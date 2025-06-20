@@ -8,7 +8,7 @@ without requiring database connections.
 
 import os
 import sys
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -112,7 +112,7 @@ def test_feedback_record():
         feedback_content="This amendment needs clarification on implementation details.",
         feedback_type="comment",
         status=FeedbackStatus.SUBMITTED,
-        submitted_at=datetime.now(UTC),
+        submitted_at=datetime.now(timezone.utc),
     )
 
     assert feedback.id == "test_feedback_1"
@@ -173,7 +173,7 @@ def test_stakeholder_engagement_status():
     """Test StakeholderEngagementStatus model."""
     print("Testing StakeholderEngagementStatus...")
 
-    deadline = datetime.now(UTC) + timedelta(hours=48)
+    deadline = datetime.now(timezone.utc) + timedelta(hours=48)
 
     status = StakeholderEngagementStatus(
         amendment_id=1,
@@ -197,7 +197,7 @@ def test_stakeholder_engagement_status():
             3: {"feedback_submitted": False, "engagement_score": 0.0},
             4: {"feedback_submitted": False, "engagement_score": 0.0},
         },
-        last_updated=datetime.now(UTC),
+        last_updated=datetime.now(timezone.utc),
     )
 
     assert status.amendment_id == 1
@@ -233,10 +233,10 @@ def test_notification_content_structure():
         "title": "Test Constitutional Amendment",
         "description": "A test amendment for validation",
         "proposed_by": 1,
-        "created_at": datetime.now(UTC).isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
     }
 
-    deadline = datetime.now(UTC) + timedelta(hours=72)
+    deadline = datetime.now(timezone.utc) + timedelta(hours=72)
 
     content = {
         "subject": "New Constitutional Amendment Proposal - Review Required",

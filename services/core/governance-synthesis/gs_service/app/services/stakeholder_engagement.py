@@ -7,7 +7,7 @@ for the ACGS-PGP Constitutional Council and violation escalation workflows.
 
 import logging
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -151,7 +151,7 @@ class StakeholderNotificationService:
                 sent=total_sent > 0,
                 channels_used=channels_used,
                 recipients_count=total_sent,
-                sent_at=datetime.now(UTC),
+                sent_at=datetime.now(timezone.utc),
             )
 
         except Exception as e:

@@ -27,7 +27,7 @@ import json
 import logging
 import statistics
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 from typing import Any
 
@@ -67,7 +67,7 @@ class EnhancedPolicySynthesisValidator:
 
     def __init__(self):
         self.results = {
-            "validation_timestamp": datetime.now(UTC).isoformat(),
+            "validation_timestamp": datetime.now(timezone.utc).isoformat(),
             "constitutional_hash": "cdd01ef066bc6cf2",
             "performance_targets": {
                 "accuracy_threshold": 0.95,

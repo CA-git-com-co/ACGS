@@ -17,7 +17,7 @@ API Endpoints:
 
 import logging
 import sys
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Request
@@ -431,7 +431,7 @@ async def start_workflow(workflow_id: str, http_request: Request):
             "workflow_id": workflow_id,
             "status": "started",
             "message": "Workflow started successfully",
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         if SHARED_COMPONENTS_AVAILABLE:
@@ -489,7 +489,7 @@ async def cancel_workflow(workflow_id: str, http_request: Request):
             "workflow_id": workflow_id,
             "status": "cancelled",
             "message": "Workflow cancelled successfully",
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         if SHARED_COMPONENTS_AVAILABLE:
@@ -664,7 +664,7 @@ async def _log_workflow_creation(
         "workflow_id": workflow_id,
         "workflow_type": workflow_type,
         "action": "created",
-        "timestamp": datetime.now(UTC).isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "correlation_id": correlation_id,
     }
 

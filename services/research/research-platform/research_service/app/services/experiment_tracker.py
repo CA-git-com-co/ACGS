@@ -11,7 +11,7 @@ import logging
 import pickle
 import uuid
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -123,7 +123,7 @@ class ExperimentTracker:
                 metadata=config.metadata,
                 status=ExperimentStatus.CREATED.value,
                 created_by=user_id,
-                created_at=datetime.now(UTC),
+                created_at=datetime.now(timezone.utc),
             )
 
             db.add(experiment)
@@ -165,14 +165,14 @@ class ExperimentTracker:
                 run_number=await self._get_next_run_number(db, experiment_id),
                 config=run_config or {},
                 status=ExperimentStatus.RUNNING.value,
-                started_at=datetime.now(UTC),
+                started_at=datetime.now(timezone.utc),
             )
 
             db.add(experiment_run)
 
             # Update experiment status
             experiment.status = ExperimentStatus.RUNNING.value
-            experiment.updated_at = datetime.now(UTC)
+            experiment.updated_at = datetime.now(timezone.utc)
 
             await db.commit()
             await db.refresh(experiment_run)
@@ -203,7 +203,7 @@ class ExperimentTracker:
                 metric_name=metric_name,
                 value=value,
                 step=step,
-                timestamp=timestamp or datetime.now(UTC),
+                timestamp=timestamp or datetime.now(timezone.utc),
                 metadata=metadata or {},
             )
 
@@ -262,7 +262,7 @@ class ExperimentTracker:
                 size_bytes=artifact_path.stat().st_size,
                 checksum=self._calculate_checksum(artifact_path),
                 metadata=metadata or {},
-                created_at=datetime.now(UTC),
+                created_at=datetime.now(timezone.utc),
             )
 
             db.add(artifact)
@@ -299,7 +299,7 @@ class ExperimentTracker:
 
             # Update run
             experiment_run.status = status.value
-            experiment_run.completed_at = datetime.now(UTC)
+            experiment_run.completed_at = datetime.now(timezone.utc)
             experiment_run.summary = summary
             experiment_run.conclusions = conclusions or []
             experiment_run.recommendations = recommendations or []

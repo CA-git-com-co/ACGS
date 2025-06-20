@@ -24,7 +24,7 @@ StateGraph Nodes Tested:
 import asyncio
 import json
 import time
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -199,7 +199,7 @@ class LangGraphAmendmentProcessingTests:
             {
                 "from_node": "START",
                 "to_node": "propose_amendment",
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "state_data": {"amendment_id": amendment_id},
             }
         )
@@ -222,7 +222,7 @@ class LangGraphAmendmentProcessingTests:
                 "stakeholder_config": {
                     "notification_channels": ["email", "dashboard", "api"],
                     "response_deadline": (
-                        datetime.now(UTC) + timedelta(hours=24)
+                        datetime.now(timezone.utc) + timedelta(hours=24)
                     ).isoformat(),
                     "feedback_types": ["vote", "comments", "suggested_modifications"],
                     "enable_real_time_tracking": True,
@@ -303,7 +303,7 @@ class LangGraphAmendmentProcessingTests:
             {
                 "from_node": "propose_amendment",
                 "to_node": "gather_stakeholder_feedback",
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "state_data": {"feedback_count": len(stakeholder_responses)},
             }
         )
@@ -379,7 +379,7 @@ class LangGraphAmendmentProcessingTests:
             {
                 "from_node": "gather_stakeholder_feedback",
                 "to_node": "analyze_constitutionality",
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "state_data": {"fidelity_score": fidelity_score},
             }
         )
@@ -402,7 +402,7 @@ class LangGraphAmendmentProcessingTests:
                     "quorum_threshold": 0.6,
                     "approval_threshold": 0.7,
                     "voting_deadline": (
-                        datetime.now(UTC) + timedelta(hours=48)
+                        datetime.now(timezone.utc) + timedelta(hours=48)
                     ).isoformat(),
                     "enable_delegation": True,
                     "transparency_level": "full",
@@ -445,7 +445,7 @@ class LangGraphAmendmentProcessingTests:
             {
                 "from_node": "analyze_constitutionality",
                 "to_node": "conduct_voting",
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "state_data": {"approval_rate": weighted_approval_rate},
             }
         )
@@ -500,7 +500,7 @@ class LangGraphAmendmentProcessingTests:
             {
                 "from_node": "conduct_voting",
                 "to_node": "refine_amendment",
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "state_data": {"final_status": final_status},
             }
         )
@@ -579,7 +579,7 @@ class LangGraphAmendmentProcessingTests:
         print("\n📊 Generating LangGraph Test Report...")
 
         report = {
-            "test_execution_timestamp": datetime.now(UTC).isoformat(),
+            "test_execution_timestamp": datetime.now(timezone.utc).isoformat(),
             "test_suite": "LangGraph Amendment Processing StateGraph",
             "workflow_result": workflow_result,
             "node_execution_metrics": self.node_execution_metrics,

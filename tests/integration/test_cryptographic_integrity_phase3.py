@@ -5,7 +5,7 @@ Tests digital signatures, key management, Merkle trees, and RFC 3161 timestampin
 
 import json
 import sys
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 
 # Add the src directory to Python path for imports
@@ -229,7 +229,7 @@ class TestCryptographicIntegrityPhase3:
         content = {
             "rule_content": self.test_data["policy_rule_content"],
             "version": 1,
-            "created_at": datetime.now(UTC).isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
         }
         content_json = json.dumps(content, sort_keys=True, separators=(",", ":"))
 
@@ -271,7 +271,7 @@ class TestCryptographicIntegrityPhase3:
             # Create log entry
             entry_data = {
                 "id": i + 1,
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "service_name": "test_service",
                 "action": f"ACTION_{i}",
                 "user_id": "test_user",
@@ -313,7 +313,7 @@ class TestCryptographicIntegrityPhase3:
             log_data = {
                 "id": i + 1,
                 "action": f"ACTION_{i}",
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
             log_json = json.dumps(log_data, sort_keys=True, separators=(",", ":"))
             log_hash = crypto_service.generate_sha3_hash(log_json)

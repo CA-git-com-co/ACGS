@@ -17,7 +17,7 @@ import json
 import logging
 import subprocess
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 from typing import Any
 
@@ -43,8 +43,8 @@ class CriticalActionItemsCoordinator:
         self.project_root = Path(__file__).parent.parent
         self.docker_client = docker.from_env()
         self.execution_report = {
-            "execution_id": f"acgs_critical_fixes_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}",
-            "start_time": datetime.now(UTC).isoformat(),
+            "execution_id": f"acgs_critical_fixes_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}",
+            "start_time": datetime.now(timezone.utc).isoformat(),
             "phases": {},
             "success_criteria": {
                 "infrastructure_availability": {"target": 100.0, "achieved": 0.0},
@@ -92,7 +92,7 @@ class CriticalActionItemsCoordinator:
                     "status": "SUCCESS" if phase_result["success"] else "FAILED",
                     "duration_seconds": phase_duration,
                     "details": phase_result,
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
 
                 if phase_result["success"]:
@@ -109,12 +109,12 @@ class CriticalActionItemsCoordinator:
                     "status": "CRASHED",
                     "duration_seconds": time.time() - phase_start,
                     "error": str(e),
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
 
         # Calculate overall success rate
         self.execution_report["overall_success_rate"] = (successful_phases / total_phases) * 100
-        self.execution_report["end_time"] = datetime.now(UTC).isoformat()
+        self.execution_report["end_time"] = datetime.now(timezone.utc).isoformat()
 
         # Final validation
         await self.final_validation()

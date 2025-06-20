@@ -13,7 +13,7 @@ import hashlib
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -56,7 +56,7 @@ class FederatedNode:
     api_key: str | None = None
     capabilities: dict[str, Any] = field(default_factory=dict)
     status: str = "active"
-    last_heartbeat: datetime = field(default_factory=lambda: datetime.now(UTC))
+    last_heartbeat: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     performance_metrics: dict[str, float] = field(default_factory=dict)
 
     # MAB integration
@@ -74,7 +74,7 @@ class EvaluationTask:
     target_platforms: list[PlatformType]
     mab_context: dict[str, Any]
     privacy_requirements: dict[str, Any]
-    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     status: EvaluationStatus = EvaluationStatus.PENDING
     results: dict[str, Any] = field(default_factory=dict)
 
@@ -221,7 +221,7 @@ class FederatedEvaluator:
         """Background task to monitor node health and performance."""
         while True:
             try:
-                current_time = datetime.now(UTC)
+                current_time = datetime.now(timezone.utc)
 
                 for node_id, node in self.nodes.items():
                     # Check heartbeat timeout
@@ -365,7 +365,7 @@ class FederatedEvaluator:
                 self.nodes[node_id].status = "maintenance"
                 self.quarantined_nodes[node_id] = {
                     "reason": reason,
-                    "quarantined_at": datetime.now(UTC),
+                    "quarantined_at": datetime.now(timezone.utc),
                     "duration": self.byzantine_config["quarantine_duration"],
                 }
 
@@ -1094,7 +1094,7 @@ class FederatedEvaluator:
                 )
 
             # Update last heartbeat
-            node.last_heartbeat = datetime.now(UTC)
+            node.last_heartbeat = datetime.now(timezone.utc)
 
         except Exception as e:
             logger.error(f"Failed to update node metrics: {e}")

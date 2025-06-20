@@ -9,7 +9,7 @@ import json
 import logging
 import subprocess
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 from typing import Any
 
@@ -24,8 +24,8 @@ class EnhancedTestingInfrastructure:
     def __init__(self):
         self.project_root = Path(__file__).parent.parent
         self.test_results = {
-            "execution_id": f"enhanced_testing_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}",
-            "start_time": datetime.now(UTC).isoformat(),
+            "execution_id": f"enhanced_testing_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}",
+            "start_time": datetime.now(timezone.utc).isoformat(),
             "test_suites": {},
             "coverage_metrics": {},
             "performance_benchmarks": {},
@@ -62,7 +62,7 @@ class EnhancedTestingInfrastructure:
                     "status": "PASSED" if suite_result["success"] else "FAILED",
                     "duration_seconds": suite_duration,
                     "details": suite_result,
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
 
                 if suite_result["success"]:
@@ -78,7 +78,7 @@ class EnhancedTestingInfrastructure:
                     "status": "CRASHED",
                     "duration_seconds": time.time() - suite_start,
                     "error": str(e),
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
 
         # Generate comprehensive coverage report
@@ -88,7 +88,7 @@ class EnhancedTestingInfrastructure:
         await self.calculate_success_metrics()
 
         # Save test results
-        self.test_results["end_time"] = datetime.now(UTC).isoformat()
+        self.test_results["end_time"] = datetime.now(timezone.utc).isoformat()
         report_path = (
             self.project_root
             / f"reports/enhanced_testing_report_{self.test_results['execution_id']}.json"

@@ -21,7 +21,7 @@ import os
 import subprocess
 import time
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -108,7 +108,7 @@ class PolicySynthesisDeploymentOrchestrator:
         """Execute the complete 10-week deployment and optimization plan."""
         logger.info("🚀 Starting Policy Synthesis Enhancement Deployment Plan")
 
-        deployment_start = datetime.now(UTC)
+        deployment_start = datetime.now(timezone.utc)
         overall_success = True
 
         try:
@@ -132,7 +132,7 @@ class PolicySynthesisDeploymentOrchestrator:
             phase5_result = await self.execute_phase_5_documentation()
             overall_success &= phase5_result["success"]
 
-            deployment_end = datetime.now(UTC)
+            deployment_end = datetime.now(timezone.utc)
 
             # Generate final report
             final_report = await self.generate_final_deployment_report(
@@ -163,7 +163,7 @@ class PolicySynthesisDeploymentOrchestrator:
 
         phase_metrics = DeploymentMetrics(
             phase=DeploymentPhase.PRODUCTION_DEPLOYMENT,
-            start_time=datetime.now(UTC),
+            start_time=datetime.now(timezone.utc),
         )
 
         try:
@@ -217,7 +217,7 @@ class PolicySynthesisDeploymentOrchestrator:
             phase_metrics.warnings.append(f"Phase 1 error: {str(e)}")
 
         finally:
-            phase_metrics.end_time = datetime.now(UTC)
+            phase_metrics.end_time = datetime.now(timezone.utc)
             self.deployment_metrics.append(phase_metrics)
 
         return {
@@ -675,7 +675,7 @@ class PolicySynthesisDeploymentOrchestrator:
             return {
                 "success": all_tests_passed,
                 "validation_results": validation_results,
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:
@@ -806,7 +806,7 @@ class PolicySynthesisDeploymentOrchestrator:
 
         phase_metrics = DeploymentMetrics(
             phase=DeploymentPhase.THRESHOLD_OPTIMIZATION,
-            start_time=datetime.now(UTC),
+            start_time=datetime.now(timezone.utc),
         )
 
         try:
@@ -853,7 +853,7 @@ class PolicySynthesisDeploymentOrchestrator:
             phase_metrics.warnings.append(f"Phase 2 error: {str(e)}")
 
         finally:
-            phase_metrics.end_time = datetime.now(UTC)
+            phase_metrics.end_time = datetime.now(timezone.utc)
             self.deployment_metrics.append(phase_metrics)
 
         return {
@@ -878,7 +878,7 @@ class PolicySynthesisDeploymentOrchestrator:
 
         phase_metrics = DeploymentMetrics(
             phase=DeploymentPhase.TESTING_EXPANSION,
-            start_time=datetime.now(UTC),
+            start_time=datetime.now(timezone.utc),
         )
 
         try:
@@ -921,7 +921,7 @@ class PolicySynthesisDeploymentOrchestrator:
             phase_metrics.warnings.append(f"Phase 3 error: {str(e)}")
 
         finally:
-            phase_metrics.end_time = datetime.now(UTC)
+            phase_metrics.end_time = datetime.now(timezone.utc)
             self.deployment_metrics.append(phase_metrics)
 
         return {
@@ -946,7 +946,7 @@ class PolicySynthesisDeploymentOrchestrator:
 
         phase_metrics = DeploymentMetrics(
             phase=DeploymentPhase.PERFORMANCE_ANALYSIS,
-            start_time=datetime.now(UTC),
+            start_time=datetime.now(timezone.utc),
         )
 
         try:
@@ -985,7 +985,7 @@ class PolicySynthesisDeploymentOrchestrator:
             phase_metrics.warnings.append(f"Phase 4 error: {str(e)}")
 
         finally:
-            phase_metrics.end_time = datetime.now(UTC)
+            phase_metrics.end_time = datetime.now(timezone.utc)
             self.deployment_metrics.append(phase_metrics)
 
         return {
@@ -1009,7 +1009,7 @@ class PolicySynthesisDeploymentOrchestrator:
         self.current_phase = DeploymentPhase.DOCUMENTATION
 
         phase_metrics = DeploymentMetrics(
-            phase=DeploymentPhase.DOCUMENTATION, start_time=datetime.now(UTC)
+            phase=DeploymentPhase.DOCUMENTATION, start_time=datetime.now(timezone.utc)
         )
 
         try:
@@ -1046,7 +1046,7 @@ class PolicySynthesisDeploymentOrchestrator:
             phase_metrics.warnings.append(f"Phase 5 error: {str(e)}")
 
         finally:
-            phase_metrics.end_time = datetime.now(UTC)
+            phase_metrics.end_time = datetime.now(timezone.utc)
             self.deployment_metrics.append(phase_metrics)
 
         return {
@@ -1145,7 +1145,7 @@ class PolicySynthesisDeploymentOrchestrator:
             return {
                 "success": True,
                 "deployed_thresholds": optimization["optimized_thresholds"],
-                "deployment_timestamp": datetime.now(UTC).isoformat(),
+                "deployment_timestamp": datetime.now(timezone.utc).isoformat(),
             }
         except Exception as e:
             return {"success": False, "error": str(e)}

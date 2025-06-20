@@ -8,7 +8,7 @@ as part of the WINA (Weight Informed Neuron Activation) system.
 import logging
 import time
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -119,7 +119,7 @@ class NeuronGate:
         self.is_active = True
         self.activation_history: list[bool] = []
         self.score_history: list[float] = []
-        self.last_activation_time = datetime.now(UTC)
+        self.last_activation_time = datetime.now(timezone.utc)
 
     def update_activation(self, is_active: bool, score: float) -> None:
         """
@@ -132,7 +132,7 @@ class NeuronGate:
         self.is_active = is_active
         self.activation_history.append(is_active)
         self.score_history.append(score)
-        self.last_activation_time = datetime.now(UTC)
+        self.last_activation_time = datetime.now(timezone.utc)
 
         # Keep history limited to prevent memory growth
         if len(self.activation_history) > 1000:

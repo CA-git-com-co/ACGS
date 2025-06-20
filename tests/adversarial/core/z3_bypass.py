@@ -8,7 +8,7 @@ vulnerabilities in the ACGS-PGP formal verification service.
 import json
 import logging
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 import aiohttp
 
@@ -219,7 +219,7 @@ class Z3BypassTester:
                                         ],
                                         cvss_score=8.0,
                                         execution_time_ms=execution_time,
-                                        timestamp=datetime.now(UTC),
+                                        timestamp=datetime.now(timezone.utc),
                                     )
                                 )
 
@@ -309,7 +309,7 @@ class Z3BypassTester:
                                                 else 7.5
                                             ),
                                             execution_time_ms=execution_time,
-                                            timestamp=datetime.now(UTC),
+                                            timestamp=datetime.now(timezone.utc),
                                         )
                                     )
 
@@ -333,7 +333,7 @@ class Z3BypassTester:
                                 ],
                                 cvss_score=6.5,
                                 execution_time_ms=60000,  # Timeout duration
-                                timestamp=datetime.now(UTC),
+                                timestamp=datetime.now(timezone.utc),
                             )
                         )
 
@@ -429,7 +429,7 @@ class Z3BypassTester:
                                         ],
                                         cvss_score=5.5,
                                         execution_time_ms=execution_time,
-                                        timestamp=datetime.now(UTC),
+                                        timestamp=datetime.now(timezone.utc),
                                     )
                                 )
 
@@ -452,7 +452,7 @@ class Z3BypassTester:
                             ],
                             cvss_score=6.0,
                             execution_time_ms=10000,  # Timeout duration
-                            timestamp=datetime.now(UTC),
+                            timestamp=datetime.now(timezone.utc),
                         )
                     )
 
@@ -538,7 +538,7 @@ class Z3BypassTester:
                                         ],
                                         cvss_score=9.5,
                                         execution_time_ms=execution_time,
-                                        timestamp=datetime.now(UTC),
+                                        timestamp=datetime.now(timezone.utc),
                                     )
                                 )
 

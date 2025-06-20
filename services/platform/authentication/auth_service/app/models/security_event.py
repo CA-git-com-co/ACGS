@@ -1,7 +1,7 @@
 # Enterprise Security Event Model
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
-from .db.base_class import Base
+from ..db.base_class import Base
 from sqlalchemy import (
     JSON,
     Boolean,
@@ -47,7 +47,7 @@ class SecurityEvent(Base):
     # Timestamps
     created_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(UTC),
+        default=lambda: datetime.now(timezone.utc),
         nullable=False,
         index=True,
     )
@@ -84,7 +84,7 @@ class ApiKey(Base):
     # Timestamps
     created_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(UTC),
+        default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
     expires_at = Column(DateTime(timezone=True), nullable=True, index=True)
@@ -118,13 +118,13 @@ class OAuthAccount(Base):
     # Timestamps
     created_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(UTC),
+        default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
     updated_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(UTC),
-        onupdate=lambda: datetime.now(UTC),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
 
@@ -153,14 +153,14 @@ class UserSession(Base):
     is_active = Column(Boolean, nullable=False, default=True, index=True)
     last_activity_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(UTC),
+        default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
 
     # Timestamps
     created_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(UTC),
+        default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
     expires_at = Column(DateTime(timezone=True), nullable=False, index=True)

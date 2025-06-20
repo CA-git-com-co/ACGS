@@ -16,7 +16,7 @@ Key Enhancements:
 
 import logging
 import re
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 try:
@@ -393,7 +393,7 @@ Step 3: PROACTIVE COMPLIANCE
         """Retrieve constitutional precedents for RAG enhancement."""
         try:
             # Check cache freshness (refresh every hour)
-            current_time = datetime.now(UTC)
+            current_time = datetime.now(timezone.utc)
             if (
                 self.precedent_cache_timestamp is None
                 or (current_time - self.precedent_cache_timestamp).seconds > 3600
@@ -470,7 +470,7 @@ Step 3: PROACTIVE COMPLIANCE
                 },
             }
 
-            self.precedent_cache_timestamp = datetime.now(UTC)
+            self.precedent_cache_timestamp = datetime.now(timezone.utc)
             logger.info("Constitutional precedent cache refreshed")
 
         except Exception as e:

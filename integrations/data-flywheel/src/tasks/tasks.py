@@ -72,7 +72,7 @@ celery_app.conf.update(
     task_serializer="json",
     accept_content=["json"],
     result_serializer="json",
-    timezone="UTC",
+    timezone="timezone.utc",
     enable_utc=True,
     # Prevent Redis from re-queuing long-running tasks
     broker_transport_options={

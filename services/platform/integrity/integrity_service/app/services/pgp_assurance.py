@@ -8,7 +8,7 @@ import json
 import logging
 import time
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any, Optional
 
@@ -177,7 +177,7 @@ class PGPAssuranceService:
                 signature=signature,
                 algorithm=algorithm,
                 public_key_pem=public_pem,
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 metadata={
                     "data_hash": self.compute_hash(
                         ac_version_data, HashAlgorithm.SHA256
@@ -421,7 +421,7 @@ class PGPAssuranceService:
             # In production, this would make an actual RFC 3161 request to a TSA
             # For now, we create a mock timestamp token
 
-            timestamp = datetime.now(UTC)
+            timestamp = datetime.now(timezone.utc)
 
             # Create timestamp token data (simplified)
             token_data = {
@@ -473,7 +473,7 @@ class PGPAssuranceService:
                 return False
 
             # Verify timestamp is reasonable (not in future, not too old)
-            now = datetime.now(UTC)
+            now = datetime.now(timezone.utc)
             if timestamp_token.timestamp > now:
                 logger.warning("Timestamp is in the future")
                 return False
@@ -551,7 +551,7 @@ class PGPAssuranceService:
                     if timestamp_token
                     else None
                 ),
-                "created_at": datetime.now(UTC).isoformat(),
+                "created_at": datetime.now(timezone.utc).isoformat(),
                 "key_id": key_id,
             }
 

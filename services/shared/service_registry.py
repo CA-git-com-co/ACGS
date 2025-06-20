@@ -6,7 +6,7 @@ Centralized service discovery and health monitoring for all ACGS services
 import asyncio
 import logging
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -41,7 +41,7 @@ class ServiceInfo:
     status: ServiceStatus = ServiceStatus.UNKNOWN
     last_health_check: datetime | None = None
     health_check_failures: int = 0
-    registered_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    registered_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     @property
     def base_url(self) -> str:
@@ -262,13 +262,13 @@ class ServiceRegistry:
                     if service.health_check_failures >= self.max_failures:
                         service.status = ServiceStatus.UNHEALTHY
 
-                service.last_health_check = datetime.now(UTC)
+                service.last_health_check = datetime.now(timezone.utc)
                 return is_healthy
 
         except Exception as e:
             logger.debug(f"Health check failed for {service.name}: {e}")
             service.health_check_failures += 1
-            service.last_health_check = datetime.now(UTC)
+            service.last_health_check = datetime.now(timezone.utc)
 
             if service.health_check_failures >= self.max_failures:
                 service.status = ServiceStatus.UNHEALTHY
@@ -329,7 +329,7 @@ class ServiceRegistry:
             "health_percentage": (
                 (healthy_services / total_services * 100) if total_services > 0 else 0
             ),
-            "last_check": datetime.now(UTC).isoformat(),
+            "last_check": datetime.now(timezone.utc).isoformat(),
             "services": {
                 name: {
                     "status": service.status.value,

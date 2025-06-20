@@ -17,7 +17,7 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -57,8 +57,8 @@ class PolicyRule:
     priority: int = 100
     status: PolicyStatus = PolicyStatus.ACTIVE
     version: str = "1.0.0"
-    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
-    updated_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
@@ -71,7 +71,7 @@ class PolicyBundle:
     rules: list[PolicyRule] = field(default_factory=list)
     version: str = "1.0.0"
     status: PolicyStatus = PolicyStatus.ACTIVE
-    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
@@ -172,7 +172,7 @@ class PolicyOrchestrator:
                         "decision": decision,
                         "result": result,
                         "query": policy_query,
-                        "evaluated_at": datetime.now(UTC).isoformat(),
+                        "evaluated_at": datetime.now(timezone.utc).isoformat(),
                     }
                 else:
                     error_text = await response.text()
@@ -234,7 +234,7 @@ class PolicyOrchestrator:
                 "rule_id": policy_rule.rule_id,
                 "status": "added",
                 "bundle_updated": True,
-                "added_at": datetime.now(UTC).isoformat(),
+                "added_at": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:
@@ -273,7 +273,7 @@ class PolicyOrchestrator:
                 status=PolicyStatus(updates.get("status", current_rule.status.value)),
                 version=updates.get("version", current_rule.version),
                 created_at=current_rule.created_at,
-                updated_at=datetime.now(UTC),
+                updated_at=datetime.now(timezone.utc),
                 metadata=updates.get("metadata", current_rule.metadata),
             )
 
@@ -352,7 +352,7 @@ class PolicyOrchestrator:
                 "rule_id": rule_id,
                 "status": "removed",
                 "bundle_updated": True,
-                "removed_at": datetime.now(UTC).isoformat(),
+                "removed_at": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:
@@ -406,7 +406,7 @@ class PolicyOrchestrator:
                     "constitution_hash": self.constitution_hash,
                     "compliance_validated": True,
                 },
-                "last_updated": datetime.now(UTC).isoformat(),
+                "last_updated": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:

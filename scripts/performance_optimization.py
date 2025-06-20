@@ -8,7 +8,7 @@ and Redis caching to achieve <0.01 SOL costs and <2s response times.
 import json
 import logging
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 from typing import Any
 
@@ -25,8 +25,8 @@ class PerformanceOptimizer:
     def __init__(self):
         self.project_root = Path(__file__).parent.parent
         self.optimization_results = {
-            "execution_id": f"performance_opt_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}",
-            "start_time": datetime.now(UTC).isoformat(),
+            "execution_id": f"performance_opt_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}",
+            "start_time": datetime.now(timezone.utc).isoformat(),
             "optimizations": {},
             "performance_metrics": {
                 "transaction_cost_sol": {
@@ -73,7 +73,7 @@ class PerformanceOptimizer:
                     "status": "SUCCESS" if opt_result["success"] else "FAILED",
                     "duration_seconds": opt_duration,
                     "details": opt_result,
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
 
                 if opt_result["success"]:
@@ -89,14 +89,14 @@ class PerformanceOptimizer:
                     "status": "CRASHED",
                     "duration_seconds": time.time() - opt_start,
                     "error": str(e),
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
 
         # Run performance benchmarks
         await self.run_performance_benchmarks()
 
         # Save optimization results
-        self.optimization_results["end_time"] = datetime.now(UTC).isoformat()
+        self.optimization_results["end_time"] = datetime.now(timezone.utc).isoformat()
         report_path = (
             self.project_root
             / f"reports/performance_optimization_report_{self.optimization_results['execution_id']}.json"

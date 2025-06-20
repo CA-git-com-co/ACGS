@@ -13,7 +13,7 @@ import asyncio
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -63,7 +63,7 @@ class ActionContext:
     action_type: ActionType
     user_id: str
     resource_id: str
-    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     # Action details
     action_data: dict[str, Any] = field(default_factory=dict)
@@ -102,7 +102,7 @@ class ComplianceResult:
     constitutional_analysis: dict[str, Any] | None = None
     audit_trail: list[dict[str, Any]] = field(default_factory=list)
 
-    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class RealTimeComplianceEngine:
@@ -575,7 +575,7 @@ class RealTimeComplianceEngine:
         audit_entry = {
             "audit_id": str(uuid.uuid4()),
             "action_id": context.action_id,
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "action_type": context.action_type.value,
             "user_id": context.user_id,
             "resource_id": context.resource_id,

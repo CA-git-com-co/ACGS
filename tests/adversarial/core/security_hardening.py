@@ -9,7 +9,7 @@ import json
 import logging
 import time
 from dataclasses import asdict, dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -149,7 +149,7 @@ class SecurityHardeningRecommendations:
 
         report = SecurityHardeningReport(
             report_id=f"hardening_report_{int(time.time())}",
-            generation_time=datetime.now(UTC),
+            generation_time=datetime.now(timezone.utc),
             total_recommendations=len(prioritized_recommendations),
             critical_recommendations=critical_count,
             high_priority_recommendations=high_count,

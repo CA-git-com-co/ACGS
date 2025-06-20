@@ -2405,3 +2405,13 @@ AttributeError: 'str' object has no attribute 'get'
 2025-06-19 20:48:19,880 - app.main - WARNING - ⚠️ Prometheus metrics not available: No module named 'services'
 2025-06-19 20:48:19,882 - app.main - INFO - 🚀 Starting ACGS-1 Phase 3 Production AC Service
 2025-06-19 20:48:19,882 - app.main - INFO - ⚠️ Running with basic constitutional compliance
+2025-06-19 22:16:10,542 - app.main - WARNING - Enhanced services not available: No module named 'app.services.audit_logging_service'. Running with basic compliance.
+2025-06-19 22:16:10,542 - app.main - WARNING - ⚠️ Security middleware not available: No module named 'services'
+2025-06-19 22:16:10,542 - app.main - WARNING - ⚠️ Prometheus metrics not available: No module named 'services'
+2025-06-19 22:16:10,545 - app.main - INFO - 🚀 Starting ACGS-1 Phase 3 Production AC Service
+2025-06-19 22:16:10,545 - app.main - INFO - ⚠️ Running with basic constitutional compliance
+2025-06-19 22:42:39,554 - __main__ - WARNING - Enhanced services not available: No module named 'app.services.audit_logging_service'. Running with basic compliance.
+2025-06-19 22:42:39,554 - __main__ - WARNING - ⚠️ Security middleware not available: No module named 'services'
+2025-06-19 22:42:39,555 - __main__ - WARNING - ⚠️ Prometheus metrics not available: No module named 'services'
+2025-06-19 22:42:39,588 - __main__ - INFO - 🚀 Starting ACGS-1 Phase 3 Production AC Service
+2025-06-19 22:42:39,588 - __main__ - INFO - ⚠️ Running with basic constitutional compliance

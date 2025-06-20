@@ -15,7 +15,7 @@ import os
 
 # Import the module under test
 import sys
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 import numpy as np
 import pytest
@@ -116,7 +116,7 @@ class TestLipschitzSample:
         # sha256: func_hash
         """Test Lipschitz sample creation."""
         sample = LipschitzSample(
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             lipschitz_constant=0.75,
             policy_distance=0.3,
             principle_distance=0.4,
@@ -141,7 +141,7 @@ class TestStabilityAlert:
         """Test stability alert creation."""
         alert = StabilityAlert(
             alert_id="WARN-123-0.750",
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             severity=AlertSeverity.WARNING,
             lipschitz_value=0.75,
             threshold=0.7,
@@ -454,7 +454,7 @@ class TestLipschitzMonitor:
 
         # Create a sample that should trigger warning
         warning_sample = LipschitzSample(
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             lipschitz_constant=0.75,  # Above warning threshold (0.7)
             policy_distance=0.3,
             principle_distance=0.4,
@@ -495,7 +495,7 @@ class TestLipschitzMonitor:
 
         # Create a sample that should trigger critical alert
         critical_sample = LipschitzSample(
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             lipschitz_constant=0.85,  # Above critical threshold (0.8)
             policy_distance=0.5,
             principle_distance=0.6,
@@ -525,7 +525,7 @@ class TestLipschitzMonitor:
         # Add some samples to the window
         for _i in range(5):
             sample = LipschitzSample(
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 lipschitz_constant=0.5,
                 policy_distance=0.3,
                 principle_distance=0.4,
@@ -538,7 +538,7 @@ class TestLipschitzMonitor:
 
         # Create sample that triggers recalibration
         recalibration_sample = LipschitzSample(
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             lipschitz_constant=0.9,  # Above recalibration threshold (0.85)
             policy_distance=0.7,
             principle_distance=0.8,
@@ -575,7 +575,7 @@ class TestLipschitzMonitor:
         """Test stability status with data."""
         # Add sample data
         sample = LipschitzSample(
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             lipschitz_constant=0.65,
             policy_distance=0.3,
             principle_distance=0.4,

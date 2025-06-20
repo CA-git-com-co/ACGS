@@ -19,7 +19,7 @@ import logging
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -132,7 +132,7 @@ class GovernanceWorkflowMonitor:
         metrics["total_executions"] += 1
         metrics["total_time"] += execution_time
         metrics["avg_time"] = metrics["total_time"] / metrics["total_executions"]
-        metrics["last_execution"] = datetime.now(UTC).isoformat()
+        metrics["last_execution"] = datetime.now(timezone.utc).isoformat()
 
         if success:
             metrics["successful_executions"] += 1
@@ -300,7 +300,7 @@ class EnhancedMonitoringService:
                     service_name, response_time, is_healthy
                 )
 
-                health_check.last_check = datetime.now(UTC)
+                health_check.last_check = datetime.now(timezone.utc)
 
             except Exception as e:
                 logger.error(f"Health check failed for {service_name}: {e}")
@@ -344,7 +344,7 @@ class EnhancedMonitoringService:
         """Record service performance metrics."""
         metrics = ServiceMetrics(
             service_name=service_name,
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             response_time_ms=response_time,
             error_rate=0.0 if is_healthy else 1.0,
             throughput_rps=0.0,  # Would be calculated from actual metrics
@@ -460,7 +460,7 @@ class EnhancedMonitoringService:
             service=service,
             severity=severity,
             message=message,
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             metadata=metadata or {},
         )
 
@@ -486,7 +486,7 @@ class EnhancedMonitoringService:
     def get_monitoring_dashboard(self) -> dict[str, Any]:
         """Get comprehensive monitoring dashboard data."""
         return {
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "services": {
                 name: {
                     "status": health_check.status.value,

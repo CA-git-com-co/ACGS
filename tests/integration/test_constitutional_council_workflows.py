@@ -23,7 +23,7 @@ Target Metrics:
 import asyncio
 import json
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 
 import httpx
@@ -224,7 +224,7 @@ class ConstitutionalCouncilWorkflowTests:
             "notification_type": "feedback_request",
             "target_roles": [s["role"] for s in stakeholder_roles],
             "priority": "high",
-            "deadline": (datetime.now(UTC)).isoformat(),
+            "deadline": (datetime.now(timezone.utc)).isoformat(),
         }
 
         notification_response = await self.client.post(
@@ -452,7 +452,7 @@ class ConstitutionalCouncilWorkflowTests:
         print("\n📊 Generating Workflow Test Report...")
 
         report = {
-            "test_execution_timestamp": datetime.now(UTC).isoformat(),
+            "test_execution_timestamp": datetime.now(timezone.utc).isoformat(),
             "test_suite": "Constitutional Council LangGraph Workflows",
             "workflow_results": self.workflow_results,
             "performance_validation": {

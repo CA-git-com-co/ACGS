@@ -18,7 +18,7 @@ import logging
 import time
 from typing import Any
 
-from .core.wina_oversight_coordinator import WINAECOversightCoordinator
+from ...core.wina_oversight_coordinator import WINAECOversightCoordinator
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
@@ -108,7 +108,7 @@ class AnalyticsResponse(BaseModel):
 async def get_wina_coordinator() -> WINAECOversightCoordinator:
     """Get the WINA oversight coordinator instance."""
     # This will be injected by the main application
-    from .main import get_wina_coordinator as get_coordinator
+    from ...main import get_wina_coordinator as get_coordinator
 
     return get_coordinator()
 

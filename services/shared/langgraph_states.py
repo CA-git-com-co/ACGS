@@ -7,7 +7,7 @@ the Gemini-LangGraph quickstart for constitutional governance workflows.
 """
 
 import operator
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Annotated, Any, TypedDict
 
@@ -254,7 +254,7 @@ def create_workflow_metadata(
     Returns:
         Standardized metadata dictionary
     """
-    now = datetime.now(UTC).isoformat()
+    now = datetime.now(timezone.utc).isoformat()
 
     return {
         "workflow_type": workflow_type,
@@ -286,7 +286,7 @@ def update_workflow_status(
     """
     update = {
         "status": status.value,
-        "updated_at": datetime.now(UTC).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
     }
 
     if error_message:

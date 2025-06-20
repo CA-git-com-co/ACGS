@@ -10,7 +10,7 @@ import json
 import logging
 import statistics
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -387,7 +387,7 @@ class ResearchDataPipeline:
                 "metadata": {
                     "export_name": export_name,
                     "export_description": export_description,
-                    "created_at": datetime.now(UTC).isoformat(),
+                    "created_at": datetime.now(timezone.utc).isoformat(),
                     "domain_ids": domain_ids,
                     "principle_ids": principle_ids,
                     "date_range": {

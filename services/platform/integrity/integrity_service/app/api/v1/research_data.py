@@ -6,7 +6,7 @@ with PGP-signed integrity for external validation.
 """
 
 import logging
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 from .database import get_async_db
@@ -490,7 +490,7 @@ async def verify_export_integrity(
             "hash_verified": hash_verified,
             "signature_verified": signature_verified,
             "overall_verified": hash_verified and signature_verified,
-            "verification_timestamp": datetime.now(UTC).isoformat(),
+            "verification_timestamp": datetime.now(timezone.utc).isoformat(),
             "details": {
                 "stored_hash": export.data_hash,
                 "calculated_hash": calculated_hash,
@@ -555,5 +555,5 @@ async def health_check():
     return {
         "status": "healthy",
         "service": "research_data_pipeline",
-        "timestamp": datetime.now(UTC).isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }

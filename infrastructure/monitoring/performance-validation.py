@@ -19,7 +19,7 @@ import statistics
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 from typing import Any
 
@@ -957,7 +957,7 @@ class MonitoringPerformanceValidator:
 
         report = {
             "test_metadata": {
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "test_duration_seconds": self.config.test_duration_seconds,
                 "concurrent_users": self.config.concurrent_users,
                 "test_type": "monitoring_infrastructure_performance_validation",

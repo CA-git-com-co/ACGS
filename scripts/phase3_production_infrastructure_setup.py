@@ -18,7 +18,7 @@ import logging
 import os
 import subprocess
 import sys
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 import psutil
 
@@ -64,7 +64,7 @@ class ACGSProductionInfrastructure:
         }
 
         self.results = {
-            "setup_start": datetime.now(UTC).isoformat(),
+            "setup_start": datetime.now(timezone.utc).isoformat(),
             "infrastructure_checks": {},
             "monitoring_setup": {},
             "security_hardening": {},
@@ -613,7 +613,7 @@ class ACGSProductionInfrastructure:
 
     def save_final_report(self):
         """Save comprehensive production setup report."""
-        self.results["setup_end"] = datetime.now(UTC).isoformat()
+        self.results["setup_end"] = datetime.now(timezone.utc).isoformat()
 
         # Save detailed results to file
         report_file = f"logs/phase3_production_setup_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"

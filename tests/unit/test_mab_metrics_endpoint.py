@@ -13,7 +13,7 @@ import asyncio
 import json
 import os
 import sys
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 # Add the backend directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src", "backend"))
@@ -148,7 +148,7 @@ async def test_mab_api_endpoint_logic():
 
         # Construct response (simulating the API response)
         metrics_response = {
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "optimization_metrics": optimization_metrics,
             "integration_status": integration_status,
             "best_templates": best_templates,

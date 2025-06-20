@@ -15,7 +15,7 @@ Classes:
 import logging
 import time
 from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from enum import Enum
 from typing import Any
 
@@ -153,7 +153,7 @@ class ViolationAuditService:
                 "violation_id": str(violation.id),
                 "violation_type": violation.violation_type,
                 "severity": violation.severity,
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
             # Add user information (with privacy considerations)
@@ -270,7 +270,7 @@ class ViolationAuditService:
         try:
             # Set default time range
             if end_time is None:
-                end_time = datetime.now(UTC)
+                end_time = datetime.now(timezone.utc)
 
             if start_time is None:
                 start_time = self._get_period_start_time(period, end_time)
@@ -354,8 +354,8 @@ class ViolationAuditService:
             logger.error(f"Error generating violation analytics: {e}")
             return ViolationAnalytics(
                 period=period,
-                start_time=start_time or datetime.now(UTC),
-                end_time=end_time or datetime.now(UTC),
+                start_time=start_time or datetime.now(timezone.utc),
+                end_time=end_time or datetime.now(timezone.utc),
                 total_violations=0,
                 violations_by_type={},
                 violations_by_severity={},
@@ -431,7 +431,7 @@ class ViolationAuditService:
 
             return ComplianceReport(
                 report_id=report_id,
-                generated_at=datetime.now(UTC),
+                generated_at=datetime.now(timezone.utc),
                 period_start=start_time,
                 period_end=end_time,
                 total_violations=analytics.total_violations,
@@ -448,7 +448,7 @@ class ViolationAuditService:
             logger.error(f"Error generating compliance report: {e}")
             return ComplianceReport(
                 report_id=f"error_report_{int(time.time())}",
-                generated_at=datetime.now(UTC),
+                generated_at=datetime.now(timezone.utc),
                 period_start=start_time,
                 period_end=end_time,
                 total_violations=0,
@@ -503,7 +503,7 @@ class ViolationAuditService:
             # Format export data
             export_data = {
                 "export_metadata": {
-                    "generated_at": datetime.now(UTC).isoformat(),
+                    "generated_at": datetime.now(timezone.utc).isoformat(),
                     "period_start": start_time.isoformat(),
                     "period_end": end_time.isoformat(),
                     "total_records": len(audit_logs),
@@ -536,7 +536,7 @@ class ViolationAuditService:
             logger.error(f"Error exporting audit trail: {e}")
             return {
                 "export_metadata": {
-                    "generated_at": datetime.now(UTC).isoformat(),
+                    "generated_at": datetime.now(timezone.utc).isoformat(),
                     "error": str(e),
                 },
                 "audit_records": [],

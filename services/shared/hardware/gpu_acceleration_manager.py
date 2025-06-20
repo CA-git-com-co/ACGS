@@ -18,7 +18,7 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -103,7 +103,7 @@ class AcceleratedResult:
     constitutional_compliance: float
     success: bool
     error_message: str | None = None
-    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class GPUAccelerationManager:
@@ -204,7 +204,7 @@ class GPUAccelerationManager:
                 - self.gpu_config["memory_reserve_gb"],
                 "current_utilization": 0.0,
                 "active_tasks": [],
-                "last_updated": datetime.now(UTC),
+                "last_updated": datetime.now(timezone.utc),
             }
 
         if NVML_AVAILABLE:
@@ -364,7 +364,7 @@ class GPUAccelerationManager:
                 "model_id": model_id,
                 "device_id": device_id,
                 "memory_allocated": allocation.memory_allocated_gb,
-                "loaded_at": datetime.now(UTC),
+                "loaded_at": datetime.now(timezone.utc),
             }
 
             # Update GPU state

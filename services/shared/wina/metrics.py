@@ -9,7 +9,7 @@ import asyncio
 import logging
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from typing import Any
 
 import numpy as np
@@ -414,7 +414,7 @@ class PerformanceMonitor:
         # Filter snapshots by time window if specified
         snapshots = list(self.snapshots)
         if window_minutes:
-            cutoff_time = datetime.now(UTC) - timedelta(minutes=window_minutes)
+            cutoff_time = datetime.now(timezone.utc) - timedelta(minutes=window_minutes)
             snapshots = [s for s in snapshots if s.timestamp >= cutoff_time]
 
         if not snapshots:
@@ -452,7 +452,7 @@ class PerformanceMonitor:
                     for a in self.alerts_triggered
                     if not window_minutes
                     or a["timestamp"]
-                    >= datetime.now(UTC) - timedelta(minutes=window_minutes)
+                    >= datetime.now(timezone.utc) - timedelta(minutes=window_minutes)
                 ]
             ),
         }
@@ -509,7 +509,7 @@ class WINAMetrics:
 
             # Create performance snapshot
             snapshot = WINAPerformanceSnapshot(
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 gflops_baseline=metrics.get("baseline_gflops", 0.0),
                 gflops_optimized=metrics.get("optimized_gflops", 0.0),
                 gflops_reduction=metrics.get("gflops_reduction", 0.0),

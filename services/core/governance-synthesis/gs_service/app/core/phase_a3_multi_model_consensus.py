@@ -30,7 +30,7 @@ import sys
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -101,7 +101,7 @@ class ModelResponse:
     constitutional_compliance: float
     error: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
-    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 @dataclass
@@ -804,7 +804,7 @@ class PhaseA3MultiModelConsensus:
         # sha256: func_hash
         """Update performance history for monitoring and optimization."""
         self.performance_history[consensus_id] = {
-            "timestamp": datetime.now(UTC),
+            "timestamp": datetime.now(timezone.utc),
             "consensus_time_ms": result.consensus_time_ms,
             "agreement_level": result.agreement_level.value,
             "confidence": result.overall_confidence,
@@ -1144,7 +1144,7 @@ class PhaseA3MultiModelConsensus:
             detailed_analysis=detailed_analysis,
             recommendations=recommendations,
             metadata={
-                "assessment_timestamp": datetime.now(UTC).isoformat(),
+                "assessment_timestamp": datetime.now(timezone.utc).isoformat(),
                 "content_length": len(content),
                 "principles_count": len(principles),
                 "model_responses_count": len(model_responses),

@@ -72,6 +72,18 @@ class User:
     email: str = ""
     role: str = "user"
 
+
+@dataclass
+class RefreshToken:
+    """Mock RefreshToken model for testing."""
+    id: Optional[int] = None
+    user_id: Optional[int] = None
+    token: str = ""
+    jti: str = ""
+    expires_at: Optional[datetime] = None
+    created_at: Optional[datetime] = None
+    is_revoked: bool = False
+
 __all__ = [
     "ACAmendment",
     "ACAmendmentComment",
@@ -80,4 +92,5 @@ __all__ = [
     "ACMetaRule",
     "Principle",
     "User",
+    "RefreshToken",
 ]

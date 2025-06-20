@@ -18,7 +18,7 @@ import logging
 import sys
 import time
 import uuid
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
@@ -301,7 +301,7 @@ class PolicySynthesisEngine:
                 "synthesis_time_ms": synthesis_time,
                 "strategy_used": strategy,
                 "target_met": synthesis_time < 2000,  # <2s target
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
             # Step 5: Error prediction
@@ -551,7 +551,7 @@ class PolicySynthesisEngine:
             "validated_principles": principles[:5],  # Limit for demo
             "violations": [],
             "recommendations": ["Policy meets constitutional requirements"],
-            "validation_timestamp": datetime.now(UTC).isoformat(),
+            "validation_timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     async def _predict_potential_errors(self, policy_content: str, context: str) -> dict[str, Any]:
@@ -566,7 +566,7 @@ class PolicySynthesisEngine:
                 "Consider additional context validation",
             ],
             "confidence": 0.85,
-            "prediction_timestamp": datetime.now(UTC).isoformat(),
+            "prediction_timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
 
@@ -649,7 +649,7 @@ async def _log_synthesis_metrics(
         "strategy_used": strategy_used,
         "synthesis_time_ms": synthesis_time_ms,
         "target_met": synthesis_time_ms < 2000,
-        "timestamp": datetime.now(UTC).isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "correlation_id": correlation_id,
     }
 

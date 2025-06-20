@@ -8,7 +8,7 @@ import asyncio
 import json
 import logging
 import subprocess
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 from typing import Any
 
@@ -25,8 +25,8 @@ class InfrastructureValidator:
     def __init__(self):
         self.project_root = Path(__file__).parent.parent
         self.validation_results = {
-            "validation_id": f"infra_validation_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}",
-            "timestamp": datetime.now(UTC).isoformat(),
+            "validation_id": f"infra_validation_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "tests": {},
             "overall_status": "UNKNOWN",
         }
@@ -65,7 +65,7 @@ class InfrastructureValidator:
                 self.validation_results["tests"][test_name] = {
                     "status": "CRASH",
                     "message": str(e),
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
 
         # Calculate overall status
@@ -124,19 +124,19 @@ class InfrastructureValidator:
                     "status": "PASS",
                     "message": "Database connection successful",
                     "details": "PostgreSQL responding correctly",
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
             else:
                 return {
                     "status": "FAIL",
                     "message": f"Database connection failed: {result.stderr}",
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
         except Exception as e:
             return {
                 "status": "FAIL",
                 "message": f"Database test error: {str(e)}",
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
     async def test_health_endpoints(self) -> dict[str, Any]:
@@ -169,7 +169,7 @@ class InfrastructureValidator:
                 "status": "PASS",
                 "message": f"All {len(healthy_services)} services healthy",
                 "healthy_services": healthy_services,
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         else:
             return {
@@ -177,7 +177,7 @@ class InfrastructureValidator:
                 "message": f"{len(unhealthy_services)} services unhealthy",
                 "healthy_services": healthy_services,
                 "unhealthy_services": unhealthy_services,
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
     async def test_security_middleware(self) -> dict[str, Any]:
@@ -210,7 +210,7 @@ class InfrastructureValidator:
                     "status": "PASS",
                     "message": "Security middleware bypass working correctly",
                     "working_endpoints": bypass_working,
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
             else:
                 return {
@@ -218,13 +218,13 @@ class InfrastructureValidator:
                     "message": "Security middleware bypass issues detected",
                     "working_endpoints": bypass_working,
                     "failed_endpoints": bypass_failed,
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
         except Exception as e:
             return {
                 "status": "FAIL",
                 "message": f"Security middleware test error: {str(e)}",
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
     async def test_container_status(self) -> dict[str, Any]:
@@ -263,7 +263,7 @@ class InfrastructureValidator:
                         "status": "PASS",
                         "message": f"All {len(running_containers)} containers running",
                         "running_containers": running_containers,
-                        "timestamp": datetime.now(UTC).isoformat(),
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
                     }
                 else:
                     return {
@@ -271,19 +271,19 @@ class InfrastructureValidator:
                         "message": f"{len(stopped_containers)} containers stopped",
                         "running_containers": running_containers,
                         "stopped_containers": stopped_containers,
-                        "timestamp": datetime.now(UTC).isoformat(),
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
                     }
             else:
                 return {
                     "status": "FAIL",
                     "message": f"Docker compose status check failed: {result.stderr}",
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
         except Exception as e:
             return {
                 "status": "FAIL",
                 "message": f"Container status test error: {str(e)}",
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
     async def test_environment_config(self) -> dict[str, Any]:
@@ -295,7 +295,7 @@ class InfrastructureValidator:
                 return {
                     "status": "FAIL",
                     "message": ".env file not found",
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
 
             # Read and validate key environment variables
@@ -319,20 +319,20 @@ class InfrastructureValidator:
                     "status": "PASS",
                     "message": "Environment configuration complete",
                     "required_vars_found": required_vars,
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
             else:
                 return {
                     "status": "FAIL",
                     "message": f"Missing environment variables: {missing_vars}",
                     "missing_vars": missing_vars,
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
         except Exception as e:
             return {
                 "status": "FAIL",
                 "message": f"Environment config test error: {str(e)}",
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
 

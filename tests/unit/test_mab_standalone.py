@@ -8,7 +8,7 @@ import asyncio
 import os
 import sys
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -36,7 +36,7 @@ class PromptTemplate:
     template_content: str
     category: str
     version: str = "1.0"
-    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     metadata: dict[str, Any] = field(default_factory=dict)
 
     # Performance tracking
@@ -216,7 +216,7 @@ class StandaloneMABOptimizer:
         # Record optimization history
         self.optimization_history.append(
             {
-                "timestamp": datetime.now(UTC),
+                "timestamp": datetime.now(timezone.utc),
                 "template_id": template_id,
                 "template_name": template.name,
                 "context": context,

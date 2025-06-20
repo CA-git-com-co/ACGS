@@ -9,7 +9,7 @@ import statistics
 import time
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -46,7 +46,7 @@ class ValidationResult:
     result: dict[str, Any]
     confidence_score: float
     execution_time_ms: float
-    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     metadata: dict[str, Any] = field(default_factory=dict)
 
     @property
@@ -72,7 +72,7 @@ class AggregatedResult:
     conflicts_detected: list[str] = field(default_factory=list)
     resolution_method: ConflictResolution | None = None
     aggregation_time_ms: float = 0.0
-    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     @property
     def total_validators(self) -> int:
@@ -368,7 +368,7 @@ class WebSocketStreamer:
         self.active_connections.add(websocket)
         self.connection_metadata[websocket] = {
             "client_id": client_id or f"client_{int(time.time() * 1000)}",
-            "connected_at": datetime.now(UTC),
+            "connected_at": datetime.now(timezone.utc),
             "message_count": 0,
         }
         logger.info(f"WebSocket connected: {client_id}")
@@ -393,7 +393,7 @@ class WebSocketStreamer:
             "task_id": task_id,
             "progress": progress,
             "status": status,
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "details": details or {},
         }
 
@@ -404,7 +404,7 @@ class WebSocketStreamer:
         message = {
             "type": "alert",
             "alert_type": alert_type,
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "details": details,
         }
 
@@ -442,7 +442,7 @@ class WebSocketStreamer:
             "failed_tasks": failed_tasks,
             "success_rate": completed_tasks / total_tasks if total_tasks > 0 else 0.0,
             "execution_time_ms": execution_time_ms,
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         await self._broadcast_message(message)

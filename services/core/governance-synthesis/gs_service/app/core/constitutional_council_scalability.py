@@ -7,7 +7,7 @@ Constitutional Council workflows in the ACGS-PGP framework.
 
 import logging
 from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from enum import Enum
 from typing import Any
 
@@ -165,7 +165,7 @@ class ConstitutionalCouncilScalabilityFramework:
             session = {
                 "session_id": session_id,
                 "mode": context.mode.value,
-                "started_at": datetime.now(UTC),
+                "started_at": datetime.now(timezone.utc),
                 "context": context,
                 "config": mode_config,
                 "status": "active",

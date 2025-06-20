@@ -6,7 +6,7 @@ and constitutional compliance validation.
 """
 
 import asyncio
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from unittest.mock import patch
 
 import pytest
@@ -127,7 +127,7 @@ class TestFederatedEvaluationFramework:
                 ),
                 endpoint_url=f"https://api.test{i}.com",
                 status="active",
-                last_heartbeat=datetime.now(UTC),
+                last_heartbeat=datetime.now(timezone.utc),
                 performance_metrics={
                     "success_rate": 0.95 - (i * 0.05),
                     "avg_response_time": 1000 + (i * 200),

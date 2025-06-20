@@ -15,7 +15,7 @@ Classes:
 import logging
 import time
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -213,7 +213,7 @@ class ViolationDetectionService:
             detection_time = time.time() - start_time
             result.detection_metadata.update(
                 {
-                    "detection_timestamp": datetime.now(UTC).isoformat(),
+                    "detection_timestamp": datetime.now(timezone.utc).isoformat(),
                     "detection_time_ms": round(detection_time * 1000, 2),
                     "violations_found": len(violations),
                     "detection_methods_used": self._get_detection_methods_used(
@@ -294,7 +294,7 @@ class ViolationDetectionService:
             analysis_time = time.time() - start_time
 
             # Update scan time
-            self.last_scan_time = datetime.now(UTC)
+            self.last_scan_time = datetime.now(timezone.utc)
 
             batch_result = BatchViolationResult(
                 total_analyzed=total_analyzed,
@@ -532,7 +532,7 @@ class ViolationDetectionService:
             # Check if cache needs refresh (refresh every 5 minutes)
             if (
                 self.cache_updated_at is None
-                or (datetime.now(UTC) - self.cache_updated_at).total_seconds() > 300
+                or (datetime.now(timezone.utc) - self.cache_updated_at).total_seconds() > 300
             ):
 
                 async for db in get_async_db():
@@ -542,7 +542,7 @@ class ViolationDetectionService:
                     thresholds = result.scalars().all()
 
                     self.thresholds_cache = {t.threshold_name: t for t in thresholds}
-                    self.cache_updated_at = datetime.now(UTC)
+                    self.cache_updated_at = datetime.now(timezone.utc)
                     break
 
         except Exception as e:

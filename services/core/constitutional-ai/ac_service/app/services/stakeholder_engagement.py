@@ -13,7 +13,7 @@ with the Constitutional Council StateGraph to provide:
 import asyncio
 import logging
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from enum import Enum
@@ -231,7 +231,7 @@ class StakeholderNotificationService:
                 raise ValueError("No stakeholders found for required roles")
 
             # Calculate engagement deadline
-            deadline = datetime.now(UTC) + timedelta(hours=engagement_input.engagement_period_hours)
+            deadline = datetime.now(timezone.utc) + timedelta(hours=engagement_input.engagement_period_hours)
 
             # Create engagement status
             engagement_status = StakeholderEngagementStatus(
@@ -246,7 +246,7 @@ class StakeholderNotificationService:
                 feedback_received=0,
                 feedback_by_role={role.value: 0 for role in engagement_input.required_roles},
                 status_by_stakeholder={},
-                last_updated=datetime.now(UTC),
+                last_updated=datetime.now(timezone.utc),
             )
 
             # Store engagement status
@@ -401,7 +401,7 @@ class StakeholderNotificationService:
             # Update notification status
             if success:
                 notification_record.status = NotificationStatus.SENT
-                notification_record.sent_at = datetime.now(UTC)
+                notification_record.sent_at = datetime.now(timezone.utc)
                 logger.info(f"Notification sent successfully: {notification_id}")
             else:
                 notification_record.status = NotificationStatus.FAILED
@@ -444,7 +444,7 @@ class StakeholderNotificationService:
             },
             "engagement": {
                 "deadline": deadline.isoformat(),
-                "hours_remaining": int((deadline - datetime.now(UTC)).total_seconds() / 3600),
+                "hours_remaining": int((deadline - datetime.now(timezone.utc)).total_seconds() / 3600),
                 "notification_type": notification_type,
             },
             "actions": {
@@ -497,7 +497,7 @@ class StakeholderNotificationService:
 
             # Mark as delivered (in real implementation, check SMTP response)
             notification.status = NotificationStatus.DELIVERED
-            notification.delivered_at = datetime.now(UTC)
+            notification.delivered_at = datetime.now(timezone.utc)
 
             return True
 
@@ -514,7 +514,7 @@ class StakeholderNotificationService:
 
             # Mark as delivered immediately (dashboard notifications are always available)
             notification.status = NotificationStatus.DELIVERED
-            notification.delivered_at = datetime.now(UTC)
+            notification.delivered_at = datetime.now(timezone.utc)
 
             return True
 
@@ -542,7 +542,7 @@ class StakeholderNotificationService:
                 "amendment": notification.content["amendment"],
                 "engagement": notification.content["engagement"],
                 "actions": notification.content["actions"],
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
             # Send webhook request
@@ -557,7 +557,7 @@ class StakeholderNotificationService:
 
             logger.info(f"Webhook notification sent to {webhook_url}")
             notification.status = NotificationStatus.DELIVERED
-            notification.delivered_at = datetime.now(UTC)
+            notification.delivered_at = datetime.now(timezone.utc)
 
             return True
 
@@ -585,7 +585,7 @@ class StakeholderNotificationService:
                 "stakeholder_id": notification.stakeholder_id,
                 "amendment_id": amendment_id,
                 "content": notification.content,
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
             # Send to all active connections
@@ -602,7 +602,7 @@ class StakeholderNotificationService:
 
             logger.info(f"WebSocket notification sent to {len(connections)} connections")
             notification.status = NotificationStatus.DELIVERED
-            notification.delivered_at = datetime.now(UTC)
+            notification.delivered_at = datetime.now(timezone.utc)
 
             return True
 
@@ -656,7 +656,7 @@ class StakeholderNotificationService:
                 feedback_content=feedback_content,
                 feedback_type=feedback_type,
                 status=FeedbackStatus.SUBMITTED,
-                submitted_at=datetime.now(UTC),
+                submitted_at=datetime.now(timezone.utc),
             )
 
             # Store feedback record
@@ -690,7 +690,7 @@ class StakeholderNotificationService:
             if stakeholder_id in engagement_status.status_by_stakeholder:
                 stakeholder_status = engagement_status.status_by_stakeholder[stakeholder_id]
                 stakeholder_status["feedback_submitted"] = True
-                stakeholder_status["last_activity"] = datetime.now(UTC).isoformat()
+                stakeholder_status["last_activity"] = datetime.now(timezone.utc).isoformat()
                 stakeholder_status["engagement_score"] = (
                     1.0  # Full engagement for feedback submission
                 )
@@ -709,7 +709,7 @@ class StakeholderNotificationService:
                 engaged_stakeholders / total_stakeholders if total_stakeholders > 0 else 0.0
             )
             engagement_status.feedback_received += 1
-            engagement_status.last_updated = datetime.now(UTC)
+            engagement_status.last_updated = datetime.now(timezone.utc)
 
             # Update feedback by role
             stakeholder_query = select(User).where(User.id == stakeholder_id)
@@ -754,7 +754,7 @@ class StakeholderNotificationService:
                     "is_deadline_passed": engagement_status.is_deadline_passed,
                     "last_updated": engagement_status.last_updated.isoformat(),
                 },
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
             # Send to all active connections
@@ -783,7 +783,7 @@ class StakeholderNotificationService:
                 reminder_time = deadline - timedelta(hours=hours_before)
 
                 # Only schedule if reminder time is in the future
-                if reminder_time > datetime.now(UTC):
+                if reminder_time > datetime.now(timezone.utc):
                     # In a production system, this would use a task queue like Celery
                     # For now, we'll log the scheduled reminder
                     logger.info(
@@ -811,7 +811,7 @@ class StakeholderNotificationService:
 
         # Sort by sent time (most recent first)
         notifications.sort(
-            key=lambda n: n.sent_at or datetime.min.replace(tzinfo=UTC),
+            key=lambda n: n.sent_at or datetime.min.replace(tzinfo=timezone.utc),
             reverse=True,
         )
 

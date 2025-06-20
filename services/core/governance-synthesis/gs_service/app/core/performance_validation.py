@@ -7,7 +7,7 @@ Provides real-time monitoring and benchmarking capabilities.
 
 import logging
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -118,7 +118,7 @@ class PerformanceValidator:
 
         # Tracking variables
         self.current_iteration = 0
-        self.start_time = datetime.now(UTC)
+        self.start_time = datetime.now(timezone.utc)
         self.last_analysis_iteration = 0
 
         logger.info(
@@ -145,7 +145,7 @@ class PerformanceValidator:
         baseline = PerformanceBaseline(
             baseline_id=baseline_id,
             baseline_name=baseline_name,
-            created_at=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
             average_reward=average_reward,
             success_rate=success_rate,
             response_time_ms=response_time_ms,
@@ -196,7 +196,7 @@ class PerformanceValidator:
 
         # Create performance snapshot
         snapshot = PerformanceSnapshot(
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             iteration=self.current_iteration,
             average_reward=average_reward,
             success_rate=success_rate,
@@ -579,10 +579,10 @@ class PerformanceValidator:
         }
 
         return {
-            "report_generated": datetime.now(UTC).isoformat(),
+            "report_generated": datetime.now(timezone.utc).isoformat(),
             "validation_period": {
                 "start_time": self.start_time.isoformat(),
-                "duration_hours": (datetime.now(UTC) - self.start_time).total_seconds() / 3600,
+                "duration_hours": (datetime.now(timezone.utc) - self.start_time).total_seconds() / 3600,
             },
             "summary_statistics": summary_stats,
             "performance_targets": self.check_performance_targets(),

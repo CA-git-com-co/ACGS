@@ -5,7 +5,7 @@ Tests core cryptographic functions without database dependencies
 
 import hashlib
 import json
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 # Test cryptography library availability
 try:
@@ -322,7 +322,7 @@ def test_chain_integrity():
     for i in range(5):
         entry_data = {
             "id": i + 1,
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "service_name": "test_service",
             "action": f"ACTION_{i}",
             "user_id": "test_user",

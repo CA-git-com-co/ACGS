@@ -7,7 +7,7 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -109,7 +109,7 @@ class ServiceInfo:
     status: ServiceStatus = ServiceStatus.UNKNOWN
     last_health_check: datetime | None = None
     health_check_failures: int = 0
-    registered_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    registered_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     # Performance metrics
     avg_response_time: float = 0.0
@@ -368,7 +368,7 @@ class EnhancedServiceRegistry:
                 else:
                     service.status = ServiceStatus.DEGRADED
 
-            service.last_health_check = datetime.now(UTC)
+            service.last_health_check = datetime.now(timezone.utc)
 
             # Cache result in Redis
             if self.redis_client:
@@ -384,7 +384,7 @@ class EnhancedServiceRegistry:
 
             service.update_metrics(response_time, False)
             service.health_check_failures += 1
-            service.last_health_check = datetime.now(UTC)
+            service.last_health_check = datetime.now(timezone.utc)
             service.circuit_breaker.record_failure()
 
             if service.health_check_failures >= self.max_failures:
@@ -630,7 +630,7 @@ class EnhancedServiceRegistry:
             }
 
         return {
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "overall_health_percentage": (
                 (healthy_count / total_services * 100) if total_services > 0 else 0
             ),

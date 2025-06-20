@@ -9,7 +9,7 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ class PerformanceMetric:
     metric_name: str
     value: float
     unit: str
-    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     tags: dict[str, str] = field(default_factory=dict)
 
 
@@ -36,7 +36,7 @@ class BottleneckAnalysis:
     description: str
     impact_score: float
     recommended_actions: list[str]
-    detected_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    detected_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 @dataclass
@@ -50,7 +50,7 @@ class OptimizationPlan:
     implementation_steps: list[str]
     estimated_duration_minutes: int
     risk_level: str  # low, medium, high
-    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class PerformanceMonitor:
@@ -118,7 +118,7 @@ class PerformanceMonitor:
                 "session_id": session_id,
                 "workflow_id": monitoring_data.get("workflow_id"),
                 "component": monitoring_data.get("component", "workflow"),
-                "started_at": datetime.now(UTC),
+                "started_at": datetime.now(timezone.utc),
                 "metrics": [],
                 "status": "active",
             }
@@ -308,7 +308,7 @@ class PerformanceMonitor:
                 "workflow_id": workflow_id,
                 "monitoring_session_id": monitoring_session["session_id"],
                 "monitoring_duration_minutes": (
-                    (datetime.now(UTC) - monitoring_session["started_at"]).total_seconds() / 60
+                    (datetime.now(timezone.utc) - monitoring_session["started_at"]).total_seconds() / 60
                 ),
                 "performance_summary": await self._calculate_performance_summary(
                     monitoring_session
@@ -316,7 +316,7 @@ class PerformanceMonitor:
                 "bottlenecks_summary": await self._summarize_bottlenecks(workflow_id),
                 "optimizations_summary": await self._summarize_optimizations(workflow_id),
                 "recommendations": await self._generate_recommendations(workflow_id),
-                "generated_at": datetime.now(UTC).isoformat(),
+                "generated_at": datetime.now(timezone.utc).isoformat(),
             }
 
             logger.info(f"Generated performance report for workflow {workflow_id}")
@@ -338,7 +338,7 @@ class PerformanceMonitor:
             recent_metrics = [
                 m
                 for m in self.performance_metrics
-                if (datetime.now(UTC) - m.timestamp).total_seconds() < 3600  # Last hour
+                if (datetime.now(timezone.utc) - m.timestamp).total_seconds() < 3600  # Last hour
             ]
 
             # Calculate averages
@@ -371,7 +371,7 @@ class PerformanceMonitor:
                 "monitoring_statistics": self.performance_stats,
                 "active_sessions": len(self.active_monitoring_sessions),
                 "recent_metrics_count": len(recent_metrics),
-                "last_updated": datetime.now(UTC).isoformat(),
+                "last_updated": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:
@@ -428,7 +428,7 @@ class PerformanceMonitor:
             for session_id in list(self.active_monitoring_sessions.keys()):
                 session = self.active_monitoring_sessions[session_id]
                 session["status"] = "stopped"
-                session["stopped_at"] = datetime.now(UTC)
+                session["stopped_at"] = datetime.now(timezone.utc)
                 del self.active_monitoring_sessions[session_id]
 
             logger.info("✅ Performance monitor shutdown complete")
@@ -456,7 +456,7 @@ class PerformanceMonitor:
         """Collect metrics for a monitoring session."""
         try:
             # Simulate metric collection (in production, this would collect real metrics)
-            current_time = datetime.now(UTC)
+            current_time = datetime.now(timezone.utc)
 
             # Response time metric
             response_time_metric = PerformanceMetric(
@@ -487,7 +487,7 @@ class PerformanceMonitor:
             self.performance_metrics.extend([response_time_metric, availability_metric])
 
             # Keep only recent metrics (last 24 hours)
-            cutoff_time = datetime.now(UTC).timestamp() - 86400
+            cutoff_time = datetime.now(timezone.utc).timestamp() - 86400
             self.performance_metrics = [
                 m for m in self.performance_metrics if m.timestamp.timestamp() > cutoff_time
             ]
@@ -770,7 +770,7 @@ class PerformanceMonitor:
                 "availability": availability_stats,
                 "metrics_count": len(metrics),
                 "monitoring_duration_minutes": (
-                    (datetime.now(UTC) - session["started_at"]).total_seconds() / 60
+                    (datetime.now(timezone.utc) - session["started_at"]).total_seconds() / 60
                 ),
             }
 

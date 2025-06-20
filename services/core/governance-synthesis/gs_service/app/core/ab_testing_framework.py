@@ -7,7 +7,7 @@ and A/B test result tracking for prompt template optimization.
 
 import logging
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -130,7 +130,7 @@ class ABTestingFramework:
         test_result = ABTestResult(
             test_id=test_id,
             status=ABTestStatus.RUNNING,
-            start_time=datetime.now(UTC),
+            start_time=datetime.now(timezone.utc),
         )
 
         # Create variants
@@ -243,7 +243,7 @@ class ABTestingFramework:
             return
 
         # Check maximum duration
-        duration_hours = (datetime.now(UTC) - test_result.start_time).total_seconds() / 3600
+        duration_hours = (datetime.now(timezone.utc) - test_result.start_time).total_seconds() / 3600
         max_duration_reached = duration_hours >= self.config.maximum_duration_hours
 
         # Perform statistical analysis
@@ -327,7 +327,7 @@ class ABTestingFramework:
         """Complete an A/B test and determine the winner."""
         test_result = self.active_tests[test_id]
         test_result.status = ABTestStatus.COMPLETED
-        test_result.end_time = datetime.now(UTC)
+        test_result.end_time = datetime.now(timezone.utc)
         test_result.early_stopped = early_stopped
 
         # Calculate test duration
@@ -395,7 +395,7 @@ class ABTestingFramework:
         if test_id in self.active_tests:
             test_result = self.active_tests[test_id]
             test_result.status = ABTestStatus.STOPPED
-            test_result.end_time = datetime.now(UTC)
+            test_result.end_time = datetime.now(timezone.utc)
 
             # Move to completed tests
             self.completed_tests[test_id] = test_result

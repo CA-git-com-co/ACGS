@@ -15,7 +15,7 @@ Key Features:
 
 import json
 import logging
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from typing import Any
 
 from .performance_monitoring import (
@@ -43,7 +43,7 @@ class WINADashboard:
         self.performance_collector: WINAPerformanceCollector | None = None
         self.dashboard_cache: dict[str, Any] = {}
         self.cache_ttl = timedelta(seconds=30)  # 30-second cache
-        self.last_cache_update = datetime.min.replace(tzinfo=UTC)
+        self.last_cache_update = datetime.min.replace(tzinfo=timezone.utc)
 
         # Dashboard configuration
         self.refresh_interval = 5  # seconds
@@ -72,7 +72,7 @@ class WINADashboard:
             Dashboard data with all visualizations and metrics
         """
         try:
-            current_time = datetime.now(UTC)
+            current_time = datetime.now(timezone.utc)
 
             # Check cache validity
             if (
@@ -107,7 +107,7 @@ class WINADashboard:
         except Exception as e:
             logger.error(f"Dashboard data retrieval failed: {e}")
             return {
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "error": f"Dashboard data unavailable: {str(e)}",
                 "status": "error",
             }
@@ -170,7 +170,7 @@ class WINADashboard:
                     "throughput": system_health.get("throughput", 0.0),
                 },
                 "monitoring_active": self.performance_collector.monitoring_active,
-                "last_update": datetime.now(UTC).isoformat(),
+                "last_update": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:
@@ -215,8 +215,8 @@ class WINADashboard:
                 recent_metrics = [
                     m
                     for m in component_metrics
-                    if datetime.now(UTC)
-                    - m.get("timestamp", datetime.min.replace(tzinfo=UTC))
+                    if datetime.now(timezone.utc)
+                    - m.get("timestamp", datetime.min.replace(tzinfo=timezone.utc))
                     < timedelta(minutes=5)
                 ]
 
@@ -243,7 +243,7 @@ class WINADashboard:
                             max(
                                 m.get(
                                     "timestamp",
-                                    datetime.min.replace(tzinfo=UTC),
+                                    datetime.min.replace(tzinfo=timezone.utc),
                                 )
                                 for m in recent_metrics
                             ).isoformat()
@@ -269,7 +269,7 @@ class WINADashboard:
     async def _get_alerts_summary(self) -> dict[str, Any]:
         """Get alerts summary for dashboard."""
         try:
-            current_time = datetime.now(UTC)
+            current_time = datetime.now(timezone.utc)
 
             # Get recent alerts
             recent_alerts = [
@@ -349,7 +349,7 @@ class WINADashboard:
     async def _get_gflops_chart_data(self) -> dict[str, Any]:
         """Get GFLOPs reduction chart data."""
         try:
-            current_time = datetime.now(UTC)
+            current_time = datetime.now(timezone.utc)
             time_range = timedelta(hours=2)
 
             # Get neuron activation metrics for GFLOPs calculation
@@ -387,7 +387,7 @@ class WINADashboard:
     async def _get_accuracy_chart_data(self) -> dict[str, Any]:
         """Get accuracy retention chart data."""
         try:
-            current_time = datetime.now(UTC)
+            current_time = datetime.now(timezone.utc)
             time_range = timedelta(hours=2)
 
             # Get constitutional compliance metrics for accuracy
@@ -433,8 +433,8 @@ class WINADashboard:
                 recent_metrics = [
                     m
                     for m in component_metrics
-                    if datetime.now(UTC)
-                    - m.get("timestamp", datetime.min.replace(tzinfo=UTC))
+                    if datetime.now(timezone.utc)
+                    - m.get("timestamp", datetime.min.replace(tzinfo=timezone.utc))
                     < timedelta(minutes=30)
                 ]
 
@@ -464,7 +464,7 @@ class WINADashboard:
     async def _get_system_health_chart(self) -> dict[str, Any]:
         """Get system health metrics chart."""
         try:
-            current_time = datetime.now(UTC)
+            current_time = datetime.now(timezone.utc)
             time_range = timedelta(hours=1)
 
             relevant_metrics = [
@@ -508,7 +508,7 @@ class WINADashboard:
     async def _get_integration_latency_chart(self) -> dict[str, Any]:
         """Get integration latency trends chart."""
         try:
-            current_time = datetime.now(UTC)
+            current_time = datetime.now(timezone.utc)
             time_range = timedelta(hours=2)
 
             relevant_metrics = [
@@ -648,7 +648,7 @@ class WINADashboard:
         """Get trend analysis data."""
         try:
             # Get 24-hour performance report for trends
-            end_time = datetime.now(UTC)
+            end_time = datetime.now(timezone.utc)
             start_time = end_time - timedelta(hours=24)
 
             report = await self.performance_collector.get_performance_report(
@@ -729,7 +729,7 @@ class WINADashboard:
             recent_alerts = [
                 alert
                 for alert in self.performance_collector.alerts_history
-                if datetime.now(UTC) - alert["timestamp"] < timedelta(hours=1)
+                if datetime.now(timezone.utc) - alert["timestamp"] < timedelta(hours=1)
             ]
 
             if len(recent_alerts) > 5:
@@ -816,11 +816,11 @@ class WINADashboard:
             )
 
             # Get recent metrics (last hour)
-            current_time = datetime.now(UTC)
+            current_time = datetime.now(timezone.utc)
             recent_metrics = [
                 m
                 for m in component_metrics
-                if current_time - m.get("timestamp", datetime.min.replace(tzinfo=UTC))
+                if current_time - m.get("timestamp", datetime.min.replace(tzinfo=timezone.utc))
                 < timedelta(hours=1)
             ]
 
@@ -870,7 +870,7 @@ class WINADashboard:
                     "success_rate": success_rate,
                     "avg_duration_ms": avg_duration,
                     "last_activity": max(
-                        m.get("timestamp", datetime.min.replace(tzinfo=UTC))
+                        m.get("timestamp", datetime.min.replace(tzinfo=timezone.utc))
                         for m in recent_metrics
                     ).isoformat(),
                 },

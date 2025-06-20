@@ -13,7 +13,7 @@ sha256: c8f2e1a9b7d6f4e3c2a1b8e7f6c5a4b3d2e1f8c7b6a5d4e3f2c1b8a7d6e5f4c3
 import hashlib
 import json
 import logging
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 from cryptography.hazmat.primitives import serialization
@@ -35,7 +35,7 @@ class ConstitutionalSignature(BaseModel):
     signature: str = Field(..., description="Base64-encoded Ed25519 signature")
     public_key: str = Field(..., description="Base64-encoded Ed25519 public key")
     algorithm: str = Field(default="Ed25519", description="Signature algorithm")
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     content_hash: str = Field(..., description="SHA-256 hash of signed content")
     signer_id: str | None = Field(None, description="ID of the signing entity")
     signature_type: str = Field(..., description="Type of signature (principle, amendment, etc.)")
@@ -144,7 +144,7 @@ class ConstitutionalCryptoSigner:
             content_hash = self._calculate_content_hash(content)
 
             # Create signing payload with timestamp
-            timestamp = datetime.now(UTC)
+            timestamp = datetime.now(timezone.utc)
             signing_payload = {
                 "content_hash": content_hash,
                 "signer_id": signer_id,
@@ -256,7 +256,7 @@ class ConstitutionalCryptoSigner:
                     {
                         "signature": sig.dict(),
                         "verified": is_valid,
-                        "verification_timestamp": datetime.now(UTC).isoformat(),
+                        "verification_timestamp": datetime.now(timezone.utc).isoformat(),
                     }
                 )
 
@@ -273,7 +273,7 @@ class ConstitutionalCryptoSigner:
                     if signatures
                     else 0
                 ),
-                "proof_timestamp": datetime.now(UTC).isoformat(),
+                "proof_timestamp": datetime.now(timezone.utc).isoformat(),
                 "constitutional_compliance": {
                     "tamper_proof": all(sig["verified"] for sig in verified_signatures),
                     "non_repudiation": len(verified_signatures) > 0,

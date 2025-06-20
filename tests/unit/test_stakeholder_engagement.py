@@ -10,7 +10,7 @@ import asyncio
 import logging
 import os
 import sys
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -105,7 +105,7 @@ async def create_test_data(db: AsyncSession):
         justification="Testing stakeholder engagement system",
         status="proposed",
         proposed_by_user_id=1,
-        created_at=datetime.now(UTC),
+        created_at=datetime.now(timezone.utc),
     )
 
     db.add(test_amendment)

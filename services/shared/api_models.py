@@ -7,7 +7,7 @@ and production-grade API implementation.
 """
 
 import uuid
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -44,7 +44,7 @@ class APIError(BaseModel):
     code: ErrorCode
     message: str
     details: dict[str, Any] | None = None
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     correlation_id: str | None = None
 
     class Config:
@@ -55,7 +55,7 @@ class APIMetadata(BaseModel):
     """Metadata for API responses including performance and tracing information."""
 
     correlation_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     response_time_ms: float | None = None
     service_name: str
     service_version: str = "3.0.0"
@@ -108,7 +108,7 @@ class HealthCheckResponse(BaseModel):
     service: str
     version: str = "3.0.0"
     port: int
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     uptime_seconds: float | None = None
     dependencies: dict[str, str] = Field(default_factory=dict)
     performance_metrics: dict[str, Any] = Field(default_factory=dict)
@@ -187,7 +187,7 @@ class ConstitutionalComplianceInfo(BaseModel):
     compliance_score: float = Field(ge=0.0, le=1.0)
     violations: list[str] = Field(default_factory=list)
     recommendations: list[str] = Field(default_factory=list)
-    validation_timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    validation_timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class PerformanceMetrics(BaseModel):

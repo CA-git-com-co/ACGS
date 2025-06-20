@@ -20,7 +20,7 @@ import json
 import logging
 import os
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
@@ -123,7 +123,7 @@ class AuditLogEntry(BaseModel):
 
     # Core identification
     id: str = Field(default_factory=lambda: str(uuid4()))
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     correlation_id: str = Field(default_factory=lambda: str(uuid4()))
 
     # Event details

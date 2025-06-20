@@ -7,7 +7,7 @@ duplicate formatting logic across services.
 
 import json
 import logging
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from decimal import Decimal
 from enum import Enum
 from typing import Any
@@ -75,14 +75,14 @@ def format_datetime(
 
     # Ensure timezone awareness
     if timezone_aware and dt.tzinfo is None:
-        dt = dt.replace(tzinfo=UTC)
+        dt = dt.replace(tzinfo=timezone.utc)
 
     if format_type == DateTimeFormat.ISO:
         return dt.isoformat()
     elif format_type == DateTimeFormat.TIMESTAMP:
         return str(int(dt.timestamp()))
     elif format_type == DateTimeFormat.HUMAN:
-        return dt.strftime("%Y-%m-%d %H:%M:%S UTC")
+        return dt.strftime("%Y-%m-%d %H:%M:%S timezone.utc")
     else:
         return dt.isoformat()
 
@@ -109,7 +109,7 @@ def format_response(
     """
     response = {
         "status": status.value,
-        "timestamp": datetime.now(UTC).isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
     if data is not None:
@@ -150,7 +150,7 @@ def format_error(
         "error": {
             "message": error_message,
             "code": error_code,
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         },
     }
 
@@ -242,7 +242,7 @@ def format_health_check(
     health_data = {
         "service": service_name,
         "status": status,
-        "timestamp": datetime.now(UTC).isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
     if version:

@@ -1,5 +1,5 @@
 # acgspcp-main/auth_service/app/crud/crud_refresh_token.py
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,7 +15,7 @@ async def create_refresh_token(
         token=token,
         jti=jti,
         expires_at=expires_at,
-        created_at=datetime.now(UTC),
+        created_at=datetime.now(timezone.utc),
         is_revoked=False,
     )
     db.add(db_refresh_token)
@@ -40,8 +40,8 @@ async def is_valid_refresh_token(db: AsyncSession, user_id: int, jti: str) -> bo
     # Ensure both datetimes are timezone-aware for comparison
     expires_at = token.expires_at
     if expires_at.tzinfo is None:
-        expires_at = expires_at.replace(tzinfo=UTC)
-    if expires_at < datetime.now(UTC):
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+    if expires_at < datetime.now(timezone.utc):
         return False
     return True
 

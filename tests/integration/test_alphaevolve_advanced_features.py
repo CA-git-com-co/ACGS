@@ -15,7 +15,7 @@ import asyncio
 import sys
 import time
 import uuid
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 from typing import Any
 
@@ -214,7 +214,7 @@ class PolisIntegration:
             conversation_id=str(uuid.uuid4()),
             topic=topic.title,
             description=topic.description,
-            created_at=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
             participant_count=total_participants,
         )
 
@@ -296,7 +296,7 @@ class TestAdvancedDemocraticParticipation:
                 role=StakeholderRole.CITIZEN,
                 input_text="AI systems should prioritize human welfare and dignity in all decisions",
                 constitutional_context="fundamental_rights",
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 confidence_score=0.9,
             ),
             StakeholderInput(
@@ -304,7 +304,7 @@ class TestAdvancedDemocraticParticipation:
                 role=StakeholderRole.EXPERT,
                 input_text="Constitutional AI requires transparent decision-making processes with clear audit trails",
                 constitutional_context="transparency_accountability",
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 confidence_score=0.95,
             ),
             StakeholderInput(
@@ -312,7 +312,7 @@ class TestAdvancedDemocraticParticipation:
                 role=StakeholderRole.REPRESENTATIVE,
                 input_text="Democratic governance must include diverse stakeholder perspectives in AI policy formation",
                 constitutional_context="democratic_participation",
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 confidence_score=0.85,
             ),
         ]
@@ -701,7 +701,7 @@ class TestIntegratedPerformanceValidation:
                 role=StakeholderRole.CITIZEN,
                 input_text=f"Democratic input {i}",
                 constitutional_context="test_context",
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
             )
             for i in range(10)
         ]

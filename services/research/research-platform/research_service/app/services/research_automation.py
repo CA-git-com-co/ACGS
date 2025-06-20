@@ -10,7 +10,7 @@ import json
 import logging
 import uuid
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -385,7 +385,7 @@ class ResearchAutomationService:
         # ensures: Correct function execution
         # sha256: func_hash
         """Check and execute scheduled pipelines."""
-        current_time = datetime.now(UTC)
+        current_time = datetime.now(timezone.utc)
 
         for pipeline in self.research_pipelines.values():
             if not pipeline.enabled or not pipeline.schedule:

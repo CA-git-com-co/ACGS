@@ -9,7 +9,7 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 try:
@@ -31,7 +31,7 @@ class MetricData:
     metric_type: str  # counter, gauge, histogram
     value: float
     labels: dict[str, str] = field(default_factory=dict)
-    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     description: str = ""
 
 
@@ -419,7 +419,7 @@ class MetricsCollector:
             recent_metrics = [
                 m
                 for m in self.metrics_buffer
-                if (datetime.now(UTC) - m.timestamp).total_seconds() < 3600  # Last hour
+                if (datetime.now(timezone.utc) - m.timestamp).total_seconds() < 3600  # Last hour
             ]
 
             # Group metrics by type
@@ -439,7 +439,7 @@ class MetricsCollector:
                     metric_type: len(metrics) for metric_type, metrics in metrics_by_type.items()
                 },
                 "export_interval_seconds": self.export_interval,
-                "last_updated": datetime.now(UTC).isoformat(),
+                "last_updated": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:

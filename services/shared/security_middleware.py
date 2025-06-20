@@ -28,7 +28,7 @@ import os
 import re
 import secrets
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any, Dict, List
 from urllib.parse import unquote
 
@@ -312,7 +312,7 @@ class ThreatDetector:
             "threat_level": threat_level,
             "threats": threats,
             "threat_count": len(threats),
-            "analysis_timestamp": datetime.now(UTC).isoformat(),
+            "analysis_timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def _analyze_url(self, url: str) -> list[dict[str, Any]]:
@@ -800,7 +800,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 "error": message,
                 "service": self.service_name,
                 "correlation_id": correlation_id,
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
         return JSONResponse(
@@ -831,7 +831,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 "service": self.service_name,
                 "correlation_id": correlation_id,
                 "details": rate_limit_info,
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
         headers = {
@@ -858,7 +858,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         # sha256: func_hash
         """Log security events for audit and monitoring."""
         event = {
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "service": self.service_name,
             "event_type": event_type,
             "client_ip": self._get_client_ip(request),

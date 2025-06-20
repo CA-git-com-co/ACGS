@@ -1,4 +1,4 @@
-from datetime import UTC, datetime  # For setting timestamps
+from datetime import timezone, datetime  # For setting timestamps
 from typing import Any
 
 from sqlalchemy import delete
@@ -22,8 +22,8 @@ async def create_policy_template(
         **template_data,
         created_by_user_id=user_id,
         version=template_data.get("version", 1),  # Default version or from data
-        created_at=datetime.now(UTC),
-        updated_at=datetime.now(UTC),
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc),
     )
     db.add(db_template)
     await db.commit()
@@ -67,7 +67,7 @@ async def update_policy_template(
         .where(PolicyTemplate.id == template_id)
         .values(
             **update_data,
-            updated_at=datetime.now(UTC),
+            updated_at=datetime.now(timezone.utc),
             version=current_template.version + 1,
         )
         .returning(PolicyTemplate)
@@ -92,8 +92,8 @@ async def create_direct_policy(
         **policy_data,
         created_by_user_id=user_id,
         version=policy_data.get("version", 1),
-        created_at=datetime.now(UTC),
-        updated_at=datetime.now(UTC),
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc),
     )
     db.add(db_policy)
     await db.commit()
@@ -136,8 +136,8 @@ async def create_policy_from_template_logic(
         "source_principle_ids": policy_data.get("source_principle_ids"),
         "created_by_user_id": user_id,
         "version": 1,  # Initial version for a new policy instance
-        "created_at": datetime.now(UTC),
-        "updated_at": datetime.now(UTC),
+        "created_at": datetime.now(timezone.utc),
+        "updated_at": datetime.now(timezone.utc),
     }
 
     # Filter out None values to use SQLAlchemy defaults if applicable
@@ -184,7 +184,7 @@ async def update_policy(
         .where(Policy.id == policy_id)
         .values(
             **update_data,
-            updated_at=datetime.now(UTC),
+            updated_at=datetime.now(timezone.utc),
             version=current_policy.version + 1,
         )
         .returning(Policy)

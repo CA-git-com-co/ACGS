@@ -16,7 +16,7 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -166,7 +166,7 @@ class ModelPerformanceTracker:
         """Record a failed model request."""
         self.total_requests += 1
         self.failed_requests += 1
-        self.last_failure_time = datetime.now(UTC)
+        self.last_failure_time = datetime.now(timezone.utc)
 
         # Open circuit breaker if failure rate is too high
         if self.get_failure_rate() > 0.5 and self.total_requests > 5:
@@ -201,7 +201,7 @@ class ModelPerformanceTracker:
             # Check if we should try to close the circuit breaker
             if (
                 self.last_failure_time
-                and (datetime.now(UTC) - self.last_failure_time).seconds > 300
+                and (datetime.now(timezone.utc) - self.last_failure_time).seconds > 300
             ):  # 5 minutes
                 self.circuit_breaker_open = False
                 logger.info(f"Circuit breaker closed for model {self.model_name}")

@@ -13,7 +13,7 @@ import logging
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 from typing import Any
 
@@ -68,7 +68,7 @@ class AlertTestResult:
     error_message: str = ""
     details: dict[str, Any] = field(default_factory=dict)
     timestamp: str = field(
-        default_factory=lambda: datetime.now(UTC).isoformat()
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
     )
 
 
@@ -602,7 +602,7 @@ class AlertSystemTester:
 
         report = {
             "test_metadata": {
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "test_duration_seconds": self.config.test_duration_seconds,
                 "test_type": "alert_system_performance_validation",
             },

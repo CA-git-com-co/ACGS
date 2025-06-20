@@ -19,7 +19,7 @@ import logging
 import statistics
 from collections import deque
 from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from enum import Enum
 from typing import Any
 
@@ -530,7 +530,7 @@ class WINAPerformanceCollector:
                 "operation_type": operation_type,
                 "duration_ms": duration_ms,
                 "success": success,
-                "timestamp": datetime.now(UTC),
+                "timestamp": datetime.now(timezone.utc),
             }
             self.component_metrics[component].append(operation_data)
 
@@ -542,7 +542,7 @@ class WINAPerformanceCollector:
     async def _collect_real_time_metrics(self) -> None:
         """Collect real-time metrics for monitoring."""
         try:
-            current_time = datetime.now(UTC)
+            current_time = datetime.now(timezone.utc)
 
             # Calculate real-time performance metrics
             self.real_time_metrics = {
@@ -568,7 +568,7 @@ class WINAPerformanceCollector:
         recent_metrics = [
             m
             for m in self.neuron_activation_metrics
-            if datetime.now(UTC) - m.timestamp < timedelta(minutes=10)
+            if datetime.now(timezone.utc) - m.timestamp < timedelta(minutes=10)
         ]
 
         if not recent_metrics:
@@ -597,7 +597,7 @@ class WINAPerformanceCollector:
         recent_metrics = [
             m
             for m in self.svd_transformation_metrics
-            if datetime.now(UTC) - m.timestamp < timedelta(minutes=10)
+            if datetime.now(timezone.utc) - m.timestamp < timedelta(minutes=10)
         ]
 
         if not recent_metrics:
@@ -628,7 +628,7 @@ class WINAPerformanceCollector:
         recent_metrics = [
             m
             for m in self.dynamic_gating_metrics
-            if datetime.now(UTC) - m.timestamp < timedelta(minutes=10)
+            if datetime.now(timezone.utc) - m.timestamp < timedelta(minutes=10)
         ]
 
         if not recent_metrics:
@@ -657,7 +657,7 @@ class WINAPerformanceCollector:
         recent_metrics = [
             m
             for m in self.constitutional_compliance_metrics
-            if datetime.now(UTC) - m.timestamp < timedelta(minutes=10)
+            if datetime.now(timezone.utc) - m.timestamp < timedelta(minutes=10)
         ]
 
         if not recent_metrics:
@@ -688,7 +688,7 @@ class WINAPerformanceCollector:
         recent_metrics = [
             m
             for m in self.learning_feedback_metrics
-            if datetime.now(UTC) - m.timestamp < timedelta(minutes=10)
+            if datetime.now(timezone.utc) - m.timestamp < timedelta(minutes=10)
         ]
 
         if not recent_metrics:
@@ -717,7 +717,7 @@ class WINAPerformanceCollector:
         recent_metrics = [
             m
             for m in self.integration_metrics
-            if datetime.now(UTC) - m.timestamp < timedelta(minutes=10)
+            if datetime.now(timezone.utc) - m.timestamp < timedelta(minutes=10)
         ]
 
         if not recent_metrics:
@@ -750,7 +750,7 @@ class WINAPerformanceCollector:
         recent_metrics = [
             m
             for m in self.system_health_metrics
-            if datetime.now(UTC) - m.timestamp < timedelta(minutes=5)
+            if datetime.now(timezone.utc) - m.timestamp < timedelta(minutes=5)
         ]
 
         if not recent_metrics:
@@ -843,7 +843,7 @@ class WINAPerformanceCollector:
         """Check for performance alerts and trigger notifications."""
         try:
             alerts = []
-            current_time = datetime.now(UTC)
+            current_time = datetime.now(timezone.utc)
 
             # Check GFLOPs reduction target
             overall_perf = self.real_time_metrics.get("overall_performance", {})
@@ -938,7 +938,7 @@ class WINAPerformanceCollector:
             WINAPerformanceReport with comprehensive analytics
         """
         if end_time is None:
-            end_time = datetime.now(UTC)
+            end_time = datetime.now(timezone.utc)
         if start_time is None:
             start_time = end_time - timedelta(hours=24)
 
@@ -1003,7 +1003,7 @@ class WINAPerformanceCollector:
                 alerts_triggered=period_alerts,
                 recommendations=recommendations,
                 trends=trends,
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
             )
 
             logger.info(f"Generated WINA performance report: {report.report_id}")

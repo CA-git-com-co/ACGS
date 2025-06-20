@@ -17,7 +17,7 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -70,7 +70,7 @@ class PerformanceMetric:
     value: float
     unit: str = ""
     labels: dict[str, str] = field(default_factory=dict)
-    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
@@ -101,7 +101,7 @@ class Alert:
     metric_name: str | None = None
     threshold_value: float | None = None
     current_value: float | None = None
-    triggered_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    triggered_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     resolved_at: datetime | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
 
@@ -199,7 +199,7 @@ class ObservabilityFramework:
                 span_id=span_id,
                 trace_id=trace_id,
                 operation_name=operation_name,
-                start_time=datetime.now(UTC),
+                start_time=datetime.now(timezone.utc),
                 tags=tags or {},
             )
 
@@ -241,7 +241,7 @@ class ObservabilityFramework:
                 return
 
             span = self.active_spans[span_id]
-            span.end_time = datetime.now(UTC)
+            span.end_time = datetime.now(timezone.utc)
             span.duration_ms = (span.end_time - span.start_time).total_seconds() * 1000
             span.status = status
             span.logs = logs or []
@@ -385,7 +385,7 @@ class ObservabilityFramework:
                 return
 
             alert = self.active_alerts[alert_id]
-            alert.resolved_at = datetime.now(UTC)
+            alert.resolved_at = datetime.now(timezone.utc)
 
             # Remove from active alerts
             del self.active_alerts[alert_id]
@@ -643,7 +643,7 @@ class ObservabilityFramework:
     async def _cleanup_old_metrics(self):
         """Clean up old metrics from buffer."""
         try:
-            current_time = datetime.now(UTC)
+            current_time = datetime.now(timezone.utc)
             old_metrics = []
 
             for metric in self.metrics_buffer:
@@ -727,7 +727,7 @@ class ObservabilityFramework:
         try:
             for alert_id, alert in list(self.active_alerts.items()):
                 # Auto-resolve alerts older than 1 hour (simplified logic)
-                if (datetime.now(UTC) - alert.triggered_at).total_seconds() > 3600:
+                if (datetime.now(timezone.utc) - alert.triggered_at).total_seconds() > 3600:
                     await self.resolve_alert(alert_id)
 
         except Exception as e:
@@ -740,7 +740,7 @@ class ObservabilityFramework:
                 # Escalate critical alerts that have been active for more than 15 minutes
                 if (
                     alert.alert_level == AlertLevel.CRITICAL
-                    and (datetime.now(UTC) - alert.triggered_at).total_seconds() > 900
+                    and (datetime.now(timezone.utc) - alert.triggered_at).total_seconds() > 900
                 ):
 
                     logger.critical(
@@ -774,7 +774,7 @@ class ObservabilityFramework:
                 },
                 "metrics": self.observability_metrics,
                 "performance_targets": self.performance_targets,
-                "last_updated": datetime.now(UTC).isoformat(),
+                "last_updated": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:

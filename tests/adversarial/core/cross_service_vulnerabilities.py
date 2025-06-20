@@ -8,7 +8,7 @@ vulnerabilities in the ACGS-PGP microservices architecture.
 import json
 import logging
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 import aiohttp
 
@@ -224,7 +224,7 @@ class CrossServiceVulnerabilityScanner:
                                             ],
                                             cvss_score=9.0,
                                             execution_time_ms=execution_time,
-                                            timestamp=datetime.now(UTC),
+                                            timestamp=datetime.now(timezone.utc),
                                         )
                                     )
 
@@ -302,7 +302,7 @@ class CrossServiceVulnerabilityScanner:
                                             ],
                                             cvss_score=8.0,
                                             execution_time_ms=execution_time,
-                                            timestamp=datetime.now(UTC),
+                                            timestamp=datetime.now(timezone.utc),
                                         )
                                     )
 
@@ -377,7 +377,7 @@ class CrossServiceVulnerabilityScanner:
                                             ],
                                             cvss_score=9.5,
                                             execution_time_ms=execution_time,
-                                            timestamp=datetime.now(UTC),
+                                            timestamp=datetime.now(timezone.utc),
                                         )
                                     )
 

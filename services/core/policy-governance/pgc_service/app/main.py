@@ -8,7 +8,13 @@ from typing import Any
 try:
     import sys
 
-    sys.path.append("/home/dislove/ACGS-1/services/shared")
+    # Add the correct path to services/shared
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    shared_path = os.path.join(
+        current_dir, "..", "..", "..", "..", "..", "services", "shared"
+    )
+    sys.path.insert(0, os.path.abspath(shared_path))
+
     from input_validation_middleware import InputValidationMiddleware
     from rate_limiting_middleware import RateLimitingMiddleware
     from security_headers_middleware import SecurityHeadersMiddleware
@@ -20,9 +26,6 @@ except ImportError:
 
 # Import production security middleware
 try:
-    import sys
-
-    sys.path.append("/home/dislove/ACGS-1/services/shared")
     from security_middleware import (
         apply_production_security_middleware,
         create_security_config,
@@ -37,9 +40,6 @@ except ImportError as e:
 
 # Import comprehensive audit logging
 try:
-    import sys
-
-    sys.path.append("/home/dislove/ACGS-1/services/shared")
     from comprehensive_audit_logger import (
         apply_audit_logging_to_service,
     )
@@ -1403,9 +1403,6 @@ else:
 
 # Apply enhanced security middleware
 try:
-    import sys
-
-    sys.path.append("/home/dislove/ACGS-1/services/shared")
     from security.security_middleware import SecurityConfig, SecurityMiddleware
 
     # Configure security for PGC service
@@ -1438,9 +1435,6 @@ metrics = get_metrics("pgc_service")
 
 # Add enhanced Prometheus metrics middleware
 try:
-    import sys
-
-    sys.path.append("/home/dislove/ACGS-1/services/shared")
     from prometheus_middleware import (
         add_prometheus_middleware,
         create_enhanced_metrics_endpoint,
@@ -3291,3 +3285,17 @@ async def policy_creation_workflow_secure(policy_data: dict[str, Any]):
     except Exception as e:
         logger.error(f"Policy creation workflow failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# Main execution block
+if __name__ == "__main__":
+    import uvicorn
+
+    print(f"🚀 Starting PGC Service on port {port}")
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=port,
+        reload=False,
+        log_level="info"
+    )

@@ -15,7 +15,7 @@ import logging
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 import numpy as np
@@ -42,7 +42,7 @@ class ModelWeightInfo:
     layer_type: str  # 'attention', 'mlp', 'embedding', etc.
     matrix_type: str  # 'W_k', 'W_gate', 'W_q', 'W_v', etc.
     original_shape: tuple[int, ...]
-    extraction_timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    extraction_timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 @dataclass
@@ -372,7 +372,7 @@ class WINAModelIntegrator:
             # Create optimization result
             result = WINAOptimizationResult(
                 model_id=model_identifier,
-                optimization_timestamp=datetime.now(UTC),
+                optimization_timestamp=datetime.now(timezone.utc),
                 transformed_layers=transformed_layers,
                 performance_metrics={
                     "original_gflops": total_gflops_original,
@@ -616,7 +616,7 @@ class WINAModelIntegrator:
                 "layer_results": invariance_results,
                 "tolerance": tolerance,
                 "test_inputs_count": len(test_inputs),
-                "verification_timestamp": datetime.now(UTC).isoformat(),
+                "verification_timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
             logger.info(
@@ -631,7 +631,7 @@ class WINAModelIntegrator:
             return {
                 "invariance_maintained": False,
                 "error": str(e),
-                "verification_timestamp": datetime.now(UTC).isoformat(),
+                "verification_timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
     def get_optimization_history(self) -> list[WINAOptimizationResult]:

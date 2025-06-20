@@ -6,7 +6,7 @@ and optimization history in the ACGS-PGP database.
 """
 
 import uuid
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 from sqlalchemy import (
     JSON,
@@ -41,11 +41,11 @@ class PromptTemplateModel(Base):
 
     # Metadata
     metadata_json = Column(JSON, default={})
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(UTC),
-        onupdate=lambda: datetime.now(UTC),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
     )
     created_by_user_id = Column(Integer, nullable=True)  # Reference to user who created template
 
@@ -103,7 +103,7 @@ class PromptPerformanceModel(Base):
     llm_response_hash = Column(String(64), nullable=True)  # SHA-256 hash for deduplication
 
     # Timing
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     response_time_ms = Column(Integer, nullable=True)
 
     # Relationships
@@ -140,7 +140,7 @@ class OptimizationHistoryModel(Base):
     category = Column(String(100), nullable=True, index=True)
 
     # Timing
-    timestamp = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), index=True)
+    timestamp = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), index=True)
 
     # Relationships
     template = relationship("PromptTemplateModel", back_populates="optimization_history")
@@ -174,11 +174,11 @@ class MABConfigurationModel(Base):
 
     # Status and metadata
     is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(UTC),
-        onupdate=lambda: datetime.now(UTC),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
     )
     created_by_user_id = Column(Integer, nullable=True)
 
@@ -196,7 +196,7 @@ class MABSessionModel(Base):
 
     # Session metadata
     config_name = Column(String(255), ForeignKey("mab_configurations.config_name"), nullable=False)
-    start_time = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+    start_time = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     end_time = Column(DateTime(timezone=True), nullable=True)
 
     # Session statistics
@@ -238,7 +238,7 @@ class PromptTemplateVersionModel(Base):
     a_b_test_results = Column(JSON, default={})
 
     # Metadata
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     created_by_user_id = Column(Integer, nullable=True)
     is_current = Column(Boolean, default=False)
 
@@ -268,11 +268,11 @@ class RewardFunctionModel(Base):
     validation_results = Column(JSON, default={})
 
     # Metadata
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(UTC),
-        onupdate=lambda: datetime.now(UTC),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
     )
     created_by_user_id = Column(Integer, nullable=True)
     description = Column(Text, nullable=True)

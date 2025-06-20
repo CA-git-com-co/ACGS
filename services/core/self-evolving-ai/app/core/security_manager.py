@@ -23,7 +23,7 @@ import json
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -60,7 +60,7 @@ class ThreatAssessment:
     mitigation_required: bool
     mitigation_actions: list[str] = field(default_factory=list)
     confidence_score: float = 0.0
-    detected_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    detected_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 @dataclass
@@ -73,7 +73,7 @@ class SecurityEvent:
     source: str
     description: str
     metadata: dict[str, Any] = field(default_factory=dict)
-    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class SecurityManager:
@@ -253,7 +253,7 @@ class SecurityManager:
                 "recommended_mitigations": self._get_recommended_mitigations(
                     threat_level
                 ),
-                "assessed_at": datetime.now(UTC).isoformat(),
+                "assessed_at": datetime.now(timezone.utc).isoformat(),
             }
 
             # Log security assessment
@@ -445,7 +445,7 @@ class SecurityManager:
                     "success": True,
                     "threat_id": threat_id,
                     "mitigation_results": mitigation_results,
-                    "mitigated_at": datetime.now(UTC).isoformat(),
+                    "mitigated_at": datetime.now(timezone.utc).isoformat(),
                 }
             else:
                 return {
@@ -500,13 +500,13 @@ class SecurityManager:
                         [
                             event
                             for event in self.security_events
-                            if (datetime.now(UTC) - event.timestamp).total_seconds()
+                            if (datetime.now(timezone.utc) - event.timestamp).total_seconds()
                             < 3600
                         ]
                     ),
                 },
                 "threat_categories": list(self.threat_categories.keys()),
-                "last_updated": datetime.now(UTC).isoformat(),
+                "last_updated": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:
@@ -963,7 +963,7 @@ class SecurityManager:
             recent_events = [
                 event
                 for event in self.security_events
-                if (datetime.now(UTC) - event.timestamp).total_seconds()
+                if (datetime.now(timezone.utc) - event.timestamp).total_seconds()
                 < 300  # Last 5 minutes
             ]
 
@@ -983,7 +983,7 @@ class SecurityManager:
     async def _cleanup_old_threats(self):
         """Clean up old resolved threats."""
         try:
-            current_time = datetime.now(UTC)
+            current_time = datetime.now(timezone.utc)
             old_threats = []
 
             for threat_id, threat in self.active_threats.items():

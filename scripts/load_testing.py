@@ -18,7 +18,7 @@ import os
 import statistics
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 import aiohttp
 import asyncpg
@@ -129,7 +129,7 @@ class LoadTester:
                     response_time_ms=response_time,
                     status_code=response.status,
                     success=success,
-                    timestamp=datetime.now(UTC),
+                    timestamp=datetime.now(timezone.utc),
                     error_message=None if success else f"HTTP {response.status}",
                 )
         except Exception as e:
@@ -140,7 +140,7 @@ class LoadTester:
                 response_time_ms=response_time,
                 status_code=0,
                 success=False,
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 error_message=str(e),
             )
 
@@ -180,7 +180,7 @@ class LoadTester:
                                 response_time_ms=response_time,
                                 status_code=gs_resp.status,
                                 success=success,
-                                timestamp=datetime.now(UTC),
+                                timestamp=datetime.now(timezone.utc),
                                 error_message=(
                                     None
                                     if success
@@ -197,7 +197,7 @@ class LoadTester:
                     response_time_ms=response_time,
                     status_code=0,
                     success=False,
-                    timestamp=datetime.now(UTC),
+                    timestamp=datetime.now(timezone.utc),
                     error_message=str(e),
                 )
             )
@@ -239,7 +239,7 @@ class LoadTester:
                         response_time_ms=response_time,
                         status_code=response.status,
                         success=success,
-                        timestamp=datetime.now(UTC),
+                        timestamp=datetime.now(timezone.utc),
                         error_message=(
                             None if success else "AlphaEvolve integration failed"
                         ),
@@ -254,7 +254,7 @@ class LoadTester:
                     response_time_ms=response_time,
                     status_code=0,
                     success=False,
-                    timestamp=datetime.now(UTC),
+                    timestamp=datetime.now(timezone.utc),
                     error_message=str(e),
                 )
             )
@@ -326,7 +326,7 @@ class LoadTester:
         logger.info(
             f"🚀 Starting ACGS-PGP Load Test with {self.config.concurrent_users} concurrent users"
         )
-        start_time = datetime.now(UTC)
+        start_time = datetime.now(timezone.utc)
 
         # Create concurrent user tasks
         user_tasks = [
@@ -356,7 +356,7 @@ class LoadTester:
         logger.info("🗄️ Measuring database performance...")
         database_metrics = await self.test_database_performance()
 
-        end_time = datetime.now(UTC)
+        end_time = datetime.now(timezone.utc)
 
         # Calculate metrics
         successful_results = [r for r in all_results if r.success]

@@ -8,7 +8,7 @@ duplicate error handling logic across services.
 import json
 import logging
 import traceback
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -65,7 +65,7 @@ class ACGSException(Exception):
         self.severity = severity
         self.user_message = user_message or message
         self.suggestions = suggestions or []
-        self.timestamp = datetime.now(UTC)
+        self.timestamp = datetime.now(timezone.utc)
 
         super().__init__(message)
 
@@ -353,7 +353,7 @@ def log_error(
         "service": service_name,
         "operation": operation,
         "error_type": type(error).__name__,
-        "timestamp": datetime.now(UTC).isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
     if user_id:
@@ -414,6 +414,6 @@ def create_error_response(
             "category": ErrorCategory.UNKNOWN.value,
             "severity": ErrorSeverity.HIGH.value,
             "user_message": "An unexpected error occurred. Please try again.",
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     }

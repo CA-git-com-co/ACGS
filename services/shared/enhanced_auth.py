@@ -9,7 +9,7 @@ import os
 import secrets
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from enum import Enum
 from typing import Any
 
@@ -152,14 +152,14 @@ class User:
     email: str
     role: UserRole
     is_active: bool = True
-    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     last_login: datetime | None = None
     login_attempts: int = 0
     locked_until: datetime | None = None
 
     # Security features
     mfa_enabled: bool = False
-    password_changed_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    password_changed_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     failed_login_attempts: int = 0
 
     def to_dict(self) -> dict[str, Any]:
@@ -439,7 +439,7 @@ class EnhancedAuthService:
             user = user_data["user"]
 
             # Check if user is locked
-            if user.locked_until and user.locked_until > datetime.now(UTC):
+            if user.locked_until and user.locked_until > datetime.now(timezone.utc):
                 raise AuthenticationError(f"Account locked until {user.locked_until}")
 
             # Verify password
@@ -449,7 +449,7 @@ class EnhancedAuthService:
 
                 # Lock account if too many failures
                 if user.failed_login_attempts >= self.max_login_attempts:
-                    user.locked_until = datetime.now(UTC) + self.lockout_duration
+                    user.locked_until = datetime.now(timezone.utc) + self.lockout_duration
                     logger.warning(
                         f"Account {username} locked due to too many failed attempts"
                     )
@@ -464,7 +464,7 @@ class EnhancedAuthService:
                 return None
 
             # Successful authentication
-            user.last_login = datetime.now(UTC)
+            user.last_login = datetime.now(timezone.utc)
             user.failed_login_attempts = 0
             user.locked_until = None
 
@@ -511,8 +511,8 @@ class EnhancedAuthService:
         session = UserSession(
             session_id=session_id,
             user_id=user.id,
-            created_at=datetime.now(UTC),
-            last_activity=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
+            last_activity=datetime.now(timezone.utc),
             ip_address=ip_address,
             user_agent=user_agent,
         )
@@ -542,9 +542,9 @@ class EnhancedAuthService:
     ) -> str:
         """Create an access token with enhanced security."""
         if expires_delta:
-            expire = datetime.now(UTC) + expires_delta
+            expire = datetime.now(timezone.utc) + expires_delta
         else:
-            expire = datetime.now(UTC) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+            expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
         # Generate unique JWT ID
         jti = secrets.token_urlsafe(16)
@@ -554,7 +554,7 @@ class EnhancedAuthService:
             "username": user.username,
             "role": user.role.value,
             "exp": expire,
-            "iat": datetime.now(UTC),
+            "iat": datetime.now(timezone.utc),
             "jti": jti,
             "service": "acgs",
             "session_id": session_id,
@@ -570,7 +570,7 @@ class EnhancedAuthService:
                 token_key = f"token:{jti}"
                 await self.redis_client.setex(
                     token_key,
-                    int((expire - datetime.now(UTC)).total_seconds()),
+                    int((expire - datetime.now(timezone.utc)).total_seconds()),
                     json.dumps(
                         {
                             "user_id": user.id,
@@ -858,14 +858,14 @@ class ServiceAuthManager:
         if permissions is None:
             permissions = ["internal_service"]
 
-        expire = datetime.now(UTC) + timedelta(minutes=SERVICE_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=SERVICE_TOKEN_EXPIRE_MINUTES)
         jti = secrets.token_urlsafe(16)
 
         payload = {
             "service_name": service_name,
             "permissions": permissions,
             "exp": expire,
-            "iat": datetime.now(UTC),
+            "iat": datetime.now(timezone.utc),
             "jti": jti,
             "type": "service_token",
         }

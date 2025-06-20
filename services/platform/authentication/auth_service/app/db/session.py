@@ -1,5 +1,5 @@
-from .core.config import settings
-from .db.base_class import Base  # Import Base for metadata
+from ..core.config import settings
+from .base_class import Base  # Import Base for metadata
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 

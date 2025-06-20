@@ -26,7 +26,7 @@ import asyncio
 import logging
 import time
 from dataclasses import asdict, dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -279,7 +279,7 @@ class EnhancedConstitutionalAnalyzer:
                     "processing_time_ms": (time.time() - start_time) * 1000,
                     "constitutional_hash": self.constitutional_hash,
                     "model_used": "qwen3-embedding-8b",
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
             )
 
@@ -859,7 +859,7 @@ class EnhancedConstitutionalAnalyzer:
                 "approval_score": approval_score,
                 "approved": approval_score >= 0.8,  # 80% threshold for approval
                 "processing_time_ms": (time.time() - start_time) * 1000,
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:
@@ -931,7 +931,7 @@ class EnhancedConstitutionalAnalyzer:
                 "violations": detailed_violations,
                 "supporting_principles": compliance_result.supporting_principles,
                 "processing_time_ms": (time.time() - start_time) * 1000,
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:
@@ -1008,7 +1008,7 @@ class EnhancedConstitutionalAnalyzer:
                 "recommendations": oversight_recommendations,
                 "oversight_required": oversight_score < 0.8,
                 "processing_time_ms": (time.time() - start_time) * 1000,
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:
@@ -1210,14 +1210,14 @@ class EnhancedConstitutionalAnalyzer:
                     / max(1, self._performance_metrics["total_analyses"])
                 ),
                 "constitutional_hash": self.constitutional_hash,
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:
             return {
                 "status": "unhealthy",
                 "error": str(e),
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
 

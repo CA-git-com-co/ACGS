@@ -1,0 +1,25 @@
+# ACGS-1 Grafana Dashboard Provisioning
+# Phase 3 - Production Monitoring Dashboards
+
+apiVersion: 1
+
+providers:
+  - name: 'ACGS Dashboards'
+    orgId: 1
+    folder: 'ACGS-1'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards
+
+  - name: 'System Dashboards'
+    orgId: 1
+    folder: 'System'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/system

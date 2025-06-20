@@ -9,7 +9,7 @@ Provides REST API for cross-domain principle testing framework including:
 """
 
 import logging
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 from .core.auth import User, require_verification_triggerer
 from .core.cross_domain_testing_engine import cross_domain_testing_engine
@@ -162,7 +162,7 @@ async def update_domain_context(
         for field, value in update_data.items():
             setattr(domain, field, value)
 
-        domain.updated_at = datetime.now(UTC)
+        domain.updated_at = datetime.now(timezone.utc)
 
         await db.commit()
         await db.refresh(domain)
@@ -376,7 +376,7 @@ async def execute_cross_domain_test(
         # Update scenario statuses
         for scenario in scenarios:
             scenario.status = "completed"
-            scenario.last_run_at = datetime.now(UTC)
+            scenario.last_run_at = datetime.now(timezone.utc)
             scenario.accuracy_score = response.overall_accuracy
             scenario.consistency_score = response.overall_consistency
 
@@ -455,5 +455,5 @@ async def health_check():
     return {
         "status": "healthy",
         "service": "cross_domain_testing",
-        "timestamp": datetime.now(UTC).isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }

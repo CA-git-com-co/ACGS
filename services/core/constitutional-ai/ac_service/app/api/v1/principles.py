@@ -1,5 +1,5 @@
 import logging
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 from app import crud, schemas  # Import from app directory
 from .core.auth import (  # Import from app directory
@@ -212,7 +212,7 @@ async def verify_principle_signature_endpoint(
             "signature_type": signature.signature_type,
             "signer_id": signature.signer_id,
             "signature_timestamp": signature.timestamp.isoformat(),
-            "verification_timestamp": datetime.now(UTC).isoformat(),
+            "verification_timestamp": datetime.now(timezone.utc).isoformat(),
             "content_hash": signature.content_hash,
             "message": (
                 "Signature verified successfully" if is_valid else "Signature verification failed"

@@ -19,7 +19,7 @@ import hashlib
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 
 import aiohttp
@@ -54,7 +54,7 @@ class SecurityFinding:
     endpoint: str | None = None
     recommendation: str | None = None
     cve_reference: str | None = None
-    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 @dataclass
@@ -529,7 +529,7 @@ class SecurityAuditor:
     async def run_security_audit(self) -> SecurityAuditReport:
         """Execute comprehensive security audit."""
         logger.info("🔒 Starting ACGS-PGP Security Audit")
-        start_time = datetime.now(UTC)
+        start_time = datetime.now(timezone.utc)
 
         # Test each service
         for service, port in self.config.services.items():
@@ -562,7 +562,7 @@ class SecurityAuditor:
         cross_service_findings = await self.test_cross_service_security()
         self.findings.extend(cross_service_findings)
 
-        end_time = datetime.now(UTC)
+        end_time = datetime.now(timezone.utc)
 
         # Calculate security score
         security_score = self.calculate_security_score()

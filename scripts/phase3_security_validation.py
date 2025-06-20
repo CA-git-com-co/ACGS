@@ -17,7 +17,7 @@ import json
 import logging
 import subprocess
 import sys
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 import aiohttp
 
@@ -56,7 +56,7 @@ class ACGSSecurityValidator:
         }
 
         self.results = {
-            "test_start": datetime.now(UTC).isoformat(),
+            "test_start": datetime.now(timezone.utc).isoformat(),
             "services_tested": [],
             "dependency_scan_results": {},
             "penetration_test_results": {},
@@ -464,7 +464,7 @@ class ACGSSecurityValidator:
 
     def generate_security_report(self):
         """Generate comprehensive security validation report."""
-        self.results["test_end"] = datetime.now(UTC).isoformat()
+        self.results["test_end"] = datetime.now(timezone.utc).isoformat()
 
         # Save detailed results to file
         report_file = f"logs/phase3_security_validation_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"

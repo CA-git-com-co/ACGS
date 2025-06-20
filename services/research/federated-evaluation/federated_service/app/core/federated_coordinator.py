@@ -6,7 +6,7 @@ the overall federated evaluation lifecycle.
 """
 
 import logging
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 from .federated_evaluator import federated_evaluator
@@ -103,7 +103,7 @@ class FederatedCoordinator:
                     "initialized" if differential_privacy_manager else "not_initialized"
                 ),
             },
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     async def shutdown(self):

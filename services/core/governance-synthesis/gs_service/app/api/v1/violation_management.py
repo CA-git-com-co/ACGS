@@ -7,7 +7,7 @@ and threshold configuration management.
 """
 
 import logging
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 from uuid import UUID
 
@@ -301,7 +301,7 @@ async def trigger_violation_scan(
             "scan_initiated": True,
             "message": "Violation scan initiated in background",
             "initiated_by": current_user.username,
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     except Exception as e:
@@ -367,7 +367,7 @@ async def perform_violation_scan(db: AsyncSession):
                     recommended_actions=detection_result.recommended_actions,
                     escalated=violation.escalated,
                     escalation_level=violation.escalation_level,
-                    timestamp=datetime.now(UTC),
+                    timestamp=datetime.now(timezone.utc),
                 )
 
                 # Broadcast violation alert
@@ -449,7 +449,7 @@ async def escalate_violation(
                 "error_message": escalation_result.error_message,
             },
             "escalated_by": current_user.username,
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     except HTTPException:
@@ -494,7 +494,7 @@ async def resolve_violation(
         violation.status = "resolved"
         violation.resolution_status = resolution_status
         violation.resolution_description = resolution_description
-        violation.resolved_at = datetime.now(UTC)
+        violation.resolved_at = datetime.now(timezone.utc)
         violation.resolved_by = current_user.id
 
         await db.commit()
@@ -568,7 +568,7 @@ async def get_violation_analytics(
                 "top_violation_sources": analytics.top_violation_sources,
                 "trend_analysis": analytics.trend_analysis,
             },
-            "generated_at": datetime.now(UTC).isoformat(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
             "generated_by": current_user.username,
         }
 
@@ -657,7 +657,7 @@ async def get_violation_thresholds(
 
         return {
             "thresholds": thresholds_data,
-            "retrieved_at": datetime.now(UTC).isoformat(),
+            "retrieved_at": datetime.now(timezone.utc).isoformat(),
         }
 
     except Exception as e:
@@ -719,7 +719,7 @@ async def update_violation_threshold(
             "updated": True,
             "threshold_name": threshold_name,
             "updated_by": current_user.username,
-            "updated_at": datetime.now(UTC).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
         }
 
     except HTTPException:

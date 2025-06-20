@@ -20,9 +20,6 @@ from contextlib import asynccontextmanager
 
 # Import production security middleware
 try:
-    import sys
-
-    sys.path.append("/home/dislove/ACGS-1/services/shared")
     from security_middleware import (
         apply_production_security_middleware,
         create_security_config,
@@ -34,12 +31,24 @@ except ImportError as e:
     print(f"⚠️ Production security middleware not available: {e}")
     SECURITY_MIDDLEWARE_AVAILABLE = False
 
+    def apply_production_security_middleware(app, service_name, config=None):
+        pass
+
+    def create_security_config(**kwargs):
+        return None
+
 
 # Import comprehensive audit logging
 try:
-    import sys
+    import os
 
-    sys.path.append("/home/dislove/ACGS-1/services/shared")
+    # Add the correct path to services/shared
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    shared_path = os.path.join(
+        current_dir, "..", "..", "..", "..", "services", "shared"
+    )
+    sys.path.insert(0, os.path.abspath(shared_path))
+
     from comprehensive_audit_logger import (
         apply_audit_logging_to_service,
     )
@@ -56,12 +65,14 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 # Import shared components
 try:
-    from shared.api_models import (
+    # Try to import from services.shared first
+    sys.path.insert(0, os.path.abspath(shared_path))
+    from api_models import (
         HealthCheckResponse,
         ServiceInfo,
         create_success_response,
     )
-    from shared.middleware import add_production_middleware, create_exception_handlers
+    from middleware import add_production_middleware, create_exception_handlers
 
     SHARED_AVAILABLE = True
 except ImportError:
@@ -69,10 +80,14 @@ except ImportError:
     SHARED_AVAILABLE = False
 
     class HealthCheckResponse:
-        pass
+        def __init__(self, **kwargs):
+            for key, value in kwargs.items():
+                setattr(self, key, value)
 
     class ServiceInfo:
-        pass
+        def __init__(self, **kwargs):
+            for key, value in kwargs.items():
+                setattr(self, key, value)
 
     def create_success_response(data, service_name, correlation_id=None):
         return data
@@ -243,47 +258,30 @@ app.add_middleware(
 
 # Add enhanced Prometheus metrics middleware
 try:
-    from services.shared.prometheus_middleware import (
+    from prometheus_middleware import (
         add_prometheus_middleware,
         create_enhanced_metrics_endpoint,
     )
 
-    PROMETHEUS_AVAILABLE = True
-except ImportError:
-    PROMETHEUS_AVAILABLE = False
-
-    def add_prometheus_middleware(app, service_name, service_config=None):
-        pass
-
-    def create_enhanced_metrics_endpoint():
-        return None
-
     add_prometheus_middleware(app, SERVICE_NAME)
-
-    # Add metrics endpoint
-    @app.get("/metrics")
-    async def metrics():
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
-        """Prometheus metrics endpoint for Integrity service."""
-        if PROMETHEUS_AVAILABLE:
-            endpoint_func = create_enhanced_metrics_endpoint(SERVICE_NAME)
-            return await endpoint_func()
-        else:
-            return {"metrics": "prometheus_not_available"}
-
     logger.info("✅ Enhanced Prometheus metrics enabled for Integrity Service")
+    PROMETHEUS_AVAILABLE = True
 except ImportError as e:
     logger.warning(f"⚠️ Prometheus metrics not available: {e}")
+    PROMETHEUS_AVAILABLE = False
 
-    # Fallback metrics endpoint
-    @app.get("/metrics")
-    async def fallback_metrics():
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
-        """Fallback metrics endpoint."""
+# Add metrics endpoint
+@app.get("/metrics")
+async def metrics():
+    """Prometheus metrics endpoint for Integrity service."""
+    if PROMETHEUS_AVAILABLE:
+        try:
+            endpoint_func = create_enhanced_metrics_endpoint(SERVICE_NAME)
+            return await endpoint_func()
+        except Exception as e:
+            logger.warning(f"Metrics endpoint error: {e}")
+            return {"status": "metrics_error", "service": SERVICE_NAME}
+    else:
         return {"status": "metrics_not_available", "service": SERVICE_NAME}
 
 

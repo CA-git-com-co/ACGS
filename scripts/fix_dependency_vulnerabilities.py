@@ -17,7 +17,7 @@ import logging
 import re
 import subprocess
 import sys
-from datetime import UTC
+from datetime import timezone
 from pathlib import Path
 from typing import Any
 
@@ -331,7 +331,7 @@ class DependencyVulnerabilityFixer:
         """Get current timestamp."""
         from datetime import datetime
 
-        return datetime.now(UTC).isoformat()
+        return datetime.now(timezone.utc).isoformat()
 
 
 def main():

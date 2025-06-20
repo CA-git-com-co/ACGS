@@ -26,7 +26,7 @@ import json
 import os
 import subprocess
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 from typing import Any
 
@@ -42,7 +42,7 @@ class ComprehensiveIntegrationTestRunner:
     """Comprehensive integration test runner for ACGS-PGP production readiness."""
 
     def __init__(self):
-        self.start_time = datetime.now(UTC)
+        self.start_time = datetime.now(timezone.utc)
         self.results = {
             "test_execution_id": f"integration_test_{int(time.time())}",
             "start_time": self.start_time.isoformat(),
@@ -94,7 +94,7 @@ class ComprehensiveIntegrationTestRunner:
         print("🚀 ACGS-PGP Step 6: Comprehensive Integration Testing")
         print("=" * 70)
         print(f"Test Execution ID: {self.results['test_execution_id']}")
-        print(f"Start Time: {self.start_time.strftime('%Y-%m-%d %H:%M:%S UTC')}")
+        print(f"Start Time: {self.start_time.strftime('%Y-%m-%d %H:%M:%S timezone.utc')}")
         print()
 
         try:
@@ -1028,7 +1028,7 @@ class ComprehensiveIntegrationTestRunner:
         print("📋 Generating Integration Test Report")
         print("-" * 50)
 
-        end_time = datetime.now(UTC)
+        end_time = datetime.now(timezone.utc)
         execution_time = (end_time - self.start_time).total_seconds()
 
         # Calculate summary metrics

@@ -6,7 +6,7 @@ and integrates contextual data during policy generation.
 """
 
 import logging
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ class EnvironmentalFactor:
         self.factor_id = factor_id
         self.factor_type = factor_type  # e.g., "regulatory", "operational", "technical", "social"
         self.value = value
-        self.timestamp = timestamp or datetime.now(UTC)
+        self.timestamp = timestamp or datetime.now(timezone.utc)
         self.source = source
         self.confidence = confidence  # 0.0 to 1.0
 
@@ -108,7 +108,7 @@ class ContextualAnalyzer:
 
         analysis_result = {
             "context": context,
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "relevant_factors": [factor.to_dict() for factor in relevant_factors],
             "similar_contexts": similar_contexts,
             "environmental_changes": changes,
@@ -221,7 +221,7 @@ class ContextualAnalyzer:
         changes = []
 
         # Look for factors that have changed recently (within last hour for demo)
-        current_time = datetime.now(UTC)
+        current_time = datetime.now(timezone.utc)
 
         for factor in self.environmental_factors.values():
             if self._is_factor_relevant(factor, context.lower()):

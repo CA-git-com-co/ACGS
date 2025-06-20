@@ -23,9 +23,15 @@ from typing import Any
 
 # Import production security middleware
 try:
-    import sys
+    import os
 
-    sys.path.append("/home/dislove/ACGS-1/services/shared")
+    # Add the correct path to services/shared
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    shared_path = os.path.join(
+        current_dir, "..", "..", "..", "..", "..", "services", "shared"
+    )
+    sys.path.insert(0, os.path.abspath(shared_path))
+
     from security_middleware import (
         apply_production_security_middleware,
         create_security_config,
@@ -40,9 +46,6 @@ except ImportError as e:
 
 # Import comprehensive audit logging
 try:
-    import sys
-
-    sys.path.append("/home/dislove/ACGS-1/services/shared")
     from comprehensive_audit_logger import (
         apply_audit_logging_to_service,
     )
@@ -219,7 +222,7 @@ else:
 
 # Add enhanced security middleware
 try:
-    from services.shared.security.security_middleware import (
+    from security.security_middleware import (
         SecurityConfig,
         SecurityMiddleware,
     )
@@ -251,34 +254,30 @@ app.add_middleware(
 
 # Add enhanced Prometheus metrics middleware
 try:
-    from services.shared.prometheus_middleware import (
+    from prometheus_middleware import (
         add_prometheus_middleware,
         create_enhanced_metrics_endpoint,
     )
 
     add_prometheus_middleware(app, "ac_service")
-
-    # Add metrics endpoint
-    @app.get("/metrics")
-    async def metrics():
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
-        """Prometheus metrics endpoint for Constitutional AI service."""
-        endpoint_func = create_enhanced_metrics_endpoint("ac_service")
-        return await endpoint_func()
-
     logger.info("✅ Enhanced Prometheus metrics enabled for Constitutional AI Service")
+    PROMETHEUS_AVAILABLE = True
 except ImportError as e:
     logger.warning(f"⚠️ Prometheus metrics not available: {e}")
+    PROMETHEUS_AVAILABLE = False
 
-    # Fallback metrics endpoint
-    @app.get("/metrics")
-    async def fallback_metrics():
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
-        """Fallback metrics endpoint."""
+# Add metrics endpoint
+@app.get("/metrics")
+async def metrics():
+    """Prometheus metrics endpoint for Constitutional AI service."""
+    if PROMETHEUS_AVAILABLE:
+        try:
+            endpoint_func = create_enhanced_metrics_endpoint("ac_service")
+            return await endpoint_func()
+        except Exception as e:
+            logger.warning(f"Metrics endpoint error: {e}")
+            return {"status": "metrics_error", "service": "ac_service"}
+    else:
         return {"status": "metrics_not_available", "service": "ac_service"}
 
 

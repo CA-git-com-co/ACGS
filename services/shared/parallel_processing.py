@@ -10,7 +10,7 @@ import time
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -62,7 +62,7 @@ class ParallelTask:
     dependencies: list[str] = field(default_factory=list)
     priority: TaskPriority = TaskPriority.MEDIUM
     status: TaskStatus = TaskStatus.PENDING
-    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     started_at: datetime | None = None
     completed_at: datetime | None = None
     result: dict[str, Any] | None = None
@@ -108,7 +108,7 @@ class ValidationBatch:
     batch_id: str
     tasks: list[ParallelTask]
     batch_type: str = "validation"
-    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     max_concurrent: int = 10
     timeout_seconds: float = 120.0
 
@@ -338,7 +338,7 @@ class ParallelExecutor:
         """Execute a single task with timeout and error handling."""
         async with self.semaphore:
             task.status = TaskStatus.RUNNING
-            task.started_at = datetime.now(UTC)
+            task.started_at = datetime.now(timezone.utc)
 
             try:
                 # Execute task with timeout
@@ -351,17 +351,17 @@ class ParallelExecutor:
 
                 task.result = result
                 task.status = TaskStatus.COMPLETED
-                task.completed_at = datetime.now(UTC)
+                task.completed_at = datetime.now(timezone.utc)
 
             except TimeoutError:
                 task.error = f"Task timed out after {task.timeout_seconds} seconds"
                 task.status = TaskStatus.FAILED
-                task.completed_at = datetime.now(UTC)
+                task.completed_at = datetime.now(timezone.utc)
 
             except Exception as e:
                 task.error = str(e)
                 task.status = TaskStatus.FAILED
-                task.completed_at = datetime.now(UTC)
+                task.completed_at = datetime.now(timezone.utc)
 
             return task
 

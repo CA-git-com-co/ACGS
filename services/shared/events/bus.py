@@ -12,7 +12,7 @@ import uuid
 from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 from services.shared.common.error_handling import ACGSException, handle_service_error
@@ -57,7 +57,7 @@ class Event:
         Returns:
             New event instance
         """
-        now = datetime.now(UTC)
+        now = datetime.now(timezone.utc)
 
         metadata = EventMetadata(
             event_id=str(uuid.uuid4()),
@@ -426,7 +426,7 @@ class EventBus(EventBusInterface):
         try:
             # Update event status
             event.metadata.status = EventStatus.PROCESSING
-            event.metadata.updated_at = datetime.now(UTC)
+            event.metadata.updated_at = datetime.now(timezone.utc)
             await self.event_store.update_event(event)
 
             # Get handlers for event type
@@ -457,7 +457,7 @@ class EventBus(EventBusInterface):
 
             # Update event status
             event.metadata.status = EventStatus.COMPLETED
-            event.metadata.updated_at = datetime.now(UTC)
+            event.metadata.updated_at = datetime.now(timezone.utc)
             await self.event_store.update_event(event)
 
             self.metrics["events_processed"] += 1
@@ -467,7 +467,7 @@ class EventBus(EventBusInterface):
 
             # Update event status to failed
             event.metadata.status = EventStatus.FAILED
-            event.metadata.updated_at = datetime.now(UTC)
+            event.metadata.updated_at = datetime.now(timezone.utc)
             await self.event_store.update_event(event)
 
             self.metrics["events_failed"] += 1

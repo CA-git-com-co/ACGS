@@ -15,7 +15,7 @@ import os
 
 # Import the module under test
 import sys
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 import pytest
 
@@ -78,8 +78,8 @@ class TestConstitutionalPrinciple:
             category="governance",
             priority=9,
             constitutional_hash="cdd01ef066bc6cf2",
-            created_at=datetime.now(UTC),
-            last_updated=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
+            last_updated=datetime.now(timezone.utc),
         )
 
         assert principle.principle_id == "PRIN-001"
@@ -103,8 +103,8 @@ class TestGovernanceRule:
             category="governance",
             policy_id="POL-001",
             enforcement_level="strict",
-            created_at=datetime.now(UTC),
-            last_updated=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
+            last_updated=datetime.now(timezone.utc),
             usage_frequency=50,
         )
 
@@ -130,8 +130,8 @@ class TestPrincipleRuleRelationship:
             confidence=0.9,
             reasoning="Rule directly implements constitutional governance principle",
             evidence=["constitutional_review", "approval_process"],
-            created_at=datetime.now(UTC),
-            last_validated=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
+            last_validated=datetime.now(timezone.utc),
         )
 
         assert relationship.principle_id == "PRIN-001"
@@ -170,8 +170,8 @@ class TestPrincipleTracer:
             category="test",
             priority=8,
             constitutional_hash="cdd01ef066bc6cf2",
-            created_at=datetime.now(UTC),
-            last_updated=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
+            last_updated=datetime.now(timezone.utc),
         )
 
     @pytest.fixture
@@ -187,8 +187,8 @@ class TestPrincipleTracer:
             category="test",
             policy_id="POL-TEST-001",
             enforcement_level="moderate",
-            created_at=datetime.now(UTC),
-            last_updated=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
+            last_updated=datetime.now(timezone.utc),
             usage_frequency=25,
         )
 
@@ -260,8 +260,8 @@ class TestPrincipleTracer:
             confidence=0.9,
             reasoning="Test relationship",
             evidence=["test_evidence"],
-            created_at=datetime.now(UTC),
-            last_validated=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
+            last_validated=datetime.now(timezone.utc),
         )
 
         result = await tracer.add_relationship(relationship)
@@ -300,8 +300,8 @@ class TestPrincipleTracer:
             confidence=0.9,
             reasoning="Test relationship",
             evidence=["test_evidence"],
-            created_at=datetime.now(UTC),
-            last_validated=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
+            last_validated=datetime.now(timezone.utc),
         )
 
         result = await tracer.add_relationship(relationship)
@@ -368,8 +368,8 @@ class TestPrincipleTracer:
             confidence=0.9,
             reasoning="Test relationship",
             evidence=["test_evidence"],
-            created_at=datetime.now(UTC),
-            last_validated=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
+            last_validated=datetime.now(timezone.utc),
         )
         await tracer.add_relationship(relationship)
 
@@ -413,8 +413,8 @@ class TestPrincipleTracer:
                 category="test",
                 priority=8,
                 constitutional_hash="cdd01ef066bc6cf2",
-                created_at=datetime.now(UTC),
-                last_updated=datetime.now(UTC),
+                created_at=datetime.now(timezone.utc),
+                last_updated=datetime.now(timezone.utc),
             )
             principles.append(principle)
             await tracer.add_principle(principle)
@@ -427,8 +427,8 @@ class TestPrincipleTracer:
             category="governance",
             policy_id="POL-HIGH",
             enforcement_level="strict",
-            created_at=datetime.now(UTC),
-            last_updated=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
+            last_updated=datetime.now(timezone.utc),
             usage_frequency=100,
         )
         await tracer.add_rule(high_impact_rule)
@@ -443,8 +443,8 @@ class TestPrincipleTracer:
                 confidence=0.9,
                 reasoning="High impact relationship",
                 evidence=["test"],
-                created_at=datetime.now(UTC),
-                last_validated=datetime.now(UTC),
+                created_at=datetime.now(timezone.utc),
+                last_validated=datetime.now(timezone.utc),
             )
             await tracer.add_relationship(relationship)
 
@@ -477,8 +477,8 @@ class TestPrincipleTracer:
             confidence=0.9,
             reasoning="Test relationship",
             evidence=["test"],
-            created_at=datetime.now(UTC),
-            last_validated=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
+            last_validated=datetime.now(timezone.utc),
         )
         await tracer.add_relationship(relationship)
 
@@ -509,8 +509,8 @@ class TestPrincipleTracer:
             category="test",
             priority=5,
             constitutional_hash="cdd01ef066bc6cf2",
-            created_at=datetime.now(UTC),
-            last_updated=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
+            last_updated=datetime.now(timezone.utc),
         )
         await tracer.add_principle(orphaned_principle)
 
@@ -522,8 +522,8 @@ class TestPrincipleTracer:
             category="test",
             policy_id="POL-ORPHAN",
             enforcement_level="advisory",
-            created_at=datetime.now(UTC),
-            last_updated=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
+            last_updated=datetime.now(timezone.utc),
         )
         await tracer.add_rule(orphaned_rule)
 
@@ -569,8 +569,8 @@ class TestPrincipleTracerIntegration:
             category="test",
             priority=7,
             constitutional_hash="cdd01ef066bc6cf2",
-            created_at=datetime.now(UTC),
-            last_updated=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
+            last_updated=datetime.now(timezone.utc),
         )
         await tracer.add_principle(principle)
 
@@ -581,8 +581,8 @@ class TestPrincipleTracerIntegration:
             category="test",
             policy_id="POL-REPORT",
             enforcement_level="moderate",
-            created_at=datetime.now(UTC),
-            last_updated=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
+            last_updated=datetime.now(timezone.utc),
             usage_frequency=30,
         )
         await tracer.add_rule(rule)
@@ -595,8 +595,8 @@ class TestPrincipleTracerIntegration:
             confidence=0.85,
             reasoning="Report test relationship",
             evidence=["report_test"],
-            created_at=datetime.now(UTC),
-            last_validated=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
+            last_validated=datetime.now(timezone.utc),
         )
         await tracer.add_relationship(relationship)
 

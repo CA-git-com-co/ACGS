@@ -10,14 +10,14 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from .core.wina_oversight_coordinator import (
+from ...core.wina_oversight_coordinator import (
     ECOversightContext,
     ECOversightRequest,
     ECOversightStrategy,
     WINAECOversightCoordinator,
     WINAOversightResult,
 )
-from .services.ac_client import ac_service_client
+from ...services.ac_client import ac_service_client
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
 
@@ -76,7 +76,7 @@ class BatchOversightResponseModel(BaseModel):
 
 def get_wina_coordinator() -> WINAECOversightCoordinator:
     """Dependency to get WINA oversight coordinator."""
-    from .main import get_wina_coordinator
+    from ...main import get_wina_coordinator
 
     return get_wina_coordinator()
 

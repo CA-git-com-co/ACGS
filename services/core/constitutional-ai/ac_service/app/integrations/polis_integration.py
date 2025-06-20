@@ -18,7 +18,7 @@ Key Features:
 import logging
 import uuid
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from enum import Enum
 from typing import Any
 
@@ -200,7 +200,7 @@ class PolisIntegration:
             conversation_id=conversation_id,
             topic=topic.title,
             description=topic.description,
-            created_at=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
             participant_count=sum(group.participant_count for group in stakeholder_groups),
             status="active",
         )
@@ -336,7 +336,7 @@ class PolisIntegration:
                     source="mock_polis",
                     content=content,
                     participant_id=f"consensus_participant_{i}",
-                    timestamp=datetime.now(UTC),
+                    timestamp=datetime.now(timezone.utc),
                     weight=min_consensus + (i * 0.05),
                     validated=True,
                 )
@@ -382,7 +382,7 @@ class PolisIntegration:
         final_report_data = {
             "conversation_id": conversation_id,
             "topic": conversation.topic,
-            "duration": (datetime.now(UTC) - conversation.created_at).total_seconds(),
+            "duration": (datetime.now(timezone.utc) - conversation.created_at).total_seconds(),
             "final_metrics": final_metrics.__dict__,
             "consensus_statements": [ci.content for ci in consensus_inputs],
             "total_participants": final_metrics.total_participants,

@@ -82,12 +82,12 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
-shared_path = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "shared"
-)
-sys.path.append(shared_path)
-from api_models import HealthCheckResponse, ServiceInfo, create_success_response
-from middleware import add_production_middleware, create_exception_handlers
+# Add the project root to Python path for shared imports
+project_root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "..", "..")
+sys.path.insert(0, project_root)
+
+from services.shared.api_models import HealthCheckResponse, ServiceInfo, create_success_response
+from services.shared.middleware import add_production_middleware, create_exception_handlers
 
 # Import metrics functionality and enhanced security (with fallbacks)
 try:

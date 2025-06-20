@@ -20,7 +20,7 @@ import json
 import logging
 import subprocess
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 from typing import Any
 
@@ -139,7 +139,7 @@ class AutomatedDisasterRecoveryTester:
     async def _capture_system_state(self) -> dict[str, Any]:
         """Capture baseline system state for comparison"""
         state = {
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "services": {},
             "constitutional_hash": None,
             "database_status": None,
@@ -581,7 +581,7 @@ class AutomatedDisasterRecoveryTester:
             "component_scores": scores,
             "test_results": test_results,
             "meets_threshold": overall_score >= 80.0,
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     async def _save_dr_test_report(self, results: dict[str, Any]) -> None:

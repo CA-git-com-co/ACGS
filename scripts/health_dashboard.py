@@ -7,7 +7,7 @@ Real-time health monitoring dashboard for constitutional governance system
 import asyncio
 import os
 import sys
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 import aiohttp
@@ -60,7 +60,7 @@ class HealthDashboard:
         print("=" * 80)
         print("🏛️  ACGS-1 CONSTITUTIONAL GOVERNANCE SYSTEM HEALTH DASHBOARD")
         print("=" * 80)
-        print(f"📅 {datetime.now(UTC).strftime('%Y-%m-%d %H:%M:%S UTC')}")
+        print(f"📅 {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S timezone.utc')}")
         print(
             f"🔄 Auto-refresh every {self.refresh_interval} seconds (Press Ctrl+C to exit)"
         )

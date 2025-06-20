@@ -6,7 +6,7 @@ integrated with the EC oversight coordinator.
 """
 
 import asyncio
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 from services.shared.wina.performance_monitoring import (
     WINAConstitutionalComplianceMetrics,
@@ -55,7 +55,7 @@ async def demonstrate_performance_monitoring():
         availability_percent=99.92,
         response_time_p95_ms=42.3,
         concurrent_operations=15,
-        timestamp=datetime.now(UTC),
+        timestamp=datetime.now(timezone.utc),
     )
     await collector.record_system_health_metrics(system_health)
     print(f"      ✅ CPU: {system_health.cpu_utilization_percent}%")
@@ -78,7 +78,7 @@ async def demonstrate_performance_monitoring():
             "fairness": 0.94,
         },
         remediation_actions_taken=1,
-        timestamp=datetime.now(UTC),
+        timestamp=datetime.now(timezone.utc),
     )
     await collector.record_constitutional_compliance_metrics(compliance_metrics)
     print(f"      ✅ Compliance Score: {compliance_metrics.compliance_score:.1%}")
@@ -97,7 +97,7 @@ async def demonstrate_performance_monitoring():
         activation_scores_std=0.19,
         performance_impact_ms=11.2,
         energy_savings_ratio=0.38,
-        timestamp=datetime.now(UTC),
+        timestamp=datetime.now(timezone.utc),
     )
     await collector.record_neuron_activation_metrics(neuron_metrics)
     print(f"      ✅ Activation Ratio: {neuron_metrics.activation_ratio:.1%}")
@@ -116,7 +116,7 @@ async def demonstrate_performance_monitoring():
         decision_latency_ms=1.8,
         accuracy_impact=-0.003,
         resource_savings=0.31,
-        timestamp=datetime.now(UTC),
+        timestamp=datetime.now(timezone.utc),
     )
     await collector.record_dynamic_gating_metrics(gating_metrics)
     print(f"      ✅ Gating Efficiency: {gating_metrics.gating_efficiency:.1%}")
@@ -134,7 +134,7 @@ async def demonstrate_performance_monitoring():
         reconstruction_error=0.008,
         compression_ratio=0.52,
         memory_savings_mb=156.8,
-        timestamp=datetime.now(UTC),
+        timestamp=datetime.now(timezone.utc),
     )
     await collector.record_svd_transformation_metrics(svd_metrics)
     print(f"      ✅ Rank Reduction: {svd_metrics.rank_reduction_ratio:.1%}")
@@ -152,7 +152,7 @@ async def demonstrate_performance_monitoring():
         model_update_size_mb=4.2,
         convergence_rate=0.85,
         feedback_quality_score=0.92,
-        timestamp=datetime.now(UTC),
+        timestamp=datetime.now(timezone.utc),
     )
     await collector.record_learning_feedback_metrics(learning_metrics)
     print(f"      ✅ Learning Accuracy: {learning_metrics.learning_accuracy:.1%}")
@@ -173,7 +173,7 @@ async def demonstrate_performance_monitoring():
         integration_success_rate=0.97,
         error_count=0,
         performance_improvement_ratio=0.46,
-        timestamp=datetime.now(UTC),
+        timestamp=datetime.now(timezone.utc),
     )
     await collector.record_integration_performance_metrics(integration_metrics)
     print(
@@ -207,7 +207,7 @@ async def demonstrate_performance_monitoring():
     print("\n4. Generating Performance Report...")
     from datetime import timedelta
 
-    end_time = datetime.now(UTC)
+    end_time = datetime.now(timezone.utc)
     start_time = end_time - timedelta(hours=1)
 
     report = await collector.get_performance_report(start_time, end_time)

@@ -9,7 +9,7 @@ import asyncio
 import json
 import logging
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 import aiohttp
 import psutil
@@ -210,7 +210,7 @@ class StressTestingProtocol:
                             failed_requests, len(results)
                         ),
                         execution_time_ms=(time.time() - start_time) * 1000,
-                        timestamp=datetime.now(UTC),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
 
@@ -315,7 +315,7 @@ class StressTestingProtocol:
                         ],
                         cvss_score=7.5,
                         execution_time_ms=(time.time() - start_time) * 1000,
-                        timestamp=datetime.now(UTC),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
 
@@ -424,7 +424,7 @@ class StressTestingProtocol:
                             ],
                             cvss_score=6.0,
                             execution_time_ms=(time.time() - start_time) * 1000,
-                            timestamp=datetime.now(UTC),
+                            timestamp=datetime.now(timezone.utc),
                         )
 
         except Exception as e:

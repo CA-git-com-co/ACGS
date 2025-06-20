@@ -12,7 +12,7 @@ import json
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -49,7 +49,7 @@ class SecureShare:
     share_id: str
     encrypted_value: bytes
     participant_id: str
-    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     verification_hash: str = ""
 
 
@@ -523,7 +523,7 @@ class SecureAggregator:
             self.aggregation_history.append(
                 {
                     "aggregation_id": aggregation_id,
-                    "timestamp": datetime.now(UTC),
+                    "timestamp": datetime.now(timezone.utc),
                     "execution_time": execution_time,
                     "success": success,
                     "method": self.config.method.value,

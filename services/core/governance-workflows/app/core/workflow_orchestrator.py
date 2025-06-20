@@ -17,7 +17,7 @@ import logging
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -86,7 +86,7 @@ class WorkflowInstance:
     input_data: dict[str, Any] = field(default_factory=dict)
     output_data: dict[str, Any] = field(default_factory=dict)
     metadata: dict[str, Any] = field(default_factory=dict)
-    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     started_at: datetime | None = None
     completed_at: datetime | None = None
     timeout_minutes: int = 30
@@ -265,7 +265,7 @@ class WorkflowOrchestrator:
 
             workflow = self.active_workflows[workflow_id]
             workflow.status = WorkflowStatus.CANCELLED
-            workflow.completed_at = datetime.now(UTC)
+            workflow.completed_at = datetime.now(timezone.utc)
 
             # Move to history
             self.workflow_history.append(workflow)
@@ -336,7 +336,7 @@ class WorkflowOrchestrator:
                 },
                 "constitution_hash": self.constitution_hash,
                 "max_concurrent_workflows": self.max_concurrent_workflows,
-                "last_updated": datetime.now(UTC).isoformat(),
+                "last_updated": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:
@@ -545,7 +545,7 @@ class WorkflowOrchestrator:
                 return
 
             workflow.status = WorkflowStatus.IN_PROGRESS
-            workflow.started_at = datetime.now(UTC)
+            workflow.started_at = datetime.now(timezone.utc)
 
             logger.info(f"Executing workflow: {workflow_id} ({workflow.workflow_type.value})")
 
@@ -582,7 +582,7 @@ class WorkflowOrchestrator:
             elif workflow.status == WorkflowStatus.FAILED:
                 self.workflow_metrics["failed_workflows"] += 1
 
-            workflow.completed_at = datetime.now(UTC)
+            workflow.completed_at = datetime.now(timezone.utc)
 
             # Move to history
             self.workflow_history.append(workflow)
@@ -598,7 +598,7 @@ class WorkflowOrchestrator:
             if workflow_id in self.active_workflows:
                 workflow = self.active_workflows[workflow_id]
                 workflow.status = WorkflowStatus.FAILED
-                workflow.completed_at = datetime.now(UTC)
+                workflow.completed_at = datetime.now(timezone.utc)
                 self.workflow_history.append(workflow)
                 del self.active_workflows[workflow_id]
 
@@ -606,7 +606,7 @@ class WorkflowOrchestrator:
         """Execute a single workflow step."""
         try:
             step.status = WorkflowStatus.IN_PROGRESS
-            step.started_at = datetime.now(UTC)
+            step.started_at = datetime.now(timezone.utc)
 
             # Route step execution based on workflow type and step
             if workflow.workflow_type == WorkflowType.POLICY_CREATION:
@@ -622,7 +622,7 @@ class WorkflowOrchestrator:
             else:
                 result = {"success": False, "error": "Unknown workflow type"}
 
-            step.completed_at = datetime.now(UTC)
+            step.completed_at = datetime.now(timezone.utc)
             step.duration_ms = (step.completed_at - step.started_at).total_seconds() * 1000
             step.result = result
 
@@ -637,7 +637,7 @@ class WorkflowOrchestrator:
         except Exception as e:
             step.status = WorkflowStatus.FAILED
             step.error_message = str(e)
-            step.completed_at = datetime.now(UTC)
+            step.completed_at = datetime.now(timezone.utc)
             if step.started_at:
                 step.duration_ms = (step.completed_at - step.started_at).total_seconds() * 1000
             return False
@@ -779,7 +779,7 @@ class WorkflowOrchestrator:
         while True:
             try:
                 # Check for timeout workflows
-                current_time = datetime.now(UTC)
+                current_time = datetime.now(timezone.utc)
                 timeout_workflows = []
 
                 for workflow_id, workflow in self.active_workflows.items():
@@ -811,7 +811,7 @@ class WorkflowOrchestrator:
         """Background task to cleanup old completed workflows."""
         while True:
             try:
-                current_time = datetime.now(UTC)
+                current_time = datetime.now(timezone.utc)
                 old_workflows = []
 
                 # Remove workflows older than 24 hours

@@ -8,7 +8,7 @@ including prompt injection, jailbreaking, and manipulation attacks.
 import json
 import logging
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 import aiohttp
 
@@ -238,7 +238,7 @@ class LLMSecurityTester:
                                                 payload_category
                                             ),
                                             execution_time_ms=execution_time,
-                                            timestamp=datetime.now(UTC),
+                                            timestamp=datetime.now(timezone.utc),
                                         )
                                     )
 
@@ -308,7 +308,7 @@ class LLMSecurityTester:
                                             ],
                                             cvss_score=8.5,
                                             execution_time_ms=execution_time,
-                                            timestamp=datetime.now(UTC),
+                                            timestamp=datetime.now(timezone.utc),
                                         )
                                     )
 

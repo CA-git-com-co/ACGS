@@ -12,7 +12,7 @@ import hashlib
 import json
 import logging
 from dataclasses import asdict, dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 from typing import Any
 
@@ -196,13 +196,13 @@ class ManifestManager:
             "dataset_path": str(dataset_path),
             "include_patterns": include_patterns,
             "exclude_patterns": exclude_patterns,
-            "analysis_timestamp": datetime.now(UTC).isoformat(),
+            "analysis_timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         # Create manifest
         manifest = PolicyManifest(
             manifest_version=self.manifest_version,
-            generated_at=datetime.now(UTC),
+            generated_at=datetime.now(timezone.utc),
             dataset_name=dataset_name,
             dataset_version=dataset_version,
             total_files=len(files_info),
@@ -232,7 +232,7 @@ class ManifestManager:
         # Get file stats
         stat = file_path.stat()
         size_bytes = stat.st_size
-        last_modified = datetime.fromtimestamp(stat.st_mtime, tz=UTC)
+        last_modified = datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc)
 
         # Determine framework and count records
         framework, record_count = self._analyze_file_content(file_path)
@@ -334,7 +334,7 @@ class ManifestManager:
             "total_size_bytes": total_size,
             "hash_algorithm": "SHA-256",
             "file_count": len(files_info),
-            "integrity_check_timestamp": datetime.now(UTC).isoformat(),
+            "integrity_check_timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def validate_manifest(self, manifest_path: str, dataset_path: str) -> dict[str, Any]:

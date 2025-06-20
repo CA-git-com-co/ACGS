@@ -4,7 +4,7 @@ Handles digital signatures, key management, Merkle trees, and timestamping
 """
 
 import base64
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 from .database import get_async_db
@@ -67,7 +67,7 @@ async def generate_crypto_key(
             purpose=key_request.key_purpose,
             key_size=key_request.key_size,
             expires_days=(
-                (key_request.expires_at - datetime.now(UTC)).days
+                (key_request.expires_at - datetime.now(timezone.utc)).days
                 if key_request.expires_at
                 else None
             ),
@@ -187,7 +187,7 @@ async def sign_data(
             signature=signature_b64,
             key_id=key_info["key_id"],
             algorithm="RSA-PSS-SHA256",
-            signed_at=datetime.now(UTC),
+            signed_at=datetime.now(timezone.utc),
         )
 
     except HTTPException:
@@ -224,7 +224,7 @@ async def verify_signature(
         return SignatureVerificationResult(
             is_valid=is_valid,
             key_id=verification_request.key_id,
-            verified_at=datetime.now(UTC),
+            verified_at=datetime.now(timezone.utc),
         )
 
     except HTTPException:
@@ -389,7 +389,7 @@ async def generate_hash(
         return {
             "hash": hash_value,
             "algorithm": "SHA3-256",
-            "generated_at": datetime.now(UTC),
+            "generated_at": datetime.now(timezone.utc),
         }
 
     except Exception as e:

@@ -6,7 +6,7 @@ including initiation, approval, status tracking, and rollback operations.
 """
 
 import logging
-from datetime import UTC
+from datetime import timezone
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
@@ -322,7 +322,7 @@ async def cancel_evolution(
             status=EvolutionStatus.CANCELLED,
             success=False,
             error_message="Evolution cancelled by user request",
-            completed_at=datetime.now(UTC),
+            completed_at=datetime.now(timezone.utc),
             rollback_available=False,
         )
 

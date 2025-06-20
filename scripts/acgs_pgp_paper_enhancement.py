@@ -18,7 +18,7 @@ import asyncio
 import json
 import logging
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 
 import httpx
@@ -93,7 +93,7 @@ class ACGSPGPPaperEnhancer:
             adversarial_robustness=pgc_data.get("adversarial_robustness", {}),
             quantumagi_deployment=quantumagi_data,
             service_health=service_health,
-            timestamp=datetime.now(UTC).isoformat(),
+            timestamp=datetime.now(timezone.utc).isoformat(),
         )
 
         self.validation_data = validation_data

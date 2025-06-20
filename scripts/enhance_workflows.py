@@ -323,7 +323,7 @@ class WorkflowEnhancer:
         report = f"""
 # ACGS-PGP Workflow Enhancement Report
 
-**Generated:** {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}
+**Generated:** {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S timezone.utc')}
 
 ## Executive Summary
 

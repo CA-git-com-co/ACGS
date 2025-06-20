@@ -16,7 +16,7 @@ Key Features:
 import json
 import logging
 from dataclasses import asdict
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
@@ -230,7 +230,7 @@ async def get_health_status(
 
         health_status = {
             "status": "healthy",
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "monitoring_active": collector.monitoring_active,
             "monitoring_level": collector.monitoring_level.value,
             "system_health": system_health,
@@ -256,7 +256,7 @@ async def get_health_status(
                 [
                     alert
                     for alert in collector.alerts_history
-                    if datetime.now(UTC) - alert["timestamp"] < timedelta(hours=1)
+                    if datetime.now(timezone.utc) - alert["timestamp"] < timedelta(hours=1)
                 ]
             ),
         }
@@ -316,7 +316,7 @@ async def get_metrics_summary(
         Summarized performance metrics
     """
     try:
-        end_time = datetime.now(UTC)
+        end_time = datetime.now(timezone.utc)
         start_time = end_time - timedelta(hours=time_range_hours)
 
         # Get performance report for the time range
@@ -397,7 +397,7 @@ async def generate_performance_report(
 
         return {
             "report": report_dict,
-            "generation_timestamp": datetime.now(UTC).isoformat(),
+            "generation_timestamp": datetime.now(timezone.utc).isoformat(),
             "report_size": len(json.dumps(report_dict)),
             "status": "completed",
         }
@@ -447,7 +447,7 @@ async def get_recent_alerts(
         Recent performance alerts
     """
     try:
-        cutoff_time = datetime.now(UTC) - timedelta(hours=hours)
+        cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
 
         recent_alerts = [
             alert
@@ -469,7 +469,7 @@ async def get_recent_alerts(
             "total_count": len(recent_alerts),
             "time_range": {
                 "start_time": cutoff_time.isoformat(),
-                "end_time": datetime.now(UTC).isoformat(),
+                "end_time": datetime.now(timezone.utc).isoformat(),
                 "duration_hours": hours,
             },
             "severity_filter": severity,
@@ -502,7 +502,7 @@ async def record_neuron_activation_metrics(
             activation_scores_std=request.activation_scores_std,
             performance_impact_ms=request.performance_impact_ms,
             energy_savings_ratio=request.energy_savings_ratio,
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
         )
 
         await collector.record_neuron_activation_metrics(metrics)
@@ -535,7 +535,7 @@ async def record_svd_transformation_metrics(
             reconstruction_error=request.reconstruction_error,
             compression_ratio=request.compression_ratio,
             memory_savings_mb=request.memory_savings_mb,
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
         )
 
         await collector.record_svd_transformation_metrics(metrics)
@@ -569,7 +569,7 @@ async def record_dynamic_gating_metrics(
             decision_latency_ms=request.decision_latency_ms,
             accuracy_impact=request.accuracy_impact,
             resource_savings=request.resource_savings,
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
         )
 
         await collector.record_dynamic_gating_metrics(metrics)
@@ -602,7 +602,7 @@ async def record_constitutional_compliance_metrics(
             constitutional_overhead_ratio=request.constitutional_overhead_ratio,
             principle_adherence_breakdown=request.principle_adherence_breakdown,
             remediation_actions_taken=request.remediation_actions_taken,
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
         )
 
         await collector.record_constitutional_compliance_metrics(metrics)
@@ -635,7 +635,7 @@ async def record_learning_feedback_metrics(
             model_update_size_mb=request.model_update_size_mb,
             convergence_rate=request.convergence_rate,
             feedback_quality_score=request.feedback_quality_score,
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
         )
 
         await collector.record_learning_feedback_metrics(metrics)
@@ -669,7 +669,7 @@ async def record_integration_metrics(
             integration_success_rate=request.integration_success_rate,
             error_count=request.error_count,
             performance_improvement_ratio=request.performance_improvement_ratio,
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
         )
 
         await collector.record_integration_metrics(metrics)
@@ -702,7 +702,7 @@ async def record_system_health_metrics(
             availability_percent=request.availability_percent,
             response_time_p95_ms=request.response_time_p95_ms,
             concurrent_operations=request.concurrent_operations,
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
         )
 
         await collector.record_system_health_metrics(metrics)

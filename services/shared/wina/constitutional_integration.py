@@ -7,7 +7,7 @@ for WINA (Weight Informed Neuron Activation) within the ACGS-PGP framework.
 
 import logging
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 from .config import WINAConfig, WINAIntegrationConfig
@@ -191,7 +191,7 @@ class WINAConstitutionalPrincipleAnalyzer:
             efficiency_impact=efficiency_impact,
             compliance_assessment=compliance_assessment,
             approval_status="pending",
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             wina_analysis=optimization_analysis,
             constitutional_distance=constitutional_distance,
             risk_assessment=risk_assessment,
@@ -200,7 +200,7 @@ class WINAConstitutionalPrincipleAnalyzer:
             metadata={
                 "analyzer_version": "1.0",
                 "optimization_context": update_context,
-                "analysis_timestamp": datetime.now(UTC).isoformat(),
+                "analysis_timestamp": datetime.now(timezone.utc).isoformat(),
             },
         )
 
@@ -741,7 +741,7 @@ class WINAConstitutionalUpdateService:
                     {
                         "principle_id": update.principle_id,
                         "update_type": update.update_type,
-                        "applied_at": datetime.now(UTC),
+                        "applied_at": datetime.now(timezone.utc),
                         "application_result": application_result,
                     }
                 )
@@ -777,7 +777,7 @@ class WINAConstitutionalUpdateService:
 
         monitoring_results = {
             "principle_id": update.principle_id,
-            "monitoring_start": datetime.now(UTC),
+            "monitoring_start": datetime.now(timezone.utc),
             "monitoring_duration": monitoring_duration,
             "performance_metrics": {},
             "compliance_status": "monitoring",
@@ -902,7 +902,7 @@ class WINAConstitutionalUpdateService:
             "success": True,
             "principle_id": update.principle_id,
             "new_version": 2,
-            "applied_at": datetime.now(UTC).isoformat(),
+            "applied_at": datetime.now(timezone.utc).isoformat(),
             "backup_created": True,
             "rollback_available": True,
         }
@@ -915,7 +915,7 @@ class WINAConstitutionalUpdateService:
             "success": True,
             "principle_id": update.principle_id,
             "simulated": True,
-            "applied_at": datetime.now(UTC).isoformat(),
+            "applied_at": datetime.now(timezone.utc).isoformat(),
         }
 
     async def _monitor_efficiency_metrics(
@@ -1226,7 +1226,7 @@ class ConstitutionalWINASupport:
                 efficiency_impact=efficiency_impact,
                 compliance_assessment=compliance_assessment,
                 approval_status="pending",
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
             )
 
             self.proposed_updates.append(update)
@@ -1331,7 +1331,7 @@ class ConstitutionalWINASupport:
                 constitutional_constraints=constitutional_constraints,
                 final_decision=final_decision,
                 compliance_score=compliance_score,
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
             )
 
             self.governance_decisions.append(governance_decision)

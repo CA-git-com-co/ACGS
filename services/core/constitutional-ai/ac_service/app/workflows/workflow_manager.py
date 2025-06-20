@@ -8,7 +8,7 @@ with the existing Constitutional Council infrastructure.
 
 import logging
 import uuid
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 try:
@@ -100,7 +100,7 @@ class WorkflowManager:
             "type": workflow_type,
             "state": initial_state,
             "metadata": metadata,
-            "created_at": datetime.now(UTC),
+            "created_at": datetime.now(timezone.utc),
             "status": WorkflowStatus.PENDING,
         }
 
@@ -195,7 +195,7 @@ class WorkflowManager:
             workflow["state"].update(state_updates)
 
             # Update metadata
-            workflow["metadata"]["updated_at"] = datetime.now(UTC).isoformat()
+            workflow["metadata"]["updated_at"] = datetime.now(timezone.utc).isoformat()
 
             # Update status if provided
             if "status" in state_updates:
@@ -246,7 +246,7 @@ class WorkflowManager:
         Returns:
             Number of workflows cleaned up
         """
-        cutoff_time = datetime.now(UTC) - timedelta(hours=max_age_hours)
+        cutoff_time = datetime.now(timezone.utc) - timedelta(hours=max_age_hours)
         cleaned_count = 0
 
         workflows_to_remove = []

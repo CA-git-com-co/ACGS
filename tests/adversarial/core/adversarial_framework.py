@@ -9,7 +9,7 @@ import json
 import logging
 import time
 from dataclasses import asdict, dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -176,7 +176,7 @@ class AdversarialTestingFramework:
         Returns:
             AdversarialTestReport: Comprehensive test results and recommendations
         """
-        start_time = datetime.now(UTC)
+        start_time = datetime.now(timezone.utc)
         logger.info(
             f"Starting comprehensive adversarial assessment - Session: {self.session_id}"
         )
@@ -200,7 +200,7 @@ class AdversarialTestingFramework:
                 total_tests += len(category_results)
 
         # Generate comprehensive report
-        end_time = datetime.now(UTC)
+        end_time = datetime.now(timezone.utc)
         report = self._generate_comprehensive_report(start_time, end_time, total_tests)
 
         logger.info(

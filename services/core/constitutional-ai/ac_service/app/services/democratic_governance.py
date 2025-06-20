@@ -20,7 +20,7 @@ import json
 import logging
 import uuid
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from enum import Enum
 from typing import Any
 
@@ -344,7 +344,7 @@ class DemocraticGovernanceOrchestrator:
         """
         try:
             proposal_id = str(uuid.uuid4())
-            current_time = datetime.now(UTC)
+            current_time = datetime.now(timezone.utc)
 
             # Determine decision type and routing requirements
             decision_type = GovernanceDecisionType(
@@ -403,7 +403,7 @@ class DemocraticGovernanceOrchestrator:
             # Record metrics
             self.metrics.counter("proposals_initiated").inc()
             self.metrics.histogram("proposal_initiation_duration").observe(
-                (datetime.now(UTC) - current_time).total_seconds()
+                (datetime.now(timezone.utc) - current_time).total_seconds()
             )
 
             logger.info(f"Governance proposal {proposal_id} initiated successfully")
@@ -440,7 +440,7 @@ class DemocraticGovernanceOrchestrator:
             if not proposal:
                 raise ValueError(f"Proposal {proposal_id} not found")
 
-            current_time = datetime.now(UTC)
+            current_time = datetime.now(timezone.utc)
 
             # Validate stage transition
             if not await self._validate_stage_transition(proposal, target_stage, actor_id):
@@ -526,7 +526,7 @@ class DemocraticGovernanceOrchestrator:
             if not proposal:
                 raise ValueError(f"Proposal {proposal_id} not found")
 
-            current_time = datetime.now(UTC)
+            current_time = datetime.now(timezone.utc)
 
             # Validate approver authority
             if not await self._validate_approver_authority(db, approver_id, approval_level):
@@ -615,7 +615,7 @@ class DemocraticGovernanceOrchestrator:
             if not proposal:
                 raise ValueError(f"Proposal {proposal_id} not found")
 
-            current_time = datetime.now(UTC)
+            current_time = datetime.now(timezone.utc)
 
             # Validate finalization authority
             if not await self._validate_finalization_authority(db, finalizer_id, proposal):
@@ -853,7 +853,7 @@ class DemocraticGovernanceOrchestrator:
                 ),
                 "duration": (proposal.updated_at - proposal.created_at).total_seconds(),
                 "integrity_verified": True,  # Would include actual verification
-                "generated_at": datetime.now(UTC).isoformat(),
+                "generated_at": datetime.now(timezone.utc).isoformat(),
             }
 
             return audit_report

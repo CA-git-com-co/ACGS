@@ -14,7 +14,7 @@ Classes:
 import logging
 import os
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -144,7 +144,7 @@ class ViolationConfigManager:
             # Cache the result
             if config:
                 self.cached_thresholds[threshold_name] = config
-                self.cache_updated_at = datetime.now(UTC)
+                self.cache_updated_at = datetime.now(timezone.utc)
 
             return config
 
@@ -204,7 +204,7 @@ class ViolationConfigManager:
 
             # Update cache
             self.cached_thresholds = configs
-            self.cache_updated_at = datetime.now(UTC)
+            self.cache_updated_at = datetime.now(timezone.utc)
 
             return configs.copy()
 
@@ -344,7 +344,7 @@ class ViolationConfigManager:
                 file_configs = self._load_file_configs()
                 self.cached_thresholds.update(file_configs)
 
-            self.cache_updated_at = datetime.now(UTC)
+            self.cache_updated_at = datetime.now(timezone.utc)
 
         except Exception as e:
             logger.error(f"Error loading initial configuration: {e}")
@@ -492,7 +492,7 @@ class ViolationConfigManager:
         if self.cache_updated_at is None:
             return False
 
-        cache_age = (datetime.now(UTC) - self.cache_updated_at).total_seconds()
+        cache_age = (datetime.now(timezone.utc) - self.cache_updated_at).total_seconds()
         return cache_age < self.cache_ttl_seconds
 
     def _invalidate_cache(self):

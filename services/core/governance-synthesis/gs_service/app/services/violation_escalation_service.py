@@ -14,7 +14,7 @@ Classes:
 
 import logging
 from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from enum import Enum
 from typing import Any
 
@@ -212,7 +212,7 @@ class ViolationEscalationService:
             # Update violation
             violation.escalated = True
             violation.escalation_level = escalation_level.value
-            violation.escalated_at = datetime.now(UTC)
+            violation.escalated_at = datetime.now(timezone.utc)
             violation.escalated_by = escalated_by.id if escalated_by else None
 
             # Assign to appropriate personnel
@@ -242,7 +242,7 @@ class ViolationEscalationService:
                 escalation_metadata={
                     "escalation_type": "manual",
                     "escalated_by": escalated_by.username if escalated_by else "system",
-                    "escalated_at": datetime.now(UTC).isoformat(),
+                    "escalated_at": datetime.now(timezone.utc).isoformat(),
                 },
             )
 
@@ -281,7 +281,7 @@ class ViolationEscalationService:
                 select(ViolationEscalation).where(
                     and_(
                         ViolationEscalation.status == "pending",
-                        ViolationEscalation.escalated_at < datetime.now(UTC) - timedelta(hours=1),
+                        ViolationEscalation.escalated_at < datetime.now(timezone.utc) - timedelta(hours=1),
                     )
                 )
             )
@@ -294,7 +294,7 @@ class ViolationEscalationService:
                 )
                 timeout_threshold = escalation.escalated_at + timedelta(minutes=timeout_minutes)
 
-                if datetime.now(UTC) > timeout_threshold:
+                if datetime.now(timezone.utc) > timeout_threshold:
                     # Handle timeout
                     await self._handle_escalation_timeout(escalation, db)
                     timed_out.append(str(escalation.id))
@@ -322,7 +322,7 @@ class ViolationEscalationService:
             elif rule.trigger_type == EscalationTrigger.VIOLATION_COUNT:
                 # Count recent violations of same type
                 time_window = conditions.get("time_window_hours", 1)
-                threshold_time = datetime.now(UTC) - timedelta(hours=time_window)
+                threshold_time = datetime.now(timezone.utc) - timedelta(hours=time_window)
 
                 result = await db.execute(
                     select(func.count(ConstitutionalViolation.id)).where(
@@ -338,7 +338,7 @@ class ViolationEscalationService:
             elif rule.trigger_type == EscalationTrigger.TIME_THRESHOLD:
                 # Check if violation has been unresolved for too long
                 max_unresolved_minutes = conditions.get("max_unresolved_minutes", 30)
-                threshold_time = datetime.now(UTC) - timedelta(minutes=max_unresolved_minutes)
+                threshold_time = datetime.now(timezone.utc) - timedelta(minutes=max_unresolved_minutes)
                 return violation.detected_at <= threshold_time and violation.status != "resolved"
 
             return False
@@ -371,7 +371,7 @@ class ViolationEscalationService:
             # Update violation
             violation.escalated = True
             violation.escalation_level = rule.target_level.value
-            violation.escalated_at = datetime.now(UTC)
+            violation.escalated_at = datetime.now(timezone.utc)
 
             # Assign to appropriate personnel
             assigned_user = None
@@ -402,7 +402,7 @@ class ViolationEscalationService:
                 escalation_metadata={
                     "rule_id": rule.rule_id,
                     "trigger_type": rule.trigger_type.value,
-                    "escalated_at": datetime.now(UTC).isoformat(),
+                    "escalated_at": datetime.now(timezone.utc).isoformat(),
                 },
             )
 

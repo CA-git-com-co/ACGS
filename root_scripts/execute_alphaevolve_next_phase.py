@@ -19,7 +19,7 @@ import json
 import logging
 import sys
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 
 # Add project root to path
@@ -42,7 +42,7 @@ class AlphaEvolveNextPhaseExecutor:
     """Executor for AlphaEvolve-ACGS next phase implementation."""
 
     def __init__(self):
-        self.execution_start_time = datetime.now(UTC)
+        self.execution_start_time = datetime.now(timezone.utc)
         self.results = {
             "execution_id": f"alphaevolve_exec_{int(time.time())}",
             "start_time": self.execution_start_time.isoformat(),
@@ -477,7 +477,7 @@ class AlphaEvolveNextPhaseExecutor:
         logger.info("-" * 60)
 
         total_duration = (
-            datetime.now(UTC) - self.execution_start_time
+            datetime.now(timezone.utc) - self.execution_start_time
         ).total_seconds()
 
         # Calculate overall success metrics
@@ -516,7 +516,7 @@ class AlphaEvolveNextPhaseExecutor:
 
     async def _save_execution_results(self):
         """Save execution results to file."""
-        self.results["end_time"] = datetime.now(UTC).isoformat()
+        self.results["end_time"] = datetime.now(timezone.utc).isoformat()
 
         results_file = f"alphaevolve_execution_results_{int(time.time())}.json"
 

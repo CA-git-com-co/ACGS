@@ -6,7 +6,7 @@ Implements trusted timestamping for audit logs and policy rules
 import base64
 import hashlib
 import logging
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 import requests
@@ -99,7 +99,7 @@ class RFC3161TimestampService:
                 timestamp_token = response.content
 
                 # Extract timestamp value (simplified - real implementation needs ASN.1 parsing)
-                timestamp_value = datetime.now(UTC)
+                timestamp_value = datetime.now(timezone.utc)
 
                 result = {
                     "timestamp_token": timestamp_token,
@@ -170,7 +170,7 @@ class RFC3161TimestampService:
         try:
             # Simplified extraction - real implementation needs ASN.1 parsing
             # For now, return current time as placeholder
-            return datetime.now(UTC)
+            return datetime.now(timezone.utc)
 
         except Exception as e:
             logger.error(f"Timestamp extraction error: {e}")
@@ -194,7 +194,7 @@ class MockTimestampService(RFC3161TimestampService):
         """
         try:
             # Create mock timestamp token
-            timestamp_value = datetime.now(UTC)
+            timestamp_value = datetime.now(timezone.utc)
             mock_token = f"MOCK_TIMESTAMP_{timestamp_value.isoformat()}_{base64.b64encode(message_hash).decode()}"
             timestamp_token = mock_token.encode("utf-8")
 

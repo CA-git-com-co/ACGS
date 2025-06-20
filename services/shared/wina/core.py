@@ -8,7 +8,7 @@ within the ACGS-PGP framework.
 import logging
 import time
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 import numpy as np
@@ -306,7 +306,7 @@ class WINACore:
                 mask=mask,
                 scores=wina_scores,
                 sparsity_ratio=sparsity_ratio,
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
             )
 
         return activation_masks

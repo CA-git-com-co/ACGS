@@ -19,7 +19,7 @@ import time
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from enum import Enum
 from typing import Any
 
@@ -204,8 +204,8 @@ class AdvancedDemocraticParticipation:
             "proposal_id": proposal_id,
             "proposal_text": proposal_text,
             "voting_mechanism": voting_mechanism.value,
-            "created_at": datetime.now(UTC),
-            "expires_at": datetime.now(UTC) + timedelta(hours=duration_hours),
+            "created_at": datetime.now(timezone.utc),
+            "expires_at": datetime.now(timezone.utc) + timedelta(hours=duration_hours),
             "eligible_voters": eligible_voters or [],
             "votes": [],
             "status": "active",
@@ -260,7 +260,7 @@ class AdvancedDemocraticParticipation:
         vote_config = self.active_votes[vote_id]
 
         # Check if vote is still active
-        if datetime.now(UTC) > vote_config["expires_at"]:
+        if datetime.now(timezone.utc) > vote_config["expires_at"]:
             raise ValueError(f"Vote {vote_id} has expired")
 
         # Calculate total credits used
@@ -287,7 +287,7 @@ class AdvancedDemocraticParticipation:
             credits_allocated=total_credits,
             vote_strength=sum(vote_strength.values()),
             preference_intensity=total_preference_intensity,
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
         )
 
         # Record vote
@@ -353,14 +353,14 @@ class AdvancedDemocraticParticipation:
 
         expires_at = None
         if duration_days:
-            expires_at = datetime.now(UTC) + timedelta(days=duration_days)
+            expires_at = datetime.now(timezone.utc) + timedelta(days=duration_days)
 
         delegation = DelegationChain(
             delegator_id=delegator_id,
             delegate_id=delegate_id,
             topic_scope=topic_scope,
             delegation_weight=delegation_weight,
-            created_at=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
             expires_at=expires_at,
             active=True,
         )
@@ -407,7 +407,7 @@ class AdvancedDemocraticParticipation:
             divergent_points=[],
             sentiment_analysis={},
             toxicity_score=0.0,
-            created_at=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
             status="active",
         )
 
@@ -455,7 +455,7 @@ class AdvancedDemocraticParticipation:
             demographic_breakdown={},
             confidence_interval=0.95,
             sample_size=0,
-            created_at=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
         )
 
         self.real_time_polls[poll_id] = poll
@@ -499,7 +499,7 @@ class AdvancedDemocraticParticipation:
 
         # Initialize sentiment trend tracking
         initial_sentiment = dict.fromkeys(poll.options, 0.0)
-        poll.sentiment_trend.append((datetime.now(UTC), initial_sentiment))
+        poll.sentiment_trend.append((datetime.now(timezone.utc), initial_sentiment))
 
         logger.debug(f"Real-time monitoring initialized for poll {poll.poll_id}")
 
@@ -559,7 +559,7 @@ class AdvancedDemocraticParticipation:
                 "ai_moderation": "large_scale_deliberation",
                 "real_time_polling": "continuous_sentiment_monitoring",
             },
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
 

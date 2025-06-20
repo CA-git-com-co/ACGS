@@ -1,6 +1,6 @@
 # Enterprise Security Audit Logging
 import uuid
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from typing import Any
 
 from fastapi import Request
@@ -274,10 +274,10 @@ class SecurityAuditLogger:
         """Get security event summary statistics"""
 
         if not start_date:
-            start_date = datetime.now(UTC) - timedelta(days=7)
+            start_date = datetime.now(timezone.utc) - timedelta(days=7)
 
         if not end_date:
-            end_date = datetime.now(UTC)
+            end_date = datetime.now(timezone.utc)
 
         # Get all events in date range
         events = await self.get_events(

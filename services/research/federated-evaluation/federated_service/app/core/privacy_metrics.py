@@ -9,7 +9,7 @@ Based on Task 6 requirements and privacy-preserving techniques.
 
 import logging
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -56,7 +56,7 @@ class PrivacyMetrics:
     noise_added: float
     privacy_loss: float
     data_utility: float
-    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class DifferentialPrivacyManager:

@@ -8,7 +8,7 @@ import logging
 import os
 from collections.abc import Callable
 from dataclasses import asdict
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 try:
@@ -46,7 +46,7 @@ class CeleryConfig:
     task_serializer = "json"
     accept_content = ["json"]
     result_serializer = "json"
-    timezone = "UTC"
+    timezone = "timezone.utc"
     enable_utc = True
 
     # Worker settings
@@ -131,7 +131,7 @@ if CELERY_AVAILABLE and Task:
                 redis_client = await get_redis_client("celery_tasks")
                 status_data = {
                     "status": status.value,
-                    "updated_at": datetime.now(UTC).isoformat(),
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
                     "error": error,
                 }
                 await redis_client.set_json(
@@ -269,7 +269,7 @@ class CeleryTaskManager:
             "batch_id": batch_id,
             "task_ids": [task.task_id for task in batch.tasks],
             "celery_task_ids": [ct.id for _, ct in celery_tasks],
-            "submitted_at": datetime.now(UTC).isoformat(),
+            "submitted_at": datetime.now(timezone.utc).isoformat(),
             "status": "submitted",
         }
         await redis_client.set_json(f"batch:{batch_id}", batch_data, ttl=7200)
@@ -357,7 +357,7 @@ class CeleryTaskManager:
 
         # Update batch status
         batch_data["status"] = "cancelled"
-        batch_data["cancelled_at"] = datetime.now(UTC).isoformat()
+        batch_data["cancelled_at"] = datetime.now(timezone.utc).isoformat()
         await redis_client.set_json(f"batch:{batch_id}", batch_data, ttl=7200)
 
         return True

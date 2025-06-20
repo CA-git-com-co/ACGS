@@ -5,7 +5,7 @@ Provides JWT token validation and user authentication across all services
 
 import os
 import uuid  # Added uuid
-from datetime import UTC, datetime, timedelta  # Added timedelta
+from datetime import timezone, datetime, timedelta  # Added timedelta
 
 import httpx
 import jwt
@@ -71,8 +71,8 @@ def verify_token_and_get_payload(token_str: str) -> TokenPayload:
         # Validate expiration
         exp_timestamp = payload.get("exp")
         if exp_timestamp is None or datetime.fromtimestamp(
-            exp_timestamp, UTC
-        ) < datetime.now(UTC):
+            exp_timestamp, timezone.utc
+        ) < datetime.now(timezone.utc):
             raise token_expired_exception
 
         token_payload = TokenPayload(**payload)
@@ -198,7 +198,7 @@ async def get_service_token() -> str:
     )
 
     expiration_delta = timedelta(days=365)  # Long expiry for this placeholder
-    expire = datetime.now(UTC) + expiration_delta
+    expire = datetime.now(timezone.utc) + expiration_delta
     payload = {
         "sub": "internal_service_user",
         "user_id": 0,  # Or a conventional ID for internal services

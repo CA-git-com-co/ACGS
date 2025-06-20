@@ -17,7 +17,7 @@ import logging
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from enum import Enum
 from typing import Any
 
@@ -230,7 +230,7 @@ class CollectiveConstitutionalAI:
             conversation_id=conversation_id,
             topic=topic,
             description=description,
-            created_at=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
         )
 
         self.active_conversations[conversation_id] = conversation
@@ -479,7 +479,7 @@ class CollectiveConstitutionalAI:
                     source="mock",
                     content=content,
                     participant_id=f"participant_{i}",
-                    timestamp=datetime.now(UTC),
+                    timestamp=datetime.now(timezone.utc),
                     weight=0.7 + (i * 0.1),  # Varying consensus levels
                     validated=True,
                 )
@@ -540,8 +540,8 @@ class CollectiveConstitutionalAI:
             legitimacy_level=legitimacy_level,
             bias_evaluation=bias_evaluation,
             stakeholder_agreement=stakeholder_agreement,
-            created_at=datetime.now(UTC),
-            last_updated=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
+            last_updated=datetime.now(timezone.utc),
         )
 
         self.democratic_principles[principle_id] = democratic_principle
@@ -657,7 +657,7 @@ class CollectiveConstitutionalAI:
 
         # Calculate trend analysis
         recent_principles = [
-            p for p in principles if p.created_at > datetime.now(UTC) - timedelta(days=30)
+            p for p in principles if p.created_at > datetime.now(timezone.utc) - timedelta(days=30)
         ]
 
         metrics = {
@@ -673,7 +673,7 @@ class CollectiveConstitutionalAI:
             "bias_by_category": bias_by_category,
             "active_conversations": len(self.active_conversations),
             "democratic_legitimacy_score": self._calculate_overall_legitimacy_score(principles),
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         # Record metrics for monitoring

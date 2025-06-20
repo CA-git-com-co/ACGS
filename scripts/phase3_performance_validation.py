@@ -18,7 +18,7 @@ import logging
 import statistics
 import sys
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 import aiohttp
 import psutil
@@ -55,7 +55,7 @@ class ACGSPerformanceValidator:
         }
 
         self.results = {
-            "test_start": datetime.now(UTC).isoformat(),
+            "test_start": datetime.now(timezone.utc).isoformat(),
             "services_tested": [],
             "performance_metrics": {},
             "load_test_results": {},
@@ -240,7 +240,7 @@ class ACGSPerformanceValidator:
             memory_info = psutil.virtual_memory()
             self.results["memory_monitoring"].append(
                 {
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                     "memory_percent": memory_info.percent,
                     "memory_used_gb": memory_info.used / (1024**3),
                     "memory_available_gb": memory_info.available / (1024**3),
@@ -355,7 +355,7 @@ class ACGSPerformanceValidator:
 
     def generate_final_report(self):
         """Generate comprehensive performance validation report."""
-        self.results["test_end"] = datetime.now(UTC).isoformat()
+        self.results["test_end"] = datetime.now(timezone.utc).isoformat()
 
         # Save detailed results to file
         report_file = f"logs/phase3_performance_validation_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"

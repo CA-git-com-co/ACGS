@@ -11,7 +11,7 @@ import logging
 import time
 import uuid
 from collections.abc import Callable
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 from fastapi import HTTPException, Request, Response
@@ -80,7 +80,7 @@ class PerformanceMonitoringMiddleware(BaseHTTPMiddleware):
         # Add performance headers
         response.headers["X-Response-Time"] = f"{response_time_ms:.2f}ms"
         response.headers["X-Service"] = self.service_name
-        response.headers["X-Timestamp"] = datetime.now(UTC).isoformat()
+        response.headers["X-Timestamp"] = datetime.now(timezone.utc).isoformat()
 
         # Log performance metrics
         logger.info(
@@ -213,7 +213,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             "query_params": str(request.query_params),
             "client_ip": request.client.host if request.client else "unknown",
             "user_agent": request.headers.get("user-agent", "unknown"),
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         logger.info(f"API Request: {json.dumps(request_data)}")
@@ -227,7 +227,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             "correlation_id": correlation_id,
             "status_code": response.status_code,
             "response_time_ms": getattr(request.state, "response_time_ms", None),
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         logger.info(f"API Response: {json.dumps(response_data)}")

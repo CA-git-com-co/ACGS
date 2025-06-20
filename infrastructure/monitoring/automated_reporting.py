@@ -11,7 +11,7 @@ import json
 import logging
 import statistics
 from dataclasses import asdict, dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -99,7 +99,7 @@ class ACGSAutomatedReporting:
                     )
 
                 # Wait until next hour
-                now = datetime.now(UTC)
+                now = datetime.now(timezone.utc)
                 next_hour = now.replace(minute=0, second=0, microsecond=0) + timedelta(
                     hours=1
                 )
@@ -124,7 +124,7 @@ class ACGSAutomatedReporting:
                     )
 
                 # Wait until next day
-                now = datetime.now(UTC)
+                now = datetime.now(timezone.utc)
                 next_day = now.replace(
                     hour=0, minute=0, second=0, microsecond=0
                 ) + timedelta(days=1)
@@ -147,7 +147,7 @@ class ACGSAutomatedReporting:
                     )
 
                 # Wait until next week (Monday)
-                now = datetime.now(UTC)
+                now = datetime.now(timezone.utc)
                 days_until_monday = (7 - now.weekday()) % 7
                 if days_until_monday == 0:
                     days_until_monday = 7
@@ -175,7 +175,7 @@ class ACGSAutomatedReporting:
                     )
 
                 # Wait until next month
-                now = datetime.now(UTC)
+                now = datetime.now(timezone.utc)
                 if now.month == 12:
                     next_month = now.replace(
                         year=now.year + 1,
@@ -208,7 +208,7 @@ class ACGSAutomatedReporting:
         """Generate a performance report for the specified period."""
         try:
             # Load SLA reports from the specified period
-            cutoff_time = datetime.now(UTC) - timedelta(hours=period_hours)
+            cutoff_time = datetime.now(timezone.utc) - timedelta(hours=period_hours)
             sla_reports = self._load_sla_reports_since(cutoff_time)
 
             if not sla_reports:
@@ -260,7 +260,7 @@ class ACGSAutomatedReporting:
             service_availability = self._calculate_service_availability(sla_reports)
 
             return PerformanceReport(
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 period_hours=period_hours,
                 overall_sla_compliance=overall_sla_compliance,
                 uptime_percentage=(
@@ -309,7 +309,7 @@ class ACGSAutomatedReporting:
                     )
                     file_time = datetime.strptime(
                         timestamp_str, "%Y%m%d_%H%M%S"
-                    ).replace(tzinfo=UTC)
+                    ).replace(tzinfo=timezone.utc)
 
                     if file_time >= cutoff_time:
                         with open(file_path) as f:
@@ -327,7 +327,7 @@ class ACGSAutomatedReporting:
     def _create_default_report(self, period_hours: int) -> PerformanceReport:
         """Create a default report when no data is available."""
         return PerformanceReport(
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             period_hours=period_hours,
             overall_sla_compliance=0.0,
             uptime_percentage=0.0,
@@ -500,7 +500,7 @@ class ACGSAutomatedReporting:
                 await asyncio.sleep(86400)  # Clean up daily
 
                 retention_days = self.config.get("retention_days", 90)
-                cutoff_date = datetime.now(UTC) - timedelta(
+                cutoff_date = datetime.now(timezone.utc) - timedelta(
                     days=retention_days
                 )
 
@@ -509,7 +509,7 @@ class ACGSAutomatedReporting:
                     for report_file in output_dir.glob("*_report_*"):
                         try:
                             file_time = datetime.fromtimestamp(
-                                report_file.stat().st_mtime, tz=UTC
+                                report_file.stat().st_mtime, tz=timezone.utc
                             )
                             if file_time < cutoff_date:
                                 report_file.unlink()

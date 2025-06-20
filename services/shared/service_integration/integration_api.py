@@ -11,7 +11,7 @@ sha256: b8a7c6d5e4f3b2a1c8d7e6f5c4b3a2d1e8f7c6d5e4f3b2a1c8d7e6f5c4b3a2d1
 
 import logging
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
@@ -133,7 +133,7 @@ async def call_service_endpoint(
                 "target_time_ms": 2000,  # <2s target
                 "performance_met": call_time_ms < 2000,
             },
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         logger.info(
@@ -297,7 +297,7 @@ async def start_workflow_endpoint(
             "services": request.services,
             "total_steps": len(services),
             "status": "started",
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         logger.info(
@@ -355,7 +355,7 @@ async def get_integration_status(
                 "average_processing_time_ms"
             ],
             service_health=health_status,
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
         )
 
         return status_response
@@ -422,7 +422,7 @@ async def get_integration_metrics(
                 "target_service_availability": 0.995,
                 "target_event_success_rate": 0.95,
             },
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         return enhanced_metrics
@@ -475,14 +475,14 @@ async def trigger_health_check(
                     health_results[service_type.value] = {
                         "healthy": True,
                         "response": response_data,
-                        "checked_at": datetime.now(UTC).isoformat(),
+                        "checked_at": datetime.now(timezone.utc).isoformat(),
                     }
 
                 except Exception as e:
                     health_results[service_type.value] = {
                         "healthy": False,
                         "error": str(e),
-                        "checked_at": datetime.now(UTC).isoformat(),
+                        "checked_at": datetime.now(timezone.utc).isoformat(),
                     }
 
             logger.info(f"Health check completed for {len(health_results)} services")
@@ -496,7 +496,7 @@ async def trigger_health_check(
             "success": True,
             "message": "Health check initiated for all services",
             "services_checked": len(orchestrator.services),
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         return result

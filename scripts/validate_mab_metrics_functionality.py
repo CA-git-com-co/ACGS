@@ -13,7 +13,7 @@ import asyncio
 import json
 import os
 import sys
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 # Add the backend directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src", "backend"))
@@ -177,7 +177,7 @@ async def validate_mab_metrics_format():
 
         # Test JSON serialization
         combined_response = {
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "metrics": metrics,
             "status": status,
         }

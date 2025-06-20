@@ -11,7 +11,7 @@ import logging
 import statistics
 import time
 from dataclasses import asdict, dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -172,7 +172,7 @@ class ACGSSLAMonitor:
                     warning_threshold=self.warning_thresholds["uptime_percentage"],
                     unit="percentage",
                     status=status,
-                    timestamp=datetime.now(UTC),
+                    timestamp=datetime.now(timezone.utc),
                     details={
                         "healthy_services": healthy_services,
                         "total_services": total_services,
@@ -241,7 +241,7 @@ class ACGSSLAMonitor:
                         warning_threshold=self.warning_thresholds["response_time_ms"],
                         unit="milliseconds",
                         status=status,
-                        timestamp=datetime.now(UTC),
+                        timestamp=datetime.now(timezone.utc),
                         details={
                             "p95_response_time_ms": p95_response_time,
                             "avg_response_time_ms": avg_response_time,
@@ -289,7 +289,7 @@ class ACGSSLAMonitor:
                     warning_threshold=self.warning_thresholds["concurrent_actions"],
                     unit="actions",
                     status=status,
-                    timestamp=datetime.now(UTC),
+                    timestamp=datetime.now(timezone.utc),
                     details={
                         "estimation_method": "system_load_analysis",
                         "current_load": "normal",  # This would be calculated
@@ -363,7 +363,7 @@ class ACGSSLAMonitor:
                     warning_threshold=self.warning_thresholds["sol_transaction_cost"],
                     unit="SOL",
                     status=status,
-                    timestamp=datetime.now(UTC),
+                    timestamp=datetime.now(timezone.utc),
                     details={
                         "network": "solana_devnet",
                         "estimation_method": "recent_transactions",
@@ -418,7 +418,7 @@ class ACGSSLAMonitor:
                     warning_threshold=self.warning_thresholds["compliance_accuracy"],
                     unit="percentage",
                     status=status,
-                    timestamp=datetime.now(UTC),
+                    timestamp=datetime.now(timezone.utc),
                     details={
                         "constitution_hash": "cdd01ef066bc6cf2",
                         "validation_method": "pgc_service",
@@ -486,7 +486,7 @@ class ACGSSLAMonitor:
             overall_status = SLAStatus.COMPLIANT
 
         return {
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "overall_status": overall_status.value,
             "metrics": {
                 name: asdict(metric) for name, metric in latest_metrics.items()
@@ -497,7 +497,7 @@ class ACGSSLAMonitor:
 
     def _count_breaches_24h(self) -> int:
         """Count SLA breaches in the last 24 hours."""
-        cutoff = datetime.now(UTC) - timedelta(hours=24)
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
         return sum(
             1
             for metric in self.metrics_history
@@ -506,7 +506,7 @@ class ACGSSLAMonitor:
 
     def _count_warnings_24h(self) -> int:
         """Count SLA warnings in the last 24 hours."""
-        cutoff = datetime.now(UTC) - timedelta(hours=24)
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
         return sum(
             1
             for metric in self.metrics_history
@@ -569,7 +569,7 @@ class ACGSSLAMonitor:
             )
 
         return SLAReport(
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             overall_status=SLAStatus(current_status["overall_status"]),
             metrics=metric_objects,
             uptime_percentage=uptime,
@@ -611,7 +611,7 @@ class ACGSSLAMonitor:
                 await asyncio.sleep(3600)  # Clean up every hour
 
                 # Clean up old metrics (keep last 24 hours)
-                cutoff = datetime.now(UTC) - timedelta(hours=24)
+                cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
                 self.metrics_history = [
                     m for m in self.metrics_history if m.timestamp > cutoff
                 ]
@@ -620,14 +620,14 @@ class ACGSSLAMonitor:
                 retention_days = self.config.get("retention_days", 30)
                 reports_dir = Path("logs/sla_reports")
                 if reports_dir.exists():
-                    cutoff_date = datetime.now(UTC) - timedelta(
+                    cutoff_date = datetime.now(timezone.utc) - timedelta(
                         days=retention_days
                     )
 
                     for report_file in reports_dir.glob("sla_report_*.json"):
                         try:
                             file_time = datetime.fromtimestamp(
-                                report_file.stat().st_mtime, tz=UTC
+                                report_file.stat().st_mtime, tz=timezone.utc
                             )
                             if file_time < cutoff_date:
                                 report_file.unlink()
@@ -644,7 +644,7 @@ class ACGSSLAMonitor:
 
     def get_sla_trends(self, hours: int = 24) -> dict[str, Any]:
         """Get SLA trends over the specified time period."""
-        cutoff = datetime.now(UTC) - timedelta(hours=hours)
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
         recent_metrics = [m for m in self.metrics_history if m.timestamp > cutoff]
 
         if not recent_metrics:

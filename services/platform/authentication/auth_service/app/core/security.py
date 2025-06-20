@@ -1,6 +1,6 @@
 # acgspcp-main/auth_service/app/core/security.py
 import uuid
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import jwt
 from fastapi import Depends, HTTPException, Request, status
@@ -61,9 +61,9 @@ def create_access_token(
     expires_delta: timedelta | None = None,
 ) -> tuple[str, str]:  # returns (token, jti)
     if expires_delta:
-        expire = datetime.now(UTC) + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.now(UTC) + timedelta(
+        expire = datetime.now(timezone.utc) + timedelta(
             minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
         )
 
@@ -86,7 +86,7 @@ def create_refresh_token(
     subject: str, user_id: int, roles: list[str]
 ) -> tuple[str, str, datetime]:  # returns (token, jti, expiry_datetime)
     expires_delta = timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
-    expire_datetime = datetime.now(UTC) + expires_delta
+    expire_datetime = datetime.now(timezone.utc) + expires_delta
     jti = uuid.uuid4().hex
     to_encode = {
         "exp": int(expire_datetime.timestamp()),
@@ -137,8 +137,8 @@ def verify_token_and_get_payload(token_str: str) -> TokenPayload:
         # Validate expiration (jose's decode already does this, but an explicit check is fine)
         exp_timestamp = payload.get("exp")
         if exp_timestamp is None or datetime.fromtimestamp(
-            exp_timestamp, UTC
-        ) < datetime.now(UTC):
+            exp_timestamp, timezone.utc
+        ) < datetime.now(timezone.utc):
             raise token_expired_exception
 
         token_payload = TokenPayload(**payload)  # Validate structure
@@ -276,7 +276,7 @@ async def get_current_user_from_api_key(
         raise credentials_exception
 
     # Check expiration
-    if api_key_obj.expires_at and api_key_obj.expires_at <= datetime.now(UTC):
+    if api_key_obj.expires_at and api_key_obj.expires_at <= datetime.now(timezone.utc):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="API key has expired"
         )
@@ -291,7 +291,7 @@ async def get_current_user_from_api_key(
             )
 
     # Update usage statistics
-    api_key_obj.last_used_at = datetime.now(UTC)
+    api_key_obj.last_used_at = datetime.now(timezone.utc)
     api_key_obj.usage_count += 1
     await db.commit()
 

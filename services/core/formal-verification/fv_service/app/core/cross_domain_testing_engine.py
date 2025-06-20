@@ -10,7 +10,7 @@ import logging
 import time
 import uuid
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -356,7 +356,7 @@ class CrossDomainTestingEngine:
         all_results = []
         execution_summary = {
             "test_run_id": test_run_id,
-            "start_time": datetime.now(UTC).isoformat(),
+            "start_time": datetime.now(timezone.utc).isoformat(),
             "scenarios_count": len(scenarios),
             "domains_count": len(domains),
             "principles_count": len(principles),
@@ -395,7 +395,7 @@ class CrossDomainTestingEngine:
         execution_time = time.time() - start_time
         execution_summary.update(
             {
-                "end_time": datetime.now(UTC).isoformat(),
+                "end_time": datetime.now(timezone.utc).isoformat(),
                 "execution_time_seconds": execution_time,
                 "total_results": len(all_results),
                 "overall_accuracy": overall_accuracy,
@@ -510,7 +510,7 @@ class CrossDomainTestingEngine:
             conflict_details=conflict_details,
             execution_time_ms=execution_time,
             memory_usage_mb=None,  # Could be implemented with memory profiling
-            executed_at=datetime.now(UTC),
+            executed_at=datetime.now(timezone.utc),
             executed_by_user_id=None,
         )
 

@@ -5,7 +5,7 @@ Comprehensive test suite for validating WINA performance monitoring,
 metrics collection, dashboard functionality, and API endpoints.
 """
 
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
@@ -39,7 +39,7 @@ class TestWINAPerformanceCollector:
     def sample_neuron_metrics(self):
         """Create sample neuron activation metrics."""
         return WINANeuronActivationMetrics(
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             component_id="test_component",
             total_neurons=1000,
             active_neurons=650,
@@ -55,7 +55,7 @@ class TestWINAPerformanceCollector:
     def sample_svd_metrics(self):
         """Create sample SVD transformation metrics."""
         return WINASVDTransformationMetrics(
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             component_id="test_svd",
             original_rank=512,
             reduced_rank=256,
@@ -70,7 +70,7 @@ class TestWINAPerformanceCollector:
     def sample_constitutional_metrics(self):
         """Create sample constitutional compliance metrics."""
         return WINAConstitutionalComplianceMetrics(
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             component_id="test_constitutional",
             compliance_score=0.96,
             violations_detected=1,
@@ -171,7 +171,7 @@ class TestWINAPerformanceCollector:
         # Record some metrics
         await collector.record_neuron_activation_metrics(sample_neuron_metrics)
 
-        end_time = datetime.now(UTC)
+        end_time = datetime.now(timezone.utc)
         start_time = end_time - timedelta(hours=1)
 
         report = await collector.get_performance_report(start_time, end_time)
@@ -186,7 +186,7 @@ class TestWINAPerformanceCollector:
         """Test alert generation for anomalies."""
         # Create metrics that should trigger alerts
         poor_metrics = WINANeuronActivationMetrics(
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             component_id="failing_component",
             total_neurons=1000,
             active_neurons=950,  # High activation (poor optimization)
@@ -214,7 +214,7 @@ class TestWINAPerformanceCollector:
     async def test_metrics_cleanup(self, collector):
         """Test automatic cleanup of old metrics."""
         # Create old metrics
-        old_timestamp = datetime.now(UTC) - timedelta(hours=25)  # Older than retention
+        old_timestamp = datetime.now(timezone.utc) - timedelta(hours=25)  # Older than retention
         old_metrics = WINANeuronActivationMetrics(
             timestamp=old_timestamp,
             component_id="old_component",
@@ -517,7 +517,7 @@ class TestWINAMetricsDataClasses:
     def test_neuron_activation_metrics_creation(self):
         """Test neuron activation metrics data class."""
         metrics = WINANeuronActivationMetrics(
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             component_id="test",
             total_neurons=1000,
             active_neurons=600,
@@ -536,7 +536,7 @@ class TestWINAMetricsDataClasses:
     def test_svd_transformation_metrics_creation(self):
         """Test SVD transformation metrics data class."""
         metrics = WINASVDTransformationMetrics(
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             component_id="test",
             original_rank=512,
             reduced_rank=256,
@@ -554,7 +554,7 @@ class TestWINAMetricsDataClasses:
     def test_constitutional_compliance_metrics_creation(self):
         """Test constitutional compliance metrics data class."""
         metrics = WINAConstitutionalComplianceMetrics(
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             component_id="test",
             compliance_score=0.95,
             violations_detected=0,
@@ -582,7 +582,7 @@ class TestWINAPerformanceIntegration:
         try:
             # Create sample metrics
             neuron_metrics = WINANeuronActivationMetrics(
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 component_id="integration_test",
                 total_neurons=2000,
                 active_neurons=1200,
@@ -595,7 +595,7 @@ class TestWINAPerformanceIntegration:
             )
 
             constitutional_metrics = WINAConstitutionalComplianceMetrics(
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 component_id="integration_test",
                 compliance_score=0.97,
                 violations_detected=0,
@@ -619,7 +619,7 @@ class TestWINAPerformanceIntegration:
             assert "constitutional_compliance" in real_time_metrics
 
             # Generate performance report
-            end_time = datetime.now(UTC)
+            end_time = datetime.now(timezone.utc)
             start_time = end_time - timedelta(minutes=30)
             report = await collector.get_performance_report(start_time, end_time)
 
@@ -643,7 +643,7 @@ class TestWINAPerformanceIntegration:
         try:
             # Add some test data
             test_metrics = WINANeuronActivationMetrics(
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 component_id="dashboard_test",
                 total_neurons=1500,
                 active_neurons=900,

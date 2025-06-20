@@ -10,7 +10,7 @@ import json
 import logging
 import time
 from dataclasses import asdict, dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -194,7 +194,7 @@ class ACGSHealthMonitor:
                         service_name=service_name,
                         status=status,
                         response_time_ms=response_time_ms,
-                        timestamp=datetime.now(UTC),
+                        timestamp=datetime.now(timezone.utc),
                         details={
                             "http_status": response.status,
                             "response_data": data,
@@ -206,7 +206,7 @@ class ACGSHealthMonitor:
                         service_name=service_name,
                         status=HealthStatus.UNHEALTHY,
                         response_time_ms=response_time_ms,
-                        timestamp=datetime.now(UTC),
+                        timestamp=datetime.now(timezone.utc),
                         details={"http_status": response.status, "url": url},
                         error_message=f"HTTP {response.status}",
                     )
@@ -217,7 +217,7 @@ class ACGSHealthMonitor:
                 service_name=service_name,
                 status=HealthStatus.UNHEALTHY,
                 response_time_ms=response_time_ms,
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 details={
                     "url": f"http://localhost:{config['port']}{config['endpoint']}"
                 },
@@ -253,7 +253,7 @@ class ACGSHealthMonitor:
             severity=severity,
             service=service,
             message=message,
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             details=details,
         )
 
@@ -316,7 +316,7 @@ class ACGSHealthMonitor:
                 service_name="postgresql",
                 status=HealthStatus.HEALTHY,
                 response_time_ms=response_time_ms,
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 details={"database": config["database"], "host": config["host"]},
             )
 
@@ -327,7 +327,7 @@ class ACGSHealthMonitor:
                 service_name="postgresql",
                 status=HealthStatus.UNHEALTHY,
                 response_time_ms=0,
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 details={"database": config["database"], "host": config["host"]},
                 error_message=str(e),
             )
@@ -369,7 +369,7 @@ class ACGSHealthMonitor:
                 service_name="redis",
                 status=HealthStatus.HEALTHY,
                 response_time_ms=response_time_ms,
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 details={"host": config["host"], "port": config["port"]},
             )
 
@@ -380,7 +380,7 @@ class ACGSHealthMonitor:
                 service_name="redis",
                 status=HealthStatus.UNHEALTHY,
                 response_time_ms=0,
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 details={"host": config["host"], "port": config["port"]},
                 error_message=str(e),
             )
@@ -411,7 +411,7 @@ class ACGSHealthMonitor:
                             service_name="prometheus",
                             status=HealthStatus.HEALTHY,
                             response_time_ms=response_time_ms,
-                            timestamp=datetime.now(UTC),
+                            timestamp=datetime.now(timezone.utc),
                             details={"url": url},
                         )
                     else:
@@ -419,7 +419,7 @@ class ACGSHealthMonitor:
                             service_name="prometheus",
                             status=HealthStatus.UNHEALTHY,
                             response_time_ms=response_time_ms,
-                            timestamp=datetime.now(UTC),
+                            timestamp=datetime.now(timezone.utc),
                             details={"url": url, "http_status": response.status},
                             error_message=f"HTTP {response.status}",
                         )
@@ -431,7 +431,7 @@ class ACGSHealthMonitor:
                 service_name="prometheus",
                 status=HealthStatus.UNHEALTHY,
                 response_time_ms=0,
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 details={"host": config["host"], "port": config["port"]},
                 error_message=str(e),
             )
@@ -456,7 +456,7 @@ class ACGSHealthMonitor:
                             service_name="grafana",
                             status=HealthStatus.HEALTHY,
                             response_time_ms=response_time_ms,
-                            timestamp=datetime.now(UTC),
+                            timestamp=datetime.now(timezone.utc),
                             details={"url": url},
                         )
                     else:
@@ -464,7 +464,7 @@ class ACGSHealthMonitor:
                             service_name="grafana",
                             status=HealthStatus.UNHEALTHY,
                             response_time_ms=response_time_ms,
-                            timestamp=datetime.now(UTC),
+                            timestamp=datetime.now(timezone.utc),
                             details={"url": url, "http_status": response.status},
                             error_message=f"HTTP {response.status}",
                         )
@@ -476,7 +476,7 @@ class ACGSHealthMonitor:
                 service_name="grafana",
                 status=HealthStatus.UNHEALTHY,
                 response_time_ms=0,
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 details={"host": config["host"], "port": config["port"]},
                 error_message=str(e),
             )
@@ -530,7 +530,7 @@ class ACGSHealthMonitor:
                                 service_name="solana_network",
                                 status=HealthStatus.HEALTHY,
                                 response_time_ms=response_time_ms,
-                                timestamp=datetime.now(UTC),
+                                timestamp=datetime.now(timezone.utc),
                                 details={
                                     "rpc_url": self.blockchain["solana_rpc"],
                                     "result": data.get("result"),
@@ -541,7 +541,7 @@ class ACGSHealthMonitor:
                                 service_name="solana_network",
                                 status=HealthStatus.DEGRADED,
                                 response_time_ms=response_time_ms,
-                                timestamp=datetime.now(UTC),
+                                timestamp=datetime.now(timezone.utc),
                                 details={
                                     "rpc_url": self.blockchain["solana_rpc"],
                                     "result": data.get("result"),
@@ -553,7 +553,7 @@ class ACGSHealthMonitor:
                             service_name="solana_network",
                             status=HealthStatus.UNHEALTHY,
                             response_time_ms=response_time_ms,
-                            timestamp=datetime.now(UTC),
+                            timestamp=datetime.now(timezone.utc),
                             details={
                                 "rpc_url": self.blockchain["solana_rpc"],
                                 "http_status": response.status,
@@ -568,7 +568,7 @@ class ACGSHealthMonitor:
                 service_name="solana_network",
                 status=HealthStatus.UNHEALTHY,
                 response_time_ms=0,
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 details={"rpc_url": self.blockchain["solana_rpc"]},
                 error_message=str(e),
             )
@@ -627,7 +627,7 @@ class ACGSHealthMonitor:
                     service_name="quantumagi_programs",
                     status=status,
                     response_time_ms=response_time_ms,
-                    timestamp=datetime.now(UTC),
+                    timestamp=datetime.now(timezone.utc),
                     details={
                         "healthy_programs": healthy_programs,
                         "total_programs": total_programs,
@@ -651,7 +651,7 @@ class ACGSHealthMonitor:
                 service_name="quantumagi_programs",
                 status=HealthStatus.UNHEALTHY,
                 response_time_ms=0,
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 details={"program_ids": self.blockchain["program_ids"]},
                 error_message=str(e),
             )
@@ -677,7 +677,7 @@ class ACGSHealthMonitor:
                                 service_name="constitution_hash",
                                 status=HealthStatus.HEALTHY,
                                 response_time_ms=(time.time() - time.time()) * 1000,
-                                timestamp=datetime.now(UTC),
+                                timestamp=datetime.now(timezone.utc),
                                 details={
                                     "hash": self.blockchain["constitution_hash"],
                                     "validation": data,
@@ -688,7 +688,7 @@ class ACGSHealthMonitor:
                                 service_name="constitution_hash",
                                 status=HealthStatus.UNHEALTHY,
                                 response_time_ms=0,
-                                timestamp=datetime.now(UTC),
+                                timestamp=datetime.now(timezone.utc),
                                 details={
                                     "hash": self.blockchain["constitution_hash"],
                                     "validation": data,
@@ -700,7 +700,7 @@ class ACGSHealthMonitor:
                             service_name="constitution_hash",
                             status=HealthStatus.UNKNOWN,
                             response_time_ms=0,
-                            timestamp=datetime.now(UTC),
+                            timestamp=datetime.now(timezone.utc),
                             details={"hash": self.blockchain["constitution_hash"]},
                             error_message=f"PGC service unavailable (HTTP {response.status})",
                         )
@@ -712,7 +712,7 @@ class ACGSHealthMonitor:
                 service_name="constitution_hash",
                 status=HealthStatus.UNKNOWN,
                 response_time_ms=0,
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 details={"hash": self.blockchain["constitution_hash"]},
                 error_message=str(e),
             )
@@ -724,8 +724,8 @@ class ACGSHealthMonitor:
         while self.is_monitoring:
             try:
                 # Clean up old alerts
-                cutoff_time = datetime.now(UTC).replace(
-                    hour=datetime.now(UTC).hour - 24
+                cutoff_time = datetime.now(timezone.utc).replace(
+                    hour=datetime.now(timezone.utc).hour - 24
                 )
                 self.alerts = [
                     alert for alert in self.alerts if alert.timestamp > cutoff_time
@@ -750,7 +750,7 @@ class ACGSHealthMonitor:
                 report_path = Path("logs/health_reports")
                 report_path.mkdir(parents=True, exist_ok=True)
 
-                timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
+                timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
                 report_file = report_path / f"health_report_{timestamp}.json"
 
                 with open(report_file, "w") as f:
@@ -786,7 +786,7 @@ class ACGSHealthMonitor:
         ) / max(total_services, 1)
 
         return {
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "overall_status": (
                 "healthy" if healthy_services == total_services else "degraded"
             ),
@@ -798,8 +798,8 @@ class ACGSHealthMonitor:
                     a
                     for a in self.alerts
                     if a.timestamp
-                    > datetime.now(UTC).replace(
-                        hour=datetime.now(UTC).hour - 1
+                    > datetime.now(timezone.utc).replace(
+                        hour=datetime.now(timezone.utc).hour - 1
                     )
                 ]
             ),

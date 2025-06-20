@@ -2,7 +2,7 @@
 import hashlib
 import json
 import secrets
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from typing import Any
 
 from fastapi import Request
@@ -62,7 +62,7 @@ class SessionManager:
 
         # Check time since last login
         if user.last_login_at:
-            time_since_last = datetime.now(UTC) - user.last_login_at
+            time_since_last = datetime.now(timezone.utc) - user.last_login_at
             if time_since_last > timedelta(days=30):
                 risk_score += 25
             elif time_since_last > timedelta(days=7):
@@ -105,7 +105,7 @@ class SessionManager:
 
         # Calculate session expiration
         timeout_minutes = user.session_timeout_minutes or self.default_session_timeout
-        expires_at = datetime.now(UTC) + timedelta(minutes=timeout_minutes)
+        expires_at = datetime.now(timezone.utc) + timedelta(minutes=timeout_minutes)
 
         # Create session
         session = UserSession(
@@ -144,7 +144,7 @@ class SessionManager:
             select(UserSession).where(
                 UserSession.user_id == user_id,
                 UserSession.is_active,
-                UserSession.expires_at > datetime.now(UTC),
+                UserSession.expires_at > datetime.now(timezone.utc),
             )
         )
         return result.scalars().all()
@@ -156,11 +156,11 @@ class SessionManager:
             return False
 
         # Check if session is expired
-        if session.expires_at <= datetime.now(UTC):
+        if session.expires_at <= datetime.now(timezone.utc):
             await self.terminate_session(db, session_id)
             return False
 
-        session.last_activity_at = datetime.now(UTC)
+        session.last_activity_at = datetime.now(timezone.utc)
         await db.commit()
         return True
 
@@ -206,7 +206,7 @@ class SessionManager:
 
     async def cleanup_expired_sessions(self, db: AsyncSession) -> int:
         """Clean up expired sessions"""
-        current_time = datetime.now(UTC)
+        current_time = datetime.now(timezone.utc)
 
         result = await db.execute(
             select(UserSession).where(
@@ -257,7 +257,7 @@ class SessionManager:
             return None
 
         # Check expiration
-        if session.expires_at <= datetime.now(UTC):
+        if session.expires_at <= datetime.now(timezone.utc):
             await self.terminate_session(db, session_id)
             return None
 

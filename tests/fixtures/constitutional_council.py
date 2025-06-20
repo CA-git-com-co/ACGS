@@ -5,7 +5,7 @@ Provides standardized test fixtures for Constitutional Council tests with Pydant
 """
 
 from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from enum import Enum
 from typing import Any
 
@@ -364,7 +364,7 @@ class MockVotingSimulator:
                     "amendment_id": amendment_id,
                     "voter_id": member.id,
                     "vote": vote,
-                    "timestamp": datetime.now(UTC),
+                    "timestamp": datetime.now(timezone.utc),
                 }
             )
 
@@ -525,7 +525,7 @@ class ConstitutionalCouncilTestUtils:
             "vote_after_deadline": {
                 "member_id": 1,
                 "amendment_id": 1,
-                "voting_deadline": datetime.now(UTC) - timedelta(hours=1),
+                "voting_deadline": datetime.now(timezone.utc) - timedelta(hours=1),
                 "expected_error": "VotingDeadlineExceeded",
                 "error_message": "Voting period has ended",
             },

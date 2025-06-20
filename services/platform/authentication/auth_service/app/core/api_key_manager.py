@@ -1,6 +1,6 @@
 # Enterprise API Key Management for Service-to-Service Authentication
 import secrets
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 
 from fastapi import HTTPException
 from sqlalchemy import and_, select
@@ -60,7 +60,7 @@ class ApiKeyManager:
         # Calculate expiration
         expires_at = None
         if expires_in_days:
-            expires_at = datetime.now(UTC) + timedelta(days=expires_in_days)
+            expires_at = datetime.now(timezone.utc) + timedelta(days=expires_in_days)
 
         # Create API key record
         api_key_obj = ApiKey(
@@ -225,7 +225,7 @@ class ApiKeyManager:
             return None
 
         # Check expiration
-        if api_key_obj.expires_at and api_key_obj.expires_at <= datetime.now(UTC):
+        if api_key_obj.expires_at and api_key_obj.expires_at <= datetime.now(timezone.utc):
             return None
 
         # Check scopes if required
@@ -252,7 +252,7 @@ class ApiKeyManager:
 
     async def cleanup_expired_keys(self, db: AsyncSession) -> int:
         """Clean up expired API keys"""
-        current_time = datetime.now(UTC)
+        current_time = datetime.now(timezone.utc)
 
         result = await db.execute(
             select(ApiKey).where(
@@ -276,10 +276,10 @@ class ApiKeyManager:
     ) -> dict:
         """Get API key usage statistics"""
         if not start_date:
-            start_date = datetime.now(UTC) - timedelta(days=30)
+            start_date = datetime.now(timezone.utc) - timedelta(days=30)
 
         if not end_date:
-            end_date = datetime.now(UTC)
+            end_date = datetime.now(timezone.utc)
 
         # Get all API keys for user
         result = await db.execute(select(ApiKey).where(ApiKey.user_id == user_id))
@@ -290,7 +290,7 @@ class ApiKeyManager:
         expired_keys = sum(
             1
             for key in api_keys
-            if key.expires_at and key.expires_at <= datetime.now(UTC)
+            if key.expires_at and key.expires_at <= datetime.now(timezone.utc)
         )
 
         return {

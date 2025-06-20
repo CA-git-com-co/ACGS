@@ -11,7 +11,7 @@ import asyncio
 import json
 import logging
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 
 import httpx
@@ -58,7 +58,7 @@ class ACGSProductionValidator:
 
         # Test results storage
         self.test_results = {
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "service_connectivity": {},
             "performance_metrics": {},
             "quantumagi_validation": {},

@@ -10,7 +10,7 @@ Task 19.4: Performance Dashboard Integration - Automated Reporting System
 
 import logging
 from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from enum import Enum
 from typing import Any
 
@@ -159,7 +159,7 @@ class ConstitutionalReportingService:
         Returns:
             Complete compliance report
         """
-        start_time = datetime.now(UTC)
+        start_time = datetime.now(timezone.utc)
 
         try:
             # Calculate reporting period if not provided
@@ -199,7 +199,7 @@ class ConstitutionalReportingService:
             )
 
             # Record metrics
-            generation_time = (datetime.now(UTC) - start_time).total_seconds()
+            generation_time = (datetime.now(timezone.utc) - start_time).total_seconds()
             self.metrics.record_custom_metric(
                 "constitutional_report_generation_time",
                 generation_time,
@@ -270,7 +270,7 @@ class ConstitutionalReportingService:
 
     def _calculate_reporting_period(self, report_type: ReportType) -> tuple[datetime, datetime]:
         """Calculate the reporting period based on report type."""
-        now = datetime.now(UTC)
+        now = datetime.now(timezone.utc)
 
         if report_type == ReportType.DAILY:
             period_end = now.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -412,7 +412,7 @@ class ConstitutionalReportingService:
                     "type": "constitutional_violation",
                     "severity": "high",
                     "message": "Critical constitutional violation detected in policy synthesis",
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                     "status": "active",
                 },
                 {
@@ -420,7 +420,7 @@ class ConstitutionalReportingService:
                     "type": "qec_performance",
                     "severity": "medium",
                     "message": "QEC response time exceeding 30 seconds",
-                    "timestamp": (datetime.now(UTC) - timedelta(minutes=15)).isoformat(),
+                    "timestamp": (datetime.now(timezone.utc) - timedelta(minutes=15)).isoformat(),
                     "status": "acknowledged",
                 },
             ]

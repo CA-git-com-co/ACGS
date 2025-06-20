@@ -15,7 +15,7 @@ import time
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -82,7 +82,7 @@ class ServiceEvent:
     max_retries: int = field(default=3)
 
     # Timestamps
-    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     processed_at: datetime | None = None
 
     def __post_init__(self):
@@ -368,7 +368,7 @@ class Phase2ServiceOrchestrator:
             "correlation_id": correlation_id,
             "status": "started",
             "data": workflow_data,
-            "started_at": datetime.now(UTC).isoformat(),
+            "started_at": datetime.now(timezone.utc).isoformat(),
             "steps_completed": 0,
             "total_steps": len(services),
         }
@@ -426,7 +426,7 @@ class Phase2ServiceOrchestrator:
         # Check if workflow is complete
         if workflow["steps_completed"] >= workflow["total_steps"]:
             workflow["status"] = "completed"
-            workflow["completed_at"] = datetime.now(UTC).isoformat()
+            workflow["completed_at"] = datetime.now(timezone.utc).isoformat()
 
             # Publish workflow completed event
             event = ServiceEvent(
@@ -617,7 +617,7 @@ class Phase2ServiceOrchestrator:
                 )
 
                 # Add to history
-                event.processed_at = datetime.now(UTC)
+                event.processed_at = datetime.now(timezone.utc)
                 self.event_history.append(event)
 
                 # Limit history size

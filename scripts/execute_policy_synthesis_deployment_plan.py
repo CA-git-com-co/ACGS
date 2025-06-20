@@ -22,7 +22,7 @@ import asyncio
 import json
 import logging
 import sys
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 from typing import Any
 
@@ -119,7 +119,7 @@ class DeploymentPlanExecutor:
             return {
                 "success": False,
                 "error": str(e),
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
     async def execute_specific_phase(self, phase_number: int) -> dict[str, Any]:
@@ -156,7 +156,7 @@ class DeploymentPlanExecutor:
                 "success": False,
                 "phase": phase_number,
                 "error": str(e),
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
     async def generate_status_report(self) -> dict[str, Any]:
@@ -174,7 +174,7 @@ class DeploymentPlanExecutor:
             performance_check = await self._check_performance_targets()
 
             report = {
-                "report_timestamp": datetime.now(UTC).isoformat(),
+                "report_timestamp": datetime.now(timezone.utc).isoformat(),
                 "system_status": system_status,
                 "deployment_metrics": metrics_analysis,
                 "performance_targets": performance_check,

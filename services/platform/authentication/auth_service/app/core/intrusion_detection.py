@@ -3,7 +3,7 @@ import ipaddress
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 
 from fastapi import HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,7 +28,7 @@ class SecurityThreat:
         # ensures: Correct function execution
         # sha256: func_hash
         if self.detected_at is None:
-            self.detected_at = datetime.now(UTC)
+            self.detected_at = datetime.now(timezone.utc)
         if self.metadata is None:
             self.metadata = {}
 
@@ -106,7 +106,7 @@ class IntrusionDetectionSystem:
         """Check if IP address is currently blocked"""
         if ip_address in self.blocked_ips:
             block_time = self.blocked_ips[ip_address]
-            if datetime.now(UTC) - block_time < timedelta(
+            if datetime.now(timezone.utc) - block_time < timedelta(
                 minutes=self.block_duration_minutes
             ):
                 return True
@@ -123,7 +123,7 @@ class IntrusionDetectionSystem:
         if duration_minutes is None:
             duration_minutes = self.block_duration_minutes
 
-        self.blocked_ips[ip_address] = datetime.now(UTC)
+        self.blocked_ips[ip_address] = datetime.now(timezone.utc)
 
     def is_malicious_ip(self, ip_address: str) -> bool:
         """Check if IP address is in known malicious ranges"""

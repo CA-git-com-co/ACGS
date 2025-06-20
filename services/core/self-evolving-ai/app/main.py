@@ -51,6 +51,23 @@ from .core.observability_framework import ObservabilityFramework
 from .core.policy_orchestrator import PolicyOrchestrator
 from .core.security_manager import SecurityManager
 from .dependencies import (
+    set_background_processor,
+    set_evolution_engine,
+    set_observability_framework,
+    set_policy_orchestrator,
+    set_security_manager,
+)
+
+# Configure logging first
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+    ],
+)
+
+logger = logging.getLogger(__name__)
 
 # Enhanced Security Middleware
 try:
@@ -60,24 +77,7 @@ except ImportError:
     SECURITY_MIDDLEWARE_AVAILABLE = False
     logger.warning("Enhanced security middleware not available")
 
-    set_background_processor,
-    set_evolution_engine,
-    set_observability_framework,
-    set_policy_orchestrator,
-    set_security_manager,
-)
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.StreamHandler(sys.stdout),
-        logging.FileHandler("logs/self_evolving_ai.log", mode="a"),
-    ],
-)
-
-logger = logging.getLogger(__name__)
+# Logger already configured above
 
 # Global service instances
 evolution_engine: EvolutionEngine | None = None

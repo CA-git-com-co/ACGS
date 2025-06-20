@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 import pytest
 
@@ -19,7 +19,7 @@ async def test_database_metrics_in_report(monkeypatch):
             response_time_ms=1.0,
             status_code=200,
             success=True,
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
         )
 
     async def mock_cross_service(self):

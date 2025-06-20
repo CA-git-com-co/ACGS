@@ -9,7 +9,28 @@ import logging
 from typing import Any
 
 import httpx
-from shared import get_config
+
+# Try to import shared config, fallback to default if not available
+try:
+    import sys
+    import os
+
+    # Add the correct path to services/shared
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    shared_path = os.path.join(
+        current_dir, "..", "..", "..", "..", "services", "shared"
+    )
+    sys.path.insert(0, os.path.abspath(shared_path))
+
+    from config import get_config
+except ImportError:
+    # Fallback configuration
+    def get_config():
+        return {
+            "ac_service_url": "http://localhost:8001",
+            "gs_service_url": "http://localhost:8004",
+            "pgc_service_url": "http://localhost:8005",
+        }
 
 logger = logging.getLogger(__name__)
 config = get_config()

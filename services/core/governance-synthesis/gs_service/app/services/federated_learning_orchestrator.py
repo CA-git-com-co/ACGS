@@ -21,7 +21,7 @@ import logging
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -241,7 +241,7 @@ class FederatedLearningOrchestrator:
             privacy_budget=self.privacy_budgets[participant_id],
             constitutional_compliance_score=constitutional_compliance_score,
             public_key=public_key,
-            last_update=datetime.now(UTC),
+            last_update=datetime.now(timezone.utc),
             active=True,
             trust_score=1.0,
         )
@@ -302,7 +302,7 @@ class FederatedLearningOrchestrator:
             constitutional_validation_score=0.0,
             privacy_budget_consumed=0.0,
             convergence_metric=0.0,
-            started_at=datetime.now(UTC),
+            started_at=datetime.now(timezone.utc),
             status="active",
         )
 
@@ -367,7 +367,7 @@ class FederatedLearningOrchestrator:
             gradient_norm=self._calculate_gradient_norm(model_weights),
             privacy_cost=privacy_cost,
             constitutional_compliance=constitutional_compliance,
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             signature=self._sign_update(private_weights, participant.public_key),
             verified=True,
         )
@@ -541,7 +541,7 @@ class FederatedLearningOrchestrator:
         global_model = {
             "version": federated_round.global_model_version,
             "strategy": strategy.value,
-            "initialized_at": datetime.now(UTC).isoformat(),
+            "initialized_at": datetime.now(timezone.utc).isoformat(),
             "constitutional_constraints": [
                 c.constraint_id for c in self.constitutional_constraints
             ],
@@ -570,7 +570,7 @@ class FederatedLearningOrchestrator:
         federated_round.aggregated_update = aggregated_update
         federated_round.constitutional_validation_score = constitutional_score
         federated_round.convergence_metric = convergence_metric
-        federated_round.completed_at = datetime.now(UTC)
+        federated_round.completed_at = datetime.now(timezone.utc)
         federated_round.status = "completed"
 
         # Update global model
@@ -697,7 +697,7 @@ class FederatedLearningOrchestrator:
                 strategy.value for strategy in FederatedLearningStrategy
             ],
             "global_model_versions": len(self.global_model_versions),
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
 

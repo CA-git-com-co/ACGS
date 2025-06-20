@@ -8,7 +8,7 @@ all 6 ACGS-PGP microservices for seamless policy validation workflows.
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -89,7 +89,7 @@ class ACGSIntegrationResult:
     warnings: list[str] = field(default_factory=list)
 
     # Metadata
-    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class ACGSServiceIntegrator:

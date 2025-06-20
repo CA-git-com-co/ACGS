@@ -7,7 +7,7 @@ import base64
 import logging
 import os
 import secrets
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from typing import Any
 
 from sqlalchemy import select, update
@@ -126,7 +126,7 @@ class KeyManagementService:
             encrypted_private = self._encrypt_private_key(private_pem)
 
             # Calculate expiration
-            expires_at = datetime.now(UTC) + timedelta(days=expires_days)
+            expires_at = datetime.now(timezone.utc) + timedelta(days=expires_days)
 
             # Create database record
             crypto_key = CryptoKey(
@@ -183,7 +183,7 @@ class KeyManagementService:
                     CryptoKey.is_active,
                     (
                         CryptoKey.expires_at.is_(None)
-                        | (CryptoKey.expires_at > datetime.now(UTC))
+                        | (CryptoKey.expires_at > datetime.now(timezone.utc))
                     ),
                 )
                 .order_by(CryptoKey.created_at.desc())
@@ -277,7 +277,7 @@ class KeyManagementService:
             stmt = (
                 update(CryptoKey)
                 .where(CryptoKey.key_id == old_key_id)
-                .values(is_active=False, revoked_at=datetime.now(UTC))
+                .values(is_active=False, revoked_at=datetime.now(timezone.utc))
             )
             await db.execute(stmt)
 
@@ -312,7 +312,7 @@ class KeyManagementService:
                 .where(CryptoKey.key_id == key_id)
                 .values(
                     is_active=False,
-                    revoked_at=datetime.now(UTC),
+                    revoked_at=datetime.now(timezone.utc),
                     rotation_reason=reason,
                 )
             )
@@ -357,7 +357,7 @@ class KeyManagementService:
                     CryptoKey.is_active,
                     (
                         CryptoKey.expires_at.is_(None)
-                        | (CryptoKey.expires_at > datetime.now(UTC))
+                        | (CryptoKey.expires_at > datetime.now(timezone.utc))
                     ),
                 )
 

@@ -19,7 +19,7 @@ import logging
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -319,7 +319,7 @@ class MultiModelEnsembleCoordinator:
                 constitutional_alignment=constitutional_alignment,
                 bias_indicators=bias_indicators,
                 latency_ms=latency_ms,
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 metadata={
                     "specialization": model_config["specialization"],
                     "weight": model_config["weight"],
@@ -339,7 +339,7 @@ class MultiModelEnsembleCoordinator:
                 constitutional_alignment=0.0,
                 bias_indicators={},
                 latency_ms=(time.time() - start_time) * 1000,
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 metadata={"error": str(e)},
             )
 
@@ -393,7 +393,7 @@ class MultiModelEnsembleCoordinator:
             total_latency_ms=0.0,  # Will be set by caller
             ensemble_strategy=strategy,
             validation_passed=False,  # Will be validated separately
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
         )
 
         return ensemble_decision
@@ -614,5 +614,5 @@ class MultiModelEnsembleCoordinator:
             total_latency_ms=1.0,
             ensemble_strategy=EnsembleStrategy.ADAPTIVE,
             validation_passed=False,
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
         )

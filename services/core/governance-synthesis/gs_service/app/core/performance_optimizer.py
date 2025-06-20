@@ -20,7 +20,7 @@ import statistics
 import time
 from collections import deque
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -77,7 +77,7 @@ class SynthesisPerformanceMetrics:
     error_count: int
     principle_count: int
     context_complexity: float
-    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
@@ -91,7 +91,7 @@ class StrategyPerformance:
     total_response_time: float = 0.0
     total_quality_score: float = 0.0
     error_count: int = 0
-    last_updated: datetime = field(default_factory=lambda: datetime.now(UTC))
+    last_updated: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     @property
     def success_rate(self) -> float:
@@ -180,7 +180,7 @@ class WINAPerformanceOptimizer:
         self.synthesis_optimization_interval = config.get(
             "synthesis_optimization_interval_hours", 1
         )
-        self.last_synthesis_optimization = datetime.now(UTC)
+        self.last_synthesis_optimization = datetime.now(timezone.utc)
         self.min_synthesis_samples = config.get("min_synthesis_samples", 10)
 
         self._initialized = False
@@ -625,14 +625,14 @@ class WINAPerformanceOptimizer:
         perf.total_response_time += metrics.response_time_seconds
         perf.total_quality_score += metrics.quality_score
         perf.error_count += metrics.error_count
-        perf.last_updated = datetime.now(UTC)
+        perf.last_updated = datetime.now(timezone.utc)
 
         if metrics.success:
             perf.success_count += 1
 
     async def _check_synthesis_optimization_trigger(self) -> None:
         """Check if synthesis strategy weight optimization should be triggered."""
-        now = datetime.now(UTC)
+        now = datetime.now(timezone.utc)
         time_since_last = (now - self.last_synthesis_optimization).total_seconds() / 3600
 
         if (
@@ -703,7 +703,7 @@ class WINAPerformanceOptimizer:
                     # Default weight for strategies without sufficient data
                     self.synthesis_strategy_weights[strategy_name] = 1.0
 
-            self.last_synthesis_optimization = datetime.now(UTC)
+            self.last_synthesis_optimization = datetime.now(timezone.utc)
 
             logger.info(f"Synthesis strategy weights optimized: {self.synthesis_strategy_weights}")
             return self.synthesis_strategy_weights

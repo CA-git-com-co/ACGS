@@ -17,7 +17,7 @@ import asyncio
 import json
 import logging
 import sys
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 from typing import Any
 
@@ -44,7 +44,7 @@ class ImmediateTestingValidator:
         )
 
         validation_results = {
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "validation_phases": {},
             "overall_status": "unknown",
             "critical_issues": [],

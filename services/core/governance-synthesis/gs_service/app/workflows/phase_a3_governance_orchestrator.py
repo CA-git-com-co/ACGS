@@ -27,7 +27,7 @@ import sys
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -104,7 +104,7 @@ class WorkflowInstance:
     steps: list[WorkflowStep] = field(default_factory=list)
     context: dict[str, Any] = field(default_factory=dict)
     metadata: dict[str, Any] = field(default_factory=dict)
-    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     started_at: datetime | None = None
     completed_at: datetime | None = None
     created_by: str = "system"
@@ -145,7 +145,7 @@ class ServiceClient:
                     "service": service,
                     "endpoint": endpoint,
                     "processed_data": data,
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
                 "execution_time_ms": 100,
             }
@@ -465,7 +465,7 @@ class PhaseA3GovernanceOrchestrator:
             return False
 
         workflow.status = WorkflowStatus.RUNNING
-        workflow.started_at = datetime.now(UTC)
+        workflow.started_at = datetime.now(timezone.utc)
 
         # Start workflow execution in background
         asyncio.create_task(self._execute_workflow(workflow))
@@ -499,7 +499,7 @@ class PhaseA3GovernanceOrchestrator:
 
             # All steps completed successfully
             workflow.status = WorkflowStatus.COMPLETED
-            workflow.completed_at = datetime.now(UTC)
+            workflow.completed_at = datetime.now(timezone.utc)
             workflow.total_execution_time_ms = (time.time() - start_time) * 1000
 
             # Update performance metrics
@@ -517,7 +517,7 @@ class PhaseA3GovernanceOrchestrator:
     async def _execute_step(self, workflow: WorkflowInstance, step: WorkflowStep) -> bool:
         """Execute a single workflow step."""
         step.status = WorkflowStepStatus.RUNNING
-        step.started_at = datetime.now(UTC)
+        step.started_at = datetime.now(timezone.utc)
 
         step_start_time = time.time()
 
@@ -537,7 +537,7 @@ class PhaseA3GovernanceOrchestrator:
             )
 
             step.execution_time_ms = (time.time() - step_start_time) * 1000
-            step.completed_at = datetime.now(UTC)
+            step.completed_at = datetime.now(timezone.utc)
 
             if result.get("success", False):
                 step.status = WorkflowStepStatus.COMPLETED
@@ -556,7 +556,7 @@ class PhaseA3GovernanceOrchestrator:
             step.status = WorkflowStepStatus.FAILED
             step.error_message = str(e)
             step.execution_time_ms = (time.time() - step_start_time) * 1000
-            step.completed_at = datetime.now(UTC)
+            step.completed_at = datetime.now(timezone.utc)
 
             logger.error(f"Step {step.name} execution failed: {e}")
             return False
@@ -648,7 +648,7 @@ class PhaseA3GovernanceOrchestrator:
             return False
 
         workflow.status = WorkflowStatus.CANCELLED
-        workflow.completed_at = datetime.now(UTC)
+        workflow.completed_at = datetime.now(timezone.utc)
 
         logger.info(f"Cancelled workflow {workflow_id}")
         return True
@@ -689,5 +689,5 @@ class PhaseA3GovernanceOrchestrator:
             "active_workflows": len(self.active_workflows),
             "service_endpoints": len(self.service_client.service_endpoints),
             "workflow_templates": len(self.workflow_templates),
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }

@@ -1,6 +1,6 @@
 import logging
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 from fastapi import (
     APIRouter,
@@ -750,7 +750,7 @@ async def get_parallel_validation_statistics(
         return {
             "status": "success",
             "statistics": statistics,
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get statistics: {str(e)}")

@@ -20,7 +20,7 @@ Test Coverage:
 import asyncio
 import json
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 import pytest
@@ -90,7 +90,7 @@ class PolicySynthesisEnhancementTester:
         """Run the complete test suite for Policy Synthesis Enhancement."""
         print("🧪 Starting Policy Synthesis Enhancement Integration Tests")
 
-        test_start = datetime.now(UTC)
+        test_start = datetime.now(timezone.utc)
         overall_success = True
 
         try:
@@ -122,7 +122,7 @@ class PolicySynthesisEnhancementTester:
             load_tests = await self.test_load_performance()
             overall_success &= load_tests["success"]
 
-            test_end = datetime.now(UTC)
+            test_end = datetime.now(timezone.utc)
 
             return {
                 "overall_success": overall_success,
@@ -145,7 +145,7 @@ class PolicySynthesisEnhancementTester:
                 "overall_success": False,
                 "error": str(e),
                 "test_duration_seconds": (
-                    datetime.now(UTC) - test_start
+                    datetime.now(timezone.utc) - test_start
                 ).total_seconds(),
             }
 

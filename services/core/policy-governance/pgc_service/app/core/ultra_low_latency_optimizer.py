@@ -23,7 +23,7 @@ import uuid
 from collections import OrderedDict, defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from enum import Enum
 from typing import Any
 
@@ -352,7 +352,7 @@ class UltraLowLatencyOptimizer:
                 optimization_level=optimization_level,
                 breakdown=breakdown,
                 recommendations=recommendations,
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
             )
 
             self.optimization_results.append(result)
@@ -381,7 +381,7 @@ class UltraLowLatencyOptimizer:
                 optimization_level=optimization_level,
                 breakdown={"error": error_latency},
                 recommendations=["Investigate error cause", "Check system health"],
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
             )
 
     async def _check_cache_hierarchy(self, request: dict[str, Any]) -> Any | None:
@@ -562,7 +562,7 @@ class UltraLowLatencyOptimizer:
             "recommendations": recommendations,
             "latency_target": self.target_latency,
             "total_optimizations": len(self.optimization_results),
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     async def adaptive_optimization(self) -> dict[str, Any]:
@@ -605,8 +605,8 @@ class UltraLowLatencyOptimizer:
                 "target_achievement": metrics.avg_latency <= self.target_latency,
             },
             "adjustments_made": adjustments,
-            "next_review": (datetime.now(UTC) + timedelta(minutes=15)).isoformat(),
-            "timestamp": datetime.now(UTC).isoformat(),
+            "next_review": (datetime.now(timezone.utc) + timedelta(minutes=15)).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     async def benchmark_performance(self, num_requests: int = 100) -> dict[str, Any]:
@@ -704,7 +704,7 @@ class UltraLowLatencyOptimizer:
                     else "Good" if cache_hit_rate > 0.7 else "Needs Improvement"
                 ),
             },
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         logger.info(

@@ -15,7 +15,7 @@ import statistics
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from math import sqrt
 from typing import Any
@@ -177,7 +177,7 @@ class RecoveryAction:
     parameters: dict[str, Any] = field(default_factory=dict)
     estimated_recovery_time: float = 30.0  # seconds
     success_probability: float = 0.8
-    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 @dataclass
@@ -319,7 +319,7 @@ class ReliabilityMetrics:
     failure_modes: dict[CriticalFailureMode, int] = field(default_factory=dict)
 
     # Timestamp and metadata
-    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     request_id: str | None = None
     model_versions: dict[str, str] = field(default_factory=dict)
     model_failures_total: dict[str, int] = field(
@@ -355,7 +355,7 @@ class UltraReliableResult:
     synthesis_details: dict[str, Any] | None = None
     validation_details: dict[str, Any] | None = None
     formal_verification_status: dict[str, Any] | None = None
-    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     status: str | None = None  # Added status field
     performance_metrics_details: dict[str, Any] | None = (
         None  # New field for detailed performance metrics
@@ -581,7 +581,7 @@ class CacheManager:
             cache_data = {
                 "interpretations": output.interpretations,
                 "raw_llm_response": output.raw_llm_response,
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
             self.redis_client.setex(
                 cache_key, self.config.cache_ttl_seconds, json.dumps(cache_data)
@@ -857,7 +857,7 @@ class AutomaticRecoveryOrchestrator:
     ) -> list[RecoveryAction]:
         """Filter out recovery actions that are in cooldown period."""
         filtered_actions = []
-        current_time = datetime.now(UTC)
+        current_time = datetime.now(timezone.utc)
 
         for action in recovery_actions:
             cooldown_key = f"{action.strategy.value}_{action.target_component}"
@@ -910,7 +910,7 @@ class AutomaticRecoveryOrchestrator:
         execution = RecoveryExecution(
             action=action,
             status=RecoveryStatus.INITIATED,
-            started_at=datetime.now(UTC),
+            started_at=datetime.now(timezone.utc),
             metrics_before=current_metrics.copy(),
         )
 
@@ -944,7 +944,7 @@ class AutomaticRecoveryOrchestrator:
             )
 
         finally:
-            execution.completed_at = datetime.now(UTC)
+            execution.completed_at = datetime.now(timezone.utc)
 
             # Update recovery attempt timestamp
             cooldown_key = f"{action.strategy.value}_{action.target_component}"

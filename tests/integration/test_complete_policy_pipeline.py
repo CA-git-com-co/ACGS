@@ -22,7 +22,7 @@ Target Metrics:
 import asyncio
 import json
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 
 import httpx
@@ -311,7 +311,7 @@ class PolicyPipelineTestSuite:
             "policy_content": synthesis_result["policy_content"],
             "metadata": {
                 "principle_id": principle["id"],
-                "synthesis_timestamp": datetime.now(UTC).isoformat(),
+                "synthesis_timestamp": datetime.now(timezone.utc).isoformat(),
                 "validation_score": validation_result.get("fidelity_score"),
             },
         }
@@ -475,7 +475,7 @@ class PolicyPipelineTestSuite:
         print("\n📊 Generating Test Report...")
 
         report = {
-            "test_execution_timestamp": datetime.now(UTC).isoformat(),
+            "test_execution_timestamp": datetime.now(timezone.utc).isoformat(),
             "phase": "2.2 Complete Policy Pipeline Validation",
             "performance_metrics": self.performance_metrics,
             "success_criteria_validation": {

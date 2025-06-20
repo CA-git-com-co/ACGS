@@ -9,7 +9,7 @@ import glob
 import json
 import os
 import sys
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 from typing import Any
 
@@ -79,7 +79,7 @@ class SLADashboard:
         print("=" * 80)
         print("📊 ACGS-1 SLA MONITORING DASHBOARD")
         print("=" * 80)
-        print(f"📅 {datetime.now(UTC).strftime('%Y-%m-%d %H:%M:%S UTC')}")
+        print(f"📅 {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S timezone.utc')}")
         print(
             f"🔄 Auto-refresh every {self.refresh_interval} seconds (Press Ctrl+C to exit)"
         )
@@ -279,7 +279,7 @@ class SLADashboard:
         self.display_trends()
         self.display_alerts()
 
-        timestamp = sla_status.get("timestamp", datetime.now(UTC).isoformat())
+        timestamp = sla_status.get("timestamp", datetime.now(timezone.utc).isoformat())
         print(f"\n🔄 Last updated: {timestamp}")
 
     async def run_dashboard(self):

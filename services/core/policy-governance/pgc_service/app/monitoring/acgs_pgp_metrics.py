@@ -16,7 +16,7 @@ import asyncio
 import logging
 from collections import deque
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 import numpy as np
 
@@ -30,7 +30,7 @@ class ConstitutionalStabilityMetrics:
     lipschitz_constant: float = 0.0
     convergence_iterations: int = 0
     stability_score: float = 0.0
-    last_update: datetime = field(default_factory=lambda: datetime.now(UTC))
+    last_update: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     principle_changes: list[dict] = field(default_factory=list)
     policy_synthesis_history: deque = field(default_factory=lambda: deque(maxlen=100))
 
@@ -85,7 +85,7 @@ class ACGSPGPMetricsCollector:
         self.policy_synthesis_results = deque(maxlen=100)
 
         self.monitoring_active = False
-        self.last_metrics_update = datetime.now(UTC)
+        self.last_metrics_update = datetime.now(timezone.utc)
 
     async def start_monitoring(self):
         # requires: Valid input parameters
@@ -119,7 +119,7 @@ class ACGSPGPMetricsCollector:
         # ensures: Correct function execution
         # sha256: func_hash
         """Record a policy enforcement event for performance analysis"""
-        timestamp = datetime.now(UTC)
+        timestamp = datetime.now(timezone.utc)
 
         # Record latency
         self.latency_window.append(latency_ms)
@@ -152,7 +152,7 @@ class ACGSPGPMetricsCollector:
         # ensures: Correct function execution
         # sha256: func_hash
         """Record policy synthesis event for stability analysis"""
-        timestamp = datetime.now(UTC)
+        timestamp = datetime.now(timezone.utc)
 
         synthesis_event = {
             "timestamp": timestamp.isoformat(),
@@ -179,7 +179,7 @@ class ACGSPGPMetricsCollector:
         # ensures: Correct function execution
         # sha256: func_hash
         """Record adversarial attack attempt for robustness analysis"""
-        datetime.now(UTC)
+        datetime.now(timezone.utc)
 
         if attack_type == "constitutional_capture":
             self.robustness_metrics.constitutional_capture_attempts += 1
@@ -342,7 +342,7 @@ class ACGSPGPMetricsCollector:
                 recent_events = [
                     e
                     for e in self.enforcement_history
-                    if (datetime.now(UTC) - datetime.fromisoformat(e["timestamp"])).seconds < 60
+                    if (datetime.now(timezone.utc) - datetime.fromisoformat(e["timestamp"])).seconds < 60
                 ]
                 self.performance_metrics.throughput_per_second = len(recent_events) / 60.0
 
@@ -426,7 +426,7 @@ class ACGSPGPMetricsCollector:
                 "enforcement_events": len(self.enforcement_history),
                 "synthesis_events": len(self.policy_synthesis_results),
                 "monitoring_duration_hours": (
-                    datetime.now(UTC) - self.last_metrics_update
+                    datetime.now(timezone.utc) - self.last_metrics_update
                 ).total_seconds()
                 / 3600,
                 "last_update": self.last_metrics_update.isoformat(),

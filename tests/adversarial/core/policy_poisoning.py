@@ -8,7 +8,7 @@ vulnerabilities in the ACGS-PGP governance synthesis engine.
 import json
 import logging
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 import aiohttp
 
@@ -203,7 +203,7 @@ class PolicyPoisoningDetector:
                                                 else 7.0
                                             ),
                                             execution_time_ms=execution_time,
-                                            timestamp=datetime.now(UTC),
+                                            timestamp=datetime.now(timezone.utc),
                                         )
                                     )
 
@@ -291,7 +291,7 @@ class PolicyPoisoningDetector:
                                         ],
                                         cvss_score=7.5,
                                         execution_time_ms=execution_time,
-                                        timestamp=datetime.now(UTC),
+                                        timestamp=datetime.now(timezone.utc),
                                     )
                                 )
 
@@ -361,7 +361,7 @@ class PolicyPoisoningDetector:
                                         ],
                                         cvss_score=8.0,
                                         execution_time_ms=execution_time,
-                                        timestamp=datetime.now(UTC),
+                                        timestamp=datetime.now(timezone.utc),
                                     )
                                 )
 
@@ -442,7 +442,7 @@ class PolicyPoisoningDetector:
                                         ],
                                         cvss_score=7.5,
                                         execution_time_ms=execution_time,
-                                        timestamp=datetime.now(UTC),
+                                        timestamp=datetime.now(timezone.utc),
                                     )
                                 )
 

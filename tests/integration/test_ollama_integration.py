@@ -16,7 +16,7 @@ import logging
 import os
 import sys
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 # Add the backend directory to the Python path
@@ -39,7 +39,7 @@ class OllamaIntegrationTester:
 
     def __init__(self):
         self.test_results: list[dict[str, Any]] = []
-        self.start_time = datetime.now(UTC)
+        self.start_time = datetime.now(timezone.utc)
 
     async def run_all_tests(self) -> dict[str, Any]:
         """Run all Ollama integration tests."""
@@ -65,7 +65,7 @@ class OllamaIntegrationTester:
                         "success": result.get("success", False),
                         "details": result.get("details", ""),
                         "metrics": result.get("metrics", {}),
-                        "timestamp": datetime.now(UTC).isoformat(),
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
                     }
                 )
                 status = "✅ PASSED" if result.get("success") else "❌ FAILED"
@@ -78,7 +78,7 @@ class OllamaIntegrationTester:
                         "success": False,
                         "details": f"Exception: {str(e)}",
                         "metrics": {},
-                        "timestamp": datetime.now(UTC).isoformat(),
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
                     }
                 )
 
@@ -369,7 +369,7 @@ class OllamaIntegrationTester:
 
     def generate_report(self) -> dict[str, Any]:
         """Generate comprehensive test report."""
-        end_time = datetime.now(UTC)
+        end_time = datetime.now(timezone.utc)
         duration = (end_time - self.start_time).total_seconds()
 
         total_tests = len(self.test_results)

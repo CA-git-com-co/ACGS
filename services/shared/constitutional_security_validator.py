@@ -19,7 +19,7 @@ import hmac
 import json
 import logging
 import time
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -164,7 +164,7 @@ class ConstitutionalSecurityValidator:
                 "constitutional_hash": self.constitutional_hash,
                 "security_level": security_level.value,
                 "validation_time_ms": validation_time,
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "operation_id": operation_data.get("operation_id", "unknown"),
             }
 
@@ -291,7 +291,7 @@ class ConstitutionalSecurityValidator:
                 "valid": True,
                 "requester_id": requester_id,
                 "security_level": security_level.value,
-                "authorized_at": datetime.now(UTC).isoformat(),
+                "authorized_at": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:
@@ -382,7 +382,7 @@ class ConstitutionalSecurityValidator:
             # Verify signature timestamp (must be recent)
             if timestamp:
                 sig_time = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
-                time_diff = datetime.now(UTC) - sig_time
+                time_diff = datetime.now(timezone.utc) - sig_time
                 if time_diff.total_seconds() > 3600:  # 1 hour limit
                     return False
 
@@ -434,7 +434,7 @@ class ConstitutionalSecurityValidator:
     ):
         """Log constitutional operation for audit trail."""
         audit_entry = {
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "operation_type": operation_type.value,
             "operation_id": operation_data.get("operation_id", "unknown"),
             "requester_id": requester_id,

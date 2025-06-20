@@ -16,7 +16,7 @@ import logging
 import statistics
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 import aiohttp
@@ -37,7 +37,7 @@ class Phase2TestResult:
     success: bool
     response_time_ms: float
     details: dict[str, Any]
-    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 @dataclass
@@ -340,7 +340,7 @@ class Phase2ComprehensiveTester:
     async def run_comprehensive_test(self) -> Phase2Report:
         """Execute comprehensive Phase 2 testing."""
         logger.info("🚀 Starting ACGS-PGP Phase 2 Comprehensive Testing")
-        start_time = datetime.now(UTC)
+        start_time = datetime.now(timezone.utc)
 
         # Test AlphaEvolve Integration
         alphaevolve_results = await self.test_alphaevolve_integration()
@@ -351,7 +351,7 @@ class Phase2ComprehensiveTester:
         # Validate Service Performance
         performance_results = await self.validate_service_performance()
 
-        end_time = datetime.now(UTC)
+        end_time = datetime.now(timezone.utc)
 
         # Calculate overall success rate
         component_scores = [

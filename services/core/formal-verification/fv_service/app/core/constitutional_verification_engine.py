@@ -14,7 +14,7 @@ import hashlib
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -89,7 +89,7 @@ class FormalProof:
 
     # Checksum and integrity
     proof_checksum: str = field(default="")
-    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     def __post_init__(self):
         """Calculate proof checksum for integrity verification."""
@@ -228,7 +228,7 @@ class ConstitutionalVerificationEngine:
                         :16
                     ],
                 },
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
             # Step 8: Cache result and update metrics
@@ -259,7 +259,7 @@ class ConstitutionalVerificationEngine:
                     "verification_time_ms": verification_time,
                     "error": True,
                 },
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
     async def generate_formal_proof(
@@ -502,8 +502,8 @@ class ConstitutionalVerificationEngine:
                 if all(r["verified"] for r in verification_results)
                 else "NON_COMPLIANT"
             ),
-            "issued_at": datetime.now(UTC).isoformat(),
-            "valid_until": datetime.now(UTC).replace(year=datetime.now().year + 1).isoformat(),
+            "issued_at": datetime.now(timezone.utc).isoformat(),
+            "valid_until": datetime.now(timezone.utc).replace(year=datetime.now().year + 1).isoformat(),
             "certificate_checksum": "",
         }
 

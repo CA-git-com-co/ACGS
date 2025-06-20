@@ -4,7 +4,7 @@ import json
 import logging
 import os
 import re
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -20,8 +20,8 @@ logger = logging.getLogger("acgs_shared_utils")
 
 
 def get_utc_now() -> datetime:
-    """Returns the current datetime in UTC."""
-    return datetime.now(UTC)
+    """Returns the current datetime in timezone.utc."""
+    return datetime.now(timezone.utc)
 
 
 def create_timestamp_str(dt_object: datetime | None = None) -> str:
@@ -46,7 +46,7 @@ def parse_timestamp_str(timestamp_str: str) -> datetime | None:
 
 
 def calculate_expiration_time(minutes: int) -> datetime:
-    """Calculates an expiration datetime from now + minutes in UTC."""
+    """Calculates an expiration datetime from now + minutes in timezone.utc."""
     return get_utc_now() + timedelta(minutes=minutes)
 
 

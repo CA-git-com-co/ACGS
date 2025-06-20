@@ -1,6 +1,6 @@
 # Enterprise OAuth 2.0 and OpenID Connect Integration
 import secrets
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from typing import Any
 from urllib.parse import urlencode
 
@@ -169,8 +169,8 @@ class OAuthService:
         self.state_store[state] = {
             "provider": provider_name,
             "redirect_uri": redirect_uri,
-            "created_at": datetime.now(UTC),
-            "expires_at": datetime.now(UTC) + timedelta(minutes=10),
+            "created_at": datetime.now(timezone.utc),
+            "expires_at": datetime.now(timezone.utc) + timedelta(minutes=10),
         }
         return state
 
@@ -180,7 +180,7 @@ class OAuthService:
         if not state_data:
             return None
 
-        if datetime.now(UTC) > state_data["expires_at"]:
+        if datetime.now(timezone.utc) > state_data["expires_at"]:
             del self.state_store[state]
             return None
 
@@ -268,7 +268,7 @@ class OAuthService:
                 user = await crud_user.create_user(db, user_data)
 
             # Update last login
-            user.last_login_at = datetime.now(UTC)
+            user.last_login_at = datetime.now(timezone.utc)
             await db.commit()
 
             # Create tokens

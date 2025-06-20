@@ -17,7 +17,7 @@ import logging
 import time
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -818,7 +818,7 @@ class EnhancedMultiModelValidator:
             "model_usage_statistics": dict(model_usage),
             "reliability_target": ">99.9%",
             "current_reliability": f"{avg_confidence * 100:.2f}%",
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
 

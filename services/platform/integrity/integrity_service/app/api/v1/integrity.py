@@ -14,7 +14,7 @@ Key Features:
 
 import logging
 import sys
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 from .database import get_async_db
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -70,7 +70,7 @@ except ImportError:
             # sha256: func_hash
             return {
                 "signature": "mock_signature",
-                "timestamp": datetime.now(UTC),
+                "timestamp": datetime.now(timezone.utc),
             }
 
         async def verify_policy_rule(self, db, rule_id):
@@ -129,7 +129,7 @@ async def sign_policy_rule(
             "rule_id": rule_id,
             "signature_info": result,
             "signed_by": current_user.user_id,
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "message": "Policy rule signed successfully",
         }
 
@@ -301,7 +301,7 @@ async def batch_verify_audit_logs(
                 ),
             },
             "results": results,
-            "verified_at": datetime.now(UTC),
+            "verified_at": datetime.now(timezone.utc),
         }
 
     except Exception as e:
@@ -377,7 +377,7 @@ async def verify_audit_log_chain_integrity(
             "end_log_id": audit_logs[-1].id,
             "details": chain_integrity_results,
             "broken_link_details": broken_links,
-            "verified_at": datetime.now(UTC),
+            "verified_at": datetime.now(timezone.utc),
         }
 
     except Exception as e:
@@ -397,7 +397,7 @@ async def generate_system_integrity_report(
     """Generate comprehensive system integrity report"""
     try:
         report = {
-            "report_generated_at": datetime.now(UTC),
+            "report_generated_at": datetime.now(timezone.utc),
             "policy_rules": {},
             "audit_logs": {},
             "overall_system_integrity": True,
@@ -522,5 +522,5 @@ async def enable_auto_signing(
     return {
         "auto_signing_enabled": enable,
         "message": f"Automatic signing {'enabled' if enable else 'disabled'}",
-        "updated_at": datetime.now(UTC),
+        "updated_at": datetime.now(timezone.utc),
     }

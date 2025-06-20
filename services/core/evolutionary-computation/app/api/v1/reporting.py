@@ -9,10 +9,10 @@ import logging
 from datetime import datetime, timedelta
 from typing import Any
 
-from .core.wina_oversight_coordinator import WINAECOversightCoordinator
-from .services.ac_client import ac_service_client
-from .services.gs_client import gs_service_client
-from .services.pgc_client import pgc_service_client
+from ...core.wina_oversight_coordinator import WINAECOversightCoordinator
+from ...services.ac_client import ac_service_client
+from ...services.gs_client import gs_service_client
+from ...services.pgc_client import pgc_service_client
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
@@ -72,7 +72,7 @@ class WINAOptimizationReport(BaseModel):
 
 def get_wina_coordinator() -> WINAECOversightCoordinator:
     """Dependency to get WINA oversight coordinator."""
-    from .main import get_wina_coordinator
+    from ...main import get_wina_coordinator
 
     return get_wina_coordinator()
 

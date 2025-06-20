@@ -21,7 +21,7 @@ import logging
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -1303,7 +1303,7 @@ class ParallelConflictProcessor:
                 pattern_key = self._generate_pattern_key(conflict)
 
                 # Add timestamp for cache expiry
-                result.correction_metadata["cached_at"] = datetime.now(UTC).isoformat()
+                result.correction_metadata["cached_at"] = datetime.now(timezone.utc).isoformat()
                 self.pattern_cache[pattern_key] = result
 
         # Clean up old cache entries
@@ -1327,7 +1327,7 @@ class ParallelConflictProcessor:
 
         try:
             cached_at = datetime.fromisoformat(cached_at_str.replace("Z", "+00:00"))
-            age_seconds = (datetime.now(UTC) - cached_at).total_seconds()
+            age_seconds = (datetime.now(timezone.utc) - cached_at).total_seconds()
             return age_seconds < self.cache_ttl
         except Exception:
             return False

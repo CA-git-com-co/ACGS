@@ -11,7 +11,7 @@ Tests the complete cross-domain testing pipeline including:
 
 # Add project root to path for imports
 import sys
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 from typing import Any
 from unittest.mock import patch
@@ -576,7 +576,7 @@ class TestCrossDomainTestingFramework:
                 "consistency_score": 0.85,
                 "adaptation_required": False,
                 "conflict_detected": False,
-                "executed_at": datetime.now(UTC).isoformat(),
+                "executed_at": datetime.now(timezone.utc).isoformat(),
                 "execution_time_ms": 150,
                 "memory_usage_mb": 2.5,
             },
@@ -590,7 +590,7 @@ class TestCrossDomainTestingFramework:
                 "consistency_score": 0.65,
                 "adaptation_required": True,
                 "conflict_detected": True,
-                "executed_at": datetime.now(UTC).isoformat(),
+                "executed_at": datetime.now(timezone.utc).isoformat(),
                 "execution_time_ms": 200,
                 "memory_usage_mb": 3.2,
             },

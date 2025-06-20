@@ -9,7 +9,7 @@ Task 19.4: Performance Dashboard Integration - API Endpoints
 """
 
 import logging
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 
 from .services.constitutional_reporting_service import (
     ComplianceReport,
@@ -75,14 +75,14 @@ async def get_reporting_health():
     try:
         health_data = {
             "status": "healthy",
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "services": {
                 "reporting_service": "active",
                 "notification_system": "active",
                 "metrics_collection": "active",
             },
             "uptime_percentage": 99.8,
-            "last_report_generated": (datetime.now(UTC) - timedelta(hours=1)).isoformat(),
+            "last_report_generated": (datetime.now(timezone.utc) - timedelta(hours=1)).isoformat(),
         }
 
         # Update monitoring health status
@@ -109,7 +109,7 @@ async def get_constitutional_monitoring_metrics(
     """
     try:
         # Collect current metrics
-        current_time = datetime.now(UTC)
+        current_time = datetime.now(timezone.utc)
 
         # Mock metrics - in production, collect from actual monitoring systems
         fidelity_score = 0.89
@@ -160,7 +160,7 @@ async def generate_compliance_report(
     and automated recommendations.
     """
     try:
-        start_time = datetime.now(UTC)
+        start_time = datetime.now(timezone.utc)
 
         # Generate the report
         report = await reporting_service.generate_compliance_report(
@@ -171,7 +171,7 @@ async def generate_compliance_report(
         )
 
         # Record metrics
-        generation_time = (datetime.now(UTC) - start_time).total_seconds()
+        generation_time = (datetime.now(timezone.utc) - start_time).total_seconds()
         metrics.record_custom_metric(
             "report_generation_duration",
             generation_time,
@@ -235,9 +235,9 @@ async def send_report_notification(
         mock_report = ComplianceReport(
             report_id=request.report_id,
             report_type=ReportType.DAILY,
-            generated_at=datetime.now(UTC),
-            period_start=datetime.now(UTC) - timedelta(days=1),
-            period_end=datetime.now(UTC),
+            generated_at=datetime.now(timezone.utc),
+            period_start=datetime.now(timezone.utc) - timedelta(days=1),
+            period_end=datetime.now(timezone.utc),
             metrics=None,  # Would be populated from storage
             trends=[],
             recommendations=[],
@@ -269,7 +269,7 @@ async def send_report_notification(
             "report_id": request.report_id,
             "notification_type": request.notification_type,
             "recipients_count": len(request.recipients),
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     except Exception as e:
@@ -290,7 +290,7 @@ async def get_dashboard_data(
     Provides data for Grafana dashboard integration and real-time monitoring.
     """
     try:
-        current_time = datetime.now(UTC)
+        current_time = datetime.now(timezone.utc)
 
         # Calculate timeframe
         timeframe_mapping = {
@@ -370,7 +370,7 @@ async def escalate_critical_issue(
     with audit trail integration.
     """
     try:
-        escalation_time = datetime.now(UTC)
+        escalation_time = datetime.now(timezone.utc)
 
         # Record escalation
         escalation_data = {

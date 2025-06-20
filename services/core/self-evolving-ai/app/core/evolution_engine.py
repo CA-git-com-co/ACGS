@@ -19,7 +19,7 @@ import logging
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -73,7 +73,7 @@ class EvolutionRequest:
     approver_id: str | None = None
     approval_notes: str = ""
     approved_at: datetime | None = None
-    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 @dataclass
@@ -265,7 +265,7 @@ class EvolutionEngine:
             evolution.status = EvolutionStatus.APPROVED
             evolution.approver_id = approver_id
             evolution.approval_notes = approval_notes
-            evolution.approved_at = datetime.now(UTC)
+            evolution.approved_at = datetime.now(timezone.utc)
 
             # Continue evolution process
             asyncio.create_task(self._continue_evolution_after_approval(evolution_id))
@@ -380,7 +380,7 @@ class EvolutionEngine:
                     "evolution_id": evolution_id,
                     "status": "rolled_back",
                     "rollback_reason": rollback_reason,
-                    "rolled_back_at": datetime.now(UTC).isoformat(),
+                    "rolled_back_at": datetime.now(timezone.utc).isoformat(),
                 }
             else:
                 return False, {"error": "Rollback execution failed"}
@@ -430,7 +430,7 @@ class EvolutionEngine:
                 "rollback_enabled": self.rollback_enabled,
                 "max_concurrent_evolutions": self.max_concurrent_evolutions,
                 "constitution_hash": self.constitution_hash,
-                "last_updated": datetime.now(UTC).isoformat(),
+                "last_updated": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:
@@ -865,7 +865,7 @@ class EvolutionEngine:
                 performance_metrics=await self._calculate_performance_metrics(
                     evolution
                 ),
-                completed_at=datetime.now(UTC),
+                completed_at=datetime.now(timezone.utc),
                 rollback_available=True,
             )
 
@@ -899,7 +899,7 @@ class EvolutionEngine:
                 status=EvolutionStatus.FAILED,
                 success=False,
                 error_message=error_message,
-                completed_at=datetime.now(UTC),
+                completed_at=datetime.now(timezone.utc),
                 rollback_available=False,
             )
 
@@ -949,7 +949,7 @@ class EvolutionEngine:
     ) -> dict[str, Any]:
         """Calculate performance metrics for completed evolution."""
         try:
-            end_time = datetime.now(UTC)
+            end_time = datetime.now(timezone.utc)
             duration_minutes = (end_time - evolution.created_at).total_seconds() / 60
 
             return {
@@ -1005,17 +1005,17 @@ class EvolutionEngine:
         """Estimate completion time for evolution."""
         try:
             elapsed_minutes = (
-                datetime.now(UTC) - evolution.created_at
+                datetime.now(timezone.utc) - evolution.created_at
             ).total_seconds() / 60
             remaining_minutes = max(
                 0, evolution.estimated_duration_minutes - elapsed_minutes
             )
 
             if remaining_minutes > 0:
-                completion_time = datetime.now(UTC).timestamp() + (
+                completion_time = datetime.now(timezone.utc).timestamp() + (
                     remaining_minutes * 60
                 )
-                return datetime.fromtimestamp(completion_time, UTC).isoformat()
+                return datetime.fromtimestamp(completion_time, timezone.utc).isoformat()
             else:
                 return "overdue"
 
@@ -1041,7 +1041,7 @@ class EvolutionEngine:
         while True:
             try:
                 # Check for overdue evolutions
-                current_time = datetime.now(UTC)
+                current_time = datetime.now(timezone.utc)
 
                 for evolution_id, evolution in list(self.active_evolutions.items()):
                     elapsed_minutes = (

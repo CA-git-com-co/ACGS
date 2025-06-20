@@ -9,7 +9,7 @@ import logging
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -327,7 +327,7 @@ class CircuitBreaker:
                 "state_changes": self.metrics.state_changes,
                 "time_in_open_state": self.metrics.time_in_open_state,
             },
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def is_healthy(self) -> bool:

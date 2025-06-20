@@ -6,7 +6,7 @@ Orchestrates digital signatures, Merkle trees, timestamps, and chain integrity
 import base64
 import json
 import logging
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 from sqlalchemy import select
@@ -88,7 +88,7 @@ class IntegrityVerificationService:
             policy_rule.digital_signature = signature_bytes
             policy_rule.signature_algorithm = "RSA-PSS-SHA256"
             policy_rule.signed_by_key_id = key_info["key_id"]
-            policy_rule.signed_at = datetime.now(UTC)
+            policy_rule.signed_at = datetime.now(timezone.utc)
             policy_rule.signature_verified = True
 
             if timestamp_result:
@@ -180,7 +180,7 @@ class IntegrityVerificationService:
             audit_log.digital_signature = signature_bytes
             audit_log.signature_algorithm = "RSA-PSS-SHA256"
             audit_log.signed_by_key_id = key_info["key_id"]
-            audit_log.signed_at = datetime.now(UTC)
+            audit_log.signed_at = datetime.now(timezone.utc)
             audit_log.signature_verified = True
             audit_log.previous_hash = previous_hash
 
@@ -301,7 +301,7 @@ class IntegrityVerificationService:
                 and verification_results["timestamp_verified"]
             )
 
-            verification_results["verified_at"] = datetime.now(UTC)
+            verification_results["verified_at"] = datetime.now(timezone.utc)
 
             return verification_results
 
@@ -412,7 +412,7 @@ class IntegrityVerificationService:
                 and verification_results["chain_integrity"]
             )
 
-            verification_results["verified_at"] = datetime.now(UTC)
+            verification_results["verified_at"] = datetime.now(timezone.utc)
 
             return verification_results
 

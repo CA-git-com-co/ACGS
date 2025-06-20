@@ -13,7 +13,7 @@ making actual system changes.
 import asyncio
 import json
 import logging
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from pathlib import Path
 from typing import Any
 
@@ -29,7 +29,7 @@ class PolicySynthesisDeploymentDemo:
 
     def __init__(self):
         self.project_root = Path.cwd()
-        self.demo_start_time = datetime.now(UTC)
+        self.demo_start_time = datetime.now(timezone.utc)
 
     async def run_deployment_demo(self) -> dict[str, Any]:
         """Run the complete deployment demonstration."""
@@ -341,7 +341,7 @@ class PolicySynthesisDeploymentDemo:
 
     async def _generate_demo_summary(self) -> dict[str, Any]:
         """Generate comprehensive demo summary."""
-        demo_end_time = datetime.now(UTC)
+        demo_end_time = datetime.now(timezone.utc)
         demo_duration = demo_end_time - self.demo_start_time
 
         return {

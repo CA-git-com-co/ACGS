@@ -18,7 +18,7 @@ import logging
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -72,7 +72,7 @@ class BackgroundTask:
     error_message: str | None = None
     retry_count: int = 0
     max_retries: int = 3
-    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     started_at: datetime | None = None
     completed_at: datetime | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
@@ -236,7 +236,7 @@ class BackgroundProcessor:
                     if celery_result.ready():
                         if celery_result.successful():
                             task.result = celery_result.result
-                            task.completed_at = datetime.now(UTC)
+                            task.completed_at = datetime.now(timezone.utc)
                         else:
                             task.error_message = str(celery_result.info)
 
@@ -311,7 +311,7 @@ class BackgroundProcessor:
 
             # Update task status
             task.status = TaskStatus.REVOKED
-            task.completed_at = datetime.now(UTC)
+            task.completed_at = datetime.now(timezone.utc)
 
             # Move to history
             self.task_history.append(task)
@@ -354,7 +354,7 @@ class BackgroundProcessor:
                     "registered_tasks": len(self.task_registry),
                 },
                 "metrics": self.task_metrics,
-                "last_updated": datetime.now(UTC).isoformat(),
+                "last_updated": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:
@@ -521,7 +521,7 @@ class BackgroundProcessor:
         """Execute task locally when Celery is not available."""
         try:
             task.status = TaskStatus.STARTED
-            task.started_at = datetime.now(UTC)
+            task.started_at = datetime.now(timezone.utc)
 
             # Get task function
             task_function = self.task_registry.get(task.task_name)
@@ -534,7 +534,7 @@ class BackgroundProcessor:
             # Update task
             task.status = TaskStatus.SUCCESS
             task.result = result
-            task.completed_at = datetime.now(UTC)
+            task.completed_at = datetime.now(timezone.utc)
 
             # Move to history
             self.task_history.append(task)
@@ -550,7 +550,7 @@ class BackgroundProcessor:
             # Handle task failure
             task.status = TaskStatus.FAILURE
             task.error_message = str(e)
-            task.completed_at = datetime.now(UTC)
+            task.completed_at = datetime.now(timezone.utc)
 
             # Move to history
             self.task_history.append(task)
@@ -644,7 +644,7 @@ class BackgroundProcessor:
                         if celery_result.successful():
                             task.status = TaskStatus.SUCCESS
                             task.result = celery_result.result
-                            task.completed_at = datetime.now(UTC)
+                            task.completed_at = datetime.now(timezone.utc)
 
                             # Move to history
                             self.task_history.append(task)
@@ -657,7 +657,7 @@ class BackgroundProcessor:
                         else:
                             task.status = TaskStatus.FAILURE
                             task.error_message = str(celery_result.info)
-                            task.completed_at = datetime.now(UTC)
+                            task.completed_at = datetime.now(timezone.utc)
 
                             # Move to history
                             self.task_history.append(task)
@@ -673,7 +673,7 @@ class BackgroundProcessor:
     async def _cleanup_old_tasks(self):
         """Clean up old tasks from history."""
         try:
-            current_time = datetime.now(UTC)
+            current_time = datetime.now(timezone.utc)
             old_tasks = []
 
             for task in self.task_history:

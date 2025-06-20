@@ -21,7 +21,7 @@ import time
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
@@ -366,7 +366,7 @@ class HardwareAccelerationManager:
             thermal_limit_celsius=thermal_limit,
             precision=precision,
             batch_size=batch_size,
-            created_at=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
         )
 
         self.acceleration_profiles[profile_id] = profile
@@ -460,7 +460,7 @@ class HardwareAccelerationManager:
 
         # Update performance history
         performance_record = {
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "profile_id": profile_id,
             "hardware_type": profile.target_hardware.value,
             "evaluation_time_ms": evaluation_time,
@@ -770,7 +770,7 @@ class HardwareAccelerationManager:
             }
 
         return {
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "hardware_performance": performance_data,
             "total_devices": len(self.available_hardware),
             "active_devices": len([h for h in self.available_hardware.values() if h.available]),
@@ -842,7 +842,7 @@ class HardwareAccelerationManager:
                 "sub_1ms_latency": "requires_fpga_asic",
                 "quantum_resistance": "in_development",
             },
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
 

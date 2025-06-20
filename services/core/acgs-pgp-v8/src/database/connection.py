@@ -76,7 +76,7 @@ class DatabaseManager:
                 if "postgresql" in self.database_url:
                     # PostgreSQL-specific settings
                     cursor = dbapi_connection.cursor()
-                    cursor.execute("SET timezone TO 'UTC'")
+                    cursor.execute("SET timezone TO 'timezone.utc'")
                     cursor.execute("SET statement_timeout = '30s'")
                     cursor.close()
 

@@ -8,7 +8,7 @@ import logging
 import threading
 import time
 from dataclasses import asdict, dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 
 # Local implementations to avoid shared module dependencies
 from enum import Enum
@@ -321,7 +321,7 @@ class ResourceMonitor:
             memory_percent=psutil.virtual_memory().percent,
             active_tasks=0,  # Will be updated by pipeline
             queue_size=0,  # Will be updated by pipeline
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
         )
 
     def get_current_metrics(self) -> ResourceMetrics | None:
@@ -331,7 +331,7 @@ class ResourceMonitor:
 
     def get_average_utilization(self, window_minutes: int = 5) -> float:
         """Get average resource utilization over time window."""
-        cutoff_time = datetime.now(UTC) - timedelta(minutes=window_minutes)
+        cutoff_time = datetime.now(timezone.utc) - timedelta(minutes=window_minutes)
 
         with self.lock:
             recent_metrics = [m for m in self.metrics_history if m.timestamp >= cutoff_time]
@@ -721,7 +721,7 @@ class ParallelValidationPipeline:
             "request_id": request_id,
             "latency_ms": latency_ms,
             "threshold_ms": self.config.performance_alert_threshold_ms,
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "resource_metrics": (
                 self.resource_monitor.get_current_metrics() if self.resource_monitor else None
             ),
@@ -1241,7 +1241,7 @@ class ParallelValidationPipeline:
                 else 0
             ),
             "celery_available": CELERY_AVAILABLE,
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     async def shutdown(self) -> None:

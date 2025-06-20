@@ -6,7 +6,7 @@ constitutional prompting, and GS service workflows.
 """
 
 import logging
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 from ..schemas import (
@@ -206,7 +206,7 @@ class MABIntegratedGSService:
 
         Combines MAB prompt selection, LLM reliability validation, and constitutional compliance.
         """
-        start_time = datetime.now(UTC)
+        start_time = datetime.now(timezone.utc)
         context = context or {}
 
         # Update metrics
@@ -263,7 +263,7 @@ class MABIntegratedGSService:
             )
 
             # 7. Calculate integration metrics
-            response_time = (datetime.now(UTC) - start_time).total_seconds()
+            response_time = (datetime.now(timezone.utc) - start_time).total_seconds()
             self._update_integration_metrics(response_time, True)
 
             integration_metadata = {
