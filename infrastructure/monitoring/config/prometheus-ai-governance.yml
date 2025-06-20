@@ -1,0 +1,181 @@
+# ACGS AI Governance Prometheus Configuration
+# Enhanced monitoring for Constitutional AI, Multi-Armed Bandits, and Policy Governance
+
+global:
+  scrape_interval: 10s
+  evaluation_interval: 10s
+  external_labels:
+    cluster: 'acgs-ai-governance'
+    environment: 'production'
+    system: 'constitutional-ai'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Load rules for AI governance monitoring
+rule_files:
+  - "ai-governance-alert-rules.yml"
+  - "constitutional-ai-rules.yml"
+
+# Scrape configuration for AI governance services
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    metrics_path: /metrics
+    scrape_interval: 15s
+
+  # ACGS Core Services with AI Governance metrics
+  - job_name: 'acgs-constitutional-ai'
+    static_configs:
+      - targets: ['ac-service:8001']
+    metrics_path: /metrics
+    scrape_interval: 5s  # High frequency for AI governance
+    scrape_timeout: 4s
+    honor_labels: true
+    params:
+      format: ['prometheus']
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'constitutional_.*'
+        target_label: 'governance_type'
+        replacement: 'constitutional'
+
+  - job_name: 'acgs-governance-synthesis'
+    static_configs:
+      - targets: ['gs-service:8004']
+    metrics_path: /metrics
+    scrape_interval: 5s
+    scrape_timeout: 4s
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'mab_.*'
+        target_label: 'algorithm_type'
+        replacement: 'multi_armed_bandit'
+      - source_labels: [__name__]
+        regex: 'llm_.*'
+        target_label: 'component_type'
+        replacement: 'llm_reliability'
+
+  - job_name: 'acgs-policy-governance'
+    static_configs:
+      - targets: ['pgc-service:8005']
+    metrics_path: /metrics
+    scrape_interval: 5s
+    scrape_timeout: 4s
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'policy_.*'
+        target_label: 'governance_type'
+        replacement: 'policy'
+
+  - job_name: 'acgs-formal-verification'
+    static_configs:
+      - targets: ['fv-service:8003']
+    metrics_path: /metrics
+    scrape_interval: 10s
+    scrape_timeout: 8s
+
+  - job_name: 'acgs-integrity-service'
+    static_configs:
+      - targets: ['integrity-service:8002']
+    metrics_path: /metrics
+    scrape_interval: 10s
+    scrape_timeout: 8s
+
+  # OPA Policy Engine monitoring
+  - job_name: 'opa-policy-engine'
+    static_configs:
+      - targets: ['opa:8181']
+    metrics_path: /metrics
+    scrape_interval: 15s
+    scrape_timeout: 10s
+
+  # Evidently AI monitoring
+  - job_name: 'evidently-ai'
+    static_configs:
+      - targets: ['evidently:8080']
+    metrics_path: /metrics
+    scrape_interval: 30s
+    scrape_timeout: 20s
+
+  # System monitoring
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node_exporter:9100']
+    scrape_interval: 15s
+
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 15s
+
+  # Redis monitoring
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    scrape_interval: 30s
+
+  # Custom AI Governance metrics endpoints
+  - job_name: 'conservative-linucb-metrics'
+    static_configs:
+      - targets: ['gs-service:8004']
+    metrics_path: /metrics/conservative-linucb
+    scrape_interval: 5s
+    scrape_timeout: 4s
+    params:
+      algorithm: ['conservative-linucb']
+
+  - job_name: 'constitutional-reward-metrics'
+    static_configs:
+      - targets: ['ac-service:8001']
+    metrics_path: /metrics/constitutional-reward
+    scrape_interval: 5s
+    scrape_timeout: 4s
+    params:
+      component: ['constitutional-reward']
+
+  # Blockchain and Quantumagi monitoring
+  - job_name: 'quantumagi-blockchain'
+    static_configs:
+      - targets: ['quantumagi-bridge:8080']
+    metrics_path: /metrics
+    scrape_interval: 30s
+    scrape_timeout: 20s
+    honor_labels: true
+
+  # Application-specific metrics
+  - job_name: 'governance-dashboard'
+    static_configs:
+      - targets: ['governance-dashboard:3000']
+    metrics_path: /api/metrics
+    scrape_interval: 30s
+
+  - job_name: 'constitutional-council'
+    static_configs:
+      - targets: ['constitutional-council:3001']
+    metrics_path: /api/metrics
+    scrape_interval: 30s
+
+# Remote write configuration for long-term storage (optional)
+# remote_write:
+#   - url: "https://prometheus-remote-write-endpoint/api/v1/write"
+#     basic_auth:
+#       username: "acgs-ai-governance"
+#       password: "secure-password"
+#     write_relabel_configs:
+#       - source_labels: [__name__]
+#         regex: 'constitutional_.*|mab_.*|policy_.*'
+#         action: keep
+
+# Storage configuration
+storage:
+  tsdb:
+    retention_time: 30d
+    retention_size: 10GB
+    wal_compression: true
