@@ -14,7 +14,7 @@ updates:
     groups:
       pip:
         patterns: ["*"]
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 5
     commit-message:
       prefix: "build(deps)"
       include: "scope"
@@ -22,18 +22,23 @@ updates:
       - "dependencies"
       - "python"
       - "security"
+    reviewers:
+      - "dislovemartin"
+    allow:
+      - dependency-type: "all"
 
   # Node.js dependencies - Applications
   - package-ecosystem: "npm"
     directory: "/applications"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "monday"
       time: "06:00"
       timezone: "UTC"
     groups:
       npm-applications:
         patterns: ["*"]
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 3
     commit-message:
       prefix: "build(deps)"
       include: "scope"
@@ -41,6 +46,10 @@ updates:
       - "dependencies"
       - "javascript"
       - "frontend"
+    reviewers:
+      - "dislovemartin"
+    allow:
+      - dependency-type: "all"
 
   # Node.js dependencies - Blockchain
   - package-ecosystem: "npm"
@@ -100,7 +109,7 @@ updates:
       day: "thursday"
       time: "06:00"
       timezone: "UTC"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 3
     commit-message:
       prefix: "ci"
       include: "scope"
@@ -108,6 +117,10 @@ updates:
       - "dependencies"
       - "github-actions"
       - "ci-cd"
+    reviewers:
+      - "dislovemartin"
+    allow:
+      - dependency-type: "all"
 
   # Docker dependencies
   - package-ecosystem: "docker"
