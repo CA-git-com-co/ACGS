@@ -146,13 +146,48 @@ ACGS-1/
 
 - **Solana CLI** v1.18.22+
 - **Anchor Framework** v0.29.0+
-- **Node.js** v18+
-- **Python** 3.9+
+- **Node.js** v20+ (required for blockchain development)
+- **Node.js** v18+ (sufficient for applications)
+- **Python** 3.9+ (3.11+ recommended)
 - **PostgreSQL** 15+
 - **Redis** 7+
 - **Docker** & **Docker Compose**
 
-### 1. Clone and Setup
+#### Node.js Version Requirements
+
+**⚠️ Important**: ACGS blockchain development requires **Node.js 20+** due to Solana dependency requirements.
+
+- **Blockchain workspace**: Node.js 20+ (required for `@solana/web3.js`, `@coral-xyz/anchor`)
+- **Applications workspace**: Node.js 18+ (React applications)
+- **Python services**: Any Node.js version (uses UV package manager)
+
+### 1. Node.js Setup (Required for Blockchain Development)
+
+**Install Node.js 20+ using NVM (Recommended)**
+
+```bash
+# Install NVM (Node Version Manager)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+
+# Reload your shell or run:
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+# Install and use Node.js 20
+nvm install 20
+nvm use 20
+
+# Verify installation
+node --version  # Should show v20.x.x
+npm --version   # Should show 10.x.x+
+```
+
+**Alternative: Direct Installation**
+- **Ubuntu/Debian**: `curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - && sudo apt-get install -y nodejs`
+- **macOS**: `brew install node@20`
+- **Windows**: Download from [nodejs.org](https://nodejs.org/)
+
+### 2. Clone and Setup
 
 ```bash
 git clone https://github.com/CA-git-com-co/ACGS.git
@@ -166,16 +201,28 @@ pip install -r config/requirements.txt
 ./scripts/setup/quick_start.sh
 ```
 
-### 2. Build Blockchain Programs
+### 3. Build Blockchain Programs
 
 ```bash
 cd blockchain
-npm install
+
+# Ensure you're using Node.js 20+ for blockchain development
+node --version  # Should show v20.x.x
+
+# Install blockchain dependencies (with legacy peer deps for Solana compatibility)
+npm install --legacy-peer-deps --ignore-scripts
+
+# Build and test Anchor programs
 anchor build
 anchor test
 ```
 
-### 3. Start Backend Services (Host-based)
+**Troubleshooting Blockchain Dependencies**:
+- **ERESOLVE warnings**: Normal for Solana dependencies, use `--legacy-peer-deps`
+- **React version conflicts**: Expected due to wallet adapter dependencies
+- **Postinstall script errors**: Use `--ignore-scripts` flag during installation
+
+### 4. Start Backend Services (Host-based)
 
 ```bash
 # Start Authentication Service (Port 8000)
@@ -213,7 +260,7 @@ python -m uvicorn app.main:app --reload --port 8006
 docker-compose -f infrastructure/docker/docker-compose.yml up -d
 ```
 
-### 4. Launch Frontend Applications
+### 5. Launch Frontend Applications
 
 ```bash
 cd applications/governance-dashboard
@@ -221,13 +268,89 @@ npm install
 npm start
 ```
 
-### 5. Deploy to Solana Devnet
+### 6. Deploy to Solana Devnet
 
 ```bash
 cd blockchain
 anchor deploy --provider.cluster devnet
 python scripts/initialize_constitution.py
 ```
+
+## 🔧 Troubleshooting
+
+### Node.js Version Issues
+
+**Problem**: `ERESOLVE overriding peer dependency` warnings during blockchain installation
+```
+npm ERR! ERESOLVE overriding peer dependency
+npm ERR! While resolving: @keystonehq/sdk@0.19.2
+npm ERR! Found: react@18.3.1
+```
+
+**Solution**: This is **normal behavior** for Solana dependencies. Use the legacy peer deps flag:
+```bash
+npm install --workspace=blockchain --legacy-peer-deps --ignore-scripts
+```
+
+**Problem**: Node.js version too old for blockchain development
+```
+Error: This package requires Node.js 20 or higher
+```
+
+**Solution**: Switch to Node.js 20+ using NVM:
+```bash
+nvm install 20
+nvm use 20
+node --version  # Verify v20.x.x
+```
+
+**Problem**: Multiple Node.js versions causing conflicts
+
+**Solution**: Use NVM to manage versions per project:
+```bash
+# For blockchain development
+nvm use 20
+
+# For applications (if needed)
+nvm use 18
+
+# Set default version
+nvm alias default 20
+```
+
+### Dependency Management
+
+**Python Services**: Continue to use UV package manager (any Node.js version)
+```bash
+cd services/core/constitutional-ai/constitutional-ai_service
+uv sync
+```
+
+**Node.js Workspaces**: Use npm with appropriate flags
+```bash
+# Blockchain workspace (Node.js 20+)
+npm install --workspace=blockchain --legacy-peer-deps --ignore-scripts
+
+# Applications workspace (Node.js 18+)
+npm install --workspace=applications
+```
+
+**Rust Programs**: Use Cargo (independent of Node.js)
+```bash
+cd blockchain
+cargo build
+```
+
+### Common Error Solutions
+
+**Error**: `husky command not found` during npm install
+**Solution**: Use `--ignore-scripts` flag to skip postinstall scripts
+
+**Error**: React version conflicts in blockchain workspace
+**Solution**: This is expected due to Solana wallet adapters requiring older React versions
+
+**Error**: `Cannot find module '@solana/web3.js'`
+**Solution**: Ensure Node.js 20+ and reinstall with `--legacy-peer-deps`
 
 ## 🏛️ Core Components
 

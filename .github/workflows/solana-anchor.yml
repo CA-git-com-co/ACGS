@@ -23,7 +23,7 @@ permissions:
 env:
   SOLANA_CLI_VERSION: 1.18.22
   ANCHOR_CLI_VERSION: 0.29.0
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
   RUST_TOOLCHAIN: 1.81.0
 
 jobs:
@@ -254,6 +254,16 @@ jobs:
             exit 1
           fi
 
+      - name: Set up NVM for Node.js 20+
+        if: steps.check_project.outputs.exists == 'true'
+        run: |
+          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          nvm install ${{ env.NODE_VERSION }}
+          nvm use ${{ env.NODE_VERSION }}
+          echo "NODE_VERSION=${{ env.NODE_VERSION }}" >> $GITHUB_ENV
+
       - name: Set up Node.js
         if: steps.check_project.outputs.exists == 'true'
         uses: actions/setup-node@v4
@@ -262,12 +272,22 @@ jobs:
           cache: 'npm'
           cache-dependency-path: ${{ matrix.project }}/package-lock.json
 
+      - name: Verify Node.js version for blockchain
+        if: steps.check_project.outputs.exists == 'true'
+        run: |
+          echo "Node.js version: $(node --version)"
+          echo "npm version: $(npm --version)"
+          if [[ "$(node --version)" < "v20.0.0" ]]; then
+            echo "❌ Error: Node.js 20+ required for blockchain development"
+            exit 1
+          fi
+
       - name: Install Node.js dependencies
         if: steps.check_project.outputs.exists == 'true'
         working-directory: ${{ matrix.project }}
         run: |
           if [ -f "package.json" ]; then
-            npm ci
+            npm ci --legacy-peer-deps --ignore-scripts
           else
             echo "No package.json found, skipping npm install"
           fi
