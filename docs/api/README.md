@@ -165,6 +165,7 @@ Each service provides Swagger UI documentation at `/docs` endpoint:
 - Governance Synthesis: http://localhost:8004/docs
 - Policy Governance: http://localhost:8005/docs
 - Formal Verification: http://localhost:8003/docs
+- Darwin Gödel Machine: http://localhost:8007/docs
 
 **Platform Services:**
 - Authentication: http://localhost:8000/docs

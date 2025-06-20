@@ -28,10 +28,11 @@ ACGS-1 (AI Compliance Governance System) is a production-grade constitutional go
 - **Open Source**: Transparent, auditable, and community-driven development
 
 ### System Overview
-- **8 Core Services**: Auth, AC, Integrity, FV, GS, PGC, EC, Research
+- **8 Core Services**: Auth (8000), AC (8001), Integrity (8002), FV (8003), GS (8004), PGC (8005), EC (8006), DGM (8007)
 - **5 Governance Workflows**: Policy Creation, Constitutional Compliance, Policy Enforcement, WINA Oversight, Audit/Transparency
 - **Blockchain Integration**: Quantumagi Solana programs for immutable governance
 - **Multi-Model AI**: Qwen3-32B, DeepSeek Chat v3 for policy synthesis
+- **DGM Integration**: Darwin Gödel Machine for self-evolving AI governance with event-driven architecture
 
 ## Development Environment Setup
 
@@ -39,43 +40,68 @@ ACGS-1 (AI Compliance Governance System) is a production-grade constitutional go
 ```bash
 # System Requirements
 - Ubuntu 20.04+ or macOS 12+
-- Python 3.12+
-- Node.js 18+
+- Rust 1.81.0+ (primary blockchain development)
+- Python 3.11+ (required for all services)
+- Node.js 18+ (frontend applications only)
 - PostgreSQL 15+
 - Redis 7+
+- Docker 24.0+
 - Solana CLI 1.18.22+
 - Anchor 0.29.0+
+- UV Package Manager (recommended for Python dependency management)
 ```
 
 ### Quick Start
 ```bash
 # 1. Clone repository
 git clone https://github.com/CA-git-com-co/ACGS.git
-cd ACGS-1
+cd ACGS
 
-# 2. Set up Python environment
-python3 -m venv .venv
+# 2. Install UV package manager (recommended)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+source ~/.bashrc
+
+# 3. Set up Python environment with UV
+uv sync
+
+# Alternative: Traditional Python setup
+python3.11 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-# 3. Set up Node.js environment
-npm install
-
-# 4. Set up Solana/Anchor environment
-sh -c "$(curl -sSfL https://release.solana.com/v1.18.22/install)"
-npm install -g @coral-xyz/anchor-cli@0.29.0
-
-# 5. Configure environment
+# 4. Set up environment variables
 cp .env.example .env
 # Edit .env with your configuration
 
-# 6. Initialize database
+# 5. Start core services (requires Docker)
+docker-compose up -d postgres redis
+
+# 6. Run database migrations
+uv run alembic upgrade head
+
+# 7. Start individual services for development
+cd services/platform/authentication && uv run uvicorn main:app --port 8000 --reload
+cd services/core/ac-service && uv run uvicorn main:app --port 8001 --reload
+cd services/core/dgm-service && uv run uvicorn dgm_service.main:app --port 8007 --reload
+
+# 4. Set up Node.js environment
+npm install
+
+# 5. Set up Solana/Anchor environment
+sh -c "$(curl -sSfL https://release.solana.com/v1.18.22/install)"
+npm install -g @coral-xyz/anchor-cli@0.29.0
+
+# 6. Configure environment
+cp .env.example .env
+# Edit .env with your configuration
+
+# 7. Initialize database
 python scripts/setup_database.py
 
-# 7. Start services
+# 8. Start services (including DGM service)
 bash scripts/start_missing_services.sh
 
-# 8. Verify installation
+# 9. Verify installation
 python3 scripts/comprehensive_health_check.py
 ```
 
@@ -112,13 +138,14 @@ Frontend (React) → API Gateway (HAProxy) → Core Services → Infrastructure
 
 ### Service Responsibilities
 
-**Auth Service (8000)**: Authentication, authorization, user management  
-**AC Service (8001)**: Constitutional AI, compliance validation  
-**Integrity Service (8002)**: Cryptographic verification, hash validation  
-**FV Service (8003)**: Formal verification, mathematical proofs  
-**GS Service (8004)**: Governance synthesis, policy generation  
-**PGC Service (8005)**: Policy governance, compliance enforcement  
-**EC Service (8006)**: Executive council, oversight management  
+**Auth Service (8000)**: Authentication, authorization, user management
+**AC Service (8001)**: Constitutional AI, compliance validation
+**Integrity Service (8002)**: Cryptographic verification, hash validation
+**FV Service (8003)**: Formal verification, mathematical proofs
+**GS Service (8004)**: Governance synthesis, policy generation
+**PGC Service (8005)**: Policy governance, compliance enforcement
+**EC Service (8006)**: Executive council, oversight management
+**DGM Service (8007)**: Darwin Gödel Machine, self-evolving AI governance
 
 ### Data Flow
 1. **User Request** → Auth Service (authentication)
@@ -126,7 +153,21 @@ Frontend (React) → API Gateway (HAProxy) → Core Services → Infrastructure
 3. **Constitutional Validation** → PGC Service
 4. **Policy Synthesis** → GS Service (if needed)
 5. **Formal Verification** → FV Service (if needed)
-6. **Blockchain Recording** → Quantumagi Programs
+6. **DGM Evolution** → DGM Service (self-improvement)
+7. **Event Broadcasting** → NATS Message Broker
+8. **Blockchain Recording** → Quantumagi Programs
+
+### DGM Event-Driven Architecture
+```
+NATS Message Broker ← → DGM Service (8007)
+        ↓                    ↓
+Service Mesh (Istio)    LSU Interface
+        ↓                    ↓
+Core Services          SEE Platform
+        ↓                    ↓
+Constitutional      Archive-backed
+Validation          Evolution Loops
+```
 
 ## Coding Standards
 

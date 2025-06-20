@@ -1,0 +1,154 @@
+# Blackbox Exporter configuration for DGM Service endpoint monitoring
+
+modules:
+  # HTTP 2xx probe
+  http_2xx:
+    prober: http
+    timeout: 5s
+    http:
+      valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+      valid_status_codes: [200, 201, 202]
+      method: GET
+      headers:
+        Host: dgm-service
+        User-Agent: "Blackbox-Exporter/DGM-Monitor"
+      no_follow_redirects: false
+      fail_if_ssl: false
+      fail_if_not_ssl: false
+      tls_config:
+        insecure_skip_verify: false
+      preferred_ip_protocol: "ip4"
+
+  # HTTP POST probe for API endpoints
+  http_post_2xx:
+    prober: http
+    timeout: 10s
+    http:
+      valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+      valid_status_codes: [200, 201, 202]
+      method: POST
+      headers:
+        Host: dgm-service
+        Content-Type: "application/json"
+        User-Agent: "Blackbox-Exporter/DGM-Monitor"
+      body: '{"health_check": true}'
+      no_follow_redirects: false
+      fail_if_ssl: false
+      fail_if_not_ssl: false
+
+  # HTTP probe with authentication
+  http_auth_2xx:
+    prober: http
+    timeout: 10s
+    http:
+      valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+      valid_status_codes: [200, 401]  # 401 is expected for auth endpoints
+      method: GET
+      headers:
+        Host: dgm-service
+        Authorization: "Bearer test-token"
+        User-Agent: "Blackbox-Exporter/DGM-Monitor"
+      no_follow_redirects: false
+
+  # TCP connect probe
+  tcp_connect:
+    prober: tcp
+    timeout: 5s
+    tcp:
+      preferred_ip_protocol: "ip4"
+
+  # ICMP ping probe
+  icmp:
+    prober: icmp
+    timeout: 5s
+    icmp:
+      preferred_ip_protocol: "ip4"
+
+  # DNS probe
+  dns_dgm:
+    prober: dns
+    timeout: 5s
+    dns:
+      query_name: "dgm-service"
+      query_type: "A"
+      valid_rcodes:
+        - NOERROR
+      validate_answer_rrs:
+        fail_if_matches_regexp:
+          - ".*127.0.0.1"
+        fail_if_not_matches_regexp:
+          - ".*"
+      preferred_ip_protocol: "ip4"
+
+  # HTTP probe for metrics endpoint
+  http_metrics:
+    prober: http
+    timeout: 5s
+    http:
+      valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+      valid_status_codes: [200]
+      method: GET
+      headers:
+        Host: dgm-service
+        Accept: "text/plain"
+        User-Agent: "Blackbox-Exporter/DGM-Monitor"
+      fail_if_body_not_matches_regexp:
+        - "dgm_service_up"
+        - "dgm_http_requests_total"
+
+  # HTTP probe for health endpoint with detailed checks
+  http_health_detailed:
+    prober: http
+    timeout: 10s
+    http:
+      valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+      valid_status_codes: [200]
+      method: GET
+      headers:
+        Host: dgm-service
+        Accept: "application/json"
+        User-Agent: "Blackbox-Exporter/DGM-Monitor"
+      fail_if_body_not_matches_regexp:
+        - '"status":\s*"healthy"'
+        - '"database":\s*"connected"'
+        - '"cache":\s*"connected"'
+      fail_if_body_matches_regexp:
+        - '"status":\s*"unhealthy"'
+        - '"error":'
+
+  # HTTP probe for API endpoints with JSON response validation
+  http_api_json:
+    prober: http
+    timeout: 15s
+    http:
+      valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+      valid_status_codes: [200, 201]
+      method: GET
+      headers:
+        Host: dgm-service
+        Accept: "application/json"
+        Content-Type: "application/json"
+        User-Agent: "Blackbox-Exporter/DGM-Monitor"
+      fail_if_body_not_matches_regexp:
+        - '^\s*\{'  # Must start with JSON object
+      fail_if_body_matches_regexp:
+        - '"error":\s*"'  # Should not contain error field
+
+  # PostgreSQL connection probe
+  tcp_postgres:
+    prober: tcp
+    timeout: 5s
+    tcp:
+      preferred_ip_protocol: "ip4"
+      query_response:
+        - expect: "^\\x00"  # PostgreSQL connection response
+
+  # Redis connection probe
+  tcp_redis:
+    prober: tcp
+    timeout: 5s
+    tcp:
+      preferred_ip_protocol: "ip4"
+      query_response:
+        - send: "PING\r\n"
+        - expect: "\\+PONG"

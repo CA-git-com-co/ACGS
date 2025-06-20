@@ -44,18 +44,101 @@ GET /health
 }
 ```
 
-### Service-Specific Endpoints
+### Authentication Endpoints
 
+#### POST /auth/register
+Register a new user account.
 
-#### Main Endpoints
-- `GET /api/v1/status` - Service status and capabilities
-- `POST /api/v1/process` - Main processing endpoint
-- `GET /api/v1/metrics` - Performance metrics
+**Request:**
+```json
+{
+  "username": "string",
+  "email": "string",
+  "password": "string",
+  "first_name": "string (optional)",
+  "last_name": "string (optional)"
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "id": 1,
+  "username": "testuser",
+  "email": "test@example.com",
+  "first_name": "Test",
+  "last_name": "User",
+  "is_active": true,
+  "is_superuser": false
+}
+```
+
+#### POST /auth/token (Login)
+Authenticate user and receive JWT tokens.
+
+**Request:**
+```json
+{
+  "username": "string",
+  "password": "string"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+  "token_type": "bearer",
+  "refresh_token": null
+}
+```
+
+#### POST /auth/token/refresh
+Refresh JWT access token using refresh token cookie.
+
+**Response (200 OK):**
+```json
+{
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+  "token_type": "bearer",
+  "refresh_token": null
+}
+```
+
+#### POST /auth/logout
+Logout user and revoke tokens.
+
+**Response (200 OK):**
+```json
+{
+  "message": "Logout successful"
+}
+```
+
+#### GET /auth/me
+Get current user profile (requires authentication).
+
+**Response (200 OK):**
+```json
+{
+  "id": 1,
+  "username": "testuser",
+  "email": "test@example.com",
+  "first_name": "Test",
+  "last_name": "User",
+  "is_active": true,
+  "is_superuser": false
+}
+```
 
 #### Service-Specific Features
-- Constitutional governance integration
-- Real-time processing capabilities
-- Enterprise security compliance
+- JWT token authentication with refresh tokens
+- HttpOnly cookie-based token storage
+- CSRF protection
+- Role-based access control (RBAC)
+- Multi-factor authentication (MFA) support
+- OAuth 2.0 and OpenID Connect integration
+- API key management
 
 
 ## 🔧 Error Handling

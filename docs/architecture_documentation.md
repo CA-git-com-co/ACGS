@@ -63,6 +63,7 @@ graph LR
         GS[GS Service:8004]
         PGC[PGC Service:8005]
         EC[EC Service:8006]
+        DGM[DGM Service:8007]
     end
     
     subgraph "Data Layer"

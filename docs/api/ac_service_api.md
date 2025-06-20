@@ -1,10 +1,10 @@
-# Ac Service API Documentation
+# Constitutional AI Service API Documentation
 
-**Service:** Ac Service  
-**Port:** 8001  
-**Base URL:** `http://localhost:8001`  
-**Status:** ✅ Operational  
-**Last Updated:** 2025-06-15
+**Service:** Constitutional AI Service
+**Port:** 8001
+**Base URL:** `http://localhost:8001`
+**Status:** ✅ Operational
+**Last Updated:** 2025-06-20
 
 // requires: Complete API documentation with examples and error handling
 // ensures: Comprehensive API guidance for developers
@@ -12,7 +12,7 @@
 
 ## 🎯 Service Overview
 
-Constitutional AI service managing principles, meta-rules, and constitutional compliance.
+Advanced constitutional compliance validation with formal verification and real-time monitoring. Provides sophisticated constitutional compliance algorithms, formal verification integration, and comprehensive audit logging.
 
 ## 📋 API Endpoints
 
@@ -44,18 +44,158 @@ GET /health
 }
 ```
 
-### Service-Specific Endpoints
+### Core Endpoints
 
+#### GET /api/v1/status
+Get detailed service status and capabilities.
 
-#### Main Endpoints
-- `GET /api/v1/status` - Service status and capabilities
-- `POST /api/v1/process` - Main processing endpoint
-- `GET /api/v1/metrics` - Performance metrics
+**Response (200 OK):**
+```json
+{
+  "api_version": "v1",
+  "service": "ac_service_production",
+  "status": "active",
+  "phase": "Phase 3 - Production Implementation",
+  "constitutional_rules_loaded": true,
+  "compliance_engine_status": "operational",
+  "endpoints": {
+    "core": ["/", "/health", "/api/v1/status"],
+    "validation": [
+      "/api/v1/constitutional/validate",
+      "/api/v1/constitutional/validate-advanced",
+      "/api/v1/constitutional/validate-formal"
+    ],
+    "analysis": [
+      "/api/v1/constitutional/analyze",
+      "/api/v1/constitutional/impact-analysis",
+      "/api/v1/constitutional/compliance-score"
+    ]
+  }
+}
+```
+
+### Constitutional Validation
+
+#### POST /api/v1/constitutional/validate
+Enhanced constitutional compliance validation.
+
+**Request:**
+```json
+{
+  "policy": {
+    "title": "Data Privacy Policy",
+    "content": "Policy content here...",
+    "category": "privacy"
+  },
+  "rules": ["CONST-001", "CONST-002", "CONST-003"],
+  "validation_level": "comprehensive"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "validation_id": "VAL-1234567890",
+  "overall_compliance": true,
+  "compliance_score": 0.92,
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "rule_evaluations": [
+    {
+      "rule_id": "CONST-001",
+      "title": "Democratic Participation",
+      "compliant": true,
+      "score": 0.95,
+      "details": "Policy includes stakeholder consultation mechanisms"
+    }
+  ],
+  "recommendations": [
+    "Consider additional transparency measures",
+    "Add more comprehensive audit trail"
+  ]
+}
+```
+
+#### GET /api/v1/constitutional/rules
+Get constitutional rules for governance validation.
+
+**Response (200 OK):**
+```json
+{
+  "rules": [
+    {
+      "id": "CONST-001",
+      "title": "Democratic Participation",
+      "description": "All governance decisions must allow democratic participation",
+      "category": "democratic_process",
+      "priority": "high",
+      "enforcement": "mandatory",
+      "criteria": [
+        "stakeholder_input_required",
+        "voting_mechanism_present",
+        "transparency_maintained"
+      ]
+    }
+  ]
+}
+```
+
+#### POST /api/v1/constitutional/analyze
+Analyze constitutional impact of proposed policy changes.
+
+**Request:**
+```json
+{
+  "changes": [
+    {
+      "description": "Update privacy policy requirements",
+      "type": "policy_modification",
+      "scope": "data_protection"
+    }
+  ],
+  "scope": "comprehensive"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "analysis_id": "IMPACT-1234567890",
+  "scope": "comprehensive",
+  "changes_analyzed": 1,
+  "constitutional_impacts": [
+    {
+      "change_id": "CHANGE-1",
+      "description": "Update privacy policy requirements",
+      "constitutional_domains_affected": ["democratic_process", "transparency"],
+      "impact_severity": "medium",
+      "compliance_risk": "low"
+    }
+  ],
+  "risk_assessment": {
+    "overall_risk": "low",
+    "risk_factors": [],
+    "mitigation_strategies": []
+  }
+}
+```
+
+### Collective Constitutional AI
+
+#### POST /api/v1/ccai/conversations
+Create a new Polis conversation for democratic deliberation.
+
+#### POST /api/v1/ccai/bias-evaluation
+Evaluate bias in constitutional principles.
 
 #### Service-Specific Features
-- Constitutional governance integration
-- Real-time processing capabilities
-- Enterprise security compliance
+- Advanced constitutional compliance algorithms
+- Formal verification integration with FV service
+- Real-time constitutional violation detection
+- Sophisticated compliance scoring and ranking
+- Comprehensive audit logging and reporting
+- Collective Constitutional AI (CCAI) methodology
+- Democratic principle sourcing via Polis integration
+- Multi-dimensional bias evaluation
 
 
 ## 🔧 Error Handling
@@ -106,6 +246,6 @@ X-API-Key: <api_key>
 
 ---
 
-**API Version:** 2.1  
-**Documentation Status:** ✅ Current  
+**API Version:** 3.0
+**Documentation Status:** ✅ Current
 **Interactive Docs:** `http://localhost:8001/docs`

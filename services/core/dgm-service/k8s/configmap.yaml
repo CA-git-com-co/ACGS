@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dgm-service-config
+  namespace: acgs-dgm
+  labels:
+    app.kubernetes.io/name: dgm-service
+    app.kubernetes.io/part-of: acgs-platform
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/component: config
+data:
+  # Service Configuration
+  SERVICE_NAME: "dgm-service"
+  DGM_HOST: "0.0.0.0"
+  DGM_PORT: "8007"
+  DGM_WORKERS: "4"
+  ENVIRONMENT: "production"
+  DEBUG: "false"
+  LOG_LEVEL: "INFO"
+  
+  # Security Configuration
+  ALLOWED_ORIGINS: "https://acgs.example.com,https://dashboard.acgs.example.com"
+  ALLOWED_HOSTS: "dgm-service,dgm-service.acgs-dgm.svc.cluster.local,localhost"
+  
+  # Database Configuration
+  DATABASE_POOL_SIZE: "20"
+  DATABASE_MAX_OVERFLOW: "30"
+  DATABASE_POOL_TIMEOUT: "30"
+  DATABASE_POOL_RECYCLE: "3600"
+  
+  # Redis Configuration
+  REDIS_MAX_CONNECTIONS: "100"
+  REDIS_RETRY_ON_TIMEOUT: "true"
+  REDIS_SOCKET_TIMEOUT: "5"
+  REDIS_SOCKET_CONNECT_TIMEOUT: "5"
+  REDIS_HEALTH_CHECK_INTERVAL: "30"
+  
+  # ACGS Service URLs
+  AUTH_SERVICE_URL: "http://auth-service.acgs-core.svc.cluster.local:8000"
+  AC_SERVICE_URL: "http://ac-service.acgs-core.svc.cluster.local:8001"
+  INTEGRITY_SERVICE_URL: "http://integrity-service.acgs-core.svc.cluster.local:8002"
+  FV_SERVICE_URL: "http://fv-service.acgs-core.svc.cluster.local:8003"
+  GS_SERVICE_URL: "http://gs-service.acgs-core.svc.cluster.local:8004"
+  PGC_SERVICE_URL: "http://pgc-service.acgs-core.svc.cluster.local:8005"
+  EC_SERVICE_URL: "http://ec-service.acgs-core.svc.cluster.local:8006"
+  
+  # DGM Configuration
+  CONSTITUTIONAL_COMPLIANCE_THRESHOLD: "0.8"
+  IMPROVEMENT_CYCLE_INTERVAL: "3600"
+  MAX_IMPROVEMENT_ATTEMPTS: "5"
+  SAFETY_EXPLORATION_RATE: "0.1"
+  ARCHIVE_RETENTION_DAYS: "365"
+  
+  # Performance Monitoring
+  PERFORMANCE_MONITORING_ENABLED: "true"
+  PERFORMANCE_METRICS_INTERVAL: "60"
+  PERFORMANCE_ALERT_THRESHOLD: "0.95"
+  
+  # Foundation Model Configuration
+  MODEL_TIMEOUT: "30"
+  MODEL_MAX_RETRIES: "3"
+  
+  # Bandit Algorithm Configuration
+  BANDIT_ALGORITHM: "ucb"
+  BANDIT_EXPLORATION_PARAMETER: "2.0"
+  BANDIT_DECAY_RATE: "0.99"
+  
+  # Monitoring and Observability
+  PROMETHEUS_ENABLED: "true"
+  JAEGER_ENABLED: "true"
+  JAEGER_ENDPOINT: "http://jaeger-collector.monitoring.svc.cluster.local:14268/api/traces"
+  
+  # Rate Limiting
+  RATE_LIMIT_ENABLED: "true"
+  RATE_LIMIT_REQUESTS: "100"
+  RATE_LIMIT_WINDOW: "60"

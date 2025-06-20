@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dgm-data-pvc
+  namespace: acgs-dgm
+  labels:
+    app.kubernetes.io/name: dgm-service
+    app.kubernetes.io/part-of: acgs-platform
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/component: storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: fast-ssd
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dgm-archive-pvc
+  namespace: acgs-dgm
+  labels:
+    app.kubernetes.io/name: dgm-service
+    app.kubernetes.io/part-of: acgs-platform
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/component: storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: standard

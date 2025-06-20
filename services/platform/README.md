@@ -17,7 +17,7 @@ This directory contains the platform services that provide foundational capabili
 - Permission-based access control
 - Security audit logging
 
-**Port**: 8005
+**Port**: 8000
 **API Base**: `/api/authentication/`
 
 ### Integrity Service (`integrity/`)
@@ -33,7 +33,7 @@ This directory contains the platform services that provide foundational capabili
 - Data integrity checking
 - Version control for policies
 
-**Port**: 8006
+**Port**: 8002
 **API Base**: `/api/integrity/`
 
 ### Workflow Service (`workflow/`)
@@ -83,10 +83,15 @@ Authentication ──→ All Services (Auth validation)
 # Start all platform services
 docker-compose -f infrastructure/docker/docker-compose.platform.yml up -d
 
-# Or start individually
-cd services/platform/authentication && python -m uvicorn app.main:app --reload --port 8005
-cd services/platform/integrity && python -m uvicorn app.main:app --reload --port 8006
-cd services/platform/workflow && python -m uvicorn app.main:app --reload --port 8007
+# Or start individually with UV (recommended)
+cd services/platform/authentication && uv sync && uv run uvicorn app.main:app --reload --port 8000
+cd services/platform/integrity && uv sync && uv run uvicorn app.main:app --reload --port 8002
+cd services/platform/workflow && uv sync && uv run uvicorn app.main:app --reload --port 9007
+
+# Alternative: Traditional Python
+cd services/platform/authentication && python -m uvicorn app.main:app --reload --port 8000
+cd services/platform/integrity && python -m uvicorn app.main:app --reload --port 8002
+cd services/platform/workflow && python -m uvicorn app.main:app --reload --port 9007
 ```
 
 ### Testing Platform Services

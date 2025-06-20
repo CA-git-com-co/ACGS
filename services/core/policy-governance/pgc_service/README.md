@@ -17,11 +17,35 @@ Enforces governance policies in real time using the Open Policy Agent.
 ## Setup
 1. Install dependencies:
    ```bash
+   # Using UV package manager (recommended)
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   source ~/.bashrc
+   uv sync
+
+   # Alternative: Traditional pip
    pip install -r requirements.txt
    ```
 2. Copy `.env.example` to `.env` and set:
    - `INTEGRITY_SERVICE_URL` - URL of the Integrity service
    - `POLICY_REFRESH_INTERVAL_SECONDS` - policy reload interval
+
+### Running Service
+```bash
+# Using UV (recommended)
+uv run uvicorn main:app --reload --port 8005
+
+# Alternative: Traditional
+uvicorn main:app --reload --port 8005
+```
+
+### Running Tests
+```bash
+# Using UV
+uv run pytest tests/
+
+# Alternative: Traditional
+pytest tests/
+```
 
 ### Running Service
 ```bash

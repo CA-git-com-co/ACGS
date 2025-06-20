@@ -91,10 +91,10 @@ source venv/bin/activate
 # Install Python dependencies
 pip install -r requirements.txt
 
-# Install Node.js dependencies for blockchain
-cd blockchain
-npm install
-cd ..
+# Build Rust blockchain tools
+cd blockchain/scripts
+cargo build --release
+cd ../..
 ```
 
 ### 5. Environment Configuration

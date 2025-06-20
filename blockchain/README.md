@@ -113,96 +113,123 @@ result = await client.check_policy_compliance(policy_id)
 events = await client.get_governance_events(start_time, end_time)
 ```
 
-## Development Setup
+## Development Setup (Rust-First)
 
 ### Prerequisites
+- **Rust** 1.81.0+ (primary development language)
 - **Solana CLI** v1.18.22+
 - **Anchor Framework** v0.29.0+
-- **Node.js** v18+
-- **Rust** 1.70+
 
 ### Installation
 ```bash
+# Install Rust 1.81.0+
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+rustup install 1.81.0
+rustup default 1.81.0
+rustup target add wasm32-unknown-unknown bpf-unknown-unknown
+
 # Install Solana CLI
 sh -c "$(curl -sSfL https://release.solana.com/v1.18.22/install)"
 
 # Install Anchor
 npm install -g @coral-xyz/anchor-cli@0.29.0
 
-# Install dependencies
-npm install
+# Build Rust tools
+cd scripts && cargo build --release
 ```
 
-### Building Programs
+### Building Programs (Rust-First)
 ```bash
-# Build all programs
+# Build Rust tools and workspace
+cd scripts && cargo build --release
+
+# Build all Anchor programs
 anchor build
 
 # Build specific program
 anchor build --program quantumagi-core
 ```
 
-### Testing
+### Testing (Rust-First)
 ```bash
-# Run all tests
+# Run Rust integration tests (primary)
+cd scripts && cargo test --release
+
+# Run legacy Anchor tests
 anchor test
 
-# Run specific test file
-anchor test --file tests/quantumagi-core.ts
+# Run specific Rust test module
+cargo test governance_tests --release
 
-# Run tests with logs
-anchor test --skip-deploy -- --verbose
+# Run tests with detailed output
+cargo test -- --nocapture
 ```
 
-### Local Development
+### Local Development (Rust-First)
 ```bash
 # Start local Solana validator
 solana-test-validator
 
-# Deploy to local validator
-anchor deploy
+# Deploy using Rust tools
+cd scripts && cargo run --bin deploy_quantumagi -- deploy
 
-# Run client examples
-npm run examples
+# Validate deployment using Rust tools
+cargo run --bin validate_deployment -- --cluster localhost
+
+# Initialize constitution using Rust tools
+cargo run --bin initialize_constitution -- --cluster localhost
 ```
 
 ## Deployment
 
-### Devnet Deployment
+### Devnet Deployment (Rust-First)
 ```bash
-# Configure for devnet
+# Deploy complete stack using Rust tools
+cd scripts && cargo run --bin deploy_quantumagi -- deploy --cluster devnet
+
+# Or deploy step-by-step:
 solana config set --url devnet
-
-# Deploy programs
 anchor deploy --provider.cluster devnet
-
-# Verify deployment
-anchor verify --provider.cluster devnet
+cargo run --bin initialize_constitution -- --cluster devnet
+cargo run --bin validate_deployment -- --cluster devnet
 ```
 
-### Mainnet Deployment
+### Mainnet Deployment (Rust-First)
 ```bash
-# Configure for mainnet
-solana config set --url mainnet-beta
+# Deploy to mainnet using Rust tools
+cd scripts && cargo run --bin deploy_quantumagi -- deploy --cluster mainnet-beta
 
-# Deploy with production settings
-anchor deploy --provider.cluster mainnet-beta --program-name quantumagi-core
+# Validate mainnet deployment
+cargo run --bin validate_deployment -- --cluster mainnet-beta --verbose
 ```
 
-### Dependency Management
+### Deployment Tools
+
+All deployment operations now use native Rust tools:
+
+- **deploy_quantumagi**: Complete deployment orchestration
+- **initialize_constitution**: Constitution setup and validation
+- **validate_deployment**: Deployment verification and testing
+- **key_management**: Keypair generation and management
+- **generate_program_ids**: Program ID management
+
+### Dependency Management (Rust-First)
 ```bash
-# Update Rust dependencies
-cargo update
+# Update Rust dependencies (primary)
+cd scripts && cargo update
 
-# Update Node.js dependencies
-yarn upgrade
+# Build all Rust tools
+cargo build --release
 
-# Security audit
-cargo audit
+# Security audit (Rust-first)
+cargo audit --deny warnings
 cargo deny check
 
 # Check for outdated dependencies
 cargo outdated
+
+# Legacy Node.js dependencies (minimal usage)
+npm update --legacy-peer-deps
 ```
 
 ## Account Structure

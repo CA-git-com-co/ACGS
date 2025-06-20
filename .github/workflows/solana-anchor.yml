@@ -23,13 +23,13 @@ permissions:
 env:
   SOLANA_CLI_VERSION: 1.18.22
   ANCHOR_CLI_VERSION: 0.29.0
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
   RUST_TOOLCHAIN: 1.81.0
 
 jobs:
-  anchor-test:
+  rust-blockchain-tools:
     runs-on: ubuntu-latest
-    name: Anchor Program Tests
+    name: Rust Blockchain Tools (Priority)
     strategy:
       matrix:
         project: ['blockchain']
@@ -254,6 +254,16 @@ jobs:
             exit 1
           fi
 
+      - name: Set up NVM for Node.js 20+
+        if: steps.check_project.outputs.exists == 'true'
+        run: |
+          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          nvm install ${{ env.NODE_VERSION }}
+          nvm use ${{ env.NODE_VERSION }}
+          echo "NODE_VERSION=${{ env.NODE_VERSION }}" >> $GITHUB_ENV
+
       - name: Set up Node.js
         if: steps.check_project.outputs.exists == 'true'
         uses: actions/setup-node@v4
@@ -262,12 +272,22 @@ jobs:
           cache: 'npm'
           cache-dependency-path: ${{ matrix.project }}/package-lock.json
 
+      - name: Verify Node.js version for blockchain
+        if: steps.check_project.outputs.exists == 'true'
+        run: |
+          echo "Node.js version: $(node --version)"
+          echo "npm version: $(npm --version)"
+          if [[ "$(node --version)" < "v20.0.0" ]]; then
+            echo "❌ Error: Node.js 20+ required for blockchain development"
+            exit 1
+          fi
+
       - name: Install Node.js dependencies
         if: steps.check_project.outputs.exists == 'true'
         working-directory: ${{ matrix.project }}
         run: |
           if [ -f "package.json" ]; then
-            npm ci
+            npm ci --legacy-peer-deps --ignore-scripts
           else
             echo "No package.json found, skipping npm install"
           fi
@@ -291,6 +311,146 @@ jobs:
           solana config set --url localhost
           anchor build
 
+      - name: Build and test Rust blockchain tools (Priority)
+        if: steps.check_project.outputs.exists == 'true'
+        working-directory: ${{ matrix.project }}
+        run: |
+          echo "🦀 Building and testing Rust-first blockchain tools..."
+
+          # Build all Rust tools in release mode
+          cd scripts
+          echo "Building Rust workspace..."
+          cargo build --release --verbose
+
+          # Run Rust integration tests
+          echo "Running Rust integration tests..."
+          cargo test --release --verbose
+
+          # Test all deployment tools
+          echo "Testing Rust deployment tools..."
+          cargo run --release --bin key_management -- --help
+          cargo run --release --bin generate_program_ids -- --help
+          cargo run --release --bin validate_deployment -- --help
+          cargo run --release --bin initialize_constitution -- --help
+          cargo run --release --bin deploy_quantumagi -- --help
+
+          # Run CI/CD compatibility test
+          echo "Running CI/CD compatibility test..."
+          if [ -f test_rust_tools_ci.sh ]; then
+            chmod +x test_rust_tools_ci.sh
+            ./test_rust_tools_ci.sh
+          fi
+
+          echo "✅ All Rust blockchain tools built and tested successfully"
+
+  anchor-test:
+    runs-on: ubuntu-latest
+    name: Anchor Program Tests
+    needs: rust-blockchain-tools
+    strategy:
+      matrix:
+        project: ['blockchain']
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check if project exists
+        id: check_project
+        run: |
+          if [ -d "${{ matrix.project }}" ] && [ -f "${{ matrix.project }}/Anchor.toml" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "Warning: Project ${{ matrix.project }} does not exist or has no Anchor.toml"
+          fi
+
+      - name: Install Rust
+        if: steps.check_project.outputs.exists == 'true'
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+          components: rustfmt, clippy
+
+      - name: Cache Rust dependencies
+        if: steps.check_project.outputs.exists == 'true'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ${{ matrix.project }}/target/
+          key: ${{ runner.os }}-cargo-${{ matrix.project }}-${{ hashFiles(format('{0}/**/Cargo.lock', matrix.project)) }}
+          restore-keys: ${{ runner.os }}-cargo-${{ matrix.project }}-
+
+      - name: Install Solana CLI with enhanced fallback strategy
+        if: steps.check_project.outputs.exists == 'true'
+        run: |
+          echo "🔧 Installing Solana CLI v${{ env.SOLANA_CLI_VERSION }} with enhanced fallback strategy..."
+
+          # Enhanced primary installation method with better error detection
+          install_solana_primary() {
+            echo "Attempting primary installation method..."
+            local temp_script=$(mktemp)
+
+            # Download install script with timeout and error checking
+            if timeout 60 curl -sSfL --retry 3 --retry-delay 5 "https://release.solana.com/v${{ env.SOLANA_CLI_VERSION }}/install" -o "$temp_script"; then
+              echo "Install script downloaded successfully"
+              chmod +x "$temp_script"
+
+              # Execute with timeout and proper error handling
+              if timeout 300 bash "$temp_script"; then
+                rm -f "$temp_script"
+                return 0
+              else
+                echo "Primary installation script execution failed with exit code $?"
+                rm -f "$temp_script"
+                return 1
+              fi
+            else
+              echo "Failed to download install script (curl error: $?)"
+              rm -f "$temp_script"
+              return 1
+            fi
+          }
+
+          # Try installation
+          if install_solana_primary; then
+            echo "✅ Primary installation successful"
+          else
+            echo "❌ Installation failed"
+            exit 1
+          fi
+
+          # Configure PATH and verify installation
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+          export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+
+          # Enhanced verification with retry
+          echo "Verifying Solana CLI installation..."
+          for attempt in 1 2 3; do
+            if solana --version; then
+              echo "✅ Solana CLI v$(solana --version | head -n1) installed and verified successfully"
+              break
+            else
+              if [ $attempt -eq 3 ]; then
+                echo "❌ Solana CLI installation verification failed after 3 attempts"
+                exit 1
+              else
+                echo "⚠️ Verification attempt $attempt failed, retrying..."
+                sleep 5
+              fi
+            fi
+          done
+
+      - name: Install Anchor CLI
+        if: steps.check_project.outputs.exists == 'true'
+        run: |
+          echo "🔧 Installing Anchor CLI v${{ env.ANCHOR_CLI_VERSION }}..."
+          npm install -g @coral-xyz/anchor-cli@${{ env.ANCHOR_CLI_VERSION }}
+          anchor --version
+
       - name: Run Anchor tests
         if: steps.check_project.outputs.exists == 'true'
         working-directory: ${{ matrix.project }}
@@ -299,10 +459,10 @@ jobs:
           solana-test-validator --reset --quiet &
           VALIDATOR_PID=$!
           sleep 15
-          
+
           # Wait for validator to be ready
           timeout 30 bash -c 'until solana cluster-version; do sleep 1; done'
-          
+
           # Run comprehensive test suite
           echo "Running comprehensive test suite..."
           if [ -f scripts/run_comprehensive_tests.sh ]; then
@@ -311,10 +471,10 @@ jobs:
           else
             anchor test --skip-local-validator || TEST_RESULT=$?
           fi
-          
+
           # Cleanup
           kill $VALIDATOR_PID || true
-          
+
           # Exit with test result
           exit ${TEST_RESULT:-0}
 
@@ -571,16 +731,17 @@ jobs:
   notify-solana-results:
     runs-on: ubuntu-latest
     name: Notify Solana Results
-    needs: [anchor-test, security-audit, program-verification]
+    needs: [rust-blockchain-tools, anchor-test, security-audit, program-verification]
     if: always()
     steps:
       - name: Generate Solana test report
         run: |
-          echo "# Solana Anchor Programs Test Report" > solana-test-report.md
+          echo "# ACGS-1 Rust-First Blockchain Test Report" > solana-test-report.md
           echo "Generated: $(date)" >> solana-test-report.md
           echo "Workflow Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> solana-test-report.md
           echo "" >> solana-test-report.md
-          echo "## Test Results Summary" >> solana-test-report.md
+          echo "## Test Results Summary (Rust-First Priority)" >> solana-test-report.md
+          echo "- Rust Blockchain Tools: ${{ needs.rust-blockchain-tools.result }}" >> solana-test-report.md
           echo "- Anchor Tests: ${{ needs.anchor-test.result }}" >> solana-test-report.md
           echo "- Security Audit: ${{ needs.security-audit.result }}" >> solana-test-report.md
           echo "- Program Verification: ${{ needs.program-verification.result }}" >> solana-test-report.md
@@ -595,11 +756,16 @@ jobs:
       - name: Notify on success
         if: success()
         run: |
-          echo "✅ All Solana Anchor tests passed successfully!"
-          echo "Programs are ready for deployment to devnet/mainnet"
+          echo "✅ All ACGS-1 Rust-first blockchain tests passed successfully!"
+          echo "🦀 Rust blockchain tools: PASSED"
+          echo "⚓ Anchor programs: PASSED"
+          echo "🔒 Security audit: PASSED"
+          echo "✅ Program verification: PASSED"
+          echo "Programs are ready for deployment to devnet/mainnet using Rust tools"
 
       - name: Notify on failure
         if: failure()
         run: |
-          echo "❌ Some Solana Anchor tests failed. Check the logs for details."
+          echo "❌ Some ACGS-1 blockchain tests failed. Check the logs for details."
+          echo "Priority: Fix Rust blockchain tools first, then Anchor programs"
           echo "Review program code and fix issues before deployment"
