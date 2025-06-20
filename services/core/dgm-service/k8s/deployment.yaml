@@ -1,0 +1,141 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dgm-service
+  namespace: acgs-dgm
+  labels:
+    app.kubernetes.io/name: dgm-service
+    app.kubernetes.io/part-of: acgs-platform
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/component: api
+    app.kubernetes.io/managed-by: kubectl
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dgm-service
+      app.kubernetes.io/component: api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: dgm-service
+        app.kubernetes.io/part-of: acgs-platform
+        app.kubernetes.io/version: "1.0.0"
+        app.kubernetes.io/component: api
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8007"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: dgm-service
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+      - name: dgm-service
+        image: acgs/dgm-service:1.0.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8007
+          protocol: TCP
+        env:
+        - name: PYTHONPATH
+          value: "/app"
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        - name: PYTHONDONTWRITEBYTECODE
+          value: "1"
+        envFrom:
+        - configMapRef:
+            name: dgm-service-config
+        - secretRef:
+            name: dgm-service-secrets
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+          limits:
+            cpu: 2000m
+            memory: 2Gi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 30
+        volumeMounts:
+        - name: dgm-logs
+          mountPath: /app/logs
+        - name: dgm-data
+          mountPath: /app/data
+        - name: dgm-cache
+          mountPath: /app/cache
+        - name: dgm-archive
+          mountPath: /app/archive
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: dgm-logs
+        emptyDir: {}
+      - name: dgm-data
+        persistentVolumeClaim:
+          claimName: dgm-data-pvc
+      - name: dgm-cache
+        emptyDir: {}
+      - name: dgm-archive
+        persistentVolumeClaim:
+          claimName: dgm-archive-pvc
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - dgm-service
+              topologyKey: kubernetes.io/hostname
+      tolerations:
+      - key: "node.kubernetes.io/not-ready"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 300
+      - key: "node.kubernetes.io/unreachable"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 300

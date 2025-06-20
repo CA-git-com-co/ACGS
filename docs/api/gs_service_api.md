@@ -1,10 +1,10 @@
-# Gs Service API Documentation
+# Governance Synthesis Service API Documentation
 
-**Service:** Gs Service  
-**Port:** 8004  
-**Base URL:** `http://localhost:8004`  
-**Status:** ✅ Operational  
-**Last Updated:** 2025-06-15
+**Service:** Governance Synthesis Service
+**Port:** 8004
+**Base URL:** `http://localhost:8004`
+**Status:** ✅ Operational
+**Last Updated:** 2025-06-20
 
 // requires: Complete API documentation with examples and error handling
 // ensures: Comprehensive API guidance for developers
@@ -12,7 +12,7 @@
 
 ## 🎯 Service Overview
 
-The Governance Synthesis Service provides AI-powered policy generation and synthesis capabilities with multi-model consensus validation. It integrates multiple LLM models to generate constitutionally compliant governance policies with high accuracy and reliability.
+Enterprise-grade policy synthesis engine with four-tier risk strategy, multi-model consensus, and constitutional compliance validation. Provides AI-powered policy generation and synthesis capabilities with advanced orchestration and monitoring.
 
 ### Key Features
 - **Multi-Model Consensus**: Ensemble of AI models for robust policy generation
@@ -56,28 +56,63 @@ GET /health
 }
 ```
 
-### Policy Synthesis Endpoints
+### Core Endpoints
 
-#### Generate Policy
-```http
-POST /api/v1/synthesis/generate
+#### GET /api/v1/status
+Get detailed service status and capabilities.
+
+**Response (200 OK):**
+```json
+{
+  "api_version": "v1",
+  "service": "gs_service_production",
+  "status": "active",
+  "phase": "Phase 3 - Production Implementation",
+  "endpoints": {
+    "core": ["/", "/health", "/api/v1/status"],
+    "phase_a3_synthesis": [
+      "/api/v1/phase-a3/synthesize",
+      "/api/v1/phase-a3/consensus",
+      "/api/v1/phase-a3/strategies"
+    ],
+    "governance_workflows": [
+      "/api/v1/governance/workflows",
+      "/api/v1/governance/workflows/{workflow_id}",
+      "/api/v1/governance/workflows/{workflow_id}/start"
+    ],
+    "synthesis": [
+      "/api/v1/synthesize",
+      "/api/v1/multi-model/synthesize",
+      "/api/v1/enhanced/synthesize"
+    ]
+  },
+  "capabilities": {
+    "advanced_synthesis": true,
+    "multi_model_consensus": true,
+    "constitutional_compliance": true,
+    "real_time_monitoring": true
+  }
+}
 ```
 
-**Description:** Generate governance policy using multi-model consensus
+### Policy Synthesis Endpoints
+
+#### POST /api/v1/synthesize
+Core governance synthesis from constitutional principles.
 
 **Request Body:**
 ```json
 {
-  "title": "Data Privacy Protection Policy",
-  "description": "Comprehensive policy for citizen data privacy protection",
-  "stakeholders": ["citizens", "government", "businesses"],
-  "constitutional_principles": ["privacy", "transparency", "accountability"],
-  "policy_type": "regulatory",
-  "priority": "high",
-  "context": {
-    "domain": "data_protection",
-    "jurisdiction": "federal",
-    "effective_date": "2025-07-01"
+  "policy_id": 123,
+  "principles": [
+    {
+      "title": "Democratic Participation",
+      "description": "Ensure democratic participation in governance"
+    }
+  ],
+  "synthesis_options": {
+    "format": "rego",
+    "validation_level": "comprehensive"
   }
 }
 ```
@@ -174,6 +209,37 @@ POST /api/v1/synthesis/optimize
 }
 ```
 
+### Advanced Features
+
+#### POST /api/v1/multi-model/synthesize
+Multi-model policy synthesis with consensus validation.
+
+#### POST /api/v1/enhanced/synthesize
+Enhanced governance synthesis with OPA integration.
+
+#### POST /api/v1/phase-a3/synthesize
+Phase A3 production policy synthesis with four-tier risk strategy.
+
+#### POST /api/v1/alphaevolve/synthesize
+AlphaEvolve integration for governance tuning.
+
+#### POST /api/v1/mab/optimize
+Multi-Armed Bandit optimization for synthesis strategies.
+
+#### POST /api/v1/wina/synthesize
+WINA-optimized Rego policy synthesis.
+
+### Governance Workflows
+
+#### GET /api/v1/governance/workflows
+List all available governance workflows.
+
+#### POST /api/v1/governance/workflows/{workflow_id}/start
+Start a specific governance workflow.
+
+#### GET /api/v1/governance/workflows/types
+Get available workflow types.
+
 ### Configuration and Management
 
 #### Service Status
@@ -186,30 +252,21 @@ GET /api/v1/status
 **Response (200 OK):**
 ```json
 {
-  "service": "governance_synthesis",
-  "version": "2.1.0",
-  "status": "operational",
-  "capabilities": [
-    "multi_model_consensus",
-    "policy_generation",
-    "constitutional_validation",
-    "performance_optimization"
-  ],
-  "performance_metrics": {
-    "avg_response_time_ms": 387,
-    "requests_per_second": 45,
-    "error_rate": 0.008
+  "api_version": "v1",
+  "service": "gs_service_production",
+  "status": "active",
+  "phase": "Phase 3 - Production Implementation",
+  "capabilities": {
+    "advanced_synthesis": true,
+    "multi_model_consensus": true,
+    "constitutional_compliance": true,
+    "real_time_monitoring": true
   },
-  "model_status": {
-    "qwen3-32b": "available",
-    "deepseek-chat": "available",
-    "qwen3-235b": "available",
-    "fallback_models": 2
-  },
-  "constitutional_compliance": {
-    "hash": "cdd01ef066bc6cf2",
-    "compliance_score": 0.96,
-    "last_validation": "2025-06-20T10:30:00Z"
+  "performance_targets": {
+    "response_time": "<2s for 95% operations",
+    "accuracy": ">95%",
+    "error_reduction": ">50%",
+    "availability": ">99.9%"
   }
 }
 ```

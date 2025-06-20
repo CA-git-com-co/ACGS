@@ -27,6 +27,7 @@ graph TB
         GS[Governance Synthesis<br/>Port 8004]
         PGC[Policy Governance<br/>Port 8005]
         EC[Evolutionary Computation<br/>Port 8006]
+        DGM[Darwin Gödel Machine<br/>Port 8007]
     end
     
     subgraph "Data Layer"
@@ -427,9 +428,144 @@ graph TB
     classDef alerts fill:#ffebee,stroke:#c62828,stroke-width:2px
     classDef tracing fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
     
-    class AUTH,AC,INT,FV,GS,PGC,EC service
+    class AUTH,AC,INT,FV,GS,PGC,EC,DGM service
     class PROM,NODE_EXP,CADVISOR metrics
     class FLUENTD,ELASTICSEARCH,KIBANA logs
     class GRAFANA,ALERT_MGR,SLACK,EMAIL alerts
     class JAEGER,ZIPKIN tracing
+```
+
+## Event-Driven Architecture with Service Mesh
+
+```mermaid
+graph TB
+    subgraph "Istio Service Mesh"
+        subgraph "Control Plane"
+            ISTIOD[Istiod Control Plane]
+            PILOT[Pilot - Service Discovery]
+            CITADEL[Citadel - Security]
+            GALLEY[Galley - Configuration]
+        end
+
+        subgraph "Data Plane"
+            subgraph "Service Pods"
+                AUTH_POD[Auth Service + Envoy Proxy]
+                AC_POD[AC Service + Envoy Proxy]
+                DGM_POD[DGM Service + Envoy Proxy]
+                GS_POD[GS Service + Envoy Proxy]
+                PGC_POD[PGC Service + Envoy Proxy]
+            end
+        end
+    end
+
+    subgraph "Event Broker Layer"
+        NATS[NATS Message Broker]
+        NATS_STREAM[NATS Streaming]
+        EVENT_STORE[Event Store]
+    end
+
+    subgraph "Event Types"
+        CONST_EVENTS[Constitutional Events]
+        POLICY_EVENTS[Policy Events]
+        DGM_EVENTS[DGM Improvement Events]
+        AUDIT_EVENTS[Audit Events]
+    end
+
+    ISTIOD --> AUTH_POD
+    ISTIOD --> AC_POD
+    ISTIOD --> DGM_POD
+    ISTIOD --> GS_POD
+    ISTIOD --> PGC_POD
+
+    AUTH_POD --> NATS
+    AC_POD --> NATS
+    DGM_POD --> NATS
+    GS_POD --> NATS
+    PGC_POD --> NATS
+
+    NATS --> NATS_STREAM
+    NATS_STREAM --> EVENT_STORE
+
+    NATS --> CONST_EVENTS
+    NATS --> POLICY_EVENTS
+    NATS --> DGM_EVENTS
+    NATS --> AUDIT_EVENTS
+
+    classDef mesh fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef service fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef broker fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef events fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+
+    class ISTIOD,PILOT,CITADEL,GALLEY mesh
+    class AUTH_POD,AC_POD,DGM_POD,GS_POD,PGC_POD service
+    class NATS,NATS_STREAM,EVENT_STORE broker
+    class CONST_EVENTS,POLICY_EVENTS,DGM_EVENTS,AUDIT_EVENTS events
+```
+
+## DGM Self-Improvement Architecture
+
+```mermaid
+graph TB
+    subgraph "DGM Service (Port 8007)"
+        DGM_ENGINE[DGM Engine]
+        BANDIT_ALG[Bandit Algorithms]
+        PERF_MON[Performance Monitor]
+        ARCHIVE_MGR[Archive Manager]
+    end
+
+    subgraph "Constitutional Compliance"
+        AC_VALIDATE[AC Service Validation]
+        CONST_HASH[Constitutional Hash Check]
+        COMPLIANCE_SCORE[Compliance Scoring]
+    end
+
+    subgraph "Target Services"
+        AUTH_TARGET[Auth Service]
+        AC_TARGET[AC Service]
+        GS_TARGET[GS Service]
+        PGC_TARGET[PGC Service]
+        FV_TARGET[FV Service]
+        INT_TARGET[Integrity Service]
+        EC_TARGET[EC Service]
+    end
+
+    subgraph "Improvement Workflow"
+        IDENTIFY[Identify Improvement]
+        VALIDATE[Validate Safety]
+        IMPLEMENT[Implement Change]
+        MONITOR[Monitor Results]
+        ROLLBACK[Rollback if Needed]
+    end
+
+    DGM_ENGINE --> BANDIT_ALG
+    BANDIT_ALG --> PERF_MON
+    PERF_MON --> ARCHIVE_MGR
+
+    DGM_ENGINE --> AC_VALIDATE
+    AC_VALIDATE --> CONST_HASH
+    CONST_HASH --> COMPLIANCE_SCORE
+
+    DGM_ENGINE --> IDENTIFY
+    IDENTIFY --> VALIDATE
+    VALIDATE --> IMPLEMENT
+    IMPLEMENT --> MONITOR
+    MONITOR --> ROLLBACK
+
+    IMPLEMENT --> AUTH_TARGET
+    IMPLEMENT --> AC_TARGET
+    IMPLEMENT --> GS_TARGET
+    IMPLEMENT --> PGC_TARGET
+    IMPLEMENT --> FV_TARGET
+    IMPLEMENT --> INT_TARGET
+    IMPLEMENT --> EC_TARGET
+
+    classDef dgm fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef compliance fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef targets fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef workflow fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+
+    class DGM_ENGINE,BANDIT_ALG,PERF_MON,ARCHIVE_MGR dgm
+    class AC_VALIDATE,CONST_HASH,COMPLIANCE_SCORE compliance
+    class AUTH_TARGET,AC_TARGET,GS_TARGET,PGC_TARGET,FV_TARGET,INT_TARGET,EC_TARGET targets
+    class IDENTIFY,VALIDATE,IMPLEMENT,MONITOR,ROLLBACK workflow
 ```

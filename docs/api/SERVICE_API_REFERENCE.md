@@ -1,10 +1,10 @@
 # ACGS-1 Service API Reference
 
-This document provides comprehensive API documentation for all 7 core services in the ACGS-1 constitutional AI governance system.
+This document provides comprehensive API documentation for all 8 core services in the ACGS-1 constitutional AI governance system.
 
 ## Service Architecture Overview
 
-ACGS-1 operates with 7 core services running on dedicated ports:
+ACGS-1 operates with 8 core services running on dedicated ports:
 
 | Service | Port | Purpose | Authentication |
 |---------|------|---------|----------------|
@@ -15,6 +15,7 @@ ACGS-1 operates with 7 core services running on dedicated ports:
 | Governance Synthesis Service | 8004 | Policy synthesis | API Key + JWT |
 | Policy Governance Service | 8005 | Policy enforcement | API Key + JWT |
 | Evolutionary Computation Service | 8006 | WINA oversight | API Key |
+| Darwin Gödel Machine Service | 8007 | Self-improvement & optimization | API Key + JWT |
 
 ## Authentication Service (Port 8000)
 
@@ -326,6 +327,80 @@ Submit learning feedback
 - WINA optimization algorithms
 - Performance monitoring infrastructure
 - Constitutional compliance verification
+
+## Darwin Gödel Machine Service (Port 8007)
+
+**Base URL**: `http://localhost:8007`
+**Implementation**: `services/core/dgm-service/`
+
+### Core Endpoints
+
+#### GET /dgm/status
+Get comprehensive DGM system status
+```json
+{
+  "status": "operational",
+  "version": "1.0.0",
+  "uptime_seconds": 3600,
+  "active_improvements": 2,
+  "total_improvements": 100,
+  "success_rate": 85.0,
+  "constitutional_compliance_score": 0.95
+}
+```
+
+#### POST /dgm/improve
+Trigger a new improvement cycle
+```json
+{
+  "description": "Optimize query performance",
+  "target_services": ["dgm-service"],
+  "priority": "medium",
+  "metadata": {}
+}
+```
+
+#### POST /dgm/bandit/select-arm
+Select an arm using bandit algorithm
+```json
+{
+  "context_key": "improvement_context",
+  "algorithm_type": "conservative_bandit",
+  "exploration_rate": 0.1,
+  "safety_threshold": 0.8
+}
+```
+
+#### POST /dgm/bandit/reward-feedback
+Provide reward feedback for bandit learning
+```json
+{
+  "context_key": "improvement_context",
+  "arm_id": "code_optimization",
+  "reward": 0.9,
+  "metadata": {}
+}
+```
+
+#### GET /dgm/performance
+Get performance report for specified time period
+
+#### POST /dgm/rollback
+Rollback a specific improvement
+```json
+{
+  "improvement_id": "uuid",
+  "reason": "Performance degradation",
+  "force": false
+}
+```
+
+### Dependencies
+- Darwin Gödel Machine engine
+- Bandit algorithm implementations
+- Performance monitoring system
+- Archive management system
+- Constitutional compliance validation
 
 ## Inter-Service Communication
 

@@ -22,12 +22,15 @@ ACGS-1/
 
 ### Prerequisites
 
-- **Rust** 1.75.0+ (for Anchor programs)
+- **Rust** 1.81.0+ (for Anchor programs and blockchain development)
 - **Solana CLI** 1.18.22+ (for blockchain development)
 - **Anchor CLI** 0.29.0+ (for smart contract framework)
 - **Node.js** 18+ (for TypeScript/React development)
-- **Python** 3.11+ (for backend services)
-- **Docker** & **Docker Compose** (for containerization)
+- **Python** 3.11+ (required for all backend services)
+- **UV Package Manager** (recommended for Python dependency management)
+- **PostgreSQL** 15+ (for database services)
+- **Redis** 7+ (for caching and session management)
+- **Docker** 24.0+ & **Docker Compose** (for containerization)
 
 ### Development Environment Setup
 
@@ -50,6 +53,12 @@ ACGS-1/
 
 3. **Set up Python environment** (for backend services):
    ```bash
+   # Using UV package manager (recommended)
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   source ~/.bashrc
+   uv sync
+
+   # Alternative: Traditional Python setup
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    pip install -r requirements.txt
@@ -95,19 +104,28 @@ ACGS-1/
 1. **Core Services** (Constitutional AI, Governance Synthesis, etc.):
    ```bash
    cd services/core/your-service
+   # Using UV (recommended)
+   uv sync && uv run uvicorn app.main:app --reload --port 800X
+
+   # Alternative: Traditional
    python -m uvicorn app.main:app --reload --port 800X
    ```
 
 2. **Platform Services** (Authentication, Integrity, etc.):
    ```bash
    cd services/platform/your-service
+   # Using UV (recommended)
+   uv sync && uv run uvicorn app.main:app --reload --port 800X
+
+   # Alternative: Traditional
    python -m uvicorn app.main:app --reload --port 800X
    ```
 
 3. **Service Communication**:
    - Use `services/shared/` for common utilities
-   - Follow port conventions (8000-8006 for core services)
+   - Follow port conventions: Auth (8000), AC (8001), Integrity (8002), FV (8003), GS (8004), PGC (8005), EC (8006), DGM (8007)
    - Implement health checks at `/health` endpoint
+   - Use UV package manager for dependency management
 
 ### Frontend Development
 
@@ -132,6 +150,27 @@ ACGS-1/
 1. **Quantumagi Bridge**: Blockchain-backend integration
 2. **AlphaEvolve Engine**: AI governance integration
 
+### DGM Development
+
+**Location**: `services/core/dgm-service/`
+
+1. **Darwin Gödel Machine Service** (Port 8007):
+   ```bash
+   cd services/core/dgm-service
+   # Using UV (recommended)
+   uv sync && uv run python -m dgm_service.main
+
+   # Alternative: Traditional
+   python -m dgm_service.main
+   ```
+
+2. **Event-Driven Architecture**:
+   - NATS message broker integration for real-time events
+   - Service mesh communication (Istio/Linkerd)
+   - LSU interface for self-evolving systems
+   - Conservative bandit algorithms for safe exploration
+   - Archive-backed evolution loops with performance tracking
+
 ## 🧪 Testing Guidelines
 
 ### Test Organization
@@ -147,7 +186,11 @@ ACGS-1/
 # Anchor program tests
 cd blockchain && anchor test
 
-# Python service tests
+# Python service tests (using UV recommended)
+uv run pytest tests/unit/
+uv run pytest tests/integration/
+
+# Alternative: Traditional Python testing
 python -m pytest tests/unit/
 python -m pytest tests/integration/
 

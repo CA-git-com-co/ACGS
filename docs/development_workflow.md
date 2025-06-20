@@ -270,20 +270,28 @@ tests/
 │   ├── fv_service/
 │   ├── gs_service/
 │   ├── pgc_service/
-│   └── ec_service/
+│   ├── ec_service/
+│   └── dgm_service/         # DGM service unit tests
 ├── integration/             # Integration tests between services
 │   ├── test_policy_pipeline.py
 │   ├── test_constitutional_council.py
-│   └── test_auth_flow.py
+│   ├── test_auth_flow.py
+│   └── test_dgm_integration.py  # DGM integration tests
 ├── e2e/                     # End-to-end tests
 │   ├── test_complete_workflows.py
-│   └── test_user_journeys.py
+│   ├── test_user_journeys.py
+│   └── test_dgm_workflows.py    # DGM workflow tests
 ├── performance/             # Performance and load tests
 │   ├── test_load_scenarios.py
-│   └── test_stress_testing.py
+│   ├── test_stress_testing.py
+│   └── test_dgm_performance.py  # DGM performance tests
+├── constitutional/          # Constitutional compliance tests
+│   ├── test_governance_compliance.py
+│   └── test_dgm_safety.py       # DGM safety tests
 └── fixtures/                # Test data and fixtures
     ├── test_users.json
     ├── test_policies.json
+    └── test_dgm_data.json       # DGM test data
     └── test_principles.json
 ```
 

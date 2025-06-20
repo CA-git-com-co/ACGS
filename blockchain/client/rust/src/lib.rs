@@ -13,6 +13,7 @@ use std::rc::Rc;
 pub mod governance;
 pub mod appeals;
 pub mod logging;
+pub mod test_infrastructure;
 
 /// ACGS Blockchain Client for Rust
 ///

@@ -1,0 +1,260 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: dgm-service
+  namespace: acgs
+  labels:
+    app: dgm-service
+spec:
+  hosts:
+  - dgm-service
+  - dgm-service.acgs.svc.cluster.local
+  - dgm.acgs.local  # External domain
+  gateways:
+  - acgs-gateway
+  - mesh  # For internal traffic
+  http:
+  - match:
+    - uri:
+        prefix: /api/v1/dgm
+    - headers:
+        x-api-version:
+          exact: v1
+    route:
+    - destination:
+        host: dgm-service
+        port:
+          number: 8007
+        subset: v1
+      weight: 100
+    timeout: 30s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+      retryOn: 5xx,reset,connect-failure,refused-stream
+    fault:
+      delay:
+        percentage:
+          value: 0.1
+        fixedDelay: 5s
+      abort:
+        percentage:
+          value: 0.001
+        httpStatus: 503
+  - match:
+    - uri:
+        prefix: /health
+    route:
+    - destination:
+        host: dgm-service
+        port:
+          number: 8007
+    timeout: 5s
+  - match:
+    - uri:
+        prefix: /ready
+    route:
+    - destination:
+        host: dgm-service
+        port:
+          number: 8007
+    timeout: 3s
+  - match:
+    - uri:
+        prefix: /metrics
+    route:
+    - destination:
+        host: dgm-service
+        port:
+          number: 9090
+    timeout: 10s
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: dgm-service
+  namespace: acgs
+  labels:
+    app: dgm-service
+spec:
+  host: dgm-service
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 100
+        connectTimeout: 30s
+        tcpKeepalive:
+          time: 7200s
+          interval: 75s
+      http:
+        http1MaxPendingRequests: 50
+        http2MaxRequests: 100
+        maxRequestsPerConnection: 10
+        maxRetries: 3
+        consecutiveGatewayErrors: 5
+        interval: 30s
+        baseEjectionTime: 30s
+        maxEjectionPercent: 50
+        minHealthPercent: 50
+    loadBalancer:
+      simple: LEAST_CONN
+    outlierDetection:
+      consecutiveGatewayErrors: 5
+      consecutive5xxErrors: 5
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+      minHealthPercent: 50
+      splitExternalLocalOriginErrors: false
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+    trafficPolicy:
+      connectionPool:
+        tcp:
+          maxConnections: 50
+        http:
+          http1MaxPendingRequests: 25
+          http2MaxRequests: 50
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: acgs-gateway
+  namespace: acgs
+  labels:
+    app: acgs-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - dgm.acgs.local
+    - "*.acgs.local"
+    tls:
+      httpsRedirect: true
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    hosts:
+    - dgm.acgs.local
+    - "*.acgs.local"
+    tls:
+      mode: SIMPLE
+      credentialName: acgs-tls-secret
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: dgm-service-authz
+  namespace: acgs
+  labels:
+    app: dgm-service
+spec:
+  selector:
+    matchLabels:
+      app: dgm-service
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/acgs/sa/auth-service"]
+    - source:
+        principals: ["cluster.local/ns/acgs/sa/ac-service"]
+    - source:
+        principals: ["cluster.local/ns/acgs/sa/gs-service"]
+    - source:
+        namespaces: ["istio-system"]  # Allow ingress gateway
+    to:
+    - operation:
+        methods: ["GET", "POST", "PUT", "DELETE"]
+        paths: ["/api/v1/dgm/*"]
+    when:
+    - key: request.headers[authorization]
+      values: ["Bearer *"]
+  - from:
+    - source:
+        namespaces: ["acgs", "istio-system"]
+    to:
+    - operation:
+        methods: ["GET"]
+        paths: ["/health", "/ready", "/metrics"]
+  - from:
+    - source:
+        principals: ["cluster.local/ns/acgs/sa/dgm-service"]
+    to:
+    - operation:
+        methods: ["*"]
+        paths: ["*"]
+---
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: dgm-service-mtls
+  namespace: acgs
+  labels:
+    app: dgm-service
+spec:
+  selector:
+    matchLabels:
+      app: dgm-service
+  mtls:
+    mode: STRICT
+---
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: dgm-service-metrics
+  namespace: acgs
+  labels:
+    app: dgm-service
+spec:
+  selector:
+    matchLabels:
+      app: dgm-service
+  metrics:
+  - providers:
+    - name: prometheus
+  - overrides:
+    - match:
+        metric: ALL_METRICS
+      tagOverrides:
+        service_name:
+          value: "dgm-service"
+        service_version:
+          value: "v1"
+        constitutional_hash:
+          value: "cdd01ef066bc6cf2"
+---
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: dgm-service-tracing
+  namespace: acgs
+  labels:
+    app: dgm-service
+spec:
+  selector:
+    matchLabels:
+      app: dgm-service
+  tracing:
+  - providers:
+    - name: jaeger
+  - customTags:
+      service_name:
+        literal:
+          value: "dgm-service"
+      constitutional_hash:
+        literal:
+          value: "cdd01ef066bc6cf2"
+      improvement_id:
+        header:
+          name: "x-improvement-id"
+      correlation_id:
+        header:
+          name: "x-correlation-id"

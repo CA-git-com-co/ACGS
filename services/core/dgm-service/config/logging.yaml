@@ -1,0 +1,260 @@
+# DGM Service Logging Configuration
+# Comprehensive structured logging setup with multiple handlers and formatters
+
+version: 1
+disable_existing_loggers: false
+
+formatters:
+  # JSON formatter for structured logging
+  json:
+    class: pythonjsonlogger.jsonlogger.JsonFormatter
+    format: '%(asctime)s %(name)s %(levelname)s %(funcName)s %(lineno)d %(message)s'
+    datefmt: '%Y-%m-%dT%H:%M:%S'
+    
+  # Standard text formatter for console output
+  standard:
+    format: '%(asctime)s [%(levelname)8s] %(name)s: %(message)s'
+    datefmt: '%Y-%m-%d %H:%M:%S'
+    
+  # Detailed formatter for debug logs
+  detailed:
+    format: '%(asctime)s [%(levelname)8s] %(name)s:%(funcName)s:%(lineno)d: %(message)s'
+    datefmt: '%Y-%m-%d %H:%M:%S'
+    
+  # Audit formatter for security events
+  audit:
+    class: pythonjsonlogger.jsonlogger.JsonFormatter
+    format: '%(asctime)s %(name)s %(levelname)s %(event_type)s %(severity)s %(user_id)s %(resource_id)s %(message)s'
+    datefmt: '%Y-%m-%dT%H:%M:%S'
+
+handlers:
+  # Console handler for development
+  console:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: standard
+    stream: ext://sys.stdout
+    
+  # Main application log file
+  file_main:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: json
+    filename: /var/log/dgm-service/dgm-service.log
+    maxBytes: 52428800  # 50MB
+    backupCount: 10
+    encoding: utf8
+    
+  # Error log file
+  file_error:
+    class: logging.handlers.RotatingFileHandler
+    level: ERROR
+    formatter: json
+    filename: /var/log/dgm-service/error.log
+    maxBytes: 52428800  # 50MB
+    backupCount: 5
+    encoding: utf8
+    
+  # Debug log file (only in development)
+  file_debug:
+    class: logging.handlers.RotatingFileHandler
+    level: DEBUG
+    formatter: detailed
+    filename: /var/log/dgm-service/debug.log
+    maxBytes: 104857600  # 100MB
+    backupCount: 3
+    encoding: utf8
+    
+  # Audit log file for security events
+  file_audit:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: audit
+    filename: /var/log/dgm-service/audit.log
+    maxBytes: 52428800  # 50MB
+    backupCount: 20  # Keep more audit logs
+    encoding: utf8
+    
+  # Performance log file
+  file_performance:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: json
+    filename: /var/log/dgm-service/performance.log
+    maxBytes: 52428800  # 50MB
+    backupCount: 7
+    encoding: utf8
+    
+  # Constitutional compliance log file
+  file_constitutional:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: json
+    filename: /var/log/dgm-service/constitutional.log
+    maxBytes: 52428800  # 50MB
+    backupCount: 15
+    encoding: utf8
+    
+  # Syslog handler for centralized logging
+  syslog:
+    class: logging.handlers.SysLogHandler
+    level: WARNING
+    formatter: json
+    address: ['localhost', 514]
+    facility: 'local0'
+    
+  # HTTP handler for log aggregation services
+  http:
+    class: logging.handlers.HTTPHandler
+    level: ERROR
+    formatter: json
+    host: 'log-aggregator:8080'
+    url: '/api/v1/logs'
+    method: 'POST'
+
+loggers:
+  # Main DGM service logger
+  dgm_service:
+    level: INFO
+    handlers: [console, file_main, file_error]
+    propagate: false
+    
+  # DGM core engine logger
+  dgm_service.core:
+    level: INFO
+    handlers: [file_main, file_performance]
+    propagate: false
+    
+  # Constitutional compliance logger
+  dgm_service.constitutional:
+    level: INFO
+    handlers: [file_constitutional, file_main]
+    propagate: false
+    
+  # Security and audit logger
+  dgm_service.security:
+    level: INFO
+    handlers: [file_audit, file_error]
+    propagate: false
+    
+  # Performance monitoring logger
+  dgm_service.performance:
+    level: INFO
+    handlers: [file_performance]
+    propagate: false
+    
+  # API request/response logger
+  dgm_service.api:
+    level: INFO
+    handlers: [file_main]
+    propagate: false
+    
+  # Database operations logger
+  dgm_service.database:
+    level: INFO
+    handlers: [file_main, file_error]
+    propagate: false
+    
+  # Cache operations logger
+  dgm_service.cache:
+    level: INFO
+    handlers: [file_main]
+    propagate: false
+    
+  # Model integration logger
+  dgm_service.models:
+    level: INFO
+    handlers: [file_main, file_performance]
+    propagate: false
+    
+  # Workflow engine logger
+  dgm_service.workflows:
+    level: INFO
+    handlers: [file_main, file_performance]
+    propagate: false
+    
+  # Archive manager logger
+  dgm_service.archive:
+    level: INFO
+    handlers: [file_main]
+    propagate: false
+    
+  # Bandit algorithms logger
+  dgm_service.bandit:
+    level: INFO
+    handlers: [file_main, file_performance]
+    propagate: false
+    
+  # Third-party library loggers
+  uvicorn:
+    level: INFO
+    handlers: [console, file_main]
+    propagate: false
+    
+  uvicorn.access:
+    level: INFO
+    handlers: [file_main]
+    propagate: false
+    
+  fastapi:
+    level: INFO
+    handlers: [file_main]
+    propagate: false
+    
+  sqlalchemy:
+    level: WARNING
+    handlers: [file_main]
+    propagate: false
+    
+  sqlalchemy.engine:
+    level: WARNING
+    handlers: [file_main]
+    propagate: false
+    
+  redis:
+    level: WARNING
+    handlers: [file_main]
+    propagate: false
+    
+  httpx:
+    level: WARNING
+    handlers: [file_main]
+    propagate: false
+    
+  openai:
+    level: INFO
+    handlers: [file_main]
+    propagate: false
+
+# Root logger configuration
+root:
+  level: WARNING
+  handlers: [console, file_error]
+
+# Environment-specific overrides
+development:
+  loggers:
+    dgm_service:
+      level: DEBUG
+      handlers: [console, file_main, file_debug, file_error]
+    root:
+      level: DEBUG
+      handlers: [console, file_debug]
+
+production:
+  loggers:
+    dgm_service:
+      level: INFO
+      handlers: [file_main, file_error, syslog]
+    root:
+      level: WARNING
+      handlers: [file_error, syslog]
+
+testing:
+  loggers:
+    dgm_service:
+      level: DEBUG
+      handlers: [console]
+    root:
+      level: WARNING
+      handlers: [console]

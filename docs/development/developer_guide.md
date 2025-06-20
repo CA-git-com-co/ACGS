@@ -6,8 +6,9 @@ This comprehensive guide provides instructions and best practices for developers
 
 ### **Prerequisites**
 - Docker 20.10+ with Docker Compose v2
-- Python 3.9+ for local development
-- Node.js 16+ for frontend development
+- Rust 1.81.0+ for blockchain development
+- Python 3.9+ for backend services
+- Node.js 18+ for frontend development only
 - Git with proper SSH/HTTPS configuration
 - OpenAI API key for LLM integration
 - Basic understanding of constitutional AI governance principles

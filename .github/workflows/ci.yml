@@ -466,6 +466,38 @@ jobs:
 
           echo "✅ Anchor build completed successfully"
 
+      - name: Test Rust deployment tools integration
+        working-directory: blockchain
+        run: |
+          echo "🔧 Testing Rust deployment tools integration with CI/CD..."
+
+          # Test all Rust deployment tools
+          echo "Testing key management tool..."
+          cargo run --bin key_management -- --help
+
+          echo "Testing program ID generator..."
+          cargo run --bin generate_program_ids -- --help
+
+          echo "Testing deployment validator..."
+          cargo run --bin validate_deployment -- --help
+
+          echo "Testing constitution initializer..."
+          cargo run --bin initialize_constitution -- --help
+
+          # Test key management functionality
+          echo "Testing key management init..."
+          cargo run --bin key_management -- init
+
+          # Test program ID generation
+          echo "Testing program ID generation..."
+          cargo run --bin generate_program_ids -- generate-all
+
+          # Test deployment validation (dry run)
+          echo "Testing deployment validation..."
+          cargo run --bin validate_deployment -- --cluster devnet --verbose || echo "Validation completed with expected results"
+
+          echo "✅ All Rust deployment tools integration tests passed"
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:

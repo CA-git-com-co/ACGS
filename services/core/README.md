@@ -66,8 +66,40 @@ This directory contains the core governance services that implement the fundamen
 - Formal validation APIs
 - Proof generation and storage
 
-**Port**: 8004
+**Port**: 8003
 **API Base**: `/api/formal-verification/`
+
+### Evolutionary Computation Service (`evolutionary-computation/`)
+**Purpose**: WINA-optimized oversight and performance monitoring
+- Constitutional compliance verification and optimization
+- Evolutionary governance strategies and learning feedback
+- Performance optimization alerts and constitutional updates
+- WINA oversight coordination
+
+**Key Features**:
+- Performance monitoring and optimization
+- Constitutional compliance tracking
+- Evolutionary strategy implementation
+- Alert and notification systems
+
+**Port**: 8006
+**API Base**: `/api/evolutionary-computation/`
+
+### Darwin Gödel Machine Service (`dgm-service/`)
+**Purpose**: Self-evolving AI governance with constitutional compliance
+- Darwin Gödel Machine implementation for autonomous system evolution
+- Event-driven architecture with NATS message broker integration
+- LSU interface and SEE platform for self-evolving systems
+- Conservative bandit algorithms for safe exploration
+
+**Key Features**:
+- Self-improving algorithms with constitutional constraints
+- Archive-backed evolution loops with performance tracking
+- Safe exploration with reward-hacking resilience
+- Semantic validation as hard constraints
+
+**Port**: 8007
+**API Base**: `/api/dgm/`
 
 ## Service Architecture
 
@@ -101,11 +133,21 @@ Constitutional AI ──→ Governance Synthesis
 # Start all core services
 docker-compose -f infrastructure/docker/docker-compose.core.yml up -d
 
-# Or start individually
+# Or start individually with UV (recommended)
+cd services/core/constitutional-ai && uv sync && uv run uvicorn app.main:app --reload --port 8001
+cd services/core/governance-synthesis && uv sync && uv run uvicorn app.main:app --reload --port 8004
+cd services/core/policy-governance && uv sync && uv run uvicorn app.main:app --reload --port 8005
+cd services/core/formal-verification && uv sync && uv run uvicorn app.main:app --reload --port 8003
+cd services/core/evolutionary-computation && uv sync && uv run uvicorn app.main:app --reload --port 8006
+cd services/core/dgm-service && uv sync && uv run python -m dgm_service.main
+
+# Alternative: Traditional Python
 cd services/core/constitutional-ai && python -m uvicorn app.main:app --reload --port 8001
-cd services/core/governance-synthesis && python -m uvicorn app.main:app --reload --port 8002
-cd services/core/policy-governance && python -m uvicorn app.main:app --reload --port 8003
-cd services/core/formal-verification && python -m uvicorn app.main:app --reload --port 8004
+cd services/core/governance-synthesis && python -m uvicorn app.main:app --reload --port 8004
+cd services/core/policy-governance && python -m uvicorn app.main:app --reload --port 8005
+cd services/core/formal-verification && python -m uvicorn app.main:app --reload --port 8003
+cd services/core/evolutionary-computation && python -m uvicorn app.main:app --reload --port 8006
+cd services/core/dgm-service && python -m dgm_service.main
 ```
 
 ### Testing Core Services

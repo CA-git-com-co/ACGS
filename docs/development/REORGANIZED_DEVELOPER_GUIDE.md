@@ -19,11 +19,11 @@ This comprehensive guide provides instructions and best practices for developers
 
 ### Prerequisites
 
+- **Rust 1.81.0+**: Primary blockchain development language
 - **Solana CLI v1.18.22+**: Blockchain development
 - **Anchor Framework v0.29.0+**: Solana program framework
-- **Rust 1.70+**: Blockchain program development
 - **Python 3.9+**: Backend service development
-- **Node.js 18+**: Frontend development and blockchain client
+- **Node.js 18+**: Frontend development only
 - **Docker & Docker Compose**: Containerization and local development
 - **PostgreSQL 15+**: Primary database
 - **Redis 7+**: Caching and session storage
@@ -108,14 +108,14 @@ ACGS-1/
 
 ## Development Environment Setup
 
-### Blockchain Development Setup
+### Blockchain Development Setup (Rust-First)
 
 ```bash
-# Set up Solana development environment
+# Set up Rust blockchain development environment
 cd blockchain
 
-# Install dependencies
-npm install
+# Build Rust tools and workspace
+cd scripts && cargo build --release && cd ..
 
 # Start local validator
 solana-test-validator &
@@ -123,11 +123,14 @@ solana-test-validator &
 # Build programs
 anchor build
 
-# Run tests
+# Run Rust integration tests (primary)
+cd scripts && cargo test --release
+
+# Run legacy Anchor tests (if needed)
 anchor test
 
-# Deploy to local validator
-anchor deploy
+# Deploy using Rust tools
+cd scripts && cargo run --bin deploy_quantumagi -- deploy --cluster localhost
 ```
 
 ### Backend Services Setup

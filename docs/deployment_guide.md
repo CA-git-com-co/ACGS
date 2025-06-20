@@ -33,22 +33,40 @@ sudo usermod -aG docker $USER
 sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 
+# Install UV Package Manager (recommended for Python dependency management)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+source ~/.bashrc
+
+# Install Python 3.11+
+sudo apt update
+sudo apt install python3.11 python3.11-venv python3.11-dev
+
 # Verify installation
 docker --version
 docker-compose --version
+uv --version
+python3.11 --version
 ```
 
 ### **Environment Setup**
 ```bash
 # Clone repository
-git clone https://github.com/dislovemartin/ACGS.git
-cd ACGS-master
+git clone https://github.com/CA-git-com-co/ACGS.git
+cd ACGS
 
 # Copy environment configuration
-cp config/env/.env.example config/env/.env
+cp .env.example .env
 
 # Configure environment variables (see Environment Configuration section)
-nano config/env/.env
+nano .env
+
+# Set up Python environment with UV (recommended)
+uv sync
+
+# Alternative: Traditional Python setup
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
 ### **Development Deployment**
@@ -180,6 +198,7 @@ FV_SERVICE_PORT=8003
 GS_SERVICE_PORT=8004
 PGC_SERVICE_PORT=8005
 EC_SERVICE_PORT=8006
+DGM_SERVICE_PORT=8007
 ```
 
 ### **Security Configuration**
@@ -348,6 +367,7 @@ curl http://localhost:8003/health  # FV Service
 curl http://localhost:8004/health  # GS Service
 curl http://localhost:8005/health  # PGC Service
 curl http://localhost:8006/health  # EC Service
+curl http://localhost:8007/health  # DGM Service
 ```
 
 ### **Integration Testing**
