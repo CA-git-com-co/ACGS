@@ -12,6 +12,7 @@ Tests overall system performance including:
 import asyncio
 import gc
 import psutil
+import random
 import time
 import statistics
 from typing import Dict, List

@@ -168,27 +168,66 @@ def run_performance_tests(args) -> Dict[str, Any]:
     print("\n" + "="*60)
     print("RUNNING PERFORMANCE TESTS")
     print("="*60)
-    
-    pytest_args = [
-        "-v",
-        "--tb=short",
-        "--benchmark-only",
-        "--benchmark-sort=mean",
-        "-m", "performance"
-    ]
-    
-    if args.verbose:
-        pytest_args.append("-vv")
-    
-    pytest_args.append("tests/")
-    
-    return_code = pytest.main(pytest_args)
-    
-    return {
-        "success": return_code == 0,
-        "return_code": return_code,
-        "test_type": "performance"
-    }
+
+    if args.comprehensive_performance:
+        # Run comprehensive performance test suite
+        print("Running comprehensive performance test suite...")
+        try:
+            import subprocess
+            import sys
+
+            cmd = [
+                sys.executable,
+                "tests/performance/run_performance_tests.py"
+            ]
+
+            if args.quick:
+                cmd.append("--quick")
+            if args.no_load:
+                cmd.append("--no-load")
+
+            result = subprocess.run(cmd, capture_output=True, text=True)
+
+            print(result.stdout)
+            if result.stderr:
+                print("STDERR:", result.stderr)
+
+            return {
+                "success": result.returncode == 0,
+                "return_code": result.returncode,
+                "test_type": "comprehensive_performance"
+            }
+
+        except Exception as e:
+            print(f"Error running comprehensive performance tests: {e}")
+            return {
+                "success": False,
+                "return_code": 1,
+                "test_type": "comprehensive_performance",
+                "error": str(e)
+            }
+    else:
+        # Run basic pytest performance tests
+        pytest_args = [
+            "-v",
+            "--tb=short",
+            "--benchmark-only",
+            "--benchmark-sort=mean",
+            "-m", "performance"
+        ]
+
+        if args.verbose:
+            pytest_args.append("-vv")
+
+        pytest_args.append("tests/performance/")
+
+        return_code = pytest.main(pytest_args)
+
+        return {
+            "success": return_code == 0,
+            "return_code": return_code,
+            "test_type": "performance"
+        }
 
 
 def run_security_tests(args) -> Dict[str, Any]:
@@ -329,6 +368,18 @@ def main():
     parser.add_argument(
         "--performance", action="store_true",
         help="Run performance tests only"
+    )
+    parser.add_argument(
+        "--comprehensive-performance", action="store_true",
+        help="Run comprehensive performance test suite with load testing"
+    )
+    parser.add_argument(
+        "--quick", action="store_true",
+        help="Run quick tests (shorter duration for performance tests)"
+    )
+    parser.add_argument(
+        "--no-load", action="store_true",
+        help="Skip load testing in performance tests"
     )
     parser.add_argument(
         "--security", action="store_true",

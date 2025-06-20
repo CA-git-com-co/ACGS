@@ -615,7 +615,6 @@ backup_reorganization/
 
 # Task Master AI files
 tasks.json
-tasks/
 .taskmaster/tasks/
 **/.taskmaster/tasks/
 
@@ -686,3 +685,52 @@ logs
 .vscode
 # OS specific
 # Task files
+
+# ============================================================================
+# ADDITIONAL CLEANUP PATTERNS (Added during deep cleanup)
+# ============================================================================
+
+# Task and summary files
+Tasks_*.md
+PROJECT_COMPLETION_SUMMARY.md
+tasks/
+
+# Additional Python cache patterns
+*.pyc
+*.pyo
+**/__pycache__/
+
+# Additional test and coverage patterns
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Additional temporary and log patterns
+*.tmp
+*.temp
+*.log
+
+# Additional build artifacts
+**/build/
+**/dist/
+**/.next/
+**/target/
+
+# Additional node modules patterns
+**/node_modules/
+
+# Additional virtual environment patterns
+**/venv/
+**/env/
+
+# IDE and editor files
+**/.vscode/
+**/.idea/
+*.swp
+*.swo
+*~
+
+# OS specific files
+.DS_Store
+Thumbs.db

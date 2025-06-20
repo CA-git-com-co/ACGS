@@ -21,10 +21,13 @@ from .core.constitutional_validator import ConstitutionalValidator
 from .core.performance_monitor import PerformanceMonitor
 from .core.archive_manager import ArchiveManager
 from .database import database_manager
-from .api.v1 import dgm_router, constitutional_router, health_router
+from .api.v1 import dgm_router, constitutional_router, health_router, integration_router
 from .middleware.auth import AuthMiddleware
 from .middleware.security import SecurityMiddleware
 from .middleware.logging import LoggingMiddleware
+from .integrations.gs_service_integration import GSServiceIntegration
+from .integrations.performance_monitor import CrossServicePerformanceMonitor
+from .integrations.trigger_manager import ImprovementTriggerManager
 
 # Configure logging
 logging.basicConfig(
@@ -47,10 +50,25 @@ async def lifespan(app: FastAPI):
     app.state.constitutional_validator = ConstitutionalValidator()
     app.state.performance_monitor = PerformanceMonitor()
     app.state.archive_manager = ArchiveManager()
-    
+
+    # Initialize integration components
+    app.state.gs_integration = GSServiceIntegration(app.state.performance_monitor)
+    app.state.cross_service_monitor = CrossServicePerformanceMonitor()
+    app.state.trigger_manager = ImprovementTriggerManager()
+
+    # Initialize integrations
+    await app.state.gs_integration.initialize()
+    await app.state.trigger_manager.start()
+
     # Start background tasks
     app.state.monitor_task = asyncio.create_task(
         app.state.performance_monitor.start_monitoring()
+    )
+    app.state.gs_monitor_task = asyncio.create_task(
+        app.state.gs_integration.start_monitoring()
+    )
+    app.state.cross_service_task = asyncio.create_task(
+        app.state.cross_service_monitor.start_monitoring()
     )
     
     logger.info("DGM Service started successfully")
@@ -59,6 +77,11 @@ async def lifespan(app: FastAPI):
     # Cleanup
     logger.info("Shutting down DGM Service...")
     app.state.monitor_task.cancel()
+    app.state.gs_monitor_task.cancel()
+    app.state.cross_service_task.cancel()
+    await app.state.gs_integration.cleanup()
+    await app.state.cross_service_monitor.stop_monitoring()
+    await app.state.trigger_manager.stop()
     await database_manager.close()
     logger.info("DGM Service shutdown complete")
 
@@ -109,6 +132,7 @@ instrumentator.instrument(app).expose(app)
 app.include_router(health_router, prefix="", tags=["Health"])
 app.include_router(dgm_router, prefix="/api/v1/dgm", tags=["DGM Operations"])
 app.include_router(constitutional_router, prefix="/api/v1/constitutional", tags=["Constitutional"])
+app.include_router(integration_router, prefix="/api/v1/integration", tags=["Service Integration"])
 
 # Global exception handler
 @app.exception_handler(Exception)
