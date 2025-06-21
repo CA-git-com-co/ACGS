@@ -199,10 +199,10 @@ jobs:
           path: test-results-*.xml
 
       - name: Upload coverage reports
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         if: always()
         with:
-          file: ./coverage.xml
+          files: ./coverage.xml
           flags: unit-tests,${{ matrix.test-group }}
           name: codecov-${{ matrix.test-group }}
           fail_ci_if_error: false
@@ -291,10 +291,10 @@ jobs:
           path: test-results-integration.xml
 
       - name: Upload coverage reports
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         if: always()
         with:
-          file: ./coverage.xml
+          files: ./coverage.xml
           flags: integration-tests
           name: codecov-integration
           fail_ci_if_error: false
@@ -406,7 +406,7 @@ jobs:
           fi
 
       - name: Upload frontend coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         if: always()
         with:
           directory: ./applications/governance-dashboard/coverage

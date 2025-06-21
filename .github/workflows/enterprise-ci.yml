@@ -27,7 +27,7 @@ env:
   ENTERPRISE_BUILD_TARGET_MINUTES: 5
   ENTERPRISE_AVAILABILITY_TARGET: 99.5
   # Enhanced Caching Configuration for Enterprise Performance
-  CARGO_INCREMENTAL: 1  # Enable incremental compilation for development
+  CARGO_INCREMENTAL: 0  # Disabled for sccache compatibility
   CARGO_NET_RETRY: 10
   CARGO_NET_GIT_FETCH_WITH_CLI: true
   # Workspace-level caching optimization
@@ -242,7 +242,7 @@ jobs:
               echo "🔄 Installation attempt $attempt/$max_attempts"
 
               # Primary method: Official installer
-              if timeout 180 sh -c 'curl -sSfL https://release.solana.com/v${{ env.SOLANA_CLI_VERSION }}/install | sh'; then
+              if timeout 180 sh -c 'timeout 300 curl -sSfL https://release.solana.com/v${{ env.SOLANA_CLI_VERSION }}/install | sh'; then
                 echo "✅ Primary installation successful on attempt $attempt"
                 return 0
               fi
