@@ -1,0 +1,457 @@
+name: ACGS-1 Performance Benchmarking
+
+on:
+  schedule:
+    - cron: '0 4 * * 1'  # Weekly on Monday at 4 AM
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - development
+        - staging
+        - production
+      test_type:
+        description: 'Type of performance test'
+        required: true
+        default: 'comprehensive'
+        type: choice
+        options:
+        - health_check
+        - load_test
+        - stress_test
+        - endurance_test
+        - comprehensive
+      concurrent_users:
+        description: 'Number of concurrent users (for load/stress tests)'
+        required: false
+        default: '50'
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+  packages: read
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  # Performance Test Setup
+  performance_setup:
+    runs-on: ubuntu-latest
+    name: Performance Test Setup
+    outputs:
+      test_environment: ${{ steps.setup.outputs.environment }}
+      base_url: ${{ steps.setup.outputs.base_url }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Setup test environment
+        id: setup
+        run: |
+          echo "🔧 Setting up performance test environment..."
+          
+          ENVIRONMENT="${{ github.event.inputs.environment || 'staging' }}"
+          
+          case "$ENVIRONMENT" in
+            "development")
+              BASE_URL="http://localhost"
+              ;;
+            "staging")
+              BASE_URL="https://staging.acgs-pgp.com"
+              ;;
+            "production")
+              BASE_URL="https://api.acgs-pgp.com"
+              ;;
+          esac
+          
+          echo "environment=$ENVIRONMENT" >> $GITHUB_OUTPUT
+          echo "base_url=$BASE_URL" >> $GITHUB_OUTPUT
+          
+          echo "✅ Environment: $ENVIRONMENT"
+          echo "✅ Base URL: $BASE_URL"
+
+  # Service Health Check
+  service_health_check:
+    runs-on: ubuntu-latest
+    name: Service Health Check
+    needs: performance_setup
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install aiohttp psutil pyyaml locust
+
+      - name: Check service health
+        run: |
+          echo "🏥 Checking service health..."
+          
+          BASE_URL="${{ needs.performance_setup.outputs.base_url }}"
+          SERVICES=("auth_service:8000" "ac_service:8001" "integrity_service:8002" "fv_service:8003" "gs_service:8004" "pgc_service:8005" "ec_service:8006")
+          
+          for service in "${SERVICES[@]}"; do
+            IFS=':' read -r name port <<< "$service"
+            echo "Checking $name on port $port..."
+            
+            if curl -f --max-time 10 "$BASE_URL:$port/health" >/dev/null 2>&1; then
+              echo "✅ $name is healthy"
+            else
+              echo "❌ $name health check failed"
+            fi
+          done
+          
+          echo "✅ Health check completed"
+
+  # Load Testing
+  load_testing:
+    runs-on: ubuntu-latest
+    name: Load Testing
+    needs: [performance_setup, service_health_check]
+    if: github.event.inputs.test_type == 'load_test' || github.event.inputs.test_type == 'comprehensive' || github.event.inputs.test_type == ''
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install aiohttp psutil pyyaml locust
+
+      - name: Create performance config
+        run: |
+          echo "📝 Creating performance configuration..."
+          
+          mkdir -p config/performance
+          
+          cat > config/performance/benchmark-config.yml << EOF
+          base_url: "${{ needs.performance_setup.outputs.base_url }}"
+          test_duration: 300
+          concurrent_users: [1, 5, 10, 25, ${{ github.event.inputs.concurrent_users || '50' }}]
+          ramp_up_time: 30
+          test_types: ["health_check", "load_test"]
+          performance_targets:
+            response_time_ms: 2000
+            availability_percent: 99.0
+            throughput_rps: 100
+          EOF
+          
+          echo "✅ Configuration created"
+
+      - name: Run load tests
+        run: |
+          echo "🚀 Running load tests..."
+          
+          # Make benchmark script executable
+          chmod +x scripts/performance/benchmark.py
+          
+          # Run benchmark
+          python scripts/performance/benchmark.py \
+            --config config/performance/benchmark-config.yml \
+            --output /tmp/load-test-results.json \
+            --format json
+          
+          echo "✅ Load tests completed"
+
+      - name: Upload load test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: load-test-results
+          path: /tmp/load-test-results.json
+          retention-days: 30
+
+  # Stress Testing
+  stress_testing:
+    runs-on: ubuntu-latest
+    name: Stress Testing
+    needs: [performance_setup, service_health_check]
+    if: github.event.inputs.test_type == 'stress_test' || github.event.inputs.test_type == 'comprehensive'
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install aiohttp psutil pyyaml locust
+
+      - name: Create stress test config
+        run: |
+          echo "📝 Creating stress test configuration..."
+          
+          mkdir -p config/performance
+          
+          # Higher load for stress testing
+          STRESS_USERS=$(($(echo "${{ github.event.inputs.concurrent_users || '50' }}" | tr -d '"') * 2))
+          
+          cat > config/performance/stress-test-config.yml << EOF
+          base_url: "${{ needs.performance_setup.outputs.base_url }}"
+          test_duration: 600
+          concurrent_users: [50, 100, 200, $STRESS_USERS]
+          ramp_up_time: 60
+          test_types: ["stress_test"]
+          performance_targets:
+            response_time_ms: 5000
+            availability_percent: 95.0
+            throughput_rps: 50
+          EOF
+          
+          echo "✅ Stress test configuration created"
+
+      - name: Run stress tests
+        run: |
+          echo "💪 Running stress tests..."
+          
+          # Make benchmark script executable
+          chmod +x scripts/performance/benchmark.py
+          
+          # Run stress test
+          python scripts/performance/benchmark.py \
+            --config config/performance/stress-test-config.yml \
+            --output /tmp/stress-test-results.json \
+            --format json
+          
+          echo "✅ Stress tests completed"
+
+      - name: Upload stress test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: stress-test-results
+          path: /tmp/stress-test-results.json
+          retention-days: 30
+
+  # Endurance Testing
+  endurance_testing:
+    runs-on: ubuntu-latest
+    name: Endurance Testing
+    needs: [performance_setup, service_health_check]
+    if: github.event.inputs.test_type == 'endurance_test' || github.event.inputs.test_type == 'comprehensive'
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install aiohttp psutil pyyaml locust
+
+      - name: Create endurance test config
+        run: |
+          echo "📝 Creating endurance test configuration..."
+          
+          mkdir -p config/performance
+          
+          cat > config/performance/endurance-test-config.yml << EOF
+          base_url: "${{ needs.performance_setup.outputs.base_url }}"
+          test_duration: 1800  # 30 minutes
+          concurrent_users: [10, 25]
+          ramp_up_time: 120
+          test_types: ["endurance_test"]
+          performance_targets:
+            response_time_ms: 3000
+            availability_percent: 99.5
+            throughput_rps: 75
+          EOF
+          
+          echo "✅ Endurance test configuration created"
+
+      - name: Run endurance tests
+        run: |
+          echo "⏱️ Running endurance tests..."
+          
+          # Make benchmark script executable
+          chmod +x scripts/performance/benchmark.py
+          
+          # Run endurance test
+          python scripts/performance/benchmark.py \
+            --config config/performance/endurance-test-config.yml \
+            --output /tmp/endurance-test-results.json \
+            --format json
+          
+          echo "✅ Endurance tests completed"
+
+      - name: Upload endurance test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: endurance-test-results
+          path: /tmp/endurance-test-results.json
+          retention-days: 30
+
+  # Performance Analysis and Reporting
+  performance_analysis:
+    runs-on: ubuntu-latest
+    name: Performance Analysis and Reporting
+    needs: [performance_setup, load_testing, stress_testing, endurance_testing]
+    if: always()
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Download all test results
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/test-results/
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install matplotlib pandas numpy jinja2
+
+      - name: Analyze performance results
+        run: |
+          echo "📊 Analyzing performance results..."
+          
+          # Create analysis script
+          cat > /tmp/analyze_results.py << 'EOF'
+          import json
+          import os
+          import glob
+          from datetime import datetime
+          
+          def analyze_results():
+              results_dir = "/tmp/test-results"
+              all_results = []
+              
+              # Load all result files
+              for result_file in glob.glob(f"{results_dir}/**/*.json", recursive=True):
+                  try:
+                      with open(result_file, 'r') as f:
+                          data = json.load(f)
+                          all_results.append(data)
+                  except Exception as e:
+                      print(f"Error loading {result_file}: {e}")
+              
+              if not all_results:
+                  print("No test results found")
+                  return
+              
+              # Generate summary report
+              summary = {
+                  "analysis_timestamp": datetime.utcnow().isoformat(),
+                  "total_test_runs": len(all_results),
+                  "environment": "${{ needs.performance_setup.outputs.test_environment }}",
+                  "test_results": all_results,
+                  "overall_performance": {
+                      "targets_met": all(r.get("performance_targets", {}).get("overall_pass", False) for r in all_results),
+                      "avg_response_time": sum(r.get("summary", {}).get("avg_response_time_ms", 0) for r in all_results) / len(all_results),
+                      "avg_availability": sum(r.get("summary", {}).get("avg_availability_percent", 0) for r in all_results) / len(all_results),
+                      "avg_throughput": sum(r.get("summary", {}).get("avg_throughput_rps", 0) for r in all_results) / len(all_results)
+                  }
+              }
+              
+              # Save summary
+              with open("/tmp/performance-analysis-summary.json", "w") as f:
+                  json.dump(summary, f, indent=2)
+              
+              print("Performance Analysis Summary:")
+              print(f"Total test runs: {summary['total_test_runs']}")
+              print(f"Overall targets met: {summary['overall_performance']['targets_met']}")
+              print(f"Average response time: {summary['overall_performance']['avg_response_time']:.2f}ms")
+              print(f"Average availability: {summary['overall_performance']['avg_availability']:.2f}%")
+              print(f"Average throughput: {summary['overall_performance']['avg_throughput']:.2f} RPS")
+          
+          if __name__ == "__main__":
+              analyze_results()
+          EOF
+          
+          python /tmp/analyze_results.py
+          
+          echo "✅ Performance analysis completed"
+
+      - name: Generate performance report
+        run: |
+          echo "📋 Generating performance report..."
+          
+          # Create performance report
+          cat > /tmp/performance-report.md << EOF
+          # ACGS-1 Performance Test Report
+          
+          **Test Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Environment:** ${{ needs.performance_setup.outputs.test_environment }}
+          **Test Type:** ${{ github.event.inputs.test_type || 'comprehensive' }}
+          **Concurrent Users:** ${{ github.event.inputs.concurrent_users || '50' }}
+          
+          ## Test Results Summary
+          
+          - **Load Testing:** ${{ needs.load_testing.result }}
+          - **Stress Testing:** ${{ needs.stress_testing.result }}
+          - **Endurance Testing:** ${{ needs.endurance_testing.result }}
+          
+          ## Performance Metrics
+          
+          Detailed performance metrics are available in the test artifacts.
+          
+          ## Recommendations
+          
+          Based on the test results, consider the following optimizations:
+          
+          1. Monitor response times under high load
+          2. Implement caching strategies for frequently accessed data
+          3. Optimize database queries and connection pooling
+          4. Consider horizontal scaling for high-traffic services
+          
+          ## Next Steps
+          
+          1. Review detailed test results in artifacts
+          2. Address any performance bottlenecks identified
+          3. Schedule regular performance testing
+          4. Monitor production metrics continuously
+          EOF
+          
+          echo "✅ Performance report generated"
+
+      - name: Upload performance analysis
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-analysis
+          path: |
+            /tmp/performance-analysis-summary.json
+            /tmp/performance-report.md
+          retention-days: 90
+
+      - name: Performance test summary
+        run: |
+          echo "🎯 Performance Test Summary"
+          echo "=========================="
+          echo "Environment: ${{ needs.performance_setup.outputs.test_environment }}"
+          echo "Test Type: ${{ github.event.inputs.test_type || 'comprehensive' }}"
+          echo "Concurrent Users: ${{ github.event.inputs.concurrent_users || '50' }}"
+          echo ""
+          echo "Results:"
+          echo "- Load Testing: ${{ needs.load_testing.result }}"
+          echo "- Stress Testing: ${{ needs.stress_testing.result }}"
+          echo "- Endurance Testing: ${{ needs.endurance_testing.result }}"
+          echo ""
+          echo "📊 Detailed results available in artifacts"

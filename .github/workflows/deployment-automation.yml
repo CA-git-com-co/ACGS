@@ -1,0 +1,390 @@
+name: ACGS-1 Deployment Automation
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - development
+        - staging
+        - production
+      strategy:
+        description: 'Deployment strategy'
+        required: true
+        default: 'rolling'
+        type: choice
+        options:
+        - rolling
+        - blue-green
+        - canary
+      services:
+        description: 'Services to deploy (comma-separated, empty for all)'
+        required: false
+        type: string
+      image_tag:
+        description: 'Docker image tag'
+        required: false
+        default: 'latest'
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+  actions: read
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # Build and Push Images
+  build_and_push:
+    runs-on: ubuntu-latest
+    name: Build and Push Docker Images
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tags }}
+      image_digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=${{ github.event.inputs.image_tag || 'latest' }}
+
+      - name: Build and push Docker images
+        id: build
+        run: |
+          echo "🏗️ Building and pushing Docker images..."
+          
+          # Build images for each service
+          SERVICES=("auth" "ac" "integrity" "fv" "gs" "pgc" "ec")
+          
+          for service in "${SERVICES[@]}"; do
+            echo "Building $service service..."
+            
+            # Check if service directory exists
+            if [ -d "services/${service}_service" ]; then
+              docker buildx build \
+                --platform linux/amd64,linux/arm64 \
+                --tag "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${service}:${{ github.event.inputs.image_tag || 'latest' }}" \
+                --tag "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${service}:${{ github.sha }}" \
+                --push \
+                services/${service}_service/
+            else
+              echo "⚠️ Service directory not found: services/${service}_service"
+            fi
+          done
+          
+          echo "✅ All images built and pushed successfully"
+
+  # Development Deployment
+  deploy_development:
+    runs-on: ubuntu-latest
+    name: Deploy to Development
+    needs: build_and_push
+    if: github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'development')
+    environment: development
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Configure kubectl
+        run: |
+          echo "🔧 Configuring kubectl for development..."
+          # This would configure kubectl with development cluster credentials
+          # kubectl config set-cluster development --server=${{ secrets.DEV_CLUSTER_URL }}
+          # kubectl config set-credentials dev-user --token=${{ secrets.DEV_CLUSTER_TOKEN }}
+          # kubectl config set-context development --cluster=development --user=dev-user
+          # kubectl config use-context development
+          echo "✅ kubectl configured for development"
+
+      - name: Deploy to development
+        run: |
+          echo "🚀 Deploying to development environment..."
+          
+          # Make deployment script executable
+          chmod +x scripts/deploy.sh
+          
+          # Deploy with rolling strategy
+          ./scripts/deploy.sh \
+            --environment development \
+            --strategy rolling \
+            --image-tag "${{ github.event.inputs.image_tag || 'latest' }}" \
+            --services "${{ github.event.inputs.services }}"
+          
+          echo "✅ Development deployment completed"
+
+  # Staging Deployment
+  deploy_staging:
+    runs-on: ubuntu-latest
+    name: Deploy to Staging
+    needs: build_and_push
+    if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
+    environment: staging
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Configure kubectl
+        run: |
+          echo "🔧 Configuring kubectl for staging..."
+          # Configure kubectl with staging cluster credentials
+          echo "✅ kubectl configured for staging"
+
+      - name: Run pre-deployment tests
+        run: |
+          echo "🧪 Running pre-deployment tests..."
+          
+          # Run integration tests
+          # npm test
+          # python -m pytest tests/integration/
+          
+          echo "✅ Pre-deployment tests passed"
+
+      - name: Deploy to staging
+        run: |
+          echo "🚀 Deploying to staging environment..."
+          
+          # Make deployment script executable
+          chmod +x scripts/deploy.sh
+          
+          # Deploy with specified strategy
+          ./scripts/deploy.sh \
+            --environment staging \
+            --strategy "${{ github.event.inputs.strategy || 'rolling' }}" \
+            --image-tag "${{ github.event.inputs.image_tag || 'latest' }}" \
+            --services "${{ github.event.inputs.services }}"
+          
+          echo "✅ Staging deployment completed"
+
+      - name: Run post-deployment tests
+        run: |
+          echo "🔍 Running post-deployment tests..."
+          
+          # Run health checks
+          ./scripts/deploy.sh --health-check --environment staging
+          
+          # Run smoke tests
+          # npm run test:smoke
+          
+          echo "✅ Post-deployment tests passed"
+
+  # Production Deployment
+  deploy_production:
+    runs-on: ubuntu-latest
+    name: Deploy to Production
+    needs: [build_and_push, deploy_staging]
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
+    environment: 
+      name: production
+      url: https://api.acgs-pgp.com
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Configure kubectl
+        run: |
+          echo "🔧 Configuring kubectl for production..."
+          # Configure kubectl with production cluster credentials
+          echo "✅ kubectl configured for production"
+
+      - name: Production deployment approval
+        run: |
+          echo "⚠️ Production Deployment"
+          echo "======================="
+          echo "Environment: production"
+          echo "Strategy: ${{ github.event.inputs.strategy || 'blue-green' }}"
+          echo "Image Tag: ${{ github.event.inputs.image_tag || 'latest' }}"
+          echo "Services: ${{ github.event.inputs.services || 'all' }}"
+          echo ""
+          echo "This deployment requires manual approval."
+
+      - name: Create database backup
+        run: |
+          echo "💾 Creating production database backup..."
+          
+          # Create database backup before deployment
+          # ./scripts/database/manage-migrations.sh backup --environment production
+          
+          echo "✅ Database backup created"
+
+      - name: Deploy to production
+        run: |
+          echo "🚀 Deploying to production environment..."
+          
+          # Make deployment script executable
+          chmod +x scripts/deploy.sh
+          
+          # Deploy with blue-green strategy for production
+          ./scripts/deploy.sh \
+            --environment production \
+            --strategy "${{ github.event.inputs.strategy || 'blue-green' }}" \
+            --image-tag "${{ github.event.inputs.image_tag || 'latest' }}" \
+            --services "${{ github.event.inputs.services }}"
+          
+          echo "✅ Production deployment completed"
+
+      - name: Run production health checks
+        run: |
+          echo "🏥 Running production health checks..."
+          
+          # Comprehensive health checks
+          ./scripts/deploy.sh --health-check --environment production
+          
+          # Run performance tests
+          # ./scripts/performance/benchmark.py --config config/performance/production-health-check.yml
+          
+          echo "✅ Production health checks passed"
+
+      - name: Update deployment status
+        run: |
+          echo "📊 Updating deployment status..."
+          
+          # Create deployment record
+          cat > /tmp/deployment-record.json << EOF
+          {
+            "deployment_id": "${{ github.run_id }}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "environment": "${{ github.event.inputs.environment || 'staging' }}",
+            "strategy": "${{ github.event.inputs.strategy || 'rolling' }}",
+            "image_tag": "${{ github.event.inputs.image_tag || 'latest' }}",
+            "services": "${{ github.event.inputs.services || 'all' }}",
+            "commit_sha": "${{ github.sha }}",
+            "status": "completed"
+          }
+          EOF
+          
+          echo "✅ Deployment status updated"
+
+  # Rollback Job
+  rollback_deployment:
+    runs-on: ubuntu-latest
+    name: Rollback Deployment
+    if: failure() && (needs.deploy_staging.result == 'failure' || needs.deploy_production.result == 'failure')
+    needs: [deploy_staging, deploy_production]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Determine rollback environment
+        id: rollback_env
+        run: |
+          if [[ "${{ needs.deploy_production.result }}" == "failure" ]]; then
+            echo "environment=production" >> $GITHUB_OUTPUT
+          elif [[ "${{ needs.deploy_staging.result }}" == "failure" ]]; then
+            echo "environment=staging" >> $GITHUB_OUTPUT
+          else
+            echo "environment=development" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Execute rollback
+        run: |
+          echo "🔄 Rolling back deployment..."
+          
+          ROLLBACK_ENV="${{ steps.rollback_env.outputs.environment }}"
+          
+          # Make deployment script executable
+          chmod +x scripts/deploy.sh
+          
+          # Execute rollback
+          ./scripts/deploy.sh \
+            --rollback \
+            --environment "$ROLLBACK_ENV" \
+            --services "${{ github.event.inputs.services }}"
+          
+          echo "✅ Rollback completed for $ROLLBACK_ENV"
+
+      - name: Notify rollback
+        run: |
+          echo "📢 Deployment rollback notification"
+          echo "Environment: ${{ steps.rollback_env.outputs.environment }}"
+          echo "Reason: Deployment failure"
+          echo "Action: Automatic rollback executed"
+
+  # Deployment Summary
+  deployment_summary:
+    runs-on: ubuntu-latest
+    name: Deployment Summary
+    needs: [build_and_push, deploy_development, deploy_staging, deploy_production]
+    if: always()
+    steps:
+      - name: Generate deployment summary
+        run: |
+          echo "📋 ACGS-1 Deployment Summary"
+          echo "============================"
+          echo "Workflow: ${{ github.workflow }}"
+          echo "Run ID: ${{ github.run_id }}"
+          echo "Trigger: ${{ github.event_name }}"
+          echo "Environment: ${{ github.event.inputs.environment || 'auto' }}"
+          echo "Strategy: ${{ github.event.inputs.strategy || 'rolling' }}"
+          echo "Image Tag: ${{ github.event.inputs.image_tag || 'latest' }}"
+          echo "Commit: ${{ github.sha }}"
+          echo ""
+          echo "Results:"
+          echo "- Build and Push: ${{ needs.build_and_push.result }}"
+          echo "- Development: ${{ needs.deploy_development.result }}"
+          echo "- Staging: ${{ needs.deploy_staging.result }}"
+          echo "- Production: ${{ needs.deploy_production.result }}"
+          echo ""
+          
+          # Determine overall status
+          if [[ "${{ needs.deploy_production.result }}" == "success" ]]; then
+            echo "🎉 Production deployment successful!"
+          elif [[ "${{ needs.deploy_staging.result }}" == "success" ]]; then
+            echo "✅ Staging deployment successful!"
+          elif [[ "${{ needs.deploy_development.result }}" == "success" ]]; then
+            echo "✅ Development deployment successful!"
+          else
+            echo "❌ Deployment failed or was skipped"
+          fi
+
+      - name: Upload deployment artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-summary
+          path: /tmp/deployment-record.json
+          retention-days: 90

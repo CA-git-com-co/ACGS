@@ -1,0 +1,336 @@
+name: ACGS-1 Docker Build and Push
+
+on:
+  push:
+    branches: [ main, master, develop ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+    inputs:
+      build_target:
+        description: 'Docker build target'
+        required: false
+        default: 'production-runtime'
+        type: choice
+        options:
+        - production-runtime
+        - development
+        - all
+      push_images:
+        description: 'Push images to registry'
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+  packages: write
+  security-events: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # Build Matrix Strategy
+  build-matrix:
+    runs-on: ubuntu-latest
+    name: Build Matrix Strategy
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Set build matrix
+        id: set-matrix
+        run: |
+          if [ "${{ github.event.inputs.build_target }}" = "all" ]; then
+            echo 'matrix={"target":["production-runtime","development"],"service":["auth","ac","integrity","fv","gs","pgc","ec"]}' >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.inputs.build_target }}" = "development" ]; then
+            echo 'matrix={"target":["development"],"service":["auth","ac","integrity","fv","gs","pgc","ec"]}' >> $GITHUB_OUTPUT
+          else
+            echo 'matrix={"target":["production-runtime"],"service":["auth","ac","integrity","fv","gs","pgc","ec"]}' >> $GITHUB_OUTPUT
+          fi
+
+  # Main Docker Build and Push
+  docker-build-push:
+    runs-on: ubuntu-latest
+    name: Docker Build and Push
+    needs: build-matrix
+    strategy:
+      matrix: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
+      fail-fast: false
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+
+      - name: Log in to Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+          labels: |
+            org.opencontainers.image.title=ACGS-1 ${{ matrix.service }} Service
+            org.opencontainers.image.description=Constitutional Governance System - ${{ matrix.service }} Service
+            org.opencontainers.image.vendor=ACGS Project
+            org.opencontainers.image.licenses=MIT
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: infrastructure/docker/Dockerfile.acgs
+          target: ${{ matrix.target }}
+          platforms: linux/amd64,linux/arm64
+          push: ${{ github.event_name != 'pull_request' && (github.event.inputs.push_images != 'false') }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.service }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.service }}:${{ github.ref_name }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.service }}:latest
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1
+            SERVICE_NAME=${{ matrix.service }}
+            BUILD_TARGET=${{ matrix.target }}
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.31.0
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.service }}:${{ github.sha }}
+          format: 'sarif'
+          output: 'trivy-results-${{ matrix.service }}-${{ matrix.target }}.sarif'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results-${{ matrix.service }}-${{ matrix.target }}.sarif'
+
+  # Multi-Service Docker Compose Build
+  docker-compose-build:
+    runs-on: ubuntu-latest
+    name: Docker Compose Build Test
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Test Docker Compose build
+        run: |
+          echo "🏗️ Testing Docker Compose build..."
+          
+          # Test development environment
+          docker-compose -f infrastructure/docker/docker-compose.development.yml build --parallel
+          
+          # Test staging environment
+          docker-compose -f infrastructure/docker/docker-compose.staging.yml build --parallel
+          
+          # Test production environment
+          docker-compose -f docker-compose.production.yml build --parallel
+          
+          echo "✅ Docker Compose builds completed successfully"
+
+      - name: Test service startup
+        run: |
+          echo "🚀 Testing service startup..."
+          
+          # Start development environment
+          docker-compose -f infrastructure/docker/docker-compose.development.yml up -d
+          
+          # Wait for services to be ready
+          sleep 60
+          
+          # Check service health
+          for port in 8000 8001 8002 8003 8004 8005 8006; do
+            if curl -f http://localhost:$port/health 2>/dev/null; then
+              echo "✅ Service on port $port is healthy"
+            else
+              echo "⚠️ Service on port $port health check failed"
+            fi
+          done
+          
+          # Cleanup
+          docker-compose -f infrastructure/docker/docker-compose.development.yml down
+          
+          echo "✅ Service startup test completed"
+
+  # Image Security and Quality Checks
+  image-security-quality:
+    runs-on: ubuntu-latest
+    name: Image Security and Quality Checks
+    needs: docker-build-push
+    if: github.event_name != 'pull_request'
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run Docker Bench Security
+        run: |
+          echo "🔒 Running Docker Bench Security..."
+          
+          # Clone Docker Bench Security
+          git clone https://github.com/docker/docker-bench-security.git
+          cd docker-bench-security
+          
+          # Run security benchmark
+          sudo sh docker-bench-security.sh -l /tmp/docker-bench-results.log
+          
+          echo "✅ Docker Bench Security completed"
+
+      - name: Analyze image layers
+        run: |
+          echo "🔍 Analyzing Docker image layers..."
+          
+          # Install dive for layer analysis
+          wget https://github.com/wagoodman/dive/releases/download/v0.10.0/dive_0.10.0_linux_amd64.deb
+          sudo apt install ./dive_0.10.0_linux_amd64.deb
+          
+          # Analyze main image
+          dive ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/auth:${{ github.sha }} --ci
+          
+          echo "✅ Image layer analysis completed"
+
+      - name: Check image size optimization
+        run: |
+          echo "📏 Checking image size optimization..."
+          
+          # Get image sizes
+          docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}" | grep ${{ env.IMAGE_NAME }}
+          
+          # Check if images are within reasonable size limits
+          for service in auth ac integrity fv gs pgc ec; do
+            SIZE=$(docker image inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/$service:${{ github.sha }} --format='{{.Size}}')
+            SIZE_MB=$((SIZE / 1024 / 1024))
+            
+            echo "Service $service image size: ${SIZE_MB}MB"
+            
+            if [ $SIZE_MB -gt 2048 ]; then
+              echo "⚠️ Warning: $service image size (${SIZE_MB}MB) exceeds 2GB"
+            else
+              echo "✅ $service image size is within limits"
+            fi
+          done
+
+  # Registry Management
+  registry-management:
+    runs-on: ubuntu-latest
+    name: Registry Management
+    needs: [docker-build-push, image-security-quality]
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Clean up old images
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            
+            // Get all packages for the repository
+            const packages = await github.rest.packages.getAllPackageVersionsForPackageOwnedByOrg({
+              package_type: 'container',
+              package_name: repo,
+              org: owner,
+              per_page: 100
+            });
+            
+            // Keep only the latest 10 versions
+            const versionsToDelete = packages.data.slice(10);
+            
+            for (const version of versionsToDelete) {
+              try {
+                await github.rest.packages.deletePackageVersionForOrg({
+                  package_type: 'container',
+                  package_name: repo,
+                  org: owner,
+                  package_version_id: version.id
+                });
+                console.log(`Deleted package version ${version.id}`);
+              } catch (error) {
+                console.log(`Failed to delete package version ${version.id}: ${error.message}`);
+              }
+            }
+
+  # Build Report Generation
+  build-report:
+    runs-on: ubuntu-latest
+    name: Build Report Generation
+    needs: [docker-build-push, docker-compose-build, image-security-quality]
+    if: always()
+    steps:
+      - name: Generate build report
+        run: |
+          echo "📊 Generating Docker build report..."
+          
+          cat > docker-build-report.json << EOF
+          {
+            "build_id": "${{ github.run_id }}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "commit_sha": "${{ github.sha }}",
+            "branch": "${{ github.ref_name }}",
+            "build_target": "${{ github.event.inputs.build_target || 'production-runtime' }}",
+            "results": {
+              "docker_build_push": "${{ needs.docker-build-push.result }}",
+              "docker_compose_build": "${{ needs.docker-compose-build.result }}",
+              "image_security_quality": "${{ needs.image-security-quality.result }}"
+            },
+            "images_built": [
+              "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/auth:${{ github.sha }}",
+              "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/ac:${{ github.sha }}",
+              "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/integrity:${{ github.sha }}",
+              "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/fv:${{ github.sha }}",
+              "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/gs:${{ github.sha }}",
+              "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/pgc:${{ github.sha }}",
+              "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/ec:${{ github.sha }}"
+            ]
+          }
+          EOF
+          
+          echo "✅ Build report generated"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-build-report
+          path: |
+            docker-build-report.json
+            trivy-results-*.sarif
+          retention-days: 30
+
+      - name: Build summary
+        run: |
+          echo "🐳 Docker Build Summary"
+          echo "====================="
+          echo "Build ID: ${{ github.run_id }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Target: ${{ github.event.inputs.build_target || 'production-runtime' }}"
+          echo ""
+          echo "Results:"
+          echo "- Docker Build/Push: ${{ needs.docker-build-push.result }}"
+          echo "- Docker Compose Build: ${{ needs.docker-compose-build.result }}"
+          echo "- Security/Quality Checks: ${{ needs.image-security-quality.result }}"
+          echo ""
+          echo "Images available at: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
