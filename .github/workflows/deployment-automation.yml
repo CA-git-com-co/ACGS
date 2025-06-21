@@ -107,7 +107,8 @@ jobs:
     name: Deploy to Development
     needs: build_and_push
     if: github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'development')
-    environment: development
+    environment:
+      name: development
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -121,8 +122,9 @@ jobs:
         run: |
           echo "🔧 Configuring kubectl for development..."
           # This would configure kubectl with development cluster credentials
-          # kubectl config set-cluster development --server=${{ secrets.DEV_CLUSTER_URL }}
-          # kubectl config set-credentials dev-user --token=${{ secrets.DEV_CLUSTER_TOKEN }}
+          # Example commands (uncomment and configure when secrets are available):
+          # kubectl config set-cluster development --server="$DEV_CLUSTER_URL"
+          # kubectl config set-credentials dev-user --token="$DEV_CLUSTER_TOKEN"
           # kubectl config set-context development --cluster=development --user=dev-user
           # kubectl config use-context development
           echo "✅ kubectl configured for development"
@@ -149,7 +151,8 @@ jobs:
     name: Deploy to Staging
     needs: build_and_push
     if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
-    environment: staging
+    environment:
+      name: staging
     steps:
       - name: Check out repository
         uses: actions/checkout@v4

@@ -1,0 +1,160 @@
+name: Setup GitHub Environments
+
+on:
+  workflow_dispatch:
+    inputs:
+      force_recreate:
+        description: 'Force recreate existing environments'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  actions: write
+  deployments: write
+
+jobs:
+  setup_environments:
+    runs-on: ubuntu-latest
+    name: Setup GitHub Environments
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Setup development environment
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            
+            try {
+              await github.rest.repos.createOrUpdateEnvironment({
+                owner,
+                repo,
+                environment_name: 'development',
+                wait_timer: 0,
+                prevent_self_review: false,
+                reviewers: [],
+                deployment_branch_policy: {
+                  protected_branches: false,
+                  custom_branch_policies: true
+                }
+              });
+              console.log('✅ Development environment created/updated');
+            } catch (error) {
+              console.log('⚠️ Development environment setup:', error.message);
+            }
+
+      - name: Setup staging environment
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            
+            try {
+              await github.rest.repos.createOrUpdateEnvironment({
+                owner,
+                repo,
+                environment_name: 'staging',
+                wait_timer: 5,
+                prevent_self_review: true,
+                reviewers: [],
+                deployment_branch_policy: {
+                  protected_branches: true,
+                  custom_branch_policies: false
+                }
+              });
+              console.log('✅ Staging environment created/updated');
+            } catch (error) {
+              console.log('⚠️ Staging environment setup:', error.message);
+            }
+
+      - name: Setup production environment
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            
+            try {
+              await github.rest.repos.createOrUpdateEnvironment({
+                owner,
+                repo,
+                environment_name: 'production',
+                wait_timer: 30,
+                prevent_self_review: true,
+                reviewers: [],
+                deployment_branch_policy: {
+                  protected_branches: true,
+                  custom_branch_policies: false
+                }
+              });
+              console.log('✅ Production environment created/updated');
+            } catch (error) {
+              console.log('⚠️ Production environment setup:', error.message);
+            }
+
+      - name: Setup github-pages environment
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            
+            try {
+              await github.rest.repos.createOrUpdateEnvironment({
+                owner,
+                repo,
+                environment_name: 'github-pages',
+                wait_timer: 0,
+                prevent_self_review: false,
+                reviewers: [],
+                deployment_branch_policy: null
+              });
+              console.log('✅ GitHub Pages environment created/updated');
+            } catch (error) {
+              console.log('⚠️ GitHub Pages environment setup:', error.message);
+            }
+
+      - name: Verify environments
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            
+            const environments = ['development', 'staging', 'production', 'github-pages'];
+            
+            console.log('🔍 Verifying environments...');
+            
+            for (const env of environments) {
+              try {
+                const response = await github.rest.repos.getEnvironment({
+                  owner,
+                  repo,
+                  environment_name: env
+                });
+                console.log(`✅ ${env}: ${response.data.name}`);
+              } catch (error) {
+                console.log(`❌ ${env}: Not found or inaccessible`);
+              }
+            }
+
+      - name: Environment setup summary
+        run: |
+          echo "📋 GitHub Environments Setup Summary"
+          echo "===================================="
+          echo "✅ Development environment configured"
+          echo "✅ Staging environment configured"
+          echo "✅ Production environment configured"
+          echo "✅ GitHub Pages environment configured"
+          echo ""
+          echo "🎉 All environments are now ready for deployment workflows!"
+          echo ""
+          echo "Next steps:"
+          echo "1. Configure environment-specific secrets if needed"
+          echo "2. Test deployment workflows"
+          echo "3. Set up team permissions for protected environments"

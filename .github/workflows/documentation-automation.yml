@@ -541,6 +541,8 @@ jobs:
   documentation_quality_check:
     runs-on: ubuntu-latest
     name: Documentation Quality Check
+    needs: [api_documentation, architecture_documentation, deployment_documentation, user_guide_documentation]
+    if: always()
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
