@@ -36,7 +36,7 @@ permissions:
 
 env:
   # Enhanced Performance Configuration
-  CARGO_INCREMENTAL: 1
+  CARGO_INCREMENTAL: 0  # Disabled for sccache compatibility
   CARGO_NET_RETRY: 10
   CARGO_NET_GIT_FETCH_WITH_CLI: true
   RUSTC_WRAPPER: sccache
@@ -302,7 +302,7 @@ jobs:
             "optimization_features": {
               "distributed_caching": true,
               "parallel_execution": true,
-              "incremental_compilation": true,
+              "incremental_compilation": false,
               "sccache_enabled": true
             }
           }
@@ -401,11 +401,11 @@ jobs:
           - **Parallel Jobs:** ${{ env.PARALLEL_JOBS }}
           
           ## Optimization Features
-          
+
           - ✅ Distributed caching with sccache
           - ✅ Multi-layer cache strategy
           - ✅ Parallel job execution
-          - ✅ Incremental compilation
+          - ❌ Incremental compilation (disabled for sccache compatibility)
           - ✅ Advanced performance monitoring
           
           EOF

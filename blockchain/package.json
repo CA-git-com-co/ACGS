@@ -39,5 +39,9 @@
     "prompt-governance"
   ],
   "author": "Quantumagi Team",
-  "license": "MIT"
+  "license": "MIT",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  }
 }
