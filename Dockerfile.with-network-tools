@@ -1,0 +1,22 @@
+# Example Dockerfile with network tools included
+FROM ubuntu:22.04
+
+# Install network tools during image build
+RUN apt-get update && \
+    apt-get install -y \
+    iputils-ping \
+    dnsutils \
+    netcat-openbsd \
+    curl \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Your application setup
+COPY . /app
+WORKDIR /app
+
+# Now ping will work in your CI/CD
+RUN ping -c 1 github.com
+
+# Alternative: Use HTTP check instead
+RUN curl -s --max-time 10 --head https://github.com >/dev/null

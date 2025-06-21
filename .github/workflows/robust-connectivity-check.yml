@@ -1,0 +1,151 @@
+name: Robust Connectivity Check
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  connectivity-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Network Diagnostics
+      run: |
+        echo "🔍 Running network diagnostics..."
+        echo "📋 DNS Configuration:"
+        cat /etc/resolv.conf
+        echo ""
+        echo "🛣️ Network Routes:"
+        ip route show
+        echo ""
+        echo "🌐 Network Interfaces:"
+        ip addr show
+        
+    - name: Test DNS Resolution
+      run: |
+        echo "🔍 Testing DNS resolution..."
+        for domain in github.com api.github.com raw.githubusercontent.com; do
+          echo "Testing $domain..."
+          if nslookup "$domain" >/dev/null 2>&1; then
+            echo "✅ $domain resolved successfully"
+          else
+            echo "❌ Failed to resolve $domain"
+          fi
+        done
+        
+    - name: Test HTTP Connectivity (with retries)
+      run: |
+        echo "🌐 Testing HTTP connectivity with retries..."
+        
+        test_connectivity() {
+          local url="$1"
+          local name="$2"
+          local max_attempts=3
+          local delay=5
+          
+          for attempt in $(seq 1 $max_attempts); do
+            echo "Attempt $attempt/$max_attempts for $name..."
+            
+            if curl -s --max-time 10 --head "$url" >/dev/null 2>&1; then
+              echo "✅ $name connectivity successful"
+              return 0
+            elif [ $attempt -lt $max_attempts ]; then
+              echo "⏳ Retrying in $delay seconds..."
+              sleep $delay
+            fi
+          done
+          
+          echo "❌ $name connectivity failed after $max_attempts attempts"
+          return 1
+        }
+        
+        # Test multiple endpoints
+        success_count=0
+        total_tests=0
+        
+        # Test GitHub main site
+        ((total_tests++))
+        if test_connectivity "https://github.com" "GitHub main site"; then
+          ((success_count++))
+        fi
+        
+        # Test GitHub API
+        ((total_tests++))
+        if test_connectivity "https://api.github.com" "GitHub API"; then
+          ((success_count++))
+        fi
+        
+        # Test GitHub raw content
+        ((total_tests++))
+        if test_connectivity "https://raw.githubusercontent.com" "GitHub raw content"; then
+          ((success_count++))
+        fi
+        
+        echo "📊 Connectivity Results: $success_count/$total_tests tests passed"
+        
+        # Require at least 2/3 tests to pass
+        if [ $success_count -ge 2 ]; then
+          echo "🎉 Connectivity check passed!"
+          exit 0
+        else
+          echo "💥 Connectivity check failed!"
+          exit 1
+        fi
+        
+    - name: Test GitHub API Functionality
+      run: |
+        echo "🔌 Testing GitHub API functionality..."
+        
+        # Test public API endpoint
+        if response=$(curl -s --max-time 10 "https://api.github.com/zen" 2>/dev/null); then
+          echo "✅ GitHub API response: $response"
+        else
+          echo "❌ GitHub API test failed"
+          exit 1
+        fi
+        
+        # Test rate limit endpoint
+        if curl -s --max-time 10 "https://api.github.com/rate_limit" >/dev/null 2>&1; then
+          echo "✅ GitHub API rate limit endpoint accessible"
+        else
+          echo "⚠️ GitHub API rate limit endpoint not accessible"
+        fi
+        
+    - name: Alternative Connectivity Test
+      if: failure()
+      run: |
+        echo "🔧 Running alternative connectivity tests..."
+        
+        # Test if general internet works
+        if curl -s --max-time 10 --head "https://httpbin.org/status/200" >/dev/null 2>&1; then
+          echo "✅ General internet connectivity works"
+          echo "❌ Issue appears to be specific to GitHub"
+        else
+          echo "❌ General internet connectivity issues detected"
+        fi
+        
+        # Try different DNS servers
+        echo "🔍 Testing with different DNS servers..."
+        for dns in "8.8.8.8" "1.1.1.1" "208.67.222.222"; do
+          echo "Testing with DNS server $dns..."
+          if nslookup github.com "$dns" >/dev/null 2>&1; then
+            echo "✅ DNS resolution works with $dns"
+          else
+            echo "❌ DNS resolution failed with $dns"
+          fi
+        done
+        
+    - name: Final Status Report
+      if: always()
+      run: |
+        echo "📋 Final Connectivity Status Report"
+        echo "=================================="
+        echo "Runner: ${{ runner.os }}"
+        echo "Timestamp: $(date)"
+        echo "GitHub Actions Runner IP:"
+        curl -s --max-time 5 "https://httpbin.org/ip" 2>/dev/null || echo "Could not determine IP"

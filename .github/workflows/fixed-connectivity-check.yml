@@ -1,0 +1,67 @@
+name: Fixed Connectivity Check
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  connectivity-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    # OPTION 1: Install ping if needed
+    - name: Install network tools (if needed)
+      run: |
+        if ! command -v ping >/dev/null 2>&1; then
+          echo "📦 Installing ping..."
+          sudo apt-get update -qq
+          sudo apt-get install -y iputils-ping
+          echo "✅ ping installed"
+        else
+          echo "✅ ping already available"
+        fi
+        
+    # OPTION 2: Use HTTP-based check (RECOMMENDED)
+    - name: GitHub Connectivity Check (HTTP-based)
+      run: |
+        echo "🌐 Testing GitHub connectivity with HTTP..."
+        
+        # Test GitHub main site
+        if curl -s --max-time 10 --head https://github.com >/dev/null 2>&1; then
+          echo "✅ GitHub main site accessible"
+        else
+          echo "❌ GitHub main site not accessible"
+          exit 1
+        fi
+        
+        # Test GitHub API
+        if curl -s --max-time 10 https://api.github.com/zen >/dev/null 2>&1; then
+          echo "✅ GitHub API accessible"
+        else
+          echo "❌ GitHub API not accessible"
+          exit 1
+        fi
+        
+        echo "🎉 All GitHub connectivity checks passed!"
+        
+    # OPTION 3: Use our robust script
+    - name: Robust Connectivity Check
+      run: |
+        chmod +x scripts/robust-github-connectivity-check.sh
+        ./scripts/robust-github-connectivity-check.sh
+        
+    # OPTION 4: Traditional ping (after installing)
+    - name: Traditional Ping Check (after installation)
+      run: |
+        echo "📡 Testing with traditional ping..."
+        if ping -c 1 github.com >/dev/null 2>&1; then
+          echo "✅ GitHub ping successful"
+        else
+          echo "❌ GitHub ping failed"
+          exit 1
+        fi
