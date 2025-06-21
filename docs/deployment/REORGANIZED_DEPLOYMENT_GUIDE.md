@@ -5,6 +5,7 @@ This guide provides comprehensive instructions for deploying the reorganized ACG
 ## Overview
 
 ACGS-1 supports multiple deployment strategies with the new reorganized structure:
+
 - **Local Development**: Docker Compose for development and testing
 - **Staging Environment**: Kubernetes deployment for pre-production testing
 - **Production Environment**: High-availability Kubernetes deployment with Solana integration
@@ -12,12 +13,14 @@ ACGS-1 supports multiple deployment strategies with the new reorganized structur
 ## Prerequisites
 
 ### System Requirements
+
 - **CPU**: 8+ cores (16+ recommended for production)
 - **Memory**: 16GB+ RAM (32GB+ recommended for production)
 - **Storage**: 100GB+ available disk space (SSD recommended)
 - **Network**: Stable internet connection for Solana RPC and external dependencies
 
 ### Software Dependencies
+
 - **Solana CLI**: v1.18.22+
 - **Anchor Framework**: v0.29.0+
 - **Docker**: 20.10+ and Docker Compose 2.0+
@@ -49,6 +52,7 @@ ACGS-1/
 ## Local Development Deployment
 
 ### Quick Start
+
 ```bash
 # Clone the repository
 git clone https://github.com/CA-git-com-co/ACGS.git
@@ -72,6 +76,7 @@ docker-compose -f infrastructure/docker/docker-compose.yml up -d
 ```
 
 ### Service Health Checks
+
 ```bash
 # Core Services
 curl http://localhost:8001/health  # Constitutional AI
@@ -95,6 +100,7 @@ curl http://localhost:8012/health  # AlphaEvolve Engine
 ```
 
 ### Integration Services
+
 ```bash
 # Start Data Flywheel integration
 cd integrations/data-flywheel
@@ -111,6 +117,7 @@ python -m alphaevolve_gs_engine.main
 ```
 
 ### Frontend Applications
+
 ```bash
 # Start governance dashboard
 cd applications/governance-dashboard
@@ -132,6 +139,7 @@ npm install && npm start
 ## Staging Environment Deployment
 
 ### Kubernetes Setup
+
 ```bash
 # Create namespace
 kubectl create namespace acgs-staging
@@ -155,6 +163,7 @@ kubectl get pods -n acgs-staging
 ```
 
 ### Helm Deployment
+
 ```bash
 # Add ACGS Helm repository
 helm repo add acgs https://charts.acgs.ai
@@ -172,6 +181,7 @@ helm status acgs-staging -n acgs-staging
 ## Production Environment Deployment
 
 ### High Availability Setup
+
 ```bash
 # Create production namespace
 kubectl create namespace acgs-production
@@ -192,6 +202,7 @@ kubectl get all -n acgs-production
 ```
 
 ### Solana Mainnet Integration
+
 ```bash
 # Configure Solana mainnet
 solana config set --url mainnet-beta
@@ -212,6 +223,7 @@ kubectl rollout restart deployment/quantumagi-bridge -n acgs-production
 ## Monitoring and Observability
 
 ### Prometheus and Grafana
+
 ```bash
 # Deploy monitoring stack
 kubectl apply -f infrastructure/monitoring/prometheus/
@@ -224,6 +236,7 @@ kubectl port-forward svc/grafana 3000:3000 -n monitoring
 ```
 
 ### Logging with ELK Stack
+
 ```bash
 # Deploy logging infrastructure
 kubectl apply -f infrastructure/monitoring/elasticsearch/
@@ -236,6 +249,7 @@ kubectl port-forward svc/kibana 5601:5601 -n monitoring
 ```
 
 ### Distributed Tracing
+
 ```bash
 # Deploy Jaeger
 kubectl apply -f infrastructure/monitoring/jaeger/
@@ -248,6 +262,7 @@ kubectl port-forward svc/jaeger-query 16686:16686 -n monitoring
 ## Security Configuration
 
 ### TLS/SSL Setup
+
 ```bash
 # Install cert-manager
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.12.0/cert-manager.yaml
@@ -260,6 +275,7 @@ kubectl apply -f infrastructure/kubernetes/ingress-tls.yml
 ```
 
 ### Secret Management
+
 ```bash
 # Create secrets for services
 kubectl create secret generic acgs-secrets \
@@ -273,6 +289,7 @@ kubectl apply -f infrastructure/kubernetes/rbac/
 ## Backup and Recovery
 
 ### Database Backup
+
 ```bash
 # Automated backup script
 ./scripts/backup/backup_database_comprehensive.sh
@@ -282,6 +299,7 @@ kubectl apply -f infrastructure/kubernetes/rbac/
 ```
 
 ### Blockchain State Backup
+
 ```bash
 # Backup Solana account states
 ./scripts/backup/backup_solana_accounts.sh
@@ -295,6 +313,7 @@ kubectl apply -f infrastructure/kubernetes/rbac/
 ### Common Issues
 
 **Service Discovery Issues**:
+
 ```bash
 # Check service registry
 kubectl get endpoints -n acgs-production
@@ -302,6 +321,7 @@ kubectl describe service quantumagi-bridge -n acgs-production
 ```
 
 **Database Connection Issues**:
+
 ```bash
 # Check database connectivity
 kubectl exec -it deployment/constitutional-ai -n acgs-production -- \
@@ -309,6 +329,7 @@ kubectl exec -it deployment/constitutional-ai -n acgs-production -- \
 ```
 
 **Blockchain Connection Issues**:
+
 ```bash
 # Check Solana RPC connectivity
 kubectl exec -it deployment/quantumagi-bridge -n acgs-production -- \
@@ -316,6 +337,7 @@ kubectl exec -it deployment/quantumagi-bridge -n acgs-production -- \
 ```
 
 ### Performance Tuning
+
 ```bash
 # Scale services based on load
 kubectl scale deployment constitutional-ai --replicas=5 -n acgs-production
@@ -327,6 +349,7 @@ kubectl apply -f infrastructure/kubernetes/hpa/
 ## Maintenance
 
 ### Rolling Updates
+
 ```bash
 # Update service image
 kubectl set image deployment/constitutional-ai \
@@ -338,6 +361,7 @@ kubectl rollout status deployment/constitutional-ai -n acgs-production
 ```
 
 ### Health Monitoring
+
 ```bash
 # Continuous health monitoring
 ./scripts/monitoring/continuous_health_check.sh

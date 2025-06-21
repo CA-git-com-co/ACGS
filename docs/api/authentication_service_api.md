@@ -28,6 +28,7 @@ Returns the current health status of the Authentication Service.
 **Authentication**: Not required
 
 **Response (200 OK)**:
+
 ```json
 {
   "status": "healthy",
@@ -50,13 +51,15 @@ Authenticate user and return JWT token.
 **Authentication**: Not required
 
 **Request Body**:
+
 ```json
-{"username": "user", "password": "password"}
+{ "username": "user", "password": "password" }
 ```
 
 **Response (200 OK)**:
+
 ```json
-{"access_token": "jwt_token", "token_type": "bearer", "expires_in": 3600}
+{ "access_token": "jwt_token", "token_type": "bearer", "expires_in": 3600 }
 ```
 
 ### Token Refresh
@@ -68,13 +71,15 @@ Refresh an existing JWT token.
 **Authentication**: Required
 
 **Request Body**:
+
 ```json
-{"refresh_token": "refresh_token"}
+{ "refresh_token": "refresh_token" }
 ```
 
 **Response (200 OK)**:
+
 ```json
-{"access_token": "new_jwt_token", "expires_in": 3600}
+{ "access_token": "new_jwt_token", "expires_in": 3600 }
 ```
 
 ### User Profile
@@ -86,13 +91,15 @@ Get current user profile information.
 **Authentication**: Required
 
 **Response (200 OK)**:
+
 ```json
-{"user_id": "123", "username": "user", "roles": ["citizen"], "permissions": ["read", "write"]}
+{ "user_id": "123", "username": "user", "roles": ["citizen"], "permissions": ["read", "write"] }
 ```
 
 ## Error Responses
 
 ### 400 Bad Request
+
 ```json
 {
   "status": "error",
@@ -106,6 +113,7 @@ Get current user profile information.
 ```
 
 ### 401 Unauthorized
+
 ```json
 {
   "status": "error",
@@ -126,6 +134,7 @@ Get current user profile information.
 ## Examples
 
 ### cURL Examples
+
 ```bash
 # Health check
 curl http://localhost:8000/health
@@ -138,6 +147,7 @@ curl -X POST http://localhost:8000/api/v1/example \
 ```
 
 ### Python Client Example
+
 ```python
 import httpx
 import asyncio
@@ -146,7 +156,7 @@ class AuthenticationServiceClient:
     def __init__(self, base_url="http://localhost:8000", token=None):
         self.base_url = base_url
         self.headers = {"Authorization": f"Bearer {token}"} if token else {}
-    
+
     async def health_check(self):
         async with httpx.AsyncClient() as client:
             response = await client.get(f"{self.base_url}/health")

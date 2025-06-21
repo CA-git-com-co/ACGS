@@ -36,17 +36,20 @@ The Darwin Gödel Machine (DGM) Service is a core component of the ACGS platform
 ## API Endpoints
 
 ### Health and Status
+
 - `GET /health` - Service health check
 - `GET /metrics` - Prometheus metrics
 - `GET /status` - Detailed service status
 
 ### DGM Operations
+
 - `POST /api/v1/dgm/improve` - Trigger improvement cycle
 - `GET /api/v1/dgm/archive` - Retrieve improvement archive
 - `POST /api/v1/dgm/rollback` - Rollback to previous state
 - `GET /api/v1/dgm/performance` - Performance metrics
 
 ### Constitutional Compliance
+
 - `POST /api/v1/constitutional/validate` - Validate improvement against constitution
 - `GET /api/v1/constitutional/compliance` - Compliance status
 
@@ -72,6 +75,7 @@ The service is configured through environment variables and YAML configuration f
 ### Setup
 
 1. Install dependencies (UV recommended):
+
    ```bash
    # Using UV package manager (recommended)
    curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -83,12 +87,14 @@ The service is configured through environment variables and YAML configuration f
    ```
 
 2. Set up environment variables:
+
    ```bash
    cp .env.example .env
    # Edit .env with your configuration
    ```
 
 3. Run database migrations:
+
    ```bash
    # Using UV
    uv run alembic upgrade head
@@ -98,6 +104,7 @@ The service is configured through environment variables and YAML configuration f
    ```
 
 4. Start the service:
+
    ```bash
    # Using UV
    uv run python -m dgm_service.main

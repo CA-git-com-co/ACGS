@@ -26,12 +26,14 @@ rustc --version && solana --version && anchor --version
 ### Step 1: System Prerequisites
 
 #### Ubuntu/Debian
+
 ```bash
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y curl build-essential pkg-config libudev-dev git
 ```
 
 #### macOS
+
 ```bash
 # Install Xcode command line tools
 xcode-select --install
@@ -41,6 +43,7 @@ brew install curl git
 ```
 
 #### Windows
+
 ```powershell
 # Install Visual Studio Build Tools
 # Download from: https://visualstudio.microsoft.com/visual-cpp-build-tools/
@@ -52,6 +55,7 @@ brew install curl git
 ### Step 2: Install Rust
 
 #### Method 1: rustup (Recommended)
+
 ```bash
 # Download and install rustup
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -66,6 +70,7 @@ cargo --version
 ```
 
 #### Method 2: Package Manager
+
 ```bash
 # Ubuntu/Debian (not recommended for Solana development)
 sudo apt install rustc cargo
@@ -121,6 +126,7 @@ anchor --version
 ### Step 6: Configure Development Environment
 
 #### Create Cargo Configuration
+
 ```bash
 # Create cargo config directory
 mkdir -p ~/.cargo
@@ -141,6 +147,7 @@ EOF
 ```
 
 #### Set Environment Variables
+
 ```bash
 # Add to ~/.bashrc or ~/.zshrc
 cat >> ~/.bashrc << 'EOF'
@@ -163,6 +170,7 @@ source ~/.bashrc
 ## 🛠️ Development Tools
 
 ### Essential Cargo Tools
+
 ```bash
 # Security and quality tools
 cargo install cargo-audit      # Security vulnerability scanning
@@ -181,6 +189,7 @@ cargo install spl-token-cli     # SPL token management
 ### IDE Setup (VS Code)
 
 #### Install Extensions
+
 ```bash
 code --install-extension rust-lang.rust-analyzer
 code --install-extension vadimcn.vscode-lldb
@@ -189,22 +198,25 @@ code --install-extension tamasfe.even-better-toml
 ```
 
 #### VS Code Configuration
+
 Create `.vscode/settings.json` in your project:
+
 ```json
 {
-    "rust-analyzer.cargo.features": "all",
-    "rust-analyzer.checkOnSave.command": "clippy",
-    "rust-analyzer.completion.addCallArgumentSnippets": true,
-    "rust-analyzer.completion.addCallParenthesis": true,
-    "rust-analyzer.inlayHints.enable": true,
-    "rust-analyzer.inlayHints.chainingHints": true,
-    "rust-analyzer.inlayHints.parameterHints": true
+  "rust-analyzer.cargo.features": "all",
+  "rust-analyzer.checkOnSave.command": "clippy",
+  "rust-analyzer.completion.addCallArgumentSnippets": true,
+  "rust-analyzer.completion.addCallParenthesis": true,
+  "rust-analyzer.inlayHints.enable": true,
+  "rust-analyzer.inlayHints.chainingHints": true,
+  "rust-analyzer.inlayHints.parameterHints": true
 }
 ```
 
 ## ✅ Verification
 
 ### Automated Verification Script
+
 ```bash
 #!/bin/bash
 # Save as verify_setup.sh and run: chmod +x verify_setup.sh && ./verify_setup.sh
@@ -277,6 +289,7 @@ echo "🎉 All checks passed! Your Rust blockchain development environment is re
 ```
 
 ### Manual Verification
+
 ```bash
 # Check versions
 rustc --version    # Should show 1.81.0
@@ -298,6 +311,7 @@ cargo run --bin deploy_quantumagi -- --help
 ### Common Issues and Solutions
 
 #### Issue: "rustc: command not found"
+
 ```bash
 # Solution: Source the cargo environment
 source ~/.cargo/env
@@ -307,18 +321,21 @@ echo 'source ~/.cargo/env' >> ~/.bashrc
 ```
 
 #### Issue: Linker errors on Linux
+
 ```bash
 # Solution: Install build essentials and linker
 sudo apt install build-essential pkg-config libudev-dev lld
 ```
 
 #### Issue: Permission denied errors
+
 ```bash
 # Solution: Fix cargo directory permissions
 sudo chown -R $USER:$USER ~/.cargo
 ```
 
 #### Issue: Slow compilation
+
 ```bash
 # Solution: Enable parallel compilation and faster linker
 export CARGO_BUILD_JOBS=$(nproc)
@@ -326,6 +343,7 @@ sudo apt install lld  # Linux
 ```
 
 #### Issue: "target not found" errors
+
 ```bash
 # Solution: Add missing targets
 rustup target add wasm32-unknown-unknown
@@ -333,6 +351,7 @@ rustup target add bpf-unknown-unknown
 ```
 
 #### Issue: Anchor CLI installation fails
+
 ```bash
 # Solution: Ensure Node.js is installed
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
@@ -345,18 +364,21 @@ npm install -g @coral-xyz/anchor-cli@0.29.0
 After completing the setup:
 
 1. **Clone ACGS-1 Repository**
+
    ```bash
    git clone https://github.com/CA-git-com-co/ACGS.git
    cd ACGS/blockchain
    ```
 
 2. **Build Rust Tools**
+
    ```bash
    cd scripts
    cargo build --release
    ```
 
 3. **Test Blockchain Programs**
+
    ```bash
    anchor build
    anchor test

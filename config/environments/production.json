@@ -10,10 +10,7 @@
     "pool_size": 20,
     "max_overflow": 50,
     "echo": false,
-    "read_replicas": [
-      "prod-db-read-1.acgs.internal",
-      "prod-db-read-2.acgs.internal"
-    ]
+    "read_replicas": ["prod-db-read-1.acgs.internal", "prod-db-read-2.acgs.internal"]
   },
   "redis": {
     "host": "prod-redis.acgs.internal",
@@ -38,7 +35,7 @@
       "replicas": 3
     },
     "ac": {
-      "name": "Constitutional AI Service", 
+      "name": "Constitutional AI Service",
       "port": 8001,
       "host": "0.0.0.0",
       "health_path": "/health",
@@ -48,7 +45,7 @@
     "integrity": {
       "name": "Integrity Service",
       "port": 8002,
-      "host": "0.0.0.0", 
+      "host": "0.0.0.0",
       "health_path": "/health",
       "debug": false,
       "replicas": 2
@@ -116,10 +113,7 @@
     "commitment": "finalized",
     "max_retries": 10,
     "timeout_seconds": 120,
-    "backup_rpc_urls": [
-      "https://solana-api.projectserum.com",
-      "https://rpc.ankr.com/solana"
-    ]
+    "backup_rpc_urls": ["https://solana-api.projectserum.com", "https://rpc.ankr.com/solana"]
   },
   "monitoring": {
     "metrics_enabled": true,

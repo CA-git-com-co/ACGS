@@ -41,7 +41,7 @@
       "test_name": "automated_tier_basic_verification",
       "validation_tier": "automated",
       "validation_level": "baseline",
-      "policy_rule_refs": [{"id": 1}, {"id": 2}],
+      "policy_rule_refs": [{ "id": 1 }, { "id": 2 }],
       "expected_status": "verified",
       "expected_confidence_range": [0.7, 0.8]
     },
@@ -49,7 +49,7 @@
       "test_name": "hitl_tier_complex_verification",
       "validation_tier": "human_in_the_loop",
       "validation_level": "standard",
-      "policy_rule_refs": [{"id": 3}, {"id": 4}],
+      "policy_rule_refs": [{ "id": 3 }, { "id": 4 }],
       "human_reviewer_id": "reviewer_001",
       "expected_status": "verified",
       "expected_confidence_range": [0.8, 0.9]
@@ -58,7 +58,7 @@
       "test_name": "rigorous_tier_critical_verification",
       "validation_tier": "rigorous",
       "validation_level": "critical",
-      "policy_rule_refs": [{"id": 5}],
+      "policy_rule_refs": [{ "id": 5 }],
       "safety_properties": [
         {
           "property_id": "SP001",
@@ -189,9 +189,7 @@
         "access_allowed(User, Resource) :- has_role(User, admin).",
         "has_role(alice, admin)."
       ],
-      "proof_obligations": [
-        "ensure_role_based_access_for_principle_1"
-      ],
+      "proof_obligations": ["ensure_role_based_access_for_principle_1"],
       "expected_result": {
         "is_satisfiable": false,
         "is_unsatisfiable": true,
@@ -205,9 +203,7 @@
         "is_sensitive(user_data).",
         "has_encryption(user_data)."
       ],
-      "proof_obligations": [
-        "protect_sensitive_data_for_principle_2"
-      ],
+      "proof_obligations": ["protect_sensitive_data_for_principle_2"],
       "expected_result": {
         "is_satisfiable": false,
         "is_unsatisfiable": true,
@@ -216,12 +212,8 @@
     },
     {
       "test_name": "contradiction_detection",
-      "datalog_rules": [
-        "access_denied(User, Resource) :- true."
-      ],
-      "proof_obligations": [
-        "ensure_role_based_access_for_principle_1"
-      ],
+      "datalog_rules": ["access_denied(User, Resource) :- true."],
+      "proof_obligations": ["ensure_role_based_access_for_principle_1"],
       "expected_result": {
         "is_satisfiable": true,
         "is_unsatisfiable": false,

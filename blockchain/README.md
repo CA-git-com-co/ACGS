@@ -9,6 +9,7 @@ The blockchain layer provides decentralized, transparent, and immutable governan
 ## 🔒 Security Policy
 
 Found a security vulnerability? Please report it responsibly:
+
 - **Email**: dev@quantumagi.org
 - **GitHub**: Open a private security advisory
 - **Response Time**: We aim to respond within 24 hours
@@ -34,13 +35,16 @@ blockchain/
 ## Programs
 
 ### Quantumagi Core Program (`programs/blockchain/`)
+
 **Purpose**: Main constitutional governance enforcement
+
 - Constitutional principle storage and validation
 - Policy proposal and voting mechanisms
 - Real-time compliance checking (PGC)
 - Democratic governance workflows
 
 **Key Features**:
+
 - Constitution account management
 - Policy account creation and validation
 - Voting and consensus mechanisms
@@ -49,13 +53,16 @@ blockchain/
 **Program ID**: `QuantumagiCoreProgram111111111111111111111`
 
 ### Appeals Program (`programs/appeals/`)
+
 **Purpose**: Governance appeals and dispute resolution
+
 - Appeal submission and processing
 - Dispute resolution workflows
 - Appeal voting and consensus
 - Resolution enforcement
 
 **Key Features**:
+
 - Appeal account management
 - Dispute resolution mechanisms
 - Appeal voting systems
@@ -64,13 +71,16 @@ blockchain/
 **Program ID**: `AppealsProgram1111111111111111111111111`
 
 ### Logging Program (`programs/logging/`)
+
 **Purpose**: Comprehensive audit trail and event logging
+
 - Governance event logging
 - Audit trail maintenance
 - Event querying and retrieval
 - Compliance reporting
 
 **Key Features**:
+
 - Event log storage
 - Query mechanisms
 - Audit trail verification
@@ -81,6 +91,7 @@ blockchain/
 ## Client Libraries (`client/`)
 
 ### TypeScript Client
+
 Provides easy integration with the Anchor programs:
 
 ```typescript
@@ -99,6 +110,7 @@ await client.voteOnProposal(proposalId, vote);
 ```
 
 ### Python Client
+
 Python bindings for backend service integration:
 
 ```python
@@ -116,11 +128,13 @@ events = await client.get_governance_events(start_time, end_time)
 ## Development Setup (Rust-First)
 
 ### Prerequisites
+
 - **Rust** 1.81.0+ (primary development language)
 - **Solana CLI** v1.18.22+
 - **Anchor Framework** v0.29.0+
 
 ### Installation
+
 ```bash
 # Install Rust 1.81.0+
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -139,6 +153,7 @@ cd scripts && cargo build --release
 ```
 
 ### Building Programs (Rust-First)
+
 ```bash
 # Build Rust tools and workspace
 cd scripts && cargo build --release
@@ -151,6 +166,7 @@ anchor build --program quantumagi-core
 ```
 
 ### Testing (Rust-First)
+
 ```bash
 # Run Rust integration tests (primary)
 cd scripts && cargo test --release
@@ -166,6 +182,7 @@ cargo test -- --nocapture
 ```
 
 ### Local Development (Rust-First)
+
 ```bash
 # Start local Solana validator
 solana-test-validator
@@ -183,6 +200,7 @@ cargo run --bin initialize_constitution -- --cluster localhost
 ## Deployment
 
 ### Devnet Deployment (Rust-First)
+
 ```bash
 # Deploy complete stack using Rust tools
 cd scripts && cargo run --bin deploy_quantumagi -- deploy --cluster devnet
@@ -195,6 +213,7 @@ cargo run --bin validate_deployment -- --cluster devnet
 ```
 
 ### Mainnet Deployment (Rust-First)
+
 ```bash
 # Deploy to mainnet using Rust tools
 cd scripts && cargo run --bin deploy_quantumagi -- deploy --cluster mainnet-beta
@@ -214,6 +233,7 @@ All deployment operations now use native Rust tools:
 - **generate_program_ids**: Program ID management
 
 ### Dependency Management (Rust-First)
+
 ```bash
 # Update Rust dependencies (primary)
 cd scripts && cargo update
@@ -235,6 +255,7 @@ npm update --legacy-peer-deps
 ## Account Structure
 
 ### Constitution Account
+
 ```rust
 #[account]
 pub struct Constitution {
@@ -248,6 +269,7 @@ pub struct Constitution {
 ```
 
 ### Policy Account
+
 ```rust
 #[account]
 pub struct Policy {
@@ -261,6 +283,7 @@ pub struct Policy {
 ```
 
 ### Appeal Account
+
 ```rust
 #[account]
 pub struct Appeal {
@@ -276,13 +299,14 @@ pub struct Appeal {
 ## Integration with Backend Services
 
 ### Quantumagi Bridge
+
 The blockchain layer integrates with backend services through the Quantumagi Bridge:
 
 ```typescript
 // Event monitoring
 client.onGovernanceEvent((event) => {
-    // Forward to backend services
-    backendClient.processGovernanceEvent(event);
+  // Forward to backend services
+  backendClient.processGovernanceEvent(event);
 });
 
 // Policy compliance checking
@@ -290,6 +314,7 @@ const compliance = await client.checkPolicyCompliance(policyId);
 ```
 
 ### Real-time Synchronization
+
 - **Event Listeners**: Monitor on-chain events
 - **State Synchronization**: Keep backend services in sync
 - **Cross-chain Coordination**: Coordinate with other blockchains
@@ -297,18 +322,21 @@ const compliance = await client.checkPolicyCompliance(policyId);
 ## Security Considerations
 
 ### Program Security
+
 - **Access Control**: Multi-signature requirements for critical operations
 - **Input Validation**: Comprehensive validation of all inputs
 - **Reentrancy Protection**: Protection against reentrancy attacks
 - **Overflow Protection**: Safe arithmetic operations
 
 ### Key Management
+
 - **Hardware Security Modules**: Secure key storage
 - **Multi-signature Wallets**: Distributed key management
 - **Key Rotation**: Regular key rotation procedures
 - **Backup and Recovery**: Secure key backup procedures
 
 ### Audit and Compliance
+
 - **Code Audits**: Regular security audits
 - **Formal Verification**: Mathematical proof of correctness
 - **Compliance Monitoring**: Continuous compliance checking
@@ -317,12 +345,14 @@ const compliance = await client.checkPolicyCompliance(policyId);
 ## Monitoring and Analytics
 
 ### On-chain Metrics
+
 - **Transaction Volume**: Governance transaction metrics
 - **Account Growth**: Constitution and policy account growth
 - **Voting Participation**: Democratic participation metrics
 - **Compliance Rates**: Policy compliance statistics
 
 ### Performance Monitoring
+
 - **Transaction Latency**: Transaction confirmation times
 - **Throughput**: Transactions per second
 - **Error Rates**: Failed transaction analysis
@@ -338,23 +368,24 @@ const compliance = await client.checkPolicyCompliance(policyId);
 ## Examples
 
 ### Basic Usage
+
 ```typescript
 // Initialize client
 const client = new QuantumagiClient(connection, wallet);
 
 // Create constitution
 const constitution = await client.createConstitution({
-    principles: [
-        { name: "Transparency", description: "All governance actions must be transparent" },
-        { name: "Accountability", description: "All actors must be accountable" }
-    ]
+  principles: [
+    { name: 'Transparency', description: 'All governance actions must be transparent' },
+    { name: 'Accountability', description: 'All actors must be accountable' },
+  ],
 });
 
 // Submit policy proposal
 const proposal = await client.submitPolicyProposal({
-    constitution: constitution.publicKey,
-    content: "Policy content here",
-    metadata: { category: "governance" }
+  constitution: constitution.publicKey,
+  content: 'Policy content here',
+  metadata: { category: 'governance' },
 });
 
 // Vote on proposal

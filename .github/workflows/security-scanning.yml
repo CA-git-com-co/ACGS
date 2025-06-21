@@ -2,11 +2,11 @@ name: ACGS-1 Comprehensive Security Scanning
 
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: [main, master, develop]
   pull_request:
-    branches: [ main, master, develop ]
+    branches: [main, master, develop]
   schedule:
-    - cron: '0 3 * * 1'  # Weekly on Monday at 3 AM
+    - cron: '0 3 * * 1' # Weekly on Monday at 3 AM
   workflow_dispatch:
     inputs:
       scan_type:
@@ -15,10 +15,10 @@ on:
         default: 'comprehensive'
         type: choice
         options:
-        - comprehensive
-        - dependency-only
-        - code-only
-        - container-only
+          - comprehensive
+          - dependency-only
+          - code-only
+          - container-only
 
 permissions:
   contents: read
@@ -58,31 +58,31 @@ jobs:
       - name: Install security scanning tools
         run: |
           echo "🔧 Installing security scanning tools..."
-          
+
           # Python security tools
           pip install safety bandit semgrep
-          
+
           # Node.js security tools
           npm install -g audit-ci retire
-          
+
           # Rust security tools
           cargo install cargo-audit cargo-deny
-          
+
           echo "✅ Security tools installed"
 
       - name: Python dependency scanning with Safety
         run: |
           echo "🔍 Scanning Python dependencies with Safety..."
-          
+
           # Generate requirements files if they don't exist
           find . -name "requirements*.txt" -o -name "pyproject.toml" | head -1 | xargs -I {} safety check -r {}
-          
+
           echo "✅ Python dependency scan completed"
 
       - name: Node.js dependency scanning
         run: |
           echo "🔍 Scanning Node.js dependencies..."
-          
+
           # Find and scan package.json files
           find . -name "package.json" -not -path "*/node_modules/*" | while read package_file; do
             dir=$(dirname "$package_file")
@@ -97,13 +97,13 @@ jobs:
             
             cd - > /dev/null
           done
-          
+
           echo "✅ Node.js dependency scan completed"
 
       - name: Rust dependency scanning
         run: |
           echo "🔍 Scanning Rust dependencies..."
-          
+
           # Scan blockchain dependencies
           if [ -d "blockchain" ]; then
             cd blockchain
@@ -118,13 +118,13 @@ jobs:
             
             cd ..
           fi
-          
+
           echo "✅ Rust dependency scan completed"
 
       - name: Generate dependency scan report
         run: |
           echo "📊 Generating dependency scan report..."
-          
+
           cat > dependency-scan-report.json << EOF
           {
             "scan_type": "dependency_vulnerability",
@@ -136,7 +136,7 @@ jobs:
             "status": "success"
           }
           EOF
-          
+
           echo "✅ Dependency scan report generated"
 
   # Static Code Analysis
@@ -156,18 +156,18 @@ jobs:
       - name: Install static analysis tools
         run: |
           echo "🔧 Installing static analysis tools..."
-          
+
           pip install bandit semgrep pylint mypy
-          
+
           echo "✅ Static analysis tools installed"
 
       - name: Run Bandit security linter
         run: |
           echo "🔍 Running Bandit security analysis..."
-          
+
           # Run Bandit on Python code
           find . -name "*.py" -not -path "*/venv/*" -not -path "*/.venv/*" -not -path "*/node_modules/*" | head -100 | xargs bandit -f json -o bandit-report.json || true
-          
+
           echo "✅ Bandit analysis completed"
 
       - name: Run Semgrep analysis
@@ -180,7 +180,7 @@ jobs:
             p/python
             p/javascript
             p/typescript
-          generateSarif: "1"
+          generateSarif: '1'
 
       - name: Upload Semgrep results to GitHub
         uses: github/codeql-action/upload-sarif@v3
@@ -191,17 +191,17 @@ jobs:
       - name: Custom security pattern analysis
         run: |
           echo "🔍 Running custom security pattern analysis..."
-          
+
           # Check for common security anti-patterns
           echo "Checking for hardcoded secrets..."
           grep -r -i "password\|secret\|key\|token" --include="*.py" --include="*.js" --include="*.ts" . | grep -v ".git" | grep -v "test" | head -20 || true
-          
+
           echo "Checking for SQL injection patterns..."
           grep -r "execute.*%" --include="*.py" . | head -10 || true
-          
+
           echo "Checking for XSS vulnerabilities..."
           grep -r "innerHTML\|outerHTML" --include="*.js" --include="*.ts" . | head -10 || true
-          
+
           echo "✅ Custom security analysis completed"
 
   # Container Security Scanning
@@ -219,10 +219,10 @@ jobs:
       - name: Build test image
         run: |
           echo "🏗️ Building test image for security scanning..."
-          
+
           # Build the main ACGS image
           docker build -f infrastructure/docker/Dockerfile.acgs -t acgs-security-test:latest .
-          
+
           echo "✅ Test image built"
 
       - name: Run Trivy container scan
@@ -257,7 +257,7 @@ jobs:
       - name: Docker security best practices check
         run: |
           echo "🔍 Checking Docker security best practices..."
-          
+
           # Check Dockerfile security practices
           find . -name "Dockerfile*" | while read dockerfile; do
             echo "Analyzing $dockerfile..."
@@ -277,7 +277,7 @@ jobs:
               echo "⚠️ $dockerfile: Using :latest tag, consider pinning versions"
             fi
           done
-          
+
           echo "✅ Docker security check completed"
 
   # Infrastructure Security Scanning
@@ -292,55 +292,61 @@ jobs:
       - name: Install infrastructure security tools
         run: |
           echo "🔧 Installing infrastructure security tools..."
-          
+
           # Install checkov for infrastructure as code scanning
           pip install checkov
-          
+
           # Install tfsec for Terraform scanning
-          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
-          
+          timeout 120 curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+
           echo "✅ Infrastructure security tools installed"
 
       - name: Scan Docker Compose files
         run: |
           echo "🔍 Scanning Docker Compose files..."
-          
+
           find . -name "docker-compose*.yml" | while read compose_file; do
             echo "Scanning $compose_file..."
             checkov -f "$compose_file" --framework docker_compose || true
           done
-          
+
           echo "✅ Docker Compose scan completed"
 
       - name: Scan Kubernetes manifests
         run: |
           echo "🔍 Scanning Kubernetes manifests..."
-          
+
           find . -name "*.yaml" -path "*/kubernetes/*" | while read k8s_file; do
             echo "Scanning $k8s_file..."
             checkov -f "$k8s_file" --framework kubernetes || true
           done
-          
+
           echo "✅ Kubernetes manifest scan completed"
 
       - name: Scan Terraform files
         run: |
           echo "🔍 Scanning Terraform files..."
-          
+
           if [ -d "infrastructure/terraform" ]; then
             cd infrastructure/terraform
             tfsec . || true
             checkov -d . --framework terraform || true
             cd ../..
           fi
-          
+
           echo "✅ Terraform scan completed"
 
   # Security Report Generation
   security_report_generation:
     runs-on: ubuntu-latest
     name: Security Report Generation
-    needs: [dependency_scanning, static_code_analysis, container_security_scanning, infrastructure_security_scanning]
+    needs:
+      [
+        dependency_scanning,
+        static_code_analysis,
+        container_security_scanning,
+        infrastructure_security_scanning,
+      ]
     if: always()
     steps:
       - name: Check out repository
@@ -354,7 +360,7 @@ jobs:
       - name: Generate comprehensive security report
         run: |
           echo "📊 Generating comprehensive security report..."
-          
+
           # Create comprehensive security report
           cat > security-report.json << EOF
           {
@@ -379,7 +385,7 @@ jobs:
             ]
           }
           EOF
-          
+
           echo "✅ Security report generated"
 
       - name: Upload security artifacts

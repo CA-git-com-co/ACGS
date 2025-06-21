@@ -7,18 +7,21 @@ The MCP Inspector has been integrated into ACGS-1 to provide comprehensive testi
 ## Integration Benefits
 
 ### 🎯 **Constitutional Governance Testing**
+
 - **Interactive Policy Testing**: Test policy synthesis and compliance checking workflows
 - **Constitutional Validation**: Validate constitutional governance MCP server implementations
 - **Real-time Debugging**: Debug policy enforcement and governance decision flows
 - **Compliance Verification**: Verify PGC (Policy-Governance-Compliance) operations
 
 ### 🔧 **Development Acceleration**
+
 - **Rapid Prototyping**: Quick iteration on MCP server features
 - **Visual Debugging**: Browser-based interface for complex governance workflows
 - **Automated Testing**: CLI mode integration for CI/CD pipelines
 - **Configuration Export**: Generate `mcp.json` files for client integration
 
 ### 🔒 **Security & Authentication**
+
 - **Bearer Token Support**: Secure authentication for production MCP servers
 - **Transport Flexibility**: Support for stdio, SSE, and streamable-http protocols
 - **Environment Isolation**: Safe testing environment for governance operations
@@ -81,7 +84,7 @@ Create `tools/mcp-inspector/acgs-config.json`:
       }
     },
     "policy-synthesis": {
-      "command": "node", 
+      "command": "node",
       "args": ["build/policy-synthesis-server.js"],
       "env": {
         "OPENROUTER_API_KEY": "your-key",
@@ -104,11 +107,13 @@ npx @modelcontextprotocol/inspector \
 ### **Constitutional Governance Workflows**
 
 1. **Constitution Validation**
+
    - Test constitution hash verification
    - Validate constitutional compliance checks
    - Debug policy-constitution alignment
 
 2. **Policy Synthesis Testing**
+
    - Test multi-model consensus mechanisms
    - Validate policy generation workflows
    - Debug risk assessment algorithms
@@ -121,7 +126,7 @@ npx @modelcontextprotocol/inspector \
 ### **Integration with ACGS-1 Services**
 
 - **Auth Service (Port 8000)**: Test authentication workflows
-- **AC Service (Port 8001)**: Test access control mechanisms  
+- **AC Service (Port 8001)**: Test access control mechanisms
 - **Integrity Service (Port 8002)**: Test data integrity validation
 - **FV Service (Port 8003)**: Test formal verification processes
 - **GS Service (Port 8004)**: Test governance synthesis operations
@@ -138,11 +143,13 @@ npx @modelcontextprotocol/inspector \
 ## Security Considerations
 
 ### **Development Environment**
+
 - Use devnet Solana endpoints for testing
 - Isolate test wallets from production funds
 - Validate all governance operations in sandbox
 
 ### **Production Testing**
+
 - Use bearer token authentication for production servers
 - Implement rate limiting for governance operations
 - Monitor and log all constitutional compliance checks
@@ -162,14 +169,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
-      
+          node-version: "22"
+
       - name: Test Governance Server
         run: |
           npx @modelcontextprotocol/inspector --cli \
             node build/governance-server.js \
             --method tools/list
-      
+
       - name: Test Policy Synthesis
         run: |
           npx @modelcontextprotocol/inspector --cli \
@@ -190,6 +197,7 @@ jobs:
 ## Support
 
 For ACGS-1 specific MCP Inspector usage:
+
 - Review `tools/mcp-inspector/README.md` for general usage
 - Check ACGS-1 documentation for governance workflows
 - Use CLI mode for automated testing and CI/CD integration

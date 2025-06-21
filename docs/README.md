@@ -38,4 +38,3 @@ ACGS-1 is a blockchain-focused constitutional governance platform featuring:
 - Governance costs: <0.01 SOL per action
 - Test coverage: >80%
 - Constitutional compliance: >95% accuracy
-

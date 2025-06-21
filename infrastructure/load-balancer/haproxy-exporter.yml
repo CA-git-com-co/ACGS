@@ -5,58 +5,58 @@
 # HAProxy Exporter Configuration
 haproxy_exporter:
   # Connection settings
-  haproxy_scrape_uri: "http://localhost:8080/stats;csv"
+  haproxy_scrape_uri: 'http://localhost:8080/stats;csv'
   haproxy_ssl_verify: false
   haproxy_server_metric_fields:
-    - "2,3,4,5,6,7,8,9,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44"
-  haproxy_timeout: "5s"
-  
+    - '2,3,4,5,6,7,8,9,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44'
+  haproxy_timeout: '5s'
+
   # Authentication
-  haproxy_username: "admin"
-  haproxy_password: "acgs_haproxy_admin_2024"
-  
+  haproxy_username: 'admin'
+  haproxy_password: 'acgs_haproxy_admin_2024'
+
   # Metrics configuration
-  web_listen_address: ":9101"
-  web_telemetry_path: "/metrics"
-  log_level: "info"
-  
+  web_listen_address: ':9101'
+  web_telemetry_path: '/metrics'
+  log_level: 'info'
+
   # Custom metric labels for ACGS services
   metric_relabeling:
     - source_labels: [__name__]
       regex: 'haproxy_server_.*'
       target_label: 'component'
       replacement: 'load_balancer'
-    
+
     - source_labels: [proxy]
       regex: 'auth_backend'
       target_label: 'acgs_service'
       replacement: 'authentication'
-    
+
     - source_labels: [proxy]
       regex: 'ac_backend'
       target_label: 'acgs_service'
       replacement: 'constitutional_ai'
-    
+
     - source_labels: [proxy]
       regex: 'integrity_backend'
       target_label: 'acgs_service'
       replacement: 'integrity'
-    
+
     - source_labels: [proxy]
       regex: 'fv_backend'
       target_label: 'acgs_service'
       replacement: 'formal_verification'
-    
+
     - source_labels: [proxy]
       regex: 'gs_backend'
       target_label: 'acgs_service'
       replacement: 'governance_synthesis'
-    
+
     - source_labels: [proxy]
       regex: 'pgc_backend'
       target_label: 'acgs_service'
       replacement: 'policy_governance_control'
-    
+
     - source_labels: [proxy]
       regex: 'ec_backend'
       target_label: 'acgs_service'
@@ -64,17 +64,17 @@ haproxy_exporter:
 
 # Docker Compose Service Definition
 docker_service:
-  image: "prom/haproxy-exporter:v0.15.0"
-  container_name: "acgs-haproxy-exporter"
+  image: 'prom/haproxy-exporter:v0.15.0'
+  container_name: 'acgs-haproxy-exporter'
   ports:
-    - "9101:9101"
+    - '9101:9101'
   command:
-    - "--haproxy.scrape-uri=http://haproxy:8080/stats;csv"
-    - "--haproxy.ssl-verify=false"
-    - "--haproxy.timeout=5s"
-    - "--web.listen-address=:9101"
-    - "--web.telemetry-path=/metrics"
-    - "--log.level=info"
+    - '--haproxy.scrape-uri=http://haproxy:8080/stats;csv'
+    - '--haproxy.ssl-verify=false'
+    - '--haproxy.timeout=5s'
+    - '--web.listen-address=:9101'
+    - '--web.telemetry-path=/metrics'
+    - '--log.level=info'
   environment:
     - HAPROXY_USERNAME=admin
     - HAPROXY_PASSWORD=acgs_haproxy_admin_2024
@@ -83,10 +83,10 @@ docker_service:
   depends_on:
     - haproxy
   restart: unless-stopped
-  
+
   # Health check
   healthcheck:
-    test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9101/metrics"]
+    test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:9101/metrics']
     interval: 30s
     timeout: 10s
     retries: 3
@@ -94,100 +94,100 @@ docker_service:
 
 # Systemd Service Configuration
 systemd_service:
-  unit_name: "acgs-haproxy-exporter"
-  description: "HAProxy Prometheus Exporter for ACGS-1"
-  after: "network.target haproxy.service"
-  requires: "haproxy.service"
-  
+  unit_name: 'acgs-haproxy-exporter'
+  description: 'HAProxy Prometheus Exporter for ACGS-1'
+  after: 'network.target haproxy.service'
+  requires: 'haproxy.service'
+
   service:
-    type: "simple"
-    user: "prometheus"
-    group: "prometheus"
-    exec_start: "/usr/local/bin/haproxy_exporter --haproxy.scrape-uri=http://localhost:8080/stats;csv --haproxy.ssl-verify=false --haproxy.timeout=5s --web.listen-address=:9101 --web.telemetry-path=/metrics --log.level=info"
-    restart: "always"
-    restart_sec: "10"
-    
+    type: 'simple'
+    user: 'prometheus'
+    group: 'prometheus'
+    exec_start: '/usr/local/bin/haproxy_exporter --haproxy.scrape-uri=http://localhost:8080/stats;csv --haproxy.ssl-verify=false --haproxy.timeout=5s --web.listen-address=:9101 --web.telemetry-path=/metrics --log.level=info'
+    restart: 'always'
+    restart_sec: '10'
+
   install:
-    wanted_by: "multi-user.target"
+    wanted_by: 'multi-user.target'
 
 # Performance and Security Settings
 performance:
   # Scraping frequency
-  scrape_interval: "15s"
-  scrape_timeout: "10s"
-  
+  scrape_interval: '15s'
+  scrape_timeout: '10s'
+
   # Connection pooling
   max_idle_connections: 10
   max_connections_per_host: 5
-  
+
   # Security
-  enable_tls: false  # Internal network communication
+  enable_tls: false # Internal network communication
   basic_auth_enabled: true
-  
+
   # Resource limits
-  memory_limit: "128Mi"
-  cpu_limit: "100m"
-  
+  memory_limit: '128Mi'
+  cpu_limit: '100m'
+
 # Monitoring targets
 monitoring_targets:
   # HAProxy statistics endpoint
   haproxy_stats:
-    url: "http://localhost:8080/stats"
+    url: 'http://localhost:8080/stats'
     auth_required: true
-    
+
   # Individual backend health checks
   backend_health:
-    auth_backend: "http://localhost:8000/health"
-    ac_backend: "http://localhost:8001/health"
-    integrity_backend: "http://localhost:8002/health"
-    fv_backend: "http://localhost:8003/health"
-    gs_backend: "http://localhost:8004/health"
-    pgc_backend: "http://localhost:8005/health"
-    ec_backend: "http://localhost:8006/health"
-    
+    auth_backend: 'http://localhost:8000/health'
+    ac_backend: 'http://localhost:8001/health'
+    integrity_backend: 'http://localhost:8002/health'
+    fv_backend: 'http://localhost:8003/health'
+    gs_backend: 'http://localhost:8004/health'
+    pgc_backend: 'http://localhost:8005/health'
+    ec_backend: 'http://localhost:8006/health'
+
   # Load balancer frontend
   frontend_health:
-    url: "http://localhost:80/health"
+    url: 'http://localhost:80/health'
     expected_status: 200
-    timeout: "5s"
+    timeout: '5s'
 
 # Alert thresholds for integration with Prometheus
 alert_thresholds:
   # Response time thresholds (seconds)
   response_time_warning: 0.5
   response_time_critical: 1.0
-  
+
   # Error rate thresholds (percentage)
   error_rate_warning: 5.0
   error_rate_critical: 10.0
-  
+
   # Connection thresholds
   connection_warning: 800
   connection_critical: 1000
-  
+
   # Backend health
-  backend_down_threshold: 1  # Number of backends down before alert
-  
+  backend_down_threshold: 1 # Number of backends down before alert
+
   # Session affinity
-  session_affinity_failure_rate: 0.1  # failures per second
-  
+  session_affinity_failure_rate: 0.1 # failures per second
+
   # Circuit breaker
-  circuit_breaker_open_duration: 120  # seconds before alert
+  circuit_breaker_open_duration: 120 # seconds before alert
 
 # Integration with existing monitoring
 integration:
-  prometheus_job_name: "haproxy-exporter"
-  grafana_dashboard_id: "load-balancing-dashboard"
-  alertmanager_routing: "infrastructure"
-  
+  prometheus_job_name: 'haproxy-exporter'
+  grafana_dashboard_id: 'load-balancing-dashboard'
+  alertmanager_routing: 'infrastructure'
+
   # Metric correlation
   correlate_with:
-    - "acgs-auth-service"
-    - "acgs-ac-service"
-    - "acgs-integrity-service"
-    - "acgs-fv-service"
-    - "acgs-gs-service"
-    - "acgs-pgc-service"
-    - "acgs-ec-service"
-    - "acgs-redis"
-    - "acgs-postgres"
+    - 'acgs-auth-service'
+    - 'acgs-ac-service'
+    - 'acgs-integrity-service'
+    - 'acgs-fv-service'
+    - 'acgs-gs-service'
+    - 'acgs-pgc-service'
+    - 'acgs-ec-service'
+    - 'acgs-redis'
+    - 'acgs-postgres'

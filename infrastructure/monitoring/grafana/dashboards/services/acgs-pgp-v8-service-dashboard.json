@@ -2,7 +2,14 @@
   "dashboard": {
     "id": null,
     "title": "ACGS-PGP v8: Quantum-Inspired Semantic Fault Tolerance Service",
-    "tags": ["acgs", "pgp-v8", "quantum-inspired", "semantic-fault-tolerance", "policy-generation", "service"],
+    "tags": [
+      "acgs",
+      "pgp-v8",
+      "quantum-inspired",
+      "semantic-fault-tolerance",
+      "policy-generation",
+      "service"
+    ],
     "timezone": "browser",
     "refresh": "30s",
     "time": {
@@ -27,17 +34,17 @@
             },
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "green", "value": 1}
+                { "color": "red", "value": 0 },
+                { "color": "green", "value": 1 }
               ]
             },
             "mappings": [
-              {"options": {"0": {"text": "Down"}}, "type": "value"},
-              {"options": {"1": {"text": "Up"}}, "type": "value"}
+              { "options": { "0": { "text": "Down" } }, "type": "value" },
+              { "options": { "1": { "text": "Up" } }, "type": "value" }
             ]
           }
         },
-        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0}
+        "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 }
       },
       {
         "id": 2,
@@ -57,14 +64,14 @@
             },
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "yellow", "value": 3600},
-                {"color": "green", "value": 86400}
+                { "color": "red", "value": 0 },
+                { "color": "yellow", "value": 3600 },
+                { "color": "green", "value": 86400 }
               ]
             }
           }
         },
-        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0}
+        "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 }
       },
       {
         "id": 3,
@@ -83,17 +90,17 @@
             },
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "green", "value": 1}
+                { "color": "red", "value": 0 },
+                { "color": "green", "value": 1 }
               ]
             },
             "mappings": [
-              {"options": {"0": {"text": "Unhealthy"}}, "type": "value"},
-              {"options": {"1": {"text": "Healthy"}}, "type": "value"}
+              { "options": { "0": { "text": "Unhealthy" } }, "type": "value" },
+              { "options": { "1": { "text": "Healthy" } }, "type": "value" }
             ]
           }
         },
-        "gridPos": {"h": 4, "w": 12, "x": 12, "y": 0}
+        "gridPos": { "h": 4, "w": 12, "x": 12, "y": 0 }
       },
       {
         "id": 4,
@@ -111,7 +118,7 @@
             "min": 0
           }
         ],
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4}
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 }
       },
       {
         "id": 5,
@@ -133,7 +140,7 @@
             "min": 0
           }
         ],
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4}
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 }
       },
       {
         "id": 6,
@@ -156,7 +163,7 @@
             "max": 1
           }
         ],
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12}
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 }
       },
       {
         "id": 7,
@@ -175,7 +182,7 @@
             "max": 100
           }
         ],
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12}
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 }
       },
       {
         "id": 8,
@@ -193,7 +200,7 @@
             "min": 0
           }
         ],
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 20}
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 }
       },
       {
         "id": 9,
@@ -212,19 +219,19 @@
             },
             "thresholds": {
               "steps": [
-                {"color": "green", "value": 0},
-                {"color": "red", "value": 1},
-                {"color": "yellow", "value": 2}
+                { "color": "green", "value": 0 },
+                { "color": "red", "value": 1 },
+                { "color": "yellow", "value": 2 }
               ]
             },
             "mappings": [
-              {"options": {"0": {"text": "Closed"}}, "type": "value"},
-              {"options": {"1": {"text": "Open"}}, "type": "value"},
-              {"options": {"2": {"text": "Half-Open"}}, "type": "value"}
+              { "options": { "0": { "text": "Closed" } }, "type": "value" },
+              { "options": { "1": { "text": "Open" } }, "type": "value" },
+              { "options": { "2": { "text": "Half-Open" } }, "type": "value" }
             ]
           }
         },
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 20}
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 20 }
       },
       {
         "id": 10,
@@ -242,7 +249,7 @@
             "min": 0
           }
         ],
-        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 28}
+        "gridPos": { "h": 8, "w": 24, "x": 0, "y": 28 }
       }
     ]
   }

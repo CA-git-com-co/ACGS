@@ -7,6 +7,7 @@ This document outlines the development workflow, coding standards, testing proce
 ## 🏗️ Development Environment Setup
 
 ### **Prerequisites**
+
 ```bash
 # Required Software
 - Python 3.11+
@@ -25,6 +26,7 @@ This document outlines the development workflow, coding standards, testing proce
 ```
 
 ### **Local Environment Setup**
+
 ```bash
 # Clone repository
 git clone https://github.com/dislovemartin/ACGS.git
@@ -60,6 +62,7 @@ docker-compose -f docker-compose.dev.yml up -d
 ```
 
 ### **TaskMaster AI Integration**
+
 ```bash
 # Initialize TaskMaster AI for project management
 cd /path/to/ACGS-master
@@ -80,6 +83,7 @@ python -m taskmaster_ai.cli next_task
 ### **Code Style Guidelines**
 
 #### **Python Standards**
+
 ```python
 # Follow PEP 8 with these specific requirements:
 
@@ -105,15 +109,15 @@ async def create_policy(
     user_id: str
 ) -> PolicyResponse:
     """Create a new policy with constitutional validation.
-    
+
     Args:
         db: Database session
         policy_data: Policy creation data
         user_id: ID of the user creating the policy
-        
+
     Returns:
         Created policy response
-        
+
     Raises:
         HTTPException: If validation fails
     """
@@ -122,15 +126,15 @@ async def create_policy(
 # 4. Docstring format (Google style)
 class PolicyService:
     """Service for managing AI governance policies.
-    
+
     This service handles policy creation, validation, and enforcement
     with constitutional compliance checking.
-    
+
     Attributes:
         db: Database session
         constitutional_validator: Constitutional compliance validator
     """
-    
+
     def __init__(self, db: AsyncSession):
         self.db = db
         self.constitutional_validator = ConstitutionalValidator()
@@ -147,6 +151,7 @@ except DatabaseError as e:
 ```
 
 #### **JavaScript/TypeScript Standards**
+
 ```typescript
 // Follow Airbnb style guide with these additions:
 
@@ -166,19 +171,19 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 
 const PolicyManager: React.FC = () => {
   const [selectedPolicy, setSelectedPolicy] = useState<PolicyData | null>(null);
-  
+
   const { data: policies, isLoading } = useQuery({
     queryKey: ['policies'],
     queryFn: fetchPolicies,
   });
-  
+
   const createPolicyMutation = useMutation({
     mutationFn: createPolicy,
     onSuccess: () => {
       // Handle success
     },
   });
-  
+
   return (
     <div className="policy-manager">
       {/* Component JSX */}
@@ -192,26 +197,27 @@ class PolicyErrorBoundary extends React.Component<Props, State> {
     super(props);
     this.state = { hasError: false };
   }
-  
+
   static getDerivedStateFromError(error: Error): State {
     return { hasError: true };
   }
-  
+
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Policy component error:', error, errorInfo);
   }
-  
+
   render() {
     if (this.state.hasError) {
       return <ErrorFallback />;
     }
-    
+
     return this.props.children;
   }
 }
 ```
 
 ### **Database Standards**
+
 ```sql
 -- 1. Naming conventions
 -- Tables: snake_case, plural
@@ -224,7 +230,7 @@ class PolicyErrorBoundary extends React.Component<Props, State> {
 """Create constitutional principles table
 
 Revision ID: 001
-Revises: 
+Revises:
 Create Date: 2024-01-15 10:00:00.000000
 """
 
@@ -243,7 +249,7 @@ def upgrade():
         sa.Column('created_at', sa.DateTime, default=sa.func.now()),
         sa.Column('updated_at', sa.DateTime, default=sa.func.now(), onupdate=sa.func.now())
     )
-    
+
     # Create indexes
     op.create_index('idx_constitutional_principles_name', 'constitutional_principles', ['name'])
     op.create_index('idx_constitutional_principles_scope', 'constitutional_principles', ['scope'])
@@ -261,6 +267,7 @@ def downgrade():
 ## 🧪 Testing Standards
 
 ### **Test Structure**
+
 ```
 tests/
 ├── unit/                    # Unit tests for individual components
@@ -296,6 +303,7 @@ tests/
 ```
 
 ### **Testing Patterns**
+
 ```python
 # Unit Test Example
 import pytest
@@ -308,43 +316,43 @@ from tests.fixtures.auth_fixtures import mock_user, mock_jwt_token
 
 class TestAuthService:
     """Test suite for authentication service."""
-    
+
     @pytest.fixture
     def auth_service(self):
         return AuthService(db=AsyncMock())
-    
+
     @pytest.mark.asyncio
     async def test_authenticate_user_success(self, auth_service, mock_user):
         """Test successful user authentication."""
         # Arrange
         auth_service.db.get_user_by_email = AsyncMock(return_value=mock_user)
         auth_service.verify_password = AsyncMock(return_value=True)
-        
+
         # Act
         result = await auth_service.authenticate_user("test@example.com", "password")
-        
+
         # Assert
         assert result is not None
         assert result.email == "test@example.com"
         auth_service.db.get_user_by_email.assert_called_once_with("test@example.com")
-    
+
     @pytest.mark.asyncio
     async def test_authenticate_user_invalid_password(self, auth_service, mock_user):
         """Test authentication with invalid password."""
         # Arrange
         auth_service.db.get_user_by_email = AsyncMock(return_value=mock_user)
         auth_service.verify_password = AsyncMock(return_value=False)
-        
+
         # Act
         result = await auth_service.authenticate_user("test@example.com", "wrong_password")
-        
+
         # Assert
         assert result is None
 
 # Integration Test Example
 class TestPolicyPipeline:
     """Test complete policy creation and enforcement pipeline."""
-    
+
     @pytest.mark.asyncio
     async def test_complete_policy_workflow(self, test_client, auth_headers):
         """Test complete policy workflow from creation to enforcement."""
@@ -360,7 +368,7 @@ class TestPolicyPipeline:
             headers=auth_headers
         )
         assert principle_response.status_code == 201
-        
+
         # 2. Synthesize policy using GS service
         synthesis_data = {
             "prompt": "Create a policy for data privacy",
@@ -372,7 +380,7 @@ class TestPolicyPipeline:
             headers=auth_headers
         )
         assert synthesis_response.status_code == 200
-        
+
         # 3. Verify policy using FV service
         policy_content = synthesis_response.json()["policy_content"]
         verification_response = test_client.post(
@@ -382,7 +390,7 @@ class TestPolicyPipeline:
         )
         assert verification_response.status_code == 200
         assert verification_response.json()["result"] == "valid"
-        
+
         # 4. Store policy with integrity service
         policy_data = {
             "name": "Test Policy",
@@ -394,7 +402,7 @@ class TestPolicyPipeline:
             headers=auth_headers
         )
         assert policy_response.status_code == 201
-        
+
         # 5. Deploy policy to PGC service
         deployment_response = test_client.post(
             f"/api/v1/enforcement/rules",
@@ -406,28 +414,29 @@ class TestPolicyPipeline:
 # Performance Test Example
 class TestPerformance:
     """Performance and load testing."""
-    
+
     @pytest.mark.performance
     def test_authentication_performance(self, test_client):
         """Test authentication endpoint performance."""
         import time
-        
+
         login_data = {"username": "test@example.com", "password": "password"}
-        
+
         # Measure response time for 100 requests
         start_time = time.time()
         for _ in range(100):
             response = test_client.post("/auth/login", json=login_data)
             assert response.status_code == 200
-        
+
         end_time = time.time()
         avg_response_time = (end_time - start_time) / 100
-        
+
         # Assert average response time is under 50ms
         assert avg_response_time < 0.05, f"Average response time {avg_response_time}s exceeds 50ms"
 ```
 
 ### **Test Coverage Requirements**
+
 ```yaml
 coverage_targets:
   overall: 95%
@@ -436,23 +445,24 @@ coverage_targets:
   critical_paths: 100%
 
 coverage_exclusions:
-  - "*/migrations/*"
-  - "*/tests/*"
-  - "*/venv/*"
-  - "*/node_modules/*"
-  - "*/__pycache__/*"
+  - '*/migrations/*'
+  - '*/tests/*'
+  - '*/venv/*'
+  - '*/node_modules/*'
+  - '*/__pycache__/*'
 
 critical_paths:
-  - "Authentication flow"
-  - "Policy synthesis pipeline"
-  - "Constitutional Council workflows"
-  - "Cryptographic integrity operations"
-  - "Formal verification processes"
+  - 'Authentication flow'
+  - 'Policy synthesis pipeline'
+  - 'Constitutional Council workflows'
+  - 'Cryptographic integrity operations'
+  - 'Formal verification processes'
 ```
 
 ## 🔄 Git Workflow
 
 ### **Branch Strategy**
+
 ```
 main                    # Production-ready code
 ├── develop            # Integration branch for features
@@ -467,11 +477,12 @@ main                    # Production-ready code
 ```
 
 ### **Commit Message Standards**
+
 ```bash
 # Format: <type>(<scope>): <description>
-# 
+#
 # <body>
-# 
+#
 # <footer>
 
 # Types:
@@ -518,46 +529,48 @@ and environment variable requirements for WINA optimization.
 ```
 
 ### **Pull Request Process**
+
 ```yaml
 pr_requirements:
-  title: "Clear, descriptive title following commit message format"
+  title: 'Clear, descriptive title following commit message format'
   description:
-    - "Problem description"
-    - "Solution approach"
-    - "Testing performed"
-    - "Breaking changes (if any)"
-  
+    - 'Problem description'
+    - 'Solution approach'
+    - 'Testing performed'
+    - 'Breaking changes (if any)'
+
   checklist:
-    - "[ ] Code follows style guidelines"
-    - "[ ] Self-review completed"
-    - "[ ] Tests added/updated"
-    - "[ ] Documentation updated"
-    - "[ ] No breaking changes (or documented)"
-    - "[ ] Security implications considered"
-    - "[ ] Performance impact assessed"
-  
+    - '[ ] Code follows style guidelines'
+    - '[ ] Self-review completed'
+    - '[ ] Tests added/updated'
+    - '[ ] Documentation updated'
+    - '[ ] No breaking changes (or documented)'
+    - '[ ] Security implications considered'
+    - '[ ] Performance impact assessed'
+
   reviews:
     required: 2
     required_from_codeowners: true
     dismiss_stale_reviews: true
-  
+
   checks:
-    - "All tests pass"
-    - "Code coverage >= 95%"
-    - "Security scan passes"
-    - "Performance benchmarks pass"
-    - "Documentation builds successfully"
+    - 'All tests pass'
+    - 'Code coverage >= 95%'
+    - 'Security scan passes'
+    - 'Performance benchmarks pass'
+    - 'Documentation builds successfully'
 
 merge_strategy:
-  default: "squash"
+  default: 'squash'
   exceptions:
-    - "feature branches with multiple logical commits"
-    - "release branches"
+    - 'feature branches with multiple logical commits'
+    - 'release branches'
 ```
 
 ## 🚀 Deployment Process
 
 ### **Continuous Integration**
+
 ```yaml
 # .github/workflows/ci.yml
 name: CI/CD Pipeline
@@ -574,85 +587,86 @@ jobs:
     strategy:
       matrix:
         python-version: [3.11, 3.12]
-    
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements-dev.txt
-    
-    - name: Run linting
-      run: |
-        black --check src/
-        isort --check-only src/
-        flake8 src/
-        mypy src/
-    
-    - name: Run security scan
-      run: |
-        bandit -r src/
-        safety check
-    
-    - name: Run tests
-      run: |
-        pytest tests/ --cov=src --cov-report=xml --cov-fail-under=95
-    
-    - name: Upload coverage
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Run linting
+        run: |
+          black --check src/
+          isort --check-only src/
+          flake8 src/
+          mypy src/
+
+      - name: Run security scan
+        run: |
+          bandit -r src/
+          safety check
+
+      - name: Run tests
+        run: |
+          pytest tests/ --cov=src --cov-report=xml --cov-fail-under=95
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
 
   build:
     needs: test
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Build Docker images
-      run: |
-        docker-compose -f infrastructure/docker/docker-compose.yml build
-    
-    - name: Run integration tests
-      run: |
-        docker-compose -f infrastructure/docker/docker-compose.test.yml up --abort-on-container-exit
-    
-    - name: Security scan images
-      run: |
-        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-          aquasec/trivy image --severity HIGH,CRITICAL acgs-pgp:latest
+      - uses: actions/checkout@v4
+
+      - name: Build Docker images
+        run: |
+          docker-compose -f infrastructure/docker/docker-compose.yml build
+
+      - name: Run integration tests
+        run: |
+          docker-compose -f infrastructure/docker/docker-compose.test.yml up --abort-on-container-exit
+
+      - name: Security scan images
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy image --severity HIGH,CRITICAL acgs-pgp:latest
 
   deploy:
     needs: [test, build]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
-    - name: Deploy to staging
-      run: |
-        # Deployment script
-        ./scripts/deploy_staging.sh
-    
-    - name: Run smoke tests
-      run: |
-        ./scripts/smoke_tests.sh
-    
-    - name: Deploy to production
-      if: success()
-      run: |
-        ./scripts/deploy_production.sh
+      - name: Deploy to staging
+        run: |
+          # Deployment script
+          ./scripts/deploy_staging.sh
+
+      - name: Run smoke tests
+        run: |
+          ./scripts/smoke_tests.sh
+
+      - name: Deploy to production
+        if: success()
+        run: |
+          ./scripts/deploy_production.sh
 ```
 
 ### **Deployment Environments**
 
 #### **Development Environment**
+
 ```bash
 # Local development with hot reload
 cd config/docker
@@ -667,6 +681,7 @@ docker-compose -f docker-compose.dev.yml up -d
 ```
 
 #### **Staging Environment**
+
 ```bash
 # Staging deployment (production-like)
 ./scripts/deploy_staging.sh
@@ -680,6 +695,7 @@ docker-compose -f docker-compose.dev.yml up -d
 ```
 
 #### **Production Environment**
+
 ```bash
 # Production deployment
 ./scripts/deploy_production.sh
@@ -695,37 +711,39 @@ docker-compose -f docker-compose.dev.yml up -d
 ## 📊 Quality Assurance
 
 ### **Code Quality Metrics**
+
 ```yaml
 quality_gates:
-  code_coverage: ">= 95%"
-  test_success_rate: "100%"
-  security_vulnerabilities: "0 high/critical"
-  performance_regression: "< 5%"
-  documentation_coverage: ">= 90%"
+  code_coverage: '>= 95%'
+  test_success_rate: '100%'
+  security_vulnerabilities: '0 high/critical'
+  performance_regression: '< 5%'
+  documentation_coverage: '>= 90%'
 
 automated_checks:
   pre_commit:
-    - "black"
-    - "isort"
-    - "flake8"
-    - "mypy"
-    - "pytest-quick"
-  
+    - 'black'
+    - 'isort'
+    - 'flake8'
+    - 'mypy'
+    - 'pytest-quick'
+
   ci_pipeline:
-    - "full test suite"
-    - "security scanning"
-    - "performance benchmarks"
-    - "integration tests"
-    - "documentation build"
-  
+    - 'full test suite'
+    - 'security scanning'
+    - 'performance benchmarks'
+    - 'integration tests'
+    - 'documentation build'
+
   deployment:
-    - "smoke tests"
-    - "health checks"
-    - "monitoring validation"
-    - "rollback verification"
+    - 'smoke tests'
+    - 'health checks'
+    - 'monitoring validation'
+    - 'rollback verification'
 ```
 
 ### **Performance Monitoring**
+
 ```python
 # Performance monitoring integration
 from prometheus_client import Counter, Histogram, Gauge
@@ -739,9 +757,9 @@ ACTIVE_CONNECTIONS = Gauge('acgs_active_connections', 'Active database connectio
 @app.middleware("http")
 async def metrics_middleware(request: Request, call_next):
     start_time = time.time()
-    
+
     response = await call_next(request)
-    
+
     duration = time.time() - start_time
     REQUEST_DURATION.observe(duration)
     REQUEST_COUNT.labels(
@@ -749,13 +767,14 @@ async def metrics_middleware(request: Request, call_next):
         endpoint=request.url.path,
         status=response.status_code
     ).inc()
-    
+
     return response
 ```
 
 ## 🔧 Development Tools
 
 ### **Recommended VS Code Extensions**
+
 ```json
 {
   "recommendations": [
@@ -776,6 +795,7 @@ async def metrics_middleware(request: Request, call_next):
 ```
 
 ### **Development Scripts**
+
 ```bash
 # Available development scripts in scripts/
 ./scripts/setup_dev_environment.sh    # Initial development setup

@@ -2,7 +2,7 @@
   "version": "2.0",
   "updated": "2025-06-17",
   "description": "ACGS-1 Enterprise Incident Response Configuration",
-  
+
   "escalation_policies": {
     "critical": {
       "description": "Critical incidents affecting constitutional governance or system availability",
@@ -33,10 +33,7 @@
           "level": 3,
           "time": 900,
           "description": "Executive escalation for business-critical issues",
-          "contacts": [
-            "cto@constitutional-governance.ai",
-            "ceo@constitutional-governance.ai"
-          ],
+          "contacts": ["cto@constitutional-governance.ai", "ceo@constitutional-governance.ai"],
           "notification_methods": ["email", "phone", "pagerduty"]
         }
       ]
@@ -50,18 +47,14 @@
           "level": 1,
           "time": 900,
           "description": "Escalation to operations team",
-          "contacts": [
-            "ops-team@constitutional-governance.ai"
-          ],
+          "contacts": ["ops-team@constitutional-governance.ai"],
           "notification_methods": ["email", "slack"]
         },
         {
           "level": 2,
           "time": 1800,
           "description": "Escalation to engineering leadership",
-          "contacts": [
-            "sre-lead@constitutional-governance.ai"
-          ],
+          "contacts": ["sre-lead@constitutional-governance.ai"],
           "notification_methods": ["email", "slack"]
         }
       ]
@@ -75,9 +68,7 @@
           "level": 1,
           "time": 3600,
           "description": "Standard escalation to operations team",
-          "contacts": [
-            "ops-team@constitutional-governance.ai"
-          ],
+          "contacts": ["ops-team@constitutional-governance.ai"],
           "notification_methods": ["email"]
         }
       ]
@@ -91,15 +82,13 @@
           "level": 1,
           "time": 14400,
           "description": "Daily review escalation",
-          "contacts": [
-            "ops-team@constitutional-governance.ai"
-          ],
+          "contacts": ["ops-team@constitutional-governance.ai"],
           "notification_methods": ["email"]
         }
       ]
     }
   },
-  
+
   "automated_remediation": {
     "enabled": true,
     "description": "Automated remediation actions for common incident types",
@@ -112,7 +101,7 @@
         "cooldown_minutes": 5,
         "services": [
           "auth_service",
-          "ac_service", 
+          "ac_service",
           "integrity_service",
           "fv_service",
           "gs_service",
@@ -151,7 +140,7 @@
       }
     }
   },
-  
+
   "notification_channels": {
     "email": {
       "enabled": true,
@@ -228,11 +217,17 @@
       }
     }
   },
-  
+
   "incident_classification": {
     "severity_mapping": {
       "critical": {
-        "keywords": ["down", "unavailable", "critical", "constitutional_failure", "security_breach"],
+        "keywords": [
+          "down",
+          "unavailable",
+          "critical",
+          "constitutional_failure",
+          "security_breach"
+        ],
         "services": ["pgc_service", "gs_service"],
         "metrics": {
           "availability": "<99.0%",
@@ -285,7 +280,7 @@
       }
     }
   },
-  
+
   "runbook_automation": {
     "enabled": true,
     "description": "Automated runbook execution for common incidents",
@@ -322,7 +317,7 @@
       }
     }
   },
-  
+
   "metrics_and_reporting": {
     "incident_metrics": {
       "mttr_target": {
@@ -344,7 +339,10 @@
       },
       "weekly_analysis": {
         "enabled": true,
-        "recipients": ["sre-lead@constitutional-governance.ai", "engineering-manager@constitutional-governance.ai"],
+        "recipients": [
+          "sre-lead@constitutional-governance.ai",
+          "engineering-manager@constitutional-governance.ai"
+        ],
         "day": "monday",
         "time": "10:00"
       },
@@ -356,7 +354,7 @@
       }
     }
   },
-  
+
   "integration_settings": {
     "prometheus": {
       "url": "http://localhost:9090",
@@ -377,7 +375,7 @@
       "api_timeout": 10
     }
   },
-  
+
   "security_settings": {
     "encryption": {
       "enabled": false,

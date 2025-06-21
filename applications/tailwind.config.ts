@@ -1,4 +1,4 @@
-import type { Config } from 'tailwindcss'
+import type { Config } from 'tailwindcss';
 
 const config: Config = {
   content: [
@@ -42,10 +42,10 @@ const config: Config = {
         },
       },
       fontSize: {
-        'caption': ['12px', { lineHeight: '16px' }],
-        'body': ['14px', { lineHeight: '20px' }],
-        'subheading': ['16px', { lineHeight: '24px' }],
-        'heading': ['20px', { lineHeight: '28px' }],
+        caption: ['12px', { lineHeight: '16px' }],
+        body: ['14px', { lineHeight: '20px' }],
+        subheading: ['16px', { lineHeight: '24px' }],
+        heading: ['20px', { lineHeight: '28px' }],
         'large-heading': ['24px', { lineHeight: '32px' }],
       },
       spacing: {
@@ -72,16 +72,16 @@ const config: Config = {
         },
       },
       boxShadow: {
-        'card': '0 2px 4px rgba(0, 0, 0, 0.1)',
+        card: '0 2px 4px rgba(0, 0, 0, 0.1)',
         'card-hover': '0 4px 12px rgba(0, 0, 0, 0.15)',
-        'command': '0 16px 70px rgba(0, 0, 0, 0.2)',
+        command: '0 16px 70px rgba(0, 0, 0, 0.2)',
       },
       backdropBlur: {
-        'xs': '2px',
+        xs: '2px',
       },
     },
   },
   plugins: [],
-}
+};
 
-export default config
+export default config;

@@ -11,13 +11,16 @@ The audit identified critical issues with policy dataset integrity, format consi
 ### 1. Content/Format Inconsistencies ✅
 
 **Issues Identified:**
+
 - 97% of artifacts unusable without translation (JSON/YAML vs required Rego)
 - 41.8% empty principle_text fields
 - Missing external modules causing import failures
 - Mixed line endings (CR-LF vs LF)
 
 **Solutions Implemented:**
+
 - **Policy Format Router** (`services/platform/pgc/pgc_service/app/core/policy_format_router.py`)
+
   - Automatic format detection (JSON, YAML, Rego, Datalog)
   - Conversion pipeline with Azure Policy and AWS IAM support
   - OPA syntax validation with missing import detection
@@ -31,12 +34,15 @@ The audit identified critical issues with policy dataset integrity, format consi
 ### 2. Naming/Metadata Issues ✅
 
 **Issues Identified:**
+
 - Non-monotonic principle_id values
-- Missing _file fields for provenance
+- Missing \_file fields for provenance
 - Inconsistent metadata.framework values
 
 **Solutions Implemented:**
+
 - **Provenance Tracking**
+
   - Added `source_file` field to policy schemas
   - Automatic file path recording during ingestion
   - Metadata consistency validation
@@ -49,12 +55,15 @@ The audit identified critical issues with policy dataset integrity, format consi
 ### 3. Security & Integrity ✅
 
 **Issues Identified:**
+
 - No pgp_signature fields present
 - Missing tamper detection mechanisms
 - No detached signatures or checksums
 
 **Solutions Implemented:**
+
 - **PGP Signature Support**
+
   - Added `pgp_signature` field to policy schemas
   - Integrated CryptoService for signature verification
   - Signature validation in policy loading pipeline
@@ -67,12 +76,15 @@ The audit identified critical issues with policy dataset integrity, format consi
 ### 4. Documentation & Reproducibility ✅
 
 **Issues Identified:**
+
 - Missing README and folder hierarchy explanation
 - No manifest.json with checksums and record counts
 - Incomplete reproducibility claims
 
 **Solutions Implemented:**
+
 - **Manifest Management System** (`services/platform/pgc/pgc_service/app/core/manifest_manager.py`)
+
   - Comprehensive manifest generation with SHA-256 checksums
   - Framework breakdown statistics
   - File integrity verification
@@ -103,6 +115,7 @@ The policy loading process now includes:
 New migration: `004_enhance_policy_rules_for_audit_findings.py`
 
 Added fields to `policy_rules` table:
+
 - `framework`: Policy format (Datalog, Rego, JSON, YAML)
 - `principle_text`: Human-readable description
 - `pgp_signature`: PGP signature for integrity

@@ -4,12 +4,13 @@ This document defines the key data structures for the QEC-SFT framework.
 
 ## 4.1. Logical Semantic Unit (LSU) / Principle
 
-*(The schema for a Principle remains largely unchanged from v7, but its conceptual role is elevated to that of an LSU.)*
+_(The schema for a Principle remains largely unchanged from v7, but its conceptual role is elevated to that of an LSU.)_
 
 ## 4.2. Semantic Syndrome Vector
 
-*   **Format**: JSON
-*   **Description**: The data structure representing the output of the SEE. It's an ordered list of stabilizer outcomes.
+- **Format**: JSON
+- **Description**: The data structure representing the output of the SEE. It's an ordered list of stabilizer outcomes.
+
 ```json
 {
   "lsu_id": "principle-a1b2c3",
@@ -25,8 +26,8 @@ This document defines the key data structures for the QEC-SFT framework.
 
 ## 4.3. Certified Artifact Package
 
-*   **Format**: JSON
-*   **Description**: The final, signed object stored in the Artifact Store. It bundles the operational artifact with its proof of semantic integrity.
+- **Format**: JSON
+- **Description**: The final, signed object stored in the Artifact Store. It bundles the operational artifact with its proof of semantic integrity.
 
 ```json
 {
@@ -48,4 +49,5 @@ This document defines the key data structures for the QEC-SFT framework.
   }
 }
 ```
-*   **Signature Details**: The signature covers a canonicalized JSON string of both the `payload` and the `certificate_of_semantic_integrity`, binding the artifact to its verification process.
+
+- **Signature Details**: The signature covers a canonicalized JSON string of both the `payload` and the `certificate_of_semantic_integrity`, binding the artifact to its verification process.

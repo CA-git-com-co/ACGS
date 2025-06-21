@@ -3,10 +3,10 @@
 // requires: Node.js environment with Anchor framework
 // ensures: >90% test pass rate, zero critical failures
 
-import * as anchor from "@coral-xyz/anchor";
-import { PublicKey, Keypair, Connection } from "@solana/web3.js";
-import * as fs from "fs";
-import * as path from "path";
+import * as anchor from '@coral-xyz/anchor';
+import { PublicKey, Keypair, Connection } from '@solana/web3.js';
+import * as fs from 'fs';
+import * as path from 'path';
 
 interface TestSuiteConfig {
   name: string;
@@ -17,42 +17,42 @@ interface TestSuiteConfig {
 
 const TEST_SUITES: TestSuiteConfig[] = [
   {
-    name: "quantumagi_core_corrected",
-    programName: "QuantumagiCore",
+    name: 'quantumagi_core_corrected',
+    programName: 'QuantumagiCore',
     requiredMethods: [
-      "initializeGovernance",
-      "createPolicyProposal", 
-      "voteOnProposal",
-      "finalizeProposal",
-      "emergencyAction"
+      'initializeGovernance',
+      'createPolicyProposal',
+      'voteOnProposal',
+      'finalizeProposal',
+      'emergencyAction',
     ],
-    accountTypes: ["governanceState", "policyProposal", "voteRecord"]
+    accountTypes: ['governanceState', 'policyProposal', 'voteRecord'],
   },
   {
-    name: "appeals_comprehensive",
-    programName: "Appeals",
+    name: 'appeals_comprehensive',
+    programName: 'Appeals',
     requiredMethods: [
-      "submitAppeal",
-      "reviewAppeal", 
-      "escalateToHumanCommittee",
-      "resolveWithRuling",
-      "getAppealStats"
+      'submitAppeal',
+      'reviewAppeal',
+      'escalateToHumanCommittee',
+      'resolveWithRuling',
+      'getAppealStats',
     ],
-    accountTypes: ["appeal", "appealStats"]
+    accountTypes: ['appeal', 'appealStats'],
   },
   {
-    name: "logging_comprehensive", 
-    programName: "Logging",
+    name: 'logging_comprehensive',
+    programName: 'Logging',
     requiredMethods: [
-      "logEvent",
-      "emitMetadataLog",
-      "logPerformanceMetrics",
-      "logSecurityAlert",
-      "acknowledgeSecurityAlert",
-      "getLoggingStats"
+      'logEvent',
+      'emitMetadataLog',
+      'logPerformanceMetrics',
+      'logSecurityAlert',
+      'acknowledgeSecurityAlert',
+      'getLoggingStats',
     ],
-    accountTypes: ["logEntry", "metadataLog", "performanceLog", "securityLog", "loggingStats"]
-  }
+    accountTypes: ['logEntry', 'metadataLog', 'performanceLog', 'securityLog', 'loggingStats'],
+  },
 ];
 
 class TestInfrastructureRemediation {
@@ -60,33 +60,33 @@ class TestInfrastructureRemediation {
   private provider: anchor.AnchorProvider;
 
   constructor() {
-    this.connection = new Connection("http://localhost:8899", "confirmed");
+    this.connection = new Connection('http://localhost:8899', 'confirmed');
     this.provider = anchor.AnchorProvider.env();
     anchor.setProvider(this.provider);
   }
 
   // Fix governance account collision by using unique PDAs
   async fixGovernanceAccountCollision(): Promise<void> {
-    console.log("🔧 Fixing governance account collision...");
-    
+    console.log('🔧 Fixing governance account collision...');
+
     const testFiles = [
-      "quantumagi_core_corrected.ts",
-      "quantumagi_core_enhanced.ts", 
-      "quantumagi-core_comprehensive.ts",
-      "transaction_optimization.ts"
+      'quantumagi_core_corrected.ts',
+      'quantumagi_core_enhanced.ts',
+      'quantumagi-core_comprehensive.ts',
+      'transaction_optimization.ts',
     ];
 
     for (const testFile of testFiles) {
-      const filePath = path.join(__dirname, "..", "tests", testFile);
+      const filePath = path.join(__dirname, '..', 'tests', testFile);
       if (fs.existsSync(filePath)) {
-        let content = fs.readFileSync(filePath, "utf8");
-        
+        let content = fs.readFileSync(filePath, 'utf8');
+
         // Replace static governance PDA with unique PDA generation
         content = content.replace(
           /\[Buffer\.from\("governance"\)\]/g,
           `[Buffer.from("governance_${testFile.replace('.ts', '')}_" + Date.now())]`
         );
-        
+
         // Add test isolation
         content = content.replace(
           /before\(async \(\) => \{/g,
@@ -103,30 +103,27 @@ class TestInfrastructureRemediation {
 
   // Fix vote record PDA seed mismatches
   async fixVoteRecordPDASeeds(): Promise<void> {
-    console.log("🔧 Fixing vote record PDA seed mismatches...");
-    
+    console.log('🔧 Fixing vote record PDA seed mismatches...');
+
     const testFiles = [
-      "quantumagi_core_corrected.ts",
-      "quantumagi_core_enhanced.ts",
-      "quantumagi-core_comprehensive.ts"
+      'quantumagi_core_corrected.ts',
+      'quantumagi_core_enhanced.ts',
+      'quantumagi-core_comprehensive.ts',
     ];
 
     for (const testFile of testFiles) {
-      const filePath = path.join(__dirname, "..", "tests", testFile);
+      const filePath = path.join(__dirname, '..', 'tests', testFile);
       if (fs.existsSync(filePath)) {
-        let content = fs.readFileSync(filePath, "utf8");
-        
+        let content = fs.readFileSync(filePath, 'utf8');
+
         // Fix vote record PDA generation to match program constraints
         content = content.replace(
           /\[Buffer\.from\("vote_record"\), policyId\.toBuffer\("le", 8\), voter\.publicKey\.toBuffer\(\)\]/g,
           `[Buffer.from("vote_record"), policyId.toBuffer("le", 8), voter.publicKey.toBuffer()]`
         );
-        
+
         // Ensure consistent proposal ID usage
-        content = content.replace(
-          /policyId\.toBuffer\("le", 8\)/g,
-          `policyId.toBuffer("le", 8)`
-        );
+        content = content.replace(/policyId\.toBuffer\("le", 8\)/g, `policyId.toBuffer("le", 8)`);
 
         fs.writeFileSync(filePath, content);
         console.log(`✅ Fixed vote record PDA seeds in ${testFile}`);
@@ -136,19 +133,19 @@ class TestInfrastructureRemediation {
 
   // Fix emergency action authorization
   async fixEmergencyActionAuth(): Promise<void> {
-    console.log("🔧 Fixing emergency action authorization...");
-    
+    console.log('🔧 Fixing emergency action authorization...');
+
     const testFiles = [
-      "quantumagi_core_corrected.ts",
-      "quantumagi_core_enhanced.ts",
-      "quantumagi-core_comprehensive.ts"
+      'quantumagi_core_corrected.ts',
+      'quantumagi_core_enhanced.ts',
+      'quantumagi-core_comprehensive.ts',
     ];
 
     for (const testFile of testFiles) {
-      const filePath = path.join(__dirname, "..", "tests", testFile);
+      const filePath = path.join(__dirname, '..', 'tests', testFile);
       if (fs.existsSync(filePath)) {
-        let content = fs.readFileSync(filePath, "utf8");
-        
+        let content = fs.readFileSync(filePath, 'utf8');
+
         // Ensure governance is initialized before emergency actions
         content = content.replace(
           /await program\.methods\.emergencyAction/g,
@@ -177,18 +174,18 @@ class TestInfrastructureRemediation {
 
   // Optimize SOL costs to meet <0.01 SOL target
   async optimizeSOLCosts(): Promise<void> {
-    console.log("🔧 Optimizing SOL costs...");
-    
-    const validationTestPath = path.join(__dirname, "..", "tests", "validation_test.ts");
+    console.log('🔧 Optimizing SOL costs...');
+
+    const validationTestPath = path.join(__dirname, '..', 'tests', 'validation_test.ts');
     if (fs.existsSync(validationTestPath)) {
-      let content = fs.readFileSync(validationTestPath, "utf8");
-      
+      let content = fs.readFileSync(validationTestPath, 'utf8');
+
       // Reduce cost target and optimize operations
       content = content.replace(
         /expect\(totalCostSOL\)\.to\.be\.below\(0\.01\)/g,
         `expect(totalCostSOL).to.be.below(0.008) // Stricter target for safety margin`
       );
-      
+
       // Add cost optimization comments
       content = content.replace(
         /const initialBalance = await/g,
@@ -197,69 +194,68 @@ class TestInfrastructureRemediation {
       );
 
       fs.writeFileSync(validationTestPath, content);
-      console.log("✅ Optimized SOL cost validation");
+      console.log('✅ Optimized SOL cost validation');
     }
   }
 
   // Generate comprehensive test report
   async generateTestReport(): Promise<void> {
-    console.log("📊 Generating test remediation report...");
-    
+    console.log('📊 Generating test remediation report...');
+
     const report = {
       timestamp: new Date().toISOString(),
       remediationActions: [
-        "Fixed governance account collision with unique PDAs",
-        "Corrected vote record PDA seed derivation",
-        "Fixed emergency action authorization flow", 
-        "Optimized SOL cost validation",
-        "Updated method signatures for appeals/logging programs"
+        'Fixed governance account collision with unique PDAs',
+        'Corrected vote record PDA seed derivation',
+        'Fixed emergency action authorization flow',
+        'Optimized SOL cost validation',
+        'Updated method signatures for appeals/logging programs',
       ],
       expectedImprovements: {
-        testPassRate: "32.4% → >90%",
-        criticalFailures: "46 → 0",
-        costCompliance: "0.012714 SOL → <0.01 SOL",
-        infrastructureStability: "Rate limited → Robust retry logic"
+        testPassRate: '32.4% → >90%',
+        criticalFailures: '46 → 0',
+        costCompliance: '0.012714 SOL → <0.01 SOL',
+        infrastructureStability: 'Rate limited → Robust retry logic',
       },
       nextSteps: [
-        "Run comprehensive test suite validation",
-        "Monitor performance under load",
-        "Validate formal verification requirements",
-        "Deploy to production environment"
-      ]
+        'Run comprehensive test suite validation',
+        'Monitor performance under load',
+        'Validate formal verification requirements',
+        'Deploy to production environment',
+      ],
     };
 
-    const reportPath = path.join(__dirname, "..", "TEST_REMEDIATION_REPORT.json");
+    const reportPath = path.join(__dirname, '..', 'TEST_REMEDIATION_REPORT.json');
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
     console.log(`✅ Test remediation report generated: ${reportPath}`);
   }
 
   // Execute complete remediation workflow
   async executeRemediation(): Promise<void> {
-    console.log("🚀 Starting ACGS-1 Test Infrastructure Remediation...");
-    console.log("=".repeat(60));
-    
+    console.log('🚀 Starting ACGS-1 Test Infrastructure Remediation...');
+    console.log('='.repeat(60));
+
     try {
       await this.fixGovernanceAccountCollision();
       await this.fixVoteRecordPDASeeds();
       await this.fixEmergencyActionAuth();
       await this.optimizeSOLCosts();
       await this.generateTestReport();
-      
-      console.log("\n✅ Test infrastructure remediation completed successfully!");
-      console.log("📋 Summary:");
-      console.log("  - Governance account collision: FIXED");
-      console.log("  - Vote record PDA seeds: FIXED");
-      console.log("  - Emergency action auth: FIXED");
-      console.log("  - SOL cost optimization: APPLIED");
-      console.log("  - Method signatures: CORRECTED");
-      console.log("\n🎯 Expected Results:");
-      console.log("  - Test pass rate: >90%");
-      console.log("  - Critical failures: 0");
-      console.log("  - SOL cost per operation: <0.01");
-      console.log("  - Infrastructure stability: HIGH");
-      
+
+      console.log('\n✅ Test infrastructure remediation completed successfully!');
+      console.log('📋 Summary:');
+      console.log('  - Governance account collision: FIXED');
+      console.log('  - Vote record PDA seeds: FIXED');
+      console.log('  - Emergency action auth: FIXED');
+      console.log('  - SOL cost optimization: APPLIED');
+      console.log('  - Method signatures: CORRECTED');
+      console.log('\n🎯 Expected Results:');
+      console.log('  - Test pass rate: >90%');
+      console.log('  - Critical failures: 0');
+      console.log('  - SOL cost per operation: <0.01');
+      console.log('  - Infrastructure stability: HIGH');
     } catch (error) {
-      console.error("❌ Remediation failed:", error);
+      console.error('❌ Remediation failed:', error);
       process.exit(1);
     }
   }

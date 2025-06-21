@@ -19,13 +19,13 @@ const Footer: React.FC<FooterProps> = ({ className = '' }) => {
     { path: '/privacy', label: 'Privacy Policy' },
     { path: '/terms', label: 'Terms of Service' },
     { path: '/about', label: 'About' },
-    { path: '/contact', label: 'Contact' },
+    { path: '/contact', label: 'Contact' }
   ];
 
   const socialLinks: FooterLink[] = [
     { path: 'https://github.com/CA-git-com-co/ACGS', label: 'GitHub', external: true },
     { path: 'https://twitter.com/acgs-pgp', label: 'Twitter', external: true },
-    { path: 'https://discord.gg/acgs-pgp', label: 'Discord', external: true },
+    { path: 'https://discord.gg/acgs-pgp', label: 'Discord', external: true }
   ];
 
   const renderLink = (link: FooterLink) => {
@@ -65,9 +65,9 @@ const Footer: React.FC<FooterProps> = ({ className = '' }) => {
               <h3 className="text-lg font-bold">ACGS-PGP Framework</h3>
             </div>
             <p className="text-gray-300 text-sm leading-relaxed mb-4">
-              Artificial Constitution and Self-Synthesizing Prompt Governance Compiler - 
-              A comprehensive framework for constitutional governance systems with 
-              real-time compliance validation and democratic policy synthesis.
+              Artificial Constitution and Self-Synthesizing Prompt Governance Compiler - A
+              comprehensive framework for constitutional governance systems with real-time
+              compliance validation and democratic policy synthesis.
             </p>
             <div className="flex items-center space-x-2 text-sm text-gray-400">
               <span>🔗</span>
@@ -80,9 +80,7 @@ const Footer: React.FC<FooterProps> = ({ className = '' }) => {
             <h4 className="text-sm font-semibold text-gray-200 uppercase tracking-wider mb-4">
               Quick Links
             </h4>
-            <div className="space-y-2">
-              {footerLinks.map(renderLink)}
-            </div>
+            <div className="space-y-2">{footerLinks.map(renderLink)}</div>
           </div>
 
           {/* Community */}
@@ -90,9 +88,7 @@ const Footer: React.FC<FooterProps> = ({ className = '' }) => {
             <h4 className="text-sm font-semibold text-gray-200 uppercase tracking-wider mb-4">
               Community
             </h4>
-            <div className="space-y-2">
-              {socialLinks.map(renderLink)}
-            </div>
+            <div className="space-y-2">{socialLinks.map(renderLink)}</div>
             <div className="mt-4">
               <h5 className="text-sm font-medium text-gray-300 mb-2">System Status</h5>
               <div className="flex items-center space-x-2">
@@ -109,17 +105,13 @@ const Footer: React.FC<FooterProps> = ({ className = '' }) => {
             <div className="text-sm text-gray-300">
               © {currentYear} ACGS-PGP Framework. All rights reserved.
             </div>
-            
+
             <div className="flex items-center space-x-4 mt-4 md:mt-0">
-              <div className="text-xs text-gray-400">
-                Version 1.0.0
-              </div>
-              <div className="text-xs text-gray-400">
-                Constitution Hash: cdd01ef066bc6cf2
-              </div>
+              <div className="text-xs text-gray-400">Version 1.0.0</div>
+              <div className="text-xs text-gray-400">Constitution Hash: cdd01ef066bc6cf2</div>
             </div>
           </div>
-          
+
           <div className="mt-4 text-center">
             <p className="text-xs text-gray-400">
               Built with ❤️ for transparent and democratic governance systems

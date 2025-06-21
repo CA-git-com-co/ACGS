@@ -1,6 +1,8 @@
 # ACGS-PGP Framework Testing Guide
 
-This document outlines the comprehensive testing strategy for the ACGS-PGP (Artificial Constitution Governance System - Prompt Governance Protocol) shared component library.
+This document outlines the comprehensive testing strategy for the ACGS-PGP
+(Artificial Constitution Governance System - Prompt Governance Protocol) shared
+component library.
 
 ## 🎯 Testing Philosophy
 
@@ -9,17 +11,20 @@ Our testing approach follows constitutional governance principles:
 - **Transparency**: All tests are well-documented and self-explanatory
 - **Reliability**: Comprehensive coverage ensures system stability
 - **Accountability**: Tests validate compliance with governance requirements
-- **Accessibility**: Testing includes accessibility validation for inclusive governance
+- **Accessibility**: Testing includes accessibility validation for inclusive
+  governance
 
 ## 📊 Coverage Targets
 
 ### Overall Coverage Goals (ACGS Standards)
+
 - **Branches**: ≥80%
 - **Functions**: ≥80%
 - **Lines**: ≥80%
 - **Statements**: ≥80%
 
 ### Critical Component Coverage
+
 - **ComplianceChecker**: ≥90% (core governance functionality)
 - **Services**: ≥85% (ACGS service integration)
 - **Hooks**: ≥80% (shared logic components)
@@ -33,6 +38,7 @@ Our testing approach follows constitutional governance principles:
 **Purpose**: Test individual components and functions in isolation
 
 **Key Features**:
+
 - Component rendering and interaction
 - Props validation with Zod schemas
 - Hook behavior and state management
@@ -40,6 +46,7 @@ Our testing approach follows constitutional governance principles:
 - Error handling and edge cases
 
 **Example**:
+
 ```bash
 npm run test                    # Run all unit tests
 npm run test:watch             # Run tests in watch mode
@@ -53,6 +60,7 @@ npm run test:coverage          # Run with coverage report
 **Purpose**: Test component interactions with services and contexts
 
 **Key Features**:
+
 - Service integration patterns
 - Authentication flows
 - Context provider behavior
@@ -60,6 +68,7 @@ npm run test:coverage          # Run with coverage report
 - Mock service responses
 
 **Example**:
+
 ```bash
 npm run test -- --testPathPattern=integration
 ```
@@ -71,6 +80,7 @@ npm run test -- --testPathPattern=integration
 **Purpose**: Test complete user workflows in browser environment
 
 **Key Features**:
+
 - Governance workflow validation
 - Cross-browser compatibility
 - Mobile responsiveness
@@ -78,6 +88,7 @@ npm run test -- --testPathPattern=integration
 - Real user interactions
 
 **Example**:
+
 ```bash
 npm run test:e2e              # Run E2E tests headless
 npm run test:e2e:headed       # Run with browser UI
@@ -132,7 +143,7 @@ it('should restrict access based on user role', () => {
       </AuthProvider>
     )
   });
-  
+
   expect(result.current.canPerformAction('admin_action')).toBe(false);
 });
 ```
@@ -368,4 +379,6 @@ npx playwright show-trace test-results/trace.zip
 
 ---
 
-*This testing strategy ensures the ACGS-PGP Framework maintains high quality while supporting constitutional governance principles through comprehensive validation and verification.*
+_This testing strategy ensures the ACGS-PGP Framework maintains high quality
+while supporting constitutional governance principles through comprehensive
+validation and verification._

@@ -9,12 +9,14 @@ This guide provides comprehensive instructions for deploying the NeMo-Skills Mat
 ### System Requirements
 
 **Hardware:**
+
 - GPU: NVIDIA A100/H100 (minimum 40GB VRAM) or 4x RTX 4090
 - CPU: 32+ cores, 128GB+ RAM
 - Storage: 1TB+ NVMe SSD
 - Network: 10Gbps+ bandwidth
 
 **Software:**
+
 - Ubuntu 22.04 LTS or RHEL 8+
 - Docker 24.0+ with NVIDIA Container Runtime
 - CUDA 12.1+ drivers
@@ -84,12 +86,12 @@ nemo_skills:
     timeout_ms: 30000
     sandbox_type: "local"
     enable_caching: true
-  
+
   server_backends:
     primary: "vllm"
     fallback: ["trtllm", "sglang"]
     model_name: "meta/llama-3.3-70b-instruct"
-  
+
   evaluation:
     benchmarks: ["gsm8k", "math", "aime24"]
     accuracy_threshold: 0.85
@@ -190,7 +192,7 @@ from pathlib import Path
 def setup_environment():
     """Set up environment variables for MRS service."""
     print("🔧 Setting up environment variables...")
-    
+
     # Core service URLs
     os.environ["AUTH_SERVICE_URL"] = "http://localhost:8000"
     os.environ["AC_SERVICE_URL"] = "http://localhost:8001"
@@ -199,33 +201,33 @@ def setup_environment():
     os.environ["GS_SERVICE_URL"] = "http://localhost:8004"
     os.environ["PGC_SERVICE_URL"] = "http://localhost:8005"
     os.environ["EC_SERVICE_URL"] = "http://localhost:8006"
-    
+
     # Database and Redis
     os.environ["DATABASE_URL"] = "postgresql+asyncpg://acgs_user:acgs_password@localhost:5433/acgs_pgp_db"
     os.environ["REDIS_URL"] = "redis://localhost:6379/2"
-    
+
     # Security
     os.environ["JWT_SECRET_KEY"] = "acgs-mathematical-reasoning-secret-key-2024"
     os.environ["ENVIRONMENT"] = "development"
-    
+
     # NeMo-Skills configuration
     os.environ["NEMO_SKILLS_PATH"] = "/home/dislove/ACGS-1/tools/NeMo-Skills"
     os.environ["PYTHONPATH"] = "/home/dislove/ACGS-1/services/shared:/home/dislove/ACGS-1/services/core/mathematical-reasoning/mrs_service"
-    
+
     print("✅ Environment variables configured")
 
 def start_mrs_service():
     """Start the Mathematical Reasoning Service."""
     print("🚀 Starting Mathematical Reasoning Service...")
-    
+
     mrs_service_dir = Path("/home/dislove/ACGS-1/services/core/mathematical-reasoning/mrs_service")
-    
+
     if not mrs_service_dir.exists():
         print(f"❌ MRS Service directory not found: {mrs_service_dir}")
         return None
-    
+
     cmd = ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8007", "--reload"]
-    
+
     try:
         process = subprocess.Popen(
             cmd,
@@ -235,16 +237,16 @@ def start_mrs_service():
             universal_newlines=True,
             env=os.environ.copy(),
         )
-        
+
         print(f"✅ MRS Service started with PID: {process.pid}")
-        
+
         # Save PID for management
         pid_file = Path("/home/dislove/ACGS-1/pids/mrs_service.pid")
         pid_file.parent.mkdir(exist_ok=True)
         pid_file.write_text(str(process.pid))
-        
+
         return process
-        
+
     except Exception as e:
         print(f"❌ Failed to start MRS service: {e}")
         return None
@@ -253,10 +255,10 @@ def main():
     """Main execution function."""
     print("🚀 Mathematical Reasoning Service Host-Based Startup")
     print("=" * 55)
-    
+
     setup_environment()
     process = start_mrs_service()
-    
+
     if process:
         print("\n✅ Mathematical Reasoning Service is running!")
         print(f"🔧 Service URL: http://localhost:8007")
@@ -330,7 +332,7 @@ export NEMO_SKILLS_GPU_MEMORY_FRACTION=0.9
 ```yaml
 # vLLM backend configuration
 vllm_config:
-  model: "meta/llama-3.3-70b-instruct"
+  model: 'meta/llama-3.3-70b-instruct'
   tensor_parallel_size: 4
   max_model_len: 32768
   gpu_memory_utilization: 0.9
@@ -339,16 +341,16 @@ vllm_config:
 
 # TensorRT-LLM backend configuration
 trtllm_config:
-  model: "meta/llama-3.3-70b-instruct"
+  model: 'meta/llama-3.3-70b-instruct'
   max_batch_size: 16
   max_input_len: 16384
   max_output_len: 2048
-  precision: "fp16"
+  precision: 'fp16'
   enable_kv_cache: true
 
 # sglang backend configuration
 sglang_config:
-  model: "meta/llama-3.3-70b-instruct"
+  model: 'meta/llama-3.3-70b-instruct'
   mem_fraction_static: 0.85
   max_concurrent_requests: 1024
   enable_flashinfer: true
@@ -472,10 +474,10 @@ async def benchmark_mathematical_reasoning():
         {"content": "Find the derivative of x^2 + 3x + 2", "problem_type": "calculus"},
         {"content": "Calculate the mean of [1, 2, 3, 4, 5]", "problem_type": "statistics"}
     ]
-    
+
     async with aiohttp.ClientSession() as session:
         start_time = time.time()
-        
+
         tasks = []
         for problem in problems:
             task = session.post(
@@ -484,12 +486,12 @@ async def benchmark_mathematical_reasoning():
                 headers={"Authorization": "Bearer test-token"}
             )
             tasks.append(task)
-        
+
         responses = await asyncio.gather(*tasks, return_exceptions=True)
         end_time = time.time()
-        
+
         successful_responses = [r for r in responses if not isinstance(r, Exception)]
-        
+
         print(f"Total time: {(end_time - start_time) * 1000:.1f}ms")
         print(f"Successful responses: {len(successful_responses)}/{len(problems)}")
         print(f"Average response time: {((end_time - start_time) / len(problems)) * 1000:.1f}ms")
@@ -503,6 +505,7 @@ EOF
 ### Common Issues
 
 **Issue: Service fails to start**
+
 ```bash
 # Check logs
 tail -f /home/dislove/ACGS-1/logs/mrs_service.log
@@ -515,6 +518,7 @@ nvidia-smi
 ```
 
 **Issue: Mathematical reasoning timeout**
+
 ```bash
 # Increase timeout in configuration
 export NEMO_SKILLS_TIMEOUT_MS=60000
@@ -527,6 +531,7 @@ htop
 ```
 
 **Issue: Constitutional compliance validation fails**
+
 ```bash
 # Check AC service connectivity
 curl http://localhost:8001/health

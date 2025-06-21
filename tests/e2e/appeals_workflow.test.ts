@@ -1,9 +1,8 @@
+import { expect } from 'chai';
+import * as anchor from '@project-serum/anchor';
+import { Program } from '@project-serum/anchor';
 
-import { expect } from "chai";
-import * as anchor from "@project-serum/anchor";
-import { Program } from "@project-serum/anchor";
-
-describe("E2E: appeals_workflow", () => {
+describe('E2E: appeals_workflow', () => {
   let appealsProgram: Program;
   let loggingProgram: Program;
   let provider: anchor.AnchorProvider;
@@ -15,7 +14,7 @@ describe("E2E: appeals_workflow", () => {
     loggingProgram = anchor.workspace.Logging as Program;
   });
 
-  it("should complete Policy violation → Appeal submission → Resolution", async () => {
+  it('should complete Policy violation → Appeal submission → Resolution', async () => {
     // Test implementation for appeals_workflow
     const startTime = Date.now();
 
@@ -24,16 +23,13 @@ describe("E2E: appeals_workflow", () => {
       // Step 1: Trigger violation via logging program
       const violationTimestamp = Date.now();
       const [securityLogPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("security_log"),
-          Buffer.from(violationTimestamp.toString().slice(-8)),
-        ],
+        [Buffer.from('security_log'), Buffer.from(violationTimestamp.toString().slice(-8))],
         loggingProgram.programId
       );
 
       const alertType = { policyViolation: {} };
       const severity = { medium: {} };
-      const description = "Policy violation detected";
+      const description = 'Policy violation detected';
       const affectedPolicyId = new anchor.BN(1234);
 
       await loggingProgram.methods
@@ -45,22 +41,20 @@ describe("E2E: appeals_workflow", () => {
         })
         .rpc();
 
-      const securityLogAccount = await loggingProgram.account.securityLog.fetch(
-        securityLogPDA
-      );
+      const securityLogAccount = await loggingProgram.account.securityLog.fetch(securityLogPDA);
       expect(securityLogAccount.alertType).to.deep.equal(alertType);
 
       // Step 2: Submit appeal
       const [appealPDA] = anchor.web3.PublicKey.findProgramAddressSync(
         [
-          Buffer.from("appeal"),
-          affectedPolicyId.toBuffer("le", 8),
+          Buffer.from('appeal'),
+          affectedPolicyId.toBuffer('le', 8),
           provider.wallet.publicKey.toBuffer(),
         ],
         appealsProgram.programId
       );
 
-      const violationDetails = "Automated test violation appeal";
+      const violationDetails = 'Automated test violation appeal';
       const evidenceHash = Array.from(Buffer.alloc(32, 5));
       const appealType = { policyViolation: {} };
 
@@ -78,7 +72,7 @@ describe("E2E: appeals_workflow", () => {
 
       // Step 3: Review appeal with low confidence to trigger human review
       const reviewDecision = { approve: {} };
-      const reviewEvidence = "Initial automated review";
+      const reviewEvidence = 'Initial automated review';
       const confidenceScore = 80; // below high confidence threshold
 
       await appealsProgram.methods
@@ -94,7 +88,7 @@ describe("E2E: appeals_workflow", () => {
 
       // Step 4: Resolve appeal with final ruling
       const finalDecision = { overturn: {} };
-      const rulingDetails = "Human review overturned decision";
+      const rulingDetails = 'Human review overturned decision';
       const enforcementAction = { none: {} };
 
       await appealsProgram.methods
@@ -113,7 +107,6 @@ describe("E2E: appeals_workflow", () => {
 
       console.log(`E2E test completed in ${duration}ms`);
       expect(duration).to.be.lessThan(30000); // 30 second timeout
-
     } catch (error) {
       console.error(`E2E test failed: ${error.message}`);
       throw error;

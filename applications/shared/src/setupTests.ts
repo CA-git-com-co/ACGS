@@ -53,8 +53,7 @@ beforeAll(() => {
     // Suppress specific warnings that are expected in tests
     if (
       typeof args[0] === 'string' &&
-      (args[0].includes('componentWillReceiveProps') ||
-       args[0].includes('componentWillUpdate'))
+      (args[0].includes('componentWillReceiveProps') || args[0].includes('componentWillUpdate'))
     ) {
       return;
     }
@@ -94,8 +93,8 @@ Object.defineProperty(window, 'matchMedia', {
     removeListener: jest.fn(), // deprecated
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-  })),
+    dispatchEvent: jest.fn()
+  }))
 });
 
 // Mock scrollTo
@@ -117,29 +116,30 @@ expect.extend({
     if (pass) {
       return {
         message: () => `expected ${received} not to be compliant`,
-        pass: true,
+        pass: true
       };
     } else {
       return {
         message: () => `expected ${received} to be compliant`,
-        pass: false,
+        pass: false
       };
     }
   },
 
   toHaveValidationScore(received: any, expected: number) {
-    const pass = received && 
-                 typeof received.validationScore === 'number' && 
-                 received.validationScore >= expected;
+    const pass =
+      received &&
+      typeof received.validationScore === 'number' &&
+      received.validationScore >= expected;
     if (pass) {
       return {
         message: () => `expected ${received.validationScore} not to be >= ${expected}`,
-        pass: true,
+        pass: true
       };
     } else {
       return {
         message: () => `expected ${received.validationScore} to be >= ${expected}`,
-        pass: false,
+        pass: false
       };
     }
   },
@@ -157,16 +157,17 @@ expect.extend({
 
     const expectedUrl = serviceUrls[serviceName as keyof typeof serviceUrls];
     const pass = received && received.includes && received.includes(expectedUrl);
-    
+
     if (pass) {
       return {
         message: () => `expected ${received} not to include ${serviceName} service URL`,
-        pass: true,
+        pass: true
       };
     } else {
       return {
-        message: () => `expected ${received} to include ${serviceName} service URL (${expectedUrl})`,
-        pass: false,
+        message: () =>
+          `expected ${received} to include ${serviceName} service URL (${expectedUrl})`,
+        pass: false
       };
     }
   }
@@ -238,25 +239,28 @@ export const mockServiceResponses = {
   AC: {
     getPrinciples: () => Promise.resolve({ principles: [createMockPrinciple()] }),
     createPrinciple: (data: any) => Promise.resolve(createMockPrinciple(data)),
-    updatePrinciple: (id: string, data: any) => Promise.resolve(createMockPrinciple({ id, ...data })),
+    updatePrinciple: (id: string, data: any) =>
+      Promise.resolve(createMockPrinciple({ id, ...data })),
     deletePrinciple: (id: string) => Promise.resolve({ success: true })
   },
   GS: {
-    synthesizePolicies: (data: any) => Promise.resolve({
-      policies: [createMockPolicy()],
-      validationScore: 90,
-      complianceComplexity: 25
-    })
+    synthesizePolicies: (data: any) =>
+      Promise.resolve({
+        policies: [createMockPolicy()],
+        validationScore: 90,
+        complianceComplexity: 25
+      })
   },
   PGC: {
-    checkCompliance: (action: string, context: any, policy: any) => 
+    checkCompliance: (action: string, context: any, policy: any) =>
       Promise.resolve(createMockComplianceResult())
   },
   Auth: {
-    login: (username: string, password: string) => Promise.resolve({
-      user: createMockUser({ username }),
-      token: 'mock-token'
-    }),
+    login: (username: string, password: string) =>
+      Promise.resolve({
+        user: createMockUser({ username }),
+        token: 'mock-token'
+      }),
     logout: () => Promise.resolve({ success: true }),
     refreshToken: () => Promise.resolve({ token: 'new-mock-token' })
   }

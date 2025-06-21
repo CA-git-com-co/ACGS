@@ -1,52 +1,63 @@
 # {SERVICE_NAME} Service
 
 ## Purpose
+
 {Brief description of the service's primary purpose and role in the ACGS-1 system}
 
 ## Features
+
 - {Feature 1}: {Description}
 - {Feature 2}: {Description}
 - {Feature 3}: {Description}
 - {Feature 4}: {Description}
 
 ## Architecture
+
 {Brief overview of the service architecture and key components}
 
 ## API Endpoints
 
 ### Health and Status
+
 - `GET /health` - Service health check
 - `GET /api/v1/status` - Comprehensive service status
 
 ### Core Functionality
+
 - `{METHOD} {ENDPOINT}` - {Description}
 - `{METHOD} {ENDPOINT}` - {Description}
 - `{METHOD} {ENDPOINT}` - {Description}
 
 ### Configuration and Management
+
 - `{METHOD} {ENDPOINT}` - {Description}
 - `{METHOD} {ENDPOINT}` - {Description}
 
 ## Setup and Installation
 
 ### Prerequisites
+
 - Python 3.9+
 - PostgreSQL 15+
 - Redis 7+
 - {Additional requirements}
 
 ### Local Development
+
 1. **Navigate to service directory**
+
    ```bash
    cd services/{category}/{service-name}
    ```
 
 2. **Install dependencies**
+
    ```bash
    pip install -r requirements.txt
    ```
 
 3. **Configure environment**
+
    ```bash
    cp .env.example .env
    # Edit .env with your configuration
@@ -58,6 +69,7 @@
    ```
 
 ### Docker Deployment
+
 ```bash
 # Build image
 docker build -t {service-name}:latest .
@@ -73,6 +85,7 @@ docker run -d \
 ## Configuration
 
 ### Environment Variables
+
 - `DATABASE_URL` - PostgreSQL connection string
 - `REDIS_URL` - Redis connection string
 - `{SERVICE}_PORT` - Service port (default: {PORT})
@@ -80,6 +93,7 @@ docker run -d \
 - `{ADDITIONAL_VARS}` - {Description}
 
 ### Service Integration
+
 - **Authentication Service**: http://localhost:8000
 - **Constitutional AI Service**: http://localhost:8001
 - **Integrity Service**: http://localhost:8002
@@ -88,6 +102,7 @@ docker run -d \
 ## Usage Examples
 
 ### Basic API Call
+
 ```python
 import httpx
 
@@ -98,6 +113,7 @@ async def call_service():
 ```
 
 ### {Specific Use Case}
+
 ```python
 # Example code for specific functionality
 ```
@@ -105,16 +121,19 @@ async def call_service():
 ## Testing
 
 ### Unit Tests
+
 ```bash
 pytest tests/unit/ -v
 ```
 
 ### Integration Tests
+
 ```bash
 pytest tests/integration/ -v
 ```
 
 ### Service Health Check
+
 ```bash
 curl http://localhost:{PORT}/health
 ```
@@ -122,17 +141,20 @@ curl http://localhost:{PORT}/health
 ## Monitoring and Observability
 
 ### Metrics
+
 - **Response Time**: Average response time for requests
 - **Throughput**: Requests per second
 - **Error Rate**: Percentage of failed requests
 - **{Service-specific metrics}**: {Description}
 
 ### Logging
+
 - **Structured Logging**: JSON-formatted logs with correlation IDs
 - **Log Levels**: DEBUG, INFO, WARNING, ERROR, CRITICAL
 - **Audit Trail**: {Specific audit requirements}
 
 ### Health Checks
+
 - **Liveness Probe**: `GET /health`
 - **Readiness Probe**: `GET /api/v1/status`
 - **Dependency Checks**: Database, Redis, external services
@@ -140,16 +162,19 @@ curl http://localhost:{PORT}/health
 ## Security
 
 ### Authentication
+
 - **JWT Integration**: Seamless integration with ACGS-1 auth service
 - **Role-Based Access**: {Specific roles and permissions}
 - **API Key Support**: Service-to-service authentication
 
 ### Data Protection
+
 - **Encryption at Rest**: Database encryption
 - **Encryption in Transit**: TLS 1.3 for all communications
 - **Input Validation**: Comprehensive request validation
 
 ### Constitutional Compliance
+
 - **Hash Validation**: Constitutional hash verification
 - **Compliance Scoring**: Real-time compliance assessment
 - **Audit Logging**: Comprehensive security event logging
@@ -159,6 +184,7 @@ curl http://localhost:{PORT}/health
 ### Common Issues
 
 #### Issue: Service fails to start
+
 ```bash
 # Check logs
 tail -f logs/{service-name}.log
@@ -169,6 +195,7 @@ redis-cli ping              # Redis
 ```
 
 #### Issue: High response times
+
 ```bash
 # Check resource usage
 docker stats {service-name}
@@ -178,6 +205,7 @@ docker stats {service-name}
 ```
 
 #### Issue: Authentication failures
+
 ```bash
 # Verify auth service connectivity
 curl http://localhost:8000/health
@@ -187,6 +215,7 @@ curl http://localhost:8000/health
 ```
 
 ### Diagnostic Commands
+
 ```bash
 # Service status
 curl http://localhost:{PORT}/api/v1/status
@@ -208,7 +237,7 @@ curl http://localhost:{PORT}/metrics
 
 ## Documentation Links
 
-- **API Documentation**: [docs/api/{service}_api.md](../api/{service}_api.md)
+- **API Documentation**: [docs/api/{service}\_api.md](../api/{service}_api.md)
 - **Deployment Guide**: [docs/deployment/](../deployment/)
 - **Troubleshooting**: [docs/troubleshooting.md](../troubleshooting.md)
 - **Architecture**: [docs/architecture/](../architecture/)

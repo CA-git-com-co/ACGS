@@ -132,9 +132,7 @@ const DEFAULT_ALERT_RULES: AlertRule[] = [
     name: 'Service Down',
     description: 'Alert when a service becomes unavailable',
     enabled: true,
-    conditions: [
-      { metric: 'service_status', operator: 'eq', threshold: 0 }
-    ],
+    conditions: [{ metric: 'service_status', operator: 'eq', threshold: 0 }],
     severity: AlertSeverity.CRITICAL,
     channels: ['console', 'browser', 'email'],
     cooldown: 60000, // 1 minute
@@ -145,9 +143,7 @@ const DEFAULT_ALERT_RULES: AlertRule[] = [
     name: 'High Response Time',
     description: 'Alert when response time exceeds threshold',
     enabled: true,
-    conditions: [
-      { metric: 'response_time', operator: 'gt', threshold: 2000, duration: 120000 }
-    ],
+    conditions: [{ metric: 'response_time', operator: 'gt', threshold: 2000, duration: 120000 }],
     severity: AlertSeverity.HIGH,
     channels: ['console', 'browser'],
     cooldown: 300000, // 5 minutes
@@ -158,9 +154,7 @@ const DEFAULT_ALERT_RULES: AlertRule[] = [
     name: 'High Error Rate',
     description: 'Alert when error rate exceeds threshold',
     enabled: true,
-    conditions: [
-      { metric: 'error_rate', operator: 'gt', threshold: 5, duration: 180000 }
-    ],
+    conditions: [{ metric: 'error_rate', operator: 'gt', threshold: 5, duration: 180000 }],
     severity: AlertSeverity.HIGH,
     channels: ['console', 'browser'],
     cooldown: 300000, // 5 minutes
@@ -171,9 +165,7 @@ const DEFAULT_ALERT_RULES: AlertRule[] = [
     name: 'Low Uptime',
     description: 'Alert when service uptime falls below threshold',
     enabled: true,
-    conditions: [
-      { metric: 'uptime', operator: 'lt', threshold: 99.5 }
-    ],
+    conditions: [{ metric: 'uptime', operator: 'lt', threshold: 99.5 }],
     severity: AlertSeverity.MEDIUM,
     channels: ['console', 'browser'],
     cooldown: 600000, // 10 minutes
@@ -184,9 +176,7 @@ const DEFAULT_ALERT_RULES: AlertRule[] = [
     name: 'Quantumagi System Failure',
     description: 'Critical alert for Quantumagi Solana integration failures',
     enabled: true,
-    conditions: [
-      { metric: 'quantumagi_health', operator: 'eq', threshold: 0 }
-    ],
+    conditions: [{ metric: 'quantumagi_health', operator: 'eq', threshold: 0 }],
     severity: AlertSeverity.CRITICAL,
     channels: ['console', 'browser', 'email', 'slack'],
     cooldown: 30000, // 30 seconds
@@ -430,9 +420,11 @@ export class ACGSAlertingSystem {
     }
 
     // Dispatch custom event for UI components
-    window.dispatchEvent(new CustomEvent('acgs-alert', {
-      detail: alert
-    }));
+    window.dispatchEvent(
+      new CustomEvent('acgs-alert', {
+        detail: alert
+      })
+    );
   }
 
   /**
@@ -503,22 +495,22 @@ export class ACGSAlertingSystem {
 
   private mapHealthAlertType(type: string): AlertType {
     const typeMap: Record<string, AlertType> = {
-      'response_time': AlertType.RESPONSE_TIME,
-      'error_rate': AlertType.ERROR_RATE,
-      'uptime': AlertType.UPTIME,
-      'consecutive_failures': AlertType.CONSECUTIVE_FAILURES,
-      'service_down': AlertType.SERVICE_DOWN,
-      'service_degraded': AlertType.SERVICE_DEGRADED
+      response_time: AlertType.RESPONSE_TIME,
+      error_rate: AlertType.ERROR_RATE,
+      uptime: AlertType.UPTIME,
+      consecutive_failures: AlertType.CONSECUTIVE_FAILURES,
+      service_down: AlertType.SERVICE_DOWN,
+      service_degraded: AlertType.SERVICE_DEGRADED
     };
     return typeMap[type] || AlertType.SERVICE_DEGRADED;
   }
 
   private mapHealthAlertSeverity(severity: string): AlertSeverity {
     const severityMap: Record<string, AlertSeverity> = {
-      'critical': AlertSeverity.CRITICAL,
-      'high': AlertSeverity.HIGH,
-      'warning': AlertSeverity.MEDIUM,
-      'info': AlertSeverity.INFO
+      critical: AlertSeverity.CRITICAL,
+      high: AlertSeverity.HIGH,
+      warning: AlertSeverity.MEDIUM,
+      info: AlertSeverity.INFO
     };
     return severityMap[severity] || AlertSeverity.MEDIUM;
   }
@@ -553,7 +545,7 @@ export class ACGSAlertingSystem {
     const suppressionKey = `${alert.type}-${alert.service || 'system'}`;
     const lastAlert = this.suppressionCache.get(suppressionKey);
 
-    if (lastAlert && (Date.now() - lastAlert) < this.config.duplicateWindow) {
+    if (lastAlert && Date.now() - lastAlert < this.config.duplicateWindow) {
       return true;
     }
 
@@ -581,13 +573,20 @@ export class ACGSAlertingSystem {
     if (value === undefined) return false;
 
     switch (condition.operator) {
-      case 'gt': return value > condition.threshold;
-      case 'lt': return value < condition.threshold;
-      case 'eq': return value === condition.threshold;
-      case 'ne': return value !== condition.threshold;
-      case 'gte': return value >= condition.threshold;
-      case 'lte': return value <= condition.threshold;
-      default: return false;
+      case 'gt':
+        return value > condition.threshold;
+      case 'lt':
+        return value < condition.threshold;
+      case 'eq':
+        return value === condition.threshold;
+      case 'ne':
+        return value !== condition.threshold;
+      case 'gte':
+        return value >= condition.threshold;
+      case 'lte':
+        return value <= condition.threshold;
+      default:
+        return false;
     }
   }
 
@@ -627,7 +626,9 @@ export class ACGSAlertingSystem {
     if (typeof window === 'undefined') return;
 
     try {
-      const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT');
+      const audio = new Audio(
+        'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT'
+      );
       audio.play().catch(() => {
         // Ignore audio play errors (user interaction required)
       });
@@ -637,8 +638,8 @@ export class ACGSAlertingSystem {
   }
 
   private setupEscalation(alert: Alert): void {
-    const escalationRules = this.config.escalationRules.filter(rule =>
-      rule.severity === alert.severity
+    const escalationRules = this.config.escalationRules.filter(
+      rule => rule.severity === alert.severity
     );
 
     escalationRules.forEach(rule => {
@@ -667,7 +668,7 @@ export class ACGSAlertingSystem {
     };
 
     // Send to escalation channels
-    rule.escalateTo.forEach(async (channelId) => {
+    rule.escalateTo.forEach(async channelId => {
       const channel = this.channels.get(channelId);
       if (channel && channel.enabled) {
         try {
@@ -688,7 +689,7 @@ export class ACGSAlertingSystem {
   }
 
   private cleanupOldAlerts(): void {
-    const cutoffTime = Date.now() - (this.config.retentionDays * 24 * 60 * 60 * 1000);
+    const cutoffTime = Date.now() - this.config.retentionDays * 24 * 60 * 60 * 1000;
 
     // Remove old alerts from active alerts
     for (const [id, alert] of this.alerts.entries()) {
@@ -698,9 +699,7 @@ export class ACGSAlertingSystem {
     }
 
     // Trim alert history
-    this.alertHistory = this.alertHistory.filter(alert =>
-      alert.timestamp >= cutoffTime
-    );
+    this.alertHistory = this.alertHistory.filter(alert => alert.timestamp >= cutoffTime);
   }
 
   private cleanupSuppressionCache(): void {

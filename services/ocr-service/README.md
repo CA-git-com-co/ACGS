@@ -96,7 +96,7 @@ ocr = OCRIntegration()
 if ocr.check_health():
     # Extract text from an image
     result = ocr.extract_text('/path/to/image.jpg')
-    
+
     # Process a specific document type
     invoice_data = ocr.analyze_document('/path/to/invoice.jpg', 'invoice')
 ```
@@ -105,11 +105,11 @@ if ocr.check_health():
 
 The OCR service can be configured through environment variables:
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `MODEL_NAME` | OCR model to use | `nanonets/Nanonets-OCR-s` |
-| `PORT` | Port to expose the API | `8666` |
-| `HUGGING_FACE_HUB_TOKEN` | Token for Hugging Face Hub | Required |
+| Variable                 | Description                | Default                   |
+| ------------------------ | -------------------------- | ------------------------- |
+| `MODEL_NAME`             | OCR model to use           | `nanonets/Nanonets-OCR-s` |
+| `PORT`                   | Port to expose the API     | `8666`                    |
+| `HUGGING_FACE_HUB_TOKEN` | Token for Hugging Face Hub | Required                  |
 
 ## Performance Considerations
 
@@ -122,11 +122,13 @@ The OCR service can be configured through environment variables:
 ### Common Issues
 
 1. **Service fails to start or becomes unhealthy**:
+
    - Check Docker logs: `docker-compose -f docker-compose.ocr.yml logs ocr-service`
    - Verify GPU availability: `nvidia-smi`
    - Check Hugging Face token is valid
 
 2. **Slow response times**:
+
    - Ensure GPU acceleration is enabled
    - Check if other processes are using GPU resources
    - Consider increasing container resource limits

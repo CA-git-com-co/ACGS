@@ -11,7 +11,7 @@ import {
   Tabs,
   TabsContent,
   TabsList,
-  TabsTrigger,
+  TabsTrigger
 } from '@/components/ui';
 import {
   LineChart,
@@ -28,7 +28,7 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell,
+  Cell
 } from 'recharts';
 import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Clock, Target } from 'lucide-react';
 
@@ -77,7 +77,7 @@ const PredictiveGovernanceDashboard: React.FC = () => {
   const fetchPredictiveAnalytics = async () => {
     try {
       setLoading(true);
-      
+
       // Simulate API calls - replace with actual service calls
       const mockMetrics: PredictiveMetrics = {
         constitutionalStability: 0.92,
@@ -85,7 +85,7 @@ const PredictiveGovernanceDashboard: React.FC = () => {
         policyImpactScore: 0.85,
         riskLevel: 'low',
         confidenceScore: 0.94,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toISOString()
       };
 
       const mockOutcomes: GovernanceOutcome[] = [
@@ -95,7 +95,7 @@ const PredictiveGovernanceDashboard: React.FC = () => {
           predictedOutcome: 'success',
           confidence: 0.89,
           impactAreas: ['Constitutional Compliance', 'Democratic Participation'],
-          riskFactors: ['Stakeholder Resistance'],
+          riskFactors: ['Stakeholder Resistance']
         },
         {
           id: 'PRED-002',
@@ -103,8 +103,8 @@ const PredictiveGovernanceDashboard: React.FC = () => {
           predictedOutcome: 'partial',
           confidence: 0.76,
           impactAreas: ['Policy Enforcement', 'Resource Allocation'],
-          riskFactors: ['Implementation Complexity', 'Resource Constraints'],
-        },
+          riskFactors: ['Implementation Complexity', 'Resource Constraints']
+        }
       ];
 
       const mockRiskAssessments: RiskAssessment[] = [
@@ -113,22 +113,22 @@ const PredictiveGovernanceDashboard: React.FC = () => {
           probability: 0.15,
           impact: 0.85,
           riskScore: 0.13,
-          mitigationStrategies: ['Regular constitutional audits', 'Stakeholder engagement'],
+          mitigationStrategies: ['Regular constitutional audits', 'Stakeholder engagement']
         },
         {
           category: 'Policy Conflicts',
           probability: 0.25,
-          impact: 0.60,
+          impact: 0.6,
           riskScore: 0.15,
-          mitigationStrategies: ['Conflict detection algorithms', 'Mediation protocols'],
-        },
+          mitigationStrategies: ['Conflict detection algorithms', 'Mediation protocols']
+        }
       ];
 
       const mockHistoricalData = Array.from({ length: 30 }, (_, i) => ({
         date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         stability: 0.85 + Math.random() * 0.15,
-        compliance: 0.80 + Math.random() * 0.20,
-        riskScore: 0.10 + Math.random() * 0.20,
+        compliance: 0.8 + Math.random() * 0.2,
+        riskScore: 0.1 + Math.random() * 0.2
       }));
 
       setMetrics(mockMetrics);
@@ -144,20 +144,29 @@ const PredictiveGovernanceDashboard: React.FC = () => {
 
   const getRiskColor = (riskLevel: string) => {
     switch (riskLevel) {
-      case 'low': return 'text-green-600';
-      case 'medium': return 'text-yellow-600';
-      case 'high': return 'text-orange-600';
-      case 'critical': return 'text-red-600';
-      default: return 'text-gray-600';
+      case 'low':
+        return 'text-green-600';
+      case 'medium':
+        return 'text-yellow-600';
+      case 'high':
+        return 'text-orange-600';
+      case 'critical':
+        return 'text-red-600';
+      default:
+        return 'text-gray-600';
     }
   };
 
   const getOutcomeIcon = (outcome: string) => {
     switch (outcome) {
-      case 'success': return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case 'failure': return <AlertTriangle className="h-4 w-4 text-red-600" />;
-      case 'partial': return <Clock className="h-4 w-4 text-yellow-600" />;
-      default: return <Target className="h-4 w-4 text-gray-600" />;
+      case 'success':
+        return <CheckCircle className="h-4 w-4 text-green-600" />;
+      case 'failure':
+        return <AlertTriangle className="h-4 w-4 text-red-600" />;
+      case 'partial':
+        return <Clock className="h-4 w-4 text-yellow-600" />;
+      default:
+        return <Target className="h-4 w-4 text-gray-600" />;
     }
   };
 
@@ -186,7 +195,9 @@ const PredictiveGovernanceDashboard: React.FC = () => {
             <TrendingUp className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{((metrics?.constitutionalStability || 0) * 100).toFixed(1)}%</div>
+            <div className="text-2xl font-bold">
+              {((metrics?.constitutionalStability || 0) * 100).toFixed(1)}%
+            </div>
             <Progress value={(metrics?.constitutionalStability || 0) * 100} className="mt-2" />
           </CardContent>
         </Card>
@@ -197,7 +208,9 @@ const PredictiveGovernanceDashboard: React.FC = () => {
             <Target className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{((metrics?.complianceForecast || 0) * 100).toFixed(1)}%</div>
+            <div className="text-2xl font-bold">
+              {((metrics?.complianceForecast || 0) * 100).toFixed(1)}%
+            </div>
             <Progress value={(metrics?.complianceForecast || 0) * 100} className="mt-2" />
           </CardContent>
         </Card>
@@ -208,7 +221,9 @@ const PredictiveGovernanceDashboard: React.FC = () => {
             <TrendingUp className="h-4 w-4 text-purple-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{((metrics?.policyImpactScore || 0) * 100).toFixed(1)}%</div>
+            <div className="text-2xl font-bold">
+              {((metrics?.policyImpactScore || 0) * 100).toFixed(1)}%
+            </div>
             <Progress value={(metrics?.policyImpactScore || 0) * 100} className="mt-2" />
           </CardContent>
         </Card>
@@ -219,7 +234,9 @@ const PredictiveGovernanceDashboard: React.FC = () => {
             <AlertTriangle className={`h-4 w-4 ${getRiskColor(metrics?.riskLevel || 'low')}`} />
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold capitalize ${getRiskColor(metrics?.riskLevel || 'low')}`}>
+            <div
+              className={`text-2xl font-bold capitalize ${getRiskColor(metrics?.riskLevel || 'low')}`}
+            >
               {metrics?.riskLevel || 'Unknown'}
             </div>
             <div className="text-sm text-gray-600 mt-1">
@@ -270,13 +287,18 @@ const PredictiveGovernanceDashboard: React.FC = () => {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ category, riskScore }) => `${category}: ${(riskScore * 100).toFixed(1)}%`}
+                      label={({ category, riskScore }) =>
+                        `${category}: ${(riskScore * 100).toFixed(1)}%`
+                      }
                       outerRadius={80}
                       fill="#8884d8"
                       dataKey="riskScore"
                     >
                       {riskAssessments.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#8884d8' : '#82ca9d'} />
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={index % 2 === 0 ? '#8884d8' : '#82ca9d'}
+                        />
                       ))}
                     </Pie>
                     <Tooltip />
@@ -294,7 +316,7 @@ const PredictiveGovernanceDashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {outcomes.map((outcome) => (
+                {outcomes.map(outcome => (
                   <div key={outcome.id} className="border rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-2">
@@ -342,7 +364,15 @@ const PredictiveGovernanceDashboard: React.FC = () => {
                   <div key={index} className="border rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-medium">{risk.category}</h4>
-                      <Badge variant={risk.riskScore > 0.2 ? 'destructive' : risk.riskScore > 0.1 ? 'default' : 'secondary'}>
+                      <Badge
+                        variant={
+                          risk.riskScore > 0.2
+                            ? 'destructive'
+                            : risk.riskScore > 0.1
+                              ? 'default'
+                              : 'secondary'
+                        }
+                      >
                         Risk Score: {(risk.riskScore * 100).toFixed(1)}%
                       </Badge>
                     </div>
@@ -384,9 +414,30 @@ const PredictiveGovernanceDashboard: React.FC = () => {
                   <YAxis domain={[0, 1]} />
                   <Tooltip />
                   <Legend />
-                  <Area type="monotone" dataKey="stability" stackId="1" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
-                  <Area type="monotone" dataKey="compliance" stackId="2" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.6} />
-                  <Area type="monotone" dataKey="riskScore" stackId="3" stroke="#ffc658" fill="#ffc658" fillOpacity={0.6} />
+                  <Area
+                    type="monotone"
+                    dataKey="stability"
+                    stackId="1"
+                    stroke="#8884d8"
+                    fill="#8884d8"
+                    fillOpacity={0.6}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="compliance"
+                    stackId="2"
+                    stroke="#82ca9d"
+                    fill="#82ca9d"
+                    fillOpacity={0.6}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="riskScore"
+                    stackId="3"
+                    stroke="#ffc658"
+                    fill="#ffc658"
+                    fillOpacity={0.6}
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             </CardContent>
@@ -399,7 +450,8 @@ const PredictiveGovernanceDashboard: React.FC = () => {
         <Alert>
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            Elevated risk level detected: {metrics.riskLevel}. Consider reviewing current policies and implementing additional safeguards.
+            Elevated risk level detected: {metrics.riskLevel}. Consider reviewing current policies
+            and implementing additional safeguards.
           </AlertDescription>
         </Alert>
       )}

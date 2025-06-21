@@ -8,13 +8,13 @@ services:
   redis:
     image: redis:7.2-alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - acgs_redis_data:/data
     command: redis-server --appendonly yes --maxmemory 1gb --maxmemory-policy allkeys-lru
     restart: always
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 3
@@ -23,7 +23,7 @@ services:
   mongodb:
     image: mongo:7.0
     ports:
-      - "27017:27017"
+      - '27017:27017'
     volumes:
       - acgs_mongodb_data:/data/db
     environment:
@@ -58,7 +58,7 @@ services:
       - logger.org.elasticsearch.node=ERROR
       - logger.org.elasticsearch.transport=ERROR
     ports:
-      - "9200:9200"
+      - '9200:9200'
     volumes:
       - acgs_elasticsearch_data:/usr/share/elasticsearch/data
     ulimits:
@@ -67,7 +67,7 @@ services:
         hard: -1
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      test: ['CMD-SHELL', 'curl -f http://localhost:9200/_cluster/health || exit 1']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -76,7 +76,7 @@ services:
   prometheus:
     image: prom/prometheus:latest
     ports:
-      - "9090:9090"
+      - '9090:9090'
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - acgs_prometheus_data:/prometheus
@@ -93,7 +93,7 @@ services:
   grafana:
     image: grafana/grafana:latest
     ports:
-      - "3001:3000"  # Different port to avoid conflicts
+      - '3001:3000' # Different port to avoid conflicts
     volumes:
       - acgs_grafana_data:/var/lib/grafana
       - ./config/grafana:/etc/grafana/provisioning:ro

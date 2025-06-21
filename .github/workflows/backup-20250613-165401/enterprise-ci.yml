@@ -2,11 +2,11 @@ name: ACGS-1 Enterprise CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
   schedule:
-    - cron: '0 2 * * *'  # Daily at 2 AM for comprehensive testing
+    - cron: '0 2 * * *' # Daily at 2 AM for comprehensive testing
 
 permissions:
   contents: read
@@ -25,7 +25,7 @@ env:
   ENTERPRISE_BUILD_TARGET_MINUTES: 5
   ENTERPRISE_AVAILABILITY_TARGET: 99.5
   # Enhanced Caching Configuration
-  CARGO_INCREMENTAL: 1  # Enable incremental compilation for development
+  CARGO_INCREMENTAL: 1 # Enable incremental compilation for development
   CARGO_NET_RETRY: 10
   CARGO_NET_GIT_FETCH_WITH_CLI: true
 
@@ -71,13 +71,13 @@ jobs:
         id: infrastructure_check
         run: |
           echo "🔧 Validating CI/CD infrastructure readiness..."
-          
+
           # Check GitHub Actions runner resources
           echo "Runner OS: $(uname -a)"
           echo "Available disk space: $(df -h / | tail -1 | awk '{print $4}')"
           echo "Available memory: $(free -h | grep '^Mem:' | awk '{print $7}')"
           echo "CPU cores: $(nproc)"
-          
+
           # Validate network connectivity
           if ping -c 1 github.com > /dev/null 2>&1; then
             echo "✅ GitHub connectivity verified"
@@ -85,14 +85,14 @@ jobs:
             echo "❌ GitHub connectivity failed"
             exit 1
           fi
-          
+
           if ping -c 1 crates.io > /dev/null 2>&1; then
             echo "✅ Crates.io connectivity verified"
           else
             echo "❌ Crates.io connectivity failed"
             exit 1
           fi
-          
+
           echo "ready=true" >> $GITHUB_OUTPUT
           echo "✅ Infrastructure validation completed successfully"
 
@@ -649,7 +649,14 @@ jobs:
   enterprise_reporting:
     runs-on: ubuntu-latest
     name: Enterprise Performance & Compliance Reporting
-    needs: [performance_monitoring, preflight, toolchain_setup, rust_quality_build, enterprise_security_scan]
+    needs:
+      [
+        performance_monitoring,
+        preflight,
+        toolchain_setup,
+        rust_quality_build,
+        enterprise_security_scan,
+      ]
     if: always() && needs.preflight.outputs.should_run_tests == 'true'
     steps:
       - name: Check out repository

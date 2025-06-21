@@ -1,7 +1,7 @@
 # Multi-Agent DGM API Specification
 
 **Version:** 1.0  
-**Date:** June 2, 2025  
+**Date:** June 2, 2025
 
 ## API Overview
 
@@ -17,7 +17,7 @@ from enum import Enum
 
 class TaskStatus(str, Enum):
     PENDING = "pending"
-    ASSIGNED = "assigned" 
+    ASSIGNED = "assigned"
     RUNNING = "running"
     COMPLETED = "completed"
     FAILED = "failed"
@@ -108,27 +108,27 @@ async def create_goal(
 ) -> GoalResponse:
     """
     Create a new goal for multi-agent execution
-    
+
     - **description**: Detailed goal description (10-5000 chars)
     - **priority**: Goal priority (1-10, default 5)
     - **constraints**: Execution constraints (optional)
     - **deadline**: Goal deadline (optional)
     - **domain_hints**: Suggested domains for execution
-    
+
     Returns:
     - **goal_id**: Unique identifier for the goal
     - **status**: Current goal status
     - **estimated_completion**: Estimated completion time
     - **tasks_created**: Number of tasks generated
     """
-    
+
 @app.get("/api/v1/goals/{goal_id}", response_model=GoalDetailResponse)
 async def get_goal(
     goal_id: str,
     token: HTTPAuthorizationCredentials = Depends(security)
 ) -> GoalDetailResponse:
     """Get detailed information about a specific goal"""
-    
+
 @app.get("/api/v1/goals", response_model=List[GoalSummary])
 async def list_goals(
     status: Optional[str] = None,
@@ -322,28 +322,28 @@ class ErrorCode(str, Enum):
     # Authentication & Authorization
     INVALID_TOKEN = "INVALID_TOKEN"
     INSUFFICIENT_PERMISSIONS = "INSUFFICIENT_PERMISSIONS"
-    
+
     # Goal Management
     GOAL_NOT_FOUND = "GOAL_NOT_FOUND"
     INVALID_GOAL_DESCRIPTION = "INVALID_GOAL_DESCRIPTION"
     GOAL_ALREADY_COMPLETED = "GOAL_ALREADY_COMPLETED"
-    
+
     # Task Management
     TASK_NOT_FOUND = "TASK_NOT_FOUND"
     TASK_ALREADY_ASSIGNED = "TASK_ALREADY_ASSIGNED"
     INVALID_TASK_DEPENDENCY = "INVALID_TASK_DEPENDENCY"
     TASK_EXECUTION_TIMEOUT = "TASK_EXECUTION_TIMEOUT"
-    
+
     # Agent Management
     AGENT_NOT_FOUND = "AGENT_NOT_FOUND"
     AGENT_UNAVAILABLE = "AGENT_UNAVAILABLE"
     SCALING_LIMIT_EXCEEDED = "SCALING_LIMIT_EXCEEDED"
-    
+
     # System Errors
     DATABASE_ERROR = "DATABASE_ERROR"
     MESSAGE_QUEUE_ERROR = "MESSAGE_QUEUE_ERROR"
     EXTERNAL_SERVICE_ERROR = "EXTERNAL_SERVICE_ERROR"
-    
+
     # Constitutional Governance
     CONSTITUTIONAL_VIOLATION = "CONSTITUTIONAL_VIOLATION"
     GOVERNANCE_POLICY_VIOLATION = "GOVERNANCE_POLICY_VIOLATION"
@@ -526,18 +526,18 @@ class AuthService:
     def __init__(self, secret_key: str, algorithm: str = "HS256"):
         self.secret_key = secret_key
         self.algorithm = algorithm
-    
+
     def create_access_token(self, data: dict, expires_delta: Optional[timedelta] = None):
         to_encode = data.copy()
         if expires_delta:
             expire = datetime.utcnow() + expires_delta
         else:
             expire = datetime.utcnow() + timedelta(hours=1)
-        
+
         to_encode.update({"exp": expire})
         encoded_jwt = jwt.encode(to_encode, self.secret_key, algorithm=self.algorithm)
         return encoded_jwt
-    
+
     def verify_token(self, token: str) -> Dict[str, Any]:
         try:
             payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])

@@ -18,10 +18,10 @@ groups:
           team: acgs_operations
           escalation: immediate
         annotations:
-          summary: "ACGS service {{ $labels.job }} is down"
-          description: "Service {{ $labels.job }} has been down for more than 30 seconds. This affects constitutional governance operations."
-          runbook_url: "https://docs.acgs.ai/runbooks/service-down"
-          impact: "Constitutional governance operations may be impacted"
+          summary: 'ACGS service {{ $labels.job }} is down'
+          description: 'Service {{ $labels.job }} has been down for more than 30 seconds. This affects constitutional governance operations.'
+          runbook_url: 'https://docs.acgs.ai/runbooks/service-down'
+          impact: 'Constitutional governance operations may be impacted'
 
       # High Response Time Alerts
       - alert: ACGSHighResponseTime
@@ -32,9 +32,9 @@ groups:
           component: performance
           team: acgs_operations
         annotations:
-          summary: "High response time for {{ $labels.job }}"
-          description: "95th percentile response time is {{ $value }}s, exceeding 500ms target for service {{ $labels.job }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/high-response-time"
+          summary: 'High response time for {{ $labels.job }}'
+          description: '95th percentile response time is {{ $value }}s, exceeding 500ms target for service {{ $labels.job }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/high-response-time'
 
       # Critical Response Time Alerts
       - alert: ACGSCriticalResponseTime
@@ -46,9 +46,9 @@ groups:
           team: acgs_operations
           escalation: immediate
         annotations:
-          summary: "Critical response time for {{ $labels.job }}"
-          description: "95th percentile response time is {{ $value }}s, exceeding 2s critical threshold for service {{ $labels.job }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/critical-response-time"
+          summary: 'Critical response time for {{ $labels.job }}'
+          description: '95th percentile response time is {{ $value }}s, exceeding 2s critical threshold for service {{ $labels.job }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/critical-response-time'
 
       # High Error Rate Alerts
       - alert: ACGSHighErrorRate
@@ -59,9 +59,9 @@ groups:
           component: error_monitoring
           team: acgs_operations
         annotations:
-          summary: "High error rate detected for {{ $labels.service }}"
-          description: "Error rate is {{ $value | humanizePercentage }} for service {{ $labels.service }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/high-error-rate"
+          summary: 'High error rate detected for {{ $labels.service }}'
+          description: 'Error rate is {{ $value | humanizePercentage }} for service {{ $labels.service }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/high-error-rate'
 
       # Critical Error Rate Alerts
       - alert: ACGSCriticalErrorRate
@@ -73,9 +73,9 @@ groups:
           team: acgs_operations
           escalation: immediate
         annotations:
-          summary: "Critical error rate detected for {{ $labels.service }}"
-          description: "Error rate is {{ $value | humanizePercentage }} for service {{ $labels.service }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/critical-error-rate"
+          summary: 'Critical error rate detected for {{ $labels.service }}'
+          description: 'Error rate is {{ $value | humanizePercentage }} for service {{ $labels.service }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/critical-error-rate'
 
   # ============================================================================
   # INFRASTRUCTURE HEALTH ALERTS
@@ -92,10 +92,10 @@ groups:
           team: acgs_operations
           escalation: immediate
         annotations:
-          summary: "PostgreSQL database is down"
-          description: "ACGS PostgreSQL database is not responding. All governance operations are affected."
-          runbook_url: "https://docs.acgs.ai/runbooks/postgresql-down"
-          impact: "All constitutional governance operations unavailable"
+          summary: 'PostgreSQL database is down'
+          description: 'ACGS PostgreSQL database is not responding. All governance operations are affected.'
+          runbook_url: 'https://docs.acgs.ai/runbooks/postgresql-down'
+          impact: 'All constitutional governance operations unavailable'
 
       # Redis Cache Alerts
       - alert: ACGSRedisDown
@@ -107,10 +107,10 @@ groups:
           team: acgs_operations
           escalation: immediate
         annotations:
-          summary: "Redis cache is down"
-          description: "ACGS Redis cache is not responding. Performance will be severely degraded."
-          runbook_url: "https://docs.acgs.ai/runbooks/redis-down"
-          impact: "Severe performance degradation expected"
+          summary: 'Redis cache is down'
+          description: 'ACGS Redis cache is not responding. Performance will be severely degraded.'
+          runbook_url: 'https://docs.acgs.ai/runbooks/redis-down'
+          impact: 'Severe performance degradation expected'
 
       # High Database Connection Usage
       - alert: ACGSHighDatabaseConnections
@@ -121,9 +121,9 @@ groups:
           component: database
           team: acgs_operations
         annotations:
-          summary: "High PostgreSQL connection usage"
-          description: "PostgreSQL connection usage is {{ $value | humanizePercentage }} of maximum"
-          runbook_url: "https://docs.acgs.ai/runbooks/high-db-connections"
+          summary: 'High PostgreSQL connection usage'
+          description: 'PostgreSQL connection usage is {{ $value | humanizePercentage }} of maximum'
+          runbook_url: 'https://docs.acgs.ai/runbooks/high-db-connections'
 
       # High Redis Memory Usage
       - alert: ACGSHighRedisMemory
@@ -134,9 +134,9 @@ groups:
           component: cache
           team: acgs_operations
         annotations:
-          summary: "High Redis memory usage"
-          description: "Redis memory usage is {{ $value | humanizePercentage }} of maximum"
-          runbook_url: "https://docs.acgs.ai/runbooks/high-redis-memory"
+          summary: 'High Redis memory usage'
+          description: 'Redis memory usage is {{ $value | humanizePercentage }} of maximum'
+          runbook_url: 'https://docs.acgs.ai/runbooks/high-redis-memory'
 
   # ============================================================================
   # BLOCKCHAIN HEALTH ALERTS
@@ -153,10 +153,10 @@ groups:
           team: acgs_operations
           escalation: immediate
         annotations:
-          summary: "Solana network connectivity issues"
-          description: "Cannot connect to Solana devnet. Blockchain operations unavailable."
-          runbook_url: "https://docs.acgs.ai/runbooks/solana-network-down"
-          impact: "Blockchain governance operations unavailable"
+          summary: 'Solana network connectivity issues'
+          description: 'Cannot connect to Solana devnet. Blockchain operations unavailable.'
+          runbook_url: 'https://docs.acgs.ai/runbooks/solana-network-down'
+          impact: 'Blockchain governance operations unavailable'
 
       # Quantumagi Program Issues
       - alert: ACGSQuantumagiProgramsDown
@@ -168,10 +168,10 @@ groups:
           team: acgs_operations
           escalation: immediate
         annotations:
-          summary: "Quantumagi programs not fully deployed"
-          description: "{{ $value }} of {{ acgs_quantumagi_programs_total }} Quantumagi programs are healthy"
-          runbook_url: "https://docs.acgs.ai/runbooks/quantumagi-programs-down"
-          impact: "Constitutional governance blockchain operations affected"
+          summary: 'Quantumagi programs not fully deployed'
+          description: '{{ $value }} of {{ acgs_quantumagi_programs_total }} Quantumagi programs are healthy'
+          runbook_url: 'https://docs.acgs.ai/runbooks/quantumagi-programs-down'
+          impact: 'Constitutional governance blockchain operations affected'
 
       # Constitution Hash Validation Issues
       - alert: ACGSConstitutionHashInvalid
@@ -183,10 +183,10 @@ groups:
           team: acgs_operations
           escalation: immediate
         annotations:
-          summary: "Constitution hash validation failed"
-          description: "Constitution hash cdd01ef066bc6cf2 validation is failing"
-          runbook_url: "https://docs.acgs.ai/runbooks/constitution-hash-invalid"
-          impact: "Constitutional compliance validation compromised"
+          summary: 'Constitution hash validation failed'
+          description: 'Constitution hash cdd01ef066bc6cf2 validation is failing'
+          runbook_url: 'https://docs.acgs.ai/runbooks/constitution-hash-invalid'
+          impact: 'Constitutional compliance validation compromised'
 
   # ============================================================================
   # GOVERNANCE WORKFLOW ALERTS
@@ -202,9 +202,9 @@ groups:
           component: governance_workflows
           team: acgs_operations
         annotations:
-          summary: "High policy creation failure rate"
-          description: "Policy creation workflow failure rate: {{ $value }} failures/second"
-          runbook_url: "https://docs.acgs.ai/runbooks/policy-creation-failures"
+          summary: 'High policy creation failure rate'
+          description: 'Policy creation workflow failure rate: {{ $value }} failures/second'
+          runbook_url: 'https://docs.acgs.ai/runbooks/policy-creation-failures'
 
       # Constitutional Compliance Issues
       - alert: ACGSLowConstitutionalCompliance
@@ -215,9 +215,9 @@ groups:
           component: constitutional_compliance
           team: acgs_operations
         annotations:
-          summary: "Low constitutional compliance score"
-          description: "Constitutional compliance score is {{ $value | humanizePercentage }}, below 95% threshold"
-          runbook_url: "https://docs.acgs.ai/runbooks/low-constitutional-compliance"
+          summary: 'Low constitutional compliance score'
+          description: 'Constitutional compliance score is {{ $value | humanizePercentage }}, below 95% threshold'
+          runbook_url: 'https://docs.acgs.ai/runbooks/low-constitutional-compliance'
 
       # WINA Oversight Issues
       - alert: ACGSWINAOversightFailures
@@ -228,9 +228,9 @@ groups:
           component: wina_oversight
           team: acgs_operations
         annotations:
-          summary: "WINA oversight failures detected"
-          description: "WINA oversight failure rate: {{ $value }} failures/second"
-          runbook_url: "https://docs.acgs.ai/runbooks/wina-oversight-failures"
+          summary: 'WINA oversight failures detected'
+          description: 'WINA oversight failure rate: {{ $value }} failures/second'
+          runbook_url: 'https://docs.acgs.ai/runbooks/wina-oversight-failures'
 
       # Audit and Transparency Issues
       - alert: ACGSAuditTrailFailures
@@ -241,9 +241,9 @@ groups:
           component: audit_transparency
           team: acgs_operations
         annotations:
-          summary: "Audit trail recording failures"
-          description: "Audit trail failure rate: {{ $value }} failures/second"
-          runbook_url: "https://docs.acgs.ai/runbooks/audit-trail-failures"
+          summary: 'Audit trail recording failures'
+          description: 'Audit trail failure rate: {{ $value }} failures/second'
+          runbook_url: 'https://docs.acgs.ai/runbooks/audit-trail-failures'
 
   # ============================================================================
   # PERFORMANCE AND CAPACITY ALERTS
@@ -259,9 +259,9 @@ groups:
           component: capacity
           team: acgs_operations
         annotations:
-          summary: "High concurrent governance actions"
-          description: "{{ $value }} concurrent governance actions, approaching 1000 limit"
-          runbook_url: "https://docs.acgs.ai/runbooks/high-concurrent-actions"
+          summary: 'High concurrent governance actions'
+          description: '{{ $value }} concurrent governance actions, approaching 1000 limit'
+          runbook_url: 'https://docs.acgs.ai/runbooks/high-concurrent-actions'
 
       # Critical Concurrent Actions
       - alert: ACGSCriticalConcurrentActions
@@ -273,9 +273,9 @@ groups:
           team: acgs_operations
           escalation: immediate
         annotations:
-          summary: "Critical concurrent governance actions"
-          description: "{{ $value }} concurrent governance actions, near 1000 limit"
-          runbook_url: "https://docs.acgs.ai/runbooks/critical-concurrent-actions"
+          summary: 'Critical concurrent governance actions'
+          description: '{{ $value }} concurrent governance actions, near 1000 limit'
+          runbook_url: 'https://docs.acgs.ai/runbooks/critical-concurrent-actions'
 
       # Low System Availability
       - alert: ACGSLowAvailability
@@ -286,9 +286,9 @@ groups:
           component: availability
           team: acgs_operations
         annotations:
-          summary: "System availability below target"
-          description: "System availability is {{ $value }}%, below 99.5% target"
-          runbook_url: "https://docs.acgs.ai/runbooks/low-availability"
+          summary: 'System availability below target'
+          description: 'System availability is {{ $value }}%, below 99.5% target'
+          runbook_url: 'https://docs.acgs.ai/runbooks/low-availability'
 
       # Critical System Availability
       - alert: ACGSCriticalAvailability
@@ -300,6 +300,6 @@ groups:
           team: acgs_operations
           escalation: immediate
         annotations:
-          summary: "Critical system availability"
-          description: "System availability is {{ $value }}%, below 99% critical threshold"
-          runbook_url: "https://docs.acgs.ai/runbooks/critical-availability"
+          summary: 'Critical system availability'
+          description: 'System availability is {{ $value }}%, below 99% critical threshold'
+          runbook_url: 'https://docs.acgs.ai/runbooks/critical-availability'

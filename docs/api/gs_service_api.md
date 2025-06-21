@@ -15,12 +15,14 @@
 Enterprise-grade policy synthesis engine with four-tier risk strategy, multi-model consensus, and constitutional compliance validation. Provides AI-powered policy generation and synthesis capabilities with advanced orchestration and monitoring.
 
 ### Key Features
+
 - **Multi-Model Consensus**: Ensemble of AI models for robust policy generation
 - **Constitutional Compliance**: Real-time validation against constitutional principles
 - **Policy Synthesis**: Advanced NLP for policy content generation and optimization
 - **Performance Optimization**: Sub-500ms response times with caching and parallel processing
 
 ### Integration Points
+
 - **Authentication Service**: JWT token validation and RBAC
 - **Constitutional AI Service**: Constitutional principle validation and compliance scoring
 - **Integrity Service**: Audit logging and policy versioning
@@ -29,11 +31,13 @@ Enterprise-grade policy synthesis engine with four-tier risk strategy, multi-mod
 ## 📋 API Endpoints
 
 ### Health Check
+
 ```http
 GET /health
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": "healthy",
@@ -48,6 +52,7 @@ GET /health
 ```
 
 **Error Response (503 Service Unavailable):**
+
 ```json
 {
   "status": "unhealthy",
@@ -59,9 +64,11 @@ GET /health
 ### Core Endpoints
 
 #### GET /api/v1/status
+
 Get detailed service status and capabilities.
 
 **Response (200 OK):**
+
 ```json
 {
   "api_version": "v1",
@@ -98,9 +105,11 @@ Get detailed service status and capabilities.
 ### Policy Synthesis Endpoints
 
 #### POST /api/v1/synthesize
+
 Core governance synthesis from constitutional principles.
 
 **Request Body:**
+
 ```json
 {
   "policy_id": 123,
@@ -118,6 +127,7 @@ Core governance synthesis from constitutional principles.
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "policy": {
@@ -142,6 +152,7 @@ Core governance synthesis from constitutional principles.
 ```
 
 #### Multi-Model Consensus
+
 ```http
 POST /api/v1/synthesis/consensus
 ```
@@ -149,20 +160,18 @@ POST /api/v1/synthesis/consensus
 **Description:** Run multi-model consensus validation on existing policy
 
 **Request Body:**
+
 ```json
 {
   "policy_content": "Policy text to validate...",
   "models": ["qwen3-32b", "deepseek-chat", "qwen3-235b"],
   "consensus_threshold": 0.8,
-  "validation_criteria": [
-    "constitutional_compliance",
-    "stakeholder_alignment",
-    "policy_coherence"
-  ]
+  "validation_criteria": ["constitutional_compliance", "stakeholder_alignment", "policy_coherence"]
 }
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "consensus_result": {
@@ -179,14 +188,12 @@ POST /api/v1/synthesis/consensus
     "stakeholder_alignment": 0.82,
     "policy_coherence": 0.85
   },
-  "recommendations": [
-    "Enhance stakeholder engagement section",
-    "Clarify enforcement mechanisms"
-  ]
+  "recommendations": ["Enhance stakeholder engagement section", "Clarify enforcement mechanisms"]
 }
 ```
 
 #### Policy Optimization
+
 ```http
 POST /api/v1/synthesis/optimize
 ```
@@ -194,6 +201,7 @@ POST /api/v1/synthesis/optimize
 **Description:** Optimize existing policy for better constitutional compliance
 
 **Request Body:**
+
 ```json
 {
   "policy_id": "pol_dp_2025_001",
@@ -212,37 +220,47 @@ POST /api/v1/synthesis/optimize
 ### Advanced Features
 
 #### POST /api/v1/multi-model/synthesize
+
 Multi-model policy synthesis with consensus validation.
 
 #### POST /api/v1/enhanced/synthesize
+
 Enhanced governance synthesis with OPA integration.
 
 #### POST /api/v1/phase-a3/synthesize
+
 Phase A3 production policy synthesis with four-tier risk strategy.
 
 #### POST /api/v1/alphaevolve/synthesize
+
 AlphaEvolve integration for governance tuning.
 
 #### POST /api/v1/mab/optimize
+
 Multi-Armed Bandit optimization for synthesis strategies.
 
 #### POST /api/v1/wina/synthesize
+
 WINA-optimized Rego policy synthesis.
 
 ### Governance Workflows
 
 #### GET /api/v1/governance/workflows
+
 List all available governance workflows.
 
 #### POST /api/v1/governance/workflows/{workflow_id}/start
+
 Start a specific governance workflow.
 
 #### GET /api/v1/governance/workflows/types
+
 Get available workflow types.
 
 ### Configuration and Management
 
 #### Service Status
+
 ```http
 GET /api/v1/status
 ```
@@ -250,6 +268,7 @@ GET /api/v1/status
 **Description:** Comprehensive service status and capabilities
 
 **Response (200 OK):**
+
 ```json
 {
   "api_version": "v1",
@@ -271,10 +290,10 @@ GET /api/v1/status
 }
 ```
 
-
 ## 🔧 Error Handling
 
 ### Standard Error Codes
+
 - **400 Bad Request:** Invalid input parameters
 - **401 Unauthorized:** Authentication required
 - **403 Forbidden:** Insufficient permissions
@@ -284,6 +303,7 @@ GET /api/v1/status
 - **503 Service Unavailable:** Service temporarily unavailable
 
 ### Error Response Format
+
 ```json
 {
   "error": {
@@ -309,11 +329,13 @@ GET /api/v1/status
 ## 🔐 Authentication
 
 ### JWT Token Authentication
+
 ```http
 Authorization: Bearer <jwt_token>
 ```
 
 ### API Key Authentication (Optional)
+
 ```http
 X-API-Key: <api_key>
 ```

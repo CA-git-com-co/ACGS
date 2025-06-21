@@ -20,12 +20,14 @@ This comprehensive guide provides step-by-step procedures for deploying the ACGS
 ### System Requirements
 
 **Minimum Hardware Specifications**:
+
 - **CPU**: 8 cores (16 vCPUs recommended)
 - **Memory**: 32GB RAM (64GB recommended for >1000 concurrent users)
 - **Storage**: 500GB SSD (1TB recommended for 15-day retention)
 - **Network**: 1Gbps bandwidth with low latency (<10ms)
 
 **Operating System**:
+
 - Ubuntu 20.04 LTS or later
 - CentOS 8 or later
 - RHEL 8 or later
@@ -56,6 +58,7 @@ pip3 install aiohttp psutil prometheus_client
 ### Network Configuration
 
 **Required Ports**:
+
 - **Prometheus**: 9090 (metrics collection)
 - **Grafana**: 3000 (dashboard access)
 - **Alertmanager**: 9093 (alert management)
@@ -63,6 +66,7 @@ pip3 install aiohttp psutil prometheus_client
 - **Node Exporter**: 9100 (system metrics)
 
 **Firewall Configuration**:
+
 ```bash
 # Allow monitoring ports
 sudo ufw allow 9090/tcp  # Prometheus
@@ -81,6 +85,7 @@ sudo ufw allow 8080/tcp       # HAProxy
 ### Authentication and Access Control
 
 **Grafana Security Configuration**:
+
 ```yaml
 # grafana.ini security settings
 [security]
@@ -106,6 +111,7 @@ auto_assign_org_role = Viewer
 ```
 
 **Prometheus Security Configuration**:
+
 ```yaml
 # prometheus.yml security settings
 global:
@@ -125,6 +131,7 @@ tls_server_config:
 ```
 
 **Environment Variables Setup**:
+
 ```bash
 # Create secure environment file
 cat > /etc/acgs/monitoring.env << EOF
@@ -154,6 +161,7 @@ chown root:root /etc/acgs/monitoring.env
 ### SSL/TLS Configuration
 
 **Generate SSL Certificates**:
+
 ```bash
 # Create certificate directory
 sudo mkdir -p /etc/acgs/certs
@@ -241,6 +249,7 @@ python3 infrastructure/monitoring/performance-validation.py \
 ### Service Discovery Configuration
 
 **Prometheus Service Discovery**:
+
 ```yaml
 scrape_configs:
   # ACGS Core Services
@@ -306,6 +315,7 @@ scrape_configs:
 ### Custom ACGS Metrics Integration
 
 **Constitutional Governance Metrics**:
+
 ```python
 # Example metrics integration in ACGS services
 from prometheus_client import Counter, Histogram, Gauge
@@ -337,17 +347,20 @@ governance_action_cost = Gauge(
 ### Performance Targets
 
 **Response Time Targets**:
+
 - Prometheus queries: <500ms (95th percentile)
 - Grafana dashboards: <2000ms loading time
 - Alert detection: <30 seconds
 - Metrics collection: <100ms scraping latency
 
 **Availability Targets**:
+
 - Overall system: >99.9% availability
 - Individual services: >99.5% availability
 - Load test success rate: >95%
 
 **Resource Utilization Targets**:
+
 - CPU overhead: <1% of total system resources
 - Memory overhead: <2% of total system resources
 - Network overhead: <5% of total bandwidth
@@ -372,6 +385,7 @@ python3 infrastructure/monitoring/test-dashboard-performance.py
 ### Backup Procedures
 
 **Automated Backup Script**:
+
 ```bash
 #!/bin/bash
 # backup-monitoring-data.sh
@@ -403,6 +417,7 @@ rm -rf "$BACKUP_DIR" "$BACKUP_DIR.tar.gz"
 ### Disaster Recovery Procedures
 
 **Recovery Steps**:
+
 1. **Stop monitoring services**
 2. **Restore configurations from backup**
 3. **Restore data volumes**
@@ -419,6 +434,7 @@ rm -rf "$BACKUP_DIR" "$BACKUP_DIR.tar.gz"
 ### Daily Operations
 
 **Health Check Routine**:
+
 ```bash
 # Daily health check script
 ./infrastructure/monitoring/daily-health-check.sh
@@ -434,6 +450,7 @@ curl -s "http://localhost:9093/api/v1/alerts" | jq '.data | length'
 ```
 
 **Performance Monitoring**:
+
 ```bash
 # Monitor system resources
 ./scripts/monitor-system-resources.sh
@@ -448,12 +465,14 @@ python3 infrastructure/monitoring/validate-performance-targets.py
 ### Maintenance Procedures
 
 **Weekly Maintenance**:
+
 - Review alert configurations and thresholds
 - Analyze performance trends and capacity planning
 - Update dashboard configurations based on usage patterns
 - Validate backup integrity and recovery procedures
 
 **Monthly Maintenance**:
+
 - Update monitoring software versions
 - Review and optimize alert rules
 - Capacity planning and resource scaling
@@ -464,6 +483,7 @@ python3 infrastructure/monitoring/validate-performance-targets.py
 ### Common Issues and Solutions
 
 **High Memory Usage**:
+
 ```bash
 # Check Prometheus memory usage
 docker stats acgs_prometheus
@@ -475,6 +495,7 @@ docker stats acgs_prometheus
 ```
 
 **Slow Dashboard Loading**:
+
 ```bash
 # Check Grafana performance
 curl -w "@curl-format.txt" -s -o /dev/null http://localhost:3000/api/health
@@ -486,6 +507,7 @@ curl -w "@curl-format.txt" -s -o /dev/null http://localhost:3000/api/health
 ```
 
 **Alert Fatigue**:
+
 ```bash
 # Review alert frequency
 curl -s "http://localhost:9093/api/v1/alerts" | jq '.data[] | .labels.alertname' | sort | uniq -c

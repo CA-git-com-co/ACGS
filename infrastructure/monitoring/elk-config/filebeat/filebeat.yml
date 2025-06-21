@@ -17,7 +17,7 @@ filebeat.inputs:
     multiline.pattern: '^\d{4}-\d{2}-\d{2}'
     multiline.negate: true
     multiline.match: after
-    
+
   # Security logs
   - type: log
     enabled: true
@@ -30,7 +30,7 @@ filebeat.inputs:
     fields_under_root: true
     json.keys_under_root: true
     json.add_error_key: true
-    
+
   # Authentication logs
   - type: log
     enabled: true
@@ -43,7 +43,7 @@ filebeat.inputs:
     fields_under_root: true
     json.keys_under_root: true
     json.add_error_key: true
-    
+
   # Audit logs
   - type: log
     enabled: true
@@ -56,7 +56,7 @@ filebeat.inputs:
     fields_under_root: true
     json.keys_under_root: true
     json.add_error_key: true
-    
+
   # Governance workflow logs
   - type: log
     enabled: true
@@ -69,7 +69,7 @@ filebeat.inputs:
     fields_under_root: true
     json.keys_under_root: true
     json.add_error_key: true
-    
+
   # System authentication logs
   - type: log
     enabled: true
@@ -80,7 +80,7 @@ filebeat.inputs:
       environment: production
       system: acgs-1
     fields_under_root: true
-    
+
   # System logs
   - type: log
     enabled: true
@@ -91,7 +91,7 @@ filebeat.inputs:
       environment: production
       system: acgs-1
     fields_under_root: true
-    
+
   # Nginx access logs (if present)
   - type: log
     enabled: true
@@ -102,7 +102,7 @@ filebeat.inputs:
       environment: production
       system: acgs-1
     fields_under_root: true
-    
+
   # Nginx error logs (if present)
   - type: log
     enabled: true
@@ -133,12 +133,12 @@ processors:
       test:
         - '2023-01-01T12:00:00.000Z'
   - drop_fields:
-      fields: ["agent", "ecs", "host.architecture", "host.os.family"]
+      fields: ['agent', 'ecs', 'host.architecture', 'host.os.family']
       ignore_missing: true
 
 # Output configuration
 output.logstash:
-  hosts: ["logstash-security:5044"]
+  hosts: ['logstash-security:5044']
   compression_level: 3
   bulk_max_size: 2048
   worker: 2
@@ -154,9 +154,9 @@ output.logstash:
 
 # Kibana setup
 setup.kibana:
-  host: "kibana-security:5601"
-  username: "elastic"
-  password: "acgs_security_2024"
+  host: 'kibana-security:5601'
+  username: 'elastic'
+  password: 'acgs_security_2024'
 
 # Index template settings
 setup.template.settings:
@@ -166,9 +166,9 @@ setup.template.settings:
 
 # ILM policy
 setup.ilm.enabled: true
-setup.ilm.rollover_alias: "filebeat-acgs"
-setup.ilm.pattern: "{now/d}-000001"
-setup.ilm.policy: "filebeat-acgs-policy"
+setup.ilm.rollover_alias: 'filebeat-acgs'
+setup.ilm.pattern: '{now/d}-000001'
+setup.ilm.policy: 'filebeat-acgs-policy'
 
 # Logging
 logging.level: info
@@ -182,9 +182,9 @@ logging.files:
 # Monitoring
 monitoring.enabled: true
 monitoring.elasticsearch:
-  hosts: ["elasticsearch-security:9200"]
-  username: "elastic"
-  password: "acgs_security_2024"
+  hosts: ['elasticsearch-security:9200']
+  username: 'elastic'
+  password: 'acgs_security_2024'
 
 # HTTP endpoint for health checks
 http.enabled: true

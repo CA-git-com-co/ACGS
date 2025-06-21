@@ -19,12 +19,14 @@ This document provides comprehensive operational runbooks for managing the ACGS-
 ### Critical Alert Response (Response Time: <5 minutes)
 
 **Severity: Critical**
+
 - Service Down alerts
 - Constitutional compliance failures
 - Security breaches
 - System resource exhaustion
 
 **Response Procedure**:
+
 ```bash
 # Step 1: Acknowledge alert
 curl -X POST http://localhost:9093/api/v1/alerts \
@@ -52,12 +54,14 @@ free -m
 ### High Priority Alert Response (Response Time: <15 minutes)
 
 **Severity: High**
+
 - High error rates
 - Performance degradation
 - Load balancer issues
 - Database connection problems
 
 **Response Procedure**:
+
 ```bash
 # Step 1: Assess impact
 curl -s "http://localhost:9090/api/v1/query?query=up" | jq '.data.result'
@@ -78,12 +82,14 @@ echo "$(date): High priority alert - ALERT_NAME" >> /var/log/acgs/incident.log
 ### Warning Alert Response (Response Time: <1 hour)
 
 **Severity: Warning**
+
 - Resource usage warnings
 - Minor performance issues
 - Configuration drift
 - Capacity planning alerts
 
 **Response Procedure**:
+
 ```bash
 # Step 1: Analyze trends
 ./scripts/analyze-trends.sh --metric METRIC_NAME --timeframe 24h
@@ -159,6 +165,7 @@ docker-compose -f docker-compose.monitoring.yml restart grafana
 
 **Symptoms**: CPU usage >80% sustained
 **Investigation**:
+
 ```bash
 # Check process CPU usage
 top -p $(pgrep -d',' prometheus)
@@ -172,6 +179,7 @@ curl -s "http://localhost:9090/api/v1/label/__name__/values" | jq '.data | lengt
 ```
 
 **Resolution**:
+
 ```bash
 # Optimize Prometheus configuration
 # Edit prometheus.yml:
@@ -186,6 +194,7 @@ docker-compose -f docker-compose.monitoring.yml restart prometheus
 
 **Symptoms**: Memory usage >90%
 **Investigation**:
+
 ```bash
 # Check memory usage by service
 docker stats --no-stream
@@ -198,6 +207,7 @@ curl -s "http://localhost:9090/api/v1/status/tsdb" | jq '.data.headStats'
 ```
 
 **Resolution**:
+
 ```bash
 # Optimize retention settings
 # Edit prometheus.yml:
@@ -212,6 +222,7 @@ docker-compose -f docker-compose.monitoring.yml restart
 
 **Symptoms**: Dashboard load times >5 seconds
 **Investigation**:
+
 ```bash
 # Check Grafana performance
 curl -w "@curl-format.txt" -s -o /dev/null http://localhost:3000/api/health
@@ -224,6 +235,7 @@ tail -f /var/log/grafana/grafana.log | grep "slow"
 ```
 
 **Resolution**:
+
 ```bash
 # Optimize dashboard queries
 # - Use appropriate time ranges
@@ -240,6 +252,7 @@ tail -f /var/log/grafana/grafana.log | grep "slow"
 
 **Symptoms**: >100 alerts firing simultaneously
 **Investigation**:
+
 ```bash
 # Check current alerts
 curl -s "http://localhost:9093/api/v1/alerts" | jq '.data | length'
@@ -249,6 +262,7 @@ curl -s "http://localhost:9093/api/v1/alerts" | jq '.data[] | .labels.alertname'
 ```
 
 **Resolution**:
+
 ```bash
 # Implement alert inhibition
 # Edit alertmanager.yml:
@@ -445,6 +459,7 @@ docker-compose -f docker-compose.monitoring.yml up -d
 
 **Symptoms**: All monitoring services down
 **Response**:
+
 ```bash
 # Step 1: Check system status
 systemctl status docker
@@ -469,6 +484,7 @@ docker-compose -f docker-compose.monitoring.yml up -d
 
 **Symptoms**: Metrics data inconsistencies
 **Response**:
+
 ```bash
 # Step 1: Stop affected services
 docker-compose -f docker-compose.monitoring.yml stop prometheus
@@ -487,6 +503,7 @@ docker-compose -f docker-compose.monitoring.yml start prometheus
 
 **Symptoms**: Unauthorized access detected
 **Response**:
+
 ```bash
 # Step 1: Isolate affected systems
 ./scripts/isolate-systems.sh
@@ -507,11 +524,13 @@ docker-compose -f docker-compose.monitoring.yml start prometheus
 ---
 
 **Contact Information**:
+
 - **Emergency Escalation**: +1-XXX-XXX-XXXX
 - **Security Team**: security@acgs.ai
 - **Operations Team**: ops@acgs.ai
 
 **Additional Resources**:
+
 - [Production Deployment Guide](PRODUCTION_DEPLOYMENT_GUIDE.md)
 - [Training Guide](TRAINING_GUIDE.md)
 - [Security Configuration Guide](SECURITY_GUIDE.md)

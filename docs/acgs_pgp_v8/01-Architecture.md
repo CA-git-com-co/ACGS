@@ -82,15 +82,17 @@ ACGS-PGP v8 fundamentally re-architects the governance pipeline to detect and di
 1.  **Principle as a Logical Semantic Unit (LSU)**: A Governance Administrator defines a "Constitutional Principle" in the **AC Repository**. This principle is treated as the **Logical Semantic Unit (LSU)**—the abstract, idealized meaning that must be protected.
 
 2.  **Encoding into Diverse Physical Representations**: The **Generation Engine** consumes the LSU and encodes its meaning into a set of diverse **Physical Representations**. This is not just N versions of the same code, but a heterogeneous set of artifacts, such as:
-    *   Python and Java implementations.
-    *   A formal TLA+ specification.
-    *   A comprehensive Pytest test suite.
-    *   Structured natural language documentation.
+
+    - Python and Java implementations.
+    - A formal TLA+ specification.
+    - A comprehensive Pytest test suite.
+    - Structured natural language documentation.
 
 3.  **Syndrome Measurement via Semantic Stabilizers**: The **Stabilizer Execution Environment (SEE)** runs a suite of **Semantic Stabilizers**. Each stabilizer is a test that checks for mutual consistency between two or more representations (e.g., "Does the Python code pass the Pytest suite?", "Is the Java code's control flow isomorphic to the Python code's?"). The collective pass/fail outcomes form a **Semantic Syndrome Vector**.
 
 4.  **Diagnosis and Certification**: The **Syndrome Diagnostic Engine (SDE)** receives the syndrome vector. It uses this diagnostic signature to determine the semantic health of the generated artifacts.
-    *   **If the syndrome indicates coherence (all +1s)**, the SDE issues a "Certificate of Semantic Integrity."
-    *   **If the syndrome indicates an inconsistency**, it pinpoints the likely location and type of the fault (e.g., "The test suite is inconsistent with the formal spec").
+
+    - **If the syndrome indicates coherence (all +1s)**, the SDE issues a "Certificate of Semantic Integrity."
+    - **If the syndrome indicates an inconsistency**, it pinpoints the likely location and type of the fault (e.g., "The test suite is inconsistent with the formal spec").
 
 5.  **Compilation and Deployment**: Only upon receiving a certificate of integrity does the **Certified Artifact Compiler** proceed. It compiles the final, verified artifact (e.g., the Rego policy), cryptographically signs it along with its certifying syndrome, and publishes it to the **Artifact Store** for consumption by LLM applications.

@@ -43,6 +43,7 @@ tests/
 ### Prerequisites
 
 1. Ensure you're in the DGM service directory:
+
    ```bash
    cd services/core/dgm-service
    ```
@@ -55,11 +56,13 @@ tests/
 ### Basic Test Execution
 
 Run all tests:
+
 ```bash
 python tests/run_tests.py --all
 ```
 
 Run specific test suites:
+
 ```bash
 # Unit tests only
 python tests/run_tests.py --unit
@@ -80,21 +83,25 @@ python tests/run_tests.py --security
 ### Using pytest directly
 
 Run all unit tests:
+
 ```bash
 ../../../.venv/bin/pytest tests/unit/ -v
 ```
 
 Run specific test file:
+
 ```bash
 ../../../.venv/bin/pytest tests/test_basic.py -v
 ```
 
 Run tests with coverage:
+
 ```bash
 ../../../.venv/bin/pytest tests/unit/ --cov=dgm_service --cov-report=html
 ```
 
 Run tests with specific markers:
+
 ```bash
 ../../../.venv/bin/pytest -m unit -v
 ../../../.venv/bin/pytest -m constitutional -v
@@ -196,11 +203,13 @@ The test suite maintains >90% code coverage with the following targets:
 ### Coverage Reports
 
 Generate coverage reports:
+
 ```bash
 ../../../.venv/bin/pytest tests/unit/ --cov=dgm_service --cov-report=html --cov-report=term-missing
 ```
 
 View HTML coverage report:
+
 ```bash
 open htmlcov/index.html
 ```
@@ -289,6 +298,7 @@ The test suite is designed for CI/CD integration:
 ### Debug Mode
 
 Run tests in debug mode:
+
 ```bash
 ../../../.venv/bin/pytest tests/unit/core/test_dgm_engine.py::TestDGMEngine::test_initialization -v -s --pdb
 ```
@@ -296,6 +306,7 @@ Run tests in debug mode:
 ### Logging
 
 Enable test logging:
+
 ```bash
 ../../../.venv/bin/pytest tests/ -v --log-cli-level=DEBUG
 ```
@@ -313,6 +324,7 @@ When adding new features:
 ## Test Metrics
 
 Current test metrics:
+
 - **Total Tests**: 50+ comprehensive tests
 - **Coverage**: >90% target
 - **Performance**: <30s full test suite execution

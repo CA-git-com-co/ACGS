@@ -1,343 +1,343 @@
 groups:
-- name: acgs_capacity_planning
-  interval: 30s
-  rules:
-  # Service Capacity Metrics
-  - record: acgs:service_capacity_utilization
-    expr: |
-      (
-        sum(rate(acgs_http_requests_total[5m])) by (service) /
-        sum(acgs_service_max_capacity) by (service)
-      ) * 100
-    labels:
-      metric_type: "capacity"
-      category: "service_utilization"
+  - name: acgs_capacity_planning
+    interval: 30s
+    rules:
+      # Service Capacity Metrics
+      - record: acgs:service_capacity_utilization
+        expr: |
+          (
+            sum(rate(acgs_http_requests_total[5m])) by (service) /
+            sum(acgs_service_max_capacity) by (service)
+          ) * 100
+        labels:
+          metric_type: 'capacity'
+          category: 'service_utilization'
 
-  - record: acgs:concurrent_user_trend
-    expr: |
-      increase(acgs_active_connections[1h])
-    labels:
-      metric_type: "capacity"
-      category: "user_growth"
+      - record: acgs:concurrent_user_trend
+        expr: |
+          increase(acgs_active_connections[1h])
+        labels:
+          metric_type: 'capacity'
+          category: 'user_growth'
 
-  - record: acgs:request_rate_trend
-    expr: |
-      rate(acgs_http_requests_total[1h])
-    labels:
-      metric_type: "capacity"
-      category: "request_growth"
+      - record: acgs:request_rate_trend
+        expr: |
+          rate(acgs_http_requests_total[1h])
+        labels:
+          metric_type: 'capacity'
+          category: 'request_growth'
 
-  # Database Capacity Metrics
-  - record: acgs:database_connection_utilization
-    expr: |
-      (
-        sum(acgs_database_active_connections) /
-        sum(acgs_database_max_connections)
-      ) * 100
-    labels:
-      metric_type: "capacity"
-      category: "database_connections"
+      # Database Capacity Metrics
+      - record: acgs:database_connection_utilization
+        expr: |
+          (
+            sum(acgs_database_active_connections) /
+            sum(acgs_database_max_connections)
+          ) * 100
+        labels:
+          metric_type: 'capacity'
+          category: 'database_connections'
 
-  - record: acgs:database_query_rate
-    expr: |
-      sum(rate(acgs_database_queries_total[5m]))
-    labels:
-      metric_type: "capacity"
-      category: "database_throughput"
+      - record: acgs:database_query_rate
+        expr: |
+          sum(rate(acgs_database_queries_total[5m]))
+        labels:
+          metric_type: 'capacity'
+          category: 'database_throughput'
 
-  # Memory and CPU Capacity
-  - record: acgs:memory_utilization_by_service
-    expr: |
-      (
-        sum(acgs_memory_usage_bytes) by (service) /
-        sum(acgs_memory_limit_bytes) by (service)
-      ) * 100
-    labels:
-      metric_type: "capacity"
-      category: "memory_utilization"
+      # Memory and CPU Capacity
+      - record: acgs:memory_utilization_by_service
+        expr: |
+          (
+            sum(acgs_memory_usage_bytes) by (service) /
+            sum(acgs_memory_limit_bytes) by (service)
+          ) * 100
+        labels:
+          metric_type: 'capacity'
+          category: 'memory_utilization'
 
-  - record: acgs:cpu_utilization_by_service
-    expr: |
-      sum(rate(acgs_cpu_usage_seconds_total[5m])) by (service) * 100
-    labels:
-      metric_type: "capacity"
-      category: "cpu_utilization"
+      - record: acgs:cpu_utilization_by_service
+        expr: |
+          sum(rate(acgs_cpu_usage_seconds_total[5m])) by (service) * 100
+        labels:
+          metric_type: 'capacity'
+          category: 'cpu_utilization'
 
-  # Load Balancer Capacity
-  - record: acgs:load_balancer_backend_utilization
-    expr: |
-      (
-        sum(acgs_haproxy_backend_current_sessions) by (backend) /
-        sum(acgs_haproxy_backend_max_sessions) by (backend)
-      ) * 100
-    labels:
-      metric_type: "capacity"
-      category: "load_balancer"
+      # Load Balancer Capacity
+      - record: acgs:load_balancer_backend_utilization
+        expr: |
+          (
+            sum(acgs_haproxy_backend_current_sessions) by (backend) /
+            sum(acgs_haproxy_backend_max_sessions) by (backend)
+          ) * 100
+        labels:
+          metric_type: 'capacity'
+          category: 'load_balancer'
 
-  # Redis Cache Capacity
-  - record: acgs:redis_memory_utilization
-    expr: |
-      (
-        sum(acgs_redis_memory_used_bytes) /
-        sum(acgs_redis_memory_max_bytes)
-      ) * 100
-    labels:
-      metric_type: "capacity"
-      category: "cache_utilization"
+      # Redis Cache Capacity
+      - record: acgs:redis_memory_utilization
+        expr: |
+          (
+            sum(acgs_redis_memory_used_bytes) /
+            sum(acgs_redis_memory_max_bytes)
+          ) * 100
+        labels:
+          metric_type: 'capacity'
+          category: 'cache_utilization'
 
-  - record: acgs:redis_hit_rate
-    expr: |
-      (
-        sum(rate(acgs_redis_cache_hits_total[5m])) /
-        (sum(rate(acgs_redis_cache_hits_total[5m])) + sum(rate(acgs_redis_cache_misses_total[5m])))
-      ) * 100
-    labels:
-      metric_type: "capacity"
-      category: "cache_efficiency"
+      - record: acgs:redis_hit_rate
+        expr: |
+          (
+            sum(rate(acgs_redis_cache_hits_total[5m])) /
+            (sum(rate(acgs_redis_cache_hits_total[5m])) + sum(rate(acgs_redis_cache_misses_total[5m])))
+          ) * 100
+        labels:
+          metric_type: 'capacity'
+          category: 'cache_efficiency'
 
-  # Scaling Prediction Metrics
-  - record: acgs:predicted_capacity_exhaustion_hours
-    expr: |
-      (
-        (100 - acgs:service_capacity_utilization) /
-        rate(acgs:service_capacity_utilization[1h])
-      )
-    labels:
-      metric_type: "prediction"
-      category: "capacity_exhaustion"
+      # Scaling Prediction Metrics
+      - record: acgs:predicted_capacity_exhaustion_hours
+        expr: |
+          (
+            (100 - acgs:service_capacity_utilization) /
+            rate(acgs:service_capacity_utilization[1h])
+          )
+        labels:
+          metric_type: 'prediction'
+          category: 'capacity_exhaustion'
 
-  - record: acgs:scaling_recommendation_score
-    expr: |
-      (
-        (acgs:service_capacity_utilization > 70) * 1 +
-        (acgs:memory_utilization_by_service > 80) * 2 +
-        (acgs:cpu_utilization_by_service > 75) * 2 +
-        (acgs:database_connection_utilization > 85) * 3
-      )
-    labels:
-      metric_type: "recommendation"
-      category: "scaling_priority"
+      - record: acgs:scaling_recommendation_score
+        expr: |
+          (
+            (acgs:service_capacity_utilization > 70) * 1 +
+            (acgs:memory_utilization_by_service > 80) * 2 +
+            (acgs:cpu_utilization_by_service > 75) * 2 +
+            (acgs:database_connection_utilization > 85) * 3
+          )
+        labels:
+          metric_type: 'recommendation'
+          category: 'scaling_priority'
 
-- name: acgs_capacity_alerts
-  rules:
-  # Capacity Warning Alerts
-  - alert: ServiceCapacityUtilizationHigh
-    expr: acgs:service_capacity_utilization > 80
-    for: 5m
-    labels:
-      severity: warning
-      category: capacity_planning
-      business_impact: medium
-    annotations:
-      summary: "Service capacity utilization above 80%"
-      description: "Service {{ $labels.service }} capacity utilization is {{ $value }}%"
-      runbook_url: "https://docs.acgs.local/runbooks/capacity-scaling"
-      scaling_recommendation: "Consider horizontal scaling"
+  - name: acgs_capacity_alerts
+    rules:
+      # Capacity Warning Alerts
+      - alert: ServiceCapacityUtilizationHigh
+        expr: acgs:service_capacity_utilization > 80
+        for: 5m
+        labels:
+          severity: warning
+          category: capacity_planning
+          business_impact: medium
+        annotations:
+          summary: 'Service capacity utilization above 80%'
+          description: 'Service {{ $labels.service }} capacity utilization is {{ $value }}%'
+          runbook_url: 'https://docs.acgs.local/runbooks/capacity-scaling'
+          scaling_recommendation: 'Consider horizontal scaling'
 
-  - alert: ServiceCapacityUtilizationCritical
-    expr: acgs:service_capacity_utilization > 95
-    for: 2m
-    labels:
-      severity: critical
-      category: capacity_planning
-      business_impact: high
-    annotations:
-      summary: "Service capacity utilization critical"
-      description: "Service {{ $labels.service }} capacity utilization is {{ $value }}% - immediate scaling required"
-      runbook_url: "https://docs.acgs.local/runbooks/emergency-scaling"
-      business_impact: "Service degradation imminent"
+      - alert: ServiceCapacityUtilizationCritical
+        expr: acgs:service_capacity_utilization > 95
+        for: 2m
+        labels:
+          severity: critical
+          category: capacity_planning
+          business_impact: high
+        annotations:
+          summary: 'Service capacity utilization critical'
+          description: 'Service {{ $labels.service }} capacity utilization is {{ $value }}% - immediate scaling required'
+          runbook_url: 'https://docs.acgs.local/runbooks/emergency-scaling'
+          business_impact: 'Service degradation imminent'
 
-  - alert: ConcurrentUserGrowthRapid
-    expr: acgs:concurrent_user_trend > 100
-    for: 10m
-    labels:
-      severity: warning
-      category: user_growth
-      business_impact: medium
-    annotations:
-      summary: "Rapid concurrent user growth detected"
-      description: "Concurrent user count increased by {{ $value }} in the last hour"
-      runbook_url: "https://docs.acgs.local/runbooks/user-growth-scaling"
+      - alert: ConcurrentUserGrowthRapid
+        expr: acgs:concurrent_user_trend > 100
+        for: 10m
+        labels:
+          severity: warning
+          category: user_growth
+          business_impact: medium
+        annotations:
+          summary: 'Rapid concurrent user growth detected'
+          description: 'Concurrent user count increased by {{ $value }} in the last hour'
+          runbook_url: 'https://docs.acgs.local/runbooks/user-growth-scaling'
 
-  - alert: DatabaseConnectionPoolNearLimit
-    expr: acgs:database_connection_utilization > 85
-    for: 3m
-    labels:
-      severity: warning
-      category: database_capacity
-      business_impact: medium
-    annotations:
-      summary: "Database connection pool utilization high"
-      description: "Database connection utilization is {{ $value }}%"
-      runbook_url: "https://docs.acgs.local/runbooks/database-scaling"
+      - alert: DatabaseConnectionPoolNearLimit
+        expr: acgs:database_connection_utilization > 85
+        for: 3m
+        labels:
+          severity: warning
+          category: database_capacity
+          business_impact: medium
+        annotations:
+          summary: 'Database connection pool utilization high'
+          description: 'Database connection utilization is {{ $value }}%'
+          runbook_url: 'https://docs.acgs.local/runbooks/database-scaling'
 
-  - alert: MemoryUtilizationHigh
-    expr: acgs:memory_utilization_by_service > 85
-    for: 5m
-    labels:
-      severity: warning
-      category: memory_capacity
-      business_impact: medium
-    annotations:
-      summary: "High memory utilization detected"
-      description: "Service {{ $labels.service }} memory utilization is {{ $value }}%"
-      runbook_url: "https://docs.acgs.local/runbooks/memory-optimization"
+      - alert: MemoryUtilizationHigh
+        expr: acgs:memory_utilization_by_service > 85
+        for: 5m
+        labels:
+          severity: warning
+          category: memory_capacity
+          business_impact: medium
+        annotations:
+          summary: 'High memory utilization detected'
+          description: 'Service {{ $labels.service }} memory utilization is {{ $value }}%'
+          runbook_url: 'https://docs.acgs.local/runbooks/memory-optimization'
 
-  - alert: CPUUtilizationHigh
-    expr: acgs:cpu_utilization_by_service > 80
-    for: 5m
-    labels:
-      severity: warning
-      category: cpu_capacity
-      business_impact: medium
-    annotations:
-      summary: "High CPU utilization detected"
-      description: "Service {{ $labels.service }} CPU utilization is {{ $value }}%"
-      runbook_url: "https://docs.acgs.local/runbooks/cpu-optimization"
+      - alert: CPUUtilizationHigh
+        expr: acgs:cpu_utilization_by_service > 80
+        for: 5m
+        labels:
+          severity: warning
+          category: cpu_capacity
+          business_impact: medium
+        annotations:
+          summary: 'High CPU utilization detected'
+          description: 'Service {{ $labels.service }} CPU utilization is {{ $value }}%'
+          runbook_url: 'https://docs.acgs.local/runbooks/cpu-optimization'
 
-  - alert: LoadBalancerBackendUtilizationHigh
-    expr: acgs:load_balancer_backend_utilization > 90
-    for: 2m
-    labels:
-      severity: warning
-      category: load_balancer_capacity
-      business_impact: medium
-    annotations:
-      summary: "Load balancer backend utilization high"
-      description: "Backend {{ $labels.backend }} utilization is {{ $value }}%"
-      runbook_url: "https://docs.acgs.local/runbooks/load-balancer-scaling"
+      - alert: LoadBalancerBackendUtilizationHigh
+        expr: acgs:load_balancer_backend_utilization > 90
+        for: 2m
+        labels:
+          severity: warning
+          category: load_balancer_capacity
+          business_impact: medium
+        annotations:
+          summary: 'Load balancer backend utilization high'
+          description: 'Backend {{ $labels.backend }} utilization is {{ $value }}%'
+          runbook_url: 'https://docs.acgs.local/runbooks/load-balancer-scaling'
 
-  - alert: RedisCacheUtilizationHigh
-    expr: acgs:redis_memory_utilization > 85
-    for: 5m
-    labels:
-      severity: warning
-      category: cache_capacity
-      business_impact: low
-    annotations:
-      summary: "Redis cache memory utilization high"
-      description: "Redis memory utilization is {{ $value }}%"
-      runbook_url: "https://docs.acgs.local/runbooks/redis-scaling"
+      - alert: RedisCacheUtilizationHigh
+        expr: acgs:redis_memory_utilization > 85
+        for: 5m
+        labels:
+          severity: warning
+          category: cache_capacity
+          business_impact: low
+        annotations:
+          summary: 'Redis cache memory utilization high'
+          description: 'Redis memory utilization is {{ $value }}%'
+          runbook_url: 'https://docs.acgs.local/runbooks/redis-scaling'
 
-  - alert: CacheHitRateLow
-    expr: acgs:redis_hit_rate < 80
-    for: 10m
-    labels:
-      severity: warning
-      category: cache_efficiency
-      business_impact: low
-    annotations:
-      summary: "Redis cache hit rate low"
-      description: "Redis cache hit rate is {{ $value }}%, below 80% target"
-      runbook_url: "https://docs.acgs.local/runbooks/cache-optimization"
+      - alert: CacheHitRateLow
+        expr: acgs:redis_hit_rate < 80
+        for: 10m
+        labels:
+          severity: warning
+          category: cache_efficiency
+          business_impact: low
+        annotations:
+          summary: 'Redis cache hit rate low'
+          description: 'Redis cache hit rate is {{ $value }}%, below 80% target'
+          runbook_url: 'https://docs.acgs.local/runbooks/cache-optimization'
 
-  - alert: CapacityExhaustionPredicted
-    expr: acgs:predicted_capacity_exhaustion_hours < 24
-    for: 5m
-    labels:
-      severity: warning
-      category: capacity_prediction
-      business_impact: medium
-    annotations:
-      summary: "Service capacity exhaustion predicted within 24 hours"
-      description: "Service {{ $labels.service }} predicted to reach capacity in {{ $value }} hours"
-      runbook_url: "https://docs.acgs.local/runbooks/proactive-scaling"
-      scaling_recommendation: "Proactive scaling recommended"
+      - alert: CapacityExhaustionPredicted
+        expr: acgs:predicted_capacity_exhaustion_hours < 24
+        for: 5m
+        labels:
+          severity: warning
+          category: capacity_prediction
+          business_impact: medium
+        annotations:
+          summary: 'Service capacity exhaustion predicted within 24 hours'
+          description: 'Service {{ $labels.service }} predicted to reach capacity in {{ $value }} hours'
+          runbook_url: 'https://docs.acgs.local/runbooks/proactive-scaling'
+          scaling_recommendation: 'Proactive scaling recommended'
 
-  - alert: HighScalingPriorityScore
-    expr: acgs:scaling_recommendation_score >= 5
-    for: 3m
-    labels:
-      severity: warning
-      category: scaling_recommendation
-      business_impact: medium
-    annotations:
-      summary: "High scaling priority score detected"
-      description: "Service {{ $labels.service }} has scaling priority score of {{ $value }}"
-      runbook_url: "https://docs.acgs.local/runbooks/scaling-prioritization"
-      scaling_recommendation: "Immediate scaling evaluation required"
+      - alert: HighScalingPriorityScore
+        expr: acgs:scaling_recommendation_score >= 5
+        for: 3m
+        labels:
+          severity: warning
+          category: scaling_recommendation
+          business_impact: medium
+        annotations:
+          summary: 'High scaling priority score detected'
+          description: 'Service {{ $labels.service }} has scaling priority score of {{ $value }}'
+          runbook_url: 'https://docs.acgs.local/runbooks/scaling-prioritization'
+          scaling_recommendation: 'Immediate scaling evaluation required'
 
-- name: acgs_enterprise_scaling_metrics
-  interval: 60s
-  rules:
-  # Enterprise Scaling Metrics for 1000+ Users
-  - record: acgs:enterprise_user_capacity_ratio
-    expr: |
-      (
-        sum(acgs_active_connections) /
-        1000
-      ) * 100
-    labels:
-      metric_type: "enterprise"
-      category: "user_capacity"
-      target: "1000_users"
+  - name: acgs_enterprise_scaling_metrics
+    interval: 60s
+    rules:
+      # Enterprise Scaling Metrics for 1000+ Users
+      - record: acgs:enterprise_user_capacity_ratio
+        expr: |
+          (
+            sum(acgs_active_connections) /
+            1000
+          ) * 100
+        labels:
+          metric_type: 'enterprise'
+          category: 'user_capacity'
+          target: '1000_users'
 
-  - record: acgs:enterprise_availability_sla
-    expr: |
-      (
-        sum(up{job=~"acgs-.*"}) /
-        count(up{job=~"acgs-.*"})
-      ) * 100
-    labels:
-      metric_type: "enterprise"
-      category: "availability_sla"
-      target: "99.9_percent"
+      - record: acgs:enterprise_availability_sla
+        expr: |
+          (
+            sum(up{job=~"acgs-.*"}) /
+            count(up{job=~"acgs-.*"})
+          ) * 100
+        labels:
+          metric_type: 'enterprise'
+          category: 'availability_sla'
+          target: '99.9_percent'
 
-  - record: acgs:enterprise_response_time_sla
-    expr: |
-      histogram_quantile(0.95, 
-        sum(rate(acgs_http_request_duration_seconds_bucket[5m])) by (le)
-      ) * 1000
-    labels:
-      metric_type: "enterprise"
-      category: "response_time_sla"
-      target: "500ms"
+      - record: acgs:enterprise_response_time_sla
+        expr: |
+          histogram_quantile(0.95, 
+            sum(rate(acgs_http_request_duration_seconds_bucket[5m])) by (le)
+          ) * 1000
+        labels:
+          metric_type: 'enterprise'
+          category: 'response_time_sla'
+          target: '500ms'
 
-  - record: acgs:enterprise_governance_workflow_capacity
-    expr: |
-      sum(rate(acgs_governance_workflows_total[5m]))
-    labels:
-      metric_type: "enterprise"
-      category: "governance_capacity"
-      target: "1000_concurrent_actions"
+      - record: acgs:enterprise_governance_workflow_capacity
+        expr: |
+          sum(rate(acgs_governance_workflows_total[5m]))
+        labels:
+          metric_type: 'enterprise'
+          category: 'governance_capacity'
+          target: '1000_concurrent_actions'
 
-- name: acgs_enterprise_alerts
-  rules:
-  # Enterprise SLA Alerts
-  - alert: EnterpriseUserCapacityExceeded
-    expr: acgs:enterprise_user_capacity_ratio > 90
-    for: 2m
-    labels:
-      severity: critical
-      category: enterprise_capacity
-      business_impact: critical
-    annotations:
-      summary: "Enterprise user capacity approaching 1000 user limit"
-      description: "Current user capacity is {{ $value }}% of 1000 user target"
-      runbook_url: "https://docs.acgs.local/runbooks/enterprise-scaling"
-      business_impact: "Enterprise SLA at risk"
+  - name: acgs_enterprise_alerts
+    rules:
+      # Enterprise SLA Alerts
+      - alert: EnterpriseUserCapacityExceeded
+        expr: acgs:enterprise_user_capacity_ratio > 90
+        for: 2m
+        labels:
+          severity: critical
+          category: enterprise_capacity
+          business_impact: critical
+        annotations:
+          summary: 'Enterprise user capacity approaching 1000 user limit'
+          description: 'Current user capacity is {{ $value }}% of 1000 user target'
+          runbook_url: 'https://docs.acgs.local/runbooks/enterprise-scaling'
+          business_impact: 'Enterprise SLA at risk'
 
-  - alert: EnterpriseAvailabilitySLABreach
-    expr: acgs:enterprise_availability_sla < 99.9
-    for: 1m
-    labels:
-      severity: critical
-      category: enterprise_sla
-      business_impact: critical
-    annotations:
-      summary: "Enterprise availability SLA breach"
-      description: "System availability is {{ $value }}%, below 99.9% enterprise SLA"
-      runbook_url: "https://docs.acgs.local/runbooks/enterprise-availability"
-      business_impact: "Enterprise SLA breach - immediate action required"
+      - alert: EnterpriseAvailabilitySLABreach
+        expr: acgs:enterprise_availability_sla < 99.9
+        for: 1m
+        labels:
+          severity: critical
+          category: enterprise_sla
+          business_impact: critical
+        annotations:
+          summary: 'Enterprise availability SLA breach'
+          description: 'System availability is {{ $value }}%, below 99.9% enterprise SLA'
+          runbook_url: 'https://docs.acgs.local/runbooks/enterprise-availability'
+          business_impact: 'Enterprise SLA breach - immediate action required'
 
-  - alert: EnterpriseResponseTimeSLABreach
-    expr: acgs:enterprise_response_time_sla > 500
-    for: 3m
-    labels:
-      severity: warning
-      category: enterprise_sla
-      business_impact: medium
-    annotations:
-      summary: "Enterprise response time SLA breach"
-      description: "P95 response time is {{ $value }}ms, exceeding 500ms enterprise SLA"
-      runbook_url: "https://docs.acgs.local/runbooks/enterprise-performance"
+      - alert: EnterpriseResponseTimeSLABreach
+        expr: acgs:enterprise_response_time_sla > 500
+        for: 3m
+        labels:
+          severity: warning
+          category: enterprise_sla
+          business_impact: medium
+        annotations:
+          summary: 'Enterprise response time SLA breach'
+          description: 'P95 response time is {{ $value }}ms, exceeding 500ms enterprise SLA'
+          runbook_url: 'https://docs.acgs.local/runbooks/enterprise-performance'

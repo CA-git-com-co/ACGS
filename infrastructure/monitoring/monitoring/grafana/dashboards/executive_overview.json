@@ -2,10 +2,7 @@
   "dashboard": {
     "id": null,
     "title": "ACGS-1 Executive Overview",
-    "tags": [
-      "acgs",
-      "executive"
-    ],
+    "tags": ["acgs", "executive"],
     "timezone": "browser",
     "panels": [
       {

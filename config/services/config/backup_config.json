@@ -9,30 +9,18 @@
     "configuration_backup": {
       "frequency": "daily",
       "retention_days": 90,
-      "includes": [
-        "config/",
-        "blockchain/programs/",
-        "services/*/config/"
-      ]
+      "includes": ["config/", "blockchain/programs/", "services/*/config/"]
     },
     "blockchain_state_backup": {
       "frequency": "every 12 hours",
       "retention_days": 7,
-      "includes": [
-        "constitution_hash_history",
-        "governance_decisions",
-        "audit_trails"
-      ]
+      "includes": ["constitution_hash_history", "governance_decisions", "audit_trails"]
     }
   },
   "disaster_recovery": {
     "rto_target_minutes": 15,
     "rpo_target_minutes": 60,
-    "backup_locations": [
-      "primary_datacenter",
-      "secondary_datacenter",
-      "cloud_storage"
-    ],
+    "backup_locations": ["primary_datacenter", "secondary_datacenter", "cloud_storage"],
     "automated_failover": true,
     "health_check_interval_seconds": 30
   },

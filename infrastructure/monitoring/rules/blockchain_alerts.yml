@@ -18,10 +18,10 @@ groups:
           team: blockchain
           escalation: immediate
         annotations:
-          summary: "Solana network health issues detected"
-          description: "Solana devnet is experiencing health issues"
-          runbook_url: "https://docs.acgs.ai/runbooks/solana-network-issues"
-          impact: "Blockchain operations unavailable"
+          summary: 'Solana network health issues detected'
+          description: 'Solana devnet is experiencing health issues'
+          runbook_url: 'https://docs.acgs.ai/runbooks/solana-network-issues'
+          impact: 'Blockchain operations unavailable'
 
       # Quantumagi Program Invocation Failures
       - alert: QuantumagiProgramInvocationFailures
@@ -32,9 +32,9 @@ groups:
           component: quantumagi_program
           team: blockchain
         annotations:
-          summary: "Quantumagi program invocation failures"
-          description: "{{ $value }} program invocation failures per second for {{ $labels.program }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/quantumagi-invocation-failures"
+          summary: 'Quantumagi program invocation failures'
+          description: '{{ $value }} program invocation failures per second for {{ $labels.program }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/quantumagi-invocation-failures'
 
       # High Blockchain Transaction Latency
       - alert: HighBlockchainTransactionLatency
@@ -45,9 +45,9 @@ groups:
           component: blockchain_performance
           team: blockchain
         annotations:
-          summary: "High blockchain transaction latency"
-          description: "95th percentile transaction latency is {{ $value }}s for {{ $labels.transaction_type }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/high-blockchain-latency"
+          summary: 'High blockchain transaction latency'
+          description: '95th percentile transaction latency is {{ $value }}s for {{ $labels.transaction_type }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/high-blockchain-latency'
 
       # Solana Transaction Failures
       - alert: SolanaTransactionFailures
@@ -58,9 +58,9 @@ groups:
           component: solana_transactions
           team: blockchain
         annotations:
-          summary: "Solana transaction failures detected"
-          description: "{{ $value }} transaction failures per second for {{ $labels.transaction_type }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/solana-transaction-failures"
+          summary: 'Solana transaction failures detected'
+          description: '{{ $value }} transaction failures per second for {{ $labels.transaction_type }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/solana-transaction-failures'
 
       # Constitutional Hash Validation Failures (Blockchain)
       - alert: BlockchainConstitutionalHashValidationFailures
@@ -72,10 +72,10 @@ groups:
           team: blockchain
           escalation: immediate
         annotations:
-          summary: "Blockchain constitutional hash validation failures"
-          description: "{{ $value }} hash validation failures per second for {{ $labels.validation_type }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/blockchain-hash-validation-failures"
-          impact: "Constitutional integrity on blockchain compromised"
+          summary: 'Blockchain constitutional hash validation failures'
+          description: '{{ $value }} hash validation failures per second for {{ $labels.validation_type }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/blockchain-hash-validation-failures'
+          impact: 'Constitutional integrity on blockchain compromised'
 
       # PGC On-Chain Validation Failures
       - alert: PGCOnChainValidationFailures
@@ -86,9 +86,9 @@ groups:
           component: pgc_blockchain
           team: blockchain
         annotations:
-          summary: "PGC on-chain validation failures"
-          description: "{{ $value }} PGC validation failures per second for {{ $labels.validation_type }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/pgc-onchain-validation-failures"
+          summary: 'PGC on-chain validation failures'
+          description: '{{ $value }} PGC validation failures per second for {{ $labels.validation_type }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/pgc-onchain-validation-failures'
 
       # Solana Account Operation Failures
       - alert: SolanaAccountOperationFailures
@@ -99,9 +99,9 @@ groups:
           component: solana_accounts
           team: blockchain
         annotations:
-          summary: "Solana account operation failures"
-          description: "{{ $value }} account operation failures per second for {{ $labels.account_type }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/solana-account-failures"
+          summary: 'Solana account operation failures'
+          description: '{{ $value }} account operation failures per second for {{ $labels.account_type }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/solana-account-failures'
 
       # High Transaction Costs
       - alert: HighTransactionCosts
@@ -112,9 +112,9 @@ groups:
           component: transaction_costs
           team: blockchain
         annotations:
-          summary: "High blockchain transaction costs"
-          description: "Transaction cost is {{ $value }} SOL for {{ $labels.transaction_type }}, exceeding 0.01 SOL target"
-          runbook_url: "https://docs.acgs.ai/runbooks/high-transaction-costs"
+          summary: 'High blockchain transaction costs'
+          description: 'Transaction cost is {{ $value }} SOL for {{ $labels.transaction_type }}, exceeding 0.01 SOL target'
+          runbook_url: 'https://docs.acgs.ai/runbooks/high-transaction-costs'
 
       # Blockchain Integration Health Low
       - alert: BlockchainIntegrationHealthLow
@@ -125,9 +125,9 @@ groups:
           component: blockchain_integration
           team: blockchain
         annotations:
-          summary: "Blockchain integration health below threshold"
-          description: "Blockchain integration health is {{ $value }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/blockchain-integration-health-low"
+          summary: 'Blockchain integration health below threshold'
+          description: 'Blockchain integration health is {{ $value }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/blockchain-integration-health-low'
 
       # Constitutional Compliance Score Low (Blockchain)
       - alert: BlockchainConstitutionalComplianceScoreLow
@@ -139,10 +139,10 @@ groups:
           team: blockchain
           escalation: immediate
         annotations:
-          summary: "Blockchain constitutional compliance score below 100%"
-          description: "On-chain compliance score is {{ $value }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/blockchain-compliance-low"
-          impact: "Constitutional governance on blockchain compromised"
+          summary: 'Blockchain constitutional compliance score below 100%'
+          description: 'On-chain compliance score is {{ $value }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/blockchain-compliance-low'
+          impact: 'Constitutional governance on blockchain compromised'
 
   # ============================================================================
   # QUANTUMAGI DEPLOYMENT ALERTS
@@ -158,9 +158,9 @@ groups:
           component: quantumagi_deployment
           team: blockchain
         annotations:
-          summary: "Quantumagi deployment health issues"
-          description: "Quantumagi deployment health score is {{ $value }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/quantumagi-deployment-health"
+          summary: 'Quantumagi deployment health issues'
+          description: 'Quantumagi deployment health score is {{ $value }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/quantumagi-deployment-health'
 
       # Constitution Framework Issues
       - alert: ConstitutionFrameworkIssues
@@ -171,9 +171,9 @@ groups:
           component: constitution_framework
           team: blockchain
         annotations:
-          summary: "Constitution framework operation issues"
-          description: "{{ $value }} constitution framework failures per second"
-          runbook_url: "https://docs.acgs.ai/runbooks/constitution-framework-issues"
+          summary: 'Constitution framework operation issues'
+          description: '{{ $value }} constitution framework failures per second'
+          runbook_url: 'https://docs.acgs.ai/runbooks/constitution-framework-issues'
 
       # Core Policy Deployment Issues
       - alert: CorePolicyDeploymentIssues
@@ -184,9 +184,9 @@ groups:
           component: core_policy
           team: blockchain
         annotations:
-          summary: "Core policy deployment issues"
-          description: "{{ $value }} core policy operation failures per second"
-          runbook_url: "https://docs.acgs.ai/runbooks/core-policy-issues"
+          summary: 'Core policy deployment issues'
+          description: '{{ $value }} core policy operation failures per second'
+          runbook_url: 'https://docs.acgs.ai/runbooks/core-policy-issues'
 
       # Democratic Voting Issues
       - alert: DemocraticVotingIssues
@@ -197,9 +197,9 @@ groups:
           component: democratic_voting
           team: blockchain
         annotations:
-          summary: "Democratic voting operation issues"
-          description: "{{ $value }} voting operation failures per second"
-          runbook_url: "https://docs.acgs.ai/runbooks/democratic-voting-issues"
+          summary: 'Democratic voting operation issues'
+          description: '{{ $value }} voting operation failures per second'
+          runbook_url: 'https://docs.acgs.ai/runbooks/democratic-voting-issues'
 
       # PGC Validation Accuracy Issues
       - alert: PGCValidationAccuracyIssues
@@ -210,9 +210,9 @@ groups:
           component: pgc_validation_accuracy
           team: blockchain
         annotations:
-          summary: "PGC validation accuracy below threshold"
-          description: "PGC validation accuracy is {{ $value }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/pgc-validation-accuracy"
+          summary: 'PGC validation accuracy below threshold'
+          description: 'PGC validation accuracy is {{ $value }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/pgc-validation-accuracy'
 
   # ============================================================================
   # BLOCKCHAIN SECURITY ALERTS
@@ -229,10 +229,10 @@ groups:
           team: security
           escalation: immediate
         annotations:
-          summary: "Suspicious blockchain activity detected"
-          description: "{{ $value }} high-severity security events per second"
-          runbook_url: "https://docs.acgs.ai/runbooks/suspicious-blockchain-activity"
-          impact: "Potential blockchain security breach"
+          summary: 'Suspicious blockchain activity detected'
+          description: '{{ $value }} high-severity security events per second'
+          runbook_url: 'https://docs.acgs.ai/runbooks/suspicious-blockchain-activity'
+          impact: 'Potential blockchain security breach'
 
       # Unauthorized Constitutional Changes
       - alert: UnauthorizedConstitutionalChanges
@@ -244,10 +244,10 @@ groups:
           team: security
           escalation: immediate
         annotations:
-          summary: "Unauthorized constitutional changes detected"
-          description: "{{ $value }} unauthorized constitutional changes per second"
-          runbook_url: "https://docs.acgs.ai/runbooks/unauthorized-constitutional-changes"
-          impact: "Constitutional integrity breach - immediate investigation required"
+          summary: 'Unauthorized constitutional changes detected'
+          description: '{{ $value }} unauthorized constitutional changes per second'
+          runbook_url: 'https://docs.acgs.ai/runbooks/unauthorized-constitutional-changes'
+          impact: 'Constitutional integrity breach - immediate investigation required'
 
       # Blockchain Governance Anomalies
       - alert: BlockchainGovernanceAnomalies
@@ -258,6 +258,6 @@ groups:
           component: governance_anomalies
           team: security
         annotations:
-          summary: "Blockchain governance anomalies detected"
-          description: "{{ $value }} governance anomalies per second"
-          runbook_url: "https://docs.acgs.ai/runbooks/governance-anomalies"
+          summary: 'Blockchain governance anomalies detected'
+          description: '{{ $value }} governance anomalies per second'
+          runbook_url: 'https://docs.acgs.ai/runbooks/governance-anomalies'

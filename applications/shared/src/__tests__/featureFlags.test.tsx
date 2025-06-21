@@ -1,6 +1,6 @@
 /**
  * Feature Flag System Tests
- * 
+ *
  * Comprehensive test suite for the feature flag system used in
  * ACGS-PGP legacy frontend migration.
  */
@@ -40,10 +40,7 @@ const TestComponent: React.FC<{ flagKey: keyof FeatureFlags }> = ({ flagKey }) =
     <div>
       <div data-testid="flag-value">{specificFlag ? 'enabled' : 'disabled'}</div>
       <div data-testid="all-flags">{JSON.stringify(flags)}</div>
-      <button
-        data-testid="toggle-flag"
-        onClick={() => updateFlag(flagKey, !flags[flagKey])}
-      >
+      <button data-testid="toggle-flag" onClick={() => updateFlag(flagKey, !flags[flagKey])}>
         Toggle {flagKey}
       </button>
       <div data-testid="is-enabled">{isEnabled(flagKey) ? 'true' : 'false'}</div>
@@ -216,7 +213,7 @@ describe('Feature Flag System', () => {
 
       render(
         <FeatureFlagProvider initialFlags={initialFlags}>
-          <WithFeatureFlag 
+          <WithFeatureFlag
             flag="useSharedDashboard"
             fallback={<div data-testid="fallback-content">Fallback Content</div>}
           >
@@ -328,7 +325,7 @@ describe('Feature Flag System', () => {
       expect(DEFAULT_FLAGS.useSharedQuantumagi).toBe(false);
       expect(DEFAULT_FLAGS.emergencyRollback).toBe(false);
       expect(DEFAULT_FLAGS.maintenanceMode).toBe(false);
-      
+
       // Infrastructure flags should default to true
       expect(DEFAULT_FLAGS.useSharedTheme).toBe(true);
       expect(DEFAULT_FLAGS.useSharedAuth).toBe(true);

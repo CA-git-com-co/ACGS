@@ -7,19 +7,19 @@ export const theme = {
     primary: '#3f51b5',
     primaryDark: '#303f9f',
     primaryLight: '#7986cb',
-    
+
     // Secondary brand colors
     secondary: '#f50057',
     secondaryDark: '#c51162',
     secondaryLight: '#ff5983',
-    
+
     // Background colors
     background: '#f5f5f5',
     backgroundDark: '#121212',
     backgroundLight: '#ffffff',
     surface: '#ffffff',
     surfaceDark: '#1e1e1e',
-    
+
     // Text colors
     text: '#333333',
     textSecondary: '#666666',
@@ -27,7 +27,7 @@ export const theme = {
     textDark: '#000000',
     textOnPrimary: '#ffffff',
     textOnSecondary: '#ffffff',
-    
+
     // Status colors
     error: '#f44336',
     errorDark: '#d32f2f',
@@ -41,7 +41,7 @@ export const theme = {
     info: '#2196f3',
     infoDark: '#1976d2',
     infoLight: '#64b5f6',
-    
+
     // Neutral colors
     gray: {
       50: '#fafafa',
@@ -53,9 +53,9 @@ export const theme = {
       600: '#757575',
       700: '#616161',
       800: '#424242',
-      900: '#212121',
+      900: '#212121'
     },
-    
+
     // Constitutional governance specific colors
     governance: {
       principle: '#6366f1',
@@ -64,10 +64,10 @@ export const theme = {
       violation: '#ef4444',
       pending: '#f59e0b',
       approved: '#22c55e',
-      rejected: '#ef4444',
-    },
+      rejected: '#ef4444'
+    }
   },
-  
+
   spacing: {
     xs: '4px',
     sm: '8px',
@@ -77,26 +77,26 @@ export const theme = {
     '2xl': '48px',
     '3xl': '64px',
     '4xl': '96px',
-    '5xl': '128px',
+    '5xl': '128px'
   },
-  
+
   typography: {
     fontFamily: {
       sans: '"Inter", "Roboto", "Helvetica Neue", "Arial", sans-serif',
       serif: '"Merriweather", "Georgia", "Times New Roman", serif',
-      mono: '"Fira Code", "Monaco", "Consolas", "Courier New", monospace',
+      mono: '"Fira Code", "Monaco", "Consolas", "Courier New", monospace'
     },
     fontSize: {
-      xs: '0.75rem',      // 12px
-      sm: '0.875rem',     // 14px
-      base: '1rem',       // 16px
-      lg: '1.125rem',     // 18px
-      xl: '1.25rem',      // 20px
-      '2xl': '1.5rem',    // 24px
-      '3xl': '1.875rem',  // 30px
-      '4xl': '2.25rem',   // 36px
-      '5xl': '3rem',      // 48px
-      '6xl': '3.75rem',   // 60px
+      xs: '0.75rem', // 12px
+      sm: '0.875rem', // 14px
+      base: '1rem', // 16px
+      lg: '1.125rem', // 18px
+      xl: '1.25rem', // 20px
+      '2xl': '1.5rem', // 24px
+      '3xl': '1.875rem', // 30px
+      '4xl': '2.25rem', // 36px
+      '5xl': '3rem', // 48px
+      '6xl': '3.75rem' // 60px
     },
     fontWeight: {
       thin: 100,
@@ -107,7 +107,7 @@ export const theme = {
       semibold: 600,
       bold: 700,
       extrabold: 800,
-      black: 900,
+      black: 900
     },
     lineHeight: {
       none: 1,
@@ -115,7 +115,7 @@ export const theme = {
       snug: 1.375,
       normal: 1.5,
       relaxed: 1.625,
-      loose: 2,
+      loose: 2
     },
     letterSpacing: {
       tighter: '-0.05em',
@@ -123,18 +123,18 @@ export const theme = {
       normal: '0em',
       wide: '0.025em',
       wider: '0.05em',
-      widest: '0.1em',
-    },
+      widest: '0.1em'
+    }
   },
-  
+
   breakpoints: {
     xs: '0px',
     sm: '600px',
     md: '960px',
     lg: '1280px',
-    xl: '1920px',
+    xl: '1920px'
   },
-  
+
   shadows: {
     none: 'none',
     sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
@@ -143,9 +143,9 @@ export const theme = {
     lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
     xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
     '2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-    inner: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
+    inner: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)'
   },
-  
+
   borderRadius: {
     none: '0px',
     sm: '0.125rem',
@@ -155,25 +155,25 @@ export const theme = {
     xl: '0.75rem',
     '2xl': '1rem',
     '3xl': '1.5rem',
-    full: '9999px',
+    full: '9999px'
   },
-  
+
   transitions: {
     duration: {
       fast: '150ms',
       base: '200ms',
       slow: '300ms',
-      slower: '500ms',
+      slower: '500ms'
     },
     timing: {
       ease: 'ease',
       easeIn: 'ease-in',
       easeOut: 'ease-out',
       easeInOut: 'ease-in-out',
-      linear: 'linear',
-    },
+      linear: 'linear'
+    }
   },
-  
+
   zIndex: {
     hide: -1,
     auto: 'auto',
@@ -187,8 +187,8 @@ export const theme = {
     popover: 1500,
     skipLink: 1600,
     toast: 1700,
-    tooltip: 1800,
-  },
+    tooltip: 1800
+  }
 };
 
 // Type definitions for theme
@@ -202,7 +202,7 @@ export type ThemeBreakpoints = typeof theme.breakpoints;
 export const getColor = (path: string): string => {
   const keys = path.split('.');
   let value: any = theme.colors;
-  
+
   for (const key of keys) {
     if (value && typeof value === 'object' && key in value) {
       value = value[key];
@@ -211,7 +211,7 @@ export const getColor = (path: string): string => {
       return theme.colors.text;
     }
   }
-  
+
   return typeof value === 'string' ? value : theme.colors.text;
 };
 

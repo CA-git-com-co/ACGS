@@ -12,7 +12,7 @@ import {
   LinearProgress,
   Badge,
   IconButton,
-  Tooltip
+  Tooltip,
 } from '@mui/material';
 import {
   Refresh as RefreshIcon,
@@ -22,7 +22,7 @@ import {
   People as PeopleIcon,
   HowToVote as VoteIcon,
   Timeline as TimelineIcon,
-  Dashboard as DashboardIcon
+  Dashboard as DashboardIcon,
 } from '@mui/icons-material';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import {
@@ -82,7 +82,7 @@ const ConstitutionalCouncilDashboard = () => {
         console.log('WebSocket connected to Constitutional Council Dashboard');
         setConnectionStatus('connected');
         setError(null);
-        
+
         // Send initial ping
         wsRef.current.send(JSON.stringify({ type: 'ping' }));
       };
@@ -99,7 +99,7 @@ const ConstitutionalCouncilDashboard = () => {
       wsRef.current.onclose = () => {
         console.log('WebSocket disconnected');
         setConnectionStatus('disconnected');
-        
+
         // Attempt to reconnect after 5 seconds
         reconnectTimeoutRef.current = setTimeout(() => {
           connectWebSocket();
@@ -111,7 +111,6 @@ const ConstitutionalCouncilDashboard = () => {
         setConnectionStatus('error');
         setError('WebSocket connection failed');
       };
-
     } catch (err) {
       console.error('Failed to create WebSocket connection:', err);
       setError('Failed to connect to dashboard');
@@ -171,27 +170,36 @@ const ConstitutionalCouncilDashboard = () => {
 
   const requestDashboardData = () => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      wsRef.current.send(JSON.stringify({
-        type: 'request_data',
-        data_type: 'full_dashboard'
-      }));
+      wsRef.current.send(
+        JSON.stringify({
+          type: 'request_data',
+          data_type: 'full_dashboard',
+        })
+      );
     }
   };
 
   const getConnectionStatusColor = () => {
     switch (connectionStatus) {
-      case 'connected': return 'success';
-      case 'disconnected': return 'warning';
-      case 'error': return 'error';
-      default: return 'default';
+      case 'connected':
+        return 'success';
+      case 'disconnected':
+        return 'warning';
+      case 'error':
+        return 'error';
+      default:
+        return 'default';
     }
   };
 
   const getAlertIcon = (severity) => {
     switch (severity) {
-      case 'critical': return <ErrorIcon color="error" />;
-      case 'warning': return <WarningIcon color="warning" />;
-      default: return <CheckCircleIcon color="info" />;
+      case 'critical':
+        return <ErrorIcon color="error" />;
+      case 'warning':
+        return <WarningIcon color="warning" />;
+      default:
+        return <CheckCircleIcon color="info" />;
     }
   };
 
@@ -201,17 +209,19 @@ const ConstitutionalCouncilDashboard = () => {
     const statusData = dashboardData.amendment_workflows.status_distribution;
     const data = {
       labels: Object.keys(statusData),
-      datasets: [{
-        data: Object.values(statusData),
-        backgroundColor: [
-          '#4CAF50', // approved - green
-          '#F44336', // rejected - red
-          '#FF9800', // under_review - orange
-          '#2196F3', // voting - blue
-          '#9C27B0', // proposed - purple
-        ],
-        borderWidth: 2,
-      }]
+      datasets: [
+        {
+          data: Object.values(statusData),
+          backgroundColor: [
+            '#4CAF50', // approved - green
+            '#F44336', // rejected - red
+            '#FF9800', // under_review - orange
+            '#2196F3', // voting - blue
+            '#9C27B0', // proposed - purple
+          ],
+          borderWidth: 2,
+        },
+      ],
     };
 
     const options = {
@@ -222,9 +232,9 @@ const ConstitutionalCouncilDashboard = () => {
         },
         title: {
           display: true,
-          text: 'Amendment Status Distribution'
-        }
-      }
+          text: 'Amendment Status Distribution',
+        },
+      },
     };
 
     return <Doughnut data={data} options={options} />;
@@ -234,20 +244,22 @@ const ConstitutionalCouncilDashboard = () => {
     if (!dashboardData?.voting_progress?.voting_progress) return null;
 
     const votingData = dashboardData.voting_progress.voting_progress;
-    const labels = votingData.map(vp => `Amendment ${vp.amendment_id}`);
-    const approvalRates = votingData.map(vp => vp.approval_rate * 100);
+    const labels = votingData.map((vp) => `Amendment ${vp.amendment_id}`);
+    const approvalRates = votingData.map((vp) => vp.approval_rate * 100);
 
     const data = {
       labels,
-      datasets: [{
-        label: 'Approval Rate (%)',
-        data: approvalRates,
-        backgroundColor: approvalRates.map(rate => 
-          rate > 50 ? '#4CAF50' : rate < 50 ? '#F44336' : '#FF9800'
-        ),
-        borderColor: '#1976D2',
-        borderWidth: 1,
-      }]
+      datasets: [
+        {
+          label: 'Approval Rate (%)',
+          data: approvalRates,
+          backgroundColor: approvalRates.map((rate) =>
+            rate > 50 ? '#4CAF50' : rate < 50 ? '#F44336' : '#FF9800'
+          ),
+          borderColor: '#1976D2',
+          borderWidth: 1,
+        },
+      ],
     };
 
     const options = {
@@ -258,20 +270,20 @@ const ConstitutionalCouncilDashboard = () => {
         },
         title: {
           display: true,
-          text: 'Current Voting Progress'
-        }
+          text: 'Current Voting Progress',
+        },
       },
       scales: {
         y: {
           beginAtZero: true,
           max: 100,
           ticks: {
-            callback: function(value) {
+            callback: function (value) {
               return value + '%';
-            }
-          }
-        }
-      }
+            },
+          },
+        },
+      },
     };
 
     return <Bar data={data} options={options} />;
@@ -312,12 +324,12 @@ const ConstitutionalCouncilDashboard = () => {
           Constitutional Council Dashboard
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Chip 
+          <Chip
             label={`Connection: ${connectionStatus}`}
             color={getConnectionStatusColor()}
             size="small"
           />
-          <Chip 
+          <Chip
             label={`${dashboardData?.active_connections || 0} Active Users`}
             color="primary"
             size="small"
@@ -335,7 +347,7 @@ const ConstitutionalCouncilDashboard = () => {
       {alerts.length > 0 && (
         <Box sx={{ mb: 3 }}>
           {alerts.slice(0, 3).map((alert, index) => (
-            <Alert 
+            <Alert
               key={alert.id || index}
               severity={alert.severity}
               icon={getAlertIcon(alert.severity)}
@@ -352,18 +364,21 @@ const ConstitutionalCouncilDashboard = () => {
         {/* Amendment Workflow Metrics */}
         <Grid item xs={12} md={6}>
           <Card>
-            <CardHeader 
-              title="Amendment Workflows"
-              avatar={<TimelineIcon color="primary" />}
-            />
+            <CardHeader title="Amendment Workflows" avatar={<TimelineIcon color="primary" />} />
             <CardContent>
               {renderAmendmentStatusChart()}
               <Box sx={{ mt: 2 }}>
                 <Typography variant="body2" color="textSecondary">
-                  Total Amendments: {dashboardData?.amendment_workflows?.workflow_efficiency?.total_amendments || 0}
+                  Total Amendments:{' '}
+                  {dashboardData?.amendment_workflows?.workflow_efficiency?.total_amendments || 0}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
-                  Completion Rate: {((dashboardData?.amendment_workflows?.workflow_efficiency?.completion_rate || 0) * 100).toFixed(1)}%
+                  Completion Rate:{' '}
+                  {(
+                    (dashboardData?.amendment_workflows?.workflow_efficiency?.completion_rate ||
+                      0) * 100
+                  ).toFixed(1)}
+                  %
                 </Typography>
               </Box>
             </CardContent>
@@ -373,10 +388,7 @@ const ConstitutionalCouncilDashboard = () => {
         {/* Voting Progress */}
         <Grid item xs={12} md={6}>
           <Card>
-            <CardHeader 
-              title="Active Voting"
-              avatar={<VoteIcon color="primary" />}
-            />
+            <CardHeader title="Active Voting" avatar={<VoteIcon color="primary" />} />
             <CardContent>
               {renderVotingProgressChart()}
               <Box sx={{ mt: 2 }}>
@@ -384,7 +396,12 @@ const ConstitutionalCouncilDashboard = () => {
                   Active Votes: {dashboardData?.voting_progress?.active_votes || 0}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
-                  Avg Participation: {((dashboardData?.voting_progress?.overall_participation?.average_participation_rate || 0) * 100).toFixed(1)}%
+                  Avg Participation:{' '}
+                  {(
+                    (dashboardData?.voting_progress?.overall_participation
+                      ?.average_participation_rate || 0) * 100
+                  ).toFixed(1)}
+                  %
                 </Typography>
               </Box>
             </CardContent>
@@ -406,13 +423,16 @@ const ConstitutionalCouncilDashboard = () => {
               </Box>
               <Box sx={{ mt: 2 }}>
                 <Typography variant="body2">
-                  Comments (24h): {dashboardData?.stakeholder_engagement?.recent_activity?.comments_24h || 0}
+                  Comments (24h):{' '}
+                  {dashboardData?.stakeholder_engagement?.recent_activity?.comments_24h || 0}
                 </Typography>
                 <Typography variant="body2">
-                  Votes (24h): {dashboardData?.stakeholder_engagement?.recent_activity?.votes_24h || 0}
+                  Votes (24h):{' '}
+                  {dashboardData?.stakeholder_engagement?.recent_activity?.votes_24h || 0}
                 </Typography>
                 <Typography variant="body2">
-                  Avg Session: {dashboardData?.stakeholder_engagement?.average_session_duration_minutes || 0} min
+                  Avg Session:{' '}
+                  {dashboardData?.stakeholder_engagement?.average_session_duration_minutes || 0} min
                 </Typography>
               </Box>
             </CardContent>
@@ -426,7 +446,10 @@ const ConstitutionalCouncilDashboard = () => {
             <CardContent>
               <Box sx={{ textAlign: 'center' }}>
                 <Typography variant="h3" color="success.main">
-                  {dashboardData?.performance_metrics?.workflow_performance?.average_processing_time_hours?.toFixed(1) || 0}h
+                  {dashboardData?.performance_metrics?.workflow_performance?.average_processing_time_hours?.toFixed(
+                    1
+                  ) || 0}
+                  h
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
                   Avg Processing Time
@@ -434,10 +457,17 @@ const ConstitutionalCouncilDashboard = () => {
               </Box>
               <Box sx={{ mt: 2 }}>
                 <Typography variant="body2">
-                  Completed (24h): {dashboardData?.performance_metrics?.workflow_performance?.completed_amendments_24h || 0}
+                  Completed (24h):{' '}
+                  {dashboardData?.performance_metrics?.workflow_performance
+                    ?.completed_amendments_24h || 0}
                 </Typography>
                 <Typography variant="body2">
-                  Efficiency: {((dashboardData?.performance_metrics?.workflow_performance?.processing_efficiency || 0) * 100).toFixed(1)}%
+                  Efficiency:{' '}
+                  {(
+                    (dashboardData?.performance_metrics?.workflow_performance
+                      ?.processing_efficiency || 0) * 100
+                  ).toFixed(1)}
+                  %
                 </Typography>
               </Box>
             </CardContent>
@@ -465,7 +495,8 @@ const ConstitutionalCouncilDashboard = () => {
                   Warning: {dashboardData?.alerts?.alerts_by_severity?.warning || 0}
                 </Typography>
                 <Typography variant="body2">
-                  Last Update: {new Date(dashboardData?.timestamp || Date.now()).toLocaleTimeString()}
+                  Last Update:{' '}
+                  {new Date(dashboardData?.timestamp || Date.now()).toLocaleTimeString()}
                 </Typography>
               </Box>
             </CardContent>

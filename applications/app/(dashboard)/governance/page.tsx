@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { Button } from '@/components/ui/Button'
-import { Plus, Clock, CheckCircle, XCircle, Users } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Plus, Clock, CheckCircle, XCircle, Users } from 'lucide-react';
 
 // Mock data for proposals
 const proposals = [
@@ -46,7 +46,7 @@ const proposals = [
       abstain: 3,
     },
   },
-]
+];
 
 const statusConfig = {
   pending: {
@@ -73,7 +73,7 @@ const statusConfig = {
     bgColor: 'bg-status-error/10',
     label: 'Rejected',
   },
-}
+};
 
 export default function GovernancePage() {
   return (
@@ -95,10 +95,10 @@ export default function GovernancePage() {
 
       <div className="space-y-4">
         {proposals.map((proposal) => {
-          const config = statusConfig[proposal.status]
-          const StatusIcon = config.icon
-          const totalVotes = proposal.votes.yes + proposal.votes.no + proposal.votes.abstain
-          const approvalRate = totalVotes > 0 ? (proposal.votes.yes / totalVotes) * 100 : 0
+          const config = statusConfig[proposal.status];
+          const StatusIcon = config.icon;
+          const totalVotes = proposal.votes.yes + proposal.votes.no + proposal.votes.abstain;
+          const approvalRate = totalVotes > 0 ? (proposal.votes.yes / totalVotes) * 100 : 0;
 
           return (
             <Card key={proposal.id} className="group">
@@ -110,7 +110,9 @@ export default function GovernancePage() {
                       {proposal.description}
                     </p>
                   </div>
-                  <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${config.bgColor}`}>
+                  <div
+                    className={`flex items-center gap-2 px-3 py-1 rounded-full ${config.bgColor}`}
+                  >
                     <StatusIcon className={`h-4 w-4 ${config.color}`} />
                     <span className={`text-caption font-medium ${config.color}`}>
                       {config.label}
@@ -199,17 +201,15 @@ export default function GovernancePage() {
                       <Button variant="destructive" size="sm">
                         Vote No
                       </Button>
-                      <Button size="sm">
-                        Vote Yes
-                      </Button>
+                      <Button size="sm">Vote Yes</Button>
                     </div>
                   </div>
                 )}
               </CardContent>
             </Card>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }

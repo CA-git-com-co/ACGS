@@ -19,6 +19,7 @@ Phase 3 of the ACGS-master development plan focuses on implementing comprehensiv
 #### Advanced Performance Monitoring (`performance_monitor.py`)
 
 **Features:**
+
 - Real-time latency profiling with bottleneck detection
 - System resource monitoring (CPU, memory, disk, network)
 - Prometheus metrics integration
@@ -26,12 +27,14 @@ Phase 3 of the ACGS-master development plan focuses on implementing comprehensiv
 - Concurrent request tracking
 
 **Key Classes:**
+
 - `PerformanceMonitor`: Main monitoring service
 - `PerformanceProfiler`: Latency profiling and bottleneck detection
 - `SystemResourceMonitor`: System resource tracking
 - `PerformanceMetrics`: Structured metrics data
 
 **Usage:**
+
 ```python
 from app.services.performance_monitor import get_performance_monitor, performance_monitor_decorator
 
@@ -51,6 +54,7 @@ async with monitor.monitor_request("endpoint", "operation"):
 #### Multi-Tier Caching System (`advanced_cache.py`)
 
 **Features:**
+
 - L1 (in-memory LRU) and L2 (Redis distributed) caching
 - Intelligent cache invalidation by tags
 - Cache hit rate optimization
@@ -58,12 +62,14 @@ async with monitor.monitor_request("endpoint", "operation"):
 - Performance metrics collection
 
 **Key Classes:**
+
 - `MultiTierCache`: Main caching interface
 - `LRUCache`: In-memory cache with TTL support
 - `RedisCache`: Distributed Redis-based cache
 - `CacheStats`: Cache performance statistics
 
 **Usage:**
+
 ```python
 from app.services.advanced_cache import MultiTierCache, LRUCache, RedisCache
 
@@ -84,6 +90,7 @@ cache.invalidate_by_tags(["policy"])
 #### Comprehensive Security Service (`security_compliance.py`)
 
 **Features:**
+
 - Input validation and sanitization
 - Rate limiting with sliding window
 - JWT authentication and authorization
@@ -91,6 +98,7 @@ cache.invalidate_by_tags(["policy"])
 - RBAC (Role-Based Access Control)
 
 **Key Classes:**
+
 - `SecurityComplianceService`: Main security service
 - `InputValidator`: Input validation and sanitization
 - `RateLimiter`: Advanced rate limiting
@@ -98,6 +106,7 @@ cache.invalidate_by_tags(["policy"])
 - `AuditLogger`: Security event logging
 
 **Security Measures:**
+
 - SQL injection prevention
 - XSS attack prevention
 - Command injection prevention
@@ -110,6 +119,7 @@ cache.invalidate_by_tags(["policy"])
 #### Performance-Optimized OPA Client
 
 **Enhancements:**
+
 - Multi-tier caching integration
 - Performance monitoring integration
 - Advanced error handling and fallback
@@ -117,6 +127,7 @@ cache.invalidate_by_tags(["policy"])
 - Connection pooling
 
 **Performance Features:**
+
 - <50ms policy decision latency target
 - Intelligent caching strategies
 - Concurrent request handling
@@ -128,6 +139,7 @@ cache.invalidate_by_tags(["policy"])
 #### Performance Monitoring API (`performance_monitoring.py`)
 
 **Endpoints:**
+
 - `GET /api/v1/performance/metrics` - Comprehensive performance metrics
 - `GET /api/v1/performance/health` - System health status
 - `GET /api/v1/performance/bottlenecks` - Performance bottlenecks
@@ -136,6 +148,7 @@ cache.invalidate_by_tags(["policy"])
 - `GET /api/v1/performance/prometheus-metrics` - Prometheus metrics
 
 **Features:**
+
 - Real-time performance metrics
 - System health monitoring
 - Bottleneck identification
@@ -146,6 +159,7 @@ cache.invalidate_by_tags(["policy"])
 #### Grafana Dashboard Integration
 
 **Dashboards:**
+
 - Performance Overview
 - Security Compliance
 - System Resources
@@ -157,36 +171,37 @@ cache.invalidate_by_tags(["policy"])
 
 ### Latency Requirements
 
-| Component | Target Latency | Validation Method |
-|-----------|---------------|-------------------|
-| Policy Decision | <50ms | Automated benchmarks |
-| Cache Hit | <2ms | Performance tests |
-| Input Validation | <5ms | Security tests |
-| Rate Limiting | <1ms | Load tests |
-| Authentication | <10ms | Integration tests |
+| Component        | Target Latency | Validation Method    |
+| ---------------- | -------------- | -------------------- |
+| Policy Decision  | <50ms          | Automated benchmarks |
+| Cache Hit        | <2ms           | Performance tests    |
+| Input Validation | <5ms           | Security tests       |
+| Rate Limiting    | <1ms           | Load tests           |
+| Authentication   | <10ms          | Integration tests    |
 
 ### Throughput Requirements
 
-| Operation | Target Throughput | Validation Method |
-|-----------|------------------|-------------------|
-| Policy Synthesis | >100 req/s | Load testing |
-| Cache Operations | >1000 req/s | Benchmark tests |
-| Security Validation | >500 req/s | Performance tests |
+| Operation           | Target Throughput | Validation Method |
+| ------------------- | ----------------- | ----------------- |
+| Policy Synthesis    | >100 req/s        | Load testing      |
+| Cache Operations    | >1000 req/s       | Benchmark tests   |
+| Security Validation | >500 req/s        | Performance tests |
 
 ### Resource Usage Limits
 
-| Resource | Limit | Monitoring |
-|----------|-------|------------|
-| Memory Usage | <85% | System monitor |
-| CPU Usage | <80% | System monitor |
-| Cache Hit Rate | >80% | Cache metrics |
-| Error Rate | <1% | Error tracking |
+| Resource       | Limit | Monitoring     |
+| -------------- | ----- | -------------- |
+| Memory Usage   | <85%  | System monitor |
+| CPU Usage      | <80%  | System monitor |
+| Cache Hit Rate | >80%  | Cache metrics  |
+| Error Rate     | <1%   | Error tracking |
 
 ## Testing Strategy
 
 ### Performance Testing
 
 **Test Categories:**
+
 - Single request latency tests
 - Concurrent load tests
 - Sustained load tests
@@ -194,6 +209,7 @@ cache.invalidate_by_tags(["policy"])
 - Cache performance tests
 
 **Test Implementation:**
+
 ```python
 @pytest.mark.performance
 @pytest.mark.asyncio
@@ -205,6 +221,7 @@ async def test_policy_decision_latency():
 ### Security Testing
 
 **Test Categories:**
+
 - Input validation tests
 - Authentication/authorization tests
 - Rate limiting tests
@@ -212,6 +229,7 @@ async def test_policy_decision_latency():
 - Security compliance tests
 
 **Test Implementation:**
+
 ```python
 @pytest.mark.security
 def test_sql_injection_prevention():
@@ -222,6 +240,7 @@ def test_sql_injection_prevention():
 ### Integration Testing
 
 **Test Categories:**
+
 - End-to-end performance tests
 - Security integration tests
 - Monitoring system tests
@@ -233,6 +252,7 @@ def test_sql_injection_prevention():
 ### Configuration
 
 **Environment Variables:**
+
 ```bash
 # Performance Configuration
 PERFORMANCE_MONITORING_ENABLED=true
@@ -255,6 +275,7 @@ ALERT_WEBHOOK_URL=https://alerts.example.com/webhook
 ### Monitoring Setup
 
 **Prometheus Configuration:**
+
 ```yaml
 scrape_configs:
   - job_name: 'acgs-gs-service'
@@ -265,6 +286,7 @@ scrape_configs:
 ```
 
 **Grafana Dashboard:**
+
 - Import dashboard from `config/monitoring/grafana/dashboards/`
 - Configure data sources for Prometheus
 - Set up alerting rules
@@ -274,6 +296,7 @@ scrape_configs:
 #### Performance Issues
 
 **High Latency:**
+
 1. Check performance metrics endpoint
 2. Identify bottlenecks using profiling
 3. Review cache hit rates
@@ -281,6 +304,7 @@ scrape_configs:
 5. Check OPA policy complexity
 
 **Low Throughput:**
+
 1. Monitor concurrent request limits
 2. Check database connection pooling
 3. Review cache configuration
@@ -290,6 +314,7 @@ scrape_configs:
 #### Security Issues
 
 **Authentication Failures:**
+
 1. Check JWT token validity
 2. Review user roles and permissions
 3. Verify secret key configuration
@@ -297,6 +322,7 @@ scrape_configs:
 5. Review rate limiting settings
 
 **Input Validation Errors:**
+
 1. Check input validation logs
 2. Review validation patterns
 3. Test with known good inputs
@@ -308,18 +334,21 @@ scrape_configs:
 ### Regular Maintenance Tasks
 
 **Daily:**
+
 - Review performance metrics
 - Check security audit logs
 - Monitor system health
 - Verify alert configurations
 
 **Weekly:**
+
 - Analyze performance trends
 - Review security incidents
 - Update performance baselines
 - Check cache efficiency
 
 **Monthly:**
+
 - Performance optimization review
 - Security compliance audit
 - Update monitoring dashboards
@@ -328,6 +357,7 @@ scrape_configs:
 ### Update Procedures
 
 **Performance Updates:**
+
 1. Test in staging environment
 2. Validate performance targets
 3. Update monitoring baselines
@@ -335,6 +365,7 @@ scrape_configs:
 5. Monitor post-deployment metrics
 
 **Security Updates:**
+
 1. Security impact assessment
 2. Test security measures
 3. Update audit configurations

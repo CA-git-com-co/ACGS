@@ -2,19 +2,19 @@ name: ACGS-1 Enterprise CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
   schedule:
-    - cron: '0 2 * * *'  # Daily at 2 AM for comprehensive testing
-  workflow_dispatch:  # Allow manual triggering for testing
+    - cron: '0 2 * * *' # Daily at 2 AM for comprehensive testing
+  workflow_dispatch: # Allow manual triggering for testing
 
 permissions:
   contents: read
   packages: write
   security-events: write
   actions: read
-  id-token: write  # Required for MSDO and advanced security scanning
+  id-token: write # Required for MSDO and advanced security scanning
 
 env:
   REGISTRY: ghcr.io
@@ -27,12 +27,12 @@ env:
   ENTERPRISE_BUILD_TARGET_MINUTES: 5
   ENTERPRISE_AVAILABILITY_TARGET: 99.5
   # Enhanced Caching Configuration for Enterprise Performance
-  CARGO_INCREMENTAL: 0  # Disabled for sccache compatibility
+  CARGO_INCREMENTAL: 0 # Disabled for sccache compatibility
   CARGO_NET_RETRY: 10
   CARGO_NET_GIT_FETCH_WITH_CLI: true
   # Workspace-level caching optimization
   CARGO_TARGET_DIR: blockchain/target
-  RUSTC_WRAPPER: sccache  # Enable distributed compilation caching
+  RUSTC_WRAPPER: sccache # Enable distributed compilation caching
   # Circuit breaker configuration
   MAX_RETRY_ATTEMPTS: 3
   CIRCUIT_BREAKER_TIMEOUT: 300
@@ -791,7 +791,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full history for comprehensive secret detection
+          fetch-depth: 0 # Full history for comprehensive secret detection
 
       - name: Run TruffleHog for secret detection
         uses: trufflesecurity/trufflehog@v3.89.2
@@ -852,7 +852,18 @@ jobs:
   enterprise_reporting:
     runs-on: ubuntu-latest
     name: Enterprise Performance & Compliance Reporting
-    needs: [performance_monitoring, preflight, toolchain_setup, rust_quality_build, enterprise_security_scan, msdo_security_scan, codeql_analysis, secret_detection, container_security]
+    needs:
+      [
+        performance_monitoring,
+        preflight,
+        toolchain_setup,
+        rust_quality_build,
+        enterprise_security_scan,
+        msdo_security_scan,
+        codeql_analysis,
+        secret_detection,
+        container_security,
+      ]
     if: always() && needs.preflight.outputs.should_run_tests == 'true'
     steps:
       - name: Check out repository

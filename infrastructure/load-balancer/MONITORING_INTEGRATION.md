@@ -9,21 +9,25 @@ This document describes the comprehensive HAProxy monitoring integration impleme
 ### Components
 
 1. **HAProxy Load Balancer** (Port 8080)
+
    - Enterprise-grade load balancing for 7 ACGS services
    - Built-in statistics endpoint with authentication
    - Circuit breaker and session affinity support
 
 2. **HAProxy Prometheus Exporter** (Port 9101)
+
    - Dedicated metrics collection service
    - Real-time HAProxy statistics conversion to Prometheus format
    - Service-specific labeling for ACGS components
 
 3. **Prometheus Integration**
+
    - Automated metrics scraping every 15 seconds
    - Custom metric relabeling for ACGS service identification
    - Integration with existing monitoring infrastructure
 
 4. **Grafana Dashboard Enhancement**
+
    - Real-time load balancing visualization
    - Backend health status monitoring
    - Performance metrics and alerting integration
@@ -37,15 +41,15 @@ This document describes the comprehensive HAProxy monitoring integration impleme
 
 ### ACGS Services and Backend Configuration
 
-| Service | Port | Backend Name | Health Check | Timeout |
-|---------|------|--------------|--------------|---------|
-| Authentication | 8000 | auth_backend | /health | 30s |
-| Constitutional AI | 8001 | ac_backend | /health | 30s |
-| Integrity | 8002 | integrity_backend | /health | 30s |
-| Formal Verification | 8003 | fv_backend | /health | 45s |
-| Governance Synthesis | 8004 | gs_backend | /health | 60s |
-| Policy Governance Control | 8005 | pgc_backend | /health | 30s |
-| Evolutionary Computation | 8006 | ec_backend | /health | 45s |
+| Service                   | Port | Backend Name      | Health Check | Timeout |
+| ------------------------- | ---- | ----------------- | ------------ | ------- |
+| Authentication            | 8000 | auth_backend      | /health      | 30s     |
+| Constitutional AI         | 8001 | ac_backend        | /health      | 30s     |
+| Integrity                 | 8002 | integrity_backend | /health      | 30s     |
+| Formal Verification       | 8003 | fv_backend        | /health      | 45s     |
+| Governance Synthesis      | 8004 | gs_backend        | /health      | 60s     |
+| Policy Governance Control | 8005 | pgc_backend       | /health      | 30s     |
+| Evolutionary Computation  | 8006 | ec_backend        | /health      | 45s     |
 
 ### Routing Configuration
 
@@ -59,18 +63,21 @@ This document describes the comprehensive HAProxy monitoring integration impleme
 ### HAProxy Exporter Metrics
 
 #### Server Metrics
+
 - `haproxy_server_status`: Backend server health status (0=down, 1=up)
 - `haproxy_server_current_sessions`: Active sessions per server
 - `haproxy_server_response_time_average_seconds`: Average response time
 - `haproxy_server_http_responses_total`: HTTP response counts by status code
 
 #### Backend Metrics
+
 - `haproxy_backend_status`: Backend pool health status
 - `haproxy_backend_current_sessions`: Active sessions per backend
 - `haproxy_backend_http_requests_total`: Total HTTP requests per backend
 - `haproxy_backend_response_time_average_seconds`: Backend response times
 
 #### Frontend Metrics
+
 - `haproxy_frontend_http_requests_total`: Total frontend requests
 - `haproxy_frontend_current_sessions`: Active frontend sessions
 - `haproxy_frontend_connections_total`: Total connections
@@ -78,6 +85,7 @@ This document describes the comprehensive HAProxy monitoring integration impleme
 ### Custom Labels
 
 All metrics include custom labels for ACGS integration:
+
 - `component`: "load_balancer"
 - `acgs_service`: Service name (authentication, constitutional_ai, etc.)
 - `proxy`: Backend name
@@ -95,11 +103,13 @@ All metrics include custom labels for ACGS integration:
 ### Warning Alerts
 
 2. **HAProxyBackendServerDown**
+
    - Condition: `haproxy_server_status{job="haproxy-exporter"} == 0`
    - Duration: 1 minute
    - Impact: Reduced backend capacity
 
 3. **HAProxyHighResponseTime**
+
    - Condition: `haproxy_server_response_time_average_seconds > 0.5`
    - Duration: 3 minutes
    - Impact: Performance degradation
@@ -184,11 +194,13 @@ curl -u admin:acgs_haproxy_admin_2024 http://localhost:8080/stats
 #### Common Issues
 
 1. **Exporter Not Starting**
+
    - Check HAProxy accessibility: `curl -u admin:password http://localhost:8080/stats`
    - Verify port availability: `netstat -tuln | grep 9101`
    - Check service logs: `journalctl -u acgs-haproxy-exporter.service`
 
 2. **Missing Metrics in Prometheus**
+
    - Verify Prometheus target status: Check `/targets` page
    - Test direct metrics access: `curl http://localhost:9101/metrics`
    - Check Prometheus configuration reload
@@ -247,6 +259,7 @@ The HAProxy monitoring integration provides visibility into:
 ## Success Criteria
 
 ✅ **Completed Objectives**:
+
 - HAProxy statistics fully integrated with Prometheus metrics collection
 - Real-time load balancer performance visibility in Grafana dashboards
 - Seamless alert correlation between load balancer and backend service issues
@@ -259,6 +272,7 @@ The HAProxy monitoring integration provides visibility into:
 ## Contact and Support
 
 For issues related to HAProxy monitoring integration:
+
 - **Infrastructure Team**: infrastructure@acgs.ai
 - **Monitoring Team**: monitoring@acgs.ai
 - **Emergency Escalation**: See runbooks in `/infrastructure/monitoring/runbooks/`

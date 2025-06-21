@@ -28,6 +28,7 @@ Returns the current health status of the Evolutionary Computation Service.
 **Authentication**: Not required
 
 **Response (200 OK)**:
+
 ```json
 {
   "status": "healthy",
@@ -50,18 +51,21 @@ Start evolutionary optimization process.
 **Authentication**: Required
 
 **Request Body**:
+
 ```json
-{"initial_policies": ["pol1"], "fitness_criteria": ["effectiveness"], "generations": 10}
+{ "initial_policies": ["pol1"], "fitness_criteria": ["effectiveness"], "generations": 10 }
 ```
 
 **Response (200 OK)**:
+
 ```json
-{"evolution_id": "evo_123", "status": "running", "estimated_completion": "2024-06-20T11:00:00Z"}
+{ "evolution_id": "evo_123", "status": "running", "estimated_completion": "2024-06-20T11:00:00Z" }
 ```
 
 ## Error Responses
 
 ### 400 Bad Request
+
 ```json
 {
   "status": "error",
@@ -75,6 +79,7 @@ Start evolutionary optimization process.
 ```
 
 ### 401 Unauthorized
+
 ```json
 {
   "status": "error",
@@ -95,6 +100,7 @@ Start evolutionary optimization process.
 ## Examples
 
 ### cURL Examples
+
 ```bash
 # Health check
 curl http://localhost:8006/health
@@ -107,6 +113,7 @@ curl -X POST http://localhost:8006/api/v1/example \
 ```
 
 ### Python Client Example
+
 ```python
 import httpx
 import asyncio
@@ -115,7 +122,7 @@ class EvolutionaryComputationServiceClient:
     def __init__(self, base_url="http://localhost:8006", token=None):
         self.base_url = base_url
         self.headers = {"Authorization": f"Bearer {token}"} if token else {}
-    
+
     async def health_check(self):
         async with httpx.AsyncClient() as client:
             response = await client.get(f"{self.base_url}/health")

@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       baseline-metrics: ${{ steps.baseline.outputs.metrics }}
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -53,7 +53,7 @@ jobs:
         id: baseline
         run: |
           echo "🔍 Establishing performance baseline..."
-          
+
           # Create performance monitoring script
           cat > performance_monitor.py << 'EOF'
           import asyncio
@@ -61,7 +61,7 @@ jobs:
           import time
           import psutil
           from datetime import datetime, timezone
-          
+
           async def run_performance_baseline():
               """Run comprehensive performance baseline tests."""
               
@@ -122,23 +122,23 @@ jobs:
               }
               
               return baseline_metrics
-          
+
           # Run baseline and save results
           baseline = asyncio.run(run_performance_baseline())
-          
+
           with open('performance_baseline.json', 'w') as f:
               json.dump(baseline, f, indent=2)
-          
+
           print("✅ Performance baseline established")
           print(f"Services tested: {len(baseline['service_performance'])}")
           print(f"Workflows tested: {len(baseline['workflow_performance'])}")
-          
+
           # Output for GitHub Actions
           import base64
           metrics_b64 = base64.b64encode(json.dumps(baseline).encode()).decode()
           print(f"metrics={metrics_b64}")
           EOF
-          
+
           python3 performance_monitor.py >> $GITHUB_OUTPUT
 
       - name: Upload Baseline Results
@@ -156,7 +156,7 @@ jobs:
       matrix:
         concurrent_users: [10, 50, 100, 200]
         test_duration: [5, 10]
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -179,7 +179,7 @@ jobs:
           import json
           import time
           from datetime import datetime, timezone
-          
+
           class LoadTestRunner:
               def __init__(self, concurrent_users, duration_minutes):
                   self.concurrent_users = concurrent_users
@@ -261,7 +261,7 @@ jobs:
                   self.results["test_config"]["end_time"] = datetime.now(timezone.utc).isoformat()
                   
                   return self.results
-          
+
           # Run load test
           async def main():
               load_tester = LoadTestRunner(${{ matrix.concurrent_users }}, ${{ matrix.test_duration }})
@@ -285,7 +285,7 @@ jobs:
                   exit(1)
               else:
                   print(f"✅ Performance target met: {results['metrics']['avg_response_time_ms']:.2f}ms ≤ 500ms")
-          
+
           asyncio.run(main())
           EOF
 
@@ -305,7 +305,7 @@ jobs:
     name: Stress Testing
     runs-on: ubuntu-latest
     needs: performance-baseline
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -327,7 +327,7 @@ jobs:
           import time
           import psutil
           from datetime import datetime, timezone
-          
+
           async def run_stress_test():
               """Run stress test to find system breaking point."""
               
@@ -400,7 +400,7 @@ jobs:
               stress_results["max_stable_concurrent_users"] = max_stable_load
               
               return stress_results
-          
+
           async def simulate_user_load():
               """Simulate user load for stress testing."""
               try:
@@ -410,7 +410,7 @@ jobs:
                   return "success"
               except Exception as e:
                   return f"error: {str(e)}"
-          
+
           # Run stress test
           async def main():
               results = await run_stress_test()
@@ -425,10 +425,10 @@ jobs:
                   print("✅ Stress test passed: System handles ≥200 concurrent users")
               else:
                   print("⚠️ Stress test warning: System capacity below 200 concurrent users")
-          
+
           asyncio.run(main())
           EOF
-          
+
           python3 stress_test.py
 
       - name: Upload Stress Test Results
@@ -442,7 +442,7 @@ jobs:
     name: Performance Regression Detection
     runs-on: ubuntu-latest
     needs: [performance-baseline, load-testing]
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -456,10 +456,10 @@ jobs:
           import json
           import os
           from datetime import datetime
-          
+
           print('📈 Performance Regression Analysis')
           print('=' * 50)
-          
+
           # Load baseline metrics
           baseline_file = 'performance-baseline/performance_baseline.json'
           if os.path.exists(baseline_file):
@@ -513,43 +513,43 @@ jobs:
         run: |
           cat > performance_report.md << 'EOF'
           # ACGS-1 Performance Monitoring Report
-          
+
           **Generated**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
           **Repository**: ${{ github.repository }}
           **Branch**: ${{ github.ref_name }}
           **Commit**: ${{ github.sha }}
-          
+
           ## Performance Summary
-          
+
           ✅ **All performance targets met**
-          
+
           ### Service Performance
           - Average response time: <100ms ✅
           - Maximum response time: <500ms ✅
           - All services within targets ✅
-          
+
           ### Workflow Performance
           - Authentication: <500ms ✅
           - Policy Creation: <2000ms ✅
           - Compliance Validation: <1000ms ✅
           - Blockchain Interaction: <3000ms ✅
-          
+
           ### Load Testing Results
           - Maximum stable concurrent users: 200+ ✅
           - Success rate under load: >95% ✅
           - Response time degradation: <20% ✅
-          
+
           ### Resource Utilization
           - CPU usage: <60% ✅
           - Memory usage: <80% ✅
           - System stability: Maintained ✅
-          
+
           ## Recommendations
-          
+
           1. **Continue Monitoring**: Performance remains within acceptable ranges
           2. **Capacity Planning**: System can handle current load with headroom
           3. **Optimization Opportunities**: Consider caching for sub-50ms responses
-          
+
           ---
           *Generated by ACGS-1 Performance Monitoring Pipeline*
           EOF
@@ -566,7 +566,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [performance-regression]
     if: failure()
-    
+
     steps:
       - name: Send Performance Alert
         run: |

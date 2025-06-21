@@ -7,6 +7,7 @@ This guide provides comprehensive instructions for deploying ACGS Phase 3 to pro
 ## Prerequisites
 
 ### System Requirements
+
 - **CPU**: 8+ cores (16+ recommended for high load)
 - **Memory**: 16GB+ RAM (32GB+ recommended)
 - **Storage**: 100GB+ SSD storage
@@ -14,6 +15,7 @@ This guide provides comprehensive instructions for deploying ACGS Phase 3 to pro
 - **OS**: Ubuntu 20.04+ or CentOS 8+
 
 ### Software Dependencies
+
 - Docker 24.0+
 - Docker Compose 2.20+
 - Python 3.11+
@@ -24,6 +26,7 @@ This guide provides comprehensive instructions for deploying ACGS Phase 3 to pro
 ## Pre-Deployment Checklist
 
 ### 1. Environment Preparation
+
 ```bash
 # Update system packages
 sudo apt update && sudo apt upgrade -y
@@ -39,6 +42,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 ```
 
 ### 2. Security Configuration
+
 ```bash
 # Generate secure secrets
 openssl rand -hex 32 > /etc/acgs/jwt_secret
@@ -51,6 +55,7 @@ sudo chown acgs:acgs /etc/acgs/*
 ```
 
 ### 3. SSL/TLS Certificates
+
 ```bash
 # Generate SSL certificates (use Let's Encrypt for production)
 sudo certbot certonly --nginx -d your-domain.com
@@ -59,6 +64,7 @@ sudo certbot certonly --nginx -d your-domain.com
 ## Production Deployment Steps
 
 ### Step 1: Clone and Configure Repository
+
 ```bash
 # Clone repository
 git clone https://github.com/your-org/ACGS-master.git
@@ -72,6 +78,7 @@ cp config/env/production.env.example config/env/production.env
 ```
 
 ### Step 2: Configure Environment Variables
+
 Edit `config/env/production.env`:
 
 ```bash
@@ -103,6 +110,7 @@ PGC_SERVICE_URL=http://pgc_service:8005
 ```
 
 ### Step 3: Deploy Infrastructure Services
+
 ```bash
 # Deploy database and cache
 docker-compose -f docker-compose.prod.yml up -d postgres redis
@@ -115,6 +123,7 @@ docker-compose -f docker-compose.prod.yml exec postgres psql -U acgs_user -d acg
 ```
 
 ### Step 4: Deploy ACGS Services
+
 ```bash
 # Deploy all ACGS services
 docker-compose -f docker-compose.prod.yml up -d
@@ -124,6 +133,7 @@ docker-compose -f docker-compose.prod.yml up -d
 ```
 
 ### Step 5: Deploy Monitoring Stack
+
 ```bash
 # Deploy monitoring services
 docker-compose -f docker-compose-monitoring.yml up -d
@@ -137,6 +147,7 @@ curl http://localhost:3002/api/health      # Grafana
 ```
 
 ### Step 6: Configure Load Balancer
+
 ```bash
 # Configure Nginx load balancer
 sudo cp config/nginx/production.conf /etc/nginx/sites-available/acgs-prod
@@ -147,6 +158,7 @@ sudo nginx -t && sudo systemctl reload nginx
 ## Performance Optimization
 
 ### 1. Database Optimization
+
 ```sql
 -- Apply production database optimizations
 \i config/database/production_optimizations.sql
@@ -159,6 +171,7 @@ ALTER SYSTEM SET work_mem = '64MB';
 ```
 
 ### 2. Cache Configuration
+
 ```bash
 # Configure Redis for production
 echo "maxmemory 8gb" >> /etc/redis/redis.conf
@@ -167,6 +180,7 @@ sudo systemctl restart redis
 ```
 
 ### 3. Application Tuning
+
 ```bash
 # Set production environment variables
 export WORKERS_PER_CORE=2
@@ -178,6 +192,7 @@ export WORKER_TIMEOUT=120
 ## Security Hardening
 
 ### 1. Network Security
+
 ```bash
 # Configure firewall
 sudo ufw enable
@@ -189,6 +204,7 @@ sudo ufw allow 3002/tcp  # Grafana (internal only)
 ```
 
 ### 2. Application Security
+
 ```bash
 # Enable security headers
 export SECURITY_HEADERS_ENABLED=true
@@ -202,6 +218,7 @@ export RATE_LIMIT_WINDOW=60
 ```
 
 ### 3. SSL/TLS Configuration
+
 ```nginx
 # Nginx SSL configuration
 ssl_protocols TLSv1.2 TLSv1.3;
@@ -213,21 +230,23 @@ add_header Strict-Transport-Security "max-age=63072000" always;
 ## Monitoring and Alerting
 
 ### 1. Prometheus Configuration
+
 ```yaml
 # Add production alert rules
 groups:
-- name: production_alerts
-  rules:
-  - alert: HighLatency
-    expr: histogram_quantile(0.95, rate(acgs_policy_decision_duration_seconds_bucket[5m])) > 0.05
-    for: 2m
-    labels:
-      severity: critical
-    annotations:
-      summary: "High policy decision latency detected"
+  - name: production_alerts
+    rules:
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, rate(acgs_policy_decision_duration_seconds_bucket[5m])) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'High policy decision latency detected'
 ```
 
 ### 2. Grafana Dashboards
+
 ```bash
 # Import production dashboards
 curl -X POST \
@@ -237,6 +256,7 @@ curl -X POST \
 ```
 
 ### 3. Log Management
+
 ```bash
 # Configure centralized logging
 docker-compose -f docker-compose.logging.yml up -d elasticsearch kibana logstash
@@ -256,6 +276,7 @@ echo "/var/log/acgs/*.log {
 ## Health Checks and Validation
 
 ### 1. Service Health Validation
+
 ```bash
 #!/bin/bash
 # Health check script
@@ -272,6 +293,7 @@ done
 ```
 
 ### 2. Performance Validation
+
 ```bash
 # Run performance tests
 python scripts/phase3_load_testing.py --production-mode
@@ -285,6 +307,7 @@ fi
 ```
 
 ### 3. Security Validation
+
 ```bash
 # Run security tests
 python scripts/phase3_security_penetration_testing.py --production-mode
@@ -296,6 +319,7 @@ python scripts/phase3_security_penetration_testing.py --production-mode
 ## Backup and Recovery
 
 ### 1. Database Backup
+
 ```bash
 # Automated backup script
 #!/bin/bash
@@ -313,6 +337,7 @@ aws s3 cp $BACKUP_DIR s3://acgs-backups/$(date +%Y%m%d)/ --recursive
 ```
 
 ### 2. Disaster Recovery
+
 ```bash
 # Recovery procedure
 #!/bin/bash
@@ -336,6 +361,7 @@ docker-compose -f docker-compose.prod.yml up -d
 ### Common Issues
 
 #### 1. High Memory Usage
+
 ```bash
 # Check memory usage
 docker stats
@@ -345,6 +371,7 @@ export JAVA_OPTS="-Xmx4g -Xms2g -XX:+UseG1GC"
 ```
 
 #### 2. Database Connection Issues
+
 ```bash
 # Check connection pool
 docker-compose exec postgres psql -U acgs_user -c "SELECT * FROM pg_stat_activity;"
@@ -354,6 +381,7 @@ docker-compose exec postgres psql -U acgs_user -c "ALTER SYSTEM SET max_connecti
 ```
 
 #### 3. Cache Performance Issues
+
 ```bash
 # Check Redis memory usage
 docker-compose exec redis redis-cli info memory
@@ -365,18 +393,21 @@ docker-compose exec redis redis-cli flushall
 ## Maintenance Procedures
 
 ### 1. Rolling Updates
+
 ```bash
 # Zero-downtime deployment
 ./scripts/rolling_update.sh --version=v1.2.3
 ```
 
 ### 2. Scaling
+
 ```bash
 # Scale services horizontally
 docker-compose -f docker-compose.prod.yml up -d --scale gs_service=3
 ```
 
 ### 3. Monitoring Maintenance
+
 ```bash
 # Update monitoring configuration
 docker-compose -f docker-compose-monitoring.yml restart prometheus grafana
@@ -385,11 +416,13 @@ docker-compose -f docker-compose-monitoring.yml restart prometheus grafana
 ## Support and Escalation
 
 ### Contact Information
+
 - **Production Issues**: production-support@acgs.com
 - **Security Incidents**: security@acgs.com
 - **Emergency Escalation**: +1-555-ACGS-911
 
 ### Documentation Links
+
 - [API Documentation](./api/README.md)
 - [Architecture Guide](./architecture.md)
 - [Security Documentation](./security.md)

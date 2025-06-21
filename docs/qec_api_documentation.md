@@ -7,18 +7,23 @@ The QEC (Quality, Error, and Correction) enhancement system provides intelligent
 ## Core Components
 
 ### 1. Constitutional Distance Calculator
+
 Measures the robustness of constitutional principles using language ambiguity analysis, criteria formality assessment, and historical success rate tracking.
 
 ### 2. Error Prediction Model
+
 Predicts potential synthesis challenges using historical patterns and principle characteristics, enabling proactive mitigation and faster recovery.
 
 ### 3. Recovery Strategy Dispatcher
+
 Provides intelligent recovery strategy selection with 8 configurable strategies for different failure types, including performance tracking and strategy optimization.
 
 ### 4. Constitutional Fidelity Monitor
+
 Implements system-wide health monitoring with composite scoring across 6 components and real-time alert management.
 
 ### 5. Validation DSL Parser
+
 Transforms natural language validation criteria into machine-actionable test specifications with support for multiple output formats.
 
 ## API Endpoints
@@ -26,6 +31,7 @@ Transforms natural language validation criteria into machine-actionable test spe
 ### Conflict Resolution Endpoints
 
 #### Create Conflict Resolution with QEC Enhancement
+
 ```http
 POST /api/v1/conflict-resolution/
 Content-Type: application/json
@@ -46,6 +52,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "id": 1,
@@ -85,12 +92,14 @@ Authorization: Bearer <token>
 ```
 
 #### Generate Automated Patch
+
 ```http
 POST /api/v1/conflict-resolution/{conflict_id}/generate-patch
 Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "conflict_id": 1,
@@ -105,10 +114,7 @@ Authorization: Bearer <token>
         "modifications": ["scope_refinement", "exception_clause"]
       }
     ],
-    "validation_tests": [
-      "privacy_compliance_check",
-      "security_effectiveness_test"
-    ]
+    "validation_tests": ["privacy_compliance_check", "security_effectiveness_test"]
   },
   "metadata": {
     "generation_time_ms": 180,
@@ -119,12 +125,14 @@ Authorization: Bearer <token>
 ```
 
 #### Get QEC Insights
+
 ```http
 GET /api/v1/conflict-resolution/{conflict_id}/qec-insights
 Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "conflict_id": 1,
@@ -166,12 +174,14 @@ Authorization: Bearer <token>
 ### Constitutional Fidelity Monitor Endpoints
 
 #### Get Current Fidelity Score
+
 ```http
 GET /api/v1/fidelity/current
 Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "composite_score": 0.87,
@@ -179,7 +189,7 @@ Authorization: Bearer <token>
   "components": {
     "principle_coverage": 0.92,
     "synthesis_success": 0.88,
-    "enforcement_reliability": 0.90,
+    "enforcement_reliability": 0.9,
     "adaptation_speed": 0.85,
     "stakeholder_satisfaction": 0.82,
     "appeal_frequency": 0.15
@@ -190,11 +200,11 @@ Authorization: Bearer <token>
     "principles_evaluated": 25,
     "weights_used": {
       "principle_coverage": 0.25,
-      "synthesis_success": 0.20,
-      "enforcement_reliability": 0.20,
+      "synthesis_success": 0.2,
+      "enforcement_reliability": 0.2,
       "adaptation_speed": 0.15,
-      "stakeholder_satisfaction": 0.10,
-      "appeal_frequency": 0.10
+      "stakeholder_satisfaction": 0.1,
+      "appeal_frequency": 0.1
     }
   },
   "alerts": [
@@ -208,12 +218,14 @@ Authorization: Bearer <token>
 ```
 
 #### Get Fidelity History
+
 ```http
 GET /api/v1/fidelity/history?hours=24&limit=100
 Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "fidelity_history": [
@@ -224,7 +236,7 @@ Authorization: Bearer <token>
       "components": {
         "principle_coverage": 0.92,
         "synthesis_success": 0.88,
-        "enforcement_reliability": 0.90,
+        "enforcement_reliability": 0.9,
         "adaptation_speed": 0.85,
         "stakeholder_satisfaction": 0.82,
         "appeal_frequency": 0.15
@@ -243,6 +255,7 @@ Authorization: Bearer <token>
 ### QEC Component Endpoints
 
 #### Calculate Constitutional Distance
+
 ```http
 POST /api/v1/qec/constitutional-distance
 Content-Type: application/json
@@ -266,6 +279,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "principle_id": "privacy_protection",
@@ -285,6 +299,7 @@ Authorization: Bearer <token>
 ```
 
 #### Predict Synthesis Challenges
+
 ```http
 POST /api/v1/qec/error-prediction
 Content-Type: application/json
@@ -307,6 +322,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "principle_id": "security_enforcement",
@@ -336,6 +352,7 @@ Authorization: Bearer <token>
 ## Data Structures
 
 ### ConstitutionalPrinciple (Enhanced)
+
 ```json
 {
   "principle_id": "string",
@@ -371,6 +388,7 @@ Authorization: Bearer <token>
 ```
 
 ### QEC Analysis Result
+
 ```json
 {
   "conflict_id": "integer",
@@ -415,18 +433,21 @@ Authorization: Bearer <token>
 ## Performance Optimization Features
 
 ### Caching Mechanisms
+
 - **Constitutional Distance Caching**: Results cached for 1 hour with Redis
 - **Error Prediction Caching**: Model predictions cached to reduce computation
 - **Fidelity Calculation Caching**: System-wide metrics cached for 5 minutes
 - **Cache Hit Rate Target**: ≥80% for optimal performance
 
 ### Database Optimizations
+
 - **Indexed Queries**: All QEC tables have optimized indexes for frequent queries
 - **Composite Indexes**: Multi-column indexes for complex query patterns
 - **Partitioning**: Large tables partitioned by timestamp for better performance
 - **Query Optimization**: Materialized views for complex aggregations
 
 ### Concurrent Processing
+
 - **Parallel Conflict Resolution**: Multiple conflicts processed simultaneously
 - **Async Operations**: All QEC components use async/await patterns
 - **Connection Pooling**: Optimized database connection management
@@ -435,17 +456,20 @@ Authorization: Bearer <token>
 ## Backward Compatibility
 
 ### Legacy API Support
+
 - **Optional QEC Fields**: All QEC-related fields in API requests are optional
 - **Graceful Degradation**: System functions normally when QEC components are disabled
 - **Fallback Behavior**: Automatic fallback to non-QEC conflict resolution when needed
 - **Migration Support**: Existing data automatically migrated with sensible defaults
 
 ### Configuration Compatibility
+
 - **QEC Toggle**: QEC features can be enabled/disabled via `QEC_ENABLED` environment variable
 - **Default Values**: All QEC configurations have sensible defaults for backward compatibility
 - **Legacy Config**: Existing configuration files work without QEC-specific settings
 
 ### Database Compatibility
+
 - **Nullable Columns**: All QEC database columns are nullable for existing data
 - **Schema Migration**: Alembic migrations handle backward-compatible schema updates
 - **Query Compatibility**: Existing database queries continue to work unchanged
@@ -453,6 +477,7 @@ Authorization: Bearer <token>
 ## Error Handling
 
 All endpoints return standard HTTP status codes:
+
 - `200 OK`: Successful operation
 - `400 Bad Request`: Invalid request parameters
 - `401 Unauthorized`: Authentication required
@@ -462,6 +487,7 @@ All endpoints return standard HTTP status codes:
 - `501 Not Implemented`: QEC components not available
 
 Error responses include detailed error information:
+
 ```json
 {
   "error": "string",

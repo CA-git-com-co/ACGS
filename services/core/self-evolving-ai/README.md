@@ -9,7 +9,7 @@ The Self-Evolving AI Architecture Foundation implements a secure, human-controll
 ### Layered Security Architecture (4 Layers)
 
 1. **Sandboxing Layer**: gVisor/Firecracker isolation with resource limits
-2. **Policy Engine Layer**: OPA integration for governance rule enforcement  
+2. **Policy Engine Layer**: OPA integration for governance rule enforcement
 3. **Authentication Layer**: Enhanced JWT/RBAC with multi-factor authentication
 4. **Audit Layer**: Comprehensive logging and traceability
 
@@ -41,6 +41,7 @@ The Self-Evolving AI Architecture Foundation implements a secure, human-controll
 ## Integration Points
 
 ### Core Services Integration
+
 - **Auth Service (8000)**: Enhanced authentication and authorization
 - **AC Service (8001)**: Constitutional principle management
 - **Integrity Service (8002)**: Audit logging and data integrity
@@ -50,6 +51,7 @@ The Self-Evolving AI Architecture Foundation implements a secure, human-controll
 - **EC Service (8006)**: Evolutionary computation oversight
 
 ### External Integrations
+
 - **Quantumagi Solana**: On-chain governance deployment
 - **HITL System**: Human-in-the-loop oversight and approval
 - **Formal Verification**: Safety validation for evolved policies
@@ -58,6 +60,7 @@ The Self-Evolving AI Architecture Foundation implements a secure, human-controll
 ## Security Framework
 
 ### Threat Mitigation (Top 6 Risks)
+
 1. **Unauthorized Policy Modification**: Multi-layer authentication and approval
 2. **Privilege Escalation**: Strict RBAC and principle of least privilege
 3. **Data Integrity Compromise**: Cryptographic integrity validation
@@ -66,6 +69,7 @@ The Self-Evolving AI Architecture Foundation implements a secure, human-controll
 6. **Insider Threats**: Comprehensive audit trails and monitoring
 
 ### Security Controls
+
 - **Sandboxing**: gVisor/Firecracker with resource limits
 - **Secrets Management**: PostgreSQL with Vault integration
 - **Network Security**: CORS/CSRF protection and rate limiting
@@ -75,17 +79,20 @@ The Self-Evolving AI Architecture Foundation implements a secure, human-controll
 ## API Endpoints
 
 ### Evolution Management
+
 - `POST /api/v1/evolution/initiate` - Initiate manual policy evolution
 - `GET /api/v1/evolution/status/{evolution_id}` - Get evolution status
 - `POST /api/v1/evolution/approve/{evolution_id}` - Human approval for evolution
 - `POST /api/v1/evolution/rollback/{evolution_id}` - Rollback evolution
 
 ### Security Management
+
 - `GET /api/v1/security/status` - Get security framework status
 - `POST /api/v1/security/threat-assessment` - Perform threat assessment
 - `GET /api/v1/security/audit-logs` - Retrieve audit logs
 
 ### Observability
+
 - `GET /api/v1/observability/metrics` - Get system metrics
 - `GET /api/v1/observability/health` - Health check endpoint
 - `GET /api/v1/observability/traces` - Get distributed traces
@@ -93,6 +100,7 @@ The Self-Evolving AI Architecture Foundation implements a secure, human-controll
 ## Configuration
 
 ### Environment Variables
+
 ```bash
 # Service Configuration
 SELF_EVOLVING_AI_PORT=8007
@@ -126,6 +134,7 @@ VAULT_TOKEN=your_vault_token
 ## Development
 
 ### Setup
+
 ```bash
 # Install dependencies
 pip install -r requirements.txt
@@ -138,6 +147,7 @@ python -m app.main
 ```
 
 ### Testing
+
 ```bash
 # Run unit tests
 pytest tests/unit/
@@ -152,6 +162,7 @@ pytest tests/security/
 ## Deployment
 
 ### Docker
+
 ```bash
 # Build image
 docker build -t acgs-self-evolving-ai .
@@ -161,6 +172,7 @@ docker run -p 8007:8007 acgs-self-evolving-ai
 ```
 
 ### Kubernetes
+
 ```bash
 # Deploy to Kubernetes
 kubectl apply -f infrastructure/kubernetes/deployment.yaml
@@ -169,6 +181,7 @@ kubectl apply -f infrastructure/kubernetes/deployment.yaml
 ## Monitoring
 
 ### Metrics
+
 - Evolution cycle completion rates
 - Security threat detection rates
 - Policy approval latencies
@@ -176,6 +189,7 @@ kubectl apply -f infrastructure/kubernetes/deployment.yaml
 - Integration service health
 
 ### Alerts
+
 - Failed evolution cycles
 - Security threats detected
 - High resource utilization

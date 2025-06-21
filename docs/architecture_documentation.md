@@ -16,21 +16,21 @@ graph TB
         MR[Meta-Rules]
         CR[Conflict Resolution]
     end
-    
+
     subgraph "Layer 2: Governance Synthesis (GS)"
         LLM[LLM Policy Synthesis]
         CP[Constitutional Prompting]
         AE[AlphaEvolve Integration]
         WINA[WINA Optimization]
     end
-    
+
     subgraph "Layer 3: Prompt Governance Compiler (PGC)"
         RT[Real-time Enforcement]
         OPA[OPA Integration]
         IC[Incremental Compilation]
         CI[Cryptographic Integrity]
     end
-    
+
     AC --> LLM
     CC --> CP
     MR --> AE
@@ -50,11 +50,11 @@ graph LR
         LLM_API[LLM APIs]
         Z3[Z3 Solver]
     end
-    
+
     subgraph "API Gateway"
         NG[Nginx Gateway]
     end
-    
+
     subgraph "Core Services"
         AUTH[Auth Service:8000]
         AC[AC Service:8001]
@@ -65,18 +65,18 @@ graph LR
         EC[EC Service:8006]
         DGM[DGM Service:8007]
     end
-    
+
     subgraph "Data Layer"
         PG[(PostgreSQL)]
         RD[(Redis)]
     end
-    
+
     subgraph "Monitoring"
         PR[Prometheus]
         GR[Grafana]
         AM[AlertManager]
     end
-    
+
     U --> NG
     NG --> AUTH
     NG --> AC
@@ -85,7 +85,7 @@ graph LR
     NG --> GS
     NG --> PGC
     NG --> EC
-    
+
     AUTH --> PG
     AC --> PG
     INT --> PG
@@ -93,14 +93,14 @@ graph LR
     GS --> PG
     PGC --> PG
     EC --> PG
-    
+
     GS --> LLM_API
     FV --> Z3
-    
+
     AUTH --> RD
     GS --> RD
     PGC --> RD
-    
+
     AUTH --> PR
     AC --> PR
     INT --> PR
@@ -108,7 +108,7 @@ graph LR
     GS --> PR
     PGC --> PR
     EC --> PR
-    
+
     PR --> GR
     PR --> AM
 ```
@@ -116,6 +116,7 @@ graph LR
 ## 🔧 Service Specifications
 
 ### **Authentication Service (Port 8000)**
+
 - **Purpose**: JWT authentication, RBAC, CSRF protection
 - **Technology**: FastAPI, SQLAlchemy, JWT, bcrypt
 - **Database**: PostgreSQL (users, roles, sessions)
@@ -126,6 +127,7 @@ graph LR
   - CSRF token generation and validation
 
 ### **AC Service (Port 8001)**
+
 - **Purpose**: Constitutional principles, meta-rules, Constitutional Council
 - **Technology**: FastAPI, SQLAlchemy, Pydantic v2.0+
 - **Database**: PostgreSQL (principles, meta_rules, amendments, votes)
@@ -136,6 +138,7 @@ graph LR
   - Conflict resolution with intelligent patch suggestions
 
 ### **Integrity Service (Port 8002)**
+
 - **Purpose**: Cryptographic integrity, PGP assurance, audit logs
 - **Technology**: FastAPI, SQLAlchemy, PGP/GPG, SHA3-256
 - **Database**: PostgreSQL (policies, audit_logs, appeals, signatures)
@@ -146,6 +149,7 @@ graph LR
   - Audit trail with cryptographic proof
 
 ### **FV Service (Port 8003)**
+
 - **Purpose**: Z3 SMT solver, algorithmic fairness, bias detection
 - **Technology**: FastAPI, Z3 Python bindings, HuggingFace Fairness
 - **Database**: PostgreSQL (verification_results, safety_properties)
@@ -156,6 +160,7 @@ graph LR
   - Formal verification with mathematical proofs
 
 ### **GS Service (Port 8004)**
+
 - **Purpose**: LLM policy synthesis, constitutional prompting, WINA optimization
 - **Technology**: FastAPI, OpenAI API, Groq, Gemini, WINA
 - **Database**: PostgreSQL (synthesis_jobs, policy_templates)
@@ -166,6 +171,7 @@ graph LR
   - WINA optimization (40-70% GFLOPs reduction)
 
 ### **PGC Service (Port 8005)**
+
 - **Purpose**: Real-time policy enforcement, OPA integration
 - **Technology**: FastAPI, Open Policy Agent, Rego
 - **Database**: PostgreSQL (enforcement_rules, compliance_logs)
@@ -176,6 +182,7 @@ graph LR
   - Policy caching with Redis
 
 ### **EC Service (Port 8006)**
+
 - **Purpose**: WINA-optimized oversight, evolutionary computation governance
 - **Technology**: FastAPI, WINA, AlphaEvolve, Constitutional monitoring
 - **Database**: PostgreSQL (oversight_metrics, governance_evolution)
@@ -190,6 +197,7 @@ graph LR
 ### **Core Tables**
 
 #### **Authentication Schema**
+
 ```sql
 -- Users table
 CREATE TABLE users (
@@ -215,6 +223,7 @@ CREATE TABLE user_sessions (
 ```
 
 #### **AC Schema (Enhanced)**
+
 ```sql
 -- Constitutional Principles (Enhanced)
 CREATE TABLE constitutional_principles (
@@ -282,6 +291,7 @@ CREATE TABLE conflict_resolutions (
 ```
 
 #### **Integrity Schema (PGP Assurance)**
+
 ```sql
 -- Policies with Cryptographic Integrity
 CREATE TABLE policies (
@@ -326,6 +336,7 @@ CREATE TABLE appeals (
 ```
 
 #### **FV Schema (Formal Verification)**
+
 ```sql
 -- Verification Results
 CREATE TABLE verification_results (
@@ -365,6 +376,7 @@ CREATE TABLE fairness_metrics (
 ```
 
 #### **GS Schema (Governance Synthesis)**
+
 ```sql
 -- LLM Synthesis Jobs
 CREATE TABLE synthesis_jobs (
@@ -406,6 +418,7 @@ CREATE TABLE wina_metrics (
 ```
 
 #### **PGC Schema (Policy Enforcement)**
+
 ```sql
 -- Enforcement Rules
 CREATE TABLE enforcement_rules (
@@ -432,6 +445,7 @@ CREATE TABLE compliance_logs (
 ```
 
 #### **EC Schema (Evolutionary Computation)**
+
 ```sql
 -- Oversight Metrics
 CREATE TABLE oversight_metrics (
@@ -473,6 +487,7 @@ CREATE TABLE qec_enhancements (
 ## 🔄 Data Flow Architecture
 
 ### **Policy Synthesis Pipeline**
+
 ```mermaid
 sequenceDiagram
     participant U as User
@@ -486,40 +501,41 @@ sequenceDiagram
 
     U->>AUTH: Authenticate
     AUTH-->>U: JWT Token
-    
+
     U->>AC: Request Policy Synthesis
     AC->>AC: Load Constitutional Principles
     AC->>GS: Send Constitutional Context
-    
+
     GS->>GS: Apply Constitutional Prompting
     GS->>GS: WINA Optimization
     GS->>GS: LLM Policy Synthesis
     GS-->>AC: Generated Policy
-    
+
     AC->>FV: Verify Policy
     FV->>FV: Z3 Formal Verification
     FV->>FV: Algorithmic Fairness Check
     FV-->>AC: Verification Results
-    
+
     AC->>INT: Store Policy
     INT->>INT: Generate Digital Signature
     INT->>INT: Create Merkle Proof
     INT-->>AC: Integrity Confirmation
-    
+
     AC->>PGC: Deploy Policy
     PGC->>PGC: Compile to Rego
     PGC->>PGC: Cache Compilation
     PGC-->>AC: Deployment Confirmation
-    
+
     AC->>EC: Monitor Performance
     EC->>EC: Track Constitutional Fidelity
     EC->>EC: Monitor WINA Performance
     EC-->>AC: Performance Metrics
-    
+
     AC-->>U: Policy Synthesis Complete
 ```
 
 ### **Constitutional Amendment Workflow**
+
 ```mermaid
 sequenceDiagram
     participant CC as Constitutional Council
@@ -530,20 +546,20 @@ sequenceDiagram
 
     CC->>AUTH: Authenticate Council Member
     AUTH-->>CC: JWT Token
-    
+
     CC->>AC: Propose Amendment
     AC->>AC: Validate Proposal
     AC->>AC: Create Amendment Record
     AC->>AC: Notify Council Members
-    
+
     loop Voting Period
         CC->>AC: Submit Vote
         AC->>AC: Record Vote
         AC->>AC: Check Threshold
     end
-    
+
     AC->>AC: Calculate Results
-    
+
     alt Amendment Passes
         AC->>AC: Update Constitutional Principles
         AC->>INT: Create Audit Log
@@ -554,13 +570,14 @@ sequenceDiagram
         AC->>AC: Mark Amendment Rejected
         AC->>INT: Log Rejection
     end
-    
+
     AC-->>CC: Amendment Result
 ```
 
 ## 🔧 Integration Patterns
 
 ### **Inter-Service Communication**
+
 - **Synchronous**: HTTP/REST APIs with JWT authentication
 - **Asynchronous**: Redis pub/sub for event-driven updates
 - **Service Discovery**: Docker Compose DNS / Kubernetes service discovery
@@ -568,12 +585,14 @@ sequenceDiagram
 - **Retry Logic**: Exponential backoff with jitter
 
 ### **Database Integration**
+
 - **Connection Pooling**: SQLAlchemy with asyncpg driver
 - **Migration Management**: Alembic for schema versioning
 - **Transaction Management**: ACID compliance with rollback support
 - **Read Replicas**: Supported for high-availability deployments
 
 ### **External API Integration**
+
 - **LLM APIs**: OpenAI, Groq, Gemini with fallback strategies
 - **Z3 Solver**: Local binary integration with timeout handling
 - **OPA**: HTTP API integration for policy evaluation
@@ -582,6 +601,7 @@ sequenceDiagram
 ## 📊 Performance Characteristics
 
 ### **Latency Targets**
+
 - **Authentication**: <50ms (95th percentile)
 - **Policy Synthesis**: <5s (including LLM call)
 - **Formal Verification**: <2s (simple policies), <30s (complex)
@@ -589,12 +609,14 @@ sequenceDiagram
 - **Constitutional Queries**: <100ms (95th percentile)
 
 ### **Throughput Targets**
+
 - **Authentication**: 1000 req/s
 - **Policy Operations**: 100 req/s
 - **Verification Jobs**: 50 concurrent
 - **Enforcement Decisions**: 500 req/s
 
 ### **Scalability**
+
 - **Horizontal Scaling**: All services support multiple instances
 - **Database Scaling**: Read replicas, connection pooling
 - **Caching**: Redis for session management and policy caching
@@ -603,18 +625,21 @@ sequenceDiagram
 ## 🔒 Security Architecture
 
 ### **Authentication & Authorization**
+
 - **JWT Tokens**: HS256 algorithm with 15-minute expiry
 - **Refresh Tokens**: 7-day expiry with rotation
 - **RBAC**: Role-based access control with fine-grained permissions
 - **CSRF Protection**: Token-based protection for state-changing operations
 
 ### **Data Protection**
+
 - **Encryption at Rest**: PostgreSQL with TDE (Transparent Data Encryption)
 - **Encryption in Transit**: TLS 1.3 for all communications
 - **PGP Signatures**: Digital signatures for policy integrity
 - **Merkle Trees**: Cryptographic proof of data integrity
 
 ### **Network Security**
+
 - **API Gateway**: Nginx with rate limiting and DDoS protection
 - **Firewall**: UFW with restrictive rules
 - **VPN Access**: Required for administrative operations
@@ -623,24 +648,28 @@ sequenceDiagram
 ## 🎯 Quality Attributes
 
 ### **Reliability**
+
 - **Uptime Target**: >99.5%
 - **Error Rate**: <5%
 - **MTTR**: <30 minutes
 - **Backup Strategy**: Daily automated backups with 30-day retention
 
 ### **Performance**
+
 - **Response Time**: <200ms (95th percentile)
 - **Throughput**: 100+ concurrent users
 - **Resource Usage**: <80% CPU/Memory under normal load
 - **Scalability**: Linear scaling up to 1000 concurrent users
 
 ### **Security**
+
 - **Vulnerability Scanning**: Weekly automated scans
 - **Penetration Testing**: Quarterly professional assessments
 - **Compliance**: SOC 2 Type II, GDPR compliance
 - **Incident Response**: <1 hour detection, <4 hour resolution
 
 ### **Maintainability**
+
 - **Code Coverage**: >95% test coverage
 - **Documentation**: Comprehensive API and architecture docs
 - **Monitoring**: Real-time metrics and alerting

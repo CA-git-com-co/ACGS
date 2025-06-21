@@ -5,6 +5,7 @@ Welcome to the ACGS-1 Constitutional Governance System! This comprehensive guide
 ## 🎯 Quick Start (5 Minutes)
 
 ### Prerequisites Check
+
 ```bash
 # Check required software
 python --version    # Should be 3.9+
@@ -15,6 +16,7 @@ redis-cli --version # Should be 7+
 ```
 
 ### 1. Clone and Setup
+
 ```bash
 # Clone the repository
 git clone https://github.com/CA-git-com-co/ACGS.git
@@ -25,6 +27,7 @@ cd ACGS
 ```
 
 ### 2. Start Core Services
+
 ```bash
 # Start with Docker Compose (Recommended)
 docker-compose -f infrastructure/docker/docker-compose.yml up -d
@@ -34,6 +37,7 @@ docker-compose -f infrastructure/docker/docker-compose.yml up -d
 ```
 
 ### 3. Verify Installation
+
 ```bash
 # Check all services are running
 ./scripts/comprehensive_health_check.py
@@ -42,6 +46,7 @@ docker-compose -f infrastructure/docker/docker-compose.yml up -d
 ```
 
 ### 4. Access the System
+
 - **Governance Dashboard**: http://localhost:3000
 - **API Documentation**: http://localhost:8001/docs (Constitutional AI)
 - **Monitoring Dashboard**: http://localhost:3001 (Grafana)
@@ -51,6 +56,7 @@ docker-compose -f infrastructure/docker/docker-compose.yml up -d
 ### For Developers
 
 #### Setting Up Development Environment
+
 ```bash
 # 1. Install development dependencies
 pip install -r config/requirements.txt
@@ -68,6 +74,7 @@ python -m pytest tests/unit/ -v
 ```
 
 #### Your First API Call
+
 ```python
 import httpx
 import asyncio
@@ -77,7 +84,7 @@ async def test_constitutional_ai():
         # Test health endpoint
         response = await client.get("http://localhost:8001/health")
         print(f"Health Status: {response.json()['status']}")
-        
+
         # Test constitutional validation
         validation_response = await client.post(
             "http://localhost:8001/api/v1/constitutional/validate",
@@ -93,6 +100,7 @@ asyncio.run(test_constitutional_ai())
 ```
 
 #### Development Workflow
+
 1. **Create Feature Branch**: `git checkout -b feature/your-feature`
 2. **Write Tests**: Add tests in `tests/` directory
 3. **Implement Feature**: Follow ACGS-1 coding standards
@@ -103,6 +111,7 @@ asyncio.run(test_constitutional_ai())
 ### For Operators
 
 #### Production Deployment Checklist
+
 ```bash
 # 1. Environment preparation
 ./scripts/deployment/prepare_production_environment.sh
@@ -121,6 +130,7 @@ asyncio.run(test_constitutional_ai())
 ```
 
 #### Daily Operations
+
 ```bash
 # Morning health check
 ./scripts/comprehensive_health_check.py
@@ -136,6 +146,7 @@ grep ERROR logs/*.log | tail -20
 ```
 
 #### Troubleshooting Quick Reference
+
 ```bash
 # Service not responding
 curl http://localhost:8001/health
@@ -155,16 +166,20 @@ redis-cli FLUSHALL
 ### For End-Users (Governance Dashboard)
 
 #### Accessing the Dashboard
+
 1. **Navigate to**: http://localhost:3000
 2. **Login**: Use your ACGS-1 credentials
 3. **Dashboard Overview**: Review system status and recent activities
 
 #### Creating Your First Policy
+
 1. **Navigate to Policy Creation**:
+
    - Click "Create New Policy" in the dashboard
    - Select policy type (Regulatory, Administrative, Constitutional)
 
 2. **Fill Policy Details**:
+
    ```
    Title: Data Privacy Protection Policy
    Description: Comprehensive policy for citizen data privacy protection
@@ -174,6 +189,7 @@ redis-cli FLUSHALL
    ```
 
 3. **Review Generated Policy**:
+
    - System will generate policy using AI synthesis
    - Review constitutional compliance score
    - Check stakeholder alignment metrics
@@ -192,40 +208,45 @@ flowchart TD
     START([User Request]) --> AUTH{Authentication}
     AUTH -->|Valid| INPUT[Input Policy Details]
     AUTH -->|Invalid| LOGIN[Redirect to Login]
-    
+
     INPUT --> SYNTH[AI Policy Synthesis]
     SYNTH --> CONST[Constitutional Validation]
     CONST --> VERIFY[Formal Verification]
     VERIFY --> APPROVE[Governance Approval]
     APPROVE --> DEPLOY[Blockchain Deployment]
     DEPLOY --> SUCCESS([Policy Active])
-    
+
     LOGIN --> AUTH
 ```
 
 **Step-by-Step Process**:
 
 1. **Authentication** (2-3 seconds)
+
    - User provides credentials
    - System validates JWT token
    - RBAC permissions checked
 
 2. **Policy Input** (30-60 seconds)
+
    - User fills policy creation form
    - System validates input parameters
    - Constitutional principles selected
 
 3. **AI Synthesis** (5-10 seconds)
+
    - Multi-model consensus generation
    - Constitutional compliance scoring
    - Stakeholder alignment analysis
 
 4. **Formal Verification** (10-30 seconds)
+
    - Z3 SMT solver validation
    - Safety property checking
    - Logical consistency verification
 
 5. **Governance Approval** (Variable)
+
    - OPA policy enforcement
    - Constitutional council review
    - Stakeholder feedback integration
@@ -238,12 +259,15 @@ flowchart TD
 ### Workflow 2: Constitutional Amendment Process
 
 **Prerequisites**:
+
 - Constitutional Council membership
 - Multi-signature approval (3 of 5 members)
 - Formal verification passing
 
 **Process**:
+
 1. **Amendment Proposal**:
+
    ```bash
    curl -X POST http://localhost:8001/api/v1/constitutional/propose \
      -H "Authorization: Bearer $COUNCIL_TOKEN" \
@@ -259,6 +283,7 @@ flowchart TD
    ```
 
 2. **Multi-Signature Collection**:
+
    - Each council member signs the amendment
    - System validates signatures cryptographically
    - Requires 3 of 5 signatures for approval
@@ -273,7 +298,9 @@ flowchart TD
 **Use Case**: Critical security threat requiring immediate policy changes
 
 **Process**:
+
 1. **Emergency Declaration**:
+
    ```bash
    curl -X POST http://localhost:8005/api/v1/emergency/declare \
      -H "Authorization: Bearer $ADMIN_TOKEN" \
@@ -287,6 +314,7 @@ flowchart TD
    ```
 
 2. **Immediate Enforcement**:
+
    - OPA policies updated instantly
    - All services notified of changes
    - Emergency audit logging activated
@@ -306,7 +334,7 @@ import json
 
 async def test_constitutional_compliance():
     """Test various policy scenarios for constitutional compliance."""
-    
+
     test_policies = [
         {
             "name": "Privacy Policy",
@@ -314,7 +342,7 @@ async def test_constitutional_compliance():
             "expected_score": 0.9
         },
         {
-            "name": "Surveillance Policy", 
+            "name": "Surveillance Policy",
             "content": "Government can monitor all citizen communications",
             "expected_score": 0.3
         },
@@ -324,17 +352,17 @@ async def test_constitutional_compliance():
             "expected_score": 0.95
         }
     ]
-    
+
     async with httpx.AsyncClient() as client:
         for policy in test_policies:
             response = await client.post(
                 "http://localhost:8001/api/v1/constitutional/validate",
                 json={"policy": policy["content"]}
             )
-            
+
             result = response.json()
             score = result["compliance_score"]
-            
+
             print(f"Policy: {policy['name']}")
             print(f"Compliance Score: {score:.2f}")
             print(f"Expected: {policy['expected_score']:.2f}")
@@ -351,7 +379,7 @@ asyncio.run(test_constitutional_compliance())
 ```python
 async def generate_policy_with_consensus():
     """Generate policy using multi-model consensus."""
-    
+
     policy_request = {
         "title": "AI Ethics Policy",
         "description": "Ethical guidelines for AI system deployment",
@@ -360,23 +388,23 @@ async def generate_policy_with_consensus():
         "domain": "technology",
         "priority": "high"
     }
-    
+
     async with httpx.AsyncClient() as client:
         # Generate policy
         response = await client.post(
             "http://localhost:8004/api/v1/synthesis/generate",
             json=policy_request
         )
-        
+
         result = response.json()
-        
+
         print("Generated Policy:")
         print(f"Title: {result['policy']['title']}")
         print(f"Content: {result['policy']['content'][:200]}...")
         print(f"Constitutional Compliance: {result['synthesis_metadata']['constitutional_compliance']:.2f}")
         print(f"Consensus Score: {result['synthesis_metadata']['consensus_score']:.2f}")
         print(f"Models Used: {', '.join(result['synthesis_metadata']['models_used'])}")
-        
+
         # Run consensus validation
         consensus_response = await client.post(
             "http://localhost:8004/api/v1/synthesis/consensus",
@@ -386,7 +414,7 @@ async def generate_policy_with_consensus():
                 "consensus_threshold": 0.8
             }
         )
-        
+
         consensus_result = consensus_response.json()
         print(f"\nConsensus Validation:")
         print(f"Overall Score: {consensus_result['consensus_result']['overall_score']:.2f}")
@@ -399,6 +427,7 @@ asyncio.run(generate_policy_with_consensus())
 ## 🔧 Configuration and Customization
 
 ### Environment Configuration
+
 ```bash
 # Core service configuration
 export CONSTITUTIONAL_HASH="cdd01ef066bc6cf2"
@@ -417,6 +446,7 @@ export MAX_REQUESTS_PER_MINUTE=1000
 ```
 
 ### Service-Specific Configuration
+
 ```yaml
 # config/services/constitutional_ai_config.yaml
 constitutional_ai:
@@ -424,34 +454,37 @@ constitutional_ai:
   validation_timeout: 30
   cache_enabled: true
   models:
-    primary: "constitutional_ai_v2"
-    fallback: "constitutional_ai_v1"
+    primary: 'constitutional_ai_v2'
+    fallback: 'constitutional_ai_v1'
 
 # config/services/governance_synthesis_config.yaml
 governance_synthesis:
   consensus_threshold: 0.8
   max_generation_time: 60
   models:
-    - "qwen3-32b"
-    - "deepseek-chat"
-    - "qwen3-235b"
+    - 'qwen3-32b'
+    - 'deepseek-chat'
+    - 'qwen3-235b'
 ```
 
 ## 📚 Next Steps
 
 ### For Developers
+
 1. **Explore API Documentation**: Visit http://localhost:8001/docs
 2. **Review Architecture**: Read [docs/architecture/](../architecture/)
 3. **Contribute**: Check [CONTRIBUTING.md](../../CONTRIBUTING.md)
 4. **Join Community**: Participate in code reviews and discussions
 
 ### For Operators
+
 1. **Production Deployment**: Follow [docs/deployment/](../deployment/)
 2. **Monitoring Setup**: Configure [monitoring dashboards](../monitoring/)
 3. **Security Hardening**: Implement [security procedures](../security/)
 4. **Backup Strategy**: Set up [backup and recovery](../deployment/backup_strategy.md)
 
 ### For End-Users
+
 1. **Advanced Tutorials**: Explore governance workflow tutorials
 2. **Policy Templates**: Use pre-built policy templates
 3. **Dashboard Customization**: Customize your governance dashboard

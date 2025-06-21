@@ -1,12 +1,12 @@
 // Corrected Test Suite for Quantumagi Core Program
 // Demonstrates proper method signatures and account structures
 
-import * as anchor from "@coral-xyz/anchor";
-import { Program } from "@coral-xyz/anchor";
-import { QuantumagiCore } from "../target/types/quantumagi_core";
-import { expect } from "chai";
+import * as anchor from '@coral-xyz/anchor';
+import { Program } from '@coral-xyz/anchor';
+import { QuantumagiCore } from '../target/types/quantumagi_core';
+import { expect } from 'chai';
 
-describe("Quantumagi Core - Corrected Test Suite", () => {
+describe('Quantumagi Core - Corrected Test Suite', () => {
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
   const program = anchor.workspace.QuantumagiCore as Program<QuantumagiCore>;
@@ -14,16 +14,16 @@ describe("Quantumagi Core - Corrected Test Suite", () => {
 
   // Correct PDAs - Use exact seeds that match the program
   const [governancePDA] = anchor.web3.PublicKey.findProgramAddressSync(
-    [Buffer.from("governance")],
+    [Buffer.from('governance')],
     program.programId
   );
 
-  describe("✅ Governance Initialization", () => {
-    it("should initialize governance with constitutional principles", async () => {
+  describe('✅ Governance Initialization', () => {
+    it('should initialize governance with constitutional principles', async () => {
       const principles = [
-        "PC-001: No unauthorized state mutations",
-        "GV-001: Democratic governance required",
-        "FN-001: Treasury protection mandatory"
+        'PC-001: No unauthorized state mutations',
+        'GV-001: Democratic governance required',
+        'FN-001: Treasury protection mandatory',
       ];
 
       // ✅ CORRECT: Use initializeGovernance method
@@ -38,17 +38,17 @@ describe("Quantumagi Core - Corrected Test Suite", () => {
 
       // ✅ CORRECT: Fetch governanceState account
       const governanceAccount = await program.account.governanceState.fetch(governancePDA);
-      
+
       expect(governanceAccount.authority.toString()).to.equal(authority.publicKey.toString());
       expect(governanceAccount.principles.length).to.equal(principles.length);
       expect(governanceAccount.totalPolicies).to.equal(0);
       expect(governanceAccount.activeProposals).to.equal(0);
-      
-      console.log("✅ Governance initialized successfully");
+
+      console.log('✅ Governance initialized successfully');
     });
   });
 
-  describe("✅ Policy Proposal Management", () => {
+  describe('✅ Policy Proposal Management', () => {
     let policyId: anchor.BN;
     let proposalPDA: anchor.web3.PublicKey;
 
@@ -56,15 +56,15 @@ describe("Quantumagi Core - Corrected Test Suite", () => {
       policyId = new anchor.BN(Date.now());
       // ✅ CORRECT: Use "proposal" seed
       [proposalPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from("proposal"), policyId.toBuffer("le", 8)],
+        [Buffer.from('proposal'), policyId.toBuffer('le', 8)],
         program.programId
       );
     });
 
-    it("should create policy proposal", async () => {
-      const title = "Test Governance Policy";
-      const description = "A test policy for governance validation";
-      const policyText = "ENFORCE: All governance actions require proper authorization";
+    it('should create policy proposal', async () => {
+      const title = 'Test Governance Policy';
+      const description = 'A test policy for governance validation';
+      const policyText = 'ENFORCE: All governance actions require proper authorization';
 
       // ✅ CORRECT: Use createPolicyProposal method
       await program.methods
@@ -79,23 +79,23 @@ describe("Quantumagi Core - Corrected Test Suite", () => {
 
       // ✅ CORRECT: Fetch policyProposal account
       const proposalAccount = await program.account.policyProposal.fetch(proposalPDA);
-      
+
       expect(proposalAccount.policyId.toString()).to.equal(policyId.toString());
       expect(proposalAccount.title).to.equal(title);
       expect(proposalAccount.policyText).to.equal(policyText);
       expect(proposalAccount.status).to.deep.equal({ active: {} });
-      
-      console.log("✅ Policy proposal created successfully");
+
+      console.log('✅ Policy proposal created successfully');
     });
 
-    it("should vote on proposal", async () => {
+    it('should vote on proposal', async () => {
       // Create proposal first
       await program.methods
         .createPolicyProposal(
           policyId,
-          "Voting Test Policy",
-          "Policy for testing voting mechanism",
-          "ENFORCE: Voting validation requirements"
+          'Voting Test Policy',
+          'Policy for testing voting mechanism',
+          'ENFORCE: Voting validation requirements'
         )
         .accounts({
           proposal: proposalPDA,
@@ -107,11 +107,7 @@ describe("Quantumagi Core - Corrected Test Suite", () => {
 
       // ✅ CORRECT: Use "vote" seed (matches program)
       const [voteRecordPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("vote"),
-          policyId.toBuffer("le", 8),
-          authority.publicKey.toBuffer(),
-        ],
+        [Buffer.from('vote'), policyId.toBuffer('le', 8), authority.publicKey.toBuffer()],
         program.programId
       );
 
@@ -128,22 +124,22 @@ describe("Quantumagi Core - Corrected Test Suite", () => {
 
       // ✅ CORRECT: Fetch voteRecord account
       const voteRecordAccount = await program.account.voteRecord.fetch(voteRecordPDA);
-      
+
       expect(voteRecordAccount.vote).to.equal(true);
       expect(voteRecordAccount.votingPower.toNumber()).to.equal(1);
       expect(voteRecordAccount.voter.toString()).to.equal(authority.publicKey.toString());
-      
-      console.log("✅ Vote cast successfully");
+
+      console.log('✅ Vote cast successfully');
     });
 
-    it("should finalize proposal", async () => {
+    it('should finalize proposal', async () => {
       // Create proposal first
       await program.methods
         .createPolicyProposal(
           policyId,
-          "Finalize Test Policy",
-          "Policy for testing finalization",
-          "ENFORCE: Finalization validation requirements"
+          'Finalize Test Policy',
+          'Policy for testing finalization',
+          'ENFORCE: Finalization validation requirements'
         )
         .accounts({
           proposal: proposalPDA,
@@ -166,12 +162,12 @@ describe("Quantumagi Core - Corrected Test Suite", () => {
       const proposalAccount = await program.account.policyProposal.fetch(proposalPDA);
       expect(proposalAccount.status).to.deep.equal({ approved: {} });
 
-      console.log("✅ Proposal finalized successfully");
+      console.log('✅ Proposal finalized successfully');
     });
   });
 
-  describe("✅ Emergency Actions", () => {
-    it("should execute emergency action", async () => {
+  describe('✅ Emergency Actions', () => {
+    it('should execute emergency action', async () => {
       // ✅ CORRECT: Use emergencyAction method
       await program.methods
         .emergencyAction(
@@ -184,12 +180,12 @@ describe("Quantumagi Core - Corrected Test Suite", () => {
         })
         .rpc();
 
-      console.log("✅ Emergency action executed successfully");
+      console.log('✅ Emergency action executed successfully');
     });
   });
 
-  describe("✅ System Validation", () => {
-    it("should validate governance state", async () => {
+  describe('✅ System Validation', () => {
+    it('should validate governance state', async () => {
       const governanceAccount = await program.account.governanceState.fetch(governancePDA);
 
       expect(governanceAccount.authority.toString()).to.equal(authority.publicKey.toString());
@@ -197,7 +193,7 @@ describe("Quantumagi Core - Corrected Test Suite", () => {
       // Note: totalPolicies starts at 0 and increments when policies are finalized
       expect(governanceAccount.totalPolicies).to.be.greaterThanOrEqual(0);
 
-      console.log("✅ Governance state validation successful");
+      console.log('✅ Governance state validation successful');
       console.log(`   Authority: ${governanceAccount.authority.toString().substring(0, 8)}...`);
       console.log(`   Principles: ${governanceAccount.principles.length}`);
       console.log(`   Total Policies: ${governanceAccount.totalPolicies}`);

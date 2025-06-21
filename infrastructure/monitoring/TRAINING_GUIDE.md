@@ -20,16 +20,19 @@ This comprehensive training guide provides administrators, operators, and develo
 ### Accessing the Monitoring Infrastructure
 
 **Grafana Dashboard Access**:
+
 - URL: `http://localhost:3000`
 - Default Username: `acgs_admin`
 - Password: Located in `/etc/acgs/admin-credentials.txt`
 
 **Prometheus Metrics Access**:
+
 - URL: `http://localhost:9090`
 - Username: `acgs_monitor`
 - Password: Located in `/etc/acgs/admin-credentials.txt`
 
 **Alertmanager Access**:
+
 - URL: `http://localhost:9093`
 - No authentication required (internal access only)
 
@@ -53,26 +56,31 @@ curl -s "http://localhost:9090/api/v1/query?query=up" | jq '.data.result | lengt
 ### Main Dashboards Overview
 
 **1. ACGS Services Overview Dashboard**
+
 - **Purpose**: High-level view of all 7 ACGS services
 - **Key Metrics**: Service uptime, response times, error rates
 - **Use Cases**: Daily health checks, incident overview
 
 **2. Constitutional Governance Workflows Dashboard**
+
 - **Purpose**: Monitor governance-specific operations
 - **Key Metrics**: Policy creation rates, compliance scores, governance costs
 - **Use Cases**: Governance performance analysis, compliance monitoring
 
 **3. Infrastructure Monitoring Dashboard**
+
 - **Purpose**: System-level monitoring (HAProxy, Redis, PostgreSQL)
 - **Key Metrics**: Load balancer performance, cache hit rates, database connections
 - **Use Cases**: Infrastructure health, capacity planning
 
 **4. Performance Metrics Dashboard**
+
 - **Purpose**: Detailed performance analysis
 - **Key Metrics**: Response time distributions, throughput, resource utilization
 - **Use Cases**: Performance optimization, SLA monitoring
 
 **5. Security Dashboard**
+
 - **Purpose**: Security event monitoring and threat detection
 - **Key Metrics**: Authentication failures, suspicious activities, security alerts
 - **Use Cases**: Security incident response, threat analysis
@@ -80,16 +88,19 @@ curl -s "http://localhost:9090/api/v1/query?query=up" | jq '.data.result | lengt
 ### Dashboard Navigation Tips
 
 **Time Range Selection**:
+
 - Use appropriate time ranges for analysis
 - Default: Last 1 hour for real-time monitoring
 - Extended ranges: Last 24 hours for trend analysis
 
 **Panel Interactions**:
+
 - Click on legend items to toggle series visibility
 - Drag to zoom into specific time periods
 - Right-click for context menu options
 
 **Variable Usage**:
+
 - Use dashboard variables to filter by service, environment, or instance
 - Variables are located at the top of each dashboard
 
@@ -120,18 +131,21 @@ curl -s "http://localhost:9090/api/v1/query?query=up" | jq '.data.result | lengt
 ### Understanding Alert Severity Levels
 
 **Critical Alerts** (Response: <5 minutes):
+
 - Service down
 - Constitutional compliance failures
 - Security breaches
 - System resource exhaustion
 
 **High Priority Alerts** (Response: <15 minutes):
+
 - High error rates
 - Performance degradation
 - Load balancer issues
 - Database connection problems
 
 **Warning Alerts** (Response: <1 hour):
+
 - Resource usage warnings
 - Minor performance issues
 - Configuration drift
@@ -140,6 +154,7 @@ curl -s "http://localhost:9090/api/v1/query?query=up" | jq '.data.result | lengt
 ### Alert Response Procedures
 
 **Step 1: Alert Acknowledgment**
+
 ```bash
 # Acknowledge alert in Alertmanager
 curl -X POST http://localhost:9093/api/v1/alerts \
@@ -148,6 +163,7 @@ curl -X POST http://localhost:9093/api/v1/alerts \
 ```
 
 **Step 2: Initial Assessment**
+
 ```bash
 # Check service status
 docker-compose -f docker-compose.monitoring.yml ps
@@ -158,6 +174,7 @@ docker logs acgs_grafana --tail 50
 ```
 
 **Step 3: Impact Analysis**
+
 ```bash
 # Check affected services
 curl -s "http://localhost:9090/api/v1/query?query=up{job=~'acgs-.*'}" | jq '.data.result'
@@ -169,6 +186,7 @@ curl -s "http://localhost:9090/api/v1/query?query=rate(http_requests_total{statu
 ### Silencing Alerts
 
 **Temporary Silence (Maintenance)**:
+
 ```bash
 curl -X POST http://localhost:9093/api/v1/silences \
   -H "Content-Type: application/json" \
@@ -186,16 +204,19 @@ curl -X POST http://localhost:9093/api/v1/silences \
 ### Key Performance Indicators (KPIs)
 
 **Response Time Metrics**:
+
 - Average response time: <200ms
 - 95th percentile: <500ms
 - 99th percentile: <1000ms
 
 **Availability Metrics**:
+
 - Service uptime: >99.5%
 - System availability: >99.9%
 - Error rate: <1%
 
 **Resource Utilization**:
+
 - CPU usage: <80%
 - Memory usage: <85%
 - Disk usage: <90%
@@ -203,9 +224,10 @@ curl -X POST http://localhost:9093/api/v1/silences \
 ### Performance Analysis Queries
 
 **Service Response Times**:
+
 ```promql
 # Average response time by service
-rate(http_request_duration_seconds_sum{job=~"acgs-.*"}[5m]) / 
+rate(http_request_duration_seconds_sum{job=~"acgs-.*"}[5m]) /
 rate(http_request_duration_seconds_count{job=~"acgs-.*"}[5m])
 
 # 95th percentile response time
@@ -213,9 +235,10 @@ histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=~"acgs-.*
 ```
 
 **Error Rate Analysis**:
+
 ```promql
 # Error rate by service
-rate(http_requests_total{status=~"5.."}[5m]) / 
+rate(http_requests_total{status=~"5.."}[5m]) /
 rate(http_requests_total[5m])
 
 # Total error count
@@ -223,6 +246,7 @@ sum(rate(http_requests_total{status=~"5.."}[5m])) by (job)
 ```
 
 **Resource Utilization**:
+
 ```promql
 # CPU usage
 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)
@@ -237,12 +261,13 @@ sum(rate(http_requests_total{status=~"5.."}[5m])) by (job)
 ### Constitutional Governance Metrics
 
 **Compliance Monitoring**:
+
 ```promql
 # Constitutional compliance score
 acgs_constitutional_compliance_score
 
 # Policy synthesis success rate
-rate(acgs_policy_synthesis_success_total[5m]) / 
+rate(acgs_policy_synthesis_success_total[5m]) /
 rate(acgs_policy_synthesis_total[5m])
 
 # Governance action costs
@@ -254,6 +279,7 @@ acgs_governance_action_cost_sol
 ### Common Issues and Solutions
 
 **Issue: High Memory Usage**
+
 ```bash
 # Check memory usage by container
 docker stats --no-stream
@@ -266,6 +292,7 @@ curl -s "http://localhost:9090/api/v1/status/tsdb" | jq '.data.headStats'
 ```
 
 **Issue: Slow Dashboard Loading**
+
 ```bash
 # Check Grafana performance
 curl -w "@curl-format.txt" -s -o /dev/null http://localhost:3000/api/health
@@ -277,6 +304,7 @@ curl -w "@curl-format.txt" -s -o /dev/null http://localhost:3000/api/health
 ```
 
 **Issue: Alert Storm**
+
 ```bash
 # Check current alerts
 curl -s "http://localhost:9093/api/v1/alerts" | jq '.data | length'
@@ -288,6 +316,7 @@ curl -s "http://localhost:9093/api/v1/alerts" | jq '.data | length'
 ### Diagnostic Commands
 
 **Service Health Check**:
+
 ```bash
 # Comprehensive health check
 ./infrastructure/monitoring/health-check.sh
@@ -299,6 +328,7 @@ curl http://localhost:9093/-/healthy
 ```
 
 **Log Analysis**:
+
 ```bash
 # View service logs
 docker logs acgs_prometheus --tail 100
@@ -423,21 +453,22 @@ governance_actions = Counter(
 
 ```promql
 # Complex aggregations
-sum(rate(http_requests_total[5m])) by (job, status) / 
+sum(rate(http_requests_total[5m])) by (job, status) /
 sum(rate(http_requests_total[5m])) by (job)
 
 # Prediction queries
 predict_linear(node_filesystem_free_bytes[1h], 4*3600) < 0
 
 # Anomaly detection
-abs(rate(http_requests_total[5m]) - 
-    avg_over_time(rate(http_requests_total[5m])[1h:5m])) > 
+abs(rate(http_requests_total[5m]) -
+    avg_over_time(rate(http_requests_total[5m])[1h:5m])) >
     2 * stddev_over_time(rate(http_requests_total[5m])[1h:5m])
 ```
 
 ### Integration with External Systems
 
 **Webhook Integration**:
+
 ```yaml
 # alertmanager.yml
 webhook_configs:
@@ -447,6 +478,7 @@ webhook_configs:
 ```
 
 **API Integration**:
+
 ```bash
 # Custom notification script
 curl -X POST https://api.external-system.com/alerts \
@@ -457,12 +489,14 @@ curl -X POST https://api.external-system.com/alerts \
 ---
 
 **Additional Resources**:
+
 - [Production Deployment Guide](PRODUCTION_DEPLOYMENT_GUIDE.md)
 - [Operational Runbooks](OPERATIONAL_RUNBOOKS.md)
 - [Security Configuration Guide](SECURITY_GUIDE.md)
 - [Performance Validation Guide](PERFORMANCE_VALIDATION_GUIDE.md)
 
 **Support Contacts**:
+
 - **Training Questions**: training@acgs.ai
 - **Technical Support**: support@acgs.ai
 - **Emergency Escalation**: +1-XXX-XXX-XXXX

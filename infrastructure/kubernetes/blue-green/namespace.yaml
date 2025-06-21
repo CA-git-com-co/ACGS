@@ -11,9 +11,9 @@ metadata:
     deployment-type: blue-green
     version: v1.0.0
   annotations:
-    description: "ACGS-1 Blue environment for zero-downtime deployments"
-    constitutional-hash: "cdd01ef066bc6cf2"
-    governance-compliance: "required"
+    description: 'ACGS-1 Blue environment for zero-downtime deployments'
+    constitutional-hash: 'cdd01ef066bc6cf2'
+    governance-compliance: 'required'
 
 ---
 apiVersion: v1
@@ -26,9 +26,9 @@ metadata:
     deployment-type: blue-green
     version: v1.0.0
   annotations:
-    description: "ACGS-1 Green environment for zero-downtime deployments"
-    constitutional-hash: "cdd01ef066bc6cf2"
-    governance-compliance: "required"
+    description: 'ACGS-1 Green environment for zero-downtime deployments'
+    constitutional-hash: 'cdd01ef066bc6cf2'
+    governance-compliance: 'required'
 
 ---
 apiVersion: v1
@@ -41,9 +41,9 @@ metadata:
     deployment-type: shared-resources
     version: v1.0.0
   annotations:
-    description: "ACGS-1 Shared resources for blue-green deployments (databases, monitoring)"
-    constitutional-hash: "cdd01ef066bc6cf2"
-    governance-compliance: "required"
+    description: 'ACGS-1 Shared resources for blue-green deployments (databases, monitoring)'
+    constitutional-hash: 'cdd01ef066bc6cf2'
+    governance-compliance: 'required'
 
 ---
 # Network Policies for Blue-Green Isolation
@@ -55,37 +55,37 @@ metadata:
 spec:
   podSelector: {}
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
   ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: acgs-shared
-    - namespaceSelector:
-        matchLabels:
-          name: ingress-nginx
-    - podSelector: {}
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: acgs-shared
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+        - podSelector: {}
   egress:
-  - to:
-    - namespaceSelector:
-        matchLabels:
-          name: acgs-shared
-    - namespaceSelector:
-        matchLabels:
-          name: kube-system
-  - to: []
-    ports:
-    - protocol: TCP
-      port: 53
-    - protocol: UDP
-      port: 53
-  - to: []
-    ports:
-    - protocol: TCP
-      port: 443
-    - protocol: TCP
-      port: 80
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: acgs-shared
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 53
+        - protocol: UDP
+          port: 53
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 80
 
 ---
 apiVersion: networking.k8s.io/v1
@@ -96,37 +96,37 @@ metadata:
 spec:
   podSelector: {}
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
   ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: acgs-shared
-    - namespaceSelector:
-        matchLabels:
-          name: ingress-nginx
-    - podSelector: {}
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: acgs-shared
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+        - podSelector: {}
   egress:
-  - to:
-    - namespaceSelector:
-        matchLabels:
-          name: acgs-shared
-    - namespaceSelector:
-        matchLabels:
-          name: kube-system
-  - to: []
-    ports:
-    - protocol: TCP
-      port: 53
-    - protocol: UDP
-      port: 53
-  - to: []
-    ports:
-    - protocol: TCP
-      port: 443
-    - protocol: TCP
-      port: 80
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: acgs-shared
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 53
+        - protocol: UDP
+          port: 53
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 80
 
 ---
 # Resource Quotas for Blue-Green Environments
@@ -137,13 +137,13 @@ metadata:
   namespace: acgs-blue
 spec:
   hard:
-    requests.cpu: "4"
+    requests.cpu: '4'
     requests.memory: 8Gi
-    limits.cpu: "8"
+    limits.cpu: '8'
     limits.memory: 16Gi
-    pods: "20"
-    services: "10"
-    persistentvolumeclaims: "5"
+    pods: '20'
+    services: '10'
+    persistentvolumeclaims: '5'
 
 ---
 apiVersion: v1
@@ -153,13 +153,13 @@ metadata:
   namespace: acgs-green
 spec:
   hard:
-    requests.cpu: "4"
+    requests.cpu: '4'
     requests.memory: 8Gi
-    limits.cpu: "8"
+    limits.cpu: '8'
     limits.memory: 16Gi
-    pods: "20"
-    services: "10"
-    persistentvolumeclaims: "5"
+    pods: '20'
+    services: '10'
+    persistentvolumeclaims: '5'
 
 ---
 # Limit Ranges for Pod Resources
@@ -170,13 +170,13 @@ metadata:
   namespace: acgs-blue
 spec:
   limits:
-  - default:
-      cpu: "500m"
-      memory: "1Gi"
-    defaultRequest:
-      cpu: "100m"
-      memory: "256Mi"
-    type: Container
+    - default:
+        cpu: '500m'
+        memory: '1Gi'
+      defaultRequest:
+        cpu: '100m'
+        memory: '256Mi'
+      type: Container
 
 ---
 apiVersion: v1
@@ -186,10 +186,10 @@ metadata:
   namespace: acgs-green
 spec:
   limits:
-  - default:
-      cpu: "500m"
-      memory: "1Gi"
-    defaultRequest:
-      cpu: "100m"
-      memory: "256Mi"
-    type: Container
+    - default:
+        cpu: '500m'
+        memory: '1Gi'
+      defaultRequest:
+        cpu: '100m'
+        memory: '256Mi'
+      type: Container

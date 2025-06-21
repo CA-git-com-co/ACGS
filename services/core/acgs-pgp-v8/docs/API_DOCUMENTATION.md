@@ -27,6 +27,7 @@ Tokens are validated against the ACGS-1 Auth Service (port 8000).
 Returns the current health status of all ACGS-PGP v8 components.
 
 **Response Example:**
+
 ```json
 {
   "status": "healthy",
@@ -68,6 +69,7 @@ Returns comprehensive system status including performance metrics.
 **Authentication**: Required
 
 **Response Example:**
+
 ```json
 {
   "overall_status": "operational",
@@ -106,6 +108,7 @@ Generates a new policy using quantum-inspired semantic fault tolerance.
 **Content-Type**: `application/json`
 
 **Request Body:**
+
 ```json
 {
   "title": "Data Privacy Protection Policy",
@@ -127,6 +130,7 @@ Generates a new policy using quantum-inspired semantic fault tolerance.
 ```
 
 **Response Example:**
+
 ```json
 {
   "generation_id": "pgp_gen_20240616_153045_abc123",
@@ -158,6 +162,7 @@ Generates a new policy using quantum-inspired semantic fault tolerance.
 ```
 
 **Error Responses:**
+
 - `400 Bad Request`: Invalid request format or missing required fields
 - `401 Unauthorized`: Invalid or missing authentication token
 - `422 Unprocessable Entity`: Constitutional compliance validation failed
@@ -175,6 +180,7 @@ Performs comprehensive system diagnosis with ML-powered error analysis.
 **Content-Type**: `application/json`
 
 **Request Body:**
+
 ```json
 {
   "target_system": "acgs-pgp-v8",
@@ -184,6 +190,7 @@ Performs comprehensive system diagnosis with ML-powered error analysis.
 ```
 
 **Response Example:**
+
 ```json
 {
   "diagnostic_id": "diag_20240616_153045_xyz789",
@@ -213,6 +220,7 @@ Returns Prometheus-formatted metrics for monitoring and alerting.
 **Content-Type**: `text/plain; version=0.0.4; charset=utf-8`
 
 **Key Metrics:**
+
 - `acgs_pgp_v8_system_uptime_seconds`: System uptime
 - `acgs_pgp_v8_policy_generation_requests_total`: Total policy generation requests
 - `acgs_pgp_v8_constitutional_compliance_score`: Constitutional compliance scores
@@ -228,6 +236,7 @@ Returns a JSON summary of key metrics for dashboard consumption.
 **Authentication**: Not required
 
 **Response Example:**
+
 ```json
 {
   "constitutional_hash": "cdd01ef066bc6cf2",
@@ -265,6 +274,7 @@ All API endpoints follow consistent error response format:
 - **Diagnostics**: 5 requests per minute per authenticated user
 
 Rate limit headers are included in responses:
+
 - `X-RateLimit-Limit`: Request limit per window
 - `X-RateLimit-Remaining`: Remaining requests in current window
 - `X-RateLimit-Reset`: Time when the rate limit resets
@@ -272,6 +282,7 @@ Rate limit headers are included in responses:
 ## Security Headers
 
 All responses include security headers:
+
 - `X-Constitutional-Hash`: cdd01ef066bc6cf2
 - `X-ACGS-Service`: acgs-pgp-v8
 - `X-Content-Type-Options`: nosniff
@@ -281,6 +292,7 @@ All responses include security headers:
 ## Integration Examples
 
 ### Python Client
+
 ```python
 import httpx
 import asyncio
@@ -289,7 +301,7 @@ class ACGSPGPClient:
     def __init__(self, base_url="http://localhost:8010", token=None):
         self.base_url = base_url
         self.headers = {"Authorization": f"Bearer {token}"} if token else {}
-    
+
     async def generate_policy(self, policy_request):
         async with httpx.AsyncClient() as client:
             response = await client.post(
@@ -298,7 +310,7 @@ class ACGSPGPClient:
                 headers=self.headers
             )
             return response.json()
-    
+
     async def health_check(self):
         async with httpx.AsyncClient() as client:
             response = await client.get(f"{self.base_url}/health")
@@ -306,6 +318,7 @@ class ACGSPGPClient:
 ```
 
 ### cURL Examples
+
 ```bash
 # Health check
 curl http://localhost:8010/health

@@ -10,14 +10,14 @@ metadata:
     app: acgs-shared
     component: configuration
 data:
-  constitutional-hash: "cdd01ef066bc6cf2"
-  postgres-host: "acgs-postgres"
-  postgres-port: "5432"
-  postgres-database: "acgs_db"
-  redis-host: "acgs-redis"
-  redis-port: "6379"
-  monitoring-enabled: "true"
-  blue-green-enabled: "true"
+  constitutional-hash: 'cdd01ef066bc6cf2'
+  postgres-host: 'acgs-postgres'
+  postgres-port: '5432'
+  postgres-database: 'acgs_db'
+  redis-host: 'acgs-redis'
+  redis-port: '6379'
+  monitoring-enabled: 'true'
+  blue-green-enabled: 'true'
 
 ---
 # PostgreSQL Database (Shared)
@@ -42,71 +42,71 @@ spec:
         component: database
     spec:
       containers:
-      - name: postgres
-        image: postgres:15-alpine
-        ports:
-        - containerPort: 5432
-          name: postgres
-        env:
-        - name: POSTGRES_DB
-          value: "acgs_db"
-        - name: POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: acgs-postgres-secret
-              key: username
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: acgs-postgres-secret
-              key: password
-        - name: PGDATA
-          value: /var/lib/postgresql/data/pgdata
-        volumeMounts:
-        - name: postgres-storage
-          mountPath: /var/lib/postgresql/data
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_DB
+              value: 'acgs_db'
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-postgres-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-postgres-secret
+                  key: password
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+            - name: postgres-config
+              mountPath: /etc/postgresql/postgresql.conf
+              subPath: postgresql.conf
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - $(POSTGRES_USER)
+                - -d
+                - $(POSTGRES_DB)
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - $(POSTGRES_USER)
+                - -d
+                - $(POSTGRES_DB)
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: '1Gi'
+              cpu: '500m'
+            limits:
+              memory: '2Gi'
+              cpu: '1000m'
+      volumes:
         - name: postgres-config
-          mountPath: /etc/postgresql/postgresql.conf
-          subPath: postgresql.conf
-        livenessProbe:
-          exec:
-            command:
-            - pg_isready
-            - -U
-            - $(POSTGRES_USER)
-            - -d
-            - $(POSTGRES_DB)
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          exec:
-            command:
-            - pg_isready
-            - -U
-            - $(POSTGRES_USER)
-            - -d
-            - $(POSTGRES_DB)
-          initialDelaySeconds: 5
-          periodSeconds: 5
+          configMap:
+            name: postgres-config
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-storage
+      spec:
+        accessModes: ['ReadWriteOnce']
         resources:
           requests:
-            memory: "1Gi"
-            cpu: "500m"
-          limits:
-            memory: "2Gi"
-            cpu: "1000m"
-      volumes:
-      - name: postgres-config
-        configMap:
-          name: postgres-config
-  volumeClaimTemplates:
-  - metadata:
-      name: postgres-storage
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      resources:
-        requests:
-          storage: 20Gi
+            storage: 20Gi
 
 ---
 apiVersion: v1
@@ -121,9 +121,9 @@ spec:
   selector:
     app: acgs-postgres
   ports:
-  - port: 5432
-    targetPort: 5432
-    name: postgres
+    - port: 5432
+      targetPort: 5432
+      name: postgres
   type: ClusterIP
 
 ---
@@ -148,46 +148,46 @@ spec:
         component: cache
     spec:
       containers:
-      - name: redis
-        image: redis:7-alpine
-        ports:
-        - containerPort: 6379
-          name: redis
-        command:
-        - redis-server
-        - /etc/redis/redis.conf
-        volumeMounts:
-        - name: redis-config
-          mountPath: /etc/redis
-        - name: redis-data
-          mountPath: /data
-        livenessProbe:
-          exec:
-            command:
-            - redis-cli
-            - ping
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          exec:
-            command:
-            - redis-cli
-            - ping
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "100m"
-          limits:
-            memory: "512Mi"
-            cpu: "200m"
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+              name: redis
+          command:
+            - redis-server
+            - /etc/redis/redis.conf
+          volumeMounts:
+            - name: redis-config
+              mountPath: /etc/redis
+            - name: redis-data
+              mountPath: /data
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '100m'
+            limits:
+              memory: '512Mi'
+              cpu: '200m'
       volumes:
-      - name: redis-config
-        configMap:
-          name: redis-config
-      - name: redis-data
-        emptyDir: {}
+        - name: redis-config
+          configMap:
+            name: redis-config
+        - name: redis-data
+          emptyDir: {}
 
 ---
 apiVersion: v1
@@ -202,9 +202,9 @@ spec:
   selector:
     app: acgs-redis
   ports:
-  - port: 6379
-    targetPort: 6379
-    name: redis
+    - port: 6379
+      targetPort: 6379
+      name: redis
   type: ClusterIP
 
 ---
@@ -229,35 +229,35 @@ spec:
         component: monitoring
     spec:
       containers:
-      - name: prometheus
-        image: prom/prometheus:latest
-        ports:
-        - containerPort: 9090
-          name: prometheus
-        args:
-        - --config.file=/etc/prometheus/prometheus.yml
-        - --storage.tsdb.path=/prometheus
-        - --web.console.libraries=/etc/prometheus/console_libraries
-        - --web.console.templates=/etc/prometheus/consoles
-        - --web.enable-lifecycle
-        volumeMounts:
-        - name: prometheus-config
-          mountPath: /etc/prometheus
-        - name: prometheus-storage
-          mountPath: /prometheus
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "200m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
+        - name: prometheus
+          image: prom/prometheus:latest
+          ports:
+            - containerPort: 9090
+              name: prometheus
+          args:
+            - --config.file=/etc/prometheus/prometheus.yml
+            - --storage.tsdb.path=/prometheus
+            - --web.console.libraries=/etc/prometheus/console_libraries
+            - --web.console.templates=/etc/prometheus/consoles
+            - --web.enable-lifecycle
+          volumeMounts:
+            - name: prometheus-config
+              mountPath: /etc/prometheus
+            - name: prometheus-storage
+              mountPath: /prometheus
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '200m'
+            limits:
+              memory: '1Gi'
+              cpu: '500m'
       volumes:
-      - name: prometheus-config
-        configMap:
-          name: prometheus-config
-      - name: prometheus-storage
-        emptyDir: {}
+        - name: prometheus-config
+          configMap:
+            name: prometheus-config
+        - name: prometheus-storage
+          emptyDir: {}
 
 ---
 apiVersion: v1
@@ -272,9 +272,9 @@ spec:
   selector:
     app: acgs-prometheus
   ports:
-  - port: 9090
-    targetPort: 9090
-    name: prometheus
+    - port: 9090
+      targetPort: 9090
+      name: prometheus
   type: ClusterIP
 
 ---
@@ -299,27 +299,27 @@ spec:
         component: health-monitoring
     spec:
       containers:
-      - name: health-checker
-        image: acgs/health-checker:latest
-        ports:
-        - containerPort: 8080
-          name: http
-        env:
-        - name: BLUE_NAMESPACE
-          value: "acgs-blue"
-        - name: GREEN_NAMESPACE
-          value: "acgs-green"
-        - name: CONSTITUTIONAL_HASH
-          value: "cdd01ef066bc6cf2"
-        - name: HEALTH_CHECK_INTERVAL
-          value: "30"
-        resources:
-          requests:
-            memory: "128Mi"
-            cpu: "50m"
-          limits:
-            memory: "256Mi"
-            cpu: "100m"
+        - name: health-checker
+          image: acgs/health-checker:latest
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: BLUE_NAMESPACE
+              value: 'acgs-blue'
+            - name: GREEN_NAMESPACE
+              value: 'acgs-green'
+            - name: CONSTITUTIONAL_HASH
+              value: 'cdd01ef066bc6cf2'
+            - name: HEALTH_CHECK_INTERVAL
+              value: '30'
+          resources:
+            requests:
+              memory: '128Mi'
+              cpu: '50m'
+            limits:
+              memory: '256Mi'
+              cpu: '100m'
 
 ---
 apiVersion: v1
@@ -334,7 +334,7 @@ spec:
   selector:
     app: acgs-health-checker
   ports:
-  - port: 8080
-    targetPort: 8080
-    name: http
+    - port: 8080
+      targetPort: 8080
+      name: http
   type: ClusterIP

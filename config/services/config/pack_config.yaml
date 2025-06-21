@@ -42,8 +42,8 @@ exp_manager:
     save_best_model: True
   create_early_stopping_callback: True
   early_stopping_callback_params:
-    monitor: "val_loss"
-    mode: "min"
+    monitor: 'val_loss'
+    mode: 'min'
     min_delta: 0.001
     patience: 10
     verbose: True
@@ -90,7 +90,7 @@ model:
   fsdp_use_orig_params: False # Set to True to use FSDP for specific peft scheme.
 
   peft:
-    peft_scheme: "adapter"  # can be either adapter,ia3, or ptuning
+    peft_scheme: 'adapter' # can be either adapter,ia3, or ptuning
     restore_from_path: null
 
     # Used for adapter peft training
@@ -102,43 +102,43 @@ model:
       column_init_method: 'xavier' # IGNORED if linear_adapter is used, options: xavier, zero or normal
       row_init_method: 'zero' # IGNORED if linear_adapter is used, options: xavier, zero or normal
       norm_type: 'mixedfusedlayernorm' # IGNORED if layer_adapter is used,  options are ['layernorm', 'mixedfusedlayernorm']
-      layer_selection: null  # selects in which layers to add adapters, e.g. [1,12] will add adapters to layer 1 (lowest) and 12. null will apply adapters to all layers
+      layer_selection: null # selects in which layers to add adapters, e.g. [1,12] will add adapters to layer 1 (lowest) and 12. null will apply adapters to all layers
       weight_tying: False
       position_embedding_strategy: null # used only when weight_tying is True
 
     lora_tuning:
-      variant: "nemo" # can be "nemo" or "canonical"
+      variant: 'nemo' # can be "nemo" or "canonical"
       target_modules: ['attention_qkv'] # this can either be 'attention_qkv','attention_dense','mlp_fc1','mlp_fc2', attention (qkv & dense), mlp (fc1 & fc2)
       adapter_dim: 32
       alpha: ${model.peft.lora_tuning.adapter_dim}
       adapter_dropout: 0.0
       column_init_method: 'xavier' # IGNORED if linear_adapter is used, options: xavier, zero or normal
       row_init_method: 'zero' # IGNORED if linear_adapter is used, options: xavier, zero or normal
-      layer_selection:  null  # selects in which layers to add lora adapters. e.g. [1,12] will add lora to layer 1 (lowest) and 12. null will apply adapters to all layers
+      layer_selection: null # selects in which layers to add lora adapters. e.g. [1,12] will add lora to layer 1 (lowest) and 12. null will apply adapters to all layers
       weight_tying: False
       position_embedding_strategy: null # used only when weight_tying is True
 
     # Used for p-tuning peft training
     p_tuning:
-      virtual_tokens: 10  # The number of virtual tokens the prompt encoder should add at the start of the sequence
-      bottleneck_dim: 1024  # the size of the prompt encoder mlp bottleneck
-      embedding_dim: 1024  # the size of the prompt encoder embeddings
+      virtual_tokens: 10 # The number of virtual tokens the prompt encoder should add at the start of the sequence
+      bottleneck_dim: 1024 # the size of the prompt encoder mlp bottleneck
+      embedding_dim: 1024 # the size of the prompt encoder embeddings
       init_std: 0.023
 
     ia3_tuning:
-      layer_selection:  null  # selects in which layers to add ia3 adapters. e.g. [1,12] will add lora to layer 1 (lowest) and 12. null will apply adapters to all layers
+      layer_selection: null # selects in which layers to add ia3 adapters. e.g. [1,12] will add lora to layer 1 (lowest) and 12. null will apply adapters to all layers
 
     selective_tuning:
-      tunable_base_param_names: ["self_attention", "word_embeddings"]  # TODO: regex support @adithyre
+      tunable_base_param_names: ['self_attention', 'word_embeddings'] # TODO: regex support @adithyre
 
   data:
     chat: False # whether use chatbot data or not
-    chat_prompt_tokens:  # special tokens for the chat prompts, a dictionary of {token_type: token}. note that some tokenizer may combine the characters at the junction between {end_of_turn}{turn_start}. e.g. '<im end><im start>', the '><' sometimes is merged to be a single token. This is not supported, try to avoid
+    chat_prompt_tokens: # special tokens for the chat prompts, a dictionary of {token_type: token}. note that some tokenizer may combine the characters at the junction between {end_of_turn}{turn_start}. e.g. '<im end><im start>', the '><' sometimes is merged to be a single token. This is not supported, try to avoid
       system_turn_start: "\x00"
       turn_start: "\x11"
       label_start: "\x12"
-      end_of_turn: "\x0A"  # \0x0A is '\n'
-      end_of_name: "\x0A"  # \0x0A is '\n'
+      end_of_turn: "\x0A" # \0x0A is '\n'
+      end_of_name: "\x0A" # \0x0A is '\n'
     train_ds:
       # Example of how to specify paths to multiple datasets
       # file_names:
@@ -167,9 +167,9 @@ model:
       add_eos: False
       add_sep: False
       add_bos: False
-      truncation_field: "input" # # Can be multiple keys separated with ',' Options: keys in prompt_template
+      truncation_field: 'input' # # Can be multiple keys separated with ',' Options: keys in prompt_template
       index_mapping_dir: null # Path to a directory to write index mapping files.
-      prompt_template: "{input}{output}" # fstring to use for assistant prompt. Example: "Q: {input}\nA: {output}"
+      prompt_template: '{input}{output}' # fstring to use for assistant prompt. Example: "Q: {input}\nA: {output}"
       truncation_method: 'right' # Truncation from which position, Options: ['left', 'right']
       global_sample_mapping: False # Whether to shuffle the replicated data all together, or shuffle the dataset within each epoch
     validation_ds:
@@ -197,7 +197,7 @@ model:
       truncation_method: 'right' # Truncation from which position, Options: ['left', 'right']
       global_sample_mapping: False # Whether to shuffle the replicated data all together, or shuffle the dataset within each epoch
       metric:
-        name: "loss" # Name of the evaluation metric to use. Options: ['exact_string_match', 'loss']
+        name: 'loss' # Name of the evaluation metric to use. Options: ['exact_string_match', 'loss']
         average: null # Average the metric over the dataset. Options: ['macro', 'micro']. Works only for 'F1', 'accuracy' etc. Refer to torchmetrics for metrics where this is supported.
         num_classes: null
     test_ds:
@@ -225,7 +225,7 @@ model:
       truncation_method: 'right' # Truncation from which position, Options: ['left', 'right']
       global_sample_mapping: False # Whether to shuffle the replicated data all together, or shuffle the dataset within each epoch
       metric:
-        name: "loss" # Name of the evaluation metric to use. Options: ['exact_string_match', 'loss']
+        name: 'loss' # Name of the evaluation metric to use. Options: ['exact_string_match', 'loss']
         average: null # Average the metric over the dataset. Options: ['macro', 'micro']. Works only for 'F1', 'accuracy' etc. Refer to torchmetrics for metrics where this is supported.
         num_classes: null
 
@@ -234,8 +234,8 @@ model:
     lr: 1e-4
     weight_decay: 0.01
     betas:
-    - 0.9
-    - 0.98
+      - 0.9
+      - 0.98
     sched:
       name: CosineAnnealing
       warmup_steps: 50

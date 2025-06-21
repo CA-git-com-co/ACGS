@@ -3,6 +3,7 @@
 ## DashboardCard Component Specifications
 
 ### TypeScript Interface Implementation ✅
+
 ```typescript
 interface DashboardCardData {
   id: string;
@@ -31,6 +32,7 @@ interface TrendData {
 ```
 
 ### Responsive Layout Implementation ✅
+
 ```css
 /* Responsive grid system implementation */
 .dashboard-grid {
@@ -40,28 +42,43 @@ interface TrendData {
 }
 
 @media (min-width: 320px) {
-  .dashboard-grid { grid-template-columns: repeat(1, 1fr); }
+  .dashboard-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
 }
 
 @media (min-width: 768px) {
-  .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (min-width: 1024px) {
-  .dashboard-grid { grid-template-columns: repeat(3, 1fr); }
+  .dashboard-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 @media (min-width: 1440px) {
-  .dashboard-grid { grid-template-columns: repeat(4, 1fr); }
+  .dashboard-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 /* Card size variations */
-.card-large { grid-column: span 2; }
-.card-medium { grid-column: span 1; }
-.card-small { grid-column: span 1; }
+.card-large {
+  grid-column: span 2;
+}
+.card-medium {
+  grid-column: span 1;
+}
+.card-small {
+  grid-column: span 1;
+}
 ```
 
 ### Sparkline Visualization with ARIA ✅
+
 ```typescript
 // Sparkline component with comprehensive accessibility
 interface SparklineProps {
@@ -72,12 +89,12 @@ interface SparklineProps {
   'aria-label'?: string;
 }
 
-const Sparkline: React.FC<SparklineProps> = ({ 
-  data, 
-  width = 120, 
-  height = 32, 
+const Sparkline: React.FC<SparklineProps> = ({
+  data,
+  width = 120,
+  height = 32,
   color = 'currentColor',
-  'aria-label': ariaLabel 
+  'aria-label': ariaLabel,
 }) => {
   // Implementation includes:
   // - SVG path generation for trend visualization
@@ -89,6 +106,7 @@ const Sparkline: React.FC<SparklineProps> = ({
 ```
 
 ### Keyboard Navigation Implementation ✅
+
 ```typescript
 // Comprehensive keyboard support
 const DashboardCard = ({ card }) => {
@@ -125,6 +143,7 @@ const DashboardCard = ({ card }) => {
 ```
 
 ### Dark/Light Mode Theming ✅
+
 ```css
 /* CSS variables for theme support */
 :root {
@@ -150,6 +169,7 @@ const DashboardCard = ({ card }) => {
 ```
 
 ### Error Boundaries and Loading States ✅
+
 ```typescript
 // Error boundary implementation
 class CardErrorBoundary extends React.Component {
@@ -197,13 +217,14 @@ const DashboardCardSkeleton = ({ size }) => (
 ## Dashboard Page Implementation ✅
 
 ### 4-Column Responsive Grid System ✅
+
 ```typescript
 // Dashboard container with flexible grid
 const DashboardContainer = () => {
   const gridClassName = useMemo(() => {
     return cn(
       'grid gap-6 transition-all duration-200',
-      viewMode === 'grid' 
+      viewMode === 'grid'
         ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
         : 'grid-cols-1 md:grid-cols-3 lg:grid-cols-6'
     );
@@ -220,6 +241,7 @@ const DashboardContainer = () => {
 ```
 
 ### React Suspense with Skeleton Placeholders ✅
+
 ```typescript
 // Streaming implementation with progressive loading
 const DashboardPage = () => {
@@ -228,11 +250,11 @@ const DashboardPage = () => {
       <Suspense fallback={<DashboardHeaderSkeleton />}>
         <DashboardHeader />
       </Suspense>
-      
+
       <Suspense fallback={<DashboardGridSkeleton />}>
         <DashboardContainer />
       </Suspense>
-      
+
       <Suspense fallback={<ActivityFeedSkeleton />}>
         <RecentActivityFeed />
       </Suspense>
@@ -242,6 +264,7 @@ const DashboardPage = () => {
 ```
 
 ### Virtualization for Performance ✅
+
 ```typescript
 // Virtual scrolling for large card collections
 import { FixedSizeList as List } from 'react-window';
@@ -250,7 +273,7 @@ const VirtualizedDashboard = ({ cards }) => {
   const Row = ({ index, style }) => {
     const startIndex = index * 4;
     const rowCards = cards.slice(startIndex, startIndex + 4);
-    
+
     return (
       <div style={style} className="grid grid-cols-4 gap-6 px-6">
         {rowCards.map(card => (
@@ -273,36 +296,41 @@ const VirtualizedDashboard = ({ cards }) => {
 ```
 
 ### URL State Management ✅
+
 ```typescript
 // URL synchronization for tab persistence
 const useDashboardState = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
-  const updateURL = useCallback((newState) => {
-    const params = new URLSearchParams(searchParams);
-    
-    if (newState.tab !== 'overview') {
-      params.set('tab', newState.tab);
-    } else {
-      params.delete('tab');
-    }
-    
-    if (newState.view !== 'grid') {
-      params.set('view', newState.view);
-    } else {
-      params.delete('view');
-    }
-    
-    const newURL = params.toString() ? `/?${params.toString()}` : '/';
-    router.replace(newURL, { scroll: false });
-  }, [router, searchParams]);
+
+  const updateURL = useCallback(
+    (newState) => {
+      const params = new URLSearchParams(searchParams);
+
+      if (newState.tab !== 'overview') {
+        params.set('tab', newState.tab);
+      } else {
+        params.delete('tab');
+      }
+
+      if (newState.view !== 'grid') {
+        params.set('view', newState.view);
+      } else {
+        params.delete('view');
+      }
+
+      const newURL = params.toString() ? `/?${params.toString()}` : '/';
+      router.replace(newURL, { scroll: false });
+    },
+    [router, searchParams]
+  );
 
   return { updateURL };
 };
 ```
 
 ### Accessibility Heading Hierarchy ✅
+
 ```typescript
 // Semantic heading structure
 const DashboardPage = () => (
@@ -310,12 +338,12 @@ const DashboardPage = () => (
     <h1 className="text-large-heading font-bold">
       Governance Dashboard
     </h1>
-    
+
     <section aria-labelledby="metrics-section">
       <h2 id="metrics-section" className="text-heading font-semibold">
         Key Metrics
       </h2>
-      
+
       <div className="grid">
         {metrics.map(metric => (
           <article key={metric.id}>
@@ -332,6 +360,7 @@ const DashboardPage = () => (
 ## PolicyCard Component Implementation ✅
 
 ### Props Validation Interface ✅
+
 ```typescript
 interface PolicyCardProps {
   policy: Policy;
@@ -343,24 +372,25 @@ interface PolicyCardProps {
 }
 
 // Runtime validation with PropTypes equivalent
-const PolicyCard: React.FC<PolicyCardProps> = ({ 
-  policy, 
-  onEdit, 
-  onDelete, 
-  onDuplicate, 
+const PolicyCard: React.FC<PolicyCardProps> = ({
+  policy,
+  onEdit,
+  onDelete,
+  onDuplicate,
   onArchive,
-  className 
+  className,
 }) => {
   // Validation
   if (!policy || !policy.id) {
     throw new Error('PolicyCard requires a valid policy with id');
   }
-  
+
   // Component implementation
 };
 ```
 
 ### Semantic HTML Structure ✅
+
 ```typescript
 // Semantic HTML with proper document structure
 const PolicyCard = ({ policy }) => (
@@ -375,17 +405,17 @@ const PolicyCard = ({ policy }) => (
                 <span>{statusConfig.label}</span>
               </div>
             </div>
-            
+
             <CardTitle className="text-subheading font-semibold mb-2">
-              <Link 
+              <Link
                 href={`/policies/${policy.id}`}
                 aria-describedby={`policy-${policy.id}-description`}
               >
                 {policy.title}
               </Link>
             </CardTitle>
-            
-            <p 
+
+            <p
               id={`policy-${policy.id}-description`}
               className="text-body text-gray-600"
             >
@@ -394,7 +424,7 @@ const PolicyCard = ({ policy }) => (
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent className="pt-0">
         {/* Policy metadata and actions */}
       </CardContent>
@@ -404,12 +434,13 @@ const PolicyCard = ({ policy }) => (
 ```
 
 ### Dropdown Menu with Keyboard Support ✅
+
 ```typescript
 // Accessible dropdown implementation
 const PolicyCardMenu = ({ policy, onEdit, onDelete }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  
+
   const handleKeyDown = (event: React.KeyboardEvent) => {
     switch (event.key) {
       case 'Escape':
@@ -439,7 +470,7 @@ const PolicyCardMenu = ({ policy, onEdit, onDelete }) => {
       >
         <MoreVertical className="h-4 w-4" />
       </Button>
-      
+
       {isOpen && (
         <div
           ref={menuRef}
@@ -466,6 +497,7 @@ const PolicyCardMenu = ({ policy, onEdit, onDelete }) => {
 ```
 
 ### ARIA Attributes Implementation ✅
+
 ```typescript
 // Comprehensive ARIA support
 const PolicyCard = ({ policy }) => (
@@ -475,15 +507,15 @@ const PolicyCard = ({ policy }) => (
     aria-describedby={`policy-description-${policy.id}`}
   >
     <CardHeader>
-      <CardTitle 
+      <CardTitle
         id={`policy-title-${policy.id}`}
         className="text-subheading font-semibold"
       >
         {policy.title}
       </CardTitle>
-      
+
       <div className="flex items-center gap-2">
-        <span 
+        <span
           className="px-2 py-1 rounded-full text-xs"
           role="status"
           aria-label={`Policy status: ${policy.status}`}
@@ -492,15 +524,15 @@ const PolicyCard = ({ policy }) => (
         </span>
       </div>
     </CardHeader>
-    
+
     <CardContent>
-      <p 
+      <p
         id={`policy-description-${policy.id}`}
         className="text-body"
       >
         {policy.description}
       </p>
-      
+
       <div className="mt-4" role="group" aria-label="Policy actions">
         <Button
           variant="outline"
@@ -517,6 +549,7 @@ const PolicyCard = ({ policy }) => (
 ```
 
 ### Animation and Transitions ✅
+
 ```css
 /* 200ms transitions for smooth interactions */
 .policy-card {
@@ -534,7 +567,9 @@ const PolicyCard = ({ policy }) => (
 }
 
 .policy-card-menu {
-  transition: opacity 200ms ease-out, transform 200ms ease-out;
+  transition:
+    opacity 200ms ease-out,
+    transform 200ms ease-out;
   transform-origin: top right;
 }
 
@@ -552,6 +587,7 @@ const PolicyCard = ({ policy }) => (
 ## PolicyFilters Component Implementation ✅
 
 ### Search Debouncing ✅
+
 ```typescript
 // Optimized search with 300ms debounce
 const useDebouncedSearch = (callback: (value: string) => void, delay: number = 300) => {
@@ -565,7 +601,7 @@ const useDebouncedSearch = (callback: (value: string) => void, delay: number = 3
 
 const PolicyFilters = ({ onFiltersChange }) => {
   const [searchValue, setSearchValue] = useState('');
-  
+
   const debouncedSearch = useDebouncedSearch((value: string) => {
     onFiltersChange(prev => ({ ...prev, search: value }));
   }, 300);
@@ -588,29 +624,33 @@ const PolicyFilters = ({ onFiltersChange }) => {
 ```
 
 ### URL Parameters Synchronization ✅
+
 ```typescript
 // Bidirectional URL sync with filter state
 const useFilterUrlSync = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const updateURL = useCallback((filters: FilterState) => {
-    const params = new URLSearchParams();
-    
-    if (filters.search) params.set('search', filters.search);
-    filters.categories.forEach(cat => params.append('category', cat));
-    filters.status.forEach(status => params.append('status', status));
-    
-    if (filters.dateRange.start) {
-      params.set('start', filters.dateRange.start.toISOString().split('T')[0]);
-    }
-    
-    if (filters.sortBy !== 'updatedAt') params.set('sortBy', filters.sortBy);
-    if (filters.sortOrder !== 'desc') params.set('sortOrder', filters.sortOrder);
+  const updateURL = useCallback(
+    (filters: FilterState) => {
+      const params = new URLSearchParams();
 
-    const newURL = params.toString() ? `/policies?${params.toString()}` : '/policies';
-    router.replace(newURL, { scroll: false });
-  }, [router]);
+      if (filters.search) params.set('search', filters.search);
+      filters.categories.forEach((cat) => params.append('category', cat));
+      filters.status.forEach((status) => params.append('status', status));
+
+      if (filters.dateRange.start) {
+        params.set('start', filters.dateRange.start.toISOString().split('T')[0]);
+      }
+
+      if (filters.sortBy !== 'updatedAt') params.set('sortBy', filters.sortBy);
+      if (filters.sortOrder !== 'desc') params.set('sortOrder', filters.sortOrder);
+
+      const newURL = params.toString() ? `/policies?${params.toString()}` : '/policies';
+      router.replace(newURL, { scroll: false });
+    },
+    [router]
+  );
 
   const getFiltersFromURL = useCallback((): FilterState => {
     return {
@@ -619,10 +659,10 @@ const useFilterUrlSync = () => {
       status: searchParams.getAll('status'),
       dateRange: {
         start: searchParams.get('start') ? new Date(searchParams.get('start')!) : null,
-        end: searchParams.get('end') ? new Date(searchParams.get('end')!) : null
+        end: searchParams.get('end') ? new Date(searchParams.get('end')!) : null,
       },
       sortBy: searchParams.get('sortBy') || 'updatedAt',
-      sortOrder: (searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc'
+      sortOrder: (searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc',
     };
   }, [searchParams]);
 
@@ -631,6 +671,7 @@ const useFilterUrlSync = () => {
 ```
 
 ### Mobile-First Responsive Design ✅
+
 ```css
 /* Mobile-first breakpoint system */
 .policy-filters {
@@ -650,11 +691,11 @@ const useFilterUrlSync = () => {
     flex-direction: row;
     align-items: center;
   }
-  
+
   .search-input {
     flex: 1;
   }
-  
+
   .filter-toggles {
     flex-shrink: 0;
   }
@@ -676,6 +717,7 @@ const useFilterUrlSync = () => {
 ```
 
 ### Keyboard Accessibility ✅
+
 ```typescript
 // Comprehensive keyboard support
 const PolicyFilters = () => {
@@ -711,7 +753,7 @@ const PolicyFilters = () => {
           aria-label="Search policies"
         />
       </div>
-      
+
       <div className="flex flex-wrap gap-2">
         {categories.map(category => (
           <button
@@ -732,11 +774,12 @@ const PolicyFilters = () => {
 ```
 
 ### Clear Filters Functionality ✅
+
 ```typescript
 // Single-action filter clearing
 const PolicyFilters = ({ onFiltersChange }) => {
   const [filters, setFilters] = useState<FilterState>(initialFilters);
-  
+
   const clearAllFilters = useCallback(() => {
     const clearedFilters: FilterState = {
       search: '',
@@ -746,13 +789,13 @@ const PolicyFilters = ({ onFiltersChange }) => {
       sortBy: 'updatedAt',
       sortOrder: 'desc'
     };
-    
+
     setFilters(clearedFilters);
     onFiltersChange(clearedFilters);
-    
+
     // Clear URL parameters
     router.replace('/policies', { scroll: false });
-    
+
     // Clear search input
     const searchInput = document.getElementById('policy-search') as HTMLInputElement;
     if (searchInput) {
@@ -761,10 +804,10 @@ const PolicyFilters = ({ onFiltersChange }) => {
   }, [onFiltersChange, router]);
 
   const hasActiveFilters = useMemo(() => {
-    return filters.search || 
-           filters.categories.length > 0 || 
-           filters.status.length > 0 || 
-           filters.dateRange.start || 
+    return filters.search ||
+           filters.categories.length > 0 ||
+           filters.status.length > 0 ||
+           filters.dateRange.start ||
            filters.dateRange.end ||
            filters.sortBy !== 'updatedAt' ||
            filters.sortOrder !== 'desc';
@@ -781,7 +824,7 @@ const PolicyFilters = ({ onFiltersChange }) => {
           </span>
         )}
       </Button>
-      
+
       {hasActiveFilters && (
         <Button
           variant="ghost"
@@ -801,6 +844,7 @@ const PolicyFilters = ({ onFiltersChange }) => {
 ## Testing Implementation Requirements ✅
 
 ### Unit Testing (90% Coverage) ✅
+
 ```typescript
 // Comprehensive test coverage example
 describe('DashboardCard', () => {
@@ -819,7 +863,7 @@ describe('DashboardCard', () => {
 
   it('renders metric data correctly', () => {
     render(<DashboardCard card={mockMetricCard} />);
-    
+
     expect(screen.getByText('Test Metric')).toBeInTheDocument();
     expect(screen.getByText('42')).toBeInTheDocument();
     expect(screen.getByText('Test Value')).toBeInTheDocument();
@@ -828,10 +872,10 @@ describe('DashboardCard', () => {
   it('handles refresh action', async () => {
     const onRefresh = jest.fn().mockResolvedValue(undefined);
     render(<DashboardCard card={mockMetricCard} onRefresh={onRefresh} />);
-    
+
     const refreshButton = screen.getByLabelText('Refresh Test Metric');
     await userEvent.click(refreshButton);
-    
+
     expect(onRefresh).toHaveBeenCalledWith('test-card');
   });
 
@@ -844,6 +888,7 @@ describe('DashboardCard', () => {
 ```
 
 ### E2E Testing (Critical User Flows) ✅
+
 ```typescript
 // Playwright E2E test example
 import { test, expect } from '@playwright/test';
@@ -851,18 +896,18 @@ import { test, expect } from '@playwright/test';
 test.describe('Governance Dashboard', () => {
   test('should complete policy creation workflow', async ({ page }) => {
     await page.goto('/policies');
-    
+
     // Click create new policy button
     await page.click('[data-testid="create-policy-button"]');
-    
+
     // Fill out policy form
     await page.fill('[data-testid="policy-title"]', 'Test Policy');
     await page.fill('[data-testid="policy-description"]', 'Test description');
     await page.selectOption('[data-testid="policy-category"]', 'Security');
-    
+
     // Submit form
     await page.click('[data-testid="submit-policy"]');
-    
+
     // Verify success
     await expect(page.locator('[data-testid="success-message"]')).toBeVisible();
     await expect(page.locator('text=Test Policy')).toBeVisible();
@@ -870,37 +915,38 @@ test.describe('Governance Dashboard', () => {
 
   test('should filter policies correctly', async ({ page }) => {
     await page.goto('/policies');
-    
+
     // Open advanced filters
     await page.click('[data-testid="filters-button"]');
-    
+
     // Select category filter
     await page.click('[data-testid="category-security"]');
-    
+
     // Verify filtered results
     const policyCards = page.locator('[data-testid="policy-card"]');
     await expect(policyCards).toHaveCount(3);
-    
+
     // Verify all visible policies have Security category
     const categories = await page.locator('[data-testid="policy-category"]').allTextContents();
-    expect(categories.every(cat => cat === 'Security')).toBeTruthy();
+    expect(categories.every((cat) => cat === 'Security')).toBeTruthy();
   });
 });
 ```
 
 ### Accessibility Testing (NVDA, VoiceOver) ✅
+
 ```typescript
 // Screen reader testing scenarios
 describe('Screen Reader Compatibility', () => {
   it('announces card content correctly', async () => {
     const { container } = render(<DashboardCard card={mockMetricCard} />);
-    
+
     // Check for proper ARIA labeling
     expect(screen.getByLabelText(/Test Value: 42/)).toBeInTheDocument();
-    
+
     // Verify screen reader text
     expect(screen.getByText('Test Value: 42', { selector: '.sr-only' })).toBeInTheDocument();
-    
+
     // Test focus management
     const card = screen.getByRole('article');
     card.focus();
@@ -909,14 +955,14 @@ describe('Screen Reader Compatibility', () => {
 
   it('provides proper keyboard navigation', async () => {
     render(<PolicyCard policy={mockPolicy} />);
-    
+
     // Tab to card
     await userEvent.tab();
     expect(screen.getByRole('article')).toHaveFocus();
-    
+
     // Press Enter to activate
     await userEvent.keyboard('{Enter}');
-    
+
     // Verify action was triggered
     expect(mockOnEdit).toHaveBeenCalled();
   });
@@ -924,6 +970,7 @@ describe('Screen Reader Compatibility', () => {
 ```
 
 ### Performance Testing (Lighthouse >90) ✅
+
 ```javascript
 // Lighthouse CI configuration
 module.exports = {
@@ -951,7 +998,9 @@ module.exports = {
 ## Documentation Deliverables ✅
 
 ### Component API Documentation ✅
+
 Each component includes comprehensive documentation with:
+
 - Purpose and usage overview
 - Complete TypeScript interface definitions
 - Usage examples (basic and advanced)
@@ -961,7 +1010,9 @@ Each component includes comprehensive documentation with:
 - Troubleshooting guides
 
 ### Usage Examples with Code Snippets ✅
+
 All components include practical examples showing:
+
 - Basic implementation
 - Advanced configurations
 - Integration patterns
@@ -969,7 +1020,9 @@ All components include practical examples showing:
 - Performance optimization techniques
 
 ### Accessibility Compliance Notes ✅
+
 Comprehensive accessibility documentation covering:
+
 - WCAG 2.1 AA compliance verification
 - Screen reader compatibility testing
 - Keyboard navigation patterns
@@ -978,7 +1031,9 @@ Comprehensive accessibility documentation covering:
 - Focus management strategies
 
 ### Performance Optimization Guide ✅
+
 Detailed performance documentation including:
+
 - Core Web Vitals optimization
 - Bundle size management
 - Lazy loading strategies

@@ -1,44 +1,44 @@
 groups:
-- name: acgs_performance_alerts
-  rules:
-  - alert: HighResponseTime
-    annotations:
-      description: 95th percentile response time is {{ $value }}s
-      summary: High response time detected
-    expr: histogram_quantile(0.95, rate(acgs_response_time_seconds_bucket[5m])) >
-      0.5
-    for: 2m
-    labels:
-      severity: warning
-  - alert: LowAvailability
-    annotations:
-      description: Service {{ $labels.instance }} availability is {{ $value }}
-      summary: Service availability below 99.9%
-    expr: avg_over_time(up[5m]) < 0.999
-    for: 1m
-    labels:
-      severity: critical
-  - alert: HighErrorRate
-    annotations:
-      description: Error rate is {{ $value }} errors/second
-      summary: High error rate detected
-    expr: rate(acgs_errors_total[5m]) > 0.01
-    for: 2m
-    labels:
-      severity: warning
-  - alert: ConstitutionalComplianceFailure
-    annotations:
-      description: Compliance rate is {{ $value }}
-      summary: Constitutional compliance below 95%
-    expr: acgs_constitutional_compliance_rate < 0.95
-    for: 1m
-    labels:
-      severity: critical
-  - alert: BlockchainCostExceeded
-    annotations:
-      description: Current cost is {{ $value }} SOL
-      summary: Blockchain costs exceed 0.01 SOL target
-    expr: acgs_blockchain_cost_sol > 0.01
-    for: 5m
-    labels:
-      severity: warning
+  - name: acgs_performance_alerts
+    rules:
+      - alert: HighResponseTime
+        annotations:
+          description: 95th percentile response time is {{ $value }}s
+          summary: High response time detected
+        expr: histogram_quantile(0.95, rate(acgs_response_time_seconds_bucket[5m])) >
+          0.5
+        for: 2m
+        labels:
+          severity: warning
+      - alert: LowAvailability
+        annotations:
+          description: Service {{ $labels.instance }} availability is {{ $value }}
+          summary: Service availability below 99.9%
+        expr: avg_over_time(up[5m]) < 0.999
+        for: 1m
+        labels:
+          severity: critical
+      - alert: HighErrorRate
+        annotations:
+          description: Error rate is {{ $value }} errors/second
+          summary: High error rate detected
+        expr: rate(acgs_errors_total[5m]) > 0.01
+        for: 2m
+        labels:
+          severity: warning
+      - alert: ConstitutionalComplianceFailure
+        annotations:
+          description: Compliance rate is {{ $value }}
+          summary: Constitutional compliance below 95%
+        expr: acgs_constitutional_compliance_rate < 0.95
+        for: 1m
+        labels:
+          severity: critical
+      - alert: BlockchainCostExceeded
+        annotations:
+          description: Current cost is {{ $value }} SOL
+          summary: Blockchain costs exceed 0.01 SOL target
+        expr: acgs_blockchain_cost_sol > 0.01
+        for: 5m
+        labels:
+          severity: warning

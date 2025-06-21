@@ -1,6 +1,6 @@
 /**
  * Performance Metrics Collection and Analysis System
- * 
+ *
  * Establishes baseline performance metrics for legacy-frontend and tracks
  * improvements during migration to shared architecture.
  */
@@ -44,13 +44,16 @@ export interface PerformanceSummary {
 export interface PerformanceComparison {
   baseline: PerformanceBaseline;
   current: PerformanceBaseline;
-  improvements: Record<string, {
-    baseline: number;
-    current: number;
-    improvement: number;
-    percentage: number;
-    status: 'improved' | 'degraded' | 'unchanged';
-  }>;
+  improvements: Record<
+    string,
+    {
+      baseline: number;
+      current: number;
+      improvement: number;
+      percentage: number;
+      status: 'improved' | 'degraded' | 'unchanged';
+    }
+  >;
   overallScore: number;
 }
 
@@ -84,7 +87,7 @@ const DEFAULT_CONFIG: PerformanceConfig = {
     firstInputDelay: 100, // 100ms
     cumulativeLayoutShift: 0.1,
     memoryUsage: 100, // 100MB
-    bundleSize: 1000, // 1MB
+    bundleSize: 1000 // 1MB
   },
   routes: [
     '/',
@@ -155,7 +158,7 @@ export class PerformanceMetricsCollector {
       return;
     }
 
-    this.observer = new PerformanceObserver((list) => {
+    this.observer = new PerformanceObserver(list => {
       const entries = list.getEntries();
       entries.forEach(entry => {
         this.processPerformanceEntry(entry);
@@ -175,7 +178,7 @@ export class PerformanceMetricsCollector {
    */
   private setupWebVitalsMonitoring(): void {
     // First Contentful Paint
-    this.observeWebVital('first-contentful-paint', (value) => {
+    this.observeWebVital('first-contentful-paint', value => {
       this.recordMetric({
         name: 'first_contentful_paint',
         value,
@@ -186,7 +189,7 @@ export class PerformanceMetricsCollector {
     });
 
     // Largest Contentful Paint
-    this.observeWebVital('largest-contentful-paint', (value) => {
+    this.observeWebVital('largest-contentful-paint', value => {
       this.recordMetric({
         name: 'largest_contentful_paint',
         value,
@@ -197,7 +200,7 @@ export class PerformanceMetricsCollector {
     });
 
     // First Input Delay
-    this.observeWebVital('first-input-delay', (value) => {
+    this.observeWebVital('first-input-delay', value => {
       this.recordMetric({
         name: 'first_input_delay',
         value,
@@ -208,7 +211,7 @@ export class PerformanceMetricsCollector {
     });
 
     // Cumulative Layout Shift
-    this.observeWebVital('cumulative-layout-shift', (value) => {
+    this.observeWebVital('cumulative-layout-shift', value => {
       this.recordMetric({
         name: 'cumulative_layout_shift',
         value,
@@ -225,7 +228,7 @@ export class PerformanceMetricsCollector {
   private observeWebVital(name: string, callback: (value: number) => void): void {
     if ('PerformanceObserver' in window) {
       try {
-        const observer = new PerformanceObserver((list) => {
+        const observer = new PerformanceObserver(list => {
           const entries = list.getEntries();
           entries.forEach(entry => {
             if (entry.name === name) {
@@ -233,7 +236,9 @@ export class PerformanceMetricsCollector {
             }
           });
         });
-        observer.observe({ entryTypes: ['paint', 'largest-contentful-paint', 'first-input', 'layout-shift'] });
+        observer.observe({
+          entryTypes: ['paint', 'largest-contentful-paint', 'first-input', 'layout-shift']
+        });
       } catch (error) {
         console.warn(`Failed to observe ${name}:`, error);
       }
@@ -366,7 +371,7 @@ export class PerformanceMetricsCollector {
    */
   recordMetric(metric: PerformanceMetric): void {
     const key = `${metric.category}-${metric.name}`;
-    
+
     if (!this.metrics.has(key)) {
       this.metrics.set(key, []);
     }
@@ -375,7 +380,7 @@ export class PerformanceMetricsCollector {
     metrics.push(metric);
 
     // Keep only recent metrics (based on retention)
-    const cutoffTime = Date.now() - (this.config.retentionDays * 24 * 60 * 60 * 1000);
+    const cutoffTime = Date.now() - this.config.retentionDays * 24 * 60 * 60 * 1000;
     const filteredMetrics = metrics.filter(m => m.timestamp >= cutoffTime);
     this.metrics.set(key, filteredMetrics);
   }
@@ -388,7 +393,7 @@ export class PerformanceMetricsCollector {
     const metrics: PerformanceMetric[] = [];
 
     // Collect all current metrics
-    this.metrics.forEach((metricList) => {
+    this.metrics.forEach(metricList => {
       const recent = metricList.filter(m => timestamp - m.timestamp < 60000); // Last minute
       metrics.push(...recent);
     });
@@ -408,7 +413,7 @@ export class PerformanceMetricsCollector {
     };
 
     this.baselines.set(baseline.id, baseline);
-    
+
     console.log(`Performance baseline '${name}' collected:`, summary);
     return baseline;
   }
@@ -425,11 +430,9 @@ export class PerformanceMetricsCollector {
     };
 
     const getAverageMetric = (name: string) => {
-      const metricValues = metrics
-        .filter(m => m.name === name)
-        .map(m => m.value);
-      return metricValues.length > 0 
-        ? metricValues.reduce((sum, val) => sum + val, 0) / metricValues.length 
+      const metricValues = metrics.filter(m => m.name === name).map(m => m.value);
+      return metricValues.length > 0
+        ? metricValues.reduce((sum, val) => sum + val, 0) / metricValues.length
         : 0;
     };
 
@@ -467,7 +470,7 @@ export class PerformanceMetricsCollector {
     const cls = metrics.find(m => m.name === 'cumulative_layout_shift')?.value || 0;
 
     let score = 100;
-    
+
     // Deduct points for poor metrics
     if (fcp > 1800) score -= 20;
     if (lcp > 2500) score -= 25;
@@ -482,7 +485,7 @@ export class PerformanceMetricsCollector {
    */
   private detectEnvironment(): 'development' | 'staging' | 'production' {
     if (typeof window === 'undefined') return 'development';
-    
+
     const hostname = window.location.hostname;
     if (hostname === 'localhost' || hostname === '127.0.0.1') return 'development';
     if (hostname.includes('staging')) return 'staging';
@@ -499,7 +502,10 @@ export class PerformanceMetricsCollector {
   /**
    * Compare performance with baseline
    */
-  compareWithBaseline(baselineId: string, currentMetrics?: PerformanceMetric[]): PerformanceComparison | null {
+  compareWithBaseline(
+    baselineId: string,
+    currentMetrics?: PerformanceMetric[]
+  ): PerformanceComparison | null {
     const baseline = this.baselines.get(baselineId);
     if (!baseline) return null;
 
@@ -543,7 +549,8 @@ export class PerformanceMetricsCollector {
       const percentage = baselineValue > 0 ? (improvement / baselineValue) * 100 : 0;
 
       let status: 'improved' | 'degraded' | 'unchanged' = 'unchanged';
-      if (Math.abs(percentage) > 5) { // 5% threshold
+      if (Math.abs(percentage) > 5) {
+        // 5% threshold
         status = improvement > 0 ? 'improved' : 'degraded';
       }
 
@@ -608,7 +615,7 @@ export class PerformanceMetricsCollector {
     const now = Date.now();
     const recentThreshold = 60000; // Last minute
 
-    this.metrics.forEach((metricList) => {
+    this.metrics.forEach(metricList => {
       const recent = metricList.filter(m => now - m.timestamp < recentThreshold);
       metrics.push(...recent);
     });
@@ -622,7 +629,7 @@ export class PerformanceMetricsCollector {
   getMetricsByCategory(category: PerformanceMetric['category']): PerformanceMetric[] {
     const metrics: PerformanceMetric[] = [];
 
-    this.metrics.forEach((metricList) => {
+    this.metrics.forEach(metricList => {
       const categoryMetrics = metricList.filter(m => m.category === category);
       metrics.push(...categoryMetrics);
     });
@@ -636,9 +643,9 @@ export class PerformanceMetricsCollector {
   getPerformanceSummary(startTime: number, endTime: number): PerformanceSummary {
     const metrics: PerformanceMetric[] = [];
 
-    this.metrics.forEach((metricList) => {
-      const rangeMetrics = metricList.filter(m =>
-        m.timestamp >= startTime && m.timestamp <= endTime
+    this.metrics.forEach(metricList => {
+      const rangeMetrics = metricList.filter(
+        m => m.timestamp >= startTime && m.timestamp <= endTime
       );
       metrics.push(...rangeMetrics);
     });
@@ -650,8 +657,7 @@ export class PerformanceMetricsCollector {
    * Get all baselines
    */
   getBaselines(): PerformanceBaseline[] {
-    return Array.from(this.baselines.values())
-      .sort((a, b) => b.timestamp - a.timestamp);
+    return Array.from(this.baselines.values()).sort((a, b) => b.timestamp - a.timestamp);
   }
 
   /**

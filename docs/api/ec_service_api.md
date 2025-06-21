@@ -17,11 +17,13 @@ Evolutionary computation service for governance optimization.
 ## 📋 API Endpoints
 
 ### Health Check
+
 ```http
 GET /health
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": "healthy",
@@ -36,6 +38,7 @@ GET /health
 ```
 
 **Error Response (503 Service Unavailable):**
+
 ```json
 {
   "status": "unhealthy",
@@ -47,6 +50,7 @@ GET /health
 ### WINA Optimization Endpoints
 
 #### WINA Performance Monitoring
+
 ```http
 GET /api/v1/wina/performance
 ```
@@ -54,6 +58,7 @@ GET /api/v1/wina/performance
 **Description:** Get current WINA optimization performance metrics
 
 **Response (200 OK):**
+
 ```json
 {
   "wina_metrics": {
@@ -71,6 +76,7 @@ GET /api/v1/wina/performance
 ```
 
 #### WINA Configuration Management
+
 ```http
 POST /api/v1/wina/configure
 ```
@@ -78,6 +84,7 @@ POST /api/v1/wina/configure
 **Description:** Configure WINA optimization parameters
 
 **Request Body:**
+
 ```json
 {
   "optimization_level": "high",
@@ -89,6 +96,7 @@ POST /api/v1/wina/configure
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": "configured",
@@ -100,6 +108,7 @@ POST /api/v1/wina/configure
 #### Evolutionary Computation Endpoints
 
 #### Start Optimization Process
+
 ```http
 POST /api/v1/oversight/start
 ```
@@ -107,6 +116,7 @@ POST /api/v1/oversight/start
 **Description:** Initiate evolutionary oversight for governance optimization
 
 **Request Body:**
+
 ```json
 {
   "target_policy": "policy_id_123",
@@ -119,6 +129,7 @@ POST /api/v1/oversight/start
 ```
 
 #### AlphaEvolve Integration
+
 ```http
 POST /api/v1/alphaevolve/execute
 ```
@@ -126,6 +137,7 @@ POST /api/v1/alphaevolve/execute
 **Description:** Execute AlphaEvolve iterative improvement process
 
 **Request Body:**
+
 ```json
 {
   "model_id": "governance_model_v2",
@@ -139,6 +151,7 @@ POST /api/v1/alphaevolve/execute
 ```
 
 #### Monitoring and Reporting
+
 ```http
 GET /api/v1/reporting/execution/{execution_id}
 ```
@@ -146,6 +159,7 @@ GET /api/v1/reporting/execution/{execution_id}
 **Description:** Get detailed execution report for optimization process
 
 **Response (200 OK):**
+
 ```json
 {
   "execution_id": "exec_123",
@@ -163,10 +177,10 @@ GET /api/v1/reporting/execution/{execution_id}
 }
 ```
 
-
 ## 🔧 Error Handling
 
 ### Standard Error Codes
+
 - **400 Bad Request:** Invalid input parameters
 - **401 Unauthorized:** Authentication required
 - **403 Forbidden:** Insufficient permissions
@@ -176,6 +190,7 @@ GET /api/v1/reporting/execution/{execution_id}
 - **503 Service Unavailable:** Service temporarily unavailable
 
 ### Error Response Format
+
 ```json
 {
   "error": {
@@ -201,11 +216,13 @@ GET /api/v1/reporting/execution/{execution_id}
 ## 🔐 Authentication
 
 ### JWT Token Authentication
+
 ```http
 Authorization: Bearer <jwt_token>
 ```
 
 ### API Key Authentication (Optional)
+
 ```http
 X-API-Key: <api_key>
 ```

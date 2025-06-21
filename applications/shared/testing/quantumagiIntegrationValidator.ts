@@ -1,6 +1,6 @@
 /**
  * Quantumagi Integration Validator
- * 
+ *
  * Comprehensive validation suite for Quantumagi Solana devnet integration,
  * constitutional compliance, governance workflows, and PGC validation.
  */
@@ -78,7 +78,7 @@ export class QuantumagiIntegrationValidator {
    */
   async runFullValidation(): Promise<IntegrationValidationReport> {
     console.log('🚀 Starting Quantumagi integration validation...');
-    
+
     this.validationResults = [];
     const startTime = Date.now();
 
@@ -87,32 +87,31 @@ export class QuantumagiIntegrationValidator {
       await this.validateSolanaConnection();
       await this.validateProgramDeployment();
       await this.validateConstitutionalFramework();
-      
+
       // Service integration validation
       await this.validateACGSServiceIntegration();
       await this.validatePGCCompliance();
       await this.validateGovernanceWorkflows();
-      
+
       // Performance and reliability validation
       await this.validatePerformanceMetrics();
       await this.validateDataIntegrity();
-      
+
       // Generate comprehensive report
       const report = this.generateValidationReport(startTime);
-      
+
       console.log(`✅ Validation completed in ${Date.now() - startTime}ms`);
       return report;
-      
     } catch (error) {
       console.error('❌ Validation failed:', error);
-      
+
       this.addValidationResult({
         component: 'validation_framework',
         status: 'failed',
         message: `Validation framework error: ${error instanceof Error ? error.message : 'Unknown error'}`,
         timestamp: Date.now()
       });
-      
+
       return this.generateValidationReport(startTime);
     }
   }
@@ -123,11 +122,11 @@ export class QuantumagiIntegrationValidator {
   private async validateSolanaConnection(): Promise<void> {
     try {
       const startTime = Date.now();
-      
+
       // Test basic connection
       const version = await this.connection.getVersion();
       const latency = Date.now() - startTime;
-      
+
       this.addValidationResult({
         component: 'solana_connection',
         status: 'passed',
@@ -139,7 +138,7 @@ export class QuantumagiIntegrationValidator {
         },
         timestamp: Date.now()
       });
-      
+
       // Test network health
       const health = await this.connection.getHealth();
       if (health === 'ok') {
@@ -157,7 +156,6 @@ export class QuantumagiIntegrationValidator {
           timestamp: Date.now()
         });
       }
-      
     } catch (error) {
       this.addValidationResult({
         component: 'solana_connection',
@@ -178,7 +176,7 @@ export class QuantumagiIntegrationValidator {
         const pubkey = new PublicKey(programId);
         const accountInfo = await this.connection.getAccountInfo(pubkey);
         const responseTime = Date.now() - startTime;
-        
+
         if (accountInfo) {
           this.addValidationResult({
             component: `program_${programName}`,
@@ -202,7 +200,6 @@ export class QuantumagiIntegrationValidator {
             timestamp: Date.now()
           });
         }
-        
       } catch (error) {
         this.addValidationResult({
           component: `program_${programName}`,
@@ -222,7 +219,7 @@ export class QuantumagiIntegrationValidator {
     try {
       // Validate constitution hash
       const expectedHash = QUANTUMAGI_CONFIG.constitutionHash;
-      
+
       this.addValidationResult({
         component: 'constitution_hash',
         status: 'passed',
@@ -234,7 +231,7 @@ export class QuantumagiIntegrationValidator {
         },
         timestamp: Date.now()
       });
-      
+
       // Validate governance policies
       this.addValidationResult({
         component: 'governance_policies',
@@ -247,7 +244,6 @@ export class QuantumagiIntegrationValidator {
         },
         timestamp: Date.now()
       });
-      
     } catch (error) {
       this.addValidationResult({
         component: 'constitutional_framework',
@@ -267,15 +263,15 @@ export class QuantumagiIntegrationValidator {
         const startTime = Date.now();
         const response = await fetch(`${endpoint}/health`, {
           method: 'GET',
-          headers: { 'Accept': 'application/json' },
+          headers: { Accept: 'application/json' },
           signal: AbortSignal.timeout(5000)
         });
-        
+
         const responseTime = Date.now() - startTime;
-        
+
         if (response.ok) {
           const healthData = await response.json();
-          
+
           this.addValidationResult({
             component: `acgs_${serviceName}`,
             status: 'passed',
@@ -301,7 +297,6 @@ export class QuantumagiIntegrationValidator {
             timestamp: Date.now()
           });
         }
-        
       } catch (error) {
         this.addValidationResult({
           component: `acgs_${serviceName}`,
@@ -320,30 +315,30 @@ export class QuantumagiIntegrationValidator {
   private async validatePGCCompliance(): Promise<void> {
     try {
       const pgcEndpoint = ACGS_ENDPOINTS.pgc;
-      
+
       // Test compliance check endpoint
       const testAction = {
         action: 'test_governance_action',
         context: { test: true, timestamp: Date.now() },
         policy: 'PC-001'
       };
-      
+
       const startTime = Date.now();
       const response = await fetch(`${pgcEndpoint}/api/v1/compliance/check`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          Accept: 'application/json'
         },
         body: JSON.stringify(testAction),
         signal: AbortSignal.timeout(10000)
       });
-      
+
       const responseTime = Date.now() - startTime;
-      
+
       if (response.ok) {
         const complianceResult = await response.json();
-        
+
         this.addValidationResult({
           component: 'pgc_compliance',
           status: 'passed',
@@ -368,7 +363,6 @@ export class QuantumagiIntegrationValidator {
           timestamp: Date.now()
         });
       }
-      
     } catch (error) {
       this.addValidationResult({
         component: 'pgc_compliance',
@@ -390,23 +384,23 @@ export class QuantumagiIntegrationValidator {
       'wina-oversight',
       'audit-transparency'
     ];
-    
+
     for (const workflow of workflows) {
       try {
         const pgcEndpoint = ACGS_ENDPOINTS.pgc;
         const startTime = Date.now();
-        
+
         const response = await fetch(`${pgcEndpoint}/api/v1/governance/workflows/${workflow}`, {
           method: 'GET',
-          headers: { 'Accept': 'application/json' },
+          headers: { Accept: 'application/json' },
           signal: AbortSignal.timeout(5000)
         });
-        
+
         const responseTime = Date.now() - startTime;
-        
+
         if (response.ok) {
           const workflowData = await response.json();
-          
+
           this.addValidationResult({
             component: `workflow_${workflow}`,
             status: 'passed',
@@ -430,7 +424,6 @@ export class QuantumagiIntegrationValidator {
             timestamp: Date.now()
           });
         }
-        
       } catch (error) {
         this.addValidationResult({
           component: `workflow_${workflow}`,
@@ -451,12 +444,12 @@ export class QuantumagiIntegrationValidator {
       const startTime = Date.now();
       const slot = await this.connection.getSlot();
       const slotTime = Date.now() - startTime;
-      
+
       // Test block time
       const blockStartTime = Date.now();
       const blockTime = await this.connection.getBlockTime(slot);
       const blockQueryTime = Date.now() - blockStartTime;
-      
+
       this.addValidationResult({
         component: 'performance_metrics',
         status: slotTime < 1000 ? 'passed' : 'warning',
@@ -469,7 +462,6 @@ export class QuantumagiIntegrationValidator {
         },
         timestamp: Date.now()
       });
-      
     } catch (error) {
       this.addValidationResult({
         component: 'performance_metrics',
@@ -487,7 +479,7 @@ export class QuantumagiIntegrationValidator {
     try {
       // Validate constitution hash integrity
       const expectedHash = QUANTUMAGI_CONFIG.constitutionHash;
-      
+
       this.addValidationResult({
         component: 'data_integrity',
         status: 'passed',
@@ -499,7 +491,6 @@ export class QuantumagiIntegrationValidator {
         },
         timestamp: Date.now()
       });
-      
     } catch (error) {
       this.addValidationResult({
         component: 'data_integrity',
@@ -515,8 +506,9 @@ export class QuantumagiIntegrationValidator {
    */
   private addValidationResult(result: ValidationResult): void {
     this.validationResults.push(result);
-    
-    const statusIcon = result.status === 'passed' ? '✅' : result.status === 'warning' ? '⚠️' : '❌';
+
+    const statusIcon =
+      result.status === 'passed' ? '✅' : result.status === 'warning' ? '⚠️' : '❌';
     console.log(`${statusIcon} ${result.component}: ${result.message}`);
   }
 
@@ -528,9 +520,9 @@ export class QuantumagiIntegrationValidator {
     const failedChecks = this.validationResults.filter(r => r.status === 'failed').length;
     const warningChecks = this.validationResults.filter(r => r.status === 'warning').length;
     const totalChecks = this.validationResults.length;
-    
+
     const successRate = totalChecks > 0 ? (passedChecks / totalChecks) * 100 : 0;
-    
+
     let overallStatus: 'healthy' | 'degraded' | 'critical';
     if (failedChecks === 0 && warningChecks <= 2) {
       overallStatus = 'healthy';
@@ -539,16 +531,17 @@ export class QuantumagiIntegrationValidator {
     } else {
       overallStatus = 'critical';
     }
-    
+
     // Calculate performance metrics
     const responseTimeResults = this.validationResults
       .filter(r => r.details?.responseTime)
       .map(r => parseInt(r.details.responseTime.replace('ms', '')));
-    
-    const averageResponseTime = responseTimeResults.length > 0
-      ? responseTimeResults.reduce((sum, time) => sum + time, 0) / responseTimeResults.length
-      : 0;
-    
+
+    const averageResponseTime =
+      responseTimeResults.length > 0
+        ? responseTimeResults.reduce((sum, time) => sum + time, 0) / responseTimeResults.length
+        : 0;
+
     return {
       timestamp: Date.now(),
       overallStatus,

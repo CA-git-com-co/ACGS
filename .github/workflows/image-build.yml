@@ -5,7 +5,7 @@ name: Docker images
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
     paths:
       - 'services/**'
       - 'applications/**'
@@ -13,7 +13,7 @@ on:
       - '**/Dockerfile'
       - '.github/workflows/image-build.yml'
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
     paths:
       - 'services/**'
       - 'applications/**'

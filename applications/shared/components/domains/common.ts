@@ -38,16 +38,9 @@ export {
   useDebouncedLoading
 } from '../../hooks/useLoadingState';
 
-export {
-  useAuthExtended,
-  useRoleAccess,
-  useProtectedAction
-} from '../../hooks/useAuthExtended';
+export { useAuthExtended, useRoleAccess, useProtectedAction } from '../../hooks/useAuthExtended';
 
-export {
-  useApiExtended,
-  useServiceApi
-} from '../../hooks/useApiExtended';
+export { useApiExtended, useServiceApi } from '../../hooks/useApiExtended';
 
 // Validation utilities
 export * from '../../utils/propValidation';

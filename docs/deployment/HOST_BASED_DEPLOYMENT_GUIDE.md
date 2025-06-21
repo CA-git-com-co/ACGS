@@ -5,6 +5,7 @@ This guide covers deploying ACGS-1 constitutional AI governance system using hos
 ## Prerequisites
 
 ### System Requirements
+
 - **OS**: Ubuntu 20.04+ / CentOS 8+ / macOS 12+
 - **RAM**: 16GB minimum, 32GB recommended
 - **CPU**: 8 cores minimum, 16 cores recommended
@@ -12,6 +13,7 @@ This guide covers deploying ACGS-1 constitutional AI governance system using hos
 - **Network**: Stable internet connection for Solana devnet
 
 ### Software Dependencies
+
 - **Python**: 3.9+
 - **Node.js**: 18+
 - **PostgreSQL**: 15+
@@ -108,6 +110,7 @@ nano .env
 ```
 
 Configure the following variables in `.env`:
+
 ```bash
 # Database Configuration
 DATABASE_URL=postgresql://acgs_user:secure_password@localhost:5432/acgs_db
@@ -158,6 +161,7 @@ python scripts/initialize_constitution.py
 Create systemd service files for each service:
 
 #### Authentication Service (Port 8000)
+
 ```bash
 sudo tee /etc/systemd/system/acgs-auth.service > /dev/null << EOF
 [Unit]
@@ -178,6 +182,7 @@ EOF
 ```
 
 #### Constitutional AI Service (Port 8001)
+
 ```bash
 sudo tee /etc/systemd/system/acgs-constitutional-ai.service > /dev/null << EOF
 [Unit]
@@ -198,6 +203,7 @@ EOF
 ```
 
 #### Integrity Service (Port 8002)
+
 ```bash
 sudo tee /etc/systemd/system/acgs-integrity.service > /dev/null << EOF
 [Unit]
@@ -218,6 +224,7 @@ EOF
 ```
 
 #### Formal Verification Service (Port 8003)
+
 ```bash
 sudo tee /etc/systemd/system/acgs-formal-verification.service > /dev/null << EOF
 [Unit]
@@ -238,6 +245,7 @@ EOF
 ```
 
 #### Governance Synthesis Service (Port 8004)
+
 ```bash
 sudo tee /etc/systemd/system/acgs-governance-synthesis.service > /dev/null << EOF
 [Unit]
@@ -258,6 +266,7 @@ EOF
 ```
 
 #### Policy Governance Service (Port 8005)
+
 ```bash
 sudo tee /etc/systemd/system/acgs-policy-governance.service > /dev/null << EOF
 [Unit]
@@ -278,6 +287,7 @@ EOF
 ```
 
 #### Evolutionary Computation Service (Port 8006)
+
 ```bash
 sudo tee /etc/systemd/system/acgs-evolutionary-computation.service > /dev/null << EOF
 [Unit]

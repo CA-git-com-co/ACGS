@@ -12,6 +12,7 @@
 The ACGS-1 Async Processing system provides enterprise-grade asynchronous job processing capabilities with the following key features:
 
 ### Core Components
+
 - **AsyncProcessingManager**: Central coordinator for job submission and processing
 - **Job Queue System**: Priority-based job queuing with Redis backend
 - **Worker Pool**: Scalable worker processes for parallel job execution
@@ -19,6 +20,7 @@ The ACGS-1 Async Processing system provides enterprise-grade asynchronous job pr
 - **Error Handling**: Automatic retry mechanisms with exponential backoff
 
 ### Supported Job Types
+
 1. **Constitutional Compliance Checking**: Async validation of governance actions
 2. **Policy Synthesis**: Background LLM-powered policy generation
 3. **Governance Workflow Processing**: Multi-step governance action execution
@@ -31,6 +33,7 @@ The ACGS-1 Async Processing system provides enterprise-grade asynchronous job pr
 ## 🚀 Performance Results
 
 ### Test Execution Summary
+
 ```
 Total Jobs Processed: 5
 Success Rate: 100.0%
@@ -40,19 +43,21 @@ Queue Processing: Real-time with priority handling
 ```
 
 ### Individual Job Performance
-| Job Type | Processing Time | Status | Priority |
-|----------|----------------|--------|----------|
-| Constitutional Compliance | 0.100s | ✅ COMPLETED | HIGH |
-| Policy Synthesis | 0.301s | ✅ COMPLETED | NORMAL |
-| Performance Monitoring | 0.050s | ✅ COMPLETED | LOW |
-| Governance Workflow | 0.200s | ✅ COMPLETED | NORMAL |
-| Data Export | 0.501s | ✅ COMPLETED | LOW |
+
+| Job Type                  | Processing Time | Status       | Priority |
+| ------------------------- | --------------- | ------------ | -------- |
+| Constitutional Compliance | 0.100s          | ✅ COMPLETED | HIGH     |
+| Policy Synthesis          | 0.301s          | ✅ COMPLETED | NORMAL   |
+| Performance Monitoring    | 0.050s          | ✅ COMPLETED | LOW      |
+| Governance Workflow       | 0.200s          | ✅ COMPLETED | NORMAL   |
+| Data Export               | 0.501s          | ✅ COMPLETED | LOW      |
 
 ---
 
 ## 🔧 Technical Architecture
 
 ### Job Processing Flow
+
 1. **Job Submission**: Client submits job with type, payload, and priority
 2. **Queue Management**: Jobs queued by priority (CRITICAL > HIGH > NORMAL > LOW)
 3. **Worker Assignment**: Available workers pick up jobs from priority queues
@@ -61,12 +66,14 @@ Queue Processing: Real-time with priority handling
 6. **Completion**: Results stored and optional callbacks triggered
 
 ### Priority System
+
 - **CRITICAL**: Constitutional violations, security alerts
 - **HIGH**: Compliance checks, urgent governance actions
 - **NORMAL**: Policy synthesis, standard workflows
 - **LOW**: Monitoring, data exports, maintenance tasks
 
 ### Error Handling & Resilience
+
 - **Automatic Retries**: Up to 3 retries with exponential backoff
 - **Timeout Protection**: Configurable job timeouts (default: 300s)
 - **Graceful Degradation**: Failed jobs don't affect other processing
@@ -77,33 +84,41 @@ Queue Processing: Real-time with priority handling
 ## 📊 Integration Points
 
 ### Service Integration
+
 The async processing system integrates with all 7 core ACGS services:
 
 #### Auth Service (Port 8000)
+
 - **Background Tasks**: User session validation, token refresh
 - **Job Types**: `auth_validation`, `session_cleanup`
 
 #### AC Service (Port 8001)
+
 - **Background Tasks**: Constitutional compliance checking
 - **Job Types**: `constitutional_compliance_check`, `principle_validation`
 
 #### Integrity Service (Port 8002)
+
 - **Background Tasks**: Data integrity verification, hash validation
 - **Job Types**: `integrity_check`, `hash_verification`
 
 #### FV Service (Port 8003)
+
 - **Background Tasks**: Formal verification of governance rules
 - **Job Types**: `formal_verification`, `rule_validation`
 
 #### GS Service (Port 8004)
+
 - **Background Tasks**: Policy synthesis, LLM processing
 - **Job Types**: `policy_synthesis`, `llm_processing`
 
 #### PGC Service (Port 8005)
+
 - **Background Tasks**: Governance workflow orchestration
 - **Job Types**: `governance_workflow`, `policy_enforcement`
 
 #### EC Service (Port 8006)
+
 - **Background Tasks**: Evolutionary computation, optimization
 - **Job Types**: `evolution_computation`, `optimization_task`
 
@@ -112,6 +127,7 @@ The async processing system integrates with all 7 core ACGS services:
 ## 🎛️ Configuration & Deployment
 
 ### Redis Configuration
+
 ```yaml
 redis:
   host: localhost
@@ -123,6 +139,7 @@ redis:
 ```
 
 ### Worker Configuration
+
 ```yaml
 workers:
   count: 4
@@ -136,6 +153,7 @@ workers:
 ```
 
 ### Job Handler Registration
+
 ```python
 # Register custom job handlers
 async_manager.register_handler("custom_job_type", custom_handler_function)
@@ -153,6 +171,7 @@ job_id = await async_manager.submit_job(
 ## 📈 Monitoring & Metrics
 
 ### Real-time Metrics
+
 - **Jobs Processed**: Total completed jobs
 - **Success Rate**: Percentage of successful job completions
 - **Average Processing Time**: Mean job execution time
@@ -160,12 +179,14 @@ job_id = await async_manager.submit_job(
 - **Worker Utilization**: Active worker count and efficiency
 
 ### Performance Targets
+
 - ✅ **Response Time**: <500ms for job submission
 - ✅ **Processing Time**: <1s average for standard jobs
 - ✅ **Success Rate**: >99% job completion rate
 - ✅ **Throughput**: >100 jobs/minute processing capacity
 
 ### Monitoring Integration
+
 - **Prometheus Metrics**: Job processing statistics
 - **Grafana Dashboards**: Real-time async processing visualization
 - **Health Checks**: Worker and queue health monitoring
@@ -176,6 +197,7 @@ job_id = await async_manager.submit_job(
 ## 🔄 Usage Examples
 
 ### Constitutional Compliance Check
+
 ```python
 job_id = await submit_async_job(
     "constitutional_compliance_check",
@@ -189,6 +211,7 @@ job_id = await submit_async_job(
 ```
 
 ### Policy Synthesis
+
 ```python
 job_id = await submit_async_job(
     "policy_synthesis",
@@ -202,6 +225,7 @@ job_id = await submit_async_job(
 ```
 
 ### Governance Workflow
+
 ```python
 job_id = await submit_async_job(
     "governance_workflow",
@@ -219,18 +243,21 @@ job_id = await submit_async_job(
 ## 🎯 Benefits Achieved
 
 ### Performance Improvements
+
 - **Non-blocking Operations**: UI remains responsive during long-running tasks
 - **Parallel Processing**: Multiple jobs processed concurrently
 - **Resource Optimization**: Efficient CPU and memory utilization
 - **Scalability**: Easy horizontal scaling with additional workers
 
 ### Reliability Enhancements
+
 - **Fault Tolerance**: Failed jobs don't affect system stability
 - **Automatic Recovery**: Retry mechanisms for transient failures
 - **Job Persistence**: Jobs survive system restarts
 - **Monitoring**: Real-time visibility into processing status
 
 ### Developer Experience
+
 - **Simple API**: Easy job submission with minimal code
 - **Flexible Handlers**: Custom job types easily added
 - **Comprehensive Logging**: Detailed processing logs
@@ -241,6 +268,7 @@ job_id = await submit_async_job(
 ## 🔮 Future Enhancements
 
 ### Planned Improvements
+
 1. **Distributed Processing**: Multi-node job processing
 2. **Advanced Scheduling**: Cron-like job scheduling
 3. **Batch Processing**: Efficient bulk job handling
@@ -248,6 +276,7 @@ job_id = await submit_async_job(
 5. **ML Pipeline Integration**: Async ML model training/inference
 
 ### Scalability Roadmap
+
 - **Kubernetes Integration**: Container orchestration support
 - **Auto-scaling**: Dynamic worker scaling based on load
 - **Multi-region**: Geographic distribution of processing
@@ -257,13 +286,13 @@ job_id = await submit_async_job(
 
 ## ✅ Success Criteria Met
 
-| Metric | Target | Achieved | Status |
-|--------|--------|----------|--------|
-| Job Success Rate | >95% | 100% | ✅ EXCEEDED |
-| Processing Time | <1s avg | 0.231s | ✅ EXCEEDED |
-| Worker Efficiency | >80% | 100% | ✅ EXCEEDED |
-| Queue Processing | Real-time | Immediate | ✅ ACHIEVED |
-| Error Handling | Automatic | Implemented | ✅ ACHIEVED |
+| Metric            | Target    | Achieved    | Status      |
+| ----------------- | --------- | ----------- | ----------- |
+| Job Success Rate  | >95%      | 100%        | ✅ EXCEEDED |
+| Processing Time   | <1s avg   | 0.231s      | ✅ EXCEEDED |
+| Worker Efficiency | >80%      | 100%        | ✅ EXCEEDED |
+| Queue Processing  | Real-time | Immediate   | ✅ ACHIEVED |
+| Error Handling    | Automatic | Implemented | ✅ ACHIEVED |
 
 ---
 

@@ -20,18 +20,21 @@ This comprehensive security guide provides detailed procedures for securing the 
 ### Security Principles
 
 **Defense in Depth**:
+
 - Multiple layers of security controls
 - Network segmentation and isolation
 - Application-level security measures
 - Data encryption at rest and in transit
 
 **Least Privilege Access**:
+
 - Minimal required permissions for users and services
 - Role-based access control (RBAC)
 - Regular access reviews and audits
 - Automated privilege escalation controls
 
 **Zero Trust Model**:
+
 - Verify every access request
 - Continuous monitoring and validation
 - Micro-segmentation of network traffic
@@ -40,18 +43,21 @@ This comprehensive security guide provides detailed procedures for securing the 
 ### Security Components
 
 **Network Security**:
+
 - Firewall rules and network ACLs
 - VPN access for remote administration
 - Network intrusion detection systems
 - Traffic encryption and monitoring
 
 **Application Security**:
+
 - Secure authentication mechanisms
 - Input validation and sanitization
 - Secure coding practices
 - Regular security assessments
 
 **Data Security**:
+
 - Encryption at rest and in transit
 - Secure key management
 - Data classification and handling
@@ -62,6 +68,7 @@ This comprehensive security guide provides detailed procedures for securing the 
 ### Grafana Security Configuration
 
 **Basic Authentication Setup**:
+
 ```ini
 # /etc/grafana/grafana.ini
 [security]
@@ -92,6 +99,7 @@ default_theme = dark
 ```
 
 **LDAP Integration** (Optional):
+
 ```ini
 [auth.ldap]
 enabled = true
@@ -129,6 +137,7 @@ org_role = "Editor"
 ### Prometheus Security Configuration
 
 **Basic Authentication**:
+
 ```yaml
 # /etc/prometheus/prometheus.yml
 global:
@@ -149,6 +158,7 @@ tls_server_config:
 ```
 
 **Web Configuration**:
+
 ```yaml
 # /etc/prometheus/web.yml
 tls_server_config:
@@ -165,6 +175,7 @@ basic_auth_users:
 ### Alertmanager Security Configuration
 
 **Authentication and TLS**:
+
 ```yaml
 # /etc/alertmanager/alertmanager.yml
 global:
@@ -200,6 +211,7 @@ receivers:
 ### Firewall Configuration
 
 **UFW Firewall Rules**:
+
 ```bash
 #!/bin/bash
 # Configure UFW firewall for ACGS monitoring
@@ -234,6 +246,7 @@ ufw status verbose
 ```
 
 **iptables Rules** (Advanced):
+
 ```bash
 #!/bin/bash
 # Advanced iptables configuration
@@ -277,6 +290,7 @@ iptables-save > /etc/iptables/rules.v4
 ### Network Segmentation
 
 **Docker Network Configuration**:
+
 ```yaml
 # docker-compose.monitoring.yml
 version: '3.8'
@@ -288,20 +302,20 @@ networks:
       config:
         - subnet: 172.20.0.0/16
     driver_opts:
-      com.docker.network.bridge.enable_icc: "false"
-      com.docker.network.bridge.enable_ip_masquerade: "true"
+      com.docker.network.bridge.enable_icc: 'false'
+      com.docker.network.bridge.enable_ip_masquerade: 'true'
 
 services:
   prometheus:
     networks:
       monitoring:
         ipv4_address: 172.20.0.10
-    
+
   grafana:
     networks:
       monitoring:
         ipv4_address: 172.20.0.20
-    
+
   alertmanager:
     networks:
       monitoring:
@@ -313,6 +327,7 @@ services:
 ### Encryption at Rest
 
 **Prometheus Data Encryption**:
+
 ```bash
 # Create encrypted volume for Prometheus data
 cryptsetup luksFormat /dev/sdb1
@@ -328,6 +343,7 @@ echo "prometheus_data /dev/sdb1 none luks" >> /etc/crypttab
 ```
 
 **Grafana Database Encryption**:
+
 ```ini
 # /etc/grafana/grafana.ini
 [database]
@@ -349,6 +365,7 @@ secret_key = ${GRAFANA_SECRET_KEY}
 ### Encryption in Transit
 
 **TLS Certificate Generation**:
+
 ```bash
 #!/bin/bash
 # Generate TLS certificates for monitoring services
@@ -362,11 +379,11 @@ openssl req -new -x509 -days 365 -key ca.key -out ca.crt \
 for service in prometheus grafana alertmanager; do
     # Generate private key
     openssl genrsa -out ${service}.key 2048
-    
+
     # Generate certificate signing request
     openssl req -new -key ${service}.key -out ${service}.csr \
         -subj "/C=US/ST=State/L=City/O=ACGS/CN=${service}.acgs.ai"
-    
+
     # Generate certificate
     openssl x509 -req -in ${service}.csr -CA ca.crt -CAkey ca.key \
         -CAcreateserial -out ${service}.crt -days 365 \
@@ -376,7 +393,7 @@ for service in prometheus grafana alertmanager; do
             echo 'extendedKeyUsage = serverAuth'
             echo "subjectAltName = DNS:${service}.acgs.ai,DNS:localhost,IP:127.0.0.1"
         )
-    
+
     # Set permissions
     chmod 600 ${service}.key
     chmod 644 ${service}.crt
@@ -386,6 +403,7 @@ done
 ### Backup Security
 
 **Encrypted Backup Script**:
+
 ```bash
 #!/bin/bash
 # Secure backup with encryption
@@ -429,6 +447,7 @@ chown root:root "$BACKUP_DIR.tar.gz.enc"
 ### Role-Based Access Control
 
 **Grafana RBAC Configuration**:
+
 ```json
 {
   "roles": [
@@ -446,19 +465,11 @@ chown root:root "$BACKUP_DIR.tar.gz.enc"
     },
     {
       "name": "ACGS Operator",
-      "permissions": [
-        "dashboards:read",
-        "dashboards:write",
-        "alerts:read",
-        "alerts:write"
-      ]
+      "permissions": ["dashboards:read", "dashboards:write", "alerts:read", "alerts:write"]
     },
     {
       "name": "ACGS Viewer",
-      "permissions": [
-        "dashboards:read",
-        "alerts:read"
-      ]
+      "permissions": ["dashboards:read", "alerts:read"]
     }
   ]
 }
@@ -467,6 +478,7 @@ chown root:root "$BACKUP_DIR.tar.gz.enc"
 ### Service Account Management
 
 **Prometheus Service Account**:
+
 ```bash
 # Create dedicated user for Prometheus
 useradd -r -s /bin/false -d /var/lib/prometheus prometheus
@@ -504,6 +516,7 @@ EOF
 ### Security Event Detection
 
 **Failed Authentication Monitoring**:
+
 ```yaml
 # Alert rule for failed authentication attempts
 groups:
@@ -516,8 +529,8 @@ groups:
           severity: warning
           category: security
         annotations:
-          summary: "High number of failed login attempts"
-          description: "{{ $value }} failed login attempts in the last 5 minutes"
+          summary: 'High number of failed login attempts'
+          description: '{{ $value }} failed login attempts in the last 5 minutes'
 
       - alert: UnauthorizedPrometheusAccess
         expr: increase(prometheus_http_requests_total{code="401"}[5m]) > 3
@@ -526,13 +539,14 @@ groups:
           severity: warning
           category: security
         annotations:
-          summary: "Unauthorized Prometheus access attempts"
-          description: "{{ $value }} unauthorized access attempts to Prometheus"
+          summary: 'Unauthorized Prometheus access attempts'
+          description: '{{ $value }} unauthorized access attempts to Prometheus'
 ```
 
 ### Audit Logging
 
 **Grafana Audit Configuration**:
+
 ```ini
 # /etc/grafana/grafana.ini
 [log]
@@ -553,6 +567,7 @@ log_dashboard_content = true
 ```
 
 **System Audit with auditd**:
+
 ```bash
 # Install auditd
 apt-get install auditd audispd-plugins
@@ -582,12 +597,14 @@ systemctl restart auditd
 ### Compliance Requirements
 
 **Data Retention Policies**:
+
 - Monitoring data: 15 days minimum
 - Audit logs: 90 days minimum
 - Security events: 1 year minimum
 - Configuration changes: 3 years minimum
 
 **Access Control Requirements**:
+
 - Multi-factor authentication for administrative access
 - Regular access reviews (quarterly)
 - Principle of least privilege
@@ -596,6 +613,7 @@ systemctl restart auditd
 ### Audit Procedures
 
 **Monthly Security Audit**:
+
 ```bash
 #!/bin/bash
 # Monthly security audit script
@@ -635,24 +653,28 @@ docker-compose -f docker-compose.monitoring.yml ps
 ### Security Incident Response Plan
 
 **Phase 1: Detection and Analysis**
+
 1. Identify security event through monitoring alerts
 2. Assess severity and potential impact
 3. Document initial findings
 4. Notify security team
 
 **Phase 2: Containment**
+
 1. Isolate affected systems
 2. Preserve evidence
 3. Implement temporary controls
 4. Prevent further damage
 
 **Phase 3: Eradication and Recovery**
+
 1. Remove threat from environment
 2. Patch vulnerabilities
 3. Restore systems from clean backups
 4. Implement additional controls
 
 **Phase 4: Post-Incident Activities**
+
 1. Document lessons learned
 2. Update security procedures
 3. Conduct post-incident review
@@ -661,6 +683,7 @@ docker-compose -f docker-compose.monitoring.yml ps
 ### Emergency Response Procedures
 
 **Security Breach Response**:
+
 ```bash
 #!/bin/bash
 # Emergency security response script
@@ -687,11 +710,13 @@ curl -X POST https://api.security-system.com/incidents \
 ---
 
 **Security Contacts**:
+
 - **Security Team**: security@acgs.ai
 - **Emergency Response**: +1-XXX-XXX-XXXX
 - **Compliance Officer**: compliance@acgs.ai
 
 **Additional Resources**:
+
 - [Production Deployment Guide](PRODUCTION_DEPLOYMENT_GUIDE.md)
 - [Operational Runbooks](OPERATIONAL_RUNBOOKS.md)
 - [Training Guide](TRAINING_GUIDE.md)

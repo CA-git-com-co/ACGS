@@ -19,24 +19,28 @@ The Darwin Gödel Machine (DGM) service uses a comprehensive database migration 
 The DGM migration system consists of four core migration files:
 
 #### 001_create_dgm_schema.py
+
 - Creates the `dgm` schema and core tables
 - Establishes enum types for status tracking
 - Creates `dgm_archive`, `performance_metrics`, and `constitutional_compliance_logs` tables
 - Includes data integrity constraints and constitutional compliance checks
 
 #### 002_create_dgm_bandit_workspace_config.py
+
 - Creates bandit algorithm state tracking tables
 - Establishes improvement workspace management
 - Creates system configuration storage
 - Includes metric aggregation tables for performance optimization
 
 #### 003_create_dgm_indexes.py
+
 - Creates performance-optimized indexes
 - Establishes database triggers for automatic timestamp updates
 - Implements constitutional compliance validation triggers
 - Includes GIN indexes for JSONB column optimization
 
 #### 004_insert_dgm_default_data.py
+
 - Inserts default system configurations
 - Creates initial bandit algorithm states
 - Establishes baseline metric aggregation windows
@@ -176,12 +180,14 @@ Post-migration health checks verify:
 ### Common Issues
 
 #### Migration Timeout
+
 ```bash
 # Increase timeout in migration runner
 # Default: 300 seconds (5 minutes)
 ```
 
 #### Permission Errors
+
 ```sql
 -- Grant necessary permissions
 GRANT CREATE ON DATABASE acgs_db TO dgm_user;
@@ -189,6 +195,7 @@ GRANT USAGE, CREATE ON SCHEMA public TO dgm_user;
 ```
 
 #### Constraint Violations
+
 ```sql
 -- Check existing data before migration
 SELECT * FROM existing_table WHERE compliance_score > 1.0;
@@ -199,27 +206,30 @@ SELECT * FROM existing_table WHERE compliance_score > 1.0;
 #### Failed Migration Recovery
 
 1. **Check Migration Status**
+
    ```bash
    alembic -c migrations/alembic.ini current
    alembic -c migrations/alembic.ini history
    ```
 
 2. **Restore from Backup**
+
    ```sql
    -- List available backups
-   SELECT schema_name FROM information_schema.schemata 
+   SELECT schema_name FROM information_schema.schemata
    WHERE schema_name LIKE 'dgm_backups%';
-   
+
    -- Restore specific table
-   INSERT INTO dgm.table_name 
+   INSERT INTO dgm.table_name
    SELECT * FROM dgm_backups.backup_name.table_name;
    ```
 
 3. **Manual Cleanup**
+
    ```sql
    -- Remove partial migration artifacts
    DROP SCHEMA IF EXISTS dgm CASCADE;
-   
+
    -- Clean Alembic version table
    DELETE FROM alembic_version WHERE version_num LIKE '00%_create_dgm%';
    ```
@@ -264,12 +274,12 @@ System configurations are managed through the database:
 
 ```sql
 -- View current configurations
-SELECT key, value, category FROM dgm.system_configurations 
+SELECT key, value, category FROM dgm.system_configurations
 ORDER BY category, key;
 
 -- Update configuration
-UPDATE dgm.system_configurations 
-SET value = '0.9' 
+UPDATE dgm.system_configurations
+SET value = '0.9'
 WHERE key = 'safety_threshold';
 ```
 

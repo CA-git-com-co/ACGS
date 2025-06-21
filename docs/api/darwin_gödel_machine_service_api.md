@@ -28,6 +28,7 @@ Returns the current health status of the Darwin Gödel Machine Service.
 **Authentication**: Not required
 
 **Response (200 OK)**:
+
 ```json
 {
   "status": "healthy",
@@ -50,18 +51,21 @@ Trigger self-improvement process.
 **Authentication**: Required
 
 **Request Body**:
+
 ```json
-{"target_component": "policy_analysis", "improvement_type": "performance"}
+{ "target_component": "policy_analysis", "improvement_type": "performance" }
 ```
 
 **Response (200 OK)**:
+
 ```json
-{"improvement_id": "imp_123", "status": "initiated", "expected_benefit": 0.15}
+{ "improvement_id": "imp_123", "status": "initiated", "expected_benefit": 0.15 }
 ```
 
 ## Error Responses
 
 ### 400 Bad Request
+
 ```json
 {
   "status": "error",
@@ -75,6 +79,7 @@ Trigger self-improvement process.
 ```
 
 ### 401 Unauthorized
+
 ```json
 {
   "status": "error",
@@ -95,6 +100,7 @@ Trigger self-improvement process.
 ## Examples
 
 ### cURL Examples
+
 ```bash
 # Health check
 curl http://localhost:8007/health
@@ -107,6 +113,7 @@ curl -X POST http://localhost:8007/api/v1/example \
 ```
 
 ### Python Client Example
+
 ```python
 import httpx
 import asyncio
@@ -115,7 +122,7 @@ class DarwinGödelMachineServiceClient:
     def __init__(self, base_url="http://localhost:8007", token=None):
         self.base_url = base_url
         self.headers = {"Authorization": f"Bearer {token}"} if token else {}
-    
+
     async def health_check(self):
         async with httpx.AsyncClient() as client:
             response = await client.get(f"{self.base_url}/health")

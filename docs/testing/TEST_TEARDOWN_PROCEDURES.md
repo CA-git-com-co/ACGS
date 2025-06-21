@@ -7,6 +7,7 @@ This document describes the comprehensive test teardown procedures implemented i
 ## Problem Statement
 
 Before implementing these procedures, ACGS-PGP tests suffered from:
+
 - Test pollution between test runs
 - Temporary files and directories not being cleaned up
 - Database connections and sessions persisting
@@ -33,41 +34,46 @@ async def comprehensive_test_teardown():
     temp_dirs = []
     db_connections = []
     http_clients = []
-    
+
     yield {
         'cleanup_tasks': cleanup_tasks,
-        'temp_files': temp_files, 
+        'temp_files': temp_files,
         'temp_dirs': temp_dirs,
         'db_connections': db_connections,
         'http_clients': http_clients
     }
-    
+
     # Comprehensive cleanup performed automatically
 ```
 
 ### 2. Resource-Specific Cleanup
 
 #### Database Cleanup
+
 - **Mock Database Sessions**: Automatically closed after each test
 - **Isolated Database Sessions**: Temporary SQLite databases created and removed
 - **Connection Pools**: Properly disposed of to prevent connection leaks
 
 #### HTTP Client Cleanup
+
 - **AsyncClient**: Properly closed using `aclose()` method
 - **Mock Clients**: Reset and cleaned up
 - **Connection Pools**: Closed to prevent resource leaks
 
 #### Temporary File Management
+
 - **Temporary Files**: Created with `tempfile.mkstemp()` and tracked for cleanup
 - **Temporary Directories**: Created with `tempfile.mkdtemp()` and recursively removed
 - **Test Artifacts**: JSON result files and test databases automatically cleaned
 
 #### Environment Variable Isolation
+
 - **Initial State Capture**: Environment state captured before tests
 - **Variable Restoration**: Environment restored to initial state after tests
 - **Test-Specific Variables**: Isolated test environment variables cleaned up
 
 #### Module Import Isolation
+
 - **Module Tracking**: Initial `sys.modules` state captured
 - **Import Cleanup**: Test-specific imports removed after tests
 - **Namespace Protection**: Prevents module pollution between tests
@@ -102,6 +108,7 @@ comprehensive_test_teardown (autouse, async)
 ### 5. Error Handling
 
 The teardown procedures include comprehensive error handling:
+
 - Cleanup failures are logged as warnings but don't fail tests
 - Each cleanup step is isolated to prevent cascade failures
 - Graceful degradation when resources can't be cleaned up
@@ -114,13 +121,13 @@ The teardown procedures include comprehensive error handling:
 def test_with_temp_files(temp_file_manager):
     # Create temporary file
     temp_file = temp_file_manager['create_file'](
-        suffix=".json", 
+        suffix=".json",
         content='{"test": true}'
     )
-    
+
     # Create temporary directory
     temp_dir = temp_file_manager['create_dir'](prefix="test_data_")
-    
+
     # Files and directories automatically cleaned up
 ```
 
@@ -129,7 +136,7 @@ def test_with_temp_files(temp_file_manager):
 ```python
 async def test_with_database(isolated_database_session):
     session = isolated_database_session
-    
+
     # Use database session for testing
     # Session automatically rolled back and cleaned up
 ```
@@ -139,11 +146,11 @@ async def test_with_database(isolated_database_session):
 ```python
 def test_with_isolated_env(isolated_test_environment):
     env = isolated_test_environment
-    
+
     # Access isolated workspace
     workspace = env['workspace']
     data_dir = env['dirs']['data']
-    
+
     # Environment variables automatically restored
 ```
 
@@ -154,6 +161,7 @@ def test_with_isolated_env(isolated_test_environment):
 **Location**: `tests/test_teardown_validation.py`
 
 Comprehensive test suite that validates teardown procedures:
+
 - Temporary file cleanup validation
 - Temporary directory cleanup validation
 - Database session cleanup validation
@@ -193,6 +201,7 @@ Each ACGS-PGP service has specific teardown requirements:
 **Location**: `tests/integration/conftest.py`
 
 Specialized teardown for integration tests:
+
 - Cross-service communication cleanup
 - Test result file cleanup
 - Service-specific resource cleanup

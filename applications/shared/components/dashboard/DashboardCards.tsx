@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import * as React from 'react'
+import * as React from 'react';
 import {
   DndContext,
   closestCenter,
@@ -8,16 +8,16 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
-} from '@dnd-kit/core'
+  DragEndEvent
+} from '@dnd-kit/core';
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
-  rectSortingStrategy,
-} from '@dnd-kit/sortable'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { DashboardCard } from '@/types/governance'
+  rectSortingStrategy
+} from '@dnd-kit/sortable';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { DashboardCard } from '@/types/governance';
 
 // Mock dashboard cards data
 const initialCards: DashboardCard[] = [
@@ -31,7 +31,7 @@ const initialCards: DashboardCard[] = [
       </div>
     ),
     position: 0,
-    size: 'small',
+    size: 'small'
   },
   {
     id: '2',
@@ -43,7 +43,7 @@ const initialCards: DashboardCard[] = [
       </div>
     ),
     position: 1,
-    size: 'small',
+    size: 'small'
   },
   {
     id: '3',
@@ -65,7 +65,7 @@ const initialCards: DashboardCard[] = [
       </div>
     ),
     position: 2,
-    size: 'large',
+    size: 'large'
   },
   {
     id: '4',
@@ -77,29 +77,29 @@ const initialCards: DashboardCard[] = [
       </div>
     ),
     position: 3,
-    size: 'small',
-  },
-]
+    size: 'small'
+  }
+];
 
 export function DashboardCards() {
-  const [cards, setCards] = React.useState(initialCards)
+  const [cards, setCards] = React.useState(initialCards);
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
+      coordinateGetter: sortableKeyboardCoordinates
     })
-  )
+  );
 
   function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event
+    const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      setCards((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id)
-        const newIndex = items.findIndex((item) => item.id === over.id)
+      setCards(items => {
+        const oldIndex = items.findIndex(item => item.id === active.id);
+        const newIndex = items.findIndex(item => item.id === over.id);
 
-        return arrayMove(items, oldIndex, newIndex)
-      })
+        return arrayMove(items, oldIndex, newIndex);
+      });
     }
   }
 
@@ -114,14 +114,10 @@ export function DashboardCards() {
         </p>
       </div>
 
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={cards} strategy={rectSortingStrategy}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {cards.map((card) => (
+            {cards.map(card => (
               <Card
                 key={card.id}
                 draggable
@@ -130,8 +126,8 @@ export function DashboardCards() {
                   card.size === 'large'
                     ? 'md:col-span-2'
                     : card.size === 'medium'
-                    ? 'md:col-span-1'
-                    : ''
+                      ? 'md:col-span-1'
+                      : ''
                 }`}
               >
                 <CardHeader>
@@ -144,5 +140,5 @@ export function DashboardCards() {
         </SortableContext>
       </DndContext>
     </div>
-  )
+  );
 }

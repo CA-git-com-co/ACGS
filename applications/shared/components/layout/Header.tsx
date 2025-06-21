@@ -30,7 +30,7 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
 
   const publicNavItems: NavItem[] = [
     { path: '/', label: 'Home' },
-    { path: '/public-consultation', label: 'Public Consultation' },
+    { path: '/public-consultation', label: 'Public Consultation' }
   ];
 
   const authenticatedNavItems: NavItem[] = [
@@ -38,12 +38,11 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
     { path: '/policy-synthesis', label: 'Synthesize', requiresAuth: true },
     { path: '/policies', label: 'View Policies', requiresAuth: true },
     { path: '/constitutional-council-dashboard', label: 'Dashboard', requiresAuth: true },
-    { path: '/compliance-checker', label: 'Compliance', requiresAuth: true },
+    { path: '/compliance-checker', label: 'Compliance', requiresAuth: true }
   ];
 
   const isActivePath = (path: string): boolean => {
-    return location.pathname === path || 
-           (path !== '/' && location.pathname.startsWith(path));
+    return location.pathname === path || (path !== '/' && location.pathname.startsWith(path));
   };
 
   const renderNavItem = (item: NavItem, mobile: boolean = false) => (
@@ -51,18 +50,20 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
       key={item.path}
       to={item.path}
       className={`
-        ${mobile 
-          ? 'block px-3 py-2 text-base font-medium' 
-          : 'px-3 py-2 rounded-md text-sm font-medium'
+        ${
+          mobile
+            ? 'block px-3 py-2 text-base font-medium'
+            : 'px-3 py-2 rounded-md text-sm font-medium'
         }
         transition-colors duration-200
-        ${isActivePath(item.path)
-          ? mobile 
-            ? 'bg-gray-900 text-white' 
-            : 'bg-blue-700 text-white'
-          : mobile
-            ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
-            : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+        ${
+          isActivePath(item.path)
+            ? mobile
+              ? 'bg-gray-900 text-white'
+              : 'bg-blue-700 text-white'
+            : mobile
+              ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
+              : 'text-gray-300 hover:bg-gray-700 hover:text-white'
         }
       `}
       onClick={() => mobile && setIsMobileMenuOpen(false)}
@@ -89,9 +90,9 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
           <div className="hidden md:block">
             <div className="flex items-center space-x-4">
               {publicNavItems.map(item => renderNavItem(item))}
-              
+
               {isAuthenticated && authenticatedNavItems.map(item => renderNavItem(item))}
-              
+
               {/* Authentication Actions */}
               {isAuthenticated ? (
                 <div className="flex items-center space-x-3 ml-4">
@@ -134,9 +135,19 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
             >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {isMobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 )}
               </svg>
             </button>
@@ -148,9 +159,9 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-700">
               {publicNavItems.map(item => renderNavItem(item, true))}
-              
+
               {isAuthenticated && authenticatedNavItems.map(item => renderNavItem(item, true))}
-              
+
               {/* Mobile Authentication Actions */}
               <div className="border-t border-gray-600 pt-4 pb-3">
                 {isAuthenticated ? (

@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { Button } from '@/components/ui/Button'
-import { Plus } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Plus } from 'lucide-react';
 
 // Mock data for policies
 const policies = [
@@ -31,13 +31,13 @@ const policies = [
     createdAt: new Date('2024-01-10'),
     author: 'HR Manager',
   },
-]
+];
 
 const statusColors = {
   active: 'bg-status-success text-white',
   draft: 'bg-status-warning text-white',
   archived: 'bg-gray-500 text-white',
-}
+};
 
 export default function PoliciesPage() {
   return (
@@ -105,5 +105,5 @@ export default function PoliciesPage() {
         ))}
       </div>
     </div>
-  )
+  );
 }

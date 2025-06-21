@@ -2,7 +2,7 @@ import { chromium, FullConfig } from '@playwright/test';
 
 /**
  * Global setup for ACGS-PGP Framework E2E tests
- * 
+ *
  * Prepares the test environment, including mock service setup
  * and authentication state for governance workflow testing.
  */
@@ -17,9 +17,9 @@ async function globalSetup(config: FullConfig) {
     // Wait for Storybook to be ready
     const baseURL = config.projects[0].use.baseURL || 'http://localhost:6006';
     console.log(`📚 Waiting for Storybook at ${baseURL}...`);
-    
+
     await page.goto(baseURL, { waitUntil: 'networkidle' });
-    
+
     // Verify Storybook is loaded
     await page.waitForSelector('[data-testid="storybook-explorer-tree"]', { timeout: 30000 });
     console.log('✅ Storybook is ready');
@@ -81,7 +81,7 @@ async function globalSetup(config: FullConfig) {
     await page.route('**/api/v1/compliance**', async route => {
       const request = route.request();
       const postData = request.postData();
-      
+
       // Mock compliance check based on request
       let compliant = true;
       let confidenceScore = 95;
@@ -126,16 +126,18 @@ async function globalSetup(config: FullConfig) {
     // Store authentication state for tests
     await page.evaluate(() => {
       localStorage.setItem('acgs-auth-token', 'mock-jwt-token');
-      localStorage.setItem('acgs-user', JSON.stringify({
-        id: 'user-123',
-        username: 'testuser',
-        email: 'test@acgs.dev',
-        role: 'admin'
-      }));
+      localStorage.setItem(
+        'acgs-user',
+        JSON.stringify({
+          id: 'user-123',
+          username: 'testuser',
+          email: 'test@acgs.dev',
+          role: 'admin'
+        })
+      );
     });
 
     console.log('🔐 Authentication state prepared');
-
   } catch (error) {
     console.error('❌ Global setup failed:', error);
     throw error;

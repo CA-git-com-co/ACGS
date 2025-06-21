@@ -15,19 +15,19 @@ spec:
         app: ac-service
     spec:
       containers:
-      - name: ac-service
-        image: yourdockerhubusername/ac-service:latest # Replace with your actual image path
-        ports:
-        - containerPort: 8001 # Port exposed by AC Service (see its Dockerfile)
-        env:
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: postgres-credentials # K8s secret holding DB connection string
-              key: database_url
-        - name: APP_NAME 
-          value: "Audit & Compliance Service"
-        # Add other necessary environment variables
+        - name: ac-service
+          image: yourdockerhubusername/ac-service:latest # Replace with your actual image path
+          ports:
+            - containerPort: 8001 # Port exposed by AC Service (see its Dockerfile)
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials # K8s secret holding DB connection string
+                  key: database_url
+            - name: APP_NAME
+              value: 'Audit & Compliance Service'
+          # Add other necessary environment variables
 ---
 apiVersion: v1
 kind: Service

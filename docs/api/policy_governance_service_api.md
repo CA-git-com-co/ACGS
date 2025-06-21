@@ -28,6 +28,7 @@ Returns the current health status of the Policy Governance Service.
 **Authentication**: Not required
 
 **Response (200 OK)**:
+
 ```json
 {
   "status": "healthy",
@@ -50,13 +51,15 @@ Create a new policy for governance.
 **Authentication**: Required
 
 **Request Body**:
+
 ```json
-{"title": "Policy Title", "description": "Description", "category": "governance"}
+{ "title": "Policy Title", "description": "Description", "category": "governance" }
 ```
 
 **Response (200 OK)**:
+
 ```json
-{"policy_id": "pol_123", "status": "draft", "created_at": "2024-06-20T10:30:00Z"}
+{ "policy_id": "pol_123", "status": "draft", "created_at": "2024-06-20T10:30:00Z" }
 ```
 
 ### Vote on Policy
@@ -68,18 +71,21 @@ Cast vote on a policy proposal.
 **Authentication**: Required
 
 **Request Body**:
+
 ```json
-{"vote": "approve", "comment": "Supports transparency"}
+{ "vote": "approve", "comment": "Supports transparency" }
 ```
 
 **Response (200 OK)**:
+
 ```json
-{"vote_id": "vote_123", "status": "recorded", "timestamp": "2024-06-20T10:30:00Z"}
+{ "vote_id": "vote_123", "status": "recorded", "timestamp": "2024-06-20T10:30:00Z" }
 ```
 
 ## Error Responses
 
 ### 400 Bad Request
+
 ```json
 {
   "status": "error",
@@ -93,6 +99,7 @@ Cast vote on a policy proposal.
 ```
 
 ### 401 Unauthorized
+
 ```json
 {
   "status": "error",
@@ -113,6 +120,7 @@ Cast vote on a policy proposal.
 ## Examples
 
 ### cURL Examples
+
 ```bash
 # Health check
 curl http://localhost:8005/health
@@ -125,6 +133,7 @@ curl -X POST http://localhost:8005/api/v1/example \
 ```
 
 ### Python Client Example
+
 ```python
 import httpx
 import asyncio
@@ -133,7 +142,7 @@ class PolicyGovernanceServiceClient:
     def __init__(self, base_url="http://localhost:8005", token=None):
         self.base_url = base_url
         self.headers = {"Authorization": f"Bearer {token}"} if token else {}
-    
+
     async def health_check(self):
         async with httpx.AsyncClient() as client:
             response = await client.get(f"{self.base_url}/health")

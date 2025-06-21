@@ -4,7 +4,7 @@
 # Service Discovery Configuration
 services:
   auth:
-    url: "${AUTH_SERVICE_URL:-http://localhost:8000}"
+    url: '${AUTH_SERVICE_URL:-http://localhost:8000}'
     timeout: 30
     retries: 3
     circuit_breaker:
@@ -12,12 +12,12 @@ services:
       recovery_timeout: 30
       success_threshold: 3
     health_check:
-      endpoint: "/health"
+      endpoint: '/health'
       interval: 30
       timeout: 5
-  
+
   ac:
-    url: "${AC_SERVICE_URL:-http://localhost:8001}"
+    url: '${AC_SERVICE_URL:-http://localhost:8001}'
     timeout: 45
     retries: 3
     circuit_breaker:
@@ -25,12 +25,12 @@ services:
       recovery_timeout: 30
       success_threshold: 3
     health_check:
-      endpoint: "/health"
+      endpoint: '/health'
       interval: 30
       timeout: 5
-  
+
   integrity:
-    url: "${INTEGRITY_SERVICE_URL:-http://localhost:8002}"
+    url: '${INTEGRITY_SERVICE_URL:-http://localhost:8002}'
     timeout: 30
     retries: 3
     circuit_breaker:
@@ -38,12 +38,12 @@ services:
       recovery_timeout: 30
       success_threshold: 3
     health_check:
-      endpoint: "/health"
+      endpoint: '/health'
       interval: 30
       timeout: 5
-  
+
   fv:
-    url: "${FV_SERVICE_URL:-http://localhost:8003}"
+    url: '${FV_SERVICE_URL:-http://localhost:8003}'
     timeout: 60
     retries: 2
     circuit_breaker:
@@ -51,12 +51,12 @@ services:
       recovery_timeout: 60
       success_threshold: 2
     health_check:
-      endpoint: "/health"
+      endpoint: '/health'
       interval: 30
       timeout: 10
-  
+
   gs:
-    url: "${GS_SERVICE_URL:-http://localhost:8004}"
+    url: '${GS_SERVICE_URL:-http://localhost:8004}'
     timeout: 120
     retries: 2
     circuit_breaker:
@@ -64,12 +64,12 @@ services:
       recovery_timeout: 60
       success_threshold: 2
     health_check:
-      endpoint: "/health"
+      endpoint: '/health'
       interval: 30
       timeout: 10
-  
+
   pgc:
-    url: "${PGC_SERVICE_URL:-http://localhost:8005}"
+    url: '${PGC_SERVICE_URL:-http://localhost:8005}'
     timeout: 30
     retries: 3
     circuit_breaker:
@@ -77,12 +77,12 @@ services:
       recovery_timeout: 30
       success_threshold: 3
     health_check:
-      endpoint: "/health"
+      endpoint: '/health'
       interval: 30
       timeout: 5
-  
+
   ec:
-    url: "${EC_SERVICE_URL:-http://localhost:8006}"
+    url: '${EC_SERVICE_URL:-http://localhost:8006}'
     timeout: 45
     retries: 3
     circuit_breaker:
@@ -90,13 +90,13 @@ services:
       recovery_timeout: 30
       success_threshold: 3
     health_check:
-      endpoint: "/health"
+      endpoint: '/health'
       interval: 30
       timeout: 5
 
 # Load Balancing Configuration
 load_balancing:
-  strategy: "round_robin"  # round_robin, least_connections, weighted
+  strategy: 'round_robin' # round_robin, least_connections, weighted
   health_check_enabled: true
   health_check_interval: 30
   unhealthy_threshold: 3
@@ -111,24 +111,24 @@ connection_pool:
 
 # Security Configuration
 security:
-  tls_enabled: false  # Set to true in production
+  tls_enabled: false # Set to true in production
   verify_ssl: true
-  client_cert_path: ""
-  client_key_path: ""
-  ca_cert_path: ""
-  
+  client_cert_path: ''
+  client_key_path: ''
+  ca_cert_path: ''
+
   # Service-to-service authentication
   service_auth:
     enabled: true
-    token_header: "X-Service-Token"
-    token_env_var: "SERVICE_TOKEN"
+    token_header: 'X-Service-Token'
+    token_env_var: 'SERVICE_TOKEN'
 
 # Rate Limiting Configuration
 rate_limiting:
   enabled: true
   requests_per_minute: 1000
   burst_size: 100
-  
+
   # Per-service rate limits
   per_service:
     auth: 500
@@ -143,12 +143,12 @@ rate_limiting:
 monitoring:
   metrics_enabled: true
   tracing_enabled: true
-  
+
   # Request/response logging
   logging:
     enabled: true
     log_requests: true
-    log_responses: false  # Set to true for debugging
+    log_responses: false # Set to true for debugging
     log_headers: false
     max_body_size: 1024
 
@@ -158,17 +158,17 @@ retry:
   default_delay: 1
   max_delay: 30
   backoff_factor: 2
-  
+
   # Retry conditions
   retry_on:
-    - "connection_error"
-    - "timeout"
-    - "5xx_status"
-  
+    - 'connection_error'
+    - 'timeout'
+    - '5xx_status'
+
   # Don't retry on these conditions
   no_retry_on:
-    - "4xx_status"
-    - "authentication_error"
+    - '4xx_status'
+    - 'authentication_error'
 
 # Timeout Configuration
 timeouts:

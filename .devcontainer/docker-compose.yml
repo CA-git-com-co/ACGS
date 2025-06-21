@@ -28,11 +28,11 @@ services:
       - postgres-data:/var/lib/postgresql/data
       - ../infrastructure/database/init:/docker-entrypoint-initdb.d:ro
     ports:
-      - "5432:5432"
+      - '5432:5432'
     networks:
       - acgs-dev
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U acgs_user -d acgs_db"]
+      test: ['CMD-SHELL', 'pg_isready -U acgs_user -d acgs_db']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -44,11 +44,11 @@ services:
     volumes:
       - redis-data:/data
     ports:
-      - "6379:6379"
+      - '6379:6379'
     networks:
       - acgs-dev
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 30s
       timeout: 10s
       retries: 3

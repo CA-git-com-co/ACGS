@@ -27,21 +27,21 @@ interface WithErrorBoundaryOptions {
 
 /**
  * Higher-order component that wraps components with error boundaries
- * 
+ *
  * @param WrappedComponent - Component to wrap with error boundary
  * @param options - Configuration options for error boundary behavior
  * @returns Component wrapped with appropriate error boundary
- * 
+ *
  * @example
  * ```typescript
  * // Basic error boundary
  * const SafeComponent = withErrorBoundary(MyComponent);
- * 
+ *
  * // Auth-aware error boundary
  * const AuthSafeComponent = withErrorBoundary(MyComponent, {
  *   boundaryType: 'auth'
  * });
- * 
+ *
  * // Service-specific error boundary
  * const ServiceSafeComponent = withErrorBoundary(MyComponent, {
  *   boundaryType: 'service',
@@ -65,16 +65,14 @@ export function withErrorBoundary<P extends object>(
     className
   } = options;
 
-  const WithErrorBoundaryComponent: React.FC<P> = (props) => {
-    const wrappedComponentName = componentName || 
-      WrappedComponent.displayName || 
-      WrappedComponent.name || 
-      'Component';
+  const WithErrorBoundaryComponent: React.FC<P> = props => {
+    const wrappedComponentName =
+      componentName || WrappedComponent.displayName || WrappedComponent.name || 'Component';
 
     const errorHandler = (error: Error, errorInfo: React.ErrorInfo) => {
       // Log error with component context
       console.error(`Error in ${wrappedComponentName}:`, error, errorInfo);
-      
+
       // Call custom error handler if provided
       if (onError) {
         onError(error, errorInfo);
@@ -98,10 +96,7 @@ export function withErrorBoundary<P extends object>(
     // Auth error boundary
     if (boundaryType === 'auth') {
       return (
-        <AuthErrorBoundary
-          onError={errorHandler}
-          className={className}
-        >
+        <AuthErrorBoundary onError={errorHandler} className={className}>
           <WrappedComponent {...props} />
         </AuthErrorBoundary>
       );
@@ -162,9 +157,7 @@ export function withServiceErrorBoundary<P extends object>(
 /**
  * Utility function to create custom error boundary HOCs
  */
-export function createErrorBoundaryHOC<P extends object>(
-  defaultOptions: WithErrorBoundaryOptions
-) {
+export function createErrorBoundaryHOC<P extends object>(defaultOptions: WithErrorBoundaryOptions) {
   return (WrappedComponent: React.ComponentType<P>, options: WithErrorBoundaryOptions = {}) => {
     return withErrorBoundary(WrappedComponent, { ...defaultOptions, ...options });
   };
@@ -220,7 +213,7 @@ export function withMultipleErrorBoundaries<P extends object>(
 ) {
   return boundaries.reduce((Component, boundary) => {
     const { type, serviceName, serviceUrl, options = {} } = boundary;
-    
+
     return withErrorBoundary(Component, {
       ...options,
       boundaryType: type,

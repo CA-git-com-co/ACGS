@@ -14,12 +14,7 @@
     }
   },
   "load_testing": {
-    "concurrent_users": [
-      1,
-      5,
-      10,
-      25
-    ],
+    "concurrent_users": [1, 5, 10, 25],
     "test_duration_seconds": 60
   }
 }

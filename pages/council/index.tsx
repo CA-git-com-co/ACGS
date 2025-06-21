@@ -4,8 +4,18 @@ import { usePrinciples } from '../../hooks/council/usePrinciples'; // Adjust pat
 const CouncilPage: React.FC = () => {
   const { principles, isLoading, isError } = usePrinciples();
 
-  if (isLoading) return <div className="container mx-auto p-4"><p>Loading principles...</p></div>;
-  if (isError) return <div className="container mx-auto p-4"><p>Failed to load principles.</p></div>;
+  if (isLoading)
+    return (
+      <div className="container mx-auto p-4">
+        <p>Loading principles...</p>
+      </div>
+    );
+  if (isError)
+    return (
+      <div className="container mx-auto p-4">
+        <p>Failed to load principles.</p>
+      </div>
+    );
 
   return (
     <div className="container mx-auto p-4">

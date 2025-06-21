@@ -11,8 +11,8 @@ services:
     container_name: acgs_redis_master_1
     command: redis-server /usr/local/etc/redis/redis.conf --port 7001 --cluster-announce-port 7001 --cluster-announce-bus-port 17001
     ports:
-      - "7001:7001"
-      - "17001:17001"
+      - '7001:7001'
+      - '17001:17001'
     volumes:
       - ./redis-cluster-config.conf:/usr/local/etc/redis/redis.conf:ro
       - redis_master_1_data:/data
@@ -33,8 +33,8 @@ services:
     container_name: acgs_redis_master_2
     command: redis-server /usr/local/etc/redis/redis.conf --port 7002 --cluster-announce-port 7002 --cluster-announce-bus-port 17002
     ports:
-      - "7002:7002"
-      - "17002:17002"
+      - '7002:7002'
+      - '17002:17002'
     volumes:
       - ./redis-cluster-config.conf:/usr/local/etc/redis/redis.conf:ro
       - redis_master_2_data:/data
@@ -55,8 +55,8 @@ services:
     container_name: acgs_redis_master_3
     command: redis-server /usr/local/etc/redis/redis.conf --port 7003 --cluster-announce-port 7003 --cluster-announce-bus-port 17003
     ports:
-      - "7003:7003"
-      - "17003:17003"
+      - '7003:7003'
+      - '17003:17003'
     volumes:
       - ./redis-cluster-config.conf:/usr/local/etc/redis/redis.conf:ro
       - redis_master_3_data:/data
@@ -78,8 +78,8 @@ services:
     container_name: acgs_redis_replica_1
     command: redis-server /usr/local/etc/redis/redis.conf --port 7004 --cluster-announce-port 7004 --cluster-announce-bus-port 17004
     ports:
-      - "7004:7004"
-      - "17004:17004"
+      - '7004:7004'
+      - '17004:17004'
     volumes:
       - ./redis-cluster-config.conf:/usr/local/etc/redis/redis.conf:ro
       - redis_replica_1_data:/data
@@ -100,8 +100,8 @@ services:
     container_name: acgs_redis_replica_2
     command: redis-server /usr/local/etc/redis/redis.conf --port 7005 --cluster-announce-port 7005 --cluster-announce-bus-port 17005
     ports:
-      - "7005:7005"
-      - "17005:17005"
+      - '7005:7005'
+      - '17005:17005'
     volumes:
       - ./redis-cluster-config.conf:/usr/local/etc/redis/redis.conf:ro
       - redis_replica_2_data:/data
@@ -122,8 +122,8 @@ services:
     container_name: acgs_redis_replica_3
     command: redis-server /usr/local/etc/redis/redis.conf --port 7006 --cluster-announce-port 7006 --cluster-announce-bus-port 17006
     ports:
-      - "7006:7006"
-      - "17006:17006"
+      - '7006:7006'
+      - '17006:17006'
     volumes:
       - ./redis-cluster-config.conf:/usr/local/etc/redis/redis.conf:ro
       - redis_replica_3_data:/data
@@ -162,12 +162,12 @@ services:
   redis-exporter:
     image: oliver006/redis_exporter:latest
     container_name: acgs_redis_exporter
-    command: 
+    command:
       - '--redis.addr=redis://redis-master-1:7001,redis://redis-master-2:7002,redis://redis-master-3:7003'
       - '--web.listen-address=:9121'
       - '--log-format=txt'
     ports:
-      - "9121:9121"
+      - '9121:9121'
     networks:
       - acgs_redis_cluster
     depends_on:

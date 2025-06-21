@@ -11,11 +11,11 @@ groups:
         labels:
           severity: critical
           component: availability
-          target: "99.9%"
+          target: '99.9%'
         annotations:
-          summary: "System availability below 99.9% target"
-          description: "Current availability: {{ $value | humanizePercentage }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/availability-degradation"
+          summary: 'System availability below 99.9% target'
+          description: 'Current availability: {{ $value | humanizePercentage }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/availability-degradation'
 
       # Service-Specific Availability
       - alert: ServiceAvailabilityBelowTarget
@@ -25,8 +25,8 @@ groups:
           severity: critical
           component: availability
         annotations:
-          summary: "Service {{ $labels.job }} availability compromised"
-          description: "Service {{ $labels.job }} is not responding"
+          summary: 'Service {{ $labels.job }} availability compromised'
+          description: 'Service {{ $labels.job }} is not responding'
 
       # Critical Service Availability (Auth, PGC, AC)
       - alert: CriticalServiceDown
@@ -36,8 +36,8 @@ groups:
           severity: critical
           component: critical_services
         annotations:
-          summary: "Critical service {{ $labels.job }} is down"
-          description: "Critical service {{ $labels.job }} must be restored immediately"
+          summary: 'Critical service {{ $labels.job }} is down'
+          description: 'Critical service {{ $labels.job }} must be restored immediately'
 
   - name: response_time_targets
     rules:
@@ -48,10 +48,10 @@ groups:
         labels:
           severity: warning
           component: response_time
-          target: "500ms"
+          target: '500ms'
         annotations:
-          summary: "Response time above 500ms target"
-          description: "95th percentile response time: {{ $value }}s for {{ $labels.service }}"
+          summary: 'Response time above 500ms target'
+          description: '95th percentile response time: {{ $value }}s for {{ $labels.service }}'
 
       # Critical Response Time Alert (>2s)
       - alert: CriticalResponseTime
@@ -61,8 +61,8 @@ groups:
           severity: critical
           component: response_time
         annotations:
-          summary: "Critical response time detected"
-          description: "95th percentile response time: {{ $value }}s for {{ $labels.service }}"
+          summary: 'Critical response time detected'
+          description: '95th percentile response time: {{ $value }}s for {{ $labels.service }}'
 
       # PGC Service Response Time (Target: <50ms)
       - alert: PGCResponseTimeAboveTarget
@@ -71,10 +71,10 @@ groups:
         labels:
           severity: warning
           component: pgc_performance
-          target: "50ms"
+          target: '50ms'
         annotations:
-          summary: "PGC response time above 50ms target"
-          description: "95th percentile PGC response time: {{ $value }}s"
+          summary: 'PGC response time above 50ms target'
+          description: '95th percentile PGC response time: {{ $value }}s'
 
       # LLM Response Time (GS Service)
       - alert: LLMResponseTimeHigh
@@ -84,8 +84,8 @@ groups:
           severity: warning
           component: llm_performance
         annotations:
-          summary: "LLM response time high"
-          description: "95th percentile LLM response time: {{ $value }}s"
+          summary: 'LLM response time high'
+          description: '95th percentile LLM response time: {{ $value }}s'
 
   - name: throughput_targets
     rules:
@@ -96,10 +96,10 @@ groups:
         labels:
           severity: warning
           component: capacity
-          target: "1000_users"
+          target: '1000_users'
         annotations:
-          summary: "Concurrent users approaching capacity"
-          description: "Current active sessions: {{ $value }}"
+          summary: 'Concurrent users approaching capacity'
+          description: 'Current active sessions: {{ $value }}'
 
       # Request Rate Monitoring
       - alert: HighRequestRate
@@ -109,8 +109,8 @@ groups:
           severity: warning
           component: throughput
         annotations:
-          summary: "High request rate detected"
-          description: "Current request rate: {{ $value }} requests/second"
+          summary: 'High request rate detected'
+          description: 'Current request rate: {{ $value }} requests/second'
 
       # Database Query Rate
       - alert: HighDatabaseQueryRate
@@ -120,8 +120,8 @@ groups:
           severity: warning
           component: database_throughput
         annotations:
-          summary: "High database query rate"
-          description: "Database transaction rate: {{ $value }} transactions/second"
+          summary: 'High database query rate'
+          description: 'Database transaction rate: {{ $value }} transactions/second'
 
   - name: resource_utilization
     rules:
@@ -133,8 +133,8 @@ groups:
           severity: warning
           component: cpu_utilization
         annotations:
-          summary: "High CPU utilization"
-          description: "CPU utilization: {{ $value }}% on {{ $labels.instance }}"
+          summary: 'High CPU utilization'
+          description: 'CPU utilization: {{ $value }}% on {{ $labels.instance }}'
 
       # Memory Utilization
       - alert: HighMemoryUtilization
@@ -144,8 +144,8 @@ groups:
           severity: warning
           component: memory_utilization
         annotations:
-          summary: "High memory utilization"
-          description: "Memory utilization: {{ $value }}% on {{ $labels.instance }}"
+          summary: 'High memory utilization'
+          description: 'Memory utilization: {{ $value }}% on {{ $labels.instance }}'
 
       # Disk Space Utilization
       - alert: HighDiskUtilization
@@ -155,8 +155,8 @@ groups:
           severity: warning
           component: disk_utilization
         annotations:
-          summary: "High disk utilization"
-          description: "Disk utilization: {{ $value }}% on {{ $labels.instance }}"
+          summary: 'High disk utilization'
+          description: 'Disk utilization: {{ $value }}% on {{ $labels.instance }}'
 
   - name: cache_performance
     rules:
@@ -167,10 +167,10 @@ groups:
         labels:
           severity: warning
           component: cache_performance
-          target: "80%"
+          target: '80%'
         annotations:
-          summary: "Cache hit rate below 80% target"
-          description: "Current cache hit rate: {{ $value }}%"
+          summary: 'Cache hit rate below 80% target'
+          description: 'Current cache hit rate: {{ $value }}%'
 
       # Cache Memory Usage
       - alert: HighCacheMemoryUsage
@@ -180,8 +180,8 @@ groups:
           severity: warning
           component: cache_memory
         annotations:
-          summary: "High Redis memory usage"
-          description: "Redis memory usage: {{ $value }}%"
+          summary: 'High Redis memory usage'
+          description: 'Redis memory usage: {{ $value }}%'
 
       # Cache Connection Pool Exhaustion
       - alert: CacheConnectionPoolExhaustion
@@ -191,8 +191,8 @@ groups:
           severity: warning
           component: cache_connections
         annotations:
-          summary: "Redis connection pool near exhaustion"
-          description: "Active connections: {{ $value }}% of pool capacity"
+          summary: 'Redis connection pool near exhaustion'
+          description: 'Active connections: {{ $value }}% of pool capacity'
 
   - name: database_performance
     rules:
@@ -204,8 +204,8 @@ groups:
           severity: warning
           component: database_connections
         annotations:
-          summary: "Database connection pool near exhaustion"
-          description: "Active connections: {{ $value }}% of max connections"
+          summary: 'Database connection pool near exhaustion'
+          description: 'Active connections: {{ $value }}% of max connections'
 
       # Long Running Queries
       - alert: LongRunningQueries
@@ -215,8 +215,8 @@ groups:
           severity: warning
           component: database_queries
         annotations:
-          summary: "Long running database queries detected"
-          description: "Longest transaction duration: {{ $value }}s"
+          summary: 'Long running database queries detected'
+          description: 'Longest transaction duration: {{ $value }}s'
 
       # Database Lock Contention
       - alert: DatabaseLockContention
@@ -226,8 +226,8 @@ groups:
           severity: warning
           component: database_locks
         annotations:
-          summary: "High database lock contention"
-          description: "Current lock count: {{ $value }}"
+          summary: 'High database lock contention'
+          description: 'Current lock count: {{ $value }}'
 
   - name: network_performance
     rules:
@@ -239,8 +239,8 @@ groups:
           severity: warning
           component: network_latency
         annotations:
-          summary: "High network latency detected"
-          description: "95th percentile network latency: {{ $value }}s"
+          summary: 'High network latency detected'
+          description: '95th percentile network latency: {{ $value }}s'
 
       # Network Error Rate
       - alert: HighNetworkErrorRate
@@ -250,8 +250,8 @@ groups:
           severity: warning
           component: network_errors
         annotations:
-          summary: "High network error rate"
-          description: "Network error rate: {{ $value | humanizePercentage }}"
+          summary: 'High network error rate'
+          description: 'Network error rate: {{ $value | humanizePercentage }}'
 
   - name: monitoring_overhead
     rules:
@@ -262,10 +262,10 @@ groups:
         labels:
           severity: warning
           component: monitoring_overhead
-          target: "1%"
+          target: '1%'
         annotations:
-          summary: "Monitoring system overhead above 1% target"
-          description: "Monitoring overhead: {{ $value | humanizePercentage }}"
+          summary: 'Monitoring system overhead above 1% target'
+          description: 'Monitoring overhead: {{ $value | humanizePercentage }}'
 
       # Metrics Collection Latency
       - alert: MetricsCollectionLatency
@@ -275,5 +275,5 @@ groups:
           severity: warning
           component: metrics_collection
         annotations:
-          summary: "High metrics collection latency"
-          description: "Rule evaluation duration: {{ $value }}s"
+          summary: 'High metrics collection latency'
+          description: 'Rule evaluation duration: {{ $value }}s'

@@ -2,11 +2,11 @@ name: ACGS-1 Enterprise CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
   schedule:
-    - cron: '0 2 * * *'  # Daily at 2 AM for comprehensive testing
+    - cron: '0 2 * * *' # Daily at 2 AM for comprehensive testing
 
 permissions:
   contents: read
@@ -25,7 +25,7 @@ env:
   ENTERPRISE_BUILD_TARGET_MINUTES: 5
   ENTERPRISE_AVAILABILITY_TARGET: 99.5
   # Enhanced Caching Configuration
-  CARGO_INCREMENTAL: 1  # Enable incremental compilation for development
+  CARGO_INCREMENTAL: 1 # Enable incremental compilation for development
   CARGO_NET_RETRY: 10
   CARGO_NET_GIT_FETCH_WITH_CLI: true
 
@@ -848,17 +848,18 @@ jobs:
     if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.python_changed == 'true'
     strategy:
       matrix:
-        service: [
-          'constitutional-ai',
-          'governance-synthesis',
-          'policy-governance',
-          'formal-verification',
-          'evolutionary-computation',
-          'authentication',
-          'integrity',
-          'federated-evaluation',
-          'research-platform'
-        ]
+        service:
+          [
+            'constitutional-ai',
+            'governance-synthesis',
+            'policy-governance',
+            'formal-verification',
+            'evolutionary-computation',
+            'authentication',
+            'integrity',
+            'federated-evaluation',
+            'research-platform',
+          ]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4

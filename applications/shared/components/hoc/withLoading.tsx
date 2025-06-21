@@ -27,11 +27,11 @@ interface LoadingProps {
 
 /**
  * Higher-order component that adds loading state management
- * 
+ *
  * @param WrappedComponent - Component to wrap with loading functionality
  * @param options - Configuration options for loading behavior
  * @returns Component with loading state management
- * 
+ *
  * @example
  * ```typescript
  * const LoadingUserList = withLoading(UserList, {
@@ -39,7 +39,7 @@ interface LoadingProps {
  *   useOverlay: false,
  *   loadingText: 'Loading users...'
  * });
- * 
+ *
  * // Usage
  * <LoadingUserList isLoading={isLoading} error={error} users={users} />
  * ```
@@ -56,7 +56,7 @@ export function withLoading<P extends LoadingProps>(
     minLoadingTime = 0
   } = options;
 
-  const WithLoadingComponent: React.FC<P> = (props) => {
+  const WithLoadingComponent: React.FC<P> = props => {
     const { isLoading = false, error, ...restProps } = props;
     const [showLoading, setShowLoading] = React.useState(isLoading);
     const [minTimeElapsed, setMinTimeElapsed] = React.useState(minLoadingTime === 0);
@@ -85,8 +85,18 @@ export function withLoading<P extends LoadingProps>(
       return (
         <div className="error-state p-4 bg-red-50 border border-red-200 rounded-md">
           <div className="flex items-center">
-            <svg className="h-5 w-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="h-5 w-5 text-red-400 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <span className="text-red-700">
               {typeof error === 'string' ? error : error.message}
@@ -99,10 +109,16 @@ export function withLoading<P extends LoadingProps>(
     // Loading state with overlay
     if (useOverlay) {
       return (
-        <LoadingOverlay 
-          isLoading={showLoading} 
+        <LoadingOverlay
+          isLoading={showLoading}
           blur={blurContent}
-          spinner={LoadingComponent ? <LoadingComponent /> : <Spinner size="lg" showText text={loadingText} />}
+          spinner={
+            LoadingComponent ? (
+              <LoadingComponent />
+            ) : (
+              <Spinner size="lg" showText text={loadingText} />
+            )
+          }
         >
           <WrappedComponent {...(restProps as P)} />
         </LoadingOverlay>
@@ -191,9 +207,7 @@ export function withDataLoading<P extends LoadingProps>(
 /**
  * Utility function to create custom loading HOCs
  */
-export function createLoadingHOC<P extends LoadingProps>(
-  defaultOptions: WithLoadingOptions
-) {
+export function createLoadingHOC<P extends LoadingProps>(defaultOptions: WithLoadingOptions) {
   return (WrappedComponent: React.ComponentType<P>, options: WithLoadingOptions = {}) => {
     return withLoading(WrappedComponent, { ...defaultOptions, ...options });
   };

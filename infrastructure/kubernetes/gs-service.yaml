@@ -15,17 +15,17 @@ spec:
         app: gs-service
     spec:
       containers:
-      - name: gs-service
-        image: yourdockerhubusername/gs-service:latest # Replace with your actual image path
-        ports:
-        - containerPort: 8004 # Port exposed by GS Service
-        env:
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: postgres-credentials
-              key: database_url
-        # Add other necessary environment variables
+        - name: gs-service
+          image: yourdockerhubusername/gs-service:latest # Replace with your actual image path
+          ports:
+            - containerPort: 8004 # Port exposed by GS Service
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: database_url
+          # Add other necessary environment variables
 ---
 apiVersion: v1
 kind: Service

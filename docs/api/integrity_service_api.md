@@ -28,6 +28,7 @@ Returns the current health status of the Integrity Service.
 **Authentication**: Not required
 
 **Response (200 OK)**:
+
 ```json
 {
   "status": "healthy",
@@ -50,13 +51,15 @@ Create digital signature for document or data.
 **Authentication**: Required
 
 **Request Body**:
+
 ```json
-{"document": "content", "signer_id": "user123"}
+{ "document": "content", "signer_id": "user123" }
 ```
 
 **Response (200 OK)**:
+
 ```json
-{"signature": "digital_signature", "signature_id": "sig_123", "timestamp": "2024-06-20T10:30:00Z"}
+{ "signature": "digital_signature", "signature_id": "sig_123", "timestamp": "2024-06-20T10:30:00Z" }
 ```
 
 ### Signature Verification
@@ -68,18 +71,21 @@ Verify digital signature authenticity.
 **Authentication**: Required
 
 **Request Body**:
+
 ```json
-{"document": "content", "signature": "digital_signature"}
+{ "document": "content", "signature": "digital_signature" }
 ```
 
 **Response (200 OK)**:
+
 ```json
-{"valid": true, "signer_id": "user123", "timestamp": "2024-06-20T10:30:00Z"}
+{ "valid": true, "signer_id": "user123", "timestamp": "2024-06-20T10:30:00Z" }
 ```
 
 ## Error Responses
 
 ### 400 Bad Request
+
 ```json
 {
   "status": "error",
@@ -93,6 +99,7 @@ Verify digital signature authenticity.
 ```
 
 ### 401 Unauthorized
+
 ```json
 {
   "status": "error",
@@ -113,6 +120,7 @@ Verify digital signature authenticity.
 ## Examples
 
 ### cURL Examples
+
 ```bash
 # Health check
 curl http://localhost:8002/health
@@ -125,6 +133,7 @@ curl -X POST http://localhost:8002/api/v1/example \
 ```
 
 ### Python Client Example
+
 ```python
 import httpx
 import asyncio
@@ -133,7 +142,7 @@ class IntegrityServiceClient:
     def __init__(self, base_url="http://localhost:8002", token=None):
         self.base_url = base_url
         self.headers = {"Authorization": f"Bearer {token}"} if token else {}
-    
+
     async def health_check(self):
         async with httpx.AsyncClient() as client:
             response = await client.get(f"{self.base_url}/health")

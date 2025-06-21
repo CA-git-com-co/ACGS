@@ -16,7 +16,7 @@ describe('LoadingStates Components', () => {
   describe('Spinner', () => {
     it('should render spinner with default props', () => {
       render(<Spinner />);
-      
+
       const spinner = screen.getByRole('status');
       expect(spinner).toBeInTheDocument();
       expect(spinner).toHaveAttribute('aria-label', 'Loading');
@@ -24,7 +24,7 @@ describe('LoadingStates Components', () => {
 
     it('should render spinner with text when showText is true', () => {
       render(<Spinner showText text="Loading data..." />);
-      
+
       expect(screen.getByText('Loading data...')).toBeInTheDocument();
     });
 
@@ -59,7 +59,7 @@ describe('LoadingStates Components', () => {
   describe('Skeleton', () => {
     it('should render single skeleton with default props', () => {
       render(<Skeleton />);
-      
+
       const skeleton = screen.getByRole('status');
       expect(skeleton).toBeInTheDocument();
       expect(skeleton).toHaveAttribute('aria-label', 'Loading content');
@@ -67,24 +67,24 @@ describe('LoadingStates Components', () => {
 
     it('should render multiple skeleton lines', () => {
       render(<Skeleton lines={3} />);
-      
+
       const skeletons = screen.getAllByRole('status');
       expect(skeletons).toHaveLength(1); // Container has single role
-      
+
       const container = screen.getByRole('status');
       expect(container.children).toHaveLength(3);
     });
 
     it('should apply rounded class when rounded is true', () => {
       render(<Skeleton rounded />);
-      
+
       const skeleton = screen.getByRole('status');
       expect(skeleton).toHaveClass('rounded-full');
     });
 
     it('should apply custom width and height', () => {
       render(<Skeleton width="200px" height="50px" />);
-      
+
       const skeleton = screen.getByRole('status');
       expect(skeleton).toHaveStyle({ width: '200px', height: '50px' });
     });
@@ -93,7 +93,7 @@ describe('LoadingStates Components', () => {
   describe('Progress', () => {
     it('should render progress bar with default props', () => {
       render(<Progress progress={50} />);
-      
+
       const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toBeInTheDocument();
       expect(progressBar).toHaveAttribute('aria-valuenow', '50');
@@ -103,19 +103,19 @@ describe('LoadingStates Components', () => {
 
     it('should display percentage when showPercentage is true', () => {
       render(<Progress progress={75} showPercentage />);
-      
+
       expect(screen.getByText('75%')).toBeInTheDocument();
     });
 
     it('should display label when provided', () => {
       render(<Progress progress={60} label="Loading policies..." />);
-      
+
       expect(screen.getByText('Loading policies...')).toBeInTheDocument();
     });
 
     it('should apply correct width based on progress', () => {
       render(<Progress progress={30} />);
-      
+
       const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveStyle({ width: '30%' });
     });
@@ -146,7 +146,7 @@ describe('LoadingStates Components', () => {
           <div>Content</div>
         </LoadingOverlay>
       );
-      
+
       expect(screen.getByText('Content')).toBeInTheDocument();
       expect(screen.queryByRole('status')).not.toBeInTheDocument();
     });
@@ -157,7 +157,7 @@ describe('LoadingStates Components', () => {
           <div>Content</div>
         </LoadingOverlay>
       );
-      
+
       expect(screen.getByText('Content')).toBeInTheDocument();
       expect(screen.getByText('Loading...')).toBeInTheDocument();
     });
@@ -168,20 +168,20 @@ describe('LoadingStates Components', () => {
           <div>Content</div>
         </LoadingOverlay>
       );
-      
+
       const contentContainer = screen.getByText('Content').parentElement;
       expect(contentContainer).toHaveClass('filter', 'blur-sm');
     });
 
     it('should render custom spinner when provided', () => {
       const customSpinner = <div data-testid="custom-spinner">Custom Loading</div>;
-      
+
       render(
         <LoadingOverlay isLoading={true} spinner={customSpinner}>
           <div>Content</div>
         </LoadingOverlay>
       );
-      
+
       expect(screen.getByTestId('custom-spinner')).toBeInTheDocument();
     });
   });
@@ -193,7 +193,7 @@ describe('LoadingStates Components', () => {
           Submit
         </LoadingButton>
       );
-      
+
       expect(screen.getByRole('button')).toBeInTheDocument();
       expect(screen.getByText('Submit')).toBeInTheDocument();
     });
@@ -204,7 +204,7 @@ describe('LoadingStates Components', () => {
           Submit
         </LoadingButton>
       );
-      
+
       expect(screen.getByText('Submitting...')).toBeInTheDocument();
       expect(screen.queryByText('Submit')).not.toBeInTheDocument();
     });
@@ -215,7 +215,7 @@ describe('LoadingStates Components', () => {
           Submit
         </LoadingButton>
       );
-      
+
       expect(screen.getByRole('button')).toBeDisabled();
     });
 
@@ -225,7 +225,7 @@ describe('LoadingStates Components', () => {
           Submit
         </LoadingButton>
       );
-      
+
       expect(screen.getByRole('button')).toBeDisabled();
     });
 
@@ -236,7 +236,7 @@ describe('LoadingStates Components', () => {
           Submit
         </LoadingButton>
       );
-      
+
       fireEvent.click(screen.getByRole('button'));
       expect(handleClick).toHaveBeenCalledTimes(1);
     });
@@ -248,7 +248,7 @@ describe('LoadingStates Components', () => {
           Submit
         </LoadingButton>
       );
-      
+
       fireEvent.click(screen.getByRole('button'));
       expect(handleClick).not.toHaveBeenCalled();
     });
@@ -257,7 +257,7 @@ describe('LoadingStates Components', () => {
   describe('CardSkeleton', () => {
     it('should render card skeleton structure', () => {
       render(<CardSkeleton />);
-      
+
       const skeletons = screen.getAllByRole('status');
       expect(skeletons.length).toBeGreaterThan(0);
     });
@@ -271,14 +271,14 @@ describe('LoadingStates Components', () => {
   describe('TableSkeleton', () => {
     it('should render table skeleton with default rows and columns', () => {
       render(<TableSkeleton />);
-      
+
       const skeletons = screen.getAllByRole('status');
       expect(skeletons.length).toBeGreaterThan(0);
     });
 
     it('should render specified number of rows and columns', () => {
       render(<TableSkeleton rows={3} columns={2} />);
-      
+
       const skeletons = screen.getAllByRole('status');
       // Should have header + 3 rows, each with 2 columns
       expect(skeletons.length).toBeGreaterThan(0);
@@ -288,14 +288,14 @@ describe('LoadingStates Components', () => {
   describe('FormSkeleton', () => {
     it('should render form skeleton with default fields', () => {
       render(<FormSkeleton />);
-      
+
       const skeletons = screen.getAllByRole('status');
       expect(skeletons.length).toBeGreaterThan(0);
     });
 
     it('should render specified number of fields', () => {
       render(<FormSkeleton fields={2} />);
-      
+
       const skeletons = screen.getAllByRole('status');
       expect(skeletons.length).toBeGreaterThan(0);
     });
@@ -316,7 +316,7 @@ describe('LoadingStates Components', () => {
           <div>Content</div>
         </TimeoutLoader>
       );
-      
+
       expect(screen.getByText('Loading...')).toBeInTheDocument();
     });
 
@@ -326,9 +326,9 @@ describe('LoadingStates Components', () => {
           <div>Content</div>
         </TimeoutLoader>
       );
-      
+
       jest.advanceTimersByTime(1000);
-      
+
       expect(screen.getByText('Request Timeout')).toBeInTheDocument();
     });
 
@@ -339,23 +339,23 @@ describe('LoadingStates Components', () => {
           <div>Content</div>
         </TimeoutLoader>
       );
-      
+
       jest.advanceTimersByTime(1000);
-      
+
       expect(handleTimeout).toHaveBeenCalledTimes(1);
     });
 
     it('should render custom timeout component', () => {
       const customTimeout = <div data-testid="custom-timeout">Custom Timeout</div>;
-      
+
       render(
         <TimeoutLoader timeout={1000} timeoutComponent={customTimeout}>
           <div>Content</div>
         </TimeoutLoader>
       );
-      
+
       jest.advanceTimersByTime(1000);
-      
+
       expect(screen.getByTestId('custom-timeout')).toBeInTheDocument();
     });
   });
@@ -368,7 +368,7 @@ describe('LoadingStates Components', () => {
 
     it('should have proper ARIA attributes for progress bars', () => {
       render(<Progress progress={50} />);
-      
+
       const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveAttribute('aria-valuenow', '50');
       expect(progressBar).toHaveAttribute('aria-valuemin', '0');

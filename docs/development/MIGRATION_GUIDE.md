@@ -6,35 +6,35 @@ This guide helps existing contributors adapt to the new blockchain-focused direc
 
 ### Directory Structure Changes
 
-| Old Location | New Location | Purpose |
-|--------------|--------------|---------|
-| `services/core/constitutional-ai/ac_service/` | `services/core/constitutional-ai/` | Constitutional AI service |
-| `services/core/governance-synthesis/gs_service/` | `services/core/governance-synthesis/` | Governance synthesis service |
-| `services/platform/pgc/pgc_service/` | `services/core/policy-governance/` | Policy governance service |
-| `services/core/formal-verification/fv_service/` | `services/core/formal-verification/` | Formal verification service |
-| `services/core/auth/auth_service/` | `services/platform/authentication/` | Authentication service |
-| `services/platform/integrity/integrity_service/` | `services/platform/integrity/` | Integrity service |
-| `services/shared/` | `services/shared/` | Shared libraries |
-| `applications/legacy-applications/governance-dashboard/` | `applications/legacy-applications/governance-dashboard/` | Legacy frontend |
-| `blockchain/` | `blockchain/` | Blockchain programs |
-| `integrations/alphaevolve-engine/` | `integrations/alphaevolve-engine/` | AlphaEvolve integration |
+| Old Location                                             | New Location                                             | Purpose                      |
+| -------------------------------------------------------- | -------------------------------------------------------- | ---------------------------- |
+| `services/core/constitutional-ai/ac_service/`            | `services/core/constitutional-ai/`                       | Constitutional AI service    |
+| `services/core/governance-synthesis/gs_service/`         | `services/core/governance-synthesis/`                    | Governance synthesis service |
+| `services/platform/pgc/pgc_service/`                     | `services/core/policy-governance/`                       | Policy governance service    |
+| `services/core/formal-verification/fv_service/`          | `services/core/formal-verification/`                     | Formal verification service  |
+| `services/core/auth/auth_service/`                       | `services/platform/authentication/`                      | Authentication service       |
+| `services/platform/integrity/integrity_service/`         | `services/platform/integrity/`                           | Integrity service            |
+| `services/shared/`                                       | `services/shared/`                                       | Shared libraries             |
+| `applications/legacy-applications/governance-dashboard/` | `applications/legacy-applications/governance-dashboard/` | Legacy frontend              |
+| `blockchain/`                                            | `blockchain/`                                            | Blockchain programs          |
+| `integrations/alphaevolve-engine/`                       | `integrations/alphaevolve-engine/`                       | AlphaEvolve integration      |
 
 ### Import Path Changes
 
-| Old Import | New Import |
-|------------|------------|
-| `from src.backend.shared` | `from services.shared` |
-| `from src.backend.ac_service` | `from services.core.constitutional_ai.ac_service` |
-| `from shared.models` | `from services.shared.models` |
+| Old Import                      | New Import                                             |
+| ------------------------------- | ------------------------------------------------------ |
+| `from src.backend.shared`       | `from services.shared`                                 |
+| `from src.backend.ac_service`   | `from services.core.constitutional_ai.ac_service`      |
+| `from shared.models`            | `from services.shared.models`                          |
 | `import src.backend.gs_service` | `import services.core.governance_synthesis.gs_service` |
 
 ### Docker & Deployment Changes
 
-| Old Path | New Path |
-|----------|----------|
-| `./services/core/constitutional-ai/ac_service` | `./services/core/constitutional-ai/ac_service` |
-| `./blockchain/deploy` | `./blockchain/quantumagi-deployment/deploy` |
-| `infrastructure/docker/infrastructure/docker/docker-compose.yml` | `infrastructure/docker/docker-compose.yml` |
+| Old Path                                                         | New Path                                       |
+| ---------------------------------------------------------------- | ---------------------------------------------- |
+| `./services/core/constitutional-ai/ac_service`                   | `./services/core/constitutional-ai/ac_service` |
+| `./blockchain/deploy`                                            | `./blockchain/quantumagi-deployment/deploy`    |
+| `infrastructure/docker/infrastructure/docker/docker-compose.yml` | `infrastructure/docker/docker-compose.yml`     |
 
 ## 🛠️ Migration Steps
 
@@ -62,6 +62,7 @@ cd ../..
 ### 2. Update Import Statements
 
 **Python Services**:
+
 ```python
 # Old
 from src.backend.shared.models import User
@@ -73,17 +74,19 @@ from services.core.constitutional_ai.ac_service.app.main import app
 ```
 
 **TypeScript/JavaScript**:
+
 ```typescript
 // Old
-import { SolanaService } from '../../../blockchain/client'
+import { SolanaService } from '../../../blockchain/client';
 
 // New
-import { SolanaService } from '../../../blockchain/client'
+import { SolanaService } from '../../../blockchain/client';
 ```
 
 ### 3. Update Docker Configurations
 
 **infrastructure/docker/docker-compose.yml**:
+
 ```yaml
 # Old
 services:
@@ -99,6 +102,7 @@ services:
 ### 4. Update CI/CD Workflows
 
 **GitHub Actions**:
+
 ```yaml
 # Old
 - name: Build service
@@ -157,6 +161,7 @@ npm start
 **Problem**: `ModuleNotFoundError: No module named 'src.backend'`
 
 **Solution**: Update import statements to use new paths:
+
 ```python
 # Change this
 from src.backend.shared.models import User
@@ -170,6 +175,7 @@ from services.shared.models import User
 **Problem**: `COPY failed: file not found`
 
 **Solution**: Update Dockerfile paths:
+
 ```dockerfile
 # Change this
 COPY services/shared /app/shared
@@ -183,6 +189,7 @@ COPY services/shared /app/shared
 **Problem**: Tests can't find modules or files
 
 **Solution**: Update test imports and file paths:
+
 ```python
 # Update test imports
 from services.core.constitutional_ai.ac_service.app.main import app
@@ -196,6 +203,7 @@ test_file = "services/shared/test_data/sample.json"
 **Problem**: `anchor build` fails
 
 **Solution**: Ensure you're in the `blockchain/` directory:
+
 ```bash
 cd blockchain
 anchor build

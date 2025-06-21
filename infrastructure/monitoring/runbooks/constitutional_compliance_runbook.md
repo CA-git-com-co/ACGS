@@ -20,6 +20,7 @@ This runbook addresses constitutional compliance failures in the ACGS-1 Constitu
 ## Immediate Response (0-2 minutes)
 
 ### 1. Alert Acknowledgment
+
 ```bash
 # Acknowledge the alert immediately
 curl -X POST http://localhost:8080/alerts/{alert_id}/acknowledge \
@@ -27,6 +28,7 @@ curl -X POST http://localhost:8080/alerts/{alert_id}/acknowledge \
 ```
 
 ### 2. Emergency Compliance Check
+
 ```bash
 # Check current constitutional compliance status
 curl -f http://localhost:8005/api/v1/governance/compliance/status
@@ -36,6 +38,7 @@ curl -f http://localhost:8005/api/v1/constitution/hash
 ```
 
 ### 3. Halt Non-Critical Governance Operations
+
 ```bash
 # Temporarily suspend new governance actions (if compliance <90%)
 curl -X POST http://localhost:8005/api/v1/governance/emergency-halt \
@@ -46,6 +49,7 @@ curl -X POST http://localhost:8005/api/v1/governance/emergency-halt \
 ## Investigation (2-10 minutes)
 
 ### 4. Constitutional Hash Verification
+
 ```bash
 # Verify constitutional hash integrity
 EXPECTED_HASH="cdd01ef066bc6cf2"
@@ -61,6 +65,7 @@ fi
 ```
 
 ### 5. Compliance Validation Analysis
+
 ```bash
 # Check recent compliance validations
 curl -s http://localhost:8005/api/v1/governance/compliance/recent | jq '.validations[] | {id, result, confidence, timestamp}'
@@ -73,6 +78,7 @@ curl -s http://localhost:8005/metrics | grep constitutional_compliance
 ```
 
 ### 6. Blockchain Connectivity Check
+
 ```bash
 # Verify Solana devnet connectivity
 curl -f http://localhost:8005/api/v1/blockchain/health
@@ -85,6 +91,7 @@ curl -s http://localhost:8005/api/v1/blockchain/accounts/constitution
 ```
 
 ### 7. Service Dependencies Check
+
 ```bash
 # Check PGC service health
 curl -f http://localhost:8005/health
@@ -102,6 +109,7 @@ psql -h localhost -U acgs_user -d acgs_db -c "SELECT count(*) FROM governance_po
 ## Automated Remediation
 
 ### 8. Intelligent Alerting Response
+
 The system will automatically attempt:
 
 1. **Constitutional Hash Verification**
@@ -114,6 +122,7 @@ The system will automatically attempt:
 ### 9. Constitutional Hash Recovery
 
 #### Hash Mismatch Resolution
+
 ```bash
 # If constitutional hash is incorrect, restore from backup
 cd /home/dislove/ACGS-1/blockchain
@@ -130,6 +139,7 @@ curl -X POST http://localhost:8005/api/v1/constitution/update-hash \
 ```
 
 #### Constitution Program Recovery
+
 ```bash
 # Redeploy constitution program if needed
 cd /home/dislove/ACGS-1/blockchain/programs/constitution
@@ -143,6 +153,7 @@ solana program show $(cat target/deploy/constitution-keypair.json | jq -r '.publ
 ### 10. Compliance Engine Recovery
 
 #### PGC Service Restart
+
 ```bash
 # Restart PGC service with constitutional validation
 pkill -f "pgc_service"
@@ -160,6 +171,7 @@ curl -f http://localhost:8005/api/v1/governance/compliance/status
 ```
 
 #### Compliance Cache Refresh
+
 ```bash
 # Clear compliance cache
 redis-cli DEL "compliance:*"
@@ -174,6 +186,7 @@ curl -X POST http://localhost:8005/api/v1/governance/compliance/refresh \
 ### 11. Governance Policy Validation
 
 #### Policy Integrity Check
+
 ```bash
 # Check all governance policies for constitutional compliance
 curl -s http://localhost:8005/api/v1/governance/policies/validate-all | jq '.validation_results[] | select(.compliant == false)'
@@ -184,6 +197,7 @@ curl -s http://localhost:8005/api/v1/governance/policies/$POLICY_ID/compliance |
 ```
 
 #### Policy Remediation
+
 ```bash
 # Suspend non-compliant policies
 curl -X POST http://localhost:8005/api/v1/governance/policies/suspend-non-compliant \
@@ -202,6 +216,7 @@ done
 ### 12. Solana Program Recovery
 
 #### Program Account Verification
+
 ```bash
 # Check constitution program account
 CONSTITUTION_PROGRAM="$(cat /home/dislove/ACGS-1/blockchain/programs/constitution/target/deploy/constitution-keypair.json | jq -r '.publicKey')"
@@ -213,6 +228,7 @@ solana account $GOVERNANCE_PROGRAM --url devnet
 ```
 
 #### Program Data Recovery
+
 ```bash
 # Verify constitution data on-chain
 curl -X POST http://localhost:8005/api/v1/blockchain/constitution/verify \
@@ -228,6 +244,7 @@ curl -X POST http://localhost:8005/api/v1/blockchain/constitution/restore \
 ### 13. Transaction Validation
 
 #### Recent Transaction Analysis
+
 ```bash
 # Check recent governance transactions
 curl -s http://localhost:8005/api/v1/blockchain/transactions/recent | jq '.transactions[] | {signature, status, constitutional_compliance}'
@@ -240,6 +257,7 @@ curl -s http://localhost:8005/api/v1/blockchain/transactions/$TRANSACTION_SIG/co
 ## Compliance Monitoring Enhancement
 
 ### 14. Real-Time Compliance Monitoring
+
 ```bash
 # Enable enhanced compliance monitoring
 curl -X POST http://localhost:8005/api/v1/governance/compliance/monitoring/enable \
@@ -259,6 +277,7 @@ curl -X POST http://localhost:8005/api/v1/governance/compliance/alerts/configure
 ```
 
 ### 15. Compliance Validation Testing
+
 ```bash
 # Run comprehensive compliance test suite
 python3 /home/dislove/ACGS-1/scripts/test_constitutional_compliance.py --comprehensive
@@ -275,16 +294,19 @@ curl -X POST http://localhost:8005/api/v1/governance/compliance/test-principles 
 ## Escalation Procedures
 
 ### Level 1 Escalation (2 minutes)
+
 - **Trigger:** Compliance rate <95%
 - **Action:** Alert Constitutional Governance Team
 - **Channels:** #acgs-governance-alerts
 
 ### Level 2 Escalation (5 minutes)
+
 - **Trigger:** Compliance rate <90% or hash mismatch
 - **Action:** Emergency governance halt
 - **Channels:** #acgs-critical-alerts, Constitutional Committee
 
 ### Level 3 Escalation (10 minutes)
+
 - **Trigger:** Constitutional framework compromise
 - **Action:** Activate constitutional emergency procedures
 - **Channels:** Emergency governance council, Stakeholder notifications
@@ -292,6 +314,7 @@ curl -X POST http://localhost:8005/api/v1/governance/compliance/test-principles 
 ## Post-Incident Actions
 
 ### 16. Compliance Audit
+
 ```bash
 # Generate comprehensive compliance report
 curl -X POST http://localhost:8005/api/v1/governance/compliance/audit \
@@ -303,12 +326,14 @@ python3 /home/dislove/ACGS-1/scripts/analyze_compliance_patterns.py --input comp
 ```
 
 ### 17. Constitutional Review
+
 - Review constitutional principles affected
 - Assess governance policy impacts
 - Update compliance validation rules
 - Strengthen constitutional safeguards
 
 ### 18. Preventive Measures
+
 - Enhance constitutional monitoring
 - Implement additional compliance checks
 - Update governance procedures
@@ -328,6 +353,7 @@ python3 /home/dislove/ACGS-1/scripts/analyze_compliance_patterns.py --input comp
 ## Constitutional Principles Verification
 
 ### Core Principles
+
 1. **Democratic Participation** - All stakeholders can participate
 2. **Transparency** - All governance actions are visible
 3. **Accountability** - All actions are traceable and auditable
@@ -335,6 +361,7 @@ python3 /home/dislove/ACGS-1/scripts/analyze_compliance_patterns.py --input comp
 5. **Separation of Powers** - Checks and balances maintained
 
 ### Verification Commands
+
 ```bash
 # Verify each principle
 for principle in democratic_participation transparency accountability rule_of_law separation_of_powers; do
@@ -358,6 +385,7 @@ done
 - [Emergency Procedures Runbook](emergency_procedures_runbook.md)
 
 ---
+
 **Last Updated:** 2024-01-01  
 **Version:** 1.0  
 **Owner:** ACGS Constitutional Governance Team

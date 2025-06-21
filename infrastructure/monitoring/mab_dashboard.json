@@ -2,11 +2,7 @@
   "dashboard": {
     "id": null,
     "title": "ACGS-PGP MAB Performance Dashboard",
-    "tags": [
-      "acgs",
-      "mab",
-      "performance"
-    ],
+    "tags": ["acgs", "mab", "performance"],
     "timezone": "browser",
     "refresh": "30s",
     "time": {

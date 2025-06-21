@@ -17,11 +17,13 @@ On [Date], a GitHub push protection error was triggered due to exposed credentia
 ### Remediation Actions Taken
 
 1. **Immediate Response**:
+
    - Removed `.kilocode/mcp.json` file from working directory
    - Updated `.gitignore` to prevent future credential exposure
    - Created secure template files with environment variable references
 
 2. **Security Infrastructure**:
+
    - Enhanced `.env.example` with MCP server credential templates
    - Added comprehensive `.gitignore` patterns for credential files
    - Created secure MCP configuration template
@@ -78,6 +80,7 @@ data:
 ## File Patterns to Avoid
 
 Never commit files containing:
+
 - API keys, tokens, passwords
 - Private keys (.key, .pem, .p12, .pfx)
 - Configuration files with embedded credentials
@@ -96,11 +99,13 @@ Never commit files containing:
 If credentials are accidentally committed:
 
 1. **Immediate Actions**:
+
    - Stop all pushes to remote repository
    - Revoke/regenerate exposed credentials immediately
    - Remove credentials from git history (if possible)
 
 2. **Assessment**:
+
    - Identify scope of exposure
    - Check for unauthorized access using exposed credentials
    - Document incident for security review
@@ -121,6 +126,7 @@ If credentials are accidentally committed:
 ## Compliance Requirements
 
 For ACGS-PGP production deployments:
+
 - All credentials must be stored in secure secret management systems
 - Regular credential rotation (minimum quarterly)
 - Audit logging for all credential access
@@ -129,6 +135,7 @@ For ACGS-PGP production deployments:
 ## Contact Information
 
 For security incidents or questions:
+
 - Security Team: [security@acgs-pgp.org]
 - Emergency Response: [emergency@acgs-pgp.org]
 - Documentation Updates: [docs@acgs-pgp.org]

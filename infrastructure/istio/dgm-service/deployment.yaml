@@ -20,101 +20,101 @@ spec:
         version: v1
         component: core
       annotations:
-        sidecar.istio.io/inject: "true"
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8007"
-        prometheus.io/path: "/metrics"
+        sidecar.istio.io/inject: 'true'
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '8007'
+        prometheus.io/path: '/metrics'
     spec:
       serviceAccountName: dgm-service
       containers:
-      - name: dgm-service
-        image: acgs/dgm-service:latest
-        ports:
-        - containerPort: 8007
-          name: http
-          protocol: TCP
-        - containerPort: 9090
-          name: metrics
-          protocol: TCP
-        env:
-        - name: ENVIRONMENT
-          value: "production"
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: dgm-service-secrets
-              key: database-url
-        - name: REDIS_URL
-          valueFrom:
-            secretKeyRef:
-              name: dgm-service-secrets
-              key: redis-url
-        - name: NATS_SERVERS
-          value: "nats://nats.acgs.svc.cluster.local:4222"
-        - name: NATS_STREAM_NAME
-          value: "DGM_EVENTS"
-        - name: NATS_ENABLE_JETSTREAM
-          value: "true"
-        - name: AUTH_SERVICE_URL
-          value: "http://auth-service.acgs.svc.cluster.local:8000"
-        - name: AC_SERVICE_URL
-          value: "http://ac-service.acgs.svc.cluster.local:8001"
-        - name: GS_SERVICE_URL
-          value: "http://gs-service.acgs.svc.cluster.local:8002"
-        - name: CONSTITUTIONAL_HASH
-          value: "cdd01ef066bc6cf2"
-        - name: LOG_LEVEL
-          value: "INFO"
-        - name: METRICS_ENABLED
-          value: "true"
-        - name: TRACING_ENABLED
-          value: "true"
-        - name: JAEGER_ENDPOINT
-          value: "http://jaeger-collector.istio-system.svc.cluster.local:14268/api/traces"
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8007
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 8007
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          timeoutSeconds: 3
-          failureThreshold: 3
-        securityContext:
-          allowPrivilegeEscalation: false
-          runAsNonRoot: true
-          runAsUser: 1000
-          capabilities:
-            drop:
-            - ALL
+        - name: dgm-service
+          image: acgs/dgm-service:latest
+          ports:
+            - containerPort: 8007
+              name: http
+              protocol: TCP
+            - containerPort: 9090
+              name: metrics
+              protocol: TCP
+          env:
+            - name: ENVIRONMENT
+              value: 'production'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: dgm-service-secrets
+                  key: database-url
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: dgm-service-secrets
+                  key: redis-url
+            - name: NATS_SERVERS
+              value: 'nats://nats.acgs.svc.cluster.local:4222'
+            - name: NATS_STREAM_NAME
+              value: 'DGM_EVENTS'
+            - name: NATS_ENABLE_JETSTREAM
+              value: 'true'
+            - name: AUTH_SERVICE_URL
+              value: 'http://auth-service.acgs.svc.cluster.local:8000'
+            - name: AC_SERVICE_URL
+              value: 'http://ac-service.acgs.svc.cluster.local:8001'
+            - name: GS_SERVICE_URL
+              value: 'http://gs-service.acgs.svc.cluster.local:8002'
+            - name: CONSTITUTIONAL_HASH
+              value: 'cdd01ef066bc6cf2'
+            - name: LOG_LEVEL
+              value: 'INFO'
+            - name: METRICS_ENABLED
+              value: 'true'
+            - name: TRACING_ENABLED
+              value: 'true'
+            - name: JAEGER_ENDPOINT
+              value: 'http://jaeger-collector.istio-system.svc.cluster.local:14268/api/traces'
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '250m'
+            limits:
+              memory: '1Gi'
+              cpu: '500m'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8007
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8007
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            capabilities:
+              drop:
+                - ALL
       securityContext:
         fsGroup: 1000
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: app
-                  operator: In
-                  values:
-                  - dgm-service
-              topologyKey: kubernetes.io/hostname
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - dgm-service
+                topologyKey: kubernetes.io/hostname
 ---
 apiVersion: v1
 kind: Service
@@ -126,14 +126,14 @@ metadata:
     service: dgm-service
 spec:
   ports:
-  - port: 8007
-    targetPort: 8007
-    name: http
-    protocol: TCP
-  - port: 9090
-    targetPort: 9090
-    name: metrics
-    protocol: TCP
+    - port: 8007
+      targetPort: 8007
+      name: http
+      protocol: TCP
+    - port: 9090
+      targetPort: 9090
+      name: metrics
+      protocol: TCP
   selector:
     app: dgm-service
   type: ClusterIP

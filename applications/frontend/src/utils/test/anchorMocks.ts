@@ -1,4 +1,3 @@
-
 // Anchor client testing utilities
 export const mockAnchorProvider = {
   connection: {

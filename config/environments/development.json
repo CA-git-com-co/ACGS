@@ -27,7 +27,7 @@
       "debug": true
     },
     "ac": {
-      "name": "Constitutional AI Service", 
+      "name": "Constitutional AI Service",
       "port": 8001,
       "host": "localhost",
       "health_path": "/health",
@@ -36,7 +36,7 @@
     "integrity": {
       "name": "Integrity Service",
       "port": 8002,
-      "host": "localhost", 
+      "host": "localhost",
       "health_path": "/health",
       "debug": true
     },

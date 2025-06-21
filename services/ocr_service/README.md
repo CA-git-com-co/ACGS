@@ -91,11 +91,11 @@ if is_healthy:
     # Extract text from an image
     result = ocr.extract_text('/path/to/image.jpg')
     print(result['text'])
-    
+
     # Process a specific document type
     invoice_data = ocr.analyze_document('/path/to/invoice.jpg', 'invoice')
     print(invoice_data['text'])
-    
+
     # Use a custom prompt
     custom_result = ocr.extract_text(
         '/path/to/image.jpg',
@@ -122,7 +122,7 @@ with open('/path/to/image.jpg', 'rb') as f:
 
 ```python
 from services.ocr_service import (
-    OCRClient, 
+    OCRClient,
     OCRServiceException,
     OCRRequestException,
     OCRResponseException,

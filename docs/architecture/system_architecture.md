@@ -18,6 +18,7 @@ ACGS-1 is a blockchain-focused constitutional governance platform with 8 core se
 ## Event-Driven Architecture
 
 The system implements event-driven architecture with:
+
 - **Message Broker**: NATS for asynchronous communication
 - **Service Mesh**: Istio for traffic management and observability
 - **Event Sourcing**: Constitutional compliance events and audit trails
@@ -28,4 +29,3 @@ The system implements event-driven architecture with:
 - **Constitution Hash**: cdd01ef066bc6cf2
 - **Deployment**: Solana Devnet
 - **Programs**: quantumagi-core, appeals, logging
-

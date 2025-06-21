@@ -1,55 +1,48 @@
-'use client'
+'use client';
 
-import * as React from 'react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import {
-  Home,
-  FileText,
-  Vote,
-  Settings,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/Button'
+import * as React from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Home, FileText, Vote, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/Button';
 
 interface NavItem {
-  title: string
-  href: string
-  icon: React.ReactNode
+  title: string;
+  href: string;
+  icon: React.ReactNode;
 }
 
 const navItems: NavItem[] = [
   {
     title: 'Dashboard',
     href: '/',
-    icon: <Home className="h-5 w-5" />,
+    icon: <Home className="h-5 w-5" />
   },
   {
     title: 'Policies',
     href: '/policies',
-    icon: <FileText className="h-5 w-5" />,
+    icon: <FileText className="h-5 w-5" />
   },
   {
     title: 'Governance',
     href: '/governance',
-    icon: <Vote className="h-5 w-5" />,
+    icon: <Vote className="h-5 w-5" />
   },
   {
     title: 'Settings',
     href: '/settings',
-    icon: <Settings className="h-5 w-5" />,
-  },
-]
+    icon: <Settings className="h-5 w-5" />
+  }
+];
 
 interface SidebarProps {
-  collapsed: boolean
-  onToggle: () => void
+  collapsed: boolean;
+  onToggle: () => void;
 }
 
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <aside
@@ -61,9 +54,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     >
       <div className="flex items-center justify-between p-4">
         {!collapsed && (
-          <h1 className="text-heading font-bold text-gray-900 dark:text-gray-100">
-            Governance
-          </h1>
+          <h1 className="text-heading font-bold text-gray-900 dark:text-gray-100">Governance</h1>
         )}
         <Button
           variant="ghost"
@@ -72,17 +63,13 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           className="ml-auto"
         >
-          {collapsed ? (
-            <ChevronRight className="h-4 w-4" />
-          ) : (
-            <ChevronLeft className="h-4 w-4" />
-          )}
+          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>
       </div>
 
       <nav className="flex-1 space-y-1 p-2">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href
+        {navItems.map(item => {
+          const isActive = pathname === item.href;
           return (
             <Link
               key={item.href}
@@ -100,7 +87,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
               {item.icon}
               {!collapsed && <span>{item.title}</span>}
             </Link>
-          )
+          );
         })}
       </nav>
 
@@ -122,5 +109,5 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         </div>
       </div>
     </aside>
-  )
+  );
 }

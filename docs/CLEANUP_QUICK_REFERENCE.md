@@ -3,43 +3,49 @@
 ## 📁 New File Locations
 
 ### Configuration Files
-| File | Old Location | New Location |
-|------|-------------|--------------|
-| `pytest.ini` | `/` | `config/pytest.ini` |
-| `requirements*.txt` | `/` | `config/requirements*.txt` |
-| `.env.example` | `/` | `config/.env.example` |
-| `uv.lock` | `/` | `config/uv.lock` |
-| `.pre-commit-config.yaml` | `/` | `config/.pre-commit-config.yaml` |
-| `.gitleaks.toml` | `/` | `config/.gitleaks.toml` |
+
+| File                      | Old Location | New Location                     |
+| ------------------------- | ------------ | -------------------------------- |
+| `pytest.ini`              | `/`          | `config/pytest.ini`              |
+| `requirements*.txt`       | `/`          | `config/requirements*.txt`       |
+| `.env.example`            | `/`          | `config/.env.example`            |
+| `uv.lock`                 | `/`          | `config/uv.lock`                 |
+| `.pre-commit-config.yaml` | `/`          | `config/.pre-commit-config.yaml` |
+| `.gitleaks.toml`          | `/`          | `config/.gitleaks.toml`          |
 
 ### Docker & Infrastructure
-| File | Old Location | New Location |
-|------|-------------|--------------|
-| `docker-compose.*.yml` | `/` | `infrastructure/docker/` |
-| `Dockerfile.acgs` | `/` | `infrastructure/docker/` |
+
+| File                   | Old Location | New Location             |
+| ---------------------- | ------------ | ------------------------ |
+| `docker-compose.*.yml` | `/`          | `infrastructure/docker/` |
+| `Dockerfile.acgs`      | `/`          | `infrastructure/docker/` |
 
 ### Application Configs
-| File | Old Location | New Location |
-|------|-------------|--------------|
-| `jest.config.js` | `/` | `applications/jest.config.js` |
-| `tsconfig.json` | `/` | `applications/tsconfig.json` |
-| `package*.json` | `/` | `applications/package*.json` |
+
+| File             | Old Location | New Location                  |
+| ---------------- | ------------ | ----------------------------- |
+| `jest.config.js` | `/`          | `applications/jest.config.js` |
+| `tsconfig.json`  | `/`          | `applications/tsconfig.json`  |
+| `package*.json`  | `/`          | `applications/package*.json`  |
 
 ### Test Configuration
-| File | Old Location | New Location |
-|------|-------------|--------------|
-| `conftest.py` | `/` | `tests/conftest.py` |
+
+| File          | Old Location | New Location        |
+| ------------- | ------------ | ------------------- |
+| `conftest.py` | `/`          | `tests/conftest.py` |
 
 ### Reports & Documentation
-| File | Old Location | New Location |
-|------|-------------|--------------|
-| `cleanup_report_*.json` | `/` | `reports/cleanup/` |
-| `*SUMMARY.md` | `/` | `docs/` |
-| `comprehensive_duplicate_cleanup.py` | `/` | `scripts/` |
+
+| File                                 | Old Location | New Location       |
+| ------------------------------------ | ------------ | ------------------ |
+| `cleanup_report_*.json`              | `/`          | `reports/cleanup/` |
+| `*SUMMARY.md`                        | `/`          | `docs/`            |
+| `comprehensive_duplicate_cleanup.py` | `/`          | `scripts/`         |
 
 ## 🔧 Updated Commands
 
 ### Running Tests
+
 ```bash
 # Old command
 pytest
@@ -52,6 +58,7 @@ cd config && pytest
 ```
 
 ### Docker Commands
+
 ```bash
 # Old command
 docker-compose up
@@ -61,6 +68,7 @@ docker-compose -f infrastructure/docker/docker-compose.yml up
 ```
 
 ### Installing Dependencies
+
 ```bash
 # Python dependencies
 pip install -r config/requirements.txt
@@ -89,6 +97,7 @@ ACGS-1/
 ## ⚡ Quick Actions
 
 ### Restore Service
+
 ```bash
 # Check service status
 curl http://localhost:8000/health
@@ -98,6 +107,7 @@ bash scripts/manage_pgc_service.sh start
 ```
 
 ### Run Cleanup Validation
+
 ```bash
 # Validate cleanup completion
 python scripts/validate_cleanup_completion.py
@@ -107,6 +117,7 @@ bash scripts/comprehensive_health_check.sh
 ```
 
 ### Fix Import Issues
+
 ```bash
 # Fix Python import paths
 python root_scripts/fix_python_imports.py
@@ -132,6 +143,7 @@ python root_scripts/fix_test_imports.py
 ## 🔍 Current Status & Next Steps
 
 ### ✅ Completed Actions
+
 1. **Service Restoration**: ✅ All 7 core services operational
 2. **Import Path Fixes**: ✅ Python imports working correctly
 3. **Test Validation**: ✅ Basic tests passing with new config
@@ -139,6 +151,7 @@ python root_scripts/fix_test_imports.py
 5. **Dependencies**: ✅ Missing packages installed (pyotp)
 
 ### 🚀 Optional Enhancements
+
 1. **Full Test Coverage**: Achieve >80% coverage across all components
 2. **Legacy Test Updates**: Fix remaining path references in tests
 3. **Monitoring Integration**: Fine-tune health check configurations

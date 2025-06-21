@@ -3,20 +3,20 @@
 
 # Service Configuration
 service:
-  name: "acgs-pgp-v8"
-  version: "8.0.0"
-  description: "Quantum-Inspired Semantic Fault Tolerance System"
+  name: 'acgs-pgp-v8'
+  version: '8.0.0'
+  description: 'Quantum-Inspired Semantic Fault Tolerance System'
   port: 8010
-  host: "0.0.0.0"
-  environment: "development"
+  host: '0.0.0.0'
+  environment: 'development'
   debug: false
 
 # Constitutional Governance Integration
 constitutional:
-  hash: "cdd01ef066bc6cf2"
+  hash: 'cdd01ef066bc6cf2'
   compliance_threshold: 0.8
   validation_enabled: true
-  enforcement_mode: "strict"
+  enforcement_mode: 'strict'
 
 # Generation Engine Configuration
 generation_engine:
@@ -30,12 +30,12 @@ generation_engine:
 
 # Multi-Model LLM Ensemble Configuration
 llm_ensemble:
-  primary_model: "qwen3-32b"
+  primary_model: 'qwen3-32b'
   fallback_models:
-    - "deepseek-chat"
-    - "qwen3-235b"
-    - "deepseek-r1"
-  consensus_strategy: "weighted_average"
+    - 'deepseek-chat'
+    - 'qwen3-235b'
+    - 'deepseek-r1'
+  consensus_strategy: 'weighted_average'
   model_timeout_seconds: 30
   retry_attempts: 3
 
@@ -65,7 +65,7 @@ diagnostic:
 
 # Database Configuration
 database:
-  url: "postgresql://acgs_user:acgs_password@localhost:5432/acgs_db"
+  url: 'postgresql://acgs_user:acgs_password@localhost:5432/acgs_db'
   pool_size: 20
   max_overflow: 30
   pool_timeout: 30
@@ -74,7 +74,7 @@ database:
 
 # Redis Configuration
 redis:
-  url: "redis://localhost:6379/0"
+  url: 'redis://localhost:6379/0'
   max_connections: 100
   retry_on_timeout: true
   socket_timeout: 5
@@ -84,50 +84,50 @@ redis:
 # Service Integration
 services:
   auth_service:
-    url: "http://localhost:8000"
+    url: 'http://localhost:8000'
     timeout: 10
     retry_attempts: 3
-  
+
   ac_service:
-    url: "http://localhost:8001"
+    url: 'http://localhost:8001'
     timeout: 10
     retry_attempts: 3
-  
+
   integrity_service:
-    url: "http://localhost:8002"
+    url: 'http://localhost:8002'
     timeout: 10
     retry_attempts: 3
-  
+
   fv_service:
-    url: "http://localhost:8003"
+    url: 'http://localhost:8003'
     timeout: 10
     retry_attempts: 3
-  
+
   gs_service:
-    url: "http://localhost:8004"
+    url: 'http://localhost:8004'
     timeout: 30
     retry_attempts: 3
-  
+
   pgc_service:
-    url: "http://localhost:8005"
+    url: 'http://localhost:8005'
     timeout: 10
     retry_attempts: 3
-  
+
   ec_service:
-    url: "http://localhost:8006"
+    url: 'http://localhost:8006'
     timeout: 10
     retry_attempts: 3
 
 # Security Configuration
 security:
-  jwt_secret_key: "${JWT_SECRET_KEY}"  # SECURITY: Load from environment variable
-  jwt_algorithm: "HS256"
+  jwt_secret_key: '${JWT_SECRET_KEY}' # SECURITY: Load from environment variable
+  jwt_algorithm: 'HS256'
   jwt_expiration_minutes: 30
   cors_enabled: true
   cors_origins:
-    - "https://acgs.constitutional.gov"
-    - "https://api.acgs.constitutional.gov"
-    - "http://localhost:3000"  # Development only
+    - 'https://acgs.constitutional.gov'
+    - 'https://api.acgs.constitutional.gov'
+    - 'http://localhost:3000' # Development only
   rate_limiting_enabled: true
   rate_limit_requests_per_minute: 100
 
@@ -135,10 +135,10 @@ security:
 monitoring:
   prometheus_enabled: true
   prometheus_port: 9090
-  metrics_path: "/metrics"
-  health_check_path: "/health"
+  metrics_path: '/metrics'
+  health_check_path: '/health'
   structured_logging: true
-  log_level: "INFO"
+  log_level: 'INFO'
   trace_sampling_rate: 0.1
 
 # Performance Optimization
@@ -147,7 +147,7 @@ performance:
   connection_pool_size: 100
   request_timeout: 30
   keep_alive_timeout: 5
-  max_request_size: 10485760  # 10MB
+  max_request_size: 10485760 # 10MB
   gzip_compression: true
 
 # Caching Strategy
@@ -185,7 +185,7 @@ development:
 # Quantumagi Integration
 quantumagi:
   enabled: true
-  devnet_endpoint: "https://api.devnet.solana.com"
-  program_id: "8eRUCnQs..."
+  devnet_endpoint: 'https://api.devnet.solana.com'
+  program_id: '8eRUCnQs...'
   constitutional_hash_validation: true
   blockchain_sync_enabled: true

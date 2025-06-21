@@ -2,11 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from '@acgs/shared/contexts/AuthContext';
 import { Layout, ProtectedRoute } from '@acgs/shared/components';
-import { 
-  DashboardPage, 
-  ACManagementPage, 
-  LoginPage 
-} from '@acgs/shared/pages';
+import { DashboardPage, ACManagementPage, LoginPage } from '@acgs/shared/pages';
 
 // Legacy imports for backward compatibility
 import RegisterPage from './pages/Auth/RegisterPage';
@@ -34,19 +30,29 @@ const routeConfigs: RouteConfig[] = [
   { path: '/dashboard', element: <DashboardPage />, protected: true },
   { path: '/login', element: <LoginPage />, protected: false },
   { path: '/ac-management', element: <ACManagementPage />, protected: true },
-  
+
   // Legacy routes with backward compatibility
   { path: '/register', element: <RegisterPage />, protected: false, legacy: true },
   { path: '/policy-synthesis', element: <PolicySynthesisPage />, protected: true, legacy: true },
   { path: '/policies', element: <PolicyListPage />, protected: true, legacy: true },
-  { path: '/public-consultation', element: <PublicConsultationPage />, protected: false, legacy: true },
-  { path: '/constitutional-council-dashboard', element: <ConstitutionalCouncilDashboard />, protected: true, legacy: true },
-  
+  {
+    path: '/public-consultation',
+    element: <PublicConsultationPage />,
+    protected: false,
+    legacy: true,
+  },
+  {
+    path: '/constitutional-council-dashboard',
+    element: <ConstitutionalCouncilDashboard />,
+    protected: true,
+    legacy: true,
+  },
+
   // Solana-specific routes
   { path: '/quantumagi', element: <QuantumagiApp />, protected: false, solana: true },
   { path: '/solana-dashboard', element: <QuantumagiApp />, protected: false, solana: true },
   { path: '/blockchain', element: <QuantumagiApp />, protected: false, solana: true },
-  
+
   // Backward compatibility redirects
   { path: '/home', redirectTo: '/' },
   { path: '/dashboard-old', redirectTo: '/dashboard' },
@@ -61,10 +67,7 @@ interface ErrorBoundaryState {
   error?: Error;
 }
 
-class ErrorBoundary extends React.Component<
-  { children: React.ReactNode },
-  ErrorBoundaryState
-> {
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, ErrorBoundaryState> {
   constructor(props: { children: React.ReactNode }) {
     super(props);
     this.state = { hasError: false };
@@ -85,8 +88,18 @@ class ErrorBoundary extends React.Component<
           <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-6">
             <div className="flex items-center mb-4">
               <div className="flex-shrink-0">
-                <svg className="h-8 w-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z" />
+                <svg
+                  className="h-8 w-8 text-red-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"
+                  />
                 </svg>
               </div>
               <div className="ml-3">
@@ -95,7 +108,8 @@ class ErrorBoundary extends React.Component<
             </div>
             <div className="mb-4">
               <p className="text-sm text-gray-600">
-                Something went wrong with the Solana governance system. Please refresh the page or contact support.
+                Something went wrong with the Solana governance system. Please refresh the page or
+                contact support.
               </p>
               {process.env.NODE_ENV === 'development' && this.state.error && (
                 <details className="mt-4">
@@ -143,13 +157,13 @@ const NotFoundPage: React.FC = () => (
       <p className="text-gray-500 mt-2">The governance page you're looking for doesn't exist.</p>
       <div className="mt-6 space-x-4">
         <button
-          onClick={() => window.location.href = '/'}
+          onClick={() => (window.location.href = '/')}
           className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200"
         >
           Go Home
         </button>
         <button
-          onClick={() => window.location.href = '/quantumagi'}
+          onClick={() => (window.location.href = '/quantumagi')}
           className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors duration-200"
         >
           Quantumagi Dashboard
@@ -210,22 +224,14 @@ const App: React.FC = () => {
                       <Route
                         key={config.path}
                         path={config.path}
-                        element={
-                          <ProtectedRoute>
-                            {elementWithAnalytics}
-                          </ProtectedRoute>
-                        }
+                        element={<ProtectedRoute>{elementWithAnalytics}</ProtectedRoute>}
                       />
                     );
                   }
 
                   // Handle public routes
                   return (
-                    <Route
-                      key={config.path}
-                      path={config.path}
-                      element={elementWithAnalytics}
-                    />
+                    <Route key={config.path} path={config.path} element={elementWithAnalytics} />
                   );
                 })}
 

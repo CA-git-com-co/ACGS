@@ -83,9 +83,9 @@ model:
     loss_mask_val: -100 #  mask dimensions with this value when calculating MSE loss
     loss_func: regression # ["regression", "regular_bt", "margin_bt", "scaled_bt"]
     load_rm_head_weights: False # [False, True] False only loads base model while True loads rm_head weights as well (useful for intializing rm_head with model containing existing rm_head)
-  output_sequence: False  # Whether to output a single scalar or a sequence of scalars.
-  use_avg_pool: False  # Whether to use avg pool to sum across the sequence dim in reward model
-  force_head_dtype: bfloat16  # enforce specific dtype for the final projection in the model head
+  output_sequence: False # Whether to output a single scalar or a sequence of scalars.
+  use_avg_pool: False # Whether to use avg pool to sum across the sequence dim in reward model
+  force_head_dtype: bfloat16 # enforce specific dtype for the final projection in the model head
   micro_batch_size: 1
   global_batch_size: 512
   megatron_amp_O2: True
@@ -112,8 +112,8 @@ model:
     lr: 9e-6
     weight_decay: 0.1
     betas:
-    - 0.9
-    - 0.98
+      - 0.9
+      - 0.98
     sched:
       name: CosineAnnealing
       warmup_steps: 0
@@ -136,5 +136,5 @@ model:
 
   # define fields from the base model's config that should be ignored when merging with this config.
   overwrite_base_config:
-      data:
-        data_prefix: True
+    data:
+      data_prefix: True

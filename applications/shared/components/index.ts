@@ -8,8 +8,16 @@ export { default as ValidatedForm } from './ValidatedForm';
 
 // Error Boundary Components
 export { default as ErrorBoundary, ErrorFallback } from './ErrorBoundary';
-export { default as AuthErrorBoundary, withAuthErrorBoundary, AuthErrorFallback } from './AuthErrorBoundary';
-export { default as ServiceErrorBoundary, ServiceErrorFallback, SERVICE_INFO } from './ServiceErrorBoundary';
+export {
+  default as AuthErrorBoundary,
+  withAuthErrorBoundary,
+  AuthErrorFallback
+} from './AuthErrorBoundary';
+export {
+  default as ServiceErrorBoundary,
+  ServiceErrorFallback,
+  SERVICE_INFO
+} from './ServiceErrorBoundary';
 
 // Loading State Components
 export {
@@ -48,4 +56,11 @@ export { default as Sidebar } from './layout/Sidebar';
 export { default as ThemeToggle } from './layout/ThemeToggle';
 
 // Re-export types for convenience
-export type { Principle, Policy, ComplianceResult, User, ActivePolicy, Amendment } from '../types/governance';
+export type {
+  Principle,
+  Policy,
+  ComplianceResult,
+  User,
+  ActivePolicy,
+  Amendment
+} from '../types/governance';

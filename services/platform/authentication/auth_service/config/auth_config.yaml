@@ -2,10 +2,10 @@ authentication:
   enabled: true
   jwt_validation: true
   public_endpoints:
-  - /health
-  - /api/v1/auth/login
-  - /api/v1/auth/register
-  - /api/v1/auth/refresh
+    - /health
+    - /api/v1/auth/login
+    - /api/v1/auth/register
+    - /api/v1/auth/refresh
   service_auth: true
 authorization:
   permission_checking: true

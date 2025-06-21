@@ -21,9 +21,9 @@ on:
         default: 'intelligent'
         type: choice
         options:
-        - intelligent
-        - aggressive
-        - conservative
+          - intelligent
+          - aggressive
+          - conservative
       cache_compression:
         description: 'Enable cache compression'
         required: false
@@ -56,23 +56,23 @@ jobs:
         id: analysis
         run: |
           echo "🔍 Analyzing repository for intelligent caching optimization..."
-          
+
           # Analyze file patterns and sizes
           RUST_FILES=$(find . -name "*.rs" | wc -l)
           PYTHON_FILES=$(find . -name "*.py" | wc -l)
           TS_FILES=$(find . -name "*.ts" -o -name "*.js" | wc -l)
-          
+
           # Calculate repository complexity
           TOTAL_FILES=$((RUST_FILES + PYTHON_FILES + TS_FILES))
           REPO_SIZE=$(du -sh . | cut -f1)
-          
+
           echo "Repository analysis:"
           echo "- Rust files: $RUST_FILES"
           echo "- Python files: $PYTHON_FILES"
           echo "- TypeScript/JS files: $TS_FILES"
           echo "- Total files: $TOTAL_FILES"
           echo "- Repository size: $REPO_SIZE"
-          
+
           # Determine optimization level based on complexity
           if [ $TOTAL_FILES -gt 1000 ]; then
             OPTIMIZATION_LEVEL="maximum"
@@ -81,7 +81,7 @@ jobs:
           else
             OPTIMIZATION_LEVEL="standard"
           fi
-          
+
           # Generate cache configuration
           CACHE_CONFIG=$(cat << EOF
           {
@@ -94,7 +94,7 @@ jobs:
           }
           EOF
           )
-          
+
           echo "config=$CACHE_CONFIG" >> $GITHUB_OUTPUT
           echo "level=$OPTIMIZATION_LEVEL" >> $GITHUB_OUTPUT
           echo "✅ Cache analysis completed"
@@ -148,7 +148,7 @@ jobs:
       - name: Setup sccache for distributed compilation
         uses: mozilla-actions/sccache-action@v0.0.9
         with:
-          version: "v0.7.4"
+          version: 'v0.7.4'
 
   # Python Dependency Caching
   python_cache_optimization:
@@ -171,15 +171,15 @@ jobs:
       - name: Advanced pip cache optimization
         run: |
           echo "🐍 Setting up advanced Python caching..."
-          
+
           # Create pip cache directory structure
           mkdir -p ~/.cache/pip/wheels
           mkdir -p ~/.cache/pip/http
-          
+
           # Configure pip for optimal caching
           pip config set global.cache-dir ~/.cache/pip
           pip config set global.find-links ~/.cache/pip/wheels
-          
+
           echo "✅ Python cache optimization completed"
 
       - name: Layer 1 - Pip Cache
@@ -242,7 +242,8 @@ jobs:
   cache_performance_monitoring:
     runs-on: ubuntu-latest
     name: Cache Performance Monitoring
-    needs: [cache_analysis, rust_cache_optimization, python_cache_optimization, node_cache_optimization]
+    needs:
+      [cache_analysis, rust_cache_optimization, python_cache_optimization, node_cache_optimization]
     if: always()
     steps:
       - name: Check out repository
@@ -251,7 +252,7 @@ jobs:
       - name: Analyze cache performance
         run: |
           echo "📊 Analyzing cache performance metrics..."
-          
+
           # Create cache performance report
           cat > cache-performance-report.json << EOF
           {
@@ -272,7 +273,7 @@ jobs:
             }
           }
           EOF
-          
+
           echo "✅ Cache performance report generated"
 
       - name: Upload cache performance report
@@ -292,10 +293,10 @@ jobs:
       - name: Intelligent cache cleanup
         run: |
           echo "🧹 Performing intelligent cache cleanup..."
-          
+
           # Simulate cache cleanup logic
           echo "- Removing stale cache entries older than 7 days"
           echo "- Compressing large cache files"
           echo "- Optimizing cache key strategies"
-          
+
           echo "✅ Cache cleanup completed"

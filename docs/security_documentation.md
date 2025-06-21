@@ -15,28 +15,28 @@ graph TB
         LB[Load Balancer]
         SSL[SSL/TLS Termination]
     end
-    
+
     subgraph "Layer 2: Application Security"
         AUTH[Authentication]
         AUTHZ[Authorization/RBAC]
         CSRF[CSRF Protection]
         RL[Rate Limiting]
     end
-    
+
     subgraph "Layer 3: Data Security"
         ENC[Encryption at Rest]
         TLS[Encryption in Transit]
         PGP[PGP Signatures]
         HASH[Cryptographic Hashing]
     end
-    
+
     subgraph "Layer 4: Constitutional Security"
         CC[Constitutional Council]
         FV[Formal Verification]
         AI[AI Governance]
         AUDIT[Audit Logging]
     end
-    
+
     FW --> AUTH
     LB --> AUTHZ
     SSL --> CSRF
@@ -53,6 +53,7 @@ graph TB
 ## 🔑 Authentication & Authorization
 
 ### **JWT Authentication**
+
 ```python
 # JWT Configuration
 AUTH_SERVICE_SECRET_KEY = "256-bit-cryptographically-secure-key"
@@ -75,52 +76,55 @@ REFRESH_TOKEN_EXPIRE_DAYS = 7
 ### **Role-Based Access Control (RBAC)**
 
 #### **Role Definitions**
+
 ```yaml
 roles:
   admin:
-    description: "Full system administration access"
+    description: 'Full system administration access'
     permissions:
-      - "*:*"  # All permissions
-    
+      - '*:*' # All permissions
+
   policy_manager:
-    description: "Policy creation and management"
+    description: 'Policy creation and management'
     permissions:
-      - "read:policies"
-      - "write:policies"
-      - "read:principles"
-      - "write:principles"
-      - "read:synthesis"
-      - "write:synthesis"
-    
+      - 'read:policies'
+      - 'write:policies'
+      - 'read:principles'
+      - 'write:principles'
+      - 'read:synthesis'
+      - 'write:synthesis'
+
   constitutional_council:
-    description: "Constitutional amendment and oversight"
+    description: 'Constitutional amendment and oversight'
     permissions:
-      - "read:principles"
-      - "write:amendments"
-      - "vote:amendments"
-      - "read:constitutional_council"
-    
+      - 'read:principles'
+      - 'write:amendments'
+      - 'vote:amendments'
+      - 'read:constitutional_council'
+
   auditor:
-    description: "Read-only access for auditing"
+    description: 'Read-only access for auditing'
     permissions:
-      - "read:policies"
-      - "read:principles"
-      - "read:audit_logs"
-      - "read:verification_results"
+      - 'read:policies'
+      - 'read:principles'
+      - 'read:audit_logs'
+      - 'read:verification_results'
 ```
 
 #### **Permission Matrix**
-| Resource | Admin | Policy Manager | Constitutional Council | Auditor |
-|----------|-------|----------------|----------------------|---------|
-| Policies | CRUD | CRUD | R | R |
-| Principles | CRUD | CRUD | R | R |
-| Amendments | CRUD | R | CRU | R |
-| Votes | CRUD | R | CRU | R |
-| Audit Logs | CRUD | R | R | R |
-| Users | CRUD | - | - | - |
-| System Config | CRUD | - | - | - |
+
+| Resource      | Admin | Policy Manager | Constitutional Council | Auditor |
+| ------------- | ----- | -------------- | ---------------------- | ------- |
+| Policies      | CRUD  | CRUD           | R                      | R       |
+| Principles    | CRUD  | CRUD           | R                      | R       |
+| Amendments    | CRUD  | R              | CRU                    | R       |
+| Votes         | CRUD  | R              | CRU                    | R       |
+| Audit Logs    | CRUD  | R              | R                      | R       |
+| Users         | CRUD  | -              | -                      | -       |
+| System Config | CRUD  | -              | -                      | -       |
 
 ### **CSRF Protection**
+
 ```python
 # CSRF Token Generation
 CSRF_SECRET_KEY = "256-bit-csrf-specific-key"
@@ -138,6 +142,7 @@ async def create_policy(request: Request, policy: PolicyCreate):
 ## 🔒 Data Protection
 
 ### **Encryption at Rest**
+
 ```sql
 -- PostgreSQL TDE Configuration
 ALTER SYSTEM SET ssl = on;
@@ -158,26 +163,27 @@ CREATE TABLE users (
 ```
 
 ### **Encryption in Transit**
+
 ```nginx
 # Nginx SSL Configuration
 server {
     listen 443 ssl http2;
     server_name api.acgs-pgp.example.com;
-    
+
     # SSL Certificate Configuration
     ssl_certificate /etc/letsencrypt/live/api.acgs-pgp.example.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/api.acgs-pgp.example.com/privkey.pem;
-    
+
     # SSL Security Configuration
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384;
     ssl_prefer_server_ciphers off;
     ssl_session_cache shared:SSL:10m;
     ssl_session_timeout 10m;
-    
+
     # HSTS Header
     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";
-    
+
     # Security Headers
     add_header X-Frame-Options DENY;
     add_header X-Content-Type-Options nosniff;
@@ -188,6 +194,7 @@ server {
 ```
 
 ### **PGP Digital Signatures**
+
 ```python
 # PGP Implementation for Policy Integrity
 import gnupg
@@ -195,7 +202,7 @@ import gnupg
 class PolicyIntegrityService:
     def __init__(self):
         self.gpg = gnupg.GPG(gnupghome='/app/.gnupg')
-        
+
     async def sign_policy(self, policy_content: str, key_id: str) -> str:
         """Sign policy content with PGP key"""
         signed_data = self.gpg.sign(
@@ -205,12 +212,12 @@ class PolicyIntegrityService:
             detach=True
         )
         return str(signed_data)
-    
+
     async def verify_signature(self, content: str, signature: str) -> bool:
         """Verify PGP signature"""
         verified = self.gpg.verify_data(signature, content.encode())
         return verified.valid
-    
+
     async def generate_merkle_proof(self, policy_id: str) -> dict:
         """Generate Merkle tree proof for policy integrity"""
         # Implementation of Merkle tree generation
@@ -218,6 +225,7 @@ class PolicyIntegrityService:
 ```
 
 ### **Cryptographic Hashing**
+
 ```python
 # SHA3-256 Implementation
 import hashlib
@@ -236,7 +244,7 @@ class MerkleTree:
     def __init__(self, data_blocks: List[str]):
         self.leaves = [hashlib.sha3_256(block.encode()).hexdigest() for block in data_blocks]
         self.tree = self._build_tree()
-    
+
     def _build_tree(self) -> List[List[str]]:
         """Build Merkle tree from leaves"""
         tree = [self.leaves]
@@ -250,11 +258,11 @@ class MerkleTree:
                 level.append(hashlib.sha3_256(combined.encode()).hexdigest())
             tree.append(level)
         return tree
-    
+
     def get_root(self) -> str:
         """Get Merkle root hash"""
         return self.tree[-1][0]
-    
+
     def get_proof(self, index: int) -> List[dict]:
         """Generate Merkle proof for specific leaf"""
         proof = []
@@ -266,21 +274,22 @@ class MerkleTree:
             else:
                 sibling_idx = index - 1
                 position = "left"
-            
+
             if sibling_idx < len(level):
                 proof.append({
                     "hash": level[sibling_idx],
                     "position": position
                 })
-            
+
             index = index // 2
-        
+
         return proof
 ```
 
 ## 🔍 Security Monitoring
 
 ### **Audit Logging**
+
 ```python
 # Comprehensive Audit Logging
 class AuditLogger:
@@ -306,10 +315,10 @@ class AuditLogger:
             timestamp=datetime.utcnow(),
             signature=self._generate_signature(audit_data)
         )
-        
+
         await self.db.save(audit_entry)
         await self._send_to_siem(audit_entry)
-    
+
     def _generate_signature(self, audit_data: dict) -> str:
         """Generate cryptographic signature for audit entry"""
         data_string = json.dumps(audit_data, sort_keys=True)
@@ -321,6 +330,7 @@ class AuditLogger:
 ```
 
 ### **Intrusion Detection**
+
 ```python
 # Rate Limiting and Anomaly Detection
 class SecurityMonitor:
@@ -331,20 +341,20 @@ class SecurityMonitor:
             'api_requests': 100,
             'policy_changes': 10
         }
-    
+
     async def check_rate_limit(self, user_id: str, action: str) -> bool:
         """Check if user has exceeded rate limits"""
         key = f"rate_limit:{user_id}:{action}"
         current_count = await self.redis.get(key) or 0
-        
+
         if int(current_count) >= self.alert_thresholds.get(action, 100):
             await self._trigger_alert(f"Rate limit exceeded: {user_id} - {action}")
             return False
-        
+
         await self.redis.incr(key)
         await self.redis.expire(key, 3600)  # 1 hour window
         return True
-    
+
     async def detect_anomalies(self, user_id: str, action: str, metadata: dict):
         """Detect anomalous behavior patterns"""
         # Implement ML-based anomaly detection
@@ -353,38 +363,40 @@ class SecurityMonitor:
 ```
 
 ### **Vulnerability Scanning**
+
 ```yaml
 # Security Scanning Configuration
 security_scans:
   dependency_check:
-    tool: "safety"
-    schedule: "daily"
+    tool: 'safety'
+    schedule: 'daily'
     config:
-      - "safety check --json"
-      - "bandit -r src/ -f json"
-  
+      - 'safety check --json'
+      - 'bandit -r src/ -f json'
+
   container_scan:
-    tool: "trivy"
-    schedule: "on_build"
+    tool: 'trivy'
+    schedule: 'on_build'
     config:
-      - "trivy image --severity HIGH,CRITICAL acgs-pgp:latest"
-  
+      - 'trivy image --severity HIGH,CRITICAL acgs-pgp:latest'
+
   static_analysis:
-    tool: "semgrep"
-    schedule: "on_commit"
+    tool: 'semgrep'
+    schedule: 'on_commit'
     config:
-      - "semgrep --config=auto src/"
-  
+      - 'semgrep --config=auto src/'
+
   dynamic_scan:
-    tool: "zap"
-    schedule: "weekly"
+    tool: 'zap'
+    schedule: 'weekly'
     config:
-      - "zap-baseline.py -t https://api.acgs-pgp.example.com"
+      - 'zap-baseline.py -t https://api.acgs-pgp.example.com'
 ```
 
 ## 🛡️ Network Security
 
 ### **Firewall Configuration**
+
 ```bash
 # UFW Firewall Rules
 sudo ufw --force reset
@@ -410,33 +422,34 @@ sudo ufw --force enable
 ```
 
 ### **DDoS Protection**
+
 ```nginx
 # Nginx DDoS Protection
 http {
     # Rate limiting
     limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
     limit_req_zone $binary_remote_addr zone=auth:10m rate=5r/s;
-    
+
     # Connection limiting
     limit_conn_zone $binary_remote_addr zone=conn_limit_per_ip:10m;
-    
+
     server {
         # Apply rate limits
         location /api/ {
             limit_req zone=api burst=20 nodelay;
             limit_conn conn_limit_per_ip 10;
         }
-        
+
         location /auth/ {
             limit_req zone=auth burst=5 nodelay;
             limit_conn conn_limit_per_ip 5;
         }
-        
+
         # Block common attack patterns
         location ~* \.(php|asp|aspx|jsp)$ {
             return 444;
         }
-        
+
         # Block SQL injection attempts
         if ($args ~* "(\;|\||\`|\'|\"|\$|\%|\<|\>|\^|\*|\?|\[|\]|\{|\}|\(|\)|=|!|&|#)") {
             return 444;
@@ -448,6 +461,7 @@ http {
 ## 🔐 Constitutional Security
 
 ### **Constitutional Council Security**
+
 ```python
 # Constitutional Council Access Control
 class ConstitutionalCouncilSecurity:
@@ -455,53 +469,54 @@ class ConstitutionalCouncilSecurity:
         """Verify user is authorized Constitutional Council member"""
         user = await self.user_service.get_user(user_id)
         return user.role == "constitutional_council" and user.is_active
-    
+
     async def validate_amendment_proposal(self, proposal: AmendmentProposal) -> bool:
         """Validate amendment proposal meets security requirements"""
         # Check proposal format and content
         if not self._validate_proposal_format(proposal):
             return False
-        
+
         # Verify proposer authority
         if not await self.verify_council_member(proposal.proposer_id):
             return False
-        
+
         # Check for malicious content
         if self._contains_malicious_content(proposal.description):
             return False
-        
+
         return True
-    
+
     async def secure_voting_process(self, amendment_id: str, vote: Vote) -> bool:
         """Ensure secure voting process"""
         # Verify voter eligibility
         if not await self.verify_council_member(vote.voter_id):
             return False
-        
+
         # Check for duplicate votes
         existing_vote = await self.get_existing_vote(amendment_id, vote.voter_id)
         if existing_vote:
             return False
-        
+
         # Validate vote within voting period
         amendment = await self.get_amendment(amendment_id)
         if datetime.utcnow() > amendment.voting_deadline:
             return False
-        
+
         # Generate cryptographic proof of vote
         vote.signature = self._sign_vote(vote)
-        
+
         return True
 ```
 
 ### **AI Governance Security**
+
 ```python
 # LLM Security and Validation
 class LLMSecurityService:
     def __init__(self):
         self.content_filter = ContentFilter()
         self.bias_detector = BiasDetector()
-        
+
     async def validate_llm_response(self, prompt: str, response: str) -> dict:
         """Comprehensive LLM response validation"""
         validation_results = {
@@ -510,43 +525,44 @@ class LLMSecurityService:
             "constitutional_compliant": False,
             "confidence_score": 0.0
         }
-        
+
         # Content safety check
         validation_results["content_safe"] = await self.content_filter.is_safe(response)
-        
+
         # Bias detection
         bias_score = await self.bias_detector.analyze(response)
         validation_results["bias_free"] = bias_score < 0.1
-        
+
         # Constitutional compliance check
         compliance_score = await self._check_constitutional_compliance(response)
         validation_results["constitutional_compliant"] = compliance_score > 0.85
-        
+
         # Overall confidence
         validation_results["confidence_score"] = min(
             validation_results["content_safe"] * 1.0,
             (1.0 - bias_score),
             compliance_score
         )
-        
+
         return validation_results
-    
+
     async def _check_constitutional_compliance(self, response: str) -> float:
         """Check response compliance with constitutional principles"""
         principles = await self.ac_service.get_active_principles()
         compliance_scores = []
-        
+
         for principle in principles:
             score = await self._evaluate_principle_compliance(response, principle)
             weighted_score = score * principle.priority_weight
             compliance_scores.append(weighted_score)
-        
+
         return sum(compliance_scores) / len(compliance_scores) if compliance_scores else 0.0
 ```
 
 ## 🚨 Incident Response
 
 ### **Security Incident Classification**
+
 ```yaml
 incident_types:
   critical:
@@ -555,20 +571,20 @@ incident_types:
     - "Constitutional principle tampering"
     - "Cryptographic key compromise"
     response_time: "15 minutes"
-    
+
   high:
     - "Failed authentication spike"
     - "Unusual API access patterns"
     - "Policy integrity violation"
     - "Service availability impact"
     response_time: "1 hour"
-    
+
   medium:
     - "Rate limit violations"
     - "Content filter triggers"
     - "Audit log anomalies"
     response_time: "4 hours"
-    
+
   low:
     - "Failed login attempts"
     - "Minor configuration issues"
@@ -577,23 +593,24 @@ incident_types:
 ```
 
 ### **Automated Response Actions**
+
 ```python
 # Incident Response Automation
 class IncidentResponseSystem:
     async def handle_security_incident(self, incident_type: str, severity: str, details: dict):
         """Automated incident response based on type and severity"""
-        
+
         if severity == "critical":
             await self._critical_incident_response(incident_type, details)
         elif severity == "high":
             await self._high_incident_response(incident_type, details)
-        
+
         # Log incident
         await self.audit_logger.log_security_incident(incident_type, severity, details)
-        
+
         # Notify security team
         await self.notification_service.alert_security_team(incident_type, severity, details)
-    
+
     async def _critical_incident_response(self, incident_type: str, details: dict):
         """Critical incident response actions"""
         if incident_type == "data_breach":
@@ -601,12 +618,12 @@ class IncidentResponseSystem:
             await self._isolate_affected_systems()
             await self._revoke_all_active_sessions()
             await self._enable_emergency_mode()
-            
+
         elif incident_type == "unauthorized_admin_access":
             # Lock down admin functions
             await self._disable_admin_endpoints()
             await self._force_admin_re_authentication()
-            
+
         elif incident_type == "constitutional_tampering":
             # Protect constitutional integrity
             await self._lock_constitutional_changes()
@@ -617,73 +634,76 @@ class IncidentResponseSystem:
 ## 📋 Security Compliance
 
 ### **Compliance Frameworks**
+
 - **SOC 2 Type II**: Security, availability, processing integrity
 - **GDPR**: Data protection and privacy rights
 - **ISO 27001**: Information security management
 - **NIST Cybersecurity Framework**: Identify, protect, detect, respond, recover
 
 ### **Security Metrics**
+
 ```yaml
 security_kpis:
   authentication:
-    - metric: "Authentication success rate"
-      target: ">95%"
-      measurement: "Daily"
-    
-    - metric: "Failed login attempts"
-      target: "<5% of total attempts"
-      measurement: "Hourly"
-  
+    - metric: 'Authentication success rate'
+      target: '>95%'
+      measurement: 'Daily'
+
+    - metric: 'Failed login attempts'
+      target: '<5% of total attempts'
+      measurement: 'Hourly'
+
   authorization:
-    - metric: "Unauthorized access attempts"
-      target: "0 successful attempts"
-      measurement: "Real-time"
-    
-    - metric: "Privilege escalation attempts"
-      target: "0 successful attempts"
-      measurement: "Real-time"
-  
+    - metric: 'Unauthorized access attempts'
+      target: '0 successful attempts'
+      measurement: 'Real-time'
+
+    - metric: 'Privilege escalation attempts'
+      target: '0 successful attempts'
+      measurement: 'Real-time'
+
   data_protection:
-    - metric: "Data integrity violations"
-      target: "0 violations"
-      measurement: "Real-time"
-    
-    - metric: "Encryption coverage"
-      target: "100% of sensitive data"
-      measurement: "Weekly"
-  
+    - metric: 'Data integrity violations'
+      target: '0 violations'
+      measurement: 'Real-time'
+
+    - metric: 'Encryption coverage'
+      target: '100% of sensitive data'
+      measurement: 'Weekly'
+
   incident_response:
-    - metric: "Mean time to detection (MTTD)"
-      target: "<15 minutes"
-      measurement: "Per incident"
-    
-    - metric: "Mean time to response (MTTR)"
-      target: "<1 hour for critical"
-      measurement: "Per incident"
+    - metric: 'Mean time to detection (MTTD)'
+      target: '<15 minutes'
+      measurement: 'Per incident'
+
+    - metric: 'Mean time to response (MTTR)'
+      target: '<1 hour for critical'
+      measurement: 'Per incident'
 ```
 
 ### **Security Testing Schedule**
+
 ```yaml
 security_testing:
   penetration_testing:
-    frequency: "Quarterly"
-    scope: "Full application and infrastructure"
-    provider: "External security firm"
-  
+    frequency: 'Quarterly'
+    scope: 'Full application and infrastructure'
+    provider: 'External security firm'
+
   vulnerability_assessment:
-    frequency: "Monthly"
-    scope: "Application and dependencies"
-    tools: ["OWASP ZAP", "Nessus", "Qualys"]
-  
+    frequency: 'Monthly'
+    scope: 'Application and dependencies'
+    tools: ['OWASP ZAP', 'Nessus', 'Qualys']
+
   code_security_review:
-    frequency: "Per release"
-    scope: "All code changes"
-    tools: ["SonarQube", "Semgrep", "Bandit"]
-  
+    frequency: 'Per release'
+    scope: 'All code changes'
+    tools: ['SonarQube', 'Semgrep', 'Bandit']
+
   compliance_audit:
-    frequency: "Annually"
-    scope: "SOC 2, GDPR, ISO 27001"
-    provider: "External auditor"
+    frequency: 'Annually'
+    scope: 'SOC 2, GDPR, ISO 27001'
+    provider: 'External auditor'
 ```
 
 ---

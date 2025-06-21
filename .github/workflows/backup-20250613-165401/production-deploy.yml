@@ -2,8 +2,8 @@ name: ACGS-PGP Production Deployment
 
 on:
   push:
-    branches: [ main ]
-    tags: [ 'v*' ]
+    branches: [main]
+    tags: ['v*']
   workflow_dispatch:
     inputs:
       deployment_type:
@@ -12,17 +12,17 @@ on:
         default: 'blue-green'
         type: choice
         options:
-        - blue-green
-        - rolling
-        - canary
+          - blue-green
+          - rolling
+          - canary
       target_environment:
         description: 'Target environment'
         required: true
         default: 'production'
         type: choice
         options:
-        - staging
-        - production
+          - staging
+          - production
 
 permissions:
   contents: read
@@ -68,20 +68,20 @@ jobs:
         id: checks
         run: |
           echo "Running pre-deployment checks..."
-          
+
           # Check if all required secrets are available
           if [ -z "${{ secrets.KUBE_CONFIG_DATA }}" ]; then
             echo "ERROR: KUBE_CONFIG_DATA secret not found"
             exit 1
           fi
-          
+
           # Check if this is a valid deployment branch/tag
           if [[ "${{ github.ref }}" == "refs/heads/main" ]] || [[ "${{ github.ref }}" == refs/tags/* ]]; then
             echo "should_deploy=true" >> $GITHUB_OUTPUT
           else
             echo "should_deploy=false" >> $GITHUB_OUTPUT
           fi
-          
+
           # Notify deployment start
           curl -X POST -H 'Content-type: application/json' \
             --data '{"text":"🚀 ACGS-PGP Production Deployment Started\nCommit: ${{ github.sha }}\nEnvironment: ${{ github.event.inputs.target_environment || 'production' }}"}' \
@@ -120,7 +120,7 @@ jobs:
     if: needs.pre-deployment-checks.outputs.should_deploy == 'true'
     strategy:
       matrix:
-        service: ['evolutionary-computation']  # Only include services that actually exist
+        service: ['evolutionary-computation'] # Only include services that actually exist
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -176,7 +176,7 @@ jobs:
     name: Blue-Green Deployment
     needs: [pre-deployment-checks, build-and-push]
     if: needs.pre-deployment-checks.outputs.should_deploy == 'true' && (github.event.inputs.deployment_type == 'blue-green' || github.event.inputs.deployment_type == '')
-    environment: 
+    environment:
       name: ${{ github.event.inputs.target_environment || 'production' }}
       url: https://api.acgs-pgp.com
     steps:
@@ -245,10 +245,10 @@ jobs:
       - name: Switch Traffic to Blue (Green to Blue)
         run: |
           export KUBECONFIG=/tmp/kubeconfig
-          
+
           # Update ingress to point to blue services
           kubectl patch ingress acgs-pgp-ingress -n acgs-pgp -p '{"spec":{"rules":[{"host":"api.acgs-pgp.com","http":{"paths":[{"path":"/","pathType":"Prefix","backend":{"service":{"name":"nginx-gateway","port":{"number":80}}}}]}}]}}'
-          
+
           # Update service selectors to point to blue deployment
           kubectl patch service auth-service -n acgs-pgp -p '{"spec":{"selector":{"deployment":"blue"}}}'
           kubectl patch service ac-service -n acgs-pgp -p '{"spec":{"selector":{"deployment":"blue"}}}'
@@ -256,7 +256,7 @@ jobs:
           kubectl patch service fv-service -n acgs-pgp -p '{"spec":{"selector":{"deployment":"blue"}}}'
           kubectl patch service gs-service -n acgs-pgp -p '{"spec":{"selector":{"deployment":"blue"}}}'
           kubectl patch service pgc-service -n acgs-pgp -p '{"spec":{"selector":{"deployment":"blue"}}}'
-          
+
           echo "✅ Traffic switched to blue environment"
 
       - name: Post-deployment Verification
@@ -295,10 +295,10 @@ jobs:
         if: success()
         run: |
           export KUBECONFIG=/tmp/kubeconfig
-          
+
           # Scale down green environment (previous production)
           kubectl scale deployment --all --replicas=0 -n acgs-pgp-green || true
-          
+
           # Clean up old resources after 24 hours (handled by separate cleanup job)
           echo "Green environment scaled down, cleanup scheduled"
 
@@ -306,9 +306,9 @@ jobs:
         if: failure()
         run: |
           export KUBECONFIG=/tmp/kubeconfig
-          
+
           echo "❌ Deployment failed, initiating rollback..."
-          
+
           # Switch traffic back to green (previous production)
           kubectl patch service auth-service -n acgs-pgp -p '{"spec":{"selector":{"deployment":"green"}}}'
           kubectl patch service ac-service -n acgs-pgp -p '{"spec":{"selector":{"deployment":"green"}}}'
@@ -316,10 +316,10 @@ jobs:
           kubectl patch service fv-service -n acgs-pgp -p '{"spec":{"selector":{"deployment":"green"}}}'
           kubectl patch service gs-service -n acgs-pgp -p '{"spec":{"selector":{"deployment":"green"}}}'
           kubectl patch service pgc-service -n acgs-pgp -p '{"spec":{"selector":{"deployment":"green"}}}'
-          
+
           # Scale down failed blue deployment
           kubectl scale deployment --all --replicas=0 -n acgs-pgp-blue
-          
+
           echo "✅ Rollback completed"
 
           # Notify Slack about rollback
@@ -339,7 +339,7 @@ jobs:
           script: |
             const deploymentId = '${{ needs.pre-deployment-checks.outputs.deployment_id }}';
             const state = '${{ needs.deploy-blue-green.result }}' === 'success' ? 'success' : 'failure';
-            
+
             await github.rest.repos.createDeploymentStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,

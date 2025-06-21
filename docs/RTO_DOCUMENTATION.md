@@ -8,20 +8,21 @@ This document defines the Recovery Time Objectives (RTO) and Recovery Point Obje
 
 ### Primary Objectives
 
-| Component | RTO Target | RPO Target | Current Achievement | Status |
-|-----------|------------|------------|-------------------|--------|
-| **Full System Recovery** | < 1 hour | < 15 minutes | ~45 minutes | ✅ |
-| **Critical Services** | < 5 minutes | < 1 minute | ~3 minutes | ✅ |
-| **Database Recovery** | < 15 minutes | < 15 minutes | ~10 minutes | ✅ |
-| **Constitutional Governance** | < 10 minutes | < 5 minutes | ~8 minutes | ✅ |
-| **Health Check Response** | < 30 seconds | N/A | ~5 seconds | ✅ |
-| **Service Restart** | < 5 minutes | N/A | ~2 minutes | ✅ |
+| Component                     | RTO Target   | RPO Target   | Current Achievement | Status |
+| ----------------------------- | ------------ | ------------ | ------------------- | ------ |
+| **Full System Recovery**      | < 1 hour     | < 15 minutes | ~45 minutes         | ✅     |
+| **Critical Services**         | < 5 minutes  | < 1 minute   | ~3 minutes          | ✅     |
+| **Database Recovery**         | < 15 minutes | < 15 minutes | ~10 minutes         | ✅     |
+| **Constitutional Governance** | < 10 minutes | < 5 minutes  | ~8 minutes          | ✅     |
+| **Health Check Response**     | < 30 seconds | N/A          | ~5 seconds          | ✅     |
+| **Service Restart**           | < 5 minutes  | N/A          | ~2 minutes          | ✅     |
 
 ### Service-Specific RTO Targets
 
 #### Core Services (Ports 8000-8006)
+
 - **Auth Service (8000)**: < 2 minutes
-- **AC Service (8001)**: < 3 minutes  
+- **AC Service (8001)**: < 3 minutes
 - **Integrity Service (8002)**: < 3 minutes
 - **FV Service (8003)**: < 4 minutes
 - **GS Service (8004)**: < 4 minutes
@@ -29,12 +30,14 @@ This document defines the Recovery Time Objectives (RTO) and Recovery Point Obje
 - **EC Service (8006)**: < 3 minutes
 
 #### Infrastructure Components
+
 - **PostgreSQL Database**: < 10 minutes
 - **Redis Cache**: < 2 minutes
 - **Prometheus Monitoring**: < 5 minutes
 - **Grafana Dashboards**: < 5 minutes
 
 #### Blockchain Integration
+
 - **Solana Devnet Connection**: < 5 minutes
 - **Quantumagi Programs**: < 10 minutes
 - **Constitution Hash Validation**: < 1 minute
@@ -44,16 +47,19 @@ This document defines the Recovery Time Objectives (RTO) and Recovery Point Obje
 ### Automated Recovery Workflow
 
 1. **Detection Phase** (< 30 seconds)
+
    - Health check failure detection
    - Service unavailability alerts
    - Performance degradation monitoring
 
 2. **Assessment Phase** (< 2 minutes)
+
    - Impact assessment
    - Root cause identification
    - Recovery strategy selection
 
 3. **Recovery Phase** (< 45 minutes)
+
    - Service isolation
    - Backup restoration
    - Service restart
@@ -89,11 +95,13 @@ curl -X GET http://localhost:8005/api/v1/constitutional/validate
 ### RTO Measurement Criteria
 
 1. **Service Availability**
+
    - Time from failure detection to service restoration
    - Measured using automated health checks
    - Target: 99.5% availability
 
 2. **Data Recovery**
+
    - Time from backup initiation to data availability
    - Includes database and configuration restoration
    - Target: < 15 minutes for critical data
@@ -106,7 +114,7 @@ curl -X GET http://localhost:8005/api/v1/constitutional/validate
 ### Monitoring and Alerting
 
 - **Real-time Monitoring**: Prometheus + Grafana
-- **Alert Thresholds**: 
+- **Alert Thresholds**:
   - Service down: Immediate alert
   - Performance degradation: 2-minute alert
   - RTO breach: Escalation to on-call team
@@ -167,7 +175,7 @@ python3 scripts/rto_validation_test.py --report
 ### Contact Information
 
 - **Primary On-Call**: ACGS-1 Operations Team
-- **Secondary**: Infrastructure Team  
+- **Secondary**: Infrastructure Team
 - **Escalation**: System Architecture Team
 - **Emergency**: Constitutional Governance Team
 

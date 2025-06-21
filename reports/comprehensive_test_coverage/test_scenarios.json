@@ -186,16 +186,8 @@
       "test_type": "role_based_authentication",
       "description": "Test authentication with different user roles",
       "parameters": {
-        "roles": [
-          "admin",
-          "user",
-          "viewer"
-        ],
-        "permissions": [
-          "read",
-          "write",
-          "admin"
-        ]
+        "roles": ["admin", "user", "viewer"],
+        "permissions": ["read", "write", "admin"]
       },
       "expected_outcome": "role_authenticated",
       "priority": "HIGH",
@@ -208,11 +200,7 @@
       "test_type": "multi_factor_authentication",
       "description": "Test MFA flows with various factors",
       "parameters": {
-        "factors": [
-          "password",
-          "totp",
-          "biometric"
-        ],
+        "factors": ["password", "totp", "biometric"],
         "required": 2
       },
       "expected_outcome": "mfa_success",
@@ -240,11 +228,7 @@
       "test_type": "multi_model_validation",
       "description": "Test multi-model constitutional validation",
       "parameters": {
-        "models": [
-          "gpt-4",
-          "claude",
-          "gemini"
-        ],
+        "models": ["gpt-4", "claude", "gemini"],
         "consensus_threshold": 0.8
       },
       "expected_outcome": "consensus_reached",
@@ -258,11 +242,7 @@
       "test_type": "principle_compliance_checking",
       "description": "Test compliance checking against constitutional principles",
       "parameters": {
-        "principles": [
-          "fairness",
-          "transparency",
-          "accountability"
-        ],
+        "principles": ["fairness", "transparency", "accountability"],
         "policy_type": "governance"
       },
       "expected_outcome": "compliance_validated",
@@ -276,11 +256,7 @@
       "test_type": "bias_detection_analysis",
       "description": "Test bias detection in constitutional analysis",
       "parameters": {
-        "bias_categories": [
-          "demographic",
-          "political",
-          "economic"
-        ],
+        "bias_categories": ["demographic", "political", "economic"],
         "threshold": 0.1
       },
       "expected_outcome": "bias_analyzed",
@@ -309,11 +285,7 @@
       "description": "Test integration of diverse stakeholder requirements",
       "parameters": {
         "stakeholder_count": 8,
-        "requirement_types": [
-          "functional",
-          "ethical",
-          "legal"
-        ]
+        "requirement_types": ["functional", "ethical", "legal"]
       },
       "expected_outcome": "requirements_integrated",
       "priority": "HIGH",
@@ -326,12 +298,7 @@
       "test_type": "policy_domain_specialization",
       "description": "Test policy synthesis across different domains",
       "parameters": {
-        "domains": [
-          "privacy",
-          "security",
-          "governance",
-          "ethics"
-        ],
+        "domains": ["privacy", "security", "governance", "ethics"],
         "cross_domain": true
       },
       "expected_outcome": "domain_specialized",
@@ -387,10 +354,7 @@
       "test_type": "multi_domain_policy_creation",
       "description": "Test policy creation across multiple domains",
       "parameters": {
-        "domains": [
-          "privacy",
-          "security"
-        ],
+        "domains": ["privacy", "security"],
         "complexity": "high",
         "stakeholders": 12
       },
@@ -419,11 +383,7 @@
       "test_type": "policy_complexity_handling",
       "description": "Test handling of varying policy complexity levels",
       "parameters": {
-        "complexity_levels": [
-          1,
-          3,
-          5
-        ],
+        "complexity_levels": [1, 3, 5],
         "adaptation_strategy": "dynamic"
       },
       "expected_outcome": "complexity_handled",
@@ -437,12 +397,7 @@
       "test_type": "multi_principle_validation",
       "description": "Test validation against multiple constitutional principles",
       "parameters": {
-        "principles": [
-          "fairness",
-          "transparency",
-          "accountability",
-          "democracy"
-        ]
+        "principles": ["fairness", "transparency", "accountability", "democracy"]
       },
       "expected_outcome": "multi_principle_validated",
       "priority": "HIGH",
@@ -455,11 +410,7 @@
       "test_type": "policy_type_specialization",
       "description": "Test compliance validation for different policy types",
       "parameters": {
-        "policy_types": [
-          "regulatory",
-          "procedural",
-          "ethical"
-        ],
+        "policy_types": ["regulatory", "procedural", "ethical"],
         "validation_depth": "comprehensive"
       },
       "expected_outcome": "type_specialized_validation",

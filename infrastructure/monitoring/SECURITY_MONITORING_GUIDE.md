@@ -6,31 +6,35 @@ The ACGS-1 Comprehensive Security Monitoring system provides enterprise-grade se
 
 **Implementation Date:** 2025-06-18  
 **Version:** 1.0.0  
-**Status:** ✅ PRODUCTION READY  
+**Status:** ✅ PRODUCTION READY
 
 ## 🏗️ Architecture
 
 ### Core Components
 
 1. **Elasticsearch Security Cluster**
+
    - Dedicated security log storage and indexing
    - Advanced search and analytics capabilities
    - Machine learning for anomaly detection
    - Port: 9201
 
 2. **Logstash Security Pipeline**
+
    - Real-time log processing and enrichment
    - Security event parsing and classification
    - Threat intelligence integration
    - Port: 5044 (Beats), 5000 (TCP), 9600 (API)
 
 3. **Kibana Security Dashboards**
+
    - Security visualization and monitoring
    - Interactive threat investigation
    - Custom security dashboards
    - Port: 5601
 
 4. **Filebeat & Metricbeat**
+
    - Log shipping and system metrics collection
    - Real-time data forwarding
    - Health monitoring integration
@@ -73,6 +77,7 @@ curl http://localhost:8080/health
 ## 📊 Security Dashboards
 
 ### 1. Security Overview Dashboard
+
 - **URL:** http://localhost:5601/app/dashboards#/view/acgs-security-overview
 - **Features:**
   - Real-time security alerts count
@@ -83,6 +88,7 @@ curl http://localhost:8080/health
   - Governance violations
 
 ### 2. Threat Intelligence Dashboard
+
 - **URL:** http://localhost:5601/app/discover
 - **Index Patterns:**
   - `acgs-security-alerts-*` - Security alerts and threats
@@ -91,6 +97,7 @@ curl http://localhost:8080/health
   - `acgs-governance-logs-*` - Governance violations
 
 ### 3. Real-time Monitoring
+
 - **Refresh Rate:** 30 seconds
 - **Time Range:** Last 24 hours (configurable)
 - **Auto-refresh:** Enabled for critical dashboards
@@ -100,18 +107,21 @@ curl http://localhost:8080/health
 ### Event Types
 
 1. **Authentication Events**
+
    - Login attempts (success/failure)
    - Multi-factor authentication
    - Session management
    - Account lockouts
 
 2. **Security Alerts**
+
    - Intrusion attempts
    - Suspicious activity
    - Malware detection
    - Policy violations
 
 3. **Governance Events**
+
    - Constitutional violations
    - Policy enforcement
    - Workflow failures
@@ -135,11 +145,13 @@ curl http://localhost:8080/health
 ### Automated Detection Rules
 
 1. **Brute Force Attacks**
+
    - 5+ failed logins within 15 minutes
    - Automatic IP blocking
    - User account lockout
 
 2. **Suspicious Activity**
+
    - Unusual access patterns
    - Geographic anomalies
    - Time-based anomalies
@@ -174,7 +186,7 @@ acgs_current_risk_score
 ### Health Endpoints
 
 - **Security Processor:** http://localhost:8080/health
-- **Elasticsearch:** http://localhost:9201/_cluster/health
+- **Elasticsearch:** http://localhost:9201/\_cluster/health
 - **Kibana:** http://localhost:5601/api/status
 - **Logstash:** http://localhost:9600
 
@@ -234,12 +246,14 @@ ALERT_WEBHOOK_URL=https://your-webhook-url.com/alerts
 ### Automated Response
 
 1. **Critical Threats**
+
    - Immediate alert notification
    - Automatic IP blocking
    - User account suspension
    - Incident ticket creation
 
 2. **High Priority Threats**
+
    - Alert notification
    - Enhanced monitoring
    - Investigation queue
@@ -254,6 +268,7 @@ ALERT_WEBHOOK_URL=https://your-webhook-url.com/alerts
 ### Manual Response Procedures
 
 1. **Threat Investigation**
+
    - Access Kibana security dashboard
    - Review threat timeline
    - Analyze related events
@@ -293,12 +308,14 @@ ALERT_WEBHOOK_URL=https://your-webhook-url.com/alerts
 ### Common Issues
 
 1. **Elasticsearch Memory Issues**
+
    ```bash
    # Increase heap size
    export ES_JAVA_OPTS="-Xms2g -Xmx2g"
    ```
 
 2. **Kibana Connection Issues**
+
    ```bash
    # Check Elasticsearch connectivity
    curl -u elastic:acgs_security_2024 http://localhost:9201/_cluster/health
@@ -320,11 +337,13 @@ ALERT_WEBHOOK_URL=https://your-webhook-url.com/alerts
 ## 📞 Support
 
 ### Documentation
+
 - **ELK Stack:** https://www.elastic.co/guide/
 - **Security Best Practices:** Internal security wiki
 - **ACGS Standards:** Constitutional governance documentation
 
 ### Contacts
+
 - **Security Team:** security@acgs.org
 - **DevOps Team:** devops@acgs.org
 - **Emergency:** security-emergency@acgs.org

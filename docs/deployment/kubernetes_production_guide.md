@@ -5,6 +5,7 @@ This guide provides step-by-step instructions for deploying ACGS-PGP to Kubernet
 ## Prerequisites
 
 ### Cluster Requirements
+
 - **Kubernetes:** Version 1.21+ with RBAC enabled
 - **kubectl:** Configured to access your cluster
 - **Helm:** Version 3.0+ for monitoring stack deployment
@@ -12,6 +13,7 @@ This guide provides step-by-step instructions for deploying ACGS-PGP to Kubernet
 - **Storage Class:** For persistent volumes (PostgreSQL, Prometheus, Grafana)
 
 ### Resource Requirements
+
 - **Minimum:** 8 CPU cores, 16GB RAM, 100GB storage
 - **Recommended:** 16 CPU cores, 32GB RAM, 500GB storage
 - **High Availability:** 3+ worker nodes with anti-affinity rules
@@ -29,6 +31,7 @@ kubectl apply -f infrastructure/kubernetes/rbac/
 ## Step 2: Secrets and ConfigMaps
 
 ### Database Secrets
+
 ```bash
 kubectl create secret generic postgres-credentials \
   --from-literal=user=acgs_user \
@@ -38,6 +41,7 @@ kubectl create secret generic postgres-credentials \
 ```
 
 ### Authentication Secrets
+
 ```bash
 kubectl create secret generic auth-secrets \
   --from-literal=jwt_secret_key=your_256_bit_jwt_secret_key \
@@ -47,6 +51,7 @@ kubectl create secret generic auth-secrets \
 ```
 
 ### LLM Integration Secrets
+
 ```bash
 kubectl create secret generic llm-secrets \
   --from-literal=openai_api_key=your_openai_api_key \
@@ -55,6 +60,7 @@ kubectl create secret generic llm-secrets \
 ```
 
 ### PGP Cryptographic Secrets
+
 ```bash
 kubectl create secret generic pgp-secrets \
   --from-literal=pgp_key_id=your_pgp_key_id \
@@ -65,6 +71,7 @@ kubectl create secret generic pgp-secrets \
 ```
 
 ### Application ConfigMap
+
 ```bash
 kubectl create configmap acgs-config \
   --from-literal=environment=production \
@@ -78,6 +85,7 @@ kubectl create configmap acgs-config \
 ## Step 3: Deploy Monitoring Stack
 
 ### Prometheus Operator
+
 ```bash
 # Add Prometheus community Helm repository
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
@@ -91,6 +99,7 @@ helm install prometheus-operator prometheus-community/kube-prometheus-stack \
 ```
 
 ### Custom ACGS-PGP Monitoring
+
 ```bash
 # Deploy custom ServiceMonitors and PrometheusRules
 kubectl apply -f infrastructure/kubernetes/monitoring/service-monitors.yaml
@@ -101,6 +110,7 @@ kubectl apply -f infrastructure/kubernetes/monitoring/grafana-dashboards.yaml
 ## Step 4: Deploy Database
 
 ### PostgreSQL with High Availability
+
 ```bash
 # Deploy PostgreSQL cluster
 kubectl apply -f infrastructure/kubernetes/database/postgres-cluster.yaml
@@ -116,6 +126,7 @@ kubectl wait --for=condition=complete job/alembic-migration --timeout=300s -n ac
 ## Step 5: Deploy ACGS-PGP Services
 
 ### Core Services Deployment
+
 ```bash
 # Deploy services in dependency order
 kubectl apply -f infrastructure/kubernetes/services/auth-service.yaml
@@ -130,6 +141,7 @@ kubectl wait --for=condition=available deployment --all --timeout=600s -n acgs-p
 ```
 
 ### Load Balancer and Ingress
+
 ```bash
 # Deploy Nginx load balancer
 kubectl apply -f infrastructure/kubernetes/ingress/nginx-configmap.yaml
@@ -152,6 +164,7 @@ kubectl apply -f infrastructure/kubernetes/applications/governance-dashboard/fro
 ## Step 7: Validation and Testing
 
 ### Health Check Validation
+
 ```bash
 # Check all pods are running
 kubectl get pods -n acgs-pgp
@@ -165,6 +178,7 @@ done
 ```
 
 ### Monitoring Validation
+
 ```bash
 # Access Grafana dashboard
 kubectl port-forward svc/prometheus-operator-grafana 3000:80 -n acgs-pgp &
@@ -178,6 +192,7 @@ echo "Prometheus available at http://localhost:9090"
 ```
 
 ### Load Testing
+
 ```bash
 # Run production load test
 kubectl apply -f infrastructure/kubernetes/testing/load-test-job.yaml
@@ -187,6 +202,7 @@ kubectl logs -f job/acgs-load-test -n acgs-pgp
 ## Step 8: Production Configuration
 
 ### Horizontal Pod Autoscaler
+
 ```bash
 # Deploy HPA for auto-scaling
 kubectl apply -f infrastructure/kubernetes/autoscaling/hpa.yaml
@@ -196,12 +212,14 @@ kubectl get hpa -n acgs-pgp
 ```
 
 ### Network Policies
+
 ```bash
 # Apply network security policies
 kubectl apply -f infrastructure/kubernetes/security/network-policies.yaml
 ```
 
 ### Backup Configuration
+
 ```bash
 # Deploy backup CronJobs
 kubectl apply -f infrastructure/kubernetes/backup/postgres-backup.yaml
@@ -211,6 +229,7 @@ kubectl apply -f infrastructure/kubernetes/backup/monitoring-backup.yaml
 ## Production Monitoring Targets
 
 ### Performance Metrics
+
 - **API Response Times:** <200ms (95th percentile)
 - **Service Uptime:** >99.5% availability
 - **Pod CPU Usage:** <70% average
@@ -218,6 +237,7 @@ kubectl apply -f infrastructure/kubernetes/backup/monitoring-backup.yaml
 - **Database Connections:** <80% of max pool size
 
 ### Alerting Rules
+
 - **Service Down:** Alert if any service is down for >2 minutes
 - **High Error Rate:** Alert if error rate >5% for >5 minutes
 - **High Response Time:** Alert if 95th percentile >500ms for >5 minutes
@@ -227,12 +247,14 @@ kubectl apply -f infrastructure/kubernetes/backup/monitoring-backup.yaml
 ## Troubleshooting
 
 ### Common Issues
+
 1. **Pod Startup Failures:** Check resource limits and secrets
 2. **Service Discovery Issues:** Verify DNS and service configurations
 3. **Database Connection Errors:** Check credentials and network policies
 4. **Monitoring Not Working:** Verify ServiceMonitor configurations
 
 ### Debugging Commands
+
 ```bash
 # Check pod logs
 kubectl logs -f deployment/auth-service -n acgs-pgp
@@ -250,18 +272,21 @@ kubectl run debug --image=busybox -it --rm --restart=Never -n acgs-pgp -- sh
 ## Security Considerations
 
 ### Network Security
+
 - All inter-service communication within cluster
 - Network policies restrict unnecessary traffic
 - Ingress with SSL/TLS termination
 - No direct database access from outside cluster
 
 ### Secret Management
+
 - All sensitive data stored in Kubernetes secrets
 - Secrets mounted as volumes, not environment variables
 - Regular secret rotation procedures
 - Integration with external secret management systems
 
 ### RBAC and Access Control
+
 - Least privilege service accounts
 - Role-based access control for kubectl access
 - Audit logging enabled
@@ -270,6 +295,7 @@ kubectl run debug --image=busybox -it --rm --restart=Never -n acgs-pgp -- sh
 ## Maintenance Procedures
 
 ### Rolling Updates
+
 ```bash
 # Update service image
 kubectl set image deployment/auth-service auth-service=new-image:tag -n acgs-pgp
@@ -279,6 +305,7 @@ kubectl rollout status deployment/auth-service -n acgs-pgp
 ```
 
 ### Database Maintenance
+
 ```bash
 # Run database migrations
 kubectl create job --from=cronjob/postgres-backup manual-backup -n acgs-pgp
@@ -286,6 +313,7 @@ kubectl apply -f infrastructure/kubernetes/database/migration-job.yaml
 ```
 
 ### Monitoring Maintenance
+
 ```bash
 # Update Grafana dashboards
 kubectl apply -f infrastructure/kubernetes/monitoring/grafana-dashboards.yaml

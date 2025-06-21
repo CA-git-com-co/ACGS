@@ -13,52 +13,48 @@
  * @returns {never} - Always throws an error
  */
 export const handleServiceError = (error, operation, options = {}) => {
-    const {
-        logLevel = 'error',
-        includeStack = false,
-        customMessage = null
-    } = options;
+  const { logLevel = 'error', includeStack = false, customMessage = null } = options;
 
-    // Extract error details
-    const errorData = error.response?.data;
-    const errorMessage = error.response?.data?.message || error.message;
-    const statusCode = error.response?.status;
-    const statusText = error.response?.statusText;
+  // Extract error details
+  const errorData = error.response?.data;
+  const errorMessage = error.response?.data?.message || error.message;
+  const statusCode = error.response?.status;
+  const statusText = error.response?.statusText;
 
-    // Create standardized error message
-    const baseMessage = customMessage || `${operation} failed`;
-    const detailedMessage = errorData?.detail || errorMessage || 'Unknown error occurred';
+  // Create standardized error message
+  const baseMessage = customMessage || `${operation} failed`;
+  const detailedMessage = errorData?.detail || errorMessage || 'Unknown error occurred';
 
-    // Log error with consistent format
-    const logMessage = `🚨 ${operation} failed:`;
-    const logDetails = {
-        message: detailedMessage,
-        status: statusCode,
-        statusText: statusText,
-        url: error.config?.url,
-        method: error.config?.method?.toUpperCase(),
-        ...(includeStack && { stack: error.stack })
-    };
+  // Log error with consistent format
+  const logMessage = `🚨 ${operation} failed:`;
+  const logDetails = {
+    message: detailedMessage,
+    status: statusCode,
+    statusText: statusText,
+    url: error.config?.url,
+    method: error.config?.method?.toUpperCase(),
+    ...(includeStack && { stack: error.stack }),
+  };
 
-    if (logLevel === 'error') {
-        console.error(logMessage, logDetails);
-    } else if (logLevel === 'warn') {
-        console.warn(logMessage, logDetails);
-    }
+  if (logLevel === 'error') {
+    console.error(logMessage, logDetails);
+  } else if (logLevel === 'warn') {
+    console.warn(logMessage, logDetails);
+  }
 
-    // Create and throw standardized error
-    const serviceError = new Error(baseMessage);
-    serviceError.originalError = error;
-    serviceError.statusCode = statusCode;
-    serviceError.details = errorData;
-    serviceError.operation = operation;
+  // Create and throw standardized error
+  const serviceError = new Error(baseMessage);
+  serviceError.originalError = error;
+  serviceError.statusCode = statusCode;
+  serviceError.details = errorData;
+  serviceError.operation = operation;
 
-    // Preserve original error data if it exists (for backend validation errors)
-    if (errorData && typeof errorData === 'object') {
-        throw errorData;
-    }
+  // Preserve original error data if it exists (for backend validation errors)
+  if (errorData && typeof errorData === 'object') {
+    throw errorData;
+  }
 
-    throw serviceError;
+  throw serviceError;
 };
 
 /**
@@ -69,12 +65,12 @@ export const handleServiceError = (error, operation, options = {}) => {
  * @returns {Promise} - The result of the API call
  */
 export const withErrorHandling = async (apiCall, operation, options = {}) => {
-    try {
-        const response = await apiCall();
-        return response.data || response;
-    } catch (error) {
-        handleServiceError(error, operation, options);
-    }
+  try {
+    const response = await apiCall();
+    return response.data || response;
+  } catch (error) {
+    handleServiceError(error, operation, options);
+  }
 };
 
 /**
@@ -84,23 +80,23 @@ export const withErrorHandling = async (apiCall, operation, options = {}) => {
  * @returns {Promise} - The result with performance metrics
  */
 export const withPerformanceMonitoring = async (apiCall, operation) => {
-    const startTime = performance.now();
+  const startTime = performance.now();
 
-    try {
-        const result = await apiCall();
-        const endTime = performance.now();
-        const duration = endTime - startTime;
+  try {
+    const result = await apiCall();
+    const endTime = performance.now();
+    const duration = endTime - startTime;
 
-        console.log(`⏱️ ${operation} completed in ${duration.toFixed(2)}ms`);
+    console.log(`⏱️ ${operation} completed in ${duration.toFixed(2)}ms`);
 
-        return result;
-    } catch (error) {
-        const endTime = performance.now();
-        const duration = endTime - startTime;
+    return result;
+  } catch (error) {
+    const endTime = performance.now();
+    const duration = endTime - startTime;
 
-        console.error(`⏱️ ${operation} failed after ${duration.toFixed(2)}ms`);
-        throw error;
-    }
+    console.error(`⏱️ ${operation} failed after ${duration.toFixed(2)}ms`);
+    throw error;
+  }
 };
 
 /**
@@ -111,20 +107,20 @@ export const withPerformanceMonitoring = async (apiCall, operation) => {
  * @returns {Promise} - The result of the API call
  */
 export const serviceCall = async (apiCall, operation, options = {}) => {
-    const { enablePerformanceMonitoring = true, ...errorOptions } = options;
+  const { enablePerformanceMonitoring = true, ...errorOptions } = options;
 
-    const wrappedCall = () => withErrorHandling(apiCall, operation, errorOptions);
+  const wrappedCall = () => withErrorHandling(apiCall, operation, errorOptions);
 
-    if (enablePerformanceMonitoring) {
-        return withPerformanceMonitoring(wrappedCall, operation);
-    }
+  if (enablePerformanceMonitoring) {
+    return withPerformanceMonitoring(wrappedCall, operation);
+  }
 
-    return wrappedCall();
+  return wrappedCall();
 };
 
 export default {
-    handleServiceError,
-    withErrorHandling,
-    withPerformanceMonitoring,
-    serviceCall
+  handleServiceError,
+  withErrorHandling,
+  withPerformanceMonitoring,
+  serviceCall,
 };

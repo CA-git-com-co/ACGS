@@ -1,10 +1,11 @@
 # Quantum Policy Evaluator (QPE) Design Specification
+
 ## ACGS-1 Constitutional Governance Enhancement
 
 **Document Version**: 1.0  
 **Date**: 2024-12-19  
 **Status**: Final  
-**Compliance**: ACGS-1 Governance Specialist Protocol v2.0  
+**Compliance**: ACGS-1 Governance Specialist Protocol v2.0
 
 ---
 
@@ -25,6 +26,7 @@ Policies exist in quantum superposition described by the state vector:
 ```
 
 Where:
+
 - `α, β, γ ∈ ℂ` are complex probability amplitudes
 - `|α|² + |β|² + |γ|² = 1` (normalization condition)
 - `|approved⟩, |rejected⟩, |pending⟩` are orthonormal basis states
@@ -38,6 +40,7 @@ The superposition vector σ represents the policy state:
 ```
 
 Where:
+
 - `w_i = |amplitude_i|²` (probability weights)
 - `∑w_i = 1` (probability conservation)
 - Initial state: `σ₀ = (⅓, ⅓, ⅓)` (maximum entropy superposition)
@@ -51,6 +54,7 @@ etag = HMAC_SHA256(K_const, policy_id)
 ```
 
 Where:
+
 - `K_const = "cdd01ef066bc6cf2"` (constitutional hash key)
 - `policy_id` is the unique policy identifier
 - `etag ∈ {0,1}²⁵⁶` (256-bit entanglement tag)
@@ -64,6 +68,7 @@ The Heisenberg-like uncertainty relation governs speed-accuracy trade-offs:
 ```
 
 Where:
+
 - `K` is the Heisenberg constant (empirically determined)
 - `Δ(accuracy)` is the accuracy uncertainty
 - `Δ(speed)` is the processing speed uncertainty
@@ -92,6 +97,7 @@ S = -∑ w_i log(w_i)
 ```
 
 Where:
+
 - `S = 0` for pure states (collapsed)
 - `S = log(3) ≈ 1.099` for maximum superposition
 
@@ -155,11 +161,13 @@ Registration → Superposition → Measurement → Collapse → Enforcement
 ### **Quantum State Manager**
 
 **Responsibilities**:
+
 - Maintain superposition vectors in Redis
 - Enforce normalization constraints
 - Handle state evolution and decoherence
 
 **Key Methods**:
+
 ```go
 func (qsm *QuantumStateManager) InitializeSuperposition(policyID string) error
 func (qsm *QuantumStateManager) UpdateWeights(policyID string, weights []float32) error
@@ -167,6 +175,7 @@ func (qsm *QuantumStateManager) GetQuantumState(policyID string) (*QuantumPolicy
 ```
 
 **Storage Format**:
+
 ```json
 {
   "policy_id": "policy-123",
@@ -186,15 +195,17 @@ func (qsm *QuantumStateManager) GetQuantumState(policyID string) (*QuantumPolicy
 ### **Observer Effect Engine**
 
 **Trigger Conditions**:
+
 1. Explicit stakeholder observation via `Observe()` RPC
 2. Automatic deadline expiration
 3. Force collapse via `Measure()` with `force_collapse=true`
 4. Administrative manual collapse
 
 **Collapse Algorithm**:
+
 ```go
 func (oee *ObserverEffectEngine) CollapseWaveFunction(
-    policy *QuantumPolicy, 
+    policy *QuantumPolicy,
     reason CollapseReason
 ) State {
     switch reason {
@@ -216,6 +227,7 @@ func (oee *ObserverEffectEngine) CollapseWaveFunction(
 ### **Constitutional Entanglement Layer**
 
 **Entanglement Generation**:
+
 ```go
 func GenerateEntanglementTag(policyID string) []byte {
     h := hmac.New(sha256.New, []byte(CONSTITUTIONAL_HASH))
@@ -225,6 +237,7 @@ func GenerateEntanglementTag(policyID string) []byte {
 ```
 
 **Verification Protocol**:
+
 ```go
 func VerifyEntanglement(policyID string, tag []byte) bool {
     expected := GenerateEntanglementTag(policyID)
@@ -233,6 +246,7 @@ func VerifyEntanglement(policyID string, tag []byte) bool {
 ```
 
 **Entanglement Properties**:
+
 - **Deterministic**: Same policy ID always generates same tag
 - **Cryptographically Secure**: HMAC-SHA256 with constitutional key
 - **Tamper-Evident**: Any modification breaks entanglement
@@ -242,13 +256,14 @@ func VerifyEntanglement(policyID string, tag []byte) bool {
 
 **Parameter Effects**:
 
-| λ Range | Accuracy Priority | Speed Priority | Use Case |
-|---------|------------------|----------------|----------|
-| [0.0, 0.3) | Low | High | Fast screening, bulk processing |
-| [0.3, 0.7] | Medium | Medium | Balanced operation |
-| (0.7, 1.0] | High | Low | Critical policies, thorough review |
+| λ Range    | Accuracy Priority | Speed Priority | Use Case                           |
+| ---------- | ----------------- | -------------- | ---------------------------------- |
+| [0.0, 0.3) | Low               | High           | Fast screening, bulk processing    |
+| [0.3, 0.7] | Medium            | Medium         | Balanced operation                 |
+| (0.7, 1.0] | High              | Low            | Critical policies, thorough review |
 
 **Heisenberg Constant Calculation**:
+
 ```go
 func CalculateHeisenbergConstant(latencyMs, accuracy float32) float32 {
     return latencyMs * accuracy
@@ -263,13 +278,13 @@ func CalculateHeisenbergConstant(latencyMs, accuracy float32) float32 {
 
 ### **Latency Requirements**
 
-| Operation | Target Latency | Maximum Latency | Percentile |
-|-----------|----------------|-----------------|------------|
-| Register | <1ms | 2ms | 95th |
-| Measure | <1.5ms | 2ms | 95th |
-| Observe | <1ms | 2ms | 95th |
-| SetUncertainty | <0.5ms | 1ms | 95th |
-| Total (QPE + PGC) | <25ms | 27ms | 95th |
+| Operation         | Target Latency | Maximum Latency | Percentile |
+| ----------------- | -------------- | --------------- | ---------- |
+| Register          | <1ms           | 2ms             | 95th       |
+| Measure           | <1.5ms         | 2ms             | 95th       |
+| Observe           | <1ms           | 2ms             | 95th       |
+| SetUncertainty    | <0.5ms         | 1ms             | 95th       |
+| Total (QPE + PGC) | <25ms          | 27ms            | 95th       |
 
 ### **Throughput Requirements**
 
@@ -317,12 +332,14 @@ func CalculateHeisenbergConstant(latencyMs, accuracy float32) float32 {
 ### **Unit Test Requirements**
 
 **Coverage Targets**:
+
 - **Code Coverage**: ≥80%
 - **Test Pass Rate**: ≥90%
 - **Performance Tests**: All latency targets validated
 - **Security Tests**: Entanglement verification comprehensive
 
 **Critical Test Cases**:
+
 1. `TestRegisterInitialWeights`: Verify σ = (⅓, ⅓, ⅓) initialization
 2. `TestDeterministicCollapseReproducibility`: Same policy ID → same result
 3. `TestLatencyBudget`: measure() ≤ 2ms on 90th percentile
@@ -335,6 +352,7 @@ func CalculateHeisenbergConstant(latencyMs, accuracy float32) float32 {
 ### **Integration Test Requirements**
 
 **End-to-End Workflows**:
+
 1. Register → Measure → PGC Evaluation
 2. Register → Observe → Immediate Collapse
 3. Register → Deadline Expiration → Auto Collapse
@@ -344,6 +362,7 @@ func CalculateHeisenbergConstant(latencyMs, accuracy float32) float32 {
 ### **Performance Test Requirements**
 
 **Benchmark Targets**:
+
 - **Register**: >5,000 ops/sec
 - **Measure**: >3,000 ops/sec
 - **Memory**: <30MB total usage
@@ -356,6 +375,7 @@ func CalculateHeisenbergConstant(latencyMs, accuracy float32) float32 {
 ### **Prometheus Metrics**
 
 **Core Metrics**:
+
 ```
 qpe_measure_latency_ms{policy_id, state}
 qpe_state_transitions_total{policy_id, from_state, to_state}
@@ -367,6 +387,7 @@ qpe_entanglement_failures_total
 ```
 
 **Alerting Thresholds**:
+
 - Latency >2ms for 5 minutes
 - Entanglement failure rate >1%
 - Redis connection failures
@@ -375,6 +396,7 @@ qpe_entanglement_failures_total
 ### **Health Check Specifications**
 
 **Health Indicators**:
+
 1. Redis connectivity and response time
 2. Entanglement tag generation and verification
 3. Quantum state normalization validation
@@ -382,6 +404,7 @@ qpe_entanglement_failures_total
 5. Memory usage within limits
 
 **Health Check Response**:
+
 ```json
 {
   "healthy": true,
@@ -425,18 +448,22 @@ qpe_entanglement_failures_total
 ## 📚 **References**
 
 ### **Quantum Mechanics**
-- Nielsen, M. A., & Chuang, I. L. (2010). *Quantum Computation and Quantum Information*
-- Griffiths, D. J. (2016). *Introduction to Quantum Mechanics*
+
+- Nielsen, M. A., & Chuang, I. L. (2010). _Quantum Computation and Quantum Information_
+- Griffiths, D. J. (2016). _Introduction to Quantum Mechanics_
 
 ### **Cryptography**
-- Katz, J., & Lindell, Y. (2014). *Introduction to Modern Cryptography*
+
+- Katz, J., & Lindell, Y. (2014). _Introduction to Modern Cryptography_
 - RFC 2104: HMAC: Keyed-Hashing for Message Authentication
 
 ### **Distributed Systems**
-- Kleppmann, M. (2017). *Designing Data-Intensive Applications*
-- Tanenbaum, A. S., & Van Steen, M. (2016). *Distributed Systems*
+
+- Kleppmann, M. (2017). _Designing Data-Intensive Applications_
+- Tanenbaum, A. S., & Van Steen, M. (2016). _Distributed Systems_
 
 ### **ACGS-1 Documentation**
+
 - ACGS-1 Governance Specialist Protocol v2.0
 - Constitutional Governance Framework
 - Quantumagi Solana Integration Specification

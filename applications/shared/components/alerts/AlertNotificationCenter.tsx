@@ -1,6 +1,6 @@
 /**
  * Alert Notification Center Component
- * 
+ *
  * Real-time alert notifications and management interface for ACGS services.
  */
 
@@ -72,16 +72,12 @@ const AlertNotification: React.FC<{
               )}
             </div>
             <p className="mt-1 text-sm">{alert.message}</p>
-            <div className="mt-2 text-xs opacity-75">
-              {formatTimestamp(alert.timestamp)}
-            </div>
-            
+            <div className="mt-2 text-xs opacity-75">{formatTimestamp(alert.timestamp)}</div>
+
             {isExpanded && alert.metadata && (
               <div className="mt-3 p-2 bg-white bg-opacity-30 rounded text-xs">
                 <div className="font-medium mb-1">Details:</div>
-                <pre className="whitespace-pre-wrap">
-                  {JSON.stringify(alert.metadata, null, 2)}
-                </pre>
+                <pre className="whitespace-pre-wrap">{JSON.stringify(alert.metadata, null, 2)}</pre>
               </div>
             )}
 
@@ -112,8 +108,16 @@ const AlertNotification: React.FC<{
             className="p-1 hover:bg-white hover:bg-opacity-30 rounded"
             title="Toggle details"
           >
-            <svg className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+            <svg
+              className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
             </svg>
           </button>
 
@@ -143,7 +147,11 @@ const AlertNotification: React.FC<{
             title="Dismiss alert"
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
             </svg>
           </button>
         </div>
@@ -151,8 +159,10 @@ const AlertNotification: React.FC<{
 
       {alert.acknowledged && (
         <div className="mt-2 text-xs opacity-75">
-          ✓ Acknowledged {alert.metadata?.acknowledgedBy ? `by ${alert.metadata.acknowledgedBy}` : ''}
-          {alert.metadata?.acknowledgedAt && ` at ${formatTimestamp(alert.metadata.acknowledgedAt)}`}
+          ✓ Acknowledged{' '}
+          {alert.metadata?.acknowledgedBy ? `by ${alert.metadata.acknowledgedBy}` : ''}
+          {alert.metadata?.acknowledgedAt &&
+            ` at ${formatTimestamp(alert.metadata.acknowledgedAt)}`}
         </div>
       )}
 
@@ -201,12 +211,7 @@ export const AlertNotificationCenter: React.FC<{
   maxAlerts?: number;
   autoRefresh?: boolean;
   refreshInterval?: number;
-}> = ({ 
-  showStats = true, 
-  maxAlerts = 50, 
-  autoRefresh = true, 
-  refreshInterval = 30000 
-}) => {
+}> = ({ showStats = true, maxAlerts = 50, autoRefresh = true, refreshInterval = 30000 }) => {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [stats, setStats] = useState<any>({});
   const [filter, setFilter] = useState<{
@@ -241,7 +246,7 @@ export const AlertNotificationCenter: React.FC<{
 
     const filteredAlerts = alertingSystem.getAlerts(filter);
     setAlerts(filteredAlerts.slice(0, maxAlerts));
-    
+
     if (showStats) {
       setStats(alertingSystem.getAlertStats());
     }
@@ -270,22 +275,31 @@ export const AlertNotificationCenter: React.FC<{
   }, [loadData]);
 
   // Alert actions
-  const handleAcknowledge = useCallback((alertId: string) => {
-    alertingSystem.acknowledgeAlert(alertId, 'User');
-    loadData();
-  }, [loadData]);
+  const handleAcknowledge = useCallback(
+    (alertId: string) => {
+      alertingSystem.acknowledgeAlert(alertId, 'User');
+      loadData();
+    },
+    [loadData]
+  );
 
-  const handleResolve = useCallback((alertId: string) => {
-    const resolution = prompt('Enter resolution details (optional):');
-    alertingSystem.resolveAlert(alertId, 'User', resolution || undefined);
-    loadData();
-  }, [loadData]);
+  const handleResolve = useCallback(
+    (alertId: string) => {
+      const resolution = prompt('Enter resolution details (optional):');
+      alertingSystem.resolveAlert(alertId, 'User', resolution || undefined);
+      loadData();
+    },
+    [loadData]
+  );
 
-  const handleDismiss = useCallback((alertId: string) => {
-    // For UI purposes, we'll just acknowledge the alert
-    alertingSystem.acknowledgeAlert(alertId, 'User');
-    loadData();
-  }, [loadData]);
+  const handleDismiss = useCallback(
+    (alertId: string) => {
+      // For UI purposes, we'll just acknowledge the alert
+      alertingSystem.acknowledgeAlert(alertId, 'User');
+      loadData();
+    },
+    [loadData]
+  );
 
   if (!isInitialized) {
     return (
@@ -323,7 +337,9 @@ export const AlertNotificationCenter: React.FC<{
           <div className="flex flex-wrap gap-4">
             <select
               value={filter.severity || ''}
-              onChange={(e) => setFilter({ ...filter, severity: e.target.value as AlertSeverity || undefined })}
+              onChange={e =>
+                setFilter({ ...filter, severity: (e.target.value as AlertSeverity) || undefined })
+              }
               className="px-3 py-2 border rounded-md"
             >
               <option value="">All Severities</option>
@@ -336,7 +352,12 @@ export const AlertNotificationCenter: React.FC<{
 
             <select
               value={filter.resolved === undefined ? '' : filter.resolved.toString()}
-              onChange={(e) => setFilter({ ...filter, resolved: e.target.value === '' ? undefined : e.target.value === 'true' })}
+              onChange={e =>
+                setFilter({
+                  ...filter,
+                  resolved: e.target.value === '' ? undefined : e.target.value === 'true'
+                })
+              }
               className="px-3 py-2 border rounded-md"
             >
               <option value="">All Statuses</option>
@@ -346,7 +367,12 @@ export const AlertNotificationCenter: React.FC<{
 
             <select
               value={filter.acknowledged === undefined ? '' : filter.acknowledged.toString()}
-              onChange={(e) => setFilter({ ...filter, acknowledged: e.target.value === '' ? undefined : e.target.value === 'true' })}
+              onChange={e =>
+                setFilter({
+                  ...filter,
+                  acknowledged: e.target.value === '' ? undefined : e.target.value === 'true'
+                })
+              }
               className="px-3 py-2 border rounded-md"
             >
               <option value="">All Acknowledgments</option>
@@ -361,8 +387,18 @@ export const AlertNotificationCenter: React.FC<{
           {alerts.length === 0 ? (
             <div className="bg-white p-8 rounded-lg shadow-sm border text-center">
               <div className="text-gray-500">
-                <svg className="w-12 h-12 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-12 h-12 mx-auto mb-4 opacity-50"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 <p className="text-lg font-medium">No alerts found</p>
                 <p className="text-sm mt-1">All systems are operating normally</p>

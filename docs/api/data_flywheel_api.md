@@ -10,6 +10,7 @@ The Data Flywheel Integration provides NVIDIA AI Blueprints Data Flywheel capabi
 ## Authentication
 
 All endpoints require JWT authentication with appropriate role permissions:
+
 - **Admin:** Full access to all operations
 - **Policy Manager:** Access to governance optimization jobs
 - **Auditor:** Read-only access to compliance data
@@ -20,9 +21,11 @@ All endpoints require JWT authentication with appropriate role permissions:
 ### Health Check
 
 #### GET `/health`
+
 Enhanced health check with ACGS-1 integration status.
 
 **Response:**
+
 ```json
 {
   "status": "healthy",
@@ -46,9 +49,11 @@ Enhanced health check with ACGS-1 integration status.
 ### Constitutional Governance
 
 #### GET `/constitutional/health`
+
 Check health of ACGS-1 services integration.
 
 **Response:**
+
 ```json
 {
   "overall_status": "healthy",
@@ -67,9 +72,11 @@ Check health of ACGS-1 services integration.
 ```
 
 #### GET `/constitutional/workloads`
+
 Get available governance workloads for optimization.
 
 **Response:**
+
 ```json
 {
   "workload_mapping": {
@@ -98,9 +105,11 @@ Get available governance workloads for optimization.
 ```
 
 #### POST `/constitutional/jobs`
+
 Create a new constitutional governance optimization job.
 
 **Request Body:**
+
 ```json
 {
   "workload_id": "policy_synthesis_demo_001",
@@ -117,6 +126,7 @@ Create a new constitutional governance optimization job.
 ```
 
 **Response:**
+
 ```json
 {
   "id": "demo_job_20250611_155206",
@@ -126,9 +136,11 @@ Create a new constitutional governance optimization job.
 ```
 
 #### GET `/constitutional/compliance/{job_id}`
+
 Get compliance validation results for a specific job.
 
 **Response:**
+
 ```json
 {
   "job_id": "demo_job_20250611_155206",
@@ -141,17 +153,16 @@ Get compliance validation results for a specific job.
     "rule_of_law": 0.94,
     "human_rights": 0.96
   },
-  "recommendations": [
-    "Enhance transparency mechanisms",
-    "Strengthen accountability measures"
-  ]
+  "recommendations": ["Enhance transparency mechanisms", "Strengthen accountability measures"]
 }
 ```
 
 #### POST `/constitutional/validate`
+
 Manual constitutional compliance validation.
 
 **Request Body:**
+
 ```json
 {
   "model_output": "This policy promotes democratic participation through transparent voting mechanisms.",
@@ -160,6 +171,7 @@ Manual constitutional compliance validation.
 ```
 
 **Response:**
+
 ```json
 {
   "validation_id": "val_20250611_155300",
@@ -182,9 +194,11 @@ Manual constitutional compliance validation.
 ```
 
 #### POST `/constitutional/traffic/collect`
+
 Collect governance traffic for analysis and optimization.
 
 **Request Body:**
+
 ```json
 {
   "service_name": "gs_service",
@@ -206,6 +220,7 @@ Collect governance traffic for analysis and optimization.
 ```
 
 **Response:**
+
 ```json
 {
   "collection_id": "traffic_20250611_155300",
@@ -217,9 +232,11 @@ Collect governance traffic for analysis and optimization.
 ### Monitoring and Metrics
 
 #### GET `/constitutional/metrics/{job_id}`
+
 Get detailed governance metrics for a specific job.
 
 **Response:**
+
 ```json
 {
   "job_id": "demo_job_20250611_155206",
@@ -333,23 +350,23 @@ print(f"Job created: {job_result['id']}")
 ```javascript
 const createGovernanceJob = async () => {
   const jobData = {
-    workload_id: "policy_optimization_001",
-    workload_type: "policy_synthesis",
-    optimization_target: "cost_reduction",
+    workload_id: 'policy_optimization_001',
+    workload_type: 'policy_synthesis',
+    optimization_target: 'cost_reduction',
     constitutional_requirements: {
       democratic_participation: true,
       transparency: true,
-      accountability: true
-    }
+      accountability: true,
+    },
   };
 
-  const response = await fetch("http://localhost:8010/constitutional/jobs", {
-    method: "POST",
+  const response = await fetch('http://localhost:8010/constitutional/jobs', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer YOUR_JWT_TOKEN"
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer YOUR_JWT_TOKEN',
     },
-    body: JSON.stringify(jobData)
+    body: JSON.stringify(jobData),
   });
 
   const result = await response.json();

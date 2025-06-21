@@ -28,6 +28,7 @@ Returns the current health status of the Constitutional AI Service.
 **Authentication**: Not required
 
 **Response (200 OK)**:
+
 ```json
 {
   "status": "healthy",
@@ -56,6 +57,7 @@ Performs comprehensive constitutional analysis on provided text or policy conten
 **Authentication**: Required
 
 **Request Body**:
+
 ```json
 {
   "text": "Policy or document text to analyze",
@@ -70,6 +72,7 @@ Performs comprehensive constitutional analysis on provided text or policy conten
 ```
 
 **Response (200 OK)**:
+
 ```json
 {
   "status": "success",
@@ -77,8 +80,8 @@ Performs comprehensive constitutional analysis on provided text or policy conten
     "analysis_id": "analysis_123456",
     "overall_score": 0.85,
     "principle_scores": {
-      "transparency": 0.90,
-      "fairness": 0.80,
+      "transparency": 0.9,
+      "fairness": 0.8,
       "accountability": 0.85
     },
     "detailed_analysis": {
@@ -86,13 +89,8 @@ Performs comprehensive constitutional analysis on provided text or policy conten
         "Clear language and accessible terminology",
         "Well-defined accountability mechanisms"
       ],
-      "concerns": [
-        "Limited transparency in decision-making process"
-      ],
-      "recommendations": [
-        "Add public consultation requirements",
-        "Include appeal process details"
-      ]
+      "concerns": ["Limited transparency in decision-making process"],
+      "recommendations": ["Add public consultation requirements", "Include appeal process details"]
     },
     "compliance_status": "compliant_with_recommendations",
     "confidence_score": 0.92
@@ -111,6 +109,7 @@ Validates a policy against constitutional principles and legal requirements.
 **Authentication**: Required
 
 **Request Body**:
+
 ```json
 {
   "policy": {
@@ -125,6 +124,7 @@ Validates a policy against constitutional principles and legal requirements.
 ```
 
 **Response (200 OK)**:
+
 ```json
 {
   "status": "success",
@@ -135,7 +135,7 @@ Validates a policy against constitutional principles and legal requirements.
     "rule_results": {
       "constitutional_compliance": {
         "passed": true,
-        "score": 0.90,
+        "score": 0.9,
         "details": "Policy aligns with constitutional privacy rights"
       },
       "legal_consistency": {
@@ -150,10 +150,7 @@ Validates a policy against constitutional principles and legal requirements.
       }
     },
     "issues": [],
-    "recommendations": [
-      "Consider adding enforcement mechanisms",
-      "Clarify data retention policies"
-    ]
+    "recommendations": ["Consider adding enforcement mechanisms", "Clarify data retention policies"]
   },
   "timestamp": "2024-06-20T10:30:00Z",
   "request_id": "req_789012"
@@ -169,10 +166,12 @@ Retrieves the list of constitutional principles used for analysis.
 **Authentication**: Required
 
 **Query Parameters**:
+
 - `category` (optional): Filter by principle category
 - `active_only` (optional): Return only active principles (default: true)
 
 **Response (200 OK)**:
+
 ```json
 {
   "status": "success",
@@ -222,19 +221,17 @@ Performs a quick compliance check against specific constitutional requirements.
 **Authentication**: Required
 
 **Request Body**:
+
 ```json
 {
   "content": "Content to check for compliance",
-  "requirements": [
-    "due_process",
-    "equal_protection",
-    "freedom_of_speech"
-  ],
+  "requirements": ["due_process", "equal_protection", "freedom_of_speech"],
   "check_type": "quick"
 }
 ```
 
 **Response (200 OK)**:
+
 ```json
 {
   "status": "success",
@@ -245,7 +242,7 @@ Performs a quick compliance check against specific constitutional requirements.
     "requirement_results": {
       "due_process": {
         "compliant": true,
-        "score": 0.90,
+        "score": 0.9,
         "evidence": ["Clear procedural steps outlined", "Appeal process defined"]
       },
       "equal_protection": {
@@ -270,6 +267,7 @@ Performs a quick compliance check against specific constitutional requirements.
 ## Error Responses
 
 ### 400 Bad Request
+
 ```json
 {
   "status": "error",
@@ -287,6 +285,7 @@ Performs a quick compliance check against specific constitutional requirements.
 ```
 
 ### 401 Unauthorized
+
 ```json
 {
   "status": "error",
@@ -300,6 +299,7 @@ Performs a quick compliance check against specific constitutional requirements.
 ```
 
 ### 500 Internal Server Error
+
 ```json
 {
   "status": "error",
@@ -320,6 +320,7 @@ Performs a quick compliance check against specific constitutional requirements.
 - **Bulk operations**: 5 requests per minute per user
 
 Rate limit headers are included in all responses:
+
 ```http
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 95
@@ -329,6 +330,7 @@ X-RateLimit-Reset: 1640995200
 ## Examples
 
 ### Python Client Example
+
 ```python
 import httpx
 import asyncio
@@ -337,7 +339,7 @@ class ConstitutionalAIClient:
     def __init__(self, base_url="http://localhost:8001", token=None):
         self.base_url = base_url
         self.headers = {"Authorization": f"Bearer {token}"} if token else {}
-    
+
     async def analyze_text(self, text, principles=None):
         async with httpx.AsyncClient() as client:
             response = await client.post(
@@ -350,7 +352,7 @@ class ConstitutionalAIClient:
                 headers=self.headers
             )
             return response.json()
-    
+
     async def validate_policy(self, policy_content):
         async with httpx.AsyncClient() as client:
             response = await client.post(
@@ -373,6 +375,7 @@ asyncio.run(main())
 ```
 
 ### cURL Examples
+
 ```bash
 # Health check
 curl http://localhost:8001/health
@@ -413,6 +416,7 @@ Returns Prometheus-formatted metrics for monitoring.
 **Authentication**: Not required
 
 Key metrics include:
+
 - `constitutional_ai_requests_total`: Total number of requests
 - `constitutional_ai_analysis_duration_seconds`: Analysis processing time
 - `constitutional_ai_model_health`: AI model health status

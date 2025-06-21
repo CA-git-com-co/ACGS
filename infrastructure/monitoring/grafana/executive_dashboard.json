@@ -15,7 +15,7 @@
         "id": 1,
         "title": "System Health Overview",
         "type": "stat",
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
         "targets": [
           {
             "expr": "avg(acgs_service_health_status)",
@@ -25,12 +25,12 @@
         ],
         "fieldConfig": {
           "defaults": {
-            "color": {"mode": "thresholds"},
+            "color": { "mode": "thresholds" },
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "yellow", "value": 0.8},
-                {"color": "green", "value": 0.95}
+                { "color": "red", "value": 0 },
+                { "color": "yellow", "value": 0.8 },
+                { "color": "green", "value": 0.95 }
               ]
             },
             "unit": "percentunit",
@@ -49,7 +49,7 @@
         "id": 2,
         "title": "Active Users",
         "type": "stat",
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
         "targets": [
           {
             "expr": "sum(acgs_service_active_connections)",
@@ -59,12 +59,12 @@
         ],
         "fieldConfig": {
           "defaults": {
-            "color": {"mode": "thresholds"},
+            "color": { "mode": "thresholds" },
             "thresholds": {
               "steps": [
-                {"color": "green", "value": 0},
-                {"color": "yellow", "value": 800},
-                {"color": "red", "value": 1000}
+                { "color": "green", "value": 0 },
+                { "color": "yellow", "value": 800 },
+                { "color": "red", "value": 1000 }
               ]
             },
             "unit": "short"
@@ -75,7 +75,7 @@
         "id": 3,
         "title": "Response Time Trends",
         "type": "timeseries",
-        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8},
+        "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
         "targets": [
           {
             "expr": "histogram_quantile(0.95, rate(acgs_service_request_duration_seconds_bucket[5m]))",
@@ -90,13 +90,13 @@
         ],
         "fieldConfig": {
           "defaults": {
-            "color": {"mode": "palette-classic"},
+            "color": { "mode": "palette-classic" },
             "unit": "s",
             "thresholds": {
               "steps": [
-                {"color": "green", "value": 0},
-                {"color": "yellow", "value": 0.5},
-                {"color": "red", "value": 1.0}
+                { "color": "green", "value": 0 },
+                { "color": "yellow", "value": 0.5 },
+                { "color": "red", "value": 1.0 }
               ]
             }
           }
@@ -106,7 +106,7 @@
         "id": 4,
         "title": "Governance Actions per Hour",
         "type": "stat",
-        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 16},
+        "gridPos": { "h": 8, "w": 8, "x": 0, "y": 16 },
         "targets": [
           {
             "expr": "rate(acgs_governance_actions_total[1h]) * 3600",
@@ -116,12 +116,12 @@
         ],
         "fieldConfig": {
           "defaults": {
-            "color": {"mode": "thresholds"},
+            "color": { "mode": "thresholds" },
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "yellow", "value": 100},
-                {"color": "green", "value": 500}
+                { "color": "red", "value": 0 },
+                { "color": "yellow", "value": 100 },
+                { "color": "green", "value": 500 }
               ]
             },
             "unit": "short"
@@ -132,7 +132,7 @@
         "id": 5,
         "title": "Constitutional Compliance Score",
         "type": "gauge",
-        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 16},
+        "gridPos": { "h": 8, "w": 8, "x": 8, "y": 16 },
         "targets": [
           {
             "expr": "avg(acgs_constitutional_compliance_score)",
@@ -142,12 +142,12 @@
         ],
         "fieldConfig": {
           "defaults": {
-            "color": {"mode": "thresholds"},
+            "color": { "mode": "thresholds" },
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "yellow", "value": 0.8},
-                {"color": "green", "value": 0.95}
+                { "color": "red", "value": 0 },
+                { "color": "yellow", "value": 0.8 },
+                { "color": "green", "value": 0.95 }
               ]
             },
             "unit": "percentunit",
@@ -164,7 +164,7 @@
         "id": 6,
         "title": "Security Events",
         "type": "stat",
-        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 16},
+        "gridPos": { "h": 8, "w": 8, "x": 16, "y": 16 },
         "targets": [
           {
             "expr": "sum(rate(acgs_security_events_total[1h])) * 3600",
@@ -174,12 +174,12 @@
         ],
         "fieldConfig": {
           "defaults": {
-            "color": {"mode": "thresholds"},
+            "color": { "mode": "thresholds" },
             "thresholds": {
               "steps": [
-                {"color": "green", "value": 0},
-                {"color": "yellow", "value": 10},
-                {"color": "red", "value": 50}
+                { "color": "green", "value": 0 },
+                { "color": "yellow", "value": 10 },
+                { "color": "red", "value": 50 }
               ]
             },
             "unit": "short"
@@ -190,7 +190,7 @@
         "id": 7,
         "title": "Service Availability",
         "type": "table",
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24},
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
         "targets": [
           {
             "expr": "acgs_service_health_status",
@@ -201,16 +201,16 @@
         ],
         "fieldConfig": {
           "defaults": {
-            "color": {"mode": "thresholds"},
+            "color": { "mode": "thresholds" },
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "green", "value": 1}
+                { "color": "red", "value": 0 },
+                { "color": "green", "value": 1 }
               ]
             },
             "mappings": [
-              {"options": {"0": {"text": "Down"}}, "type": "value"},
-              {"options": {"1": {"text": "Up"}}, "type": "value"}
+              { "options": { "0": { "text": "Down" } }, "type": "value" },
+              { "options": { "1": { "text": "Up" } }, "type": "value" }
             ]
           }
         },
@@ -221,7 +221,7 @@
           {
             "id": "organize",
             "options": {
-              "excludeByName": {"Time": true, "__name__": true},
+              "excludeByName": { "Time": true, "__name__": true },
               "renameByName": {
                 "service": "Service",
                 "Value": "Status"
@@ -234,7 +234,7 @@
         "id": 8,
         "title": "Cost Analysis (SOL)",
         "type": "timeseries",
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24},
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
         "targets": [
           {
             "expr": "rate(acgs_blockchain_transaction_cost_sol_sum[5m])",
@@ -244,13 +244,13 @@
         ],
         "fieldConfig": {
           "defaults": {
-            "color": {"mode": "palette-classic"},
+            "color": { "mode": "palette-classic" },
             "unit": "short",
             "thresholds": {
               "steps": [
-                {"color": "green", "value": 0},
-                {"color": "yellow", "value": 0.01},
-                {"color": "red", "value": 0.05}
+                { "color": "green", "value": 0 },
+                { "color": "yellow", "value": 0.01 },
+                { "color": "red", "value": 0.05 }
               ]
             }
           }
@@ -260,7 +260,7 @@
         "id": 9,
         "title": "Error Rate by Service",
         "type": "timeseries",
-        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 32},
+        "gridPos": { "h": 8, "w": 24, "x": 0, "y": 32 },
         "targets": [
           {
             "expr": "rate(acgs_service_requests_total{status_code=~\"5..\"}[5m]) / rate(acgs_service_requests_total[5m])",
@@ -270,13 +270,13 @@
         ],
         "fieldConfig": {
           "defaults": {
-            "color": {"mode": "palette-classic"},
+            "color": { "mode": "palette-classic" },
             "unit": "percentunit",
             "thresholds": {
               "steps": [
-                {"color": "green", "value": 0},
-                {"color": "yellow", "value": 0.01},
-                {"color": "red", "value": 0.05}
+                { "color": "green", "value": 0 },
+                { "color": "yellow", "value": 0.01 },
+                { "color": "red", "value": 0.05 }
               ]
             }
           }
@@ -286,7 +286,7 @@
         "id": 10,
         "title": "Resource Utilization",
         "type": "timeseries",
-        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 40},
+        "gridPos": { "h": 8, "w": 24, "x": 0, "y": 40 },
         "targets": [
           {
             "expr": "avg(acgs_cpu_usage_percent) by (service)",
@@ -301,7 +301,7 @@
         ],
         "fieldConfig": {
           "defaults": {
-            "color": {"mode": "palette-classic"},
+            "color": { "mode": "palette-classic" },
             "unit": "percent"
           }
         }

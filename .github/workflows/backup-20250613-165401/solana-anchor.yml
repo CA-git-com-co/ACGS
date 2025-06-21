@@ -2,19 +2,19 @@ name: Solana Anchor Programs CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
     paths:
       - 'blockchain/**'
       - 'quantumagi_core/**'
       - '.github/workflows/solana-anchor.yml'
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
     paths:
       - 'blockchain/**'
       - 'quantumagi_core/**'
       - '.github/workflows/solana-anchor.yml'
   schedule:
-    - cron: '0 6 * * *'  # Daily at 6 AM for comprehensive blockchain testing
+    - cron: '0 6 * * *' # Daily at 6 AM for comprehensive blockchain testing
 
 permissions:
   contents: read
@@ -286,7 +286,7 @@ jobs:
         if: steps.check_project.outputs.exists == 'true'
         working-directory: ${{ matrix.project }}
         env:
-          RUSTFLAGS: "-Dwarnings -Dclippy::all -Dclippy::pedantic"
+          RUSTFLAGS: '-Dwarnings -Dclippy::all -Dclippy::pedantic'
         run: |
           solana config set --url localhost
           anchor build
@@ -299,10 +299,10 @@ jobs:
           solana-test-validator --reset --quiet &
           VALIDATOR_PID=$!
           sleep 15
-          
+
           # Wait for validator to be ready
           timeout 30 bash -c 'until solana cluster-version; do sleep 1; done'
-          
+
           # Run comprehensive test suite
           echo "Running comprehensive test suite..."
           if [ -f scripts/run_comprehensive_tests.sh ]; then
@@ -311,10 +311,10 @@ jobs:
           else
             anchor test --skip-local-validator || TEST_RESULT=$?
           fi
-          
+
           # Cleanup
           kill $VALIDATOR_PID || true
-          
+
           # Exit with test result
           exit ${TEST_RESULT:-0}
 

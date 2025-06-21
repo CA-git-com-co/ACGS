@@ -1,32 +1,29 @@
 module.exports = {
   // Test environment
   testEnvironment: 'jsdom',
-  
+
   // Setup files
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
-  
+
   // Module file extensions
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
-  
+
   // Transform files
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest',
     '^.+\\.(js|jsx)$': 'babel-jest'
   },
-  
+
   // Module name mapping for absolute imports and assets
   moduleNameMapping: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': 'jest-transform-stub'
   },
-  
+
   // Test match patterns
-  testMatch: [
-    '<rootDir>/src/**/__tests__/**/*.(ts|tsx|js|jsx)',
-    '<rootDir>/src/**/*.(test|spec).(ts|tsx|js|jsx)'
-  ],
-  
+  testMatch: ['<rootDir>/src/**/__tests__/**/*.(ts|tsx|js|jsx)', '<rootDir>/src/**/*.(test|spec).(ts|tsx|js|jsx)'],
+
   // Ignore patterns
   testPathIgnorePatterns: [
     '<rootDir>/node_modules/',
@@ -34,7 +31,7 @@ module.exports = {
     '<rootDir>/build/',
     '<rootDir>/storybook-static/'
   ],
-  
+
   // Coverage configuration
   collectCoverage: false, // Enable with --coverage flag
   collectCoverageFrom: [
@@ -46,7 +43,7 @@ module.exports = {
     '!src/index.ts',
     '!src/setupTests.ts'
   ],
-  
+
   // Coverage thresholds (ACGS quality standards)
   coverageThreshold: {
     global: {
@@ -75,22 +72,16 @@ module.exports = {
       statements: 80
     }
   },
-  
+
   // Coverage reporters
-  coverageReporters: [
-    'text',
-    'text-summary',
-    'html',
-    'lcov',
-    'json'
-  ],
-  
+  coverageReporters: ['text', 'text-summary', 'html', 'lcov', 'json'],
+
   // Coverage directory
   coverageDirectory: 'coverage',
-  
+
   // Test timeout
   testTimeout: 10000,
-  
+
   // Globals for TypeScript
   globals: {
     'ts-jest': {
@@ -99,7 +90,7 @@ module.exports = {
       }
     }
   },
-  
+
   // Mock modules
   moduleNameMapping: {
     // Mock ACGS service URLs for testing
@@ -110,35 +101,30 @@ module.exports = {
     '^@/utils/(.*)$': '<rootDir>/src/utils/$1',
     '^@/contexts/(.*)$': '<rootDir>/src/contexts/$1'
   },
-  
+
   // Clear mocks between tests
   clearMocks: true,
-  
+
   // Restore mocks after each test
   restoreMocks: true,
-  
+
   // Verbose output for debugging
   verbose: false,
-  
+
   // Error on deprecated features
   errorOnDeprecated: true,
-  
+
   // Notify mode for watch
   notify: false,
-  
+
   // Watch plugins
-  watchPlugins: [
-    'jest-watch-typeahead/filename',
-    'jest-watch-typeahead/testname'
-  ],
-  
+  watchPlugins: ['jest-watch-typeahead/filename', 'jest-watch-typeahead/testname'],
+
   // Custom test environment options
   testEnvironmentOptions: {
     url: 'http://localhost:3000'
   },
-  
+
   // Transform ignore patterns for node_modules
-  transformIgnorePatterns: [
-    'node_modules/(?!(axios|@testing-library)/)'
-  ]
+  transformIgnorePatterns: ['node_modules/(?!(axios|@testing-library)/)']
 };

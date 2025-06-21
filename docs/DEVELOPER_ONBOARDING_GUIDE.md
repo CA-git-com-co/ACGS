@@ -5,6 +5,7 @@
 **Constitution Hash**: cdd01ef066bc6cf2
 
 ## Table of Contents
+
 1. [Welcome to ACGS-1](#welcome-to-acgs-1)
 2. [Development Environment Setup](#development-environment-setup)
 3. [Architecture Overview](#architecture-overview)
@@ -21,6 +22,7 @@
 ACGS-1 (AI Compliance Governance System) is a production-grade constitutional governance platform that combines AI-driven policy synthesis with blockchain-based constitutional compliance. Our system ensures democratic governance through technological innovation while maintaining constitutional integrity.
 
 ### Core Principles
+
 - **Constitutional Compliance**: All actions must comply with Constitution Hash `cdd01ef066bc6cf2`
 - **Democratic Governance**: Multi-signature validation and transparent decision-making
 - **Performance Excellence**: <500ms response times, >99.5% uptime
@@ -28,6 +30,7 @@ ACGS-1 (AI Compliance Governance System) is a production-grade constitutional go
 - **Open Source**: Transparent, auditable, and community-driven development
 
 ### System Overview
+
 - **8 Core Services**: Auth (8000), AC (8001), Integrity (8002), FV (8003), GS (8004), PGC (8005), EC (8006), DGM (8007)
 - **5 Governance Workflows**: Policy Creation, Constitutional Compliance, Policy Enforcement, WINA Oversight, Audit/Transparency
 - **Blockchain Integration**: Quantumagi Solana programs for immutable governance
@@ -37,6 +40,7 @@ ACGS-1 (AI Compliance Governance System) is a production-grade constitutional go
 ## Development Environment Setup
 
 ### Prerequisites
+
 ```bash
 # System Requirements
 - Ubuntu 20.04+ or macOS 12+
@@ -52,6 +56,7 @@ ACGS-1 (AI Compliance Governance System) is a production-grade constitutional go
 ```
 
 ### Quick Start
+
 ```bash
 # 1. Clone repository
 git clone https://github.com/CA-git-com-co/ACGS.git
@@ -108,6 +113,7 @@ python3 scripts/comprehensive_health_check.py
 ### Development Tools Setup
 
 **IDE Configuration**:
+
 ```bash
 # VS Code extensions
 code --install-extension ms-python.python
@@ -117,6 +123,7 @@ code --install-extension ms-vscode.vscode-typescript-next
 ```
 
 **Git Hooks**:
+
 ```bash
 # Install pre-commit hooks
 pip install pre-commit
@@ -130,6 +137,7 @@ git config user.email "your.email@example.com"
 ## Architecture Overview
 
 ### Service Architecture
+
 ```
 Frontend (React) → API Gateway (HAProxy) → Core Services → Infrastructure
                                         ↓
@@ -148,6 +156,7 @@ Frontend (React) → API Gateway (HAProxy) → Core Services → Infrastructure
 **DGM Service (8007)**: Darwin Gödel Machine, self-evolving AI governance
 
 ### Data Flow
+
 1. **User Request** → Auth Service (authentication)
 2. **Authenticated Request** → Target Service
 3. **Constitutional Validation** → PGC Service
@@ -158,6 +167,7 @@ Frontend (React) → API Gateway (HAProxy) → Core Services → Infrastructure
 8. **Blockchain Recording** → Quantumagi Programs
 
 ### DGM Event-Driven Architecture
+
 ```
 NATS Message Broker ← → DGM Service (8007)
         ↓                    ↓
@@ -172,6 +182,7 @@ Validation          Evolution Loops
 ## Coding Standards
 
 ### Python Standards
+
 ```python
 # File structure
 """
@@ -189,25 +200,25 @@ DEFAULT_TIMEOUT = 30
 
 class ServiceManager:
     """Manages ACGS service lifecycle."""
-    
+
     def __init__(self, config: Dict[str, Any]):
         """Initialize service manager.
-        
+
         Args:
             config: Service configuration dictionary
         """
         self.config = config
         self._services: List[Service] = []
-    
+
     async def start_service(self, service_name: str) -> bool:
         """Start a specific service.
-        
+
         Args:
             service_name: Name of service to start
-            
+
         Returns:
             True if service started successfully
-            
+
         Raises:
             ServiceError: If service fails to start
         """
@@ -220,6 +231,7 @@ class ServiceManager:
 ```
 
 ### TypeScript/React Standards
+
 ```typescript
 // Component structure
 import React, { useState, useEffect } from 'react';
@@ -244,18 +256,18 @@ export const PolicyCreation: React.FC<PolicyCreationProps> = ({
 }) => {
   const [policy, setPolicy] = useState<Partial<Policy>>(initialData || {});
   const [isValidating, setIsValidating] = useState(false);
-  
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsValidating(true);
-    
+
     try {
       // Validate constitutional compliance
       const validation = await validateConstitutionalCompliance(policy);
       if (!validation.compliant) {
         throw new Error('Policy violates constitutional principles');
       }
-      
+
       // Create policy
       const createdPolicy = await createPolicy(policy);
       onPolicyCreated(createdPolicy);
@@ -265,7 +277,7 @@ export const PolicyCreation: React.FC<PolicyCreationProps> = ({
       setIsValidating(false);
     }
   };
-  
+
   return (
     <form onSubmit={handleSubmit} className="policy-creation">
       {/* Component implementation */}
@@ -275,9 +287,10 @@ export const PolicyCreation: React.FC<PolicyCreationProps> = ({
 ```
 
 ### Rust/Solana Standards
+
 ```rust
 //! Quantumagi Constitution Program
-//! 
+//!
 //! Manages constitutional governance on Solana blockchain
 
 use anchor_lang::prelude::*;
@@ -307,17 +320,17 @@ pub struct InitializeConstitution<'info> {
         space = 8 + 32 + 32 + 8 + 8
     )]
     pub constitution: Account<'info, Constitution>,
-    
+
     #[account(mut)]
     pub authority: Signer<'info>,
-    
+
     pub system_program: Program<'info, System>,
 }
 
 #[program]
 pub mod constitution {
     use super::*;
-    
+
     /// Initialize constitution with specific hash
     pub fn initialize(
         ctx: Context<InitializeConstitution>,
@@ -328,7 +341,7 @@ pub mod constitution {
         constitution.authority = ctx.accounts.authority.key();
         constitution.last_updated = Clock::get()?.unix_timestamp;
         constitution.version = 1;
-        
+
         msg!("Constitution initialized with hash: {:?}", hash);
         Ok(())
     }
@@ -338,6 +351,7 @@ pub mod constitution {
 ## Testing Procedures
 
 ### Unit Testing
+
 ```bash
 # Python tests
 pytest tests/unit/ -v --cov=src --cov-report=html
@@ -350,6 +364,7 @@ cd blockchain && cargo test
 ```
 
 ### Integration Testing
+
 ```bash
 # Service integration tests
 pytest tests/integration/ -v
@@ -362,6 +377,7 @@ cd blockchain && anchor test
 ```
 
 ### Performance Testing
+
 ```bash
 # Load testing
 python3 tests/performance/load_test.py --concurrent-users 1000
@@ -371,6 +387,7 @@ python3 tests/performance/response_time_test.py --target-latency 500ms
 ```
 
 ### Constitutional Compliance Testing
+
 ```bash
 # Validate constitution hash integrity
 python3 tests/constitutional/test_hash_validation.py
@@ -382,33 +399,34 @@ python3 tests/constitutional/test_workflow_compliance.py
 ## Governance Workflow Development
 
 ### Policy Creation Workflow
+
 ```python
 async def create_policy_workflow(policy_data: Dict) -> WorkflowResult:
     """Complete policy creation workflow with constitutional validation."""
-    
+
     # 1. Constitutional compliance check
     compliance = await validate_constitutional_compliance(policy_data)
     if not compliance.valid:
         raise ConstitutionalViolationError(compliance.violations)
-    
+
     # 2. Policy synthesis (if needed)
     if policy_data.get('auto_generate'):
         synthesized = await synthesize_policy(policy_data['requirements'])
         policy_data.update(synthesized)
-    
+
     # 3. Formal verification
     verification = await formally_verify_policy(policy_data)
     if not verification.valid:
         raise VerificationError(verification.errors)
-    
+
     # 4. Multi-signature approval
     approval = await request_council_approval(policy_data)
     if not approval.approved:
         raise ApprovalError("Insufficient council signatures")
-    
+
     # 5. Blockchain recording
     tx_hash = await record_on_blockchain(policy_data)
-    
+
     return WorkflowResult(
         policy_id=policy_data['id'],
         status='approved',
@@ -418,6 +436,7 @@ async def create_policy_workflow(policy_data: Dict) -> WorkflowResult:
 ```
 
 ### Adding New Governance Workflows
+
 1. **Define Workflow Schema**: Create workflow definition in `schemas/workflows/`
 2. **Implement Workflow Logic**: Add workflow handler in `services/core/policy-governance/`
 3. **Add Constitutional Validation**: Ensure compliance with Constitution Hash
@@ -427,6 +446,7 @@ async def create_policy_workflow(policy_data: Dict) -> WorkflowResult:
 ## Quantumagi Solana Integration
 
 ### Program Development
+
 ```bash
 # Initialize new program
 cd blockchain/programs
@@ -441,6 +461,7 @@ anchor deploy --provider.cluster devnet
 ```
 
 ### Client Integration
+
 ```typescript
 // Connect to Quantumagi programs
 import { Program, AnchorProvider, web3 } from '@coral-xyz/anchor';
@@ -452,16 +473,17 @@ const program = new Program<Constitution>(idl, programId, provider);
 // Validate constitution hash
 const validateConstitution = async (hash: string) => {
   const [constitutionPDA] = web3.PublicKey.findProgramAddressSync(
-    [Buffer.from("constitution")],
+    [Buffer.from('constitution')],
     program.programId
   );
-  
+
   const constitution = await program.account.constitution.fetch(constitutionPDA);
   return constitution.hash.toString() === hash;
 };
 ```
 
 ### Testing Blockchain Integration
+
 ```bash
 # Test constitution program
 cd blockchain && anchor test tests/constitution.ts
@@ -479,6 +501,7 @@ python3 tests/blockchain/test_integration.py
 ## Contribution Guidelines
 
 ### Git Workflow
+
 ```bash
 # 1. Create feature branch
 git checkout -b feature/constitutional-validation-enhancement
@@ -499,6 +522,7 @@ git push origin feature/constitutional-validation-enhancement
 ```
 
 ### Commit Message Format
+
 ```
 type(scope): brief description
 
@@ -513,6 +537,7 @@ Closes #issue_number
 **Scopes**: auth, ac, integrity, fv, gs, pgc, ec, blockchain, docs
 
 ### Pull Request Process
+
 1. **Create PR** with descriptive title and detailed description
 2. **Link Issues** using "Closes #123" syntax
 3. **Add Labels** for type, priority, and affected services
@@ -522,6 +547,7 @@ Closes #issue_number
 7. **Merge** after approval (squash and merge preferred)
 
 ### Code Review Checklist
+
 - [ ] Constitutional compliance maintained
 - [ ] Performance targets met (<500ms response times)
 - [ ] Security best practices followed
@@ -533,6 +559,7 @@ Closes #issue_number
 ## Deployment & Release Process
 
 ### Development Deployment
+
 ```bash
 # Deploy to development environment
 bash scripts/deploy_development.sh
@@ -545,6 +572,7 @@ python3 tests/e2e/test_governance_workflows.py
 ```
 
 ### Production Deployment
+
 ```bash
 # Create release branch
 git checkout -b release/v3.1.0
@@ -563,6 +591,7 @@ bash scripts/deploy_production.sh
 ```
 
 ### Release Checklist
+
 - [ ] All tests passing
 - [ ] Performance benchmarks met
 - [ ] Security scan completed
@@ -581,6 +610,7 @@ bash scripts/deploy_production.sh
 ## Development Best Practices
 
 ### Constitutional Compliance Development
+
 Every feature must maintain constitutional compliance:
 
 ```python
@@ -603,6 +633,7 @@ async def implement_feature(data: Dict) -> Result:
 ```
 
 ### Performance Optimization Guidelines
+
 - **Response Time Target**: <500ms for 95% of requests
 - **Concurrent Users**: Support >1000 concurrent governance actions
 - **Database Queries**: Optimize for <100ms execution time
@@ -610,6 +641,7 @@ async def implement_feature(data: Dict) -> Result:
 - **Memory Usage**: Monitor and optimize service memory consumption
 
 ### Security Development Practices
+
 - **Input Validation**: Validate all inputs at service boundaries
 - **Authentication**: Use JWT tokens with proper expiration
 - **Authorization**: Implement role-based access control
@@ -617,6 +649,7 @@ async def implement_feature(data: Dict) -> Result:
 - **Audit Logging**: Log all governance actions with constitutional hash
 
 ### Monitoring & Observability
+
 ```python
 # Add metrics to all new features
 from prometheus_client import Counter, Histogram
@@ -649,6 +682,7 @@ async def new_feature():
 ### Common Development Problems
 
 **Service Won't Start**:
+
 ```bash
 # Check port conflicts
 netstat -tulpn | grep :8005
@@ -662,6 +696,7 @@ env | grep ACGS
 ```
 
 **Tests Failing**:
+
 ```bash
 # Run specific test with verbose output
 pytest tests/test_specific.py -v -s
@@ -674,6 +709,7 @@ python scripts/reset_test_environment.py
 ```
 
 **Constitutional Validation Errors**:
+
 ```bash
 # Verify constitution hash
 curl -s http://localhost:8005/api/v1/constitutional/validate | jq '.constitutional_hash'
@@ -686,6 +722,7 @@ cd blockchain && anchor test --skip-build
 ```
 
 ### Getting Help
+
 - **Internal Documentation**: Check `/docs` directory
 - **Team Chat**: Use internal communication channels
 - **Code Reviews**: Ask for help in PR comments

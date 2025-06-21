@@ -28,7 +28,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const { owner, repo } = context.repo;
-            
+
             try {
               await github.rest.repos.createOrUpdateEnvironment({
                 owner,
@@ -53,7 +53,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const { owner, repo } = context.repo;
-            
+
             try {
               await github.rest.repos.createOrUpdateEnvironment({
                 owner,
@@ -78,7 +78,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const { owner, repo } = context.repo;
-            
+
             try {
               await github.rest.repos.createOrUpdateEnvironment({
                 owner,
@@ -103,7 +103,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const { owner, repo } = context.repo;
-            
+
             try {
               await github.rest.repos.createOrUpdateEnvironment({
                 owner,
@@ -125,11 +125,11 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const { owner, repo } = context.repo;
-            
+
             const environments = ['development', 'staging', 'production', 'github-pages'];
-            
+
             console.log('🔍 Verifying environments...');
-            
+
             for (const env of environments) {
               try {
                 const response = await github.rest.repos.getEnvironment({

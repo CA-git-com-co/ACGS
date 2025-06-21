@@ -13,6 +13,7 @@ This runbook provides step-by-step procedures for responding to service down ale
 ## Immediate Response (0-5 minutes)
 
 ### 1. Alert Acknowledgment
+
 ```bash
 # Acknowledge the alert to prevent escalation
 curl -X POST http://localhost:8080/alerts/{alert_id}/acknowledge \
@@ -21,6 +22,7 @@ curl -X POST http://localhost:8080/alerts/{alert_id}/acknowledge \
 ```
 
 ### 2. Quick Health Assessment
+
 ```bash
 # Run comprehensive health check
 cd /home/dislove/ACGS-1
@@ -31,6 +33,7 @@ curl -f http://localhost:800{X}/health || echo "Service on port 800{X} is down"
 ```
 
 ### 3. Identify Affected Service
+
 ```bash
 # Check which services are down
 for port in {8000..8006}; do
@@ -42,6 +45,7 @@ done
 ## Investigation (5-15 minutes)
 
 ### 4. Check Service Logs
+
 ```bash
 # Check recent logs for the affected service
 tail -n 100 /home/dislove/ACGS-1/logs/{service_name}.log
@@ -51,6 +55,7 @@ grep -i "error\|exception\|failed" /home/dislove/ACGS-1/logs/{service_name}.log 
 ```
 
 ### 5. Check System Resources
+
 ```bash
 # Check system resources
 htop
@@ -60,6 +65,7 @@ netstat -tulpn | grep :{port}
 ```
 
 ### 6. Check Process Status
+
 ```bash
 # Check if process is running
 ps aux | grep {service_name}
@@ -71,14 +77,17 @@ ls -la /home/dislove/ACGS-1/pids/
 ## Automated Remediation (Parallel to Investigation)
 
 ### 7. Trigger Automated Recovery
+
 The intelligent alerting system will automatically attempt:
 
 1. **Health Check Validation**
+
    ```bash
    python3 scripts/emergency_rollback_procedures.py health
    ```
 
 2. **Service Restart**
+
    ```bash
    python3 scripts/emergency_rollback_procedures.py restart
    ```
@@ -91,6 +100,7 @@ The intelligent alerting system will automatically attempt:
 ## Manual Recovery Procedures
 
 ### 8. Manual Service Restart
+
 If automated remediation fails:
 
 ```bash
@@ -109,6 +119,7 @@ echo $! > /home/dislove/ACGS-1/pids/{service_name}.pid
 ```
 
 ### 9. Database Connection Issues
+
 If the issue is database-related:
 
 ```bash
@@ -123,6 +134,7 @@ psql -h localhost -U acgs_user -d acgs_db -c "SELECT 1;"
 ```
 
 ### 10. Configuration Issues
+
 ```bash
 # Validate configuration files
 python3 -c "import json; json.load(open('config/{service_name}_config.json'))"
@@ -137,6 +149,7 @@ ls -la /home/dislove/ACGS-1/services/core/{service_name}/
 ## Verification (15-20 minutes)
 
 ### 11. Service Health Verification
+
 ```bash
 # Verify service is responding
 curl -f http://localhost:800{X}/health
@@ -149,6 +162,7 @@ curl http://localhost:8005/api/v1/governance/health
 ```
 
 ### 12. End-to-End Testing
+
 ```bash
 # Run basic functionality tests
 python3 scripts/comprehensive_health_check.py
@@ -158,6 +172,7 @@ python3 scripts/test_governance_workflows.py
 ```
 
 ### 13. Performance Validation
+
 ```bash
 # Check response times
 time curl http://localhost:800{X}/health
@@ -169,19 +184,25 @@ watch -n 30 'curl -s http://localhost:800{X}/health | jq .status'
 ## Escalation Procedures
 
 ### Level 1 Escalation (20 minutes)
+
 If service cannot be restored:
+
 - Contact: ACGS Operations Team
 - Slack: #acgs-critical-alerts
 - Phone: On-call rotation
 
 ### Level 2 Escalation (45 minutes)
+
 If system-wide impact:
+
 - Contact: Infrastructure Team Lead
 - Escalate to: System Architecture Team
 - Consider: Emergency maintenance window
 
 ### Level 3 Escalation (60 minutes)
+
 If constitutional governance affected:
+
 - Contact: Constitutional Governance Team
 - Notify: Stakeholders via governance channels
 - Activate: Disaster recovery procedures
@@ -189,6 +210,7 @@ If constitutional governance affected:
 ## Post-Incident Actions
 
 ### 14. Incident Documentation
+
 ```bash
 # Create incident report
 python3 scripts/emergency_rollback_procedures.py incident \
@@ -199,12 +221,14 @@ python3 scripts/emergency_rollback_procedures.py incident \
 ```
 
 ### 15. Root Cause Analysis
+
 - Review logs for failure patterns
 - Check for resource constraints
 - Analyze configuration changes
 - Review deployment history
 
 ### 16. Preventive Measures
+
 - Update monitoring thresholds
 - Improve health checks
 - Enhance automated recovery
@@ -213,36 +237,43 @@ python3 scripts/emergency_rollback_procedures.py incident \
 ## Service-Specific Procedures
 
 ### Auth Service (Port 8000)
+
 - **Impact:** User authentication disabled
 - **Dependencies:** PostgreSQL, Redis
 - **Special Considerations:** JWT token validation
 
 ### AC Service (Port 8001)
+
 - **Impact:** Constitutional amendments affected
 - **Dependencies:** Auth Service, PostgreSQL
 - **Special Considerations:** Stakeholder notifications
 
 ### Integrity Service (Port 8002)
+
 - **Impact:** Data integrity validation disabled
 - **Dependencies:** PostgreSQL
 - **Special Considerations:** Blockchain synchronization
 
 ### FV Service (Port 8003)
+
 - **Impact:** Formal verification disabled
 - **Dependencies:** Z3 solver, PostgreSQL
 - **Special Considerations:** Mathematical proof validation
 
 ### GS Service (Port 8004)
+
 - **Impact:** Governance synthesis disabled
 - **Dependencies:** LLM services, PostgreSQL
 - **Special Considerations:** Policy generation affected
 
 ### PGC Service (Port 8005)
+
 - **Impact:** Constitutional compliance validation disabled
 - **Dependencies:** Solana blockchain, all other services
 - **Special Considerations:** Critical for governance operations
 
 ### EC Service (Port 8006)
+
 - **Impact:** External communications disabled
 - **Dependencies:** Auth Service, PostgreSQL
 - **Special Considerations:** Stakeholder notifications
@@ -262,6 +293,7 @@ python3 scripts/emergency_rollback_procedures.py incident \
 - [Emergency Rollback Procedures](emergency_rollback_runbook.md)
 
 ---
+
 **Last Updated:** 2024-01-01  
 **Version:** 1.0  
 **Owner:** ACGS Operations Team

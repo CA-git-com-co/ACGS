@@ -24,6 +24,7 @@ All DGM tables are organized under the `dgm` schema to maintain separation from 
 **Purpose**: Central repository for all improvements, their outcomes, and rollback data.
 
 **Key Features**:
+
 - Unique improvement tracking with UUIDs
 - Performance before/after comparison
 - Constitutional compliance scoring
@@ -31,6 +32,7 @@ All DGM tables are organized under the `dgm` schema to maintain separation from 
 - Status tracking through improvement lifecycle
 
 **Relationships**:
+
 - Referenced by `performance_metrics` via `improvement_id`
 - Referenced by `constitutional_compliance_logs` via `improvement_id`
 - Referenced by `improvement_workspaces` via `improvement_id`
@@ -40,6 +42,7 @@ All DGM tables are organized under the `dgm` schema to maintain separation from 
 **Purpose**: Real-time performance data collection and analysis.
 
 **Key Features**:
+
 - Multi-dimensional metric storage (latency, throughput, error rates)
 - Service-specific and system-wide metrics
 - Experiment and improvement correlation
@@ -47,6 +50,7 @@ All DGM tables are organized under the `dgm` schema to maintain separation from 
 - Time-series optimization with indexing
 
 **Aggregation Support**:
+
 - Companion table `metric_aggregations` for efficient querying
 - Pre-computed aggregations for common time windows
 - Reduced query load on high-frequency metrics
@@ -56,6 +60,7 @@ All DGM tables are organized under the `dgm` schema to maintain separation from 
 **Purpose**: Comprehensive compliance tracking and validation.
 
 **Key Features**:
+
 - Multi-level compliance assessment (critical to exemplary)
 - Violation tracking with detailed evidence
 - Remediation recommendations
@@ -63,6 +68,7 @@ All DGM tables are organized under the `dgm` schema to maintain separation from 
 - Review workflow support
 
 **Integration**:
+
 - Links to specific improvements and services
 - Constitutional hash validation
 - Audit trail for compliance decisions
@@ -72,6 +78,7 @@ All DGM tables are organized under the `dgm` schema to maintain separation from 
 **Purpose**: State management for conservative bandit algorithms.
 
 **Key Features**:
+
 - Multiple algorithm support (epsilon-greedy, UCB1, Thompson sampling)
 - Context-aware arm selection
 - Safety threshold enforcement
@@ -79,6 +86,7 @@ All DGM tables are organized under the `dgm` schema to maintain separation from 
 - Exploration history tracking
 
 **Safety Mechanisms**:
+
 - Conservative exploration parameters
 - Safety threshold validation
 - Risk tolerance bounds
@@ -89,6 +97,7 @@ All DGM tables are organized under the `dgm` schema to maintain separation from 
 **Purpose**: Isolated environments for developing and testing improvements.
 
 **Key Features**:
+
 - Complete workspace state management
 - Source code and configuration tracking
 - Test and validation result storage
@@ -96,6 +105,7 @@ All DGM tables are organized under the `dgm` schema to maintain separation from 
 - Rollback plan development
 
 **Safety Features**:
+
 - Pre-change environment snapshots
 - Comprehensive rollback plans
 - Risk assessment integration
@@ -106,6 +116,7 @@ All DGM tables are organized under the `dgm` schema to maintain separation from 
 **Purpose**: Centralized configuration management for DGM service.
 
 **Key Features**:
+
 - Type-safe configuration storage
 - Sensitive data protection
 - Read-only configuration enforcement
@@ -141,11 +152,13 @@ ON dgm.improvement_workspaces (status, created_at DESC);
 ## Constitutional Compliance Integration
 
 ### Standard Hash
+
 - All tables include `constitutional_hash` field
 - Default value: `"cdd01ef066bc6cf2"` (ACGS standard)
 - Enables cross-service compliance validation
 
 ### Compliance Scoring
+
 - Numeric scores (0.00 to 1.00) for quantitative assessment
 - Categorical levels for qualitative classification
 - Evidence storage for audit trails
@@ -164,18 +177,21 @@ erDiagram
 ## Migration Strategy
 
 ### Phase 1: Schema Creation
+
 1. Create `dgm` schema
 2. Install UUID extension
 3. Create all tables with proper constraints
 4. Create performance indexes
 
 ### Phase 2: Data Population
+
 1. Initialize system configurations
 2. Set up default bandit states
 3. Create baseline performance metrics
 4. Establish compliance baselines
 
 ### Phase 3: Integration
+
 1. Connect to ACGS core services
 2. Enable cross-service queries
 3. Implement real-time data flows
@@ -184,16 +200,19 @@ erDiagram
 ## Security Considerations
 
 ### Access Control
+
 - Schema-level permissions for DGM service
 - Read-only access for monitoring services
 - Audit logging for all modifications
 
 ### Data Protection
+
 - Sensitive configuration encryption
 - Constitutional compliance validation
 - Audit trail preservation
 
 ### Backup and Recovery
+
 - Point-in-time recovery capability
 - Archive data preservation
 - Rollback state integrity
@@ -201,16 +220,19 @@ erDiagram
 ## Performance Optimization
 
 ### Query Optimization
+
 - Composite indexes for common query patterns
 - Partitioning for time-series data
 - Materialized views for complex aggregations
 
 ### Storage Optimization
+
 - JSON field optimization for metadata
 - Compression for archive data
 - Efficient UUID storage
 
 ### Monitoring
+
 - Query performance tracking
 - Index usage analysis
 - Storage growth monitoring
@@ -218,16 +240,19 @@ erDiagram
 ## Future Considerations
 
 ### Scalability
+
 - Horizontal partitioning for large datasets
 - Read replicas for analytics workloads
 - Archive data lifecycle management
 
 ### Integration
+
 - Cross-service foreign key relationships
 - Shared configuration management
 - Unified audit logging
 
 ### Evolution
+
 - Schema versioning strategy
 - Backward compatibility maintenance
 - Migration automation

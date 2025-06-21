@@ -13,8 +13,8 @@ spec:
         app: acgs-pgp
     spec:
       containers:
-      - name: ac-service
-        image: ac-service:latest # Replace with actual image
-        ports:
-        - containerPort: 8000
-      # Add other services here 
+        - name: ac-service
+          image: ac-service:latest # Replace with actual image
+          ports:
+            - containerPort: 8000
+      # Add other services here

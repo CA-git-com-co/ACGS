@@ -13,12 +13,12 @@ alerting:
   alertmanagers:
     - static_configs:
         - targets:
-          - alertmanager:9093
+            - alertmanager:9093
 
 # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
 rule_files:
-  - "alert_rules.yml"
-  - "recording_rules.yml"
+  - 'alert_rules.yml'
+  - 'recording_rules.yml'
 
 # Scrape configuration
 scrape_configs:
@@ -115,13 +115,13 @@ scrape_configs:
     scrape_timeout: 10s
     static_configs:
       - targets:
-        - 'auth-service:8000'
-        - 'ac-service:8001'
-        - 'integrity-service:8002'
-        - 'fv-service:8003'
-        - 'gs-service:8004'
-        - 'pgc-service:8005'
-        - 'ec-service:8006'
+          - 'auth-service:8000'
+          - 'ac-service:8001'
+          - 'integrity-service:8002'
+          - 'fv-service:8003'
+          - 'gs-service:8004'
+          - 'pgc-service:8005'
+          - 'ec-service:8006'
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target

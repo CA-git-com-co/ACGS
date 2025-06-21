@@ -2,68 +2,68 @@ name: Fixed Connectivity Check
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
 
 jobs:
   connectivity-check:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    # OPTION 1: Install ping if needed
-    - name: Install network tools (if needed)
-      run: |
-        if ! command -v ping >/dev/null 2>&1; then
-          echo "📦 Installing ping..."
-          sudo apt-get update -qq
-          sudo apt-get install -y iputils-ping
-          echo "✅ ping installed"
-        else
-          echo "✅ ping already available"
-        fi
-        
-    # OPTION 2: Use HTTP-based check (RECOMMENDED)
-    - name: GitHub Connectivity Check (HTTP-based)
-      run: |
-        echo "🌐 Testing GitHub connectivity with HTTP..."
-        
-        # Test GitHub main site
-        if curl -s --max-time 10 --head https://github.com >/dev/null 2>&1; then
-          echo "✅ GitHub main site accessible"
-        else
-          echo "❌ GitHub main site not accessible"
-          exit 1
-        fi
-        
-        # Test GitHub API
-        if curl -s --max-time 10 https://api.github.com/zen >/dev/null 2>&1; then
-          echo "✅ GitHub API accessible"
-        else
-          echo "❌ GitHub API not accessible"
-          exit 1
-        fi
-        
-        echo "🎉 All GitHub connectivity checks passed!"
-        
-    # OPTION 3: Use our robust script
-    - name: Robust Connectivity Check
-      run: |
-        chmod +x scripts/robust-github-connectivity-check.sh
-        ./scripts/robust-github-connectivity-check.sh
-        
-    # OPTION 4: Traditional ping (after installing)
-    # Ping check removed - ICMP traffic is often blocked on GitHub Actions runners
-    # Using HTTP-based connectivity checks instead for better reliability
-    - name: HTTP Connectivity Check
-      run: |
-        echo "📡 Testing HTTP connectivity to GitHub..."
-        if curl -I https://github.com 2>&1 | grep -q "HTTP"; then
-          echo "✅ GitHub HTTP connectivity verified"
-        else
-          echo "❌ GitHub HTTP connectivity failed"
-          exit 1
-        fi
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # OPTION 1: Install ping if needed
+      - name: Install network tools (if needed)
+        run: |
+          if ! command -v ping >/dev/null 2>&1; then
+            echo "📦 Installing ping..."
+            sudo apt-get update -qq
+            sudo apt-get install -y iputils-ping
+            echo "✅ ping installed"
+          else
+            echo "✅ ping already available"
+          fi
+
+      # OPTION 2: Use HTTP-based check (RECOMMENDED)
+      - name: GitHub Connectivity Check (HTTP-based)
+        run: |
+          echo "🌐 Testing GitHub connectivity with HTTP..."
+
+          # Test GitHub main site
+          if curl -s --max-time 10 --head https://github.com >/dev/null 2>&1; then
+            echo "✅ GitHub main site accessible"
+          else
+            echo "❌ GitHub main site not accessible"
+            exit 1
+          fi
+
+          # Test GitHub API
+          if curl -s --max-time 10 https://api.github.com/zen >/dev/null 2>&1; then
+            echo "✅ GitHub API accessible"
+          else
+            echo "❌ GitHub API not accessible"
+            exit 1
+          fi
+
+          echo "🎉 All GitHub connectivity checks passed!"
+
+      # OPTION 3: Use our robust script
+      - name: Robust Connectivity Check
+        run: |
+          chmod +x scripts/robust-github-connectivity-check.sh
+          ./scripts/robust-github-connectivity-check.sh
+
+      # OPTION 4: Traditional ping (after installing)
+      # Ping check removed - ICMP traffic is often blocked on GitHub Actions runners
+      # Using HTTP-based connectivity checks instead for better reliability
+      - name: HTTP Connectivity Check
+        run: |
+          echo "📡 Testing HTTP connectivity to GitHub..."
+          if timeout 10 curl -I https://github.com 2>&1 | grep -q "HTTP"; then
+            echo "✅ GitHub HTTP connectivity verified"
+          else
+            echo "❌ GitHub HTTP connectivity failed"
+            exit 1
+          fi

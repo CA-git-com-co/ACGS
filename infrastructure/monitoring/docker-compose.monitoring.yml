@@ -10,12 +10,12 @@ services:
     container_name: acgs_alertmanager
     image: prom/alertmanager:v0.25.0
     networks:
-    - acgs_monitoring
+      - acgs_monitoring
     ports:
-    - 9093:9093
+      - 9093:9093
     volumes:
-    - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
-    - alertmanager_data:/alertmanager
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager_data:/alertmanager
     restart: unless-stopped
     command:
       - '--config.file=/etc/alertmanager/alertmanager.yml'
@@ -23,7 +23,7 @@ services:
       - '--web.external-url=http://localhost:9093'
       - '--cluster.listen-address=0.0.0.0:9094'
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9093/-/healthy"]
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:9093/-/healthy']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -45,17 +45,21 @@ services:
       - GF_LOG_FILTERS=rendering:debug
     image: grafana/grafana:9.3.8
     networks:
-    - acgs_monitoring
+      - acgs_monitoring
     ports:
-    - 3000:3000
+      - 3000:3000
     volumes:
-    - grafana_data:/var/lib/grafana
-    - ./grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
-    - ./grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - grafana_data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources:ro
     restart: unless-stopped
-    user: "472:472"
+    user: '472:472'
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1"]
+      test:
+        [
+          'CMD-SHELL',
+          'wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1',
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -64,50 +68,50 @@ services:
       - prometheus
   node-exporter:
     command:
-    - --path.procfs=/host/proc
-    - --path.rootfs=/rootfs
-    - --path.sysfs=/host/sys
-    - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)
+      - --path.procfs=/host/proc
+      - --path.rootfs=/rootfs
+      - --path.sysfs=/host/sys
+      - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)
     container_name: acgs_node_exporter
     image: prom/node-exporter:latest
     networks:
-    - acgs_monitoring
+      - acgs_monitoring
     ports:
-    - 9100:9100
+      - 9100:9100
     volumes:
-    - /proc:/host/proc:ro
-    - /sys:/host/sys:ro
-    - /:/rootfs:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
   prometheus:
     command:
-    - --config.file=/etc/prometheus/prometheus.yml
-    - --storage.tsdb.path=/prometheus
-    - --web.console.libraries=/etc/prometheus/console_libraries
-    - --web.console.templates=/etc/prometheus/consoles
-    - --storage.tsdb.retention.time=200h
-    - --web.enable-lifecycle
-    - --web.enable-admin-api
-    - --storage.tsdb.max-block-duration=2h
-    - --storage.tsdb.min-block-duration=2h
-    - --query.max-concurrency=50
-    - --query.timeout=2m
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.console.libraries=/etc/prometheus/console_libraries
+      - --web.console.templates=/etc/prometheus/consoles
+      - --storage.tsdb.retention.time=200h
+      - --web.enable-lifecycle
+      - --web.enable-admin-api
+      - --storage.tsdb.max-block-duration=2h
+      - --storage.tsdb.min-block-duration=2h
+      - --query.max-concurrency=50
+      - --query.timeout=2m
     container_name: acgs_prometheus
     image: prom/prometheus:v2.40.7
     networks:
-    - acgs_monitoring
+      - acgs_monitoring
     ports:
-    - 9090:9090
+      - 9090:9090
     volumes:
-    - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    - ./rules:/etc/prometheus/rules:ro
-    - prometheus_data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./rules:/etc/prometheus/rules:ro
+      - prometheus_data:/prometheus
     restart: unless-stopped
-    user: "65534:65534"
+    user: '65534:65534'
     environment:
       - PROMETHEUS_RETENTION_TIME=200h
       - PROMETHEUS_STORAGE_PATH=/prometheus
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:9090/-/healthy']
       interval: 30s
       timeout: 10s
       retries: 3

@@ -8,67 +8,67 @@ metadata:
     deployment-strategy: canary
 spec:
   hosts:
-  - dgm-service
+    - dgm-service
   http:
-  # Canary deployment routing
-  - match:
-    - headers:
-        x-canary-user:
-          exact: "true"
-    route:
-    - destination:
-        host: dgm-service
-        subset: canary
-      weight: 100
-    fault:
-      delay:
-        percentage:
-          value: 0.1
-        fixedDelay: 100ms
-  
-  # A/B testing for improvement strategies
-  - match:
-    - headers:
-        x-experiment-group:
-          exact: "strategy-a"
-    route:
-    - destination:
-        host: dgm-service
-        subset: v1
-      headers:
-        request:
-          add:
-            x-strategy-variant: "conservative"
-  
-  - match:
-    - headers:
-        x-experiment-group:
-          exact: "strategy-b"
-    route:
-    - destination:
-        host: dgm-service
-        subset: v1
-      headers:
-        request:
-          add:
-            x-strategy-variant: "aggressive"
-  
-  # Default routing with traffic splitting
-  - route:
-    - destination:
-        host: dgm-service
-        subset: v1
-      weight: 95
-    - destination:
-        host: dgm-service
-        subset: canary
-      weight: 5
-    timeout: 30s
-    retries:
-      attempts: 3
-      perTryTimeout: 10s
-      retryOn: 5xx,reset,connect-failure,refused-stream
-      retryRemoteLocalities: true
+    # Canary deployment routing
+    - match:
+        - headers:
+            x-canary-user:
+              exact: 'true'
+      route:
+        - destination:
+            host: dgm-service
+            subset: canary
+          weight: 100
+      fault:
+        delay:
+          percentage:
+            value: 0.1
+          fixedDelay: 100ms
+
+    # A/B testing for improvement strategies
+    - match:
+        - headers:
+            x-experiment-group:
+              exact: 'strategy-a'
+      route:
+        - destination:
+            host: dgm-service
+            subset: v1
+          headers:
+            request:
+              add:
+                x-strategy-variant: 'conservative'
+
+    - match:
+        - headers:
+            x-experiment-group:
+              exact: 'strategy-b'
+      route:
+        - destination:
+            host: dgm-service
+            subset: v1
+          headers:
+            request:
+              add:
+                x-strategy-variant: 'aggressive'
+
+    # Default routing with traffic splitting
+    - route:
+        - destination:
+            host: dgm-service
+            subset: v1
+          weight: 95
+        - destination:
+            host: dgm-service
+            subset: canary
+          weight: 5
+      timeout: 30s
+      retries:
+        attempts: 3
+        perTryTimeout: 10s
+        retryOn: 5xx,reset,connect-failure,refused-stream
+        retryRemoteLocalities: true
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
@@ -102,7 +102,7 @@ spec:
     loadBalancer:
       simple: LEAST_CONN
       consistentHash:
-        httpHeaderName: "x-improvement-id"
+        httpHeaderName: 'x-improvement-id'
     outlierDetection:
       consecutiveGatewayErrors: 5
       consecutive5xxErrors: 5
@@ -112,26 +112,26 @@ spec:
       minHealthPercent: 50
       splitExternalLocalOriginErrors: false
   subsets:
-  - name: v1
-    labels:
-      version: v1
-    trafficPolicy:
-      connectionPool:
-        tcp:
-          maxConnections: 80
-        http:
-          http1MaxPendingRequests: 40
-          http2MaxRequests: 80
-  - name: canary
-    labels:
-      version: canary
-    trafficPolicy:
-      connectionPool:
-        tcp:
-          maxConnections: 20
-        http:
-          http1MaxPendingRequests: 10
-          http2MaxRequests: 20
+    - name: v1
+      labels:
+        version: v1
+      trafficPolicy:
+        connectionPool:
+          tcp:
+            maxConnections: 80
+          http:
+            http1MaxPendingRequests: 40
+            http2MaxRequests: 80
+    - name: canary
+      labels:
+        version: canary
+      trafficPolicy:
+        connectionPool:
+          tcp:
+            maxConnections: 20
+          http:
+            http1MaxPendingRequests: 10
+            http2MaxRequests: 20
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: WorkloadEntry
@@ -159,13 +159,13 @@ metadata:
     app: dgm-service
 spec:
   hosts:
-  - llm.acgs.local
-  - api.openai.com
-  - api.anthropic.com
+    - llm.acgs.local
+    - api.openai.com
+    - api.anthropic.com
   ports:
-  - number: 443
-    name: https
-    protocol: HTTPS
+    - number: 443
+      name: https
+      protocol: HTTPS
   location: MESH_EXTERNAL
   resolution: DNS
 ---
@@ -181,29 +181,29 @@ spec:
     labels:
       app: dgm-service
   configPatches:
-  - applyTo: HTTP_FILTER
-    match:
-      context: SIDECAR_OUTBOUND
-      listener:
-        filterChain:
-          filter:
-            name: "envoy.filters.network.http_connection_manager"
-    patch:
-      operation: INSERT_BEFORE
-      value:
-        name: envoy.filters.http.fault
-        typed_config:
-          "@type": type.googleapis.com/envoy.extensions.filters.http.fault.v3.HTTPFault
-          abort:
-            percentage:
-              numerator: 1
-              denominator: THOUSAND
-            http_status: 503
-          delay:
-            percentage:
-              numerator: 1
-              denominator: HUNDRED
-            fixed_delay: 5s
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_OUTBOUND
+        listener:
+          filterChain:
+            filter:
+              name: 'envoy.filters.network.http_connection_manager'
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.fault
+          typed_config:
+            '@type': type.googleapis.com/envoy.extensions.filters.http.fault.v3.HTTPFault
+            abort:
+              percentage:
+                numerator: 1
+                denominator: THOUSAND
+              http_status: 503
+            delay:
+              percentage:
+                numerator: 1
+                denominator: HUNDRED
+              fixed_delay: 5s
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
@@ -217,40 +217,40 @@ spec:
     labels:
       app: dgm-service
   configPatches:
-  - applyTo: HTTP_FILTER
-    match:
-      context: SIDECAR_INBOUND
-      listener:
-        filterChain:
-          filter:
-            name: "envoy.filters.network.http_connection_manager"
-    patch:
-      operation: INSERT_BEFORE
-      value:
-        name: envoy.filters.http.lua
-        typed_config:
-          "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
-          inline_code: |
-            function envoy_on_request(request_handle)
-              -- Generate or preserve request ID
-              local request_id = request_handle:headers():get("x-request-id")
-              if not request_id then
-                request_id = string.format("%s-%d", 
-                  request_handle:headers():get("x-forwarded-for") or "unknown",
-                  math.random(100000, 999999))
-                request_handle:headers():add("x-request-id", request_id)
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_INBOUND
+        listener:
+          filterChain:
+            filter:
+              name: 'envoy.filters.network.http_connection_manager'
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.lua
+          typed_config:
+            '@type': type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+            inline_code: |
+              function envoy_on_request(request_handle)
+                -- Generate or preserve request ID
+                local request_id = request_handle:headers():get("x-request-id")
+                if not request_id then
+                  request_id = string.format("%s-%d", 
+                    request_handle:headers():get("x-forwarded-for") or "unknown",
+                    math.random(100000, 999999))
+                  request_handle:headers():add("x-request-id", request_id)
+                end
+                
+                -- Add improvement correlation ID if present
+                local improvement_id = request_handle:headers():get("x-improvement-id")
+                if improvement_id then
+                  request_handle:headers():add("x-correlation-id", improvement_id)
+                end
+                
+                -- Add constitutional tracking
+                request_handle:headers():add("x-constitutional-tracking", "enabled")
+                request_handle:headers():add("x-governance-audit", "required")
               end
-              
-              -- Add improvement correlation ID if present
-              local improvement_id = request_handle:headers():get("x-improvement-id")
-              if improvement_id then
-                request_handle:headers():add("x-correlation-id", improvement_id)
-              end
-              
-              -- Add constitutional tracking
-              request_handle:headers():add("x-constitutional-tracking", "enabled")
-              request_handle:headers():add("x-governance-audit", "required")
-            end
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
@@ -264,87 +264,87 @@ spec:
     labels:
       app: dgm-service
   configPatches:
-  - applyTo: HTTP_FILTER
-    match:
-      context: SIDECAR_INBOUND
-      listener:
-        filterChain:
-          filter:
-            name: "envoy.filters.network.http_connection_manager"
-    patch:
-      operation: INSERT_BEFORE
-      value:
-        name: envoy.filters.http.wasm
-        typed_config:
-          "@type": type.googleapis.com/envoy.extensions.filters.http.wasm.v3.Wasm
-          config:
-            name: "dgm_metrics_collector"
-            root_id: "dgm_metrics"
-            configuration:
-              "@type": type.googleapis.com/google.protobuf.StringValue
-              value: |
-                {
-                  "metric_prefix": "dgm_service",
-                  "constitutional_hash": "cdd01ef066bc6cf2",
-                  "governance_mode": "democratic",
-                  "collect_improvement_metrics": true,
-                  "collect_constitutional_metrics": true,
-                  "collect_performance_metrics": true
-                }
-            vm_config:
-              vm_id: "dgm_metrics_vm"
-              runtime: "envoy.wasm.runtime.v8"
-              code:
-                local:
-                  inline_string: |
-                    class DGMMetricsCollector {
-                      constructor(rootContext) {
-                        this.rootContext = rootContext;
-                      }
-                      
-                      onRequestHeaders() {
-                        const path = this.getRequestHeader(":path");
-                        const method = this.getRequestHeader(":method");
-                        
-                        // Increment request counter
-                        this.incrementCounter("dgm_requests_total", {
-                          path: path,
-                          method: method,
-                          constitutional_hash: "cdd01ef066bc6cf2"
-                        });
-                        
-                        // Track improvement requests
-                        if (path.includes("/api/v1/dgm/improve")) {
-                          this.incrementCounter("dgm_improvement_requests_total");
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_INBOUND
+        listener:
+          filterChain:
+            filter:
+              name: 'envoy.filters.network.http_connection_manager'
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.wasm
+          typed_config:
+            '@type': type.googleapis.com/envoy.extensions.filters.http.wasm.v3.Wasm
+            config:
+              name: 'dgm_metrics_collector'
+              root_id: 'dgm_metrics'
+              configuration:
+                '@type': type.googleapis.com/google.protobuf.StringValue
+                value: |
+                  {
+                    "metric_prefix": "dgm_service",
+                    "constitutional_hash": "cdd01ef066bc6cf2",
+                    "governance_mode": "democratic",
+                    "collect_improvement_metrics": true,
+                    "collect_constitutional_metrics": true,
+                    "collect_performance_metrics": true
+                  }
+              vm_config:
+                vm_id: 'dgm_metrics_vm'
+                runtime: 'envoy.wasm.runtime.v8'
+                code:
+                  local:
+                    inline_string: |
+                      class DGMMetricsCollector {
+                        constructor(rootContext) {
+                          this.rootContext = rootContext;
                         }
                         
-                        // Track constitutional assessments
-                        if (path.includes("/constitutional/")) {
-                          this.incrementCounter("dgm_constitutional_assessments_total");
+                        onRequestHeaders() {
+                          const path = this.getRequestHeader(":path");
+                          const method = this.getRequestHeader(":method");
+                          
+                          // Increment request counter
+                          this.incrementCounter("dgm_requests_total", {
+                            path: path,
+                            method: method,
+                            constitutional_hash: "cdd01ef066bc6cf2"
+                          });
+                          
+                          // Track improvement requests
+                          if (path.includes("/api/v1/dgm/improve")) {
+                            this.incrementCounter("dgm_improvement_requests_total");
+                          }
+                          
+                          // Track constitutional assessments
+                          if (path.includes("/constitutional/")) {
+                            this.incrementCounter("dgm_constitutional_assessments_total");
+                          }
+                          
+                          return FilterHeadersStatus.Continue;
                         }
                         
-                        return FilterHeadersStatus.Continue;
-                      }
-                      
-                      onResponseHeaders() {
-                        const status = this.getResponseHeader(":status");
-                        const path = this.getRequestHeader(":path");
-                        
-                        // Track response status
-                        this.incrementCounter("dgm_responses_total", {
-                          status: status,
-                          path: path
-                        });
-                        
-                        // Track constitutional compliance
-                        const constitutionalCompliant = this.getResponseHeader("x-constitutional-compliant");
-                        if (constitutionalCompliant === "true") {
-                          this.incrementCounter("dgm_constitutional_compliant_total");
+                        onResponseHeaders() {
+                          const status = this.getResponseHeader(":status");
+                          const path = this.getRequestHeader(":path");
+                          
+                          // Track response status
+                          this.incrementCounter("dgm_responses_total", {
+                            status: status,
+                            path: path
+                          });
+                          
+                          // Track constitutional compliance
+                          const constitutionalCompliant = this.getResponseHeader("x-constitutional-compliant");
+                          if (constitutionalCompliant === "true") {
+                            this.incrementCounter("dgm_constitutional_compliant_total");
+                          }
+                          
+                          return FilterHeadersStatus.Continue;
                         }
-                        
-                        return FilterHeadersStatus.Continue;
                       }
-                    }
 ---
 apiVersion: v1
 kind: ConfigMap

@@ -1,23 +1,23 @@
 /**
  * API Compatibility Dashboard Component
- * 
+ *
  * Real-time dashboard for monitoring API compatibility between legacy and new implementations,
  * tracking user adoption, and identifying integration issues during migration.
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  apiCompatibilityMonitor, 
-  CompatibilityTestResult, 
-  UserAdoptionMetrics, 
+import {
+  apiCompatibilityMonitor,
+  CompatibilityTestResult,
+  UserAdoptionMetrics,
   MigrationProgress,
-  CompatibilityIssue 
+  CompatibilityIssue
 } from '../../services/apiCompatibilityMonitor';
 
 // Compatibility status indicator
-const CompatibilityStatus: React.FC<{ compatible: boolean; issues: number }> = ({ 
-  compatible, 
-  issues 
+const CompatibilityStatus: React.FC<{ compatible: boolean; issues: number }> = ({
+  compatible,
+  issues
 }) => {
   if (compatible) {
     return (
@@ -38,9 +38,7 @@ const CompatibilityStatus: React.FC<{ compatible: boolean; issues: number }> = (
   return (
     <div className="flex items-center space-x-2">
       <div className={`w-3 h-3 ${colors[severity].split(' ')[0]} rounded-full`}></div>
-      <span className={`font-medium ${colors[severity].split(' ')[1]}`}>
-        {issues} Issues
-      </span>
+      <span className={`font-medium ${colors[severity].split(' ')[1]}`}>{issues} Issues</span>
     </div>
   );
 };
@@ -48,29 +46,33 @@ const CompatibilityStatus: React.FC<{ compatible: boolean; issues: number }> = (
 // Migration progress bar
 const MigrationProgressBar: React.FC<{ progress: MigrationProgress }> = ({ progress }) => {
   const completionRate = (progress.compatibleEndpoints / progress.totalEndpoints) * 100;
-  
+
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm border">
       <div className="flex justify-between items-center mb-2">
         <h3 className="font-semibold text-gray-900">{progress.service.toUpperCase()}</h3>
         <span className="text-sm text-gray-600">{completionRate.toFixed(1)}%</span>
       </div>
-      
+
       <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
-        <div 
+        <div
           className="bg-blue-600 h-2 rounded-full transition-all duration-300"
           style={{ width: `${completionRate}%` }}
         ></div>
       </div>
-      
+
       <div className="grid grid-cols-2 gap-4 text-sm">
         <div>
           <div className="text-gray-600">Compatible</div>
-          <div className="font-medium">{progress.compatibleEndpoints}/{progress.totalEndpoints}</div>
+          <div className="font-medium">
+            {progress.compatibleEndpoints}/{progress.totalEndpoints}
+          </div>
         </div>
         <div>
           <div className="text-gray-600">Issues</div>
-          <div className={`font-medium ${progress.activeIssues > 0 ? 'text-red-600' : 'text-green-600'}`}>
+          <div
+            className={`font-medium ${progress.activeIssues > 0 ? 'text-red-600' : 'text-green-600'}`}
+          >
             {progress.activeIssues}
           </div>
         </div>
@@ -88,9 +90,9 @@ const MigrationProgressBar: React.FC<{ progress: MigrationProgress }> = ({ progr
 };
 
 // Compatibility issue card
-const IssueCard: React.FC<{ issue: CompatibilityIssue; endpoint?: string }> = ({ 
-  issue, 
-  endpoint 
+const IssueCard: React.FC<{ issue: CompatibilityIssue; endpoint?: string }> = ({
+  issue,
+  endpoint
 }) => {
   const severityColors = {
     critical: 'bg-red-100 border-red-500 text-red-900',
@@ -105,9 +107,7 @@ const IssueCard: React.FC<{ issue: CompatibilityIssue; endpoint?: string }> = ({
         <div className="flex-1">
           <div className="font-medium">{issue.type.replace('_', ' ').toUpperCase()}</div>
           <div className="text-sm mt-1">{issue.description}</div>
-          {endpoint && (
-            <div className="text-xs mt-1 opacity-75">{endpoint}</div>
-          )}
+          {endpoint && <div className="text-xs mt-1 opacity-75">{endpoint}</div>}
           {issue.field && (
             <div className="text-xs mt-1">
               Field: <code className="bg-white bg-opacity-50 px-1 rounded">{issue.field}</code>
@@ -118,9 +118,7 @@ const IssueCard: React.FC<{ issue: CompatibilityIssue; endpoint?: string }> = ({
           {issue.severity.toUpperCase()}
         </span>
       </div>
-      <div className="text-xs mt-2 opacity-75">
-        Impact: {issue.impact}
-      </div>
+      <div className="text-xs mt-2 opacity-75">Impact: {issue.impact}</div>
     </div>
   );
 };
@@ -128,19 +126,15 @@ const IssueCard: React.FC<{ issue: CompatibilityIssue; endpoint?: string }> = ({
 // Adoption metrics chart (simplified)
 const AdoptionChart: React.FC<{ metrics: UserAdoptionMetrics[] }> = ({ metrics }) => {
   if (metrics.length === 0) {
-    return (
-      <div className="text-center text-gray-500 py-8">
-        No adoption data available
-      </div>
-    );
+    return <div className="text-center text-gray-500 py-8">No adoption data available</div>;
   }
 
   const latest = metrics[metrics.length - 1];
-  
+
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm border">
       <h3 className="font-semibold text-gray-900 mb-4">Adoption Metrics</h3>
-      
+
       <div className="grid grid-cols-2 gap-4">
         <div className="text-center">
           <div className="text-2xl font-bold text-blue-600">{latest.adoptionRate.toFixed(1)}%</div>
@@ -155,13 +149,15 @@ const AdoptionChart: React.FC<{ metrics: UserAdoptionMetrics[] }> = ({ metrics }
           <div className="text-sm text-gray-600">Sessions</div>
         </div>
         <div className="text-center">
-          <div className={`text-2xl font-bold ${latest.errorRate > 5 ? 'text-red-600' : 'text-green-600'}`}>
+          <div
+            className={`text-2xl font-bold ${latest.errorRate > 5 ? 'text-red-600' : 'text-green-600'}`}
+          >
             {latest.errorRate.toFixed(1)}%
           </div>
           <div className="text-sm text-gray-600">Error Rate</div>
         </div>
       </div>
-      
+
       <div className="mt-4 pt-4 border-t">
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">Legacy Usage:</span>
@@ -265,7 +261,7 @@ export const APICompatibilityDashboard: React.FC = () => {
           <div className="flex items-center space-x-4">
             <select
               value={selectedService}
-              onChange={(e) => setSelectedService(e.target.value)}
+              onChange={e => setSelectedService(e.target.value)}
               className="px-3 py-2 border rounded-md"
             >
               <option value="all">All Services</option>
@@ -335,9 +331,11 @@ export const APICompatibilityDashboard: React.FC = () => {
             <h2 className="text-xl font-semibold mb-4">Recent Compatibility Issues</h2>
             <div className="bg-white rounded-lg shadow-sm border p-4">
               <div className="space-y-3">
-                {compatibilityReport.recentIssues.slice(0, 10).map((issue: CompatibilityIssue, index: number) => (
-                  <IssueCard key={index} issue={issue} />
-                ))}
+                {compatibilityReport.recentIssues
+                  .slice(0, 10)
+                  .map((issue: CompatibilityIssue, index: number) => (
+                    <IssueCard key={index} issue={issue} />
+                  ))}
               </div>
             </div>
           </div>

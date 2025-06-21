@@ -1,6 +1,6 @@
 /**
  * API Compatibility Monitoring System
- * 
+ *
  * Monitors API compatibility between legacy and new implementations,
  * tracks user adoption, and identifies integration issues during migration.
  */
@@ -32,7 +32,13 @@ export interface CompatibilityTestResult {
 
 // Compatibility issue interface
 export interface CompatibilityIssue {
-  type: 'schema_mismatch' | 'response_format' | 'status_code' | 'performance' | 'authentication' | 'data_loss';
+  type:
+    | 'schema_mismatch'
+    | 'response_format'
+    | 'status_code'
+    | 'performance'
+    | 'authentication'
+    | 'data_loss';
   severity: 'critical' | 'high' | 'medium' | 'low';
   description: string;
   field?: string;
@@ -93,13 +99,13 @@ const DEFAULT_CONFIG: CompatibilityConfig = {
   tolerances: {
     responseTimeDifference: 1000, // 1 second
     schemaVariationThreshold: 5, // 5%
-    errorRateThreshold: 2, // 2%
+    errorRateThreshold: 2 // 2%
   },
   notifications: {
     compatibilityIssues: true,
     adoptionMilestones: true,
-    performanceDegradation: true,
-  },
+    performanceDegradation: true
+  }
 };
 
 // ACGS API endpoints for monitoring
@@ -123,7 +129,7 @@ const ACGS_API_ENDPOINTS: APIEndpoint[] = [
     service: 'auth',
     version: '1.0'
   },
-  
+
   // AC Service endpoints
   {
     path: '/api/v1/principles',
@@ -143,7 +149,7 @@ const ACGS_API_ENDPOINTS: APIEndpoint[] = [
     service: 'ac',
     version: '1.0'
   },
-  
+
   // GS Service endpoints
   {
     path: '/api/v1/synthesize',
@@ -157,7 +163,7 @@ const ACGS_API_ENDPOINTS: APIEndpoint[] = [
     service: 'gs',
     version: '1.0'
   },
-  
+
   // PGC Service endpoints
   {
     path: '/api/v1/compliance/check',
@@ -170,7 +176,7 @@ const ACGS_API_ENDPOINTS: APIEndpoint[] = [
     method: 'GET',
     service: 'pgc',
     version: '1.0'
-  },
+  }
 ];
 
 /**
@@ -217,7 +223,7 @@ export class APICompatibilityMonitor {
    */
   private initializeMigrationProgress(): void {
     const serviceEndpoints = this.groupEndpointsByService();
-    
+
     for (const [service, endpoints] of serviceEndpoints.entries()) {
       this.migrationProgress.set(service, {
         service,
@@ -228,7 +234,7 @@ export class APICompatibilityMonitor {
         activeIssues: 0,
         adoptionRate: 0,
         estimatedCompletion: 'Unknown',
-        lastUpdated: Date.now(),
+        lastUpdated: Date.now()
       });
     }
   }
@@ -238,14 +244,14 @@ export class APICompatibilityMonitor {
    */
   private groupEndpointsByService(): Map<string, APIEndpoint[]> {
     const grouped = new Map<string, APIEndpoint[]>();
-    
+
     this.config.endpoints.forEach(endpoint => {
       if (!grouped.has(endpoint.service)) {
         grouped.set(endpoint.service, []);
       }
       grouped.get(endpoint.service)!.push(endpoint);
     });
-    
+
     return grouped;
   }
 
@@ -284,12 +290,12 @@ export class APICompatibilityMonitor {
    * Run compatibility tests for all endpoints
    */
   async runCompatibilityTests(): Promise<void> {
-    const testPromises = this.config.endpoints.map(endpoint => 
+    const testPromises = this.config.endpoints.map(endpoint =>
       this.testEndpointCompatibility(endpoint)
     );
 
     const results = await Promise.allSettled(testPromises);
-    
+
     results.forEach((result, index) => {
       if (result.status === 'fulfilled' && result.value) {
         this.storeTestResult(result.value);
@@ -306,7 +312,7 @@ export class APICompatibilityMonitor {
     try {
       const legacyUrl = this.buildLegacyUrl(endpoint);
       const newUrl = this.buildNewUrl(endpoint);
-      
+
       // Skip if either URL is not available
       if (!legacyUrl || !newUrl) {
         return null;
@@ -322,11 +328,12 @@ export class APICompatibilityMonitor {
 
       // Analyze compatibility
       const issues = this.analyzeCompatibility(endpoint, legacyResponse, newResponse);
-      const compatible = issues.filter(issue => issue.severity === 'critical' || issue.severity === 'high').length === 0;
+      const compatible =
+        issues.filter(issue => issue.severity === 'critical' || issue.severity === 'high')
+          .length === 0;
 
-      const responseTimeDiff = legacyResponse && newResponse 
-        ? newResponse.responseTime - legacyResponse.responseTime 
-        : 0;
+      const responseTimeDiff =
+        legacyResponse && newResponse ? newResponse.responseTime - legacyResponse.responseTime : 0;
 
       const result: CompatibilityTestResult = {
         endpoint,
@@ -335,7 +342,7 @@ export class APICompatibilityMonitor {
         compatible,
         issues,
         responseTimeDiff,
-        timestamp: Date.now(),
+        timestamp: Date.now()
       };
 
       // Send alerts for critical issues
@@ -355,14 +362,14 @@ export class APICompatibilityMonitor {
    */
   private async makeTestRequest(url: string, endpoint: APIEndpoint): Promise<any> {
     const startTime = Date.now();
-    
+
     try {
       const response = await fetch(url, {
         method: endpoint.method,
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'User-Agent': 'ACGS-Compatibility-Monitor/1.0',
+          Accept: 'application/json',
+          'User-Agent': 'ACGS-Compatibility-Monitor/1.0'
         },
         // Add test data for POST/PUT requests
         ...(endpoint.method !== 'GET' && {
@@ -379,7 +386,7 @@ export class APICompatibilityMonitor {
         headers: Object.fromEntries(response.headers.entries()),
         data,
         responseTime,
-        url,
+        url
       };
     } catch (error) {
       return {
@@ -389,7 +396,7 @@ export class APICompatibilityMonitor {
         data: null,
         responseTime: Date.now() - startTime,
         url,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : 'Unknown error'
       };
     }
   }
@@ -398,8 +405,8 @@ export class APICompatibilityMonitor {
    * Analyze compatibility between legacy and new responses
    */
   private analyzeCompatibility(
-    endpoint: APIEndpoint, 
-    legacyResponse: any, 
+    endpoint: APIEndpoint,
+    legacyResponse: any,
     newResponse: any
   ): CompatibilityIssue[] {
     const issues: CompatibilityIssue[] = [];
@@ -410,7 +417,7 @@ export class APICompatibilityMonitor {
         type: 'response_format',
         severity: 'critical',
         description: 'One or both endpoints are not responding',
-        impact: 'Complete API incompatibility',
+        impact: 'Complete API incompatibility'
       });
       return issues;
     }
@@ -423,7 +430,7 @@ export class APICompatibilityMonitor {
         description: `Status code mismatch: ${legacyResponse.status} vs ${newResponse.status}`,
         expectedValue: legacyResponse.status,
         actualValue: newResponse.status,
-        impact: 'Client error handling may break',
+        impact: 'Client error handling may break'
       });
     }
 
@@ -437,7 +444,7 @@ export class APICompatibilityMonitor {
         description: `Significant response time difference: ${responseTimeDiff}ms`,
         expectedValue: legacyResponse.responseTime,
         actualValue: newResponse.responseTime,
-        impact: 'User experience degradation',
+        impact: 'User experience degradation'
       });
     }
 
@@ -470,7 +477,7 @@ export class APICompatibilityMonitor {
         field,
         expectedValue: legacyData[field],
         actualValue: undefined,
-        impact: 'Client code may break due to missing data',
+        impact: 'Client code may break due to missing data'
       });
     });
 
@@ -479,7 +486,7 @@ export class APICompatibilityMonitor {
       if (newKeys.includes(key)) {
         const legacyType = typeof legacyData[key];
         const newType = typeof newData[key];
-        
+
         if (legacyType !== newType) {
           issues.push({
             type: 'schema_mismatch',
@@ -488,7 +495,7 @@ export class APICompatibilityMonitor {
             field: key,
             expectedValue: legacyType,
             actualValue: newType,
-            impact: 'Type coercion may be required',
+            impact: 'Type coercion may be required'
           });
         }
       }
@@ -508,7 +515,7 @@ export class APICompatibilityMonitor {
       pgc: process.env.REACT_APP_PGC_API_URL || 'http://localhost:8005',
       integrity: process.env.REACT_APP_INTEGRITY_API_URL || 'http://localhost:8006',
       fv: process.env.REACT_APP_FV_API_URL || 'http://localhost:8004',
-      ec: process.env.REACT_APP_EC_API_URL || 'http://localhost:8007',
+      ec: process.env.REACT_APP_EC_API_URL || 'http://localhost:8007'
     };
 
     const baseUrl = baseUrls[endpoint.service];
@@ -591,8 +598,8 @@ export class APICompatibilityMonitor {
           endpoint,
           issues,
           criticalCount: criticalIssues.length,
-          highCount: highIssues.length,
-        },
+          highCount: highIssues.length
+        }
       });
     }
   }
@@ -695,9 +702,7 @@ export class APICompatibilityMonitor {
     const milestones = [25, 50, 75, 90, 95];
 
     milestones.forEach(milestone => {
-      if (metrics.adoptionRate >= milestone &&
-          this.config.notifications.adoptionMilestones) {
-
+      if (metrics.adoptionRate >= milestone && this.config.notifications.adoptionMilestones) {
         alertingSystem.createAlert({
           type: AlertType.SYSTEM_OVERLOAD,
           severity: AlertSeverity.INFO,
@@ -708,8 +713,8 @@ export class APICompatibilityMonitor {
             milestone,
             adoptionRate: metrics.adoptionRate,
             userCount: metrics.userCount,
-            endpoint: metrics.endpoint,
-          },
+            endpoint: metrics.endpoint
+          }
         });
       }
     });
@@ -725,12 +730,15 @@ export class APICompatibilityMonitor {
       incompatibleEndpoints: number;
       overallCompatibility: number;
     };
-    byService: Record<string, {
-      compatible: number;
-      total: number;
-      issues: number;
-      adoptionRate: number;
-    }>;
+    byService: Record<
+      string,
+      {
+        compatible: number;
+        total: number;
+        issues: number;
+        adoptionRate: number;
+      }
+    >;
     recentIssues: CompatibilityIssue[];
   } {
     const serviceEndpoints = this.groupEndpointsByService();
@@ -759,8 +767,9 @@ export class APICompatibilityMonitor {
 
           // Collect recent critical/high issues
           const criticalIssues = latestResult.issues.filter(
-            issue => (issue.severity === 'critical' || issue.severity === 'high') &&
-                    (Date.now() - latestResult.timestamp) < 86400000 // Last 24 hours
+            issue =>
+              (issue.severity === 'critical' || issue.severity === 'high') &&
+              Date.now() - latestResult.timestamp < 86400000 // Last 24 hours
           );
           recentIssues.push(...criticalIssues);
         }
@@ -771,7 +780,7 @@ export class APICompatibilityMonitor {
         compatible: serviceCompatible,
         total: endpoints.length,
         issues: serviceIssues,
-        adoptionRate: progress?.adoptionRate || 0,
+        adoptionRate: progress?.adoptionRate || 0
       };
     }
 
@@ -780,10 +789,10 @@ export class APICompatibilityMonitor {
         totalEndpoints,
         compatibleEndpoints,
         incompatibleEndpoints: totalEndpoints - compatibleEndpoints,
-        overallCompatibility: totalEndpoints > 0 ? (compatibleEndpoints / totalEndpoints) * 100 : 0,
+        overallCompatibility: totalEndpoints > 0 ? (compatibleEndpoints / totalEndpoints) * 100 : 0
       },
       byService,
-      recentIssues: recentIssues.slice(0, 20), // Last 20 issues
+      recentIssues: recentIssues.slice(0, 20) // Last 20 issues
     };
   }
 

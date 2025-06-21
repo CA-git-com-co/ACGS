@@ -20,28 +20,31 @@ export const useApi = <T = any>(
   options: UseApiOptions = {}
 ) => {
   const { immediate = false, onSuccess, onError } = options;
-  
+
   const [state, setState] = useState<ApiState<T>>({
     data: null,
     loading: false,
     error: null
   });
 
-  const execute = useCallback(async (...args: any[]) => {
-    setState(prev => ({ ...prev, loading: true, error: null }));
-    
-    try {
-      const result = await apiFunction(...args);
-      setState({ data: result, loading: false, error: null });
-      onSuccess?.(result);
-      return result;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
-      setState({ data: null, loading: false, error: errorMessage });
-      onError?.(errorMessage);
-      throw error;
-    }
-  }, [apiFunction, onSuccess, onError]);
+  const execute = useCallback(
+    async (...args: any[]) => {
+      setState(prev => ({ ...prev, loading: true, error: null }));
+
+      try {
+        const result = await apiFunction(...args);
+        setState({ data: result, loading: false, error: null });
+        onSuccess?.(result);
+        return result;
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'An error occurred';
+        setState({ data: null, loading: false, error: errorMessage });
+        onError?.(errorMessage);
+        throw error;
+      }
+    },
+    [apiFunction, onSuccess, onError]
+  );
 
   const reset = useCallback(() => {
     setState({ data: null, loading: false, error: null });
@@ -68,28 +71,31 @@ export const useApiForm = <T = any>(
   options: UseApiOptions = {}
 ) => {
   const { onSuccess, onError } = options;
-  
+
   const [state, setState] = useState<ApiState<T>>({
     data: null,
     loading: false,
     error: null
   });
 
-  const submit = useCallback(async (formData: any) => {
-    setState(prev => ({ ...prev, loading: true, error: null }));
-    
-    try {
-      const result = await submitFunction(formData);
-      setState({ data: result, loading: false, error: null });
-      onSuccess?.(result);
-      return result;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Submission failed';
-      setState(prev => ({ ...prev, loading: false, error: errorMessage }));
-      onError?.(errorMessage);
-      throw error;
-    }
-  }, [submitFunction, onSuccess, onError]);
+  const submit = useCallback(
+    async (formData: any) => {
+      setState(prev => ({ ...prev, loading: true, error: null }));
+
+      try {
+        const result = await submitFunction(formData);
+        setState({ data: result, loading: false, error: null });
+        onSuccess?.(result);
+        return result;
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Submission failed';
+        setState(prev => ({ ...prev, loading: false, error: errorMessage }));
+        onError?.(errorMessage);
+        throw error;
+      }
+    },
+    [submitFunction, onSuccess, onError]
+  );
 
   const reset = useCallback(() => {
     setState({ data: null, loading: false, error: null });
@@ -107,7 +113,11 @@ export const useApiForm = <T = any>(
  * Hook for paginated API calls
  */
 export const usePaginatedApi = <T = any>(
-  apiFunction: (page: number, limit: number, ...args: any[]) => Promise<{ data: T[]; total: number; page: number; limit: number }>,
+  apiFunction: (
+    page: number,
+    limit: number,
+    ...args: any[]
+  ) => Promise<{ data: T[]; total: number; page: number; limit: number }>,
   initialLimit: number = 10
 ) => {
   const [state, setState] = useState({
@@ -120,36 +130,45 @@ export const usePaginatedApi = <T = any>(
     hasMore: false
   });
 
-  const fetchPage = useCallback(async (page: number, ...args: any[]) => {
-    setState(prev => ({ ...prev, loading: true, error: null }));
-    
-    try {
-      const result = await apiFunction(page, state.limit, ...args);
-      setState(prev => ({
-        ...prev,
-        data: page === 1 ? result.data : [...prev.data, ...result.data],
-        loading: false,
-        page: result.page,
-        total: result.total,
-        hasMore: result.data.length === state.limit && (page * state.limit) < result.total
-      }));
-      return result;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch data';
-      setState(prev => ({ ...prev, loading: false, error: errorMessage }));
-      throw error;
-    }
-  }, [apiFunction, state.limit]);
+  const fetchPage = useCallback(
+    async (page: number, ...args: any[]) => {
+      setState(prev => ({ ...prev, loading: true, error: null }));
 
-  const loadMore = useCallback((...args: any[]) => {
-    if (!state.loading && state.hasMore) {
-      return fetchPage(state.page + 1, ...args);
-    }
-  }, [fetchPage, state.loading, state.hasMore, state.page]);
+      try {
+        const result = await apiFunction(page, state.limit, ...args);
+        setState(prev => ({
+          ...prev,
+          data: page === 1 ? result.data : [...prev.data, ...result.data],
+          loading: false,
+          page: result.page,
+          total: result.total,
+          hasMore: result.data.length === state.limit && page * state.limit < result.total
+        }));
+        return result;
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to fetch data';
+        setState(prev => ({ ...prev, loading: false, error: errorMessage }));
+        throw error;
+      }
+    },
+    [apiFunction, state.limit]
+  );
 
-  const refresh = useCallback((...args: any[]) => {
-    return fetchPage(1, ...args);
-  }, [fetchPage]);
+  const loadMore = useCallback(
+    (...args: any[]) => {
+      if (!state.loading && state.hasMore) {
+        return fetchPage(state.page + 1, ...args);
+      }
+    },
+    [fetchPage, state.loading, state.hasMore, state.page]
+  );
+
+  const refresh = useCallback(
+    (...args: any[]) => {
+      return fetchPage(1, ...args);
+    },
+    [fetchPage]
+  );
 
   const reset = useCallback(() => {
     setState({

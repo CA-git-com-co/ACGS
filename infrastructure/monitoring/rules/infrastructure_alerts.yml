@@ -18,10 +18,10 @@ groups:
           team: infrastructure
           escalation: immediate
         annotations:
-          summary: "HAProxy load balancer is down"
-          description: "HAProxy has been down for more than 30 seconds"
-          runbook_url: "https://docs.acgs.ai/runbooks/haproxy-down"
-          impact: "Load balancing unavailable - service disruption imminent"
+          summary: 'HAProxy load balancer is down'
+          description: 'HAProxy has been down for more than 30 seconds'
+          runbook_url: 'https://docs.acgs.ai/runbooks/haproxy-down'
+          impact: 'Load balancing unavailable - service disruption imminent'
 
       # HAProxy Backend Server Down
       - alert: HAProxyBackendServerDown
@@ -32,9 +32,9 @@ groups:
           component: backend_server
           team: infrastructure
         annotations:
-          summary: "HAProxy backend server is down"
-          description: "Backend server {{ $labels.server }} in {{ $labels.proxy }} is down"
-          runbook_url: "https://docs.acgs.ai/runbooks/backend-server-down"
+          summary: 'HAProxy backend server is down'
+          description: 'Backend server {{ $labels.server }} in {{ $labels.proxy }} is down'
+          runbook_url: 'https://docs.acgs.ai/runbooks/backend-server-down'
 
       # HAProxy High Response Time
       - alert: HAProxyHighResponseTime
@@ -45,9 +45,9 @@ groups:
           component: load_balancer_performance
           team: infrastructure
         annotations:
-          summary: "HAProxy high response time"
-          description: "Average response time is {{ $value }}s for {{ $labels.server }} in {{ $labels.proxy }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/haproxy-high-response-time"
+          summary: 'HAProxy high response time'
+          description: 'Average response time is {{ $value }}s for {{ $labels.server }} in {{ $labels.proxy }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/haproxy-high-response-time'
 
       # HAProxy High Connection Count
       - alert: HAProxyHighConnectionCount
@@ -58,9 +58,9 @@ groups:
           component: load_balancer_capacity
           team: infrastructure
         annotations:
-          summary: "HAProxy high connection count"
-          description: "Current sessions: {{ $value }} for {{ $labels.server }} in {{ $labels.proxy }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/haproxy-high-connections"
+          summary: 'HAProxy high connection count'
+          description: 'Current sessions: {{ $value }} for {{ $labels.server }} in {{ $labels.proxy }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/haproxy-high-connections'
 
       # Backend Server Health Issues
       - alert: BackendServerHealthIssues
@@ -71,9 +71,9 @@ groups:
           component: backend_health
           team: infrastructure
         annotations:
-          summary: "Backend server health issues detected"
-          description: "Backend server {{ $labels.service }}:{{ $labels.port }} is unhealthy"
-          runbook_url: "https://docs.acgs.ai/runbooks/backend-health-issues"
+          summary: 'Backend server health issues detected'
+          description: 'Backend server {{ $labels.service }}:{{ $labels.port }} is unhealthy'
+          runbook_url: 'https://docs.acgs.ai/runbooks/backend-health-issues'
 
       # Circuit Breaker Open
       - alert: CircuitBreakerOpen
@@ -84,9 +84,9 @@ groups:
           component: circuit_breaker
           team: infrastructure
         annotations:
-          summary: "Circuit breaker open for {{ $labels.service }}"
-          description: "Circuit breaker is open, blocking requests to {{ $labels.service }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/circuit-breaker-open"
+          summary: 'Circuit breaker open for {{ $labels.service }}'
+          description: 'Circuit breaker is open, blocking requests to {{ $labels.service }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/circuit-breaker-open'
 
       # High Load Balancer Response Time
       - alert: HighLoadBalancerResponseTime
@@ -97,9 +97,9 @@ groups:
           component: load_balancer_performance
           team: infrastructure
         annotations:
-          summary: "High load balancer response time"
-          description: "95th percentile response time is {{ $value }}s for {{ $labels.backend_service }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/lb-high-response-time"
+          summary: 'High load balancer response time'
+          description: '95th percentile response time is {{ $value }}s for {{ $labels.backend_service }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/lb-high-response-time'
 
       # Failover Events
       - alert: FailoverEvents
@@ -110,9 +110,9 @@ groups:
           component: failover
           team: infrastructure
         annotations:
-          summary: "Failover events detected"
-          description: "{{ $value }} failover events per second for {{ $labels.service }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/failover-events"
+          summary: 'Failover events detected'
+          description: '{{ $value }} failover events per second for {{ $labels.service }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/failover-events'
 
       # Session Affinity Issues
       - alert: SessionAffinityIssues
@@ -123,9 +123,9 @@ groups:
           component: session_affinity
           team: infrastructure
         annotations:
-          summary: "Session affinity issues detected"
-          description: "{{ $value }} session affinity failures per second"
-          runbook_url: "https://docs.acgs.ai/runbooks/session-affinity-issues"
+          summary: 'Session affinity issues detected'
+          description: '{{ $value }} session affinity failures per second'
+          runbook_url: 'https://docs.acgs.ai/runbooks/session-affinity-issues'
 
   # ============================================================================
   # REDIS CACHING ALERTS
@@ -142,10 +142,10 @@ groups:
           team: infrastructure
           escalation: immediate
         annotations:
-          summary: "Redis cache server is down"
-          description: "Redis has been down for more than 30 seconds"
-          runbook_url: "https://docs.acgs.ai/runbooks/redis-down"
-          impact: "Caching unavailable - performance degradation expected"
+          summary: 'Redis cache server is down'
+          description: 'Redis has been down for more than 30 seconds'
+          runbook_url: 'https://docs.acgs.ai/runbooks/redis-down'
+          impact: 'Caching unavailable - performance degradation expected'
 
       # Low Cache Hit Rate
       - alert: LowCacheHitRate
@@ -156,9 +156,9 @@ groups:
           component: cache_performance
           team: infrastructure
         annotations:
-          summary: "Low cache hit rate"
-          description: "Cache hit rate is {{ $value | humanizePercentage }} for {{ $labels.service }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/low-cache-hit-rate"
+          summary: 'Low cache hit rate'
+          description: 'Cache hit rate is {{ $value | humanizePercentage }} for {{ $labels.service }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/low-cache-hit-rate'
 
       # High Cache Response Time
       - alert: HighCacheResponseTime
@@ -169,9 +169,9 @@ groups:
           component: cache_performance
           team: infrastructure
         annotations:
-          summary: "High cache response time"
-          description: "95th percentile cache response time is {{ $value }}s for {{ $labels.service }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/high-cache-response-time"
+          summary: 'High cache response time'
+          description: '95th percentile cache response time is {{ $value }}s for {{ $labels.service }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/high-cache-response-time'
 
       # Redis Connection Pool Exhaustion
       - alert: RedisConnectionPoolExhaustion
@@ -182,9 +182,9 @@ groups:
           component: redis_connections
           team: infrastructure
         annotations:
-          summary: "Redis connection pool near exhaustion"
-          description: "Connection pool usage is {{ $value | humanizePercentage }} for {{ $labels.service }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/redis-connection-exhaustion"
+          summary: 'Redis connection pool near exhaustion'
+          description: 'Connection pool usage is {{ $value | humanizePercentage }} for {{ $labels.service }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/redis-connection-exhaustion'
 
       # High Cache Memory Usage
       - alert: HighCacheMemoryUsage
@@ -195,9 +195,9 @@ groups:
           component: cache_memory
           team: infrastructure
         annotations:
-          summary: "High cache memory usage"
-          description: "Cache memory usage is {{ $value }}GB for {{ $labels.service }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/high-cache-memory"
+          summary: 'High cache memory usage'
+          description: 'Cache memory usage is {{ $value }}GB for {{ $labels.service }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/high-cache-memory'
 
       # High Cache Eviction Rate
       - alert: HighCacheEvictionRate
@@ -208,9 +208,9 @@ groups:
           component: cache_evictions
           team: infrastructure
         annotations:
-          summary: "High cache eviction rate"
-          description: "{{ $value }} cache evictions per second for {{ $labels.service }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/high-cache-evictions"
+          summary: 'High cache eviction rate'
+          description: '{{ $value }} cache evictions per second for {{ $labels.service }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/high-cache-evictions'
 
   # ============================================================================
   # DATABASE PERFORMANCE ALERTS
@@ -226,9 +226,9 @@ groups:
           component: database_connections
           team: infrastructure
         annotations:
-          summary: "Database connection issues detected"
-          description: "{{ $value }} failed database connections for {{ $labels.service }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/database-connection-issues"
+          summary: 'Database connection issues detected'
+          description: '{{ $value }} failed database connections for {{ $labels.service }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/database-connection-issues'
 
       # High Database Query Time
       - alert: HighDatabaseQueryTime
@@ -239,9 +239,9 @@ groups:
           component: database_performance
           team: infrastructure
         annotations:
-          summary: "High database query time"
-          description: "95th percentile query time is {{ $value }}s"
-          runbook_url: "https://docs.acgs.ai/runbooks/high-database-query-time"
+          summary: 'High database query time'
+          description: '95th percentile query time is {{ $value }}s'
+          runbook_url: 'https://docs.acgs.ai/runbooks/high-database-query-time'
 
       # Database Connection Pool Exhaustion
       - alert: DatabaseConnectionPoolExhaustion
@@ -252,9 +252,9 @@ groups:
           component: database_connections
           team: infrastructure
         annotations:
-          summary: "Database connection pool near exhaustion"
-          description: "Connection pool usage is {{ $value | humanizePercentage }} for {{ $labels.service }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/db-connection-exhaustion"
+          summary: 'Database connection pool near exhaustion'
+          description: 'Connection pool usage is {{ $value | humanizePercentage }} for {{ $labels.service }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/db-connection-exhaustion'
 
   # ============================================================================
   # SYSTEM PERFORMANCE ALERTS
@@ -271,10 +271,10 @@ groups:
           team: platform
           escalation: immediate
         annotations:
-          summary: "System availability below 99.9% SLA"
-          description: "System availability is {{ $value | humanizePercentage }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/availability-sla-breach"
-          impact: "SLA breach - immediate attention required"
+          summary: 'System availability below 99.9% SLA'
+          description: 'System availability is {{ $value | humanizePercentage }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/availability-sla-breach'
+          impact: 'SLA breach - immediate attention required'
 
       # High Concurrent Governance Actions
       - alert: HighConcurrentGovernanceActions
@@ -285,9 +285,9 @@ groups:
           component: capacity
           team: platform
         annotations:
-          summary: "High number of concurrent governance actions"
-          description: "{{ $value }} concurrent governance actions - approaching capacity limit"
-          runbook_url: "https://docs.acgs.ai/runbooks/high-concurrent-actions"
+          summary: 'High number of concurrent governance actions'
+          description: '{{ $value }} concurrent governance actions - approaching capacity limit'
+          runbook_url: 'https://docs.acgs.ai/runbooks/high-concurrent-actions'
 
       # Resource Exhaustion Warning
       - alert: ResourceExhaustionWarning
@@ -298,6 +298,6 @@ groups:
           component: resource_usage
           team: infrastructure
         annotations:
-          summary: "Resource exhaustion warning"
-          description: "High resource usage detected - {{ $labels.resource_type }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/resource-exhaustion"
+          summary: 'Resource exhaustion warning'
+          description: 'High resource usage detected - {{ $labels.resource_type }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/resource-exhaustion'

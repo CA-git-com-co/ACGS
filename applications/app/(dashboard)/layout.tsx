@@ -1,25 +1,21 @@
-'use client'
+'use client';
 
-import * as React from 'react'
-import { Sidebar } from '@/components/layout/Sidebar'
-import { ThemeToggle } from '@/components/layout/ThemeToggle'
-import { CommandBar } from '@/components/layout/CommandBar'
-import { useLocalStorage } from '@/hooks/useLocalStorage'
+import * as React from 'react';
+import { Sidebar } from '@/components/layout/Sidebar';
+import { ThemeToggle } from '@/components/layout/ThemeToggle';
+import { CommandBar } from '@/components/layout/CommandBar';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useLocalStorage('sidebar-collapsed', false)
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const [sidebarCollapsed, setSidebarCollapsed] = useLocalStorage('sidebar-collapsed', false);
 
   return (
     <div className="flex h-screen bg-base-light dark:bg-base-dark">
-      <Sidebar 
+      <Sidebar
         collapsed={sidebarCollapsed}
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
-      
+
       <main className="flex-1 flex flex-col overflow-hidden">
         <header className="h-16 border-b border-gray-200 dark:border-gray-700 bg-base-white dark:bg-gray-800 flex items-center justify-between px-6">
           <div>
@@ -33,13 +29,11 @@ export default function DashboardLayout({
           </div>
           <ThemeToggle />
         </header>
-        
-        <div className="flex-1 overflow-auto p-6">
-          {children}
-        </div>
+
+        <div className="flex-1 overflow-auto p-6">{children}</div>
       </main>
-      
+
       <CommandBar />
     </div>
-  )
+  );
 }

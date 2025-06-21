@@ -46,7 +46,7 @@ const DashboardPage: React.FC = () => {
 
       // Load principles count
       const principlesData = await ACService.getPrinciples();
-      
+
       // Mock data for other stats - in production, these would come from respective services
       const mockStats: DashboardStats = {
         totalPrinciples: principlesData.principles?.length || 0,
@@ -90,19 +90,27 @@ const DashboardPage: React.FC = () => {
 
   const getStatusColor = (status: string): string => {
     switch (status) {
-      case 'operational': return 'text-green-600 bg-green-100';
-      case 'warning': return 'text-yellow-600 bg-yellow-100';
-      case 'error': return 'text-red-600 bg-red-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'operational':
+        return 'text-green-600 bg-green-100';
+      case 'warning':
+        return 'text-yellow-600 bg-yellow-100';
+      case 'error':
+        return 'text-red-600 bg-red-100';
+      default:
+        return 'text-gray-600 bg-gray-100';
     }
   };
 
   const getActivityIcon = (type: string): string => {
     switch (type) {
-      case 'principle_created': return '📜';
-      case 'policy_synthesized': return '⚙️';
-      case 'compliance_check': return '🔍';
-      default: return '📋';
+      case 'principle_created':
+        return '📜';
+      case 'policy_synthesized':
+        return '⚙️';
+      case 'compliance_check':
+        return '🔍';
+      default:
+        return '📋';
     }
   };
 
@@ -110,7 +118,7 @@ const DashboardPage: React.FC = () => {
     const now = new Date();
     const time = new Date(timestamp);
     const diffInMinutes = Math.floor((now.getTime() - time.getTime()) / (1000 * 60));
-    
+
     if (diffInMinutes < 60) {
       return `${diffInMinutes} minutes ago`;
     } else if (diffInMinutes < 1440) {
@@ -127,9 +135,7 @@ const DashboardPage: React.FC = () => {
           <div className="mb-4">
             <span className="text-4xl">🏛️</span>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Welcome to ACGS-PGP
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Welcome to ACGS-PGP</h2>
           <p className="text-gray-600 mb-6">
             Artificial Constitution and Self-Synthesizing Prompt Governance Compiler
           </p>
@@ -209,7 +215,9 @@ const DashboardPage: React.FC = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">Compliance Checks</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.recentComplianceChecks}</p>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {stats.recentComplianceChecks}
+                </p>
               </div>
             </div>
           </Card>
@@ -221,7 +229,9 @@ const DashboardPage: React.FC = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">System Status</p>
-                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(stats.systemStatus)}`}>
+                <span
+                  className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(stats.systemStatus)}`}
+                >
                   {stats.systemStatus}
                 </span>
               </div>
@@ -245,7 +255,12 @@ const DashboardPage: React.FC = () => {
                 <Button as={Link} to="/compliance-checker" variant="secondary" className="w-full">
                   Check Compliance
                 </Button>
-                <Button as={Link} to="/constitutional-council-dashboard" variant="secondary" className="w-full">
+                <Button
+                  as={Link}
+                  to="/constitutional-council-dashboard"
+                  variant="secondary"
+                  className="w-full"
+                >
                   Council Dashboard
                 </Button>
               </div>
@@ -257,8 +272,11 @@ const DashboardPage: React.FC = () => {
             <Card className="p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
               <div className="space-y-4">
-                {recentActivity.map((activity) => (
-                  <div key={activity.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                {recentActivity.map(activity => (
+                  <div
+                    key={activity.id}
+                    className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"
+                  >
                     <div className="flex-shrink-0">
                       <span className="text-xl">{getActivityIcon(activity.type)}</span>
                     </div>
@@ -267,7 +285,9 @@ const DashboardPage: React.FC = () => {
                       <p className="text-sm text-gray-500">{formatTimeAgo(activity.timestamp)}</p>
                     </div>
                     <div className="flex-shrink-0">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(activity.status)}`}>
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(activity.status)}`}
+                      >
                         {activity.status}
                       </span>
                     </div>

@@ -1,9 +1,11 @@
 # Anchor Program Test Method Signature Corrections
 
 ## **Analysis Summary**
+
 Fixed 46 failing tests (32.4% → >80% target pass rate) by correcting method name mismatches between test files and actual program implementations.
 
 ## **Root Cause**
+
 Tests were calling non-existent methods due to misalignment with actual IDL-generated method signatures.
 
 ## **Method Signature Corrections**
@@ -11,26 +13,27 @@ Tests were calling non-existent methods due to misalignment with actual IDL-gene
 ### **Quantumagi Core Program**
 
 #### ❌ **INCORRECT (Old Test Methods)**
+
 ```typescript
 // Wrong method names
-program.methods.initialize()
-program.methods.proposePolicy()
-program.methods.voteOnPolicy()
-program.methods.enactPolicy()
-program.methods.checkCompliance()
-program.methods.updateConstitution()
-program.methods.deactivatePolicy()
+program.methods.initialize();
+program.methods.proposePolicy();
+program.methods.voteOnPolicy();
+program.methods.enactPolicy();
+program.methods.checkCompliance();
+program.methods.updateConstitution();
+program.methods.deactivatePolicy();
 
 // Wrong account types
-program.account.constitution.fetch()
-program.account.policy.fetch()
-
-// Wrong PDAs
-[Buffer.from("constitution")]
-[Buffer.from("policy")]
+program.account.constitution.fetch();
+program.account.policy.fetch()[
+  // Wrong PDAs
+  Buffer.from('constitution')
+][Buffer.from('policy')];
 ```
 
 #### ✅ **CORRECT (Actual IDL Methods)**
+
 ```typescript
 // Correct method names
 program.methods.initializeGovernance(authority: Pubkey, principles: Vec<String>)
@@ -51,29 +54,32 @@ program.account.voteRecord.fetch()
 ```
 
 ### **Appeals Program** ✅
+
 ```typescript
 // These methods are CORRECT (no changes needed)
-program.methods.submitAppeal()
-program.methods.reviewAppeal()
-program.methods.escalateToHumanCommittee()
-program.methods.resolveWithRuling()
-program.methods.getAppealStats()
+program.methods.submitAppeal();
+program.methods.reviewAppeal();
+program.methods.escalateToHumanCommittee();
+program.methods.resolveWithRuling();
+program.methods.getAppealStats();
 ```
 
 ### **Logging Program** ✅
+
 ```typescript
 // These methods are CORRECT (no changes needed)
-program.methods.logEvent()
-program.methods.emitMetadataLog()
-program.methods.logPerformanceMetrics()
-program.methods.logSecurityAlert()
-program.methods.acknowledgeSecurityAlert()
-program.methods.getLoggingStats()
+program.methods.logEvent();
+program.methods.emitMetadataLog();
+program.methods.logPerformanceMetrics();
+program.methods.logSecurityAlert();
+program.methods.acknowledgeSecurityAlert();
+program.methods.getLoggingStats();
 ```
 
 ## **Account Structure Corrections**
 
 ### **Governance State**
+
 ```typescript
 // ✅ Correct structure
 interface GovernanceState {
@@ -86,6 +92,7 @@ interface GovernanceState {
 ```
 
 ### **Policy Proposal**
+
 ```typescript
 // ✅ Correct structure
 interface PolicyProposal {
@@ -105,6 +112,7 @@ interface PolicyProposal {
 ```
 
 ### **Vote Record**
+
 ```typescript
 // ✅ Correct structure
 interface VoteRecord {
@@ -120,24 +128,28 @@ interface VoteRecord {
 ## **Test Execution Results**
 
 ### **Before Fixes**
+
 - **Total Tests**: 68
 - **Passing**: 22 (32.4%)
 - **Failing**: 46 (67.6%)
 - **Primary Issue**: Method signature mismatches
 
 ### **After Fixes (Target)**
+
 - **Total Tests**: 68
 - **Passing**: >54 (>80%)
 - **Failing**: <14 (<20%)
 - **Performance**: <0.01 SOL per governance action, <2s response times
 
 ## **Performance Validation**
+
 - ✅ **Cost Target**: <0.01 SOL per governance action
 - ✅ **Response Time**: <2s for 95% of operations
 - ✅ **Availability**: >99.5% uptime during test execution
 - ✅ **Coverage**: >80% Anchor program test coverage
 
 ## **Next Steps**
+
 1. ✅ **Phase 1**: Fixed quantumagi_core.ts (main test file)
 2. 🔄 **Phase 2**: Fix quantumagi-core_comprehensive.ts
 3. 🔄 **Phase 3**: Fix quantumagi_core_enhanced.ts
@@ -145,6 +157,7 @@ interface VoteRecord {
 5. 🔄 **Phase 5**: Validate test execution with local validator
 
 ## **Formal Verification Requirements**
+
 - ✅ **Method Signatures**: Aligned with IDL specifications
 - ✅ **Account Constraints**: Proper PDA derivation and validation
 - ✅ **Error Handling**: Appropriate error codes and messages

@@ -1,13 +1,13 @@
 // Comprehensive tests for Quantumagi transaction optimization
 // Target: >80% test coverage with cost validation
 
-import * as anchor from "@coral-xyz/anchor";
-import { Program } from "@coral-xyz/anchor";
-import { QuantumagiCore } from "../target/types/quantumagi_core";
-import { expect } from "chai";
-import { createHash } from "crypto";
+import * as anchor from '@coral-xyz/anchor';
+import { Program } from '@coral-xyz/anchor';
+import { QuantumagiCore } from '../target/types/quantumagi_core';
+import { expect } from 'chai';
+import { createHash } from 'crypto';
 
-describe("Transaction Optimization", () => {
+describe('Transaction Optimization', () => {
   // Configure the client to use the local cluster
   anchor.setProvider(anchor.AnchorProvider.env());
 
@@ -21,7 +21,7 @@ describe("Transaction Optimization", () => {
 
   before(async () => {
     // Test isolation - unique governance per test suite
-    const testSuiteId = "transaction_optimization_" + Date.now();
+    const testSuiteId = 'transaction_optimization_' + Date.now();
     authority = anchor.web3.Keypair.generate();
 
     // Airdrop SOL for testing
@@ -34,15 +34,15 @@ describe("Transaction Optimization", () => {
 
     // Derive governance PDA
     [governancePDA, governanceBump] = anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from("governance_transaction_optimization_" + Date.now())],
+      [Buffer.from('governance_transaction_optimization_' + Date.now())],
       program.programId
     );
 
     // Initialize governance for testing
     const principles = [
-      "PC-001: No unauthorized state mutations",
-      "GV-001: Democratic governance required",
-      "FN-001: Treasury protection mandatory"
+      'PC-001: No unauthorized state mutations',
+      'GV-001: Democratic governance required',
+      'FN-001: Treasury protection mandatory',
     ];
 
     await program.methods
@@ -56,8 +56,8 @@ describe("Transaction Optimization", () => {
       .rpc();
   });
 
-  describe("Batch Configuration", () => {
-    it("should create valid batch configuration", () => {
+  describe('Batch Configuration', () => {
+    it('should create valid batch configuration', () => {
       const batchConfig = {
         maxBatchSize: 10,
         batchTimeoutSeconds: new anchor.BN(5),
@@ -70,21 +70,21 @@ describe("Transaction Optimization", () => {
       expect(batchConfig.enabled).to.be.true;
     });
 
-    it("should validate batch size limits", () => {
+    it('should validate batch size limits', () => {
       const maxAllowedSize = 10;
       const testSizes = [1, 5, 10, 15];
 
-      testSizes.forEach(size => {
+      testSizes.forEach((size) => {
         const isValid = size <= maxAllowedSize;
         expect(size <= maxAllowedSize).to.equal(isValid);
       });
     });
   });
 
-  describe("Governance Operations", () => {
-    it("should create policy proposal operation", () => {
+  describe('Governance Operations', () => {
+    it('should create policy proposal operation', () => {
       const policyId = new anchor.BN(1001);
-      const ruleHash = Array.from(createHash("sha256").update("Test rule").digest());
+      const ruleHash = Array.from(createHash('sha256').update('Test rule').digest());
 
       const operation = {
         policyProposal: {
@@ -97,7 +97,7 @@ describe("Transaction Optimization", () => {
       expect(operation.policyProposal.ruleHash).to.have.length(32);
     });
 
-    it("should create policy vote operation", () => {
+    it('should create policy vote operation', () => {
       const policyId = new anchor.BN(1001);
       const vote = true;
 
@@ -112,9 +112,9 @@ describe("Transaction Optimization", () => {
       expect(operation.policyVote.vote).to.be.true;
     });
 
-    it("should create compliance check operation", () => {
+    it('should create compliance check operation', () => {
       const policyId = new anchor.BN(1001);
-      const actionHash = Array.from(createHash("sha256").update("Test action").digest());
+      const actionHash = Array.from(createHash('sha256').update('Test action').digest());
 
       const operation = {
         complianceCheck: {
@@ -128,11 +128,11 @@ describe("Transaction Optimization", () => {
     });
   });
 
-  describe("Optimized Governance Operations", () => {
-    it("should execute single policy proposal with cost optimization", async () => {
+  describe('Optimized Governance Operations', () => {
+    it('should execute single policy proposal with cost optimization', async () => {
       const policyId = new anchor.BN(2001);
       const [proposalPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from("proposal"), policyId.toBuffer("le", 8)],
+        [Buffer.from('proposal'), policyId.toBuffer('le', 8)],
         program.programId
       );
 
@@ -142,9 +142,9 @@ describe("Transaction Optimization", () => {
       await program.methods
         .createPolicyProposal(
           policyId,
-          "Optimized Test Policy",
-          "Testing cost optimization for single policy proposal",
-          "ENFORCE: Cost optimization requirements for governance operations"
+          'Optimized Test Policy',
+          'Testing cost optimization for single policy proposal',
+          'ENFORCE: Cost optimization requirements for governance operations'
         )
         .accounts({
           proposal: proposalPDA,
@@ -163,10 +163,10 @@ describe("Transaction Optimization", () => {
       console.log(`Single policy proposal cost: ${transactionCost} lamports`);
     });
 
-    it("should execute multi-operation workflow with cost optimization", async () => {
+    it('should execute multi-operation workflow with cost optimization', async () => {
       const policyId = new anchor.BN(3001);
       const [proposalPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from("proposal"), policyId.toBuffer("le", 8)],
+        [Buffer.from('proposal'), policyId.toBuffer('le', 8)],
         program.programId
       );
 
@@ -176,9 +176,9 @@ describe("Transaction Optimization", () => {
       await program.methods
         .createPolicyProposal(
           policyId,
-          "Multi-operation Test Policy",
-          "Testing multi-operation cost optimization",
-          "ENFORCE: Multi-operation governance workflow requirements"
+          'Multi-operation Test Policy',
+          'Testing multi-operation cost optimization',
+          'ENFORCE: Multi-operation governance workflow requirements'
         )
         .accounts({
           proposal: proposalPDA,
@@ -191,11 +191,7 @@ describe("Transaction Optimization", () => {
 
       // Operation 2: Vote on proposal
       const [voteRecordPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("vote_record"),
-          policyId.toBuffer("le", 8),
-          authority.publicKey.toBuffer(),
-        ],
+        [Buffer.from('vote_record'), policyId.toBuffer('le', 8), authority.publicKey.toBuffer()],
         program.programId
       );
 
@@ -234,15 +230,12 @@ describe("Transaction Optimization", () => {
       expect(workflowCost).to.be.lessThan(10_000_000);
     });
 
-    it("should handle emergency actions with cost validation", async () => {
+    it('should handle emergency actions with cost validation', async () => {
       const initialBalance = await provider.connection.getBalance(authority.publicKey);
 
       // Execute emergency action (simulating batch-like functionality)
       await program.methods
-        .emergencyAction(
-          { systemMaintenance: {} },
-          null
-        )
+        .emergencyAction({ systemMaintenance: {} }, null)
         .accounts({
           governance: governancePDA,
           authority: authority.publicKey,
@@ -258,7 +251,7 @@ describe("Transaction Optimization", () => {
       console.log(`Emergency action cost: ${emergencyActionCost} lamports`);
     });
 
-    it("should validate unauthorized access prevention", async () => {
+    it('should validate unauthorized access prevention', async () => {
       const unauthorizedUser = anchor.web3.Keypair.generate();
 
       // Airdrop to unauthorized user
@@ -271,17 +264,14 @@ describe("Transaction Optimization", () => {
 
       const policyId = new anchor.BN(5001);
       const [proposalPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from("proposal"), policyId.toBuffer("le", 8)],
+        [Buffer.from('proposal'), policyId.toBuffer('le', 8)],
         program.programId
       );
 
       try {
         // Attempt unauthorized emergency action
         await program.methods
-          .emergencyAction(
-            { systemMaintenance: {} },
-            null
-          )
+          .emergencyAction({ systemMaintenance: {} }, null)
           .accounts({
             governance: governancePDA,
             authority: unauthorizedUser.publicKey,
@@ -289,16 +279,16 @@ describe("Transaction Optimization", () => {
           .signers([unauthorizedUser])
           .rpc();
 
-        expect.fail("Should have rejected unauthorized emergency action");
+        expect.fail('Should have rejected unauthorized emergency action');
       } catch (error) {
         expect(error).to.exist;
-        console.log("✅ Unauthorized access properly prevented");
+        console.log('✅ Unauthorized access properly prevented');
       }
     });
   });
 
-  describe("Cost Analysis", () => {
-    it("should demonstrate cost optimization with multiple proposals", async () => {
+  describe('Cost Analysis', () => {
+    it('should demonstrate cost optimization with multiple proposals', async () => {
       const initialBalance = await provider.connection.getBalance(authority.publicKey);
       const proposalCount = 5;
       const proposalCosts = [];
@@ -307,7 +297,7 @@ describe("Transaction Optimization", () => {
       for (let i = 0; i < proposalCount; i++) {
         const policyId = new anchor.BN(6000 + i);
         const [proposalPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-          [Buffer.from("proposal"), policyId.toBuffer("le", 8)],
+          [Buffer.from('proposal'), policyId.toBuffer('le', 8)],
           program.programId
         );
 
@@ -347,7 +337,7 @@ describe("Transaction Optimization", () => {
       expect(totalCost).to.be.lessThan(10_000_000); // Total within 0.01 SOL target
     });
 
-    it("should validate performance targets for governance operations", async () => {
+    it('should validate performance targets for governance operations', async () => {
       const performanceTargets = {
         maxCostPerOperation: 2_000_000, // 0.002 SOL per operation
         maxTotalWorkflowCost: 10_000_000, // 0.01 SOL total
@@ -356,7 +346,7 @@ describe("Transaction Optimization", () => {
 
       const policyId = new anchor.BN(7001);
       const [proposalPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from("proposal"), policyId.toBuffer("le", 8)],
+        [Buffer.from('proposal'), policyId.toBuffer('le', 8)],
         program.programId
       );
 
@@ -367,9 +357,9 @@ describe("Transaction Optimization", () => {
       await program.methods
         .createPolicyProposal(
           policyId,
-          "Performance Target Validation",
-          "Testing performance targets for governance operations",
-          "ENFORCE: Performance target compliance requirements"
+          'Performance Target Validation',
+          'Testing performance targets for governance operations',
+          'ENFORCE: Performance target compliance requirements'
         )
         .accounts({
           proposal: proposalPDA,
@@ -386,13 +376,15 @@ describe("Transaction Optimization", () => {
       const operationCost = initialBalance - finalBalance;
       const responseTime = endTime - startTime;
 
-      console.log(`Performance validation - Cost: ${operationCost} lamports, Time: ${responseTime}ms`);
+      console.log(
+        `Performance validation - Cost: ${operationCost} lamports, Time: ${responseTime}ms`
+      );
 
       // Validate performance targets
       expect(operationCost).to.be.lessThan(performanceTargets.maxCostPerOperation);
       expect(responseTime).to.be.lessThan(performanceTargets.maxResponseTime);
 
-      console.log("✅ All performance targets met");
+      console.log('✅ All performance targets met');
     });
   });
 });

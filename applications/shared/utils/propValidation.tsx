@@ -3,7 +3,7 @@ import { validateData } from '../types/validation';
 
 /**
  * Prop validation utilities for React components
- * 
+ *
  * Provides runtime prop validation using Zod schemas with development
  * warnings and production safety.
  */
@@ -23,22 +23,22 @@ export function validateProps<T>(
   // Only validate in development mode
   if (process.env.NODE_ENV === 'development') {
     const result = validateData(schema, props);
-    
+
     if (!result.success) {
       console.group(`🚨 Prop validation failed for ${componentName}`);
       console.error('Invalid props:', props);
       console.error('Validation errors:');
       result.errors.forEach(error => console.error(`  - ${error}`));
       console.groupEnd();
-      
+
       // In development, we still return the original props to avoid breaking the app
       // but with a warning that validation failed
       return props as T;
     }
-    
+
     return result.data;
   }
-  
+
   // In production, skip validation for performance
   return props as T;
 }
@@ -53,18 +53,18 @@ export function withPropValidation<P extends object>(
   schema: z.ZodSchema<P>,
   WrappedComponent: React.ComponentType<P>
 ) {
-  const ValidatedComponent: React.FC<P> = (props) => {
+  const ValidatedComponent: React.FC<P> = props => {
     const validatedProps = validateProps(
       schema,
       props,
       WrappedComponent.displayName || WrappedComponent.name || 'Component'
     );
-    
+
     return <WrappedComponent {...validatedProps} />;
   };
-  
+
   ValidatedComponent.displayName = `withPropValidation(${WrappedComponent.displayName || WrappedComponent.name})`;
-  
+
   return ValidatedComponent;
 }
 
@@ -81,7 +81,7 @@ export function usePropValidation<T>(
   componentName?: string
 ): { isValid: boolean; errors: string[]; data?: T } {
   const result = validateData(schema, props);
-  
+
   if (result.success) {
     return {
       isValid: true,
@@ -89,12 +89,12 @@ export function usePropValidation<T>(
       data: result.data
     };
   }
-  
+
   // Log errors in development
   if (process.env.NODE_ENV === 'development' && componentName) {
     console.warn(`Prop validation failed for ${componentName}:`, result.errors);
   }
-  
+
   return {
     isValid: false,
     errors: result.errors
@@ -114,19 +114,19 @@ export function validateApiResponse<T>(
   endpoint?: string
 ): T {
   const result = validateData(schema, response);
-  
+
   if (!result.success) {
     const errorMessage = `API response validation failed${endpoint ? ` for ${endpoint}` : ''}`;
     console.error(errorMessage, result.errors);
-    
+
     // In development, log the full response for debugging
     if (process.env.NODE_ENV === 'development') {
       console.error('Invalid response:', response);
     }
-    
+
     throw new Error(`${errorMessage}: ${result.errors.join(', ')}`);
   }
-  
+
   return result.data;
 }
 
@@ -157,7 +157,7 @@ export function validateFormData<T>(
     if (error instanceof z.ZodError) {
       const fieldErrors: Record<string, string[]> = {};
       const globalErrors: string[] = [];
-      
+
       error.errors.forEach(err => {
         if (err.path.length > 0) {
           const fieldPath = err.path.join('.');
@@ -169,14 +169,14 @@ export function validateFormData<T>(
           globalErrors.push(err.message);
         }
       });
-      
+
       return {
         isValid: false,
         errors: fieldErrors,
         globalErrors
       };
     }
-    
+
     return {
       isValid: false,
       errors: {},
@@ -207,12 +207,12 @@ export function validateEnv<T>(
   env: Record<string, string | undefined> = process.env
 ): T {
   const result = validateData(schema, env);
-  
+
   if (!result.success) {
     console.error('Environment validation failed:', result.errors);
     throw new Error(`Invalid environment configuration: ${result.errors.join(', ')}`);
   }
-  
+
   return result.data;
 }
 
@@ -243,7 +243,8 @@ export function createAssertion<T>(schema: z.ZodSchema<T>) {
       schema.parse(value);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const errorMessage = message || `Assertion failed: ${error.errors.map(e => e.message).join(', ')}`;
+        const errorMessage =
+          message || `Assertion failed: ${error.errors.map(e => e.message).join(', ')}`;
         throw new Error(errorMessage);
       }
       throw error;
@@ -285,11 +286,11 @@ export function validateWithErrorHandler<T, E>(
   onError: (errors: string[]) => E
 ): T | E {
   const result = validateData(schema, data);
-  
+
   if (result.success) {
     return result.data;
   }
-  
+
   return onError(result.errors);
 }
 
@@ -302,7 +303,9 @@ export function validateWithErrorHandler<T, E>(
 export function batchValidate<T>(
   schema: z.ZodSchema<T>,
   values: unknown[]
-): Array<{ success: true; data: T; index: number } | { success: false; errors: string[]; index: number }> {
+): Array<
+  { success: true; data: T; index: number } | { success: false; errors: string[]; index: number }
+> {
   return values.map((value, index) => {
     const result = validateData(schema, value);
     return { ...result, index };

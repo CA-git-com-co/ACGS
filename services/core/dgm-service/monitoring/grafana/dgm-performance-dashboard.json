@@ -21,11 +21,8 @@
             "legendFormat": "{{service}}"
           }
         ],
-        "yAxes": [
-          {"label": "Score", "min": 0, "max": 1},
-          {"show": false}
-        ],
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+        "yAxes": [{ "label": "Score", "min": 0, "max": 1 }, { "show": false }],
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 }
       },
       {
         "id": 2,
@@ -41,11 +38,8 @@
             "legendFormat": "Median"
           }
         ],
-        "yAxes": [
-          {"label": "Improvement %", "min": -50, "max": 100},
-          {"show": false}
-        ],
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+        "yAxes": [{ "label": "Improvement %", "min": -50, "max": 100 }, { "show": false }],
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 }
       },
       {
         "id": 3,
@@ -57,7 +51,7 @@
             "legendFormat": "{{le}}"
           }
         ],
-        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
+        "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 }
       },
       {
         "id": 4,
@@ -69,11 +63,8 @@
             "legendFormat": "Exploration Rate - {{algorithm}}"
           }
         ],
-        "yAxes": [
-          {"label": "Rate", "min": 0, "max": 1},
-          {"show": false}
-        ],
-        "gridPos": {"h": 6, "w": 12, "x": 0, "y": 16}
+        "yAxes": [{ "label": "Rate", "min": 0, "max": 1 }, { "show": false }],
+        "gridPos": { "h": 6, "w": 12, "x": 0, "y": 16 }
       },
       {
         "id": 5,
@@ -89,11 +80,8 @@
             "legendFormat": "Median"
           }
         ],
-        "yAxes": [
-          {"label": "Reward", "min": -1, "max": 1},
-          {"show": false}
-        ],
-        "gridPos": {"h": 6, "w": 12, "x": 12, "y": 16}
+        "yAxes": [{ "label": "Reward", "min": -1, "max": 1 }, { "show": false }],
+        "gridPos": { "h": 6, "w": 12, "x": 12, "y": 16 }
       },
       {
         "id": 6,
@@ -105,11 +93,8 @@
             "legendFormat": "95th percentile - {{operation}}"
           }
         ],
-        "yAxes": [
-          {"label": "Seconds", "min": 0},
-          {"show": false}
-        ],
-        "gridPos": {"h": 6, "w": 12, "x": 0, "y": 22}
+        "yAxes": [{ "label": "Seconds", "min": 0 }, { "show": false }],
+        "gridPos": { "h": 6, "w": 12, "x": 0, "y": 22 }
       },
       {
         "id": 7,
@@ -121,11 +106,8 @@
             "legendFormat": "Hit Rate"
           }
         ],
-        "yAxes": [
-          {"label": "Rate", "min": 0, "max": 1},
-          {"show": false}
-        ],
-        "gridPos": {"h": 6, "w": 12, "x": 12, "y": 22}
+        "yAxes": [{ "label": "Rate", "min": 0, "max": 1 }, { "show": false }],
+        "gridPos": { "h": 6, "w": 12, "x": 12, "y": 22 }
       }
     ]
   }

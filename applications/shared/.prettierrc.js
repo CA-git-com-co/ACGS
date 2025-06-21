@@ -6,11 +6,11 @@ module.exports = {
   printWidth: 100,
   tabWidth: 2,
   useTabs: false,
-  
+
   // JSX specific options
   jsxSingleQuote: false,
   jsxBracketSameLine: false,
-  
+
   // Other formatting options
   arrowParens: 'avoid',
   bracketSpacing: true,
@@ -20,7 +20,7 @@ module.exports = {
   proseWrap: 'preserve',
   quoteProps: 'as-needed',
   requirePragma: false,
-  
+
   // File-specific overrides for ACGS patterns
   overrides: [
     {

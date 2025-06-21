@@ -3,15 +3,7 @@
     "concurrent_users": 100,
     "duration_seconds": 120,
     "target_response_time_ms": 500.0,
-    "services_tested": [
-      "auth",
-      "ac",
-      "integrity",
-      "fv",
-      "gs",
-      "pgc",
-      "ec"
-    ]
+    "services_tested": ["auth", "ac", "integrity", "fv", "gs", "pgc", "ec"]
   },
   "execution_summary": {
     "start_time": "2025-06-18T01:58:02.050742+00:00",
@@ -72,8 +64,6 @@
   "performance_evaluation": {
     "grade": "A",
     "target_met": true,
-    "recommendations": [
-      "System performance meets targets - consider scaling tests"
-    ]
+    "recommendations": ["System performance meets targets - consider scaling tests"]
   }
 }

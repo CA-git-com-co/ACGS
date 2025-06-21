@@ -3,7 +3,7 @@
 **Version**: v3.0.0  
 **Last Updated**: 2025-06-15  
 **Service**: PGC Service (Policy Governance Control)  
-**Base URL**: `http://localhost:8005`  
+**Base URL**: `http://localhost:8005`
 
 ## Overview
 
@@ -12,6 +12,7 @@ The Constitutional Hash Validation API provides enterprise-grade constitutional 
 ## Authentication
 
 All endpoints require valid JWT authentication:
+
 ```bash
 Authorization: Bearer <jwt_token>
 ```
@@ -19,7 +20,7 @@ Authorization: Bearer <jwt_token>
 ## Performance Targets
 
 - **Validation Latency**: ≤5ms for 95% of operations
-- **Middleware Latency**: ≤2ms for 95% of requests  
+- **Middleware Latency**: ≤2ms for 95% of requests
 - **Compliance Accuracy**: ≥95%
 - **Availability**: >99.5%
 - **Cache Hit Rate**: >80%
@@ -31,6 +32,7 @@ Authorization: Bearer <jwt_token>
 Validate constitutional hash with comprehensive compliance checking.
 
 **Request Parameters:**
+
 ```json
 {
   "hash": "string (optional)",
@@ -45,6 +47,7 @@ Validate constitutional hash with comprehensive compliance checking.
 ```
 
 **Response:**
+
 ```json
 {
   "status": "valid|invalid|error",
@@ -65,6 +68,7 @@ Validate constitutional hash with comprehensive compliance checking.
 ```
 
 **Example Request:**
+
 ```bash
 curl -X GET "http://localhost:8005/api/v1/constitutional/validate" \
   -H "Authorization: Bearer $JWT_TOKEN" \
@@ -84,6 +88,7 @@ curl -X GET "http://localhost:8005/api/v1/constitutional/validate" \
 Get current constitutional state and system metrics.
 
 **Response:**
+
 ```json
 {
   "constitutional_hash": "cdd01ef066bc6cf2",
@@ -116,6 +121,7 @@ Get current constitutional state and system metrics.
 Validate policy compliance against constitutional framework.
 
 **Request Body:**
+
 ```json
 {
   "policy_data": {
@@ -139,6 +145,7 @@ Validate policy compliance against constitutional framework.
 ```
 
 **Response:**
+
 ```json
 {
   "policy_compliance": {
@@ -166,7 +173,7 @@ Validate policy compliance against constitutional framework.
       },
       {
         "check_type": "policy_structure",
-        "status": "passed", 
+        "status": "passed",
         "score": 0.94
       }
     ]
@@ -182,21 +189,25 @@ Validate policy compliance against constitutional framework.
 ## Validation Levels
 
 ### Basic Validation
+
 - **Latency Target**: <2ms
 - **Checks**: Constitutional hash verification only
 - **Use Case**: High-frequency operations, real-time validation
 
-### Standard Validation  
+### Standard Validation
+
 - **Latency Target**: <5ms
 - **Checks**: Hash verification + basic compliance checks
 - **Use Case**: Regular policy operations, standard workflows
 
 ### Comprehensive Validation
+
 - **Latency Target**: <10ms
 - **Checks**: Full constitutional compliance analysis
 - **Use Case**: Policy creation, constitutional amendments
 
 ### Critical Validation
+
 - **Latency Target**: <15ms
 - **Checks**: Maximum security validation with formal verification
 - **Use Case**: Constitutional changes, emergency procedures
@@ -204,6 +215,7 @@ Validate policy compliance against constitutional framework.
 ## Error Handling
 
 ### Error Response Format
+
 ```json
 {
   "error": {
@@ -222,19 +234,21 @@ Validate policy compliance against constitutional framework.
 
 ### Common Error Codes
 
-| Code | Description | HTTP Status |
-|------|-------------|-------------|
-| `INVALID_CONSTITUTIONAL_HASH` | Provided hash doesn't match reference | 400 |
-| `VALIDATION_TIMEOUT` | Validation exceeded time limit | 408 |
-| `CIRCUIT_BREAKER_OPEN` | Service temporarily unavailable | 503 |
-| `INSUFFICIENT_PERMISSIONS` | User lacks validation permissions | 403 |
-| `INVALID_VALIDATION_LEVEL` | Unsupported validation level | 400 |
-| `POLICY_COMPLIANCE_FAILURE` | Policy violates constitutional principles | 422 |
+| Code                          | Description                               | HTTP Status |
+| ----------------------------- | ----------------------------------------- | ----------- |
+| `INVALID_CONSTITUTIONAL_HASH` | Provided hash doesn't match reference     | 400         |
+| `VALIDATION_TIMEOUT`          | Validation exceeded time limit            | 408         |
+| `CIRCUIT_BREAKER_OPEN`        | Service temporarily unavailable           | 503         |
+| `INSUFFICIENT_PERMISSIONS`    | User lacks validation permissions         | 403         |
+| `INVALID_VALIDATION_LEVEL`    | Unsupported validation level              | 400         |
+| `POLICY_COMPLIANCE_FAILURE`   | Policy violates constitutional principles | 422         |
 
 ## Security Features
 
 ### HMAC-SHA256 Integrity Verification
+
 All constitutional operations include HMAC-SHA256 signatures for integrity verification:
+
 ```json
 {
   "integrity_signature": "hmac_sha256_signature",
@@ -244,13 +258,17 @@ All constitutional operations include HMAC-SHA256 signatures for integrity verif
 ```
 
 ### Circuit Breaker Protection
+
 Automatic circuit breaker protection prevents cascade failures:
+
 - **Failure Threshold**: 5 consecutive failures
 - **Timeout**: 30 seconds
 - **Half-Open State**: Gradual recovery testing
 
 ### Audit Logging
+
 All constitutional validation operations are logged:
+
 ```json
 {
   "audit_log": {
@@ -267,13 +285,14 @@ All constitutional validation operations are logged:
 ## Rate Limiting
 
 - **Standard Users**: 1000 requests/minute
-- **Premium Users**: 5000 requests/minute  
+- **Premium Users**: 5000 requests/minute
 - **System Services**: 10000 requests/minute
 - **Emergency Operations**: Unlimited
 
 ## Monitoring Headers
 
 All responses include monitoring headers:
+
 ```
 X-Constitutional-Hash: cdd01ef066bc6cf2
 X-Constitutional-Validation: passed
@@ -285,6 +304,7 @@ X-Circuit-Breaker-Status: closed
 ## SDK Examples
 
 ### Python SDK
+
 ```python
 from acgs_client import ACGSClient
 
@@ -307,18 +327,19 @@ policy_result = await client.constitutional.validate_policy(
 ```
 
 ### JavaScript SDK
+
 ```javascript
 import { ACGSClient } from '@acgs/client';
 
 const client = new ACGSClient({
   baseURL: 'http://localhost:8005',
-  token: 'jwt_token'
+  token: 'jwt_token',
 });
 
 // Validate constitutional hash
 const result = await client.constitutional.validate({
   validationLevel: 'comprehensive',
-  operationType: 'policy_validation'
+  operationType: 'policy_validation',
 });
 
 // Get constitutional state
@@ -328,6 +349,7 @@ const state = await client.constitutional.getState();
 ## Integration Examples
 
 ### Middleware Integration
+
 ```python
 from fastapi import FastAPI, Request
 from acgs_middleware import ConstitutionalValidationMiddleware
@@ -344,6 +366,7 @@ app.add_middleware(
 ```
 
 ### Service-to-Service Integration
+
 ```python
 import httpx
 
@@ -357,7 +380,7 @@ async def validate_constitutional_compliance(policy_data: dict) -> bool:
             },
             headers={"Authorization": f"Bearer {jwt_token}"}
         )
-        
+
         result = response.json()
         return result["policy_compliance"]["status"] == "compliant"
 ```

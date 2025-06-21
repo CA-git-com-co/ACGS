@@ -15,19 +15,19 @@ spec:
         app: integrity-service
     spec:
       containers:
-      - name: integrity-service
-        image: yourdockerhubusername/integrity-service:latest # Replace with your actual image path
-        ports:
-        - containerPort: 8002 # Port exposed by Integrity Service
-        env:
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: postgres-credentials
-              key: database_url
-        - name: LOG_LEVEL
-          value: "INFO"
-        # Add other necessary environment variables
+        - name: integrity-service
+          image: yourdockerhubusername/integrity-service:latest # Replace with your actual image path
+          ports:
+            - containerPort: 8002 # Port exposed by Integrity Service
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: database_url
+            - name: LOG_LEVEL
+              value: 'INFO'
+          # Add other necessary environment variables
 ---
 apiVersion: v1
 kind: Service

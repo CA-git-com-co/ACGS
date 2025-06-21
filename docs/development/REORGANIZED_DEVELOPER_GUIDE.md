@@ -177,7 +177,7 @@ use anchor_lang::prelude::*;
 #[program]
 pub mod quantumagi_core {
     use super::*;
-    
+
     pub fn create_constitution(
         ctx: Context<CreateConstitution>,
         principles: Vec<Principle>,
@@ -212,24 +212,24 @@ import { Program, AnchorProvider } from '@coral-xyz/anchor';
 import { QuantumagiCore } from './types/quantumagi_core';
 
 export class QuantumagiClient {
-    constructor(
-        private program: Program<QuantumagiCore>,
-        private provider: AnchorProvider
-    ) {}
-    
-    async createConstitution(principles: Principle[]) {
-        const constitution = Keypair.generate();
-        
-        return await this.program.methods
-            .createConstitution(principles)
-            .accounts({
-                constitution: constitution.publicKey,
-                authority: this.provider.wallet.publicKey,
-                systemProgram: SystemProgram.programId,
-            })
-            .signers([constitution])
-            .rpc();
-    }
+  constructor(
+    private program: Program<QuantumagiCore>,
+    private provider: AnchorProvider
+  ) {}
+
+  async createConstitution(principles: Principle[]) {
+    const constitution = Keypair.generate();
+
+    return await this.program.methods
+      .createConstitution(principles)
+      .accounts({
+        constitution: constitution.publicKey,
+        authority: this.provider.wallet.publicKey,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([constitution])
+      .rpc();
+  }
 }
 ```
 
@@ -266,7 +266,7 @@ from app.core.config import settings
 class GovernanceSynthesisClient:
     def __init__(self):
         self.base_url = settings.GOVERNANCE_SYNTHESIS_URL
-        
+
     async def synthesize_policy(self, principles: List[Principle]) -> Policy:
         async with httpx.AsyncClient() as client:
             response = await client.post(
@@ -288,7 +288,7 @@ import { useQuantumagiClient } from '../hooks/useQuantumagiClient';
 export const GovernanceDashboard: React.FC = () => {
     const [policies, setPolicies] = useState<Policy[]>([]);
     const client = useQuantumagiClient();
-    
+
     useEffect(() => {
         const loadPolicies = async () => {
             const policies = await client.getPolicies();
@@ -296,7 +296,7 @@ export const GovernanceDashboard: React.FC = () => {
         };
         loadPolicies();
     }, [client]);
-    
+
     return (
         <div className="governance-dashboard">
             <h1>Governance Dashboard</h1>
@@ -314,12 +314,12 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { QuantumagiClient } from '../lib/quantumagi-client';
 
 export const useQuantumagiClient = () => {
-    const { connection, wallet } = useWallet();
-    
-    return useMemo(() => {
-        if (!wallet || !connection) return null;
-        return new QuantumagiClient(connection, wallet);
-    }, [connection, wallet]);
+  const { connection, wallet } = useWallet();
+
+  return useMemo(() => {
+    if (!wallet || !connection) return null;
+    return new QuantumagiClient(connection, wallet);
+  }, [connection, wallet]);
 };
 ```
 
@@ -329,29 +329,25 @@ export const useQuantumagiClient = () => {
 
 ```typescript
 // Anchor test example
-describe("quantumagi-core", () => {
-    it("Creates a constitution", async () => {
-        const constitution = Keypair.generate();
-        const principles = [
-            { name: "Transparency", description: "All actions must be transparent" }
-        ];
-        
-        await program.methods
-            .createConstitution(principles)
-            .accounts({
-                constitution: constitution.publicKey,
-                authority: provider.wallet.publicKey,
-                systemProgram: SystemProgram.programId,
-            })
-            .signers([constitution])
-            .rpc();
-            
-        const constitutionAccount = await program.account.constitution.fetch(
-            constitution.publicKey
-        );
-        
-        expect(constitutionAccount.principles).toEqual(principles);
-    });
+describe('quantumagi-core', () => {
+  it('Creates a constitution', async () => {
+    const constitution = Keypair.generate();
+    const principles = [{ name: 'Transparency', description: 'All actions must be transparent' }];
+
+    await program.methods
+      .createConstitution(principles)
+      .accounts({
+        constitution: constitution.publicKey,
+        authority: provider.wallet.publicKey,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([constitution])
+      .rpc();
+
+    const constitutionAccount = await program.account.constitution.fetch(constitution.publicKey);
+
+    expect(constitutionAccount.principles).toEqual(principles);
+  });
 });
 ```
 
@@ -370,7 +366,7 @@ def test_create_principle():
         "name": "Transparency",
         "description": "All governance actions must be transparent"
     }
-    
+
     response = client.post("/api/v1/principles", json=principle_data)
     assert response.status_code == 201
     assert response.json()["name"] == principle_data["name"]
@@ -383,14 +379,14 @@ def test_create_principle():
 async def test_policy_synthesis_workflow():
     # Create principle
     principle = await constitutional_ai_client.create_principle(principle_data)
-    
+
     # Synthesize policy
     policy = await governance_synthesis_client.synthesize_policy([principle])
-    
+
     # Verify policy
     verification = await formal_verification_client.verify_policy(policy)
     assert verification.is_valid
-    
+
     # Deploy to blockchain
     tx_hash = await quantumagi_bridge.deploy_policy(policy)
     assert tx_hash is not None
@@ -475,6 +471,7 @@ jobs:
 ### Common Issues
 
 **Blockchain Connection Issues**:
+
 ```bash
 # Check Solana RPC connection
 solana cluster-version
@@ -484,6 +481,7 @@ solana program show <program_id>
 ```
 
 **Service Communication Issues**:
+
 ```bash
 # Check service health
 curl http://localhost:8001/health
@@ -493,6 +491,7 @@ docker logs acgs-constitutional-ai
 ```
 
 **Database Issues**:
+
 ```bash
 # Check database connection
 python -c "from app.core.database import engine; print(engine.execute('SELECT 1').scalar())"

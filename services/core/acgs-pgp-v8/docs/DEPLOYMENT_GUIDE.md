@@ -7,12 +7,14 @@ This guide provides comprehensive instructions for deploying ACGS-PGP v8 in vari
 ## Prerequisites
 
 ### System Requirements
+
 - **CPU**: Minimum 2 cores, Recommended 4+ cores
 - **Memory**: Minimum 2GB RAM, Recommended 4GB+ RAM
 - **Storage**: Minimum 10GB available space
 - **Network**: Access to ACGS-1 core services and external APIs
 
 ### Software Dependencies
+
 - **Docker**: Version 20.10+
 - **Python**: Version 3.11+ (for local development)
 - **PostgreSQL**: Version 12+
@@ -20,6 +22,7 @@ This guide provides comprehensive instructions for deploying ACGS-PGP v8 in vari
 - **Kubernetes**: Version 1.20+ (for K8s deployment)
 
 ### ACGS-1 Dependencies
+
 - Auth Service (port 8000)
 - GS Service (port 8004)
 - PGC Service (port 8005)
@@ -53,6 +56,7 @@ nano .env
 ```
 
 Required environment variables:
+
 ```bash
 DATABASE_URL=postgresql://acgs_user:acgs_password@localhost:5432/acgs_db
 REDIS_URL=redis://localhost:6379/0
@@ -289,6 +293,7 @@ kubectl get secret acgs-pgp-v8-secrets -o yaml > backup/secrets.yaml
 ### Common Issues
 
 #### 1. Service Won't Start
+
 ```bash
 # Check logs
 kubectl logs deployment/acgs-pgp-v8 -n acgs-system
@@ -301,6 +306,7 @@ kubectl describe pod -l app=acgs-pgp-v8 -n acgs-system
 ```
 
 #### 2. Database Connection Issues
+
 ```bash
 # Test database connectivity
 kubectl run -it --rm debug --image=postgres:13 --restart=Never -- \
@@ -311,6 +317,7 @@ kubectl get svc postgresql -n acgs-system
 ```
 
 #### 3. Redis Connection Issues
+
 ```bash
 # Test Redis connectivity
 kubectl run -it --rm debug --image=redis:6 --restart=Never -- \
@@ -321,6 +328,7 @@ kubectl get svc redis -n acgs-system
 ```
 
 #### 4. Constitutional Compliance Failures
+
 ```bash
 # Check PGC service health
 curl http://pgc-service:8005/health
@@ -332,33 +340,36 @@ kubectl logs deployment/acgs-pgp-v8 -n acgs-system | grep constitutional_hash
 ### Performance Tuning
 
 #### 1. Resource Optimization
+
 ```yaml
 # Adjust resource requests/limits
 resources:
   requests:
-    memory: "1Gi"
-    cpu: "500m"
+    memory: '1Gi'
+    cpu: '500m'
   limits:
-    memory: "4Gi"
-    cpu: "2000m"
+    memory: '4Gi'
+    cpu: '2000m'
 ```
 
 #### 2. Scaling Configuration
+
 ```yaml
 # Adjust HPA settings
 spec:
   minReplicas: 5
   maxReplicas: 20
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 60
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60
 ```
 
 #### 3. Database Optimization
+
 ```bash
 # Connection pooling
 DATABASE_URL=postgresql://user:pass@host:5432/db?pool_size=20&max_overflow=30
@@ -372,6 +383,7 @@ DATABASE_URL=postgresql://user:pass@host:5432/db?pool_size=20&max_overflow=30
 ## Rollback Procedures
 
 ### Docker Rollback
+
 ```bash
 # Stop current container
 docker stop acgs-pgp-v8
@@ -384,6 +396,7 @@ docker run -d --name acgs-pgp-v8 acgs-pgp-v8:previous
 ```
 
 ### Kubernetes Rollback
+
 ```bash
 # Check rollout history
 kubectl rollout history deployment/acgs-pgp-v8 -n acgs-system
@@ -401,6 +414,7 @@ kubectl rollout status deployment/acgs-pgp-v8 -n acgs-system
 ## Maintenance
 
 ### Regular Tasks
+
 - Monitor service health and performance
 - Review and rotate logs
 - Update dependencies and security patches
@@ -408,6 +422,7 @@ kubectl rollout status deployment/acgs-pgp-v8 -n acgs-system
 - Performance optimization review
 
 ### Update Procedures
+
 1. Test updates in staging environment
 2. Create backup of current configuration
 3. Deploy new version using rolling update
@@ -418,6 +433,7 @@ kubectl rollout status deployment/acgs-pgp-v8 -n acgs-system
 ## Support
 
 For deployment issues:
+
 1. Check the operational runbook: `docs/OPERATIONAL_RUNBOOK.md`
 2. Review API documentation: `docs/API_DOCUMENTATION.md`
 3. Check service logs and metrics

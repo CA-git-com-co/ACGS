@@ -7,10 +7,13 @@ assignees: ''
 ---
 
 ## Feature Description
+
 A clear and concise description of the feature you'd like to see.
 
 ## Roadmap Phase
+
 Which roadmap phase does this feature belong to?
+
 - [ ] Phase 5: Advanced Blockchain Integration
 - [ ] Phase 6: Quantum-Resistant Features
 - [ ] Phase 7: AI Governance Evolution
@@ -18,10 +21,13 @@ Which roadmap phase does this feature belong to?
 - [ ] New Phase (please describe)
 
 ## Use Case
+
 Describe the use case and why this feature would be valuable.
 
 ## Technical Considerations
+
 Any technical requirements or considerations for this feature.
 
 ## Community Impact
+
 How would this feature benefit the ACGS-1 community?

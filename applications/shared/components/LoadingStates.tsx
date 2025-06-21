@@ -95,9 +95,7 @@ export const Spinner: React.FC<SpinnerProps> = ({
           aria-label="Loading"
         />
         {showText && (
-          <span className={`${sizeClasses.text} ${colorClasses.split(' ')[0]}`}>
-            {text}
-          </span>
+          <span className={`${sizeClasses.text} ${colorClasses.split(' ')[0]}`}>{text}</span>
         )}
       </div>
     </div>
@@ -115,7 +113,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   lines = 1
 }) => {
   const skeletonClass = `bg-gray-200 animate-pulse ${rounded ? 'rounded-full' : 'rounded'} ${className}`;
-  
+
   if (lines === 1) {
     return (
       <div
@@ -133,9 +131,9 @@ export const Skeleton: React.FC<SkeletonProps> = ({
         <div
           key={index}
           className={skeletonClass}
-          style={{ 
-            width: index === lines - 1 ? '75%' : width, 
-            height 
+          style={{
+            width: index === lines - 1 ? '75%' : width,
+            height
           }}
         />
       ))}
@@ -155,11 +153,18 @@ export const Progress: React.FC<ProgressProps> = ({
   className = ''
 }) => {
   const percentage = Math.min(Math.max((progress / max) * 100, 0), 100);
-  const colorClass = color === 'blue' ? 'bg-blue-600' :
-                    color === 'green' ? 'bg-green-600' :
-                    color === 'yellow' ? 'bg-yellow-600' :
-                    color === 'red' ? 'bg-red-600' :
-                    color === 'indigo' ? 'bg-indigo-600' : 'bg-blue-600';
+  const colorClass =
+    color === 'blue'
+      ? 'bg-blue-600'
+      : color === 'green'
+        ? 'bg-green-600'
+        : color === 'yellow'
+          ? 'bg-yellow-600'
+          : color === 'red'
+            ? 'bg-red-600'
+            : color === 'indigo'
+              ? 'bg-indigo-600'
+              : 'bg-blue-600';
 
   return (
     <div className={`w-full ${className}`}>
@@ -201,7 +206,9 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
 
   return (
     <div className={`relative ${className}`}>
-      <div className={blur ? 'filter blur-sm pointer-events-none' : 'pointer-events-none opacity-50'}>
+      <div
+        className={blur ? 'filter blur-sm pointer-events-none' : 'pointer-events-none opacity-50'}
+      >
         {children}
       </div>
       <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75">
@@ -306,9 +313,7 @@ export const LoadingButton: React.FC<{
     disabled={disabled || isLoading}
     className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
   >
-    {isLoading && (
-      <Spinner size="sm" className="mr-2" />
-    )}
+    {isLoading && <Spinner size="sm" className="mr-2" />}
     {isLoading ? loadingText : children}
   </button>
 );
@@ -348,8 +353,18 @@ export const TimeoutLoader: React.FC<{
         {timeoutComponent || (
           <div className="text-center py-8">
             <div className="text-yellow-600 mb-2">
-              <svg className="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="mx-auto h-12 w-12"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">Request Timeout</h3>
@@ -374,10 +389,4 @@ export const TimeoutLoader: React.FC<{
   );
 };
 
-export type {
-  LoadingProps,
-  SpinnerProps,
-  SkeletonProps,
-  ProgressProps,
-  LoadingOverlayProps
-};
+export type { LoadingProps, SpinnerProps, SkeletonProps, ProgressProps, LoadingOverlayProps };

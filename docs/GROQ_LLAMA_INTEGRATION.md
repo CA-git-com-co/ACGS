@@ -7,14 +7,16 @@ This document describes the integration of three Groq-hosted Llama models into t
 ## Integrated Models
 
 ### 1. llama-3.3-70b-versatile
+
 - **Purpose**: Large versatile model for comprehensive testing and complex reasoning tasks
-- **Use Cases**: 
+- **Use Cases**:
   - Complex constitutional analysis
   - Comprehensive policy synthesis
   - Multi-step governance reasoning
 - **Configuration**: `GROQ_TESTING_MODEL_VERSATILE=llama-3.3-70b-versatile`
 
 ### 2. meta-llama/llama-4-maverick-17b-128e-instruct
+
 - **Purpose**: Mid-size model with extended context for research operations
 - **Use Cases**:
   - Research-backed governance analysis
@@ -23,6 +25,7 @@ This document describes the integration of three Groq-hosted Llama models into t
 - **Configuration**: `GROQ_TESTING_MODEL_MAVERICK=meta-llama/llama-4-maverick-17b-128e-instruct`
 
 ### 3. meta-llama/llama-4-scout-17b-16e-instruct
+
 - **Purpose**: Efficient model for rapid testing and quick task generation
 - **Use Cases**:
   - Rapid policy validation
@@ -42,6 +45,7 @@ This document describes the integration of three Groq-hosted Llama models into t
 - Added comprehensive error handling and logging
 
 **Key Features**:
+
 - Uses Groq's OpenAI-compatible endpoint: `https://api.groq.com/openai/v1`
 - Supports all three Llama models with dynamic model selection
 - Implements structured output generation with JSON parsing
@@ -57,6 +61,7 @@ This document describes the integration of three Groq-hosted Llama models into t
 - Added constitutional prompting optimized for Llama models
 
 **Key Features**:
+
 - Specialized prompts for constitutional AI governance
 - Structured output parsing for principle interpretation
 - Confidence scoring and explanation generation
@@ -143,6 +148,7 @@ python scripts/test_groq_acgs_integration.py
 ```
 
 This script tests:
+
 - AlphaEvolve GS Engine integration with all three models
 - GS Service integration with structured interpretation
 - Performance comparison across models
@@ -159,6 +165,7 @@ python tests/integration/test_groq_llm_integration.py
 ## API Endpoint Integration
 
 The Groq models use the OpenAI-compatible API endpoint:
+
 - **Base URL**: `https://api.groq.com/openai/v1`
 - **Authentication**: Bearer token with GROQ_API_KEY
 - **Request Format**: Standard OpenAI chat completions format
@@ -206,6 +213,7 @@ Based on testing, the models show different performance profiles:
 ## Future Enhancements
 
 Potential future improvements:
+
 - Dynamic model selection based on task complexity
 - Load balancing across multiple models
 - Performance monitoring and optimization

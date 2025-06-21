@@ -2,7 +2,7 @@ import { FullConfig } from '@playwright/test';
 
 /**
  * Global teardown for ACGS-PGP Framework E2E tests
- * 
+ *
  * Cleans up test environment and generates test reports
  * for constitutional governance workflow validation.
  */
@@ -12,7 +12,7 @@ async function globalTeardown(config: FullConfig) {
   try {
     // Generate test summary
     console.log('📊 Generating test summary...');
-    
+
     // Log test configuration
     console.log(`🔧 Test configuration:`);
     console.log(`   - Projects: ${config.projects.length}`);
@@ -45,7 +45,6 @@ async function globalTeardown(config: FullConfig) {
     console.log('   ✅ Loading states and user feedback');
 
     console.log('✅ ACGS-PGP Framework E2E teardown completed');
-
   } catch (error) {
     console.error('❌ Global teardown failed:', error);
     // Don't throw to avoid masking test failures

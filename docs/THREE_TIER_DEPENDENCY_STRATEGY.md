@@ -13,6 +13,7 @@ ACGS-1 implements a **three-tier dependency strategy** that eliminates conflicts
 **Scope**: All blockchain-related development and tooling
 
 #### Components
+
 - **Smart Contracts**: Anchor programs written in Rust
 - **Deployment Tools**: Native Rust implementations
 - **Testing Infrastructure**: Rust integration tests
@@ -20,6 +21,7 @@ ACGS-1 implements a **three-tier dependency strategy** that eliminates conflicts
 - **Key Management**: Rust-based keypair and security tools
 
 #### Dependencies
+
 ```toml
 [dependencies]
 solana-program = "1.18.22"
@@ -32,6 +34,7 @@ serde = "1.0"
 ```
 
 #### Benefits
+
 - **No Version Conflicts**: Eliminates Node.js dependency hell
 - **Performance**: Compiled binaries are 70%+ faster than interpreted scripts
 - **Type Safety**: Rust's type system prevents runtime errors
@@ -46,6 +49,7 @@ serde = "1.0"
 **Scope**: All backend microservices and data processing
 
 #### Components
+
 - **Constitutional AI Service**: LLM-powered governance
 - **Governance Synthesis Service**: Policy synthesis and validation
 - **Policy Governance Service**: Real-time policy enforcement
@@ -55,6 +59,7 @@ serde = "1.0"
 - **Evolutionary Computation Service**: WINA optimization
 
 #### Dependencies (UV-managed)
+
 ```toml
 [dependencies]
 fastapi = "^0.104.0"
@@ -66,6 +71,7 @@ pydantic = "^2.0.0"
 ```
 
 #### Benefits
+
 - **Fast Package Management**: UV is 10-100x faster than pip
 - **Isolated Environments**: Each service has isolated dependencies
 - **AI/ML Ecosystem**: Rich Python ecosystem for AI/ML
@@ -80,12 +86,14 @@ pydantic = "^2.0.0"
 **Scope**: Web applications and user interaction layers
 
 #### Components
+
 - **Governance Dashboard**: Main governance interface
 - **Constitutional Council Interface**: Council management
 - **Public Consultation Portal**: Public participation
 - **Admin Panel**: Administrative interface
 
 #### Dependencies
+
 ```json
 {
   "dependencies": {
@@ -99,6 +107,7 @@ pydantic = "^2.0.0"
 ```
 
 #### Benefits
+
 - **Rich UI Ecosystem**: Extensive React/Next.js ecosystem
 - **Client-Side Blockchain**: Direct blockchain interaction from browser
 - **Modern Development**: Latest frontend development practices
@@ -107,6 +116,7 @@ pydantic = "^2.0.0"
 ## 🔄 Interaction Patterns
 
 ### Blockchain ↔ Backend
+
 ```rust
 // Rust blockchain client
 let client = QuantumagiClient::new(rpc_url, keypair)?;
@@ -120,16 +130,18 @@ let response = reqwest::post("http://localhost:8001/api/v1/policies")
 ```
 
 ### Backend ↔ Frontend
+
 ```typescript
 // TypeScript frontend
 const response = await fetch('/api/v1/governance/proposals', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(proposal)
+  body: JSON.stringify(proposal),
 });
 ```
 
 ### Frontend ↔ Blockchain
+
 ```typescript
 // Direct blockchain interaction from frontend
 import { QuantumagiClient } from '@acgs/blockchain-client';
@@ -141,6 +153,7 @@ await client.voteOnProposal(proposalId, vote);
 ## 📦 Dependency Management
 
 ### Rust (Tier 1)
+
 ```bash
 # Install Rust toolchain
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -155,6 +168,7 @@ cargo audit --deny warnings
 ```
 
 ### Python + UV (Tier 2)
+
 ```bash
 # Install UV package manager
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -167,6 +181,7 @@ uv remove deprecated-package
 ```
 
 ### Node.js (Tier 3)
+
 ```bash
 # Install Node.js 18+
 nvm install 18
@@ -182,6 +197,7 @@ npm audit fix
 ## 🚀 Development Workflow
 
 ### 1. Blockchain Development
+
 ```bash
 # Setup Rust environment
 rustup default 1.81.0
@@ -195,6 +211,7 @@ anchor test
 ```
 
 ### 2. Backend Development
+
 ```bash
 # Setup Python environment
 cd services/core/constitutional-ai/constitutional-ai_service
@@ -206,6 +223,7 @@ uv run python -m uvicorn app.main:app --reload
 ```
 
 ### 3. Frontend Development
+
 ```bash
 # Setup Node.js environment
 nvm use 18
@@ -220,6 +238,7 @@ npm test
 ## 🔧 Build and Deployment
 
 ### Tier 1: Rust Blockchain
+
 ```bash
 # Build all blockchain tools
 cd blockchain/scripts
@@ -230,6 +249,7 @@ cargo run --bin deploy_quantumagi -- deploy --cluster devnet
 ```
 
 ### Tier 2: Python Services
+
 ```bash
 # Build service containers
 cd services/core/constitutional-ai/constitutional-ai_service
@@ -240,6 +260,7 @@ uv run python -m uvicorn app.main:app --host 0.0.0.0 --port 8001
 ```
 
 ### Tier 3: Frontend Applications
+
 ```bash
 # Build frontend applications
 cd applications/governance-dashboard
@@ -251,20 +272,22 @@ npm run export
 
 ## 📊 Performance Comparison
 
-| Tier | Language | Package Manager | Build Time | Runtime Performance | Memory Usage |
-|------|----------|----------------|------------|-------------------|--------------|
-| Blockchain | Rust | Cargo | 30s | Excellent (compiled) | Low |
-| Backend | Python | UV | 5s | Good (interpreted) | Medium |
-| Frontend | TypeScript | npm | 45s | Good (V8 JIT) | Medium |
+| Tier       | Language   | Package Manager | Build Time | Runtime Performance  | Memory Usage |
+| ---------- | ---------- | --------------- | ---------- | -------------------- | ------------ |
+| Blockchain | Rust       | Cargo           | 30s        | Excellent (compiled) | Low          |
+| Backend    | Python     | UV              | 5s         | Good (interpreted)   | Medium       |
+| Frontend   | TypeScript | npm             | 45s        | Good (V8 JIT)        | Medium       |
 
 ## 🔒 Security Benefits
 
 ### Tier Isolation
+
 - **No Cross-Tier Conflicts**: Each tier manages its own dependencies
 - **Reduced Attack Surface**: Minimal dependency overlap
 - **Independent Updates**: Tiers can be updated independently
 
 ### Language-Specific Security
+
 - **Rust**: Memory safety, no null pointer dereferences
 - **Python**: Sandboxed execution, controlled imports
 - **TypeScript**: Type safety, compile-time error detection
@@ -272,16 +295,19 @@ npm run export
 ## 🔮 Future Enhancements
 
 ### Tier 1 (Rust)
+
 - WebAssembly compilation for browser execution
 - Cross-chain deployment tools
 - Advanced cryptographic libraries
 
 ### Tier 2 (Python)
+
 - AI model optimization with UV
 - Distributed computing with Ray
 - Advanced ML pipelines
 
 ### Tier 3 (Frontend)
+
 - Progressive Web App capabilities
 - Offline-first architecture
 - Advanced blockchain integrations
@@ -289,6 +315,7 @@ npm run export
 ## 📚 Migration Guide
 
 ### From JavaScript to Rust (Tier 1)
+
 1. Identify JavaScript blockchain tools
 2. Implement Rust equivalents
 3. Test functionality parity
@@ -296,6 +323,7 @@ npm run export
 5. Document new workflows
 
 ### From pip to UV (Tier 2)
+
 1. Install UV package manager
 2. Convert requirements.txt to pyproject.toml
 3. Test dependency resolution
@@ -303,6 +331,7 @@ npm run export
 5. Verify performance improvements
 
 ### Node.js Optimization (Tier 3)
+
 1. Audit frontend dependencies
 2. Remove unnecessary packages
 3. Optimize bundle sizes

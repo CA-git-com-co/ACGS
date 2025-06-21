@@ -5,12 +5,14 @@ This directory contains documentation for all ACGS-1 integration components that
 ## Integration Components
 
 ### 🔄 Data Flywheel Integration
+
 **Location:** `integrations/data-flywheel/`  
 **Documentation:** [Data Flywheel API](../api/data_flywheel_api.md) | [Implementation Summary](../../integrations/data-flywheel/IMPLEMENTATION_SUMMARY.md)
 
 NVIDIA AI Blueprints Data Flywheel implementation for autonomous optimization of AI models used in governance processes while maintaining strict constitutional compliance.
 
 **Key Features:**
+
 - Autonomous model discovery and optimization
 - Constitutional compliance validation
 - Production traffic analysis
@@ -18,6 +20,7 @@ NVIDIA AI Blueprints Data Flywheel implementation for autonomous optimization of
 - Real-time performance monitoring
 
 **API Endpoints:**
+
 - Health Check: `GET /health`
 - Constitutional Health: `GET /constitutional/health`
 - Governance Workloads: `GET /constitutional/workloads`
@@ -25,24 +28,28 @@ NVIDIA AI Blueprints Data Flywheel implementation for autonomous optimization of
 - Compliance Validation: `POST /constitutional/validate`
 
 ### ⛓️ Quantumagi Bridge
+
 **Location:** `integrations/quantumagi-bridge/`  
 **Port:** 8011
 
 Seamless integration between Solana blockchain programs and ACGS-1 backend services, providing real-time synchronization and cross-chain governance coordination.
 
 **Key Features:**
+
 - Blockchain-backend integration
 - Event monitoring and synchronization
 - Cross-chain governance coordination
 - Real-time state management
 
 ### 🧬 AlphaEvolve Engine
+
 **Location:** `integrations/alphaevolve-engine/`  
 **Port:** 8012
 
 AlphaEvolve constitutional AI framework integration for advanced governance decision-making and policy synthesis.
 
 **Key Features:**
+
 - Constitutional AI framework
 - Advanced policy synthesis
 - Governance decision support
@@ -75,6 +82,7 @@ AlphaEvolve constitutional AI framework integration for advanced governance deci
 ## Quick Start Guide
 
 ### 1. Data Flywheel Integration
+
 ```bash
 # Navigate to Data Flywheel integration
 cd integrations/data-flywheel
@@ -95,6 +103,7 @@ curl http://localhost:8010/constitutional/health
 ```
 
 ### 2. Quantumagi Bridge
+
 ```bash
 # Navigate to Quantumagi Bridge
 cd integrations/quantumagi-bridge
@@ -110,6 +119,7 @@ curl http://localhost:8011/health
 ```
 
 ### 3. AlphaEvolve Engine
+
 ```bash
 # Navigate to AlphaEvolve Engine
 cd integrations/alphaevolve-engine
@@ -127,6 +137,7 @@ curl http://localhost:8012/health
 ## Integration Health Monitoring
 
 ### Comprehensive Health Check
+
 ```bash
 # Run comprehensive health check for all integrations
 cd /home/dislove/ACGS-1
@@ -141,6 +152,7 @@ cd integrations/data-flywheel
 ```
 
 ### Service Status Monitoring
+
 ```bash
 # Check all integration services
 curl http://localhost:8010/health  # Data Flywheel
@@ -154,9 +166,11 @@ curl http://localhost:8010/constitutional/health
 ## Configuration Management
 
 ### Environment Variables
+
 Each integration service requires specific environment configuration:
 
 **Data Flywheel** (`.env`):
+
 ```bash
 NGC_API_KEY=your_nvidia_ngc_api_key
 ACGS_BASE_URL=http://localhost:8000
@@ -166,6 +180,7 @@ REDIS_URL=redis://localhost:6379
 ```
 
 **Quantumagi Bridge**:
+
 ```bash
 SOLANA_CLUSTER=devnet
 SOLANA_RPC_URL=https://api.devnet.solana.com
@@ -173,6 +188,7 @@ ACGS_BACKEND_URL=http://localhost:8000
 ```
 
 **AlphaEvolve Engine**:
+
 ```bash
 ACGS_INTEGRATION_URL=http://localhost:8000
 ALPHAEVOLVE_CONFIG_PATH=./config/alphaevolve.yaml
@@ -180,27 +196,30 @@ ALPHAEVOLVE_CONFIG_PATH=./config/alphaevolve.yaml
 
 ## Performance Targets
 
-| Integration | Response Time | Availability | Throughput |
-|-------------|---------------|--------------|------------|
-| Data Flywheel | <50ms | >99.9% | >1000 req/min |
-| Quantumagi Bridge | <100ms | >99.5% | >500 req/min |
-| AlphaEvolve Engine | <200ms | >99.0% | >200 req/min |
+| Integration        | Response Time | Availability | Throughput    |
+| ------------------ | ------------- | ------------ | ------------- |
+| Data Flywheel      | <50ms         | >99.9%       | >1000 req/min |
+| Quantumagi Bridge  | <100ms        | >99.5%       | >500 req/min  |
+| AlphaEvolve Engine | <200ms        | >99.0%       | >200 req/min  |
 
 ## Security Considerations
 
 ### Authentication & Authorization
+
 - All integration services require JWT authentication
 - Service-to-service authentication with internal tokens
 - Role-based access control (RBAC) integration
 - API key management for external services
 
 ### Data Protection
+
 - HTTPS enforcement in production
 - Input validation and sanitization
 - Rate limiting and request throttling
 - Audit logging for all integration operations
 
 ### Constitutional Compliance
+
 - All integration operations logged for constitutional audit
 - Principle-based access control
 - Cryptographic integrity verification
@@ -211,6 +230,7 @@ ALPHAEVOLVE_CONFIG_PATH=./config/alphaevolve.yaml
 ### Common Issues
 
 **Service Discovery Issues**:
+
 ```bash
 # Check service connectivity
 curl -f http://localhost:8010/health || echo "Data Flywheel not responding"
@@ -219,6 +239,7 @@ curl -f http://localhost:8012/health || echo "AlphaEvolve Engine not responding"
 ```
 
 **Integration Connectivity Issues**:
+
 ```bash
 # Test ACGS-1 core services from integrations
 curl http://localhost:8010/constitutional/health
@@ -230,6 +251,7 @@ tail -f integrations/alphaevolve-engine/logs/*.log
 ```
 
 **Performance Issues**:
+
 ```bash
 # Monitor response times
 curl -o /dev/null -s -w '%{time_total}' http://localhost:8010/health

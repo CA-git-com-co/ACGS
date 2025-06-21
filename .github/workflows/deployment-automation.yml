@@ -2,7 +2,7 @@ name: ACGS-1 Deployment Automation
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   workflow_dispatch:
     inputs:
       environment:
@@ -11,18 +11,18 @@ on:
         default: 'staging'
         type: choice
         options:
-        - development
-        - staging
-        - production
+          - development
+          - staging
+          - production
       strategy:
         description: 'Deployment strategy'
         required: true
         default: 'rolling'
         type: choice
         options:
-        - rolling
-        - blue-green
-        - canary
+          - rolling
+          - blue-green
+          - canary
       services:
         description: 'Services to deploy (comma-separated, empty for all)'
         required: false
@@ -79,10 +79,10 @@ jobs:
         id: build
         run: |
           echo "🏗️ Building and pushing Docker images..."
-          
+
           # Build images for each service
           SERVICES=("auth" "ac" "integrity" "fv" "gs" "pgc" "ec")
-          
+
           for service in "${SERVICES[@]}"; do
             echo "Building $service service..."
             
@@ -98,7 +98,7 @@ jobs:
               echo "⚠️ Service directory not found: services/${service}_service"
             fi
           done
-          
+
           echo "✅ All images built and pushed successfully"
 
   # Development Deployment
@@ -132,17 +132,17 @@ jobs:
       - name: Deploy to development
         run: |
           echo "🚀 Deploying to development environment..."
-          
+
           # Make deployment script executable
           chmod +x scripts/deploy.sh
-          
+
           # Deploy with rolling strategy
           ./scripts/deploy.sh \
             --environment development \
             --strategy rolling \
             --image-tag "${{ github.event.inputs.image_tag || 'latest' }}" \
             --services "${{ github.event.inputs.services }}"
-          
+
           echo "✅ Development deployment completed"
 
   # Staging Deployment
@@ -171,39 +171,39 @@ jobs:
       - name: Run pre-deployment tests
         run: |
           echo "🧪 Running pre-deployment tests..."
-          
+
           # Run integration tests
           # npm test
           # python -m pytest tests/integration/
-          
+
           echo "✅ Pre-deployment tests passed"
 
       - name: Deploy to staging
         run: |
           echo "🚀 Deploying to staging environment..."
-          
+
           # Make deployment script executable
           chmod +x scripts/deploy.sh
-          
+
           # Deploy with specified strategy
           ./scripts/deploy.sh \
             --environment staging \
             --strategy "${{ github.event.inputs.strategy || 'rolling' }}" \
             --image-tag "${{ github.event.inputs.image_tag || 'latest' }}" \
             --services "${{ github.event.inputs.services }}"
-          
+
           echo "✅ Staging deployment completed"
 
       - name: Run post-deployment tests
         run: |
           echo "🔍 Running post-deployment tests..."
-          
+
           # Run health checks
           ./scripts/deploy.sh --health-check --environment staging
-          
+
           # Run smoke tests
           # npm run test:smoke
-          
+
           echo "✅ Post-deployment tests passed"
 
   # Production Deployment
@@ -212,7 +212,7 @@ jobs:
     name: Deploy to Production
     needs: [build_and_push, deploy_staging]
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
-    environment: 
+    environment:
       name: production
       url: https://api.acgs-pgp.com
     steps:
@@ -244,44 +244,44 @@ jobs:
       - name: Create database backup
         run: |
           echo "💾 Creating production database backup..."
-          
+
           # Create database backup before deployment
           # ./scripts/database/manage-migrations.sh backup --environment production
-          
+
           echo "✅ Database backup created"
 
       - name: Deploy to production
         run: |
           echo "🚀 Deploying to production environment..."
-          
+
           # Make deployment script executable
           chmod +x scripts/deploy.sh
-          
+
           # Deploy with blue-green strategy for production
           ./scripts/deploy.sh \
             --environment production \
             --strategy "${{ github.event.inputs.strategy || 'blue-green' }}" \
             --image-tag "${{ github.event.inputs.image_tag || 'latest' }}" \
             --services "${{ github.event.inputs.services }}"
-          
+
           echo "✅ Production deployment completed"
 
       - name: Run production health checks
         run: |
           echo "🏥 Running production health checks..."
-          
+
           # Comprehensive health checks
           ./scripts/deploy.sh --health-check --environment production
-          
+
           # Run performance tests
           # ./scripts/performance/benchmark.py --config config/performance/production-health-check.yml
-          
+
           echo "✅ Production health checks passed"
 
       - name: Update deployment status
         run: |
           echo "📊 Updating deployment status..."
-          
+
           # Create deployment record
           cat > /tmp/deployment-record.json << EOF
           {
@@ -295,7 +295,7 @@ jobs:
             "status": "completed"
           }
           EOF
-          
+
           echo "✅ Deployment status updated"
 
   # Rollback Job
@@ -327,18 +327,18 @@ jobs:
       - name: Execute rollback
         run: |
           echo "🔄 Rolling back deployment..."
-          
+
           ROLLBACK_ENV="${{ steps.rollback_env.outputs.environment }}"
-          
+
           # Make deployment script executable
           chmod +x scripts/deploy.sh
-          
+
           # Execute rollback
           ./scripts/deploy.sh \
             --rollback \
             --environment "$ROLLBACK_ENV" \
             --services "${{ github.event.inputs.services }}"
-          
+
           echo "✅ Rollback completed for $ROLLBACK_ENV"
 
       - name: Notify rollback
@@ -373,7 +373,7 @@ jobs:
           echo "- Staging: ${{ needs.deploy_staging.result }}"
           echo "- Production: ${{ needs.deploy_production.result }}"
           echo ""
-          
+
           # Determine overall status
           if [[ "${{ needs.deploy_production.result }}" == "success" ]]; then
             echo "🎉 Production deployment successful!"

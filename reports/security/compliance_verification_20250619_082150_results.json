@@ -139,82 +139,63 @@
           "control": "Authentication",
           "status": "IMPLEMENTED",
           "severity": "LOW",
-          "files": [
-            "services/shared/auth.py",
-            "services/shared/enhanced_auth.py"
-          ],
+          "files": ["services/shared/auth.py", "services/shared/enhanced_auth.py"],
           "recommendation": "Review implementation for completeness"
         },
         {
           "control": "Authorization",
           "status": "IMPLEMENTED",
           "severity": "LOW",
-          "files": [
-            "services/shared/security_middleware.py"
-          ],
+          "files": ["services/shared/security_middleware.py"],
           "recommendation": "Review implementation for completeness"
         },
         {
           "control": "Input Validation",
           "status": "IMPLEMENTED",
           "severity": "LOW",
-          "files": [
-            "services/shared/input_validation.py"
-          ],
+          "files": ["services/shared/input_validation.py"],
           "recommendation": "Review implementation for completeness"
         },
         {
           "control": "Security Headers",
           "status": "IMPLEMENTED",
           "severity": "LOW",
-          "files": [
-            "services/shared/security_middleware.py"
-          ],
+          "files": ["services/shared/security_middleware.py"],
           "recommendation": "Review implementation for completeness"
         },
         {
           "control": "Session Management",
           "status": "IMPLEMENTED",
           "severity": "LOW",
-          "files": [
-            "services/shared/enhanced_auth.py"
-          ],
+          "files": ["services/shared/enhanced_auth.py"],
           "recommendation": "Review implementation for completeness"
         },
         {
           "control": "Cryptography",
           "status": "IMPLEMENTED",
           "severity": "LOW",
-          "files": [
-            "services/shared/security_config.py"
-          ],
+          "files": ["services/shared/security_config.py"],
           "recommendation": "Review implementation for completeness"
         },
         {
           "control": "Database Security",
           "status": "IMPLEMENTED",
           "severity": "LOW",
-          "files": [
-            "services/shared/database.py"
-          ],
+          "files": ["services/shared/database.py"],
           "recommendation": "Review implementation for completeness"
         },
         {
           "control": "Logging",
           "status": "IMPLEMENTED",
           "severity": "LOW",
-          "files": [
-            "logs/"
-          ],
+          "files": ["logs/"],
           "recommendation": "Review implementation for completeness"
         },
         {
           "control": "Configuration",
           "status": "IMPLEMENTED",
           "severity": "LOW",
-          "files": [
-            "config/"
-          ],
+          "files": ["config/"],
           "recommendation": "Review implementation for completeness"
         }
       ],

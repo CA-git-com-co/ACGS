@@ -33,6 +33,7 @@ Authorization: Bearer <jwt_token>
 ```
 
 Obtain tokens from the Authentication Service:
+
 ```bash
 curl -X POST http://localhost:8000/auth/login \
   -H "Content-Type: application/json" \
@@ -47,6 +48,7 @@ curl -X POST http://localhost:8000/auth/login \
 **Interactive Docs**: `http://localhost:8000/docs`
 
 #### Core Endpoints
+
 - `POST /auth/login` - User authentication
 - `POST /auth/refresh` - Token refresh
 - `POST /auth/logout` - User logout
@@ -54,6 +56,7 @@ curl -X POST http://localhost:8000/auth/login \
 - `GET /health` - Service health check
 
 #### Example Usage
+
 ```bash
 # Login
 curl -X POST http://localhost:8000/auth/login \
@@ -70,6 +73,7 @@ curl http://localhost:8000/health
 **Interactive Docs**: `http://localhost:8001/docs`
 
 #### Core Endpoints
+
 - `POST /api/v1/analyze` - Constitutional analysis
 - `POST /api/v1/validate` - Policy validation
 - `GET /api/v1/principles` - Constitutional principles
@@ -77,6 +81,7 @@ curl http://localhost:8000/health
 - `GET /health` - Service health check
 
 #### Example Usage
+
 ```bash
 # Analyze constitutional compliance
 curl -X POST http://localhost:8001/api/v1/analyze \
@@ -94,6 +99,7 @@ curl -X POST http://localhost:8001/api/v1/analyze \
 **Interactive Docs**: `http://localhost:8002/docs`
 
 #### Core Endpoints
+
 - `POST /api/v1/sign` - Digital signature creation
 - `POST /api/v1/verify` - Signature verification
 - `GET /api/v1/audit-log` - Audit trail retrieval
@@ -101,6 +107,7 @@ curl -X POST http://localhost:8001/api/v1/analyze \
 - `GET /health` - Service health check
 
 #### Example Usage
+
 ```bash
 # Sign a document
 curl -X POST http://localhost:8002/api/v1/sign \
@@ -118,6 +125,7 @@ curl -X POST http://localhost:8002/api/v1/sign \
 **Interactive Docs**: `http://localhost:8003/docs`
 
 #### Core Endpoints
+
 - `POST /api/v1/verify-policy` - Policy formal verification
 - `POST /api/v1/check-consistency` - Consistency checking
 - `GET /api/v1/verification-rules` - Available verification rules
@@ -125,6 +133,7 @@ curl -X POST http://localhost:8002/api/v1/sign \
 - `GET /health` - Service health check
 
 #### Example Usage
+
 ```bash
 # Verify policy consistency
 curl -X POST http://localhost:8003/api/v1/verify-policy \
@@ -142,6 +151,7 @@ curl -X POST http://localhost:8003/api/v1/verify-policy \
 **Interactive Docs**: `http://localhost:8004/docs`
 
 #### Core Endpoints
+
 - `POST /api/v1/synthesize` - Policy synthesis
 - `POST /api/v1/generate-alternatives` - Alternative generation
 - `GET /api/v1/synthesis-templates` - Available templates
@@ -149,6 +159,7 @@ curl -X POST http://localhost:8003/api/v1/verify-policy \
 - `GET /health` - Service health check
 
 #### Example Usage
+
 ```bash
 # Synthesize policy from inputs
 curl -X POST http://localhost:8004/api/v1/synthesize \
@@ -167,6 +178,7 @@ curl -X POST http://localhost:8004/api/v1/synthesize \
 **Interactive Docs**: `http://localhost:8005/docs`
 
 #### Core Endpoints
+
 - `POST /api/v1/policies` - Create policy
 - `GET /api/v1/policies` - List policies
 - `GET /api/v1/policies/{id}` - Get specific policy
@@ -176,6 +188,7 @@ curl -X POST http://localhost:8004/api/v1/synthesize \
 - `GET /health` - Service health check
 
 #### Example Usage
+
 ```bash
 # Create new policy
 curl -X POST http://localhost:8005/api/v1/policies \
@@ -195,6 +208,7 @@ curl -X POST http://localhost:8005/api/v1/policies \
 **Interactive Docs**: `http://localhost:8006/docs`
 
 #### Core Endpoints
+
 - `POST /api/v1/evolve` - Start evolution process
 - `GET /api/v1/evolution/{id}` - Get evolution status
 - `POST /api/v1/fitness-evaluation` - Evaluate fitness
@@ -202,6 +216,7 @@ curl -X POST http://localhost:8005/api/v1/policies \
 - `GET /health` - Service health check
 
 #### Example Usage
+
 ```bash
 # Start policy evolution
 curl -X POST http://localhost:8006/api/v1/evolve \
@@ -220,6 +235,7 @@ curl -X POST http://localhost:8006/api/v1/evolve \
 **Interactive Docs**: `http://localhost:8007/docs`
 
 #### Core Endpoints
+
 - `POST /api/v1/improve` - Trigger self-improvement
 - `GET /api/v1/improvements` - List improvements
 - `GET /api/v1/performance` - Performance metrics
@@ -239,6 +255,7 @@ Comprehensive documentation available at: [ACGS-PGP v8 API Documentation](../ser
 **Interactive Docs**: `http://localhost:8020/docs`
 
 #### Core Endpoints
+
 - `POST /api/v1/ocr/extract` - Extract text from images
 - `POST /api/v1/ocr/analyze` - Analyze document structure
 - `GET /api/v1/ocr/formats` - Supported formats
@@ -247,6 +264,7 @@ Comprehensive documentation available at: [ACGS-PGP v8 API Documentation](../ser
 ## 🔄 Common Response Formats
 
 ### Success Response
+
 ```json
 {
   "status": "success",
@@ -257,6 +275,7 @@ Comprehensive documentation available at: [ACGS-PGP v8 API Documentation](../ser
 ```
 
 ### Error Response
+
 ```json
 {
   "status": "error",
@@ -271,6 +290,7 @@ Comprehensive documentation available at: [ACGS-PGP v8 API Documentation](../ser
 ```
 
 ### Health Check Response
+
 ```json
 {
   "status": "healthy",
@@ -287,11 +307,13 @@ Comprehensive documentation available at: [ACGS-PGP v8 API Documentation](../ser
 ## 📊 Monitoring & Metrics
 
 All services expose Prometheus metrics at `/metrics`:
+
 ```bash
 curl http://localhost:8001/metrics
 ```
 
 Key metrics include:
+
 - Request count and duration
 - Error rates
 - Service health status
@@ -300,11 +322,13 @@ Key metrics include:
 ## 🚀 Getting Started
 
 1. **Start Services**:
+
    ```bash
    ./scripts/setup/start_development.sh
    ```
 
 2. **Get Authentication Token**:
+
    ```bash
    TOKEN=$(curl -s -X POST http://localhost:8000/auth/login \
      -H "Content-Type: application/json" \

@@ -2,7 +2,7 @@ name: ACGS-1 Dependency Vulnerability Monitoring
 
 on:
   schedule:
-    - cron: '0 6 * * *'  # Daily at 6 AM UTC
+    - cron: '0 6 * * *' # Daily at 6 AM UTC
   workflow_dispatch:
     inputs:
       alert_level:
@@ -11,10 +11,10 @@ on:
         default: 'high'
         type: choice
         options:
-        - critical
-        - high
-        - medium
-        - low
+          - critical
+          - high
+          - medium
+          - low
 
 permissions:
   contents: read
@@ -49,10 +49,10 @@ jobs:
         id: safety_check
         run: |
           echo "🔍 Running Safety vulnerability check..."
-          
+
           # Create output directory
           mkdir -p /tmp/reports
-          
+
           # Run safety check and capture output
           if safety check --json --output /tmp/reports/safety-report.json; then
             echo "safety_status=success" >> $GITHUB_OUTPUT
@@ -66,7 +66,7 @@ jobs:
         id: pip_audit_check
         run: |
           echo "🔍 Running pip-audit vulnerability check..."
-          
+
           # Run pip-audit and capture output
           if pip-audit --format=json --output=/tmp/reports/pip-audit-report.json; then
             echo "pip_audit_status=success" >> $GITHUB_OUTPUT
@@ -79,7 +79,7 @@ jobs:
       - name: Process Python vulnerability results
         run: |
           echo "📊 Processing Python vulnerability results..."
-          
+
           # Combine results and create summary
           cat > /tmp/reports/python-vulnerability-summary.json << EOF
           {
@@ -90,7 +90,7 @@ jobs:
             "alert_level": "${{ env.ALERT_LEVEL }}"
           }
           EOF
-          
+
           echo "✅ Python results processed"
 
   # Node.js Dependencies Monitoring
@@ -116,9 +116,9 @@ jobs:
         id: npm_audit
         run: |
           echo "🔍 Running npm audit..."
-          
+
           mkdir -p /tmp/reports
-          
+
           # Find and audit all package.json files
           find . -name "package.json" -not -path "*/node_modules/*" | while read package_file; do
             dir=$(dirname "$package_file")
@@ -139,7 +139,7 @@ jobs:
       - name: Process Node.js vulnerability results
         run: |
           echo "📊 Processing Node.js vulnerability results..."
-          
+
           cat > /tmp/reports/nodejs-vulnerability-summary.json << EOF
           {
             "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
@@ -148,7 +148,7 @@ jobs:
             "alert_level": "${{ env.ALERT_LEVEL }}"
           }
           EOF
-          
+
           echo "✅ Node.js results processed"
 
   # Rust Dependencies Monitoring
@@ -174,9 +174,9 @@ jobs:
         id: cargo_audit
         run: |
           echo "🔍 Running cargo audit..."
-          
+
           mkdir -p /tmp/reports
-          
+
           if [ -d "blockchain" ]; then
             cd blockchain
             
@@ -198,7 +198,7 @@ jobs:
       - name: Process Rust vulnerability results
         run: |
           echo "📊 Processing Rust vulnerability results..."
-          
+
           cat > /tmp/reports/rust-vulnerability-summary.json << EOF
           {
             "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
@@ -207,7 +207,7 @@ jobs:
             "alert_level": "${{ env.ALERT_LEVEL }}"
           }
           EOF
-          
+
           echo "✅ Rust results processed"
 
   # Vulnerability Analysis and Alerting
@@ -228,7 +228,7 @@ jobs:
       - name: Analyze vulnerability trends
         run: |
           echo "📈 Analyzing vulnerability trends..."
-          
+
           # Create comprehensive vulnerability report
           cat > /tmp/vulnerability-analysis.json << EOF
           {
@@ -243,7 +243,7 @@ jobs:
             "overall_status": "$([ "${{ needs.python_dependency_monitoring.result }}" = "success" ] && [ "${{ needs.nodejs_dependency_monitoring.result }}" = "success" ] && [ "${{ needs.rust_dependency_monitoring.result }}" = "success" ] && echo "clean" || echo "vulnerabilities_found")"
           }
           EOF
-          
+
           echo "✅ Vulnerability analysis completed"
 
       - name: Create security issue for vulnerabilities
@@ -254,30 +254,30 @@ jobs:
             const title = `🚨 Security Alert: Dependency Vulnerabilities Detected (${new Date().toISOString().split('T')[0]})`;
             const body = `
             ## Security Vulnerability Alert
-            
+
             **Alert Level:** ${{ env.ALERT_LEVEL }}
             **Scan Date:** ${new Date().toISOString()}
             **Commit:** ${{ github.sha }}
-            
+
             ### Scan Results
             - **Python Dependencies:** ${{ needs.python_dependency_monitoring.result }}
             - **Node.js Dependencies:** ${{ needs.nodejs_dependency_monitoring.result }}
             - **Rust Dependencies:** ${{ needs.rust_dependency_monitoring.result }}
-            
+
             ### Action Required
             1. Review the detailed vulnerability reports in the workflow artifacts
             2. Update affected dependencies to secure versions
             3. Test the updates in development environment
             4. Deploy fixes through the standard promotion pipeline
-            
+
             ### Resources
             - [Workflow Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
             - [Security Policy](./SECURITY.md)
             - [Dependency Management Guide](./docs/DEPENDENCY_MANAGEMENT.md)
-            
+
             **This issue was automatically created by the dependency monitoring workflow.**
             `;
-            
+
             // Check if a similar issue already exists
             const existingIssues = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
@@ -285,12 +285,12 @@ jobs:
               state: 'open',
               labels: 'security,dependencies'
             });
-            
+
             const today = new Date().toISOString().split('T')[0];
             const existingIssue = existingIssues.data.find(issue => 
               issue.title.includes('Security Alert') && issue.title.includes(today)
             );
-            
+
             if (!existingIssue) {
               await github.rest.issues.create({
                 owner: context.repo.owner,
@@ -322,7 +322,7 @@ jobs:
           echo "- Node.js Dependencies: ${{ needs.nodejs_dependency_monitoring.result }}"
           echo "- Rust Dependencies: ${{ needs.rust_dependency_monitoring.result }}"
           echo ""
-          
+
           if [ "${{ needs.python_dependency_monitoring.result }}" = "failure" ] || [ "${{ needs.nodejs_dependency_monitoring.result }}" = "failure" ] || [ "${{ needs.rust_dependency_monitoring.result }}" = "failure" ]; then
             echo "⚠️ VULNERABILITIES DETECTED - Review and remediate immediately"
             echo "📋 Security issue created automatically"

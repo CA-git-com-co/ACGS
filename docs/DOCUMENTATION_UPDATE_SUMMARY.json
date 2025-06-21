@@ -4,13 +4,7 @@
   "directory_structure": {
     "blockchain": {
       "description": "Solana/Anchor Programs",
-      "subdirectories": [
-        "programs",
-        "client",
-        "tests",
-        "scripts",
-        "quantumagi-deployment"
-      ],
+      "subdirectories": ["programs", "client", "tests", "scripts", "quantumagi-deployment"],
       "purpose": "On-chain governance enforcement"
     },
     "services": {
@@ -22,19 +16,9 @@
           "policy-governance",
           "formal-verification"
         ],
-        "platform": [
-          "authentication",
-          "integrity",
-          "workflow"
-        ],
-        "research": [
-          "federated-evaluation",
-          "research-platform"
-        ],
-        "shared": [
-          "libraries",
-          "utilities"
-        ]
+        "platform": ["authentication", "integrity", "workflow"],
+        "research": ["federated-evaluation", "research-platform"],
+        "shared": ["libraries", "utilities"]
       },
       "purpose": "Off-chain governance services"
     },
@@ -50,21 +34,12 @@
     },
     "integrations": {
       "description": "Integration Layer",
-      "subdirectories": [
-        "quantumagi-bridge",
-        "alphaevolve-engine",
-        "data-flywheel"
-      ],
+      "subdirectories": ["quantumagi-bridge", "alphaevolve-engine", "data-flywheel"],
       "purpose": "Bridges between blockchain and off-chain components"
     },
     "infrastructure": {
       "description": "Infrastructure & Operations",
-      "subdirectories": [
-        "docker",
-        "kubernetes",
-        "monitoring",
-        "load-balancer"
-      ],
+      "subdirectories": ["docker", "kubernetes", "monitoring", "load-balancer"],
       "purpose": "Deployment and operational infrastructure"
     }
   },

@@ -2,12 +2,7 @@
   "data_collection": {
     "performance_metrics": {
       "collection_frequency": "real-time",
-      "aggregation_intervals": [
-        "1m",
-        "5m",
-        "1h",
-        "1d"
-      ],
+      "aggregation_intervals": ["1m", "5m", "1h", "1d"],
       "retention_policy": "90 days detailed, 1 year aggregated"
     },
     "user_behavior_analytics": {

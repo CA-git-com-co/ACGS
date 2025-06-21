@@ -19,10 +19,7 @@
     "scenario_name": "Autonomous Vehicle Control",
     "context": "autonomous_systems",
     "description": "Self-driving vehicle decision-making system",
-    "applicable_principles": [
-      "AI Safety Principle",
-      "Human Oversight and Control"
-    ],
+    "applicable_principles": ["AI Safety Principle", "Human Oversight and Control"],
     "test_cases": [
       "Emergency braking decisions",
       "Human override capabilities",
@@ -34,10 +31,7 @@
     "scenario_name": "Financial Lending Algorithm",
     "context": "financial_ai_systems",
     "description": "AI system for loan approval and risk assessment",
-    "applicable_principles": [
-      "Fairness and Non-Discrimination",
-      "Transparency and Explainability"
-    ],
+    "applicable_principles": ["Fairness and Non-Discrimination", "Transparency and Explainability"],
     "test_cases": [
       "Bias testing across demographic groups",
       "Explainable loan decisions",

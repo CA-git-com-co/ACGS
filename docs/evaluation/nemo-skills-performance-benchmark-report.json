@@ -9,10 +9,7 @@
   "system_configuration": {
     "server_backends": {
       "primary": "vllm",
-      "fallback": [
-        "trtllm",
-        "sglang"
-      ],
+      "fallback": ["trtllm", "sglang"],
       "model_name": "meta/llama-3.3-70b-instruct"
     },
     "tir_configuration": {

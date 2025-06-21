@@ -7,6 +7,7 @@ This document describes the 5 core governance workflows implemented in ACGS-1.
 End-to-end policy creation from draft to implementation
 
 ### Stages:
+
 - Draft
 - Review
 - Voting
@@ -18,6 +19,7 @@ End-to-end policy creation from draft to implementation
 Validation of policies against constitutional principles
 
 ### Stages:
+
 - Submission
 - Analysis
 - Validation
@@ -29,6 +31,7 @@ Validation of policies against constitutional principles
 Real-time policy enforcement and violation handling
 
 ### Stages:
+
 - Detection
 - Assessment
 - Response
@@ -40,6 +43,7 @@ Real-time policy enforcement and violation handling
 Weight Informed Neuron Activation oversight and monitoring
 
 ### Stages:
+
 - Monitoring
 - Analysis
 - Intervention
@@ -51,9 +55,9 @@ Weight Informed Neuron Activation oversight and monitoring
 Comprehensive audit trail and transparency reporting
 
 ### Stages:
+
 - Collection
 - Processing
 - Analysis
 - Reporting
 - Publication
-

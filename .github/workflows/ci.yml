@@ -2,12 +2,12 @@ name: ACGS-1 Enterprise Multi-Environment CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, master, develop, 'feature/*', 'hotfix/*' ]
+    branches: [main, master, develop, 'feature/*', 'hotfix/*']
   pull_request:
-    branches: [ main, master, develop ]
+    branches: [main, master, develop]
   schedule:
-    - cron: '0 2 * * *'  # Daily at 2 AM for comprehensive testing
-  workflow_dispatch:  # Allow manual triggering for testing
+    - cron: '0 2 * * *' # Daily at 2 AM for comprehensive testing
+  workflow_dispatch: # Allow manual triggering for testing
     inputs:
       environment:
         description: 'Target environment for deployment'
@@ -15,9 +15,9 @@ on:
         default: 'development'
         type: choice
         options:
-        - development
-        - staging
-        - production
+          - development
+          - staging
+          - production
       skip_tests:
         description: 'Skip test execution (emergency deployments only)'
         required: false
@@ -29,8 +29,8 @@ permissions:
   packages: write
   security-events: write
   actions: read
-  id-token: write  # Required for MSDO and advanced security scanning
-  deployments: write  # Required for environment deployments
+  id-token: write # Required for MSDO and advanced security scanning
+  deployments: write # Required for environment deployments
 
 env:
   REGISTRY: ghcr.io
@@ -43,19 +43,19 @@ env:
   ENTERPRISE_BUILD_TARGET_MINUTES: 5
   ENTERPRISE_AVAILABILITY_TARGET: 99.9
   # Enhanced Caching Configuration for Enterprise Performance
-  CARGO_INCREMENTAL: 0  # Disabled for sccache compatibility
+  CARGO_INCREMENTAL: 0 # Disabled for sccache compatibility
   CARGO_NET_RETRY: 10
   CARGO_NET_GIT_FETCH_WITH_CLI: true
   # Workspace-level caching optimization
   CARGO_TARGET_DIR: blockchain/target
-  RUSTC_WRAPPER: sccache  # Enable distributed compilation caching
+  RUSTC_WRAPPER: sccache # Enable distributed compilation caching
   # Circuit breaker configuration
   MAX_RETRY_ATTEMPTS: 3
   CIRCUIT_BREAKER_TIMEOUT: 300
   # Multi-environment configuration
-  DEVELOPMENT_CLUSTER_URL: "https://api.devnet.solana.com"
-  STAGING_CLUSTER_URL: "https://api.testnet.solana.com"
-  PRODUCTION_CLUSTER_URL: "https://api.mainnet-beta.solana.com"
+  DEVELOPMENT_CLUSTER_URL: 'https://api.devnet.solana.com'
+  STAGING_CLUSTER_URL: 'https://api.testnet.solana.com'
+  PRODUCTION_CLUSTER_URL: 'https://api.mainnet-beta.solana.com'
 
 jobs:
   # Enterprise Performance Monitoring Job
@@ -102,13 +102,13 @@ jobs:
         id: infrastructure_check
         run: |
           echo "🔧 Validating CI/CD infrastructure readiness..."
-          
+
           # Check GitHub Actions runner resources
           echo "Runner OS: $(uname -a)"
           echo "Available disk space: $(df -h / | tail -1 | awk '{print $4}')"
           echo "Available memory: $(free -h | grep '^Mem:' | awk '{print $7}')"
           echo "CPU cores: $(nproc)"
-          
+
           # Validate network connectivity using HTTP (more reliable than ping on CI)
           if timeout 10 curl -I https://github.com 2>&1 | grep -q "HTTP"; then
             echo "✅ GitHub connectivity verified"
@@ -116,14 +116,14 @@ jobs:
             echo "❌ GitHub connectivity failed"
             exit 1
           fi
-          
-          if curl -I https://crates.io 2>&1 | grep -q "HTTP"; then
+
+          if timeout 10 curl -I https://crates.io 2>&1 | grep -q "HTTP"; then
             echo "✅ Crates.io connectivity verified"
           else
             echo "❌ Crates.io connectivity failed"
             exit 1
           fi
-          
+
           echo "ready=true" >> $GITHUB_OUTPUT
           echo "✅ Infrastructure validation completed successfully"
 
@@ -838,7 +838,14 @@ jobs:
   enterprise_reporting:
     runs-on: ubuntu-latest
     name: Enterprise Performance & Compliance Reporting
-    needs: [performance_monitoring, preflight, toolchain_setup, rust_quality_build, enterprise_security_scan]
+    needs:
+      [
+        performance_monitoring,
+        preflight,
+        toolchain_setup,
+        rust_quality_build,
+        enterprise_security_scan,
+      ]
     if: always() && needs.preflight.outputs.should_run_tests == 'true'
     steps:
       - name: Check out repository
@@ -1071,7 +1078,14 @@ jobs:
   multi_environment_deployment:
     runs-on: ubuntu-latest
     name: Multi-Environment Deployment
-    needs: [preflight, toolchain_setup, rust_quality_build, enterprise_security_scan, enterprise_reporting]
+    needs:
+      [
+        preflight,
+        toolchain_setup,
+        rust_quality_build,
+        enterprise_security_scan,
+        enterprise_reporting,
+      ]
     if: needs.preflight.outputs.should_deploy == 'true' && (needs.enterprise_reporting.result == 'success' || github.event.inputs.skip_tests == 'true')
     environment:
       name: ${{ needs.preflight.outputs.target_environment }}

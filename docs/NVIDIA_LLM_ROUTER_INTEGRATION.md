@@ -9,11 +9,13 @@ The NVIDIA LLM Router provides intelligent routing of LLM requests to optimal mo
 ### Service Components
 
 1. **Router Controller** (Port 8080)
+
    - Manages routing policies and model configurations
    - Monitors model health and performance
    - Handles configuration updates and policy management
 
 2. **Router Server** (Port 8081)
+
    - Processes incoming LLM requests
    - Performs intelligent model selection
    - Routes requests to appropriate NVIDIA models
@@ -92,7 +94,7 @@ async def direct_api_example():
             "max_tokens": 2048,
             "temperature": 0.1
         }
-        
+
         async with session.post(
             "http://nvidia_llm_router_server:8081/v1/chat/completions",
             json=payload,
@@ -129,24 +131,24 @@ For external applications or frontend integration.
 
 ```javascript
 async function callLLMRouter(messages, taskType = null) {
-    const payload = {
-        messages: messages,
-        task_type: taskType,
-        max_tokens: 2048,
-        temperature: 0.2
-    };
-    
-    const response = await fetch('/api/llm-router/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${authToken}`
-        },
-        body: JSON.stringify(payload)
-    });
-    
-    const result = await response.json();
-    return result.choices[0].message.content;
+  const payload = {
+    messages: messages,
+    task_type: taskType,
+    max_tokens: 2048,
+    temperature: 0.2,
+  };
+
+  const response = await fetch('/api/llm-router/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${authToken}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const result = await response.json();
+  return result.choices[0].message.content;
 }
 ```
 
@@ -157,16 +159,19 @@ async function callLLMRouter(messages, taskType = null) {
 The router automatically selects optimal models based on task type:
 
 #### Constitutional AI Tasks
+
 - **constitutional_analysis**: Routes to premium models (Nemotron-70B, Llama-405B)
 - **constitutional_compliance**: Uses high-accuracy models with audit trails
 - **policy_synthesis**: Employs multi-model consensus for critical decisions
 
 #### Governance Synthesis Tasks
+
 - **policy_synthesis**: Premium models with multi-model validation
 - **policy_review**: Balanced models with good accuracy/speed ratio
 - **compliance_enforcement**: High-accuracy models with audit logging
 
 #### General Tasks
+
 - **content_generation**: Standard models for balanced performance
 - **summarization**: Efficient models for speed
 - **classification**: Fast models with good accuracy
@@ -176,16 +181,19 @@ The router automatically selects optimal models based on task type:
 The router analyzes request complexity and routes accordingly:
 
 #### High Complexity
+
 - **Indicators**: "constitutional", "multi-step", "reasoning", "analysis"
 - **Models**: Premium tier (Nemotron-70B, Llama-405B)
 - **Use Cases**: Constitutional analysis, complex policy synthesis
 
 #### Medium Complexity
+
 - **Indicators**: "review", "evaluate", "compare", "assess"
 - **Models**: Standard tier (Llama-70B, Llama-8B)
 - **Use Cases**: Policy review, content analysis
 
 #### Low Complexity
+
 - **Indicators**: "summarize", "classify", "extract", "list"
 - **Models**: Efficient tier (Llama-8B, Mistral-7B)
 - **Use Cases**: Summarization, simple classification
@@ -219,8 +227,8 @@ The routing policies are defined in `services/platform/nvidia-llm-router/router-
 # Task-based routing example
 task_routing:
   constitutional_analysis:
-    preferred_models: ["nvidia/llama-3.1-nemotron-70b-instruct"]
-    fallback_models: ["nvidia/llama-3.1-70b-instruct"]
+    preferred_models: ['nvidia/llama-3.1-nemotron-70b-instruct']
+    fallback_models: ['nvidia/llama-3.1-70b-instruct']
     min_confidence_threshold: 0.95
     require_audit_trail: true
 ```
@@ -236,14 +244,14 @@ from services.shared.llm_router_client import LLMRouterClient, TaskType
 class ConstitutionalAnalyzer:
     def __init__(self):
         self.llm_client = LLMRouterClient()
-    
+
     async def analyze_constitutional_compliance(self, content: str) -> dict:
         response = await self.llm_client.constitutional_request(
             content=content,
             analysis_type="compliance_check",
             constitutional_principles=["fairness", "transparency", "accountability"]
         )
-        
+
         return {
             "analysis": response.content,
             "model_used": response.model_used,
@@ -261,14 +269,14 @@ from services.shared.llm_router_client import LLMRouterClient, TaskType
 class PolicySynthesizer:
     def __init__(self):
         self.llm_client = LLMRouterClient()
-    
+
     async def synthesize_policy(self, requirements: str, context: str) -> dict:
         response = await self.llm_client.policy_synthesis_request(
             requirements=requirements,
             context=context,
             stakeholders=["citizens", "government", "experts"]
         )
-        
+
         return {
             "policy": response.content,
             "model_used": response.model_used,
@@ -285,19 +293,19 @@ from services.shared.llm_router_client import LLMRouterClient, TaskType
 class ComplianceEnforcer:
     def __init__(self):
         self.llm_client = LLMRouterClient()
-    
+
     async def detect_violations(self, content: str, policies: list) -> dict:
         messages = [
             {"role": "system", "content": "You are a compliance enforcement AI."},
             {"role": "user", "content": f"Check this content against policies: {content}"}
         ]
-        
+
         response = await self.llm_client.chat_completion(
             messages=messages,
             task_type=TaskType.VIOLATION_DETECTION,
             metadata={"policies": policies}
         )
-        
+
         return {
             "violations": response.content,
             "model_used": response.model_used,
@@ -332,6 +340,7 @@ async def get_router_metrics():
 ### Prometheus Metrics
 
 The router exposes Prometheus metrics at:
+
 - Controller: `http://nvidia_llm_router_controller:9092/metrics`
 - Server: `http://nvidia_llm_router_server:9093/metrics`
 - Via Nginx: `http://localhost:8000/metrics/llm-router`
@@ -355,12 +364,12 @@ Add to your main `infrastructure/docker/docker-compose.yml`:
 ```yaml
 services:
   # ... existing services ...
-  
+
   nvidia_llm_router_controller:
     extends:
       file: infrastructure/docker/docker-compose.nvidia-router.yml
       service: nvidia_llm_router_controller
-  
+
   nvidia_llm_router_server:
     extends:
       file: infrastructure/docker/docker-compose.nvidia-router.yml
@@ -392,12 +401,14 @@ services:
 ### Common Issues
 
 1. **Model Unavailable**
+
    ```bash
    # Check model status
    curl http://localhost:8081/v1/models
    ```
 
 2. **High Latency**
+
    ```bash
    # Check router metrics
    curl http://localhost:8081/metrics
@@ -412,6 +423,7 @@ services:
 ### Debug Mode
 
 Enable debug logging:
+
 ```bash
 LLM_ROUTER_DEBUG_MODE=true
 LLM_ROUTER_LOG_LEVEL=DEBUG
@@ -433,6 +445,7 @@ await client.close()
 ### Caching
 
 Response caching is enabled for non-sensitive requests:
+
 - Cache TTL: 5 minutes
 - Excluded tasks: constitutional_analysis, compliance_enforcement
 
@@ -459,6 +472,7 @@ nvidia_llm_router_server_2:
 ## Support
 
 For issues and questions:
+
 1. Check the service logs: `docker logs acgs_nvidia_llm_router_server`
 2. Verify configuration: Review `router-controller/config.yml`
 3. Test connectivity: Use health check endpoints

@@ -1,15 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
-import { ThemeToggle } from '@/components/layout/ThemeToggle'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { ThemeToggle } from '@/components/layout/ThemeToggle';
 
 export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-large-heading font-bold text-gray-900 dark:text-gray-100">
-          Settings
-        </h1>
+        <h1 className="text-large-heading font-bold text-gray-900 dark:text-gray-100">Settings</h1>
         <p className="text-body text-gray-500 dark:text-gray-400 mt-1">
           Manage your account settings and preferences
         </p>
@@ -21,11 +19,7 @@ export default function SettingsPage() {
             <CardTitle>Account Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Input
-              label="Full Name"
-              placeholder="Enter your full name"
-              defaultValue="John Doe"
-            />
+            <Input label="Full Name" placeholder="Enter your full name" defaultValue="John Doe" />
             <Input
               label="Email Address"
               type="email"
@@ -55,7 +49,7 @@ export default function SettingsPage() {
               </div>
               <ThemeToggle />
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-body font-medium">Email Notifications</p>
@@ -91,16 +85,8 @@ export default function SettingsPage() {
             <CardTitle>Security</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Input
-              label="Current Password"
-              type="password"
-              placeholder="Enter current password"
-            />
-            <Input
-              label="New Password"
-              type="password"
-              placeholder="Enter new password"
-            />
+            <Input label="Current Password" type="password" placeholder="Enter current password" />
+            <Input label="New Password" type="password" placeholder="Enter new password" />
             <Input
               label="Confirm New Password"
               type="password"
@@ -137,5 +123,5 @@ export default function SettingsPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

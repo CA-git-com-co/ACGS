@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import { useEffect } from 'react'
-import { matchesShortcut, KeyboardShortcut } from '@/lib/keyboard'
+import { useEffect } from 'react';
+import { matchesShortcut, KeyboardShortcut } from '@/lib/keyboard';
 
 export function useKeyboard(
   shortcut: KeyboardShortcut,
@@ -11,12 +11,12 @@ export function useKeyboard(
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (matchesShortcut(event, shortcut)) {
-        event.preventDefault()
-        callback(event)
+        event.preventDefault();
+        callback(event);
       }
     }
 
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [shortcut, callback, ...dependencies])
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [shortcut, callback, ...dependencies]);
 }

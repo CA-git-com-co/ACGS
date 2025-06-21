@@ -24,8 +24,8 @@ services:
       - cluster.routing.allocation.disk.watermark.high=90%
       - cluster.routing.allocation.disk.watermark.flood_stage=95%
     ports:
-      - "9201:9200"
-      - "9301:9300"
+      - '9201:9200'
+      - '9301:9300'
     volumes:
       - acgs_elasticsearch_security_data:/usr/share/elasticsearch/data
       - ./elk-config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
@@ -37,7 +37,11 @@ services:
       - acgs-security-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -u elastic:acgs_security_2024 -f http://localhost:9200/_cluster/health || exit 1"]
+      test:
+        [
+          'CMD-SHELL',
+          'curl -u elastic:acgs_security_2024 -f http://localhost:9200/_cluster/health || exit 1',
+        ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -53,9 +57,9 @@ services:
       - xpack.monitoring.elasticsearch.password=acgs_security_2024
       - LS_JAVA_OPTS=-Xms1g -Xmx1g
     ports:
-      - "5044:5044"  # Beats input
-      - "5000:5000"  # TCP input
-      - "9600:9600"  # Logstash monitoring API
+      - '5044:5044' # Beats input
+      - '5000:5000' # TCP input
+      - '9600:9600' # Logstash monitoring API
     volumes:
       - ./elk-config/logstash/pipeline:/usr/share/logstash/pipeline:ro
       - ./elk-config/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
@@ -67,7 +71,7 @@ services:
       - acgs-security-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9600 || exit 1"]
+      test: ['CMD-SHELL', 'curl -f http://localhost:9600 || exit 1']
       interval: 30s
       timeout: 10s
       retries: 5
@@ -87,7 +91,7 @@ services:
       - xpack.security.encryptionKey=acgs_kibana_encryption_key_32_chars
       - xpack.ml.enabled=true
     ports:
-      - "5601:5601"
+      - '5601:5601'
     volumes:
       - ./elk-config/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
       - acgs_kibana_security_data:/usr/share/kibana/data
@@ -97,7 +101,7 @@ services:
       - acgs-security-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
+      test: ['CMD-SHELL', 'curl -f http://localhost:5601/api/status || exit 1']
       interval: 30s
       timeout: 10s
       retries: 5

@@ -2,19 +2,19 @@ name: Solana Anchor Programs CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
     paths:
       - 'blockchain/**'
       - 'quantumagi_core/**'
       - '.github/workflows/solana-anchor.yml'
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
     paths:
       - 'blockchain/**'
       - 'quantumagi_core/**'
       - '.github/workflows/solana-anchor.yml'
   schedule:
-    - cron: '0 6 * * *'  # Daily at 6 AM for comprehensive blockchain testing
+    - cron: '0 6 * * *' # Daily at 6 AM for comprehensive blockchain testing
 
 permissions:
   contents: read
@@ -257,7 +257,7 @@ jobs:
       - name: Set up NVM for Node.js 20+
         if: steps.check_project.outputs.exists == 'true'
         run: |
-          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+          timeout 120 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
           export NVM_DIR="$HOME/.nvm"
           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
           nvm install ${{ env.NODE_VERSION }}
@@ -306,7 +306,7 @@ jobs:
         if: steps.check_project.outputs.exists == 'true'
         working-directory: ${{ matrix.project }}
         env:
-          RUSTFLAGS: "-Dwarnings -Dclippy::all -Dclippy::pedantic"
+          RUSTFLAGS: '-Dwarnings -Dclippy::all -Dclippy::pedantic'
         run: |
           solana config set --url localhost
           anchor build
@@ -684,7 +684,7 @@ jobs:
           # Primary installation method with proper error detection
           install_solana_primary() {
             echo "Attempting primary installation method..."
-            if curl -sSfL "https://release.solana.com/v${{ env.SOLANA_CLI_VERSION }}/install" | sh; then
+            if timeout 300 curl -sSfL "https://release.solana.com/v${{ env.SOLANA_CLI_VERSION }}/install" | sh; then
               return 0
             else
               echo "Primary installation method failed with exit code $?"

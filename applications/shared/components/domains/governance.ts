@@ -9,9 +9,7 @@ import { withACProtection, withGovernanceProtection } from '../hoc/composite';
 export { default as PrincipleCard } from '../PrincipleCard';
 
 // Protected versions of governance components
-export const ProtectedPrincipleCard = withGovernanceProtection(
-  require('../PrincipleCard').default
-);
+export const ProtectedPrincipleCard = withGovernanceProtection(require('../PrincipleCard').default);
 
 // Container components for governance features
 export { default as PrincipleList } from '../containers/PrincipleList';
@@ -29,8 +27,4 @@ export { usePrinciples } from '../../hooks/usePrinciples';
 export { useAmendments } from '../../hooks/useAmendments';
 
 // Governance types
-export type {
-  Principle,
-  Amendment,
-  AmendmentVote
-} from '../../types/governance';
+export type { Principle, Amendment, AmendmentVote } from '../../types/governance';

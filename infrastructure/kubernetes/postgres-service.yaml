@@ -11,5 +11,6 @@ spec:
     - protocol: TCP
       port: 5432 # Port the service will be available on within the K8s cluster
       targetPort: 5432 # Port the PostgreSQL container is listening on
-  type: ClusterIP # Exposes the service on a cluster-internal IP.
-                 # Backend services will connect to PostgreSQL using this service name (e.g., postgres-service:5432)
+  type:
+    ClusterIP # Exposes the service on a cluster-internal IP.
+    # Backend services will connect to PostgreSQL using this service name (e.g., postgres-service:5432)

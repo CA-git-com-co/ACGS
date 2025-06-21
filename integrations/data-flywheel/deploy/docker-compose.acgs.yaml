@@ -12,10 +12,10 @@ services:
       dockerfile: ./deploy/Dockerfile.acgs
       target: production
     ports:
-      - "8010:8010"  # Different port to avoid conflicts with ACGS-1 services
+      - '8010:8010' # Different port to avoid conflicts with ACGS-1 services
     environment:
       - ELASTICSEARCH_URL=http://localhost:9200
-      - REDIS_URL=redis://localhost:6379/1  # Different Redis DB
+      - REDIS_URL=redis://localhost:6379/1 # Different Redis DB
       - MONGODB_URL=mongodb://localhost:27017
       - MONGODB_DB=acgs_flywheel
       - NGC_API_KEY=${NGC_API_KEY}
@@ -28,7 +28,7 @@ services:
       - ./config:/app/config
       - ./logs:/app/logs
       - acgs_flywheel_data:/app/data
-    command: ["uv", "run", "uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "8010"]
+    command: ['uv', 'run', 'uvicorn', 'src.app:app', '--host', '0.0.0.0', '--port', '8010']
     network_mode: host
     restart: always
     depends_on:
@@ -39,7 +39,7 @@ services:
       mongodb:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8010/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8010/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -64,11 +64,20 @@ services:
       - ./config:/app/config
       - ./logs:/app/logs
       - acgs_flywheel_data:/app/data
-    command: [
-      "uv", "run", "celery", "-A", "src.tasks.cli:celery_app", 
-      "worker", "--loglevel=info", "--concurrency=10", 
-      "--queues=acgs_governance", "-n", "acgs_worker@%h"
-    ]
+    command:
+      [
+        'uv',
+        'run',
+        'celery',
+        '-A',
+        'src.tasks.cli:celery_app',
+        'worker',
+        '--loglevel=info',
+        '--concurrency=10',
+        '--queues=acgs_governance',
+        '-n',
+        'acgs_worker@%h',
+      ]
     restart: always
     depends_on:
       elasticsearch:
@@ -98,11 +107,20 @@ services:
       - ./config:/app/config
       - ./logs:/app/logs
       - acgs_flywheel_data:/app/data
-    command: [
-      "uv", "run", "celery", "-A", "src.tasks.cli:celery_app", 
-      "worker", "--loglevel=info", "--concurrency=1", 
-      "--queues=acgs_parent_queue", "-n", "acgs_parent_worker@%h"
-    ]
+    command:
+      [
+        'uv',
+        'run',
+        'celery',
+        '-A',
+        'src.tasks.cli:celery_app',
+        'worker',
+        '--loglevel=info',
+        '--concurrency=1',
+        '--queues=acgs_parent_queue',
+        '-n',
+        'acgs_parent_worker@%h',
+      ]
     restart: always
     depends_on:
       elasticsearch:
@@ -130,10 +148,16 @@ services:
     volumes:
       - ./config:/app/config
       - ./logs:/app/logs
-    command: [
-      "uv", "run", "python", "-m", "src.constitutional.monitor", 
-      "--config", "/app/config/acgs_config.yaml"
-    ]
+    command:
+      [
+        'uv',
+        'run',
+        'python',
+        '-m',
+        'src.constitutional.monitor',
+        '--config',
+        '/app/config/acgs_config.yaml',
+      ]
     restart: always
     depends_on:
       acgs_flywheel_api:
@@ -143,13 +167,13 @@ services:
   redis:
     image: redis:7.2-alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - acgs_redis_data:/data
     command: redis-server --appendonly yes --maxmemory 1gb --maxmemory-policy allkeys-lru
     restart: always
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 3
@@ -158,7 +182,7 @@ services:
   mongodb:
     image: mongo:7.0
     ports:
-      - "27017:27017"
+      - '27017:27017'
     volumes:
       - acgs_mongodb_data:/data/db
     environment:
@@ -193,7 +217,7 @@ services:
       - logger.org.elasticsearch.node=ERROR
       - logger.org.elasticsearch.transport=ERROR
     ports:
-      - "9200:9200"
+      - '9200:9200'
     volumes:
       - acgs_elasticsearch_data:/usr/share/elasticsearch/data
     ulimits:
@@ -202,7 +226,7 @@ services:
         hard: -1
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      test: ['CMD-SHELL', 'curl -f http://localhost:9200/_cluster/health || exit 1']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -211,7 +235,7 @@ services:
   prometheus:
     image: prom/prometheus:latest
     ports:
-      - "9090:9090"
+      - '9090:9090'
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
       - acgs_prometheus_data:/prometheus
@@ -228,7 +252,7 @@ services:
   grafana:
     image: grafana/grafana:latest
     ports:
-      - "3001:3000"  # Different port to avoid conflicts
+      - '3001:3000' # Different port to avoid conflicts
     volumes:
       - acgs_grafana_data:/var/lib/grafana
       - ./config/grafana:/etc/grafana/provisioning

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 /**
  * Zod validation schemas for ACGS-PGP Framework types
- * 
+ *
  * These schemas provide runtime validation for component props,
  * API responses, and form data to ensure type safety and data integrity.
  */
@@ -11,9 +11,9 @@ import { z } from 'zod';
 export const IdSchema = z.string().min(1, 'ID is required');
 export const EmailSchema = z.string().email('Invalid email format');
 export const UrlSchema = z.string().url('Invalid URL format');
-export const DateSchema = z.union([z.string(), z.date()]).transform((val) => 
-  typeof val === 'string' ? new Date(val) : val
-);
+export const DateSchema = z
+  .union([z.string(), z.date()])
+  .transform(val => (typeof val === 'string' ? new Date(val) : val));
 
 // User and Authentication schemas
 export const UserSchema = z.object({
@@ -156,9 +156,13 @@ export const AmendmentSchema = z.object({
 // Synthesis schemas for GS Engine
 export const SynthesisRequestSchema = z.object({
   /** Principles to synthesize from */
-  principles: z.array(z.object({
-    id: IdSchema
-  })).min(1, 'At least one principle is required')
+  principles: z
+    .array(
+      z.object({
+        id: IdSchema
+      })
+    )
+    .min(1, 'At least one principle is required')
 });
 
 export const SynthesisResultSchema = z.object({
@@ -217,14 +221,16 @@ export const ApiResponseSchema = z.object({
   /** Error details */
   errors: z.array(z.string()).optional(),
   /** Response metadata */
-  meta: z.object({
-    /** Total count for paginated responses */
-    total: z.number().optional(),
-    /** Current page */
-    page: z.number().optional(),
-    /** Items per page */
-    limit: z.number().optional()
-  }).optional()
+  meta: z
+    .object({
+      /** Total count for paginated responses */
+      total: z.number().optional(),
+      /** Current page */
+      page: z.number().optional(),
+      /** Items per page */
+      limit: z.number().optional()
+    })
+    .optional()
 });
 
 // Export type inference helpers

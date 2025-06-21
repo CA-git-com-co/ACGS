@@ -5,6 +5,7 @@ The ACGS-1 Enhancement Framework provides a lightweight, standardized approach t
 ## Overview
 
 This framework ensures consistent enhancement patterns across all 7 core ACGS services while maintaining:
+
 - **Constitutional Compliance**: Validation against hash `cdd01ef066bc6cf2`
 - **Performance Targets**: <500ms response times, >99.5% availability
 - **Monitoring Integration**: Prometheus metrics and health checks
@@ -61,36 +62,42 @@ enhancer.configure_caching(
 ## Framework Components
 
 ### 1. Service Template (`service_template.py`)
+
 - Standardized FastAPI application creation
 - Consistent middleware stack
 - Lifespan management
 - Standard endpoints
 
 ### 2. Constitutional Validator (`constitutional_validator.py`)
+
 - Fast constitutional compliance validation (<5ms target)
 - Hash verification against `cdd01ef066bc6cf2`
 - Bypass paths for health/metrics endpoints
 - Performance monitoring
 
 ### 3. Performance Optimizer (`performance_optimizer.py`)
+
 - Response time optimization (<500ms target)
 - Circuit breaker patterns
 - Availability tracking (>99.5% target)
 - Performance monitoring
 
 ### 4. Monitoring Integrator (`monitoring_integrator.py`)
+
 - Prometheus metrics collection
 - Health check endpoints
 - Service performance tracking
 - Constitutional compliance metrics
 
 ### 5. Cache Enhancer (`cache_enhancer.py`)
+
 - Redis caching integration
 - Constitutional validation caching
 - Policy decision caching
 - Fallback to in-memory cache
 
 ### 6. Service Enhancer (`service_enhancer.py`)
+
 - Main orchestration class
 - Configuration management
 - Service creation and validation
@@ -109,12 +116,12 @@ All enhanced services automatically include:
 
 The framework enforces these performance targets:
 
-| Metric | Target | Monitoring |
-|--------|--------|------------|
-| Response Time (P95) | <500ms | ✅ Automatic |
-| Availability | >99.5% | ✅ Automatic |
-| Constitutional Compliance | >95% | ✅ Automatic |
-| Cache Hit Rate | >80% | ✅ Automatic |
+| Metric                    | Target | Monitoring   |
+| ------------------------- | ------ | ------------ |
+| Response Time (P95)       | <500ms | ✅ Automatic |
+| Availability              | >99.5% | ✅ Automatic |
+| Constitutional Compliance | >95%   | ✅ Automatic |
+| Cache Hit Rate            | >80%   | ✅ Automatic |
 
 ## Constitutional Compliance
 
@@ -195,16 +202,19 @@ cache_key = await cache_enhancer.cache_policy_decision(
 ### Refactoring Existing Services
 
 1. **Import the framework**:
+
    ```python
    from services.shared.enhancement_framework import ACGSServiceEnhancer
    ```
 
 2. **Create enhancer**:
+
    ```python
    enhancer = ACGSServiceEnhancer("service_name", port=8XXX)
    ```
 
 3. **Create enhanced app**:
+
    ```python
    app = await enhancer.create_enhanced_service()
    ```
@@ -234,6 +244,7 @@ python validate_framework.py http://localhost:8005
 ```
 
 The validator checks:
+
 - Service health and availability
 - Constitutional compliance validation
 - Performance optimization
@@ -295,6 +306,7 @@ logging.basicConfig(level=logging.DEBUG)
 ## Support
 
 For issues or questions about the enhancement framework:
+
 1. Check the validation results: `framework_validation_results.json`
 2. Review service logs for enhancement-related messages
 3. Verify constitutional compliance with test requests

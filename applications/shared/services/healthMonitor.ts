@@ -1,6 +1,6 @@
 /**
  * ACGS Service Health Monitoring System
- * 
+ *
  * Comprehensive health monitoring for all 7 ACGS core services
  * with real-time status tracking, performance metrics, and alerting.
  */
@@ -58,7 +58,7 @@ export const ACGS_SERVICES: Record<string, ServiceConfig> = {
     healthEndpoint: '/health',
     description: 'Authentication and authorization service',
     critical: true,
-    timeout: 5000,
+    timeout: 5000
   },
   ac: {
     name: 'Constitutional AI Service',
@@ -67,7 +67,7 @@ export const ACGS_SERVICES: Record<string, ServiceConfig> = {
     healthEndpoint: '/health',
     description: 'Constitutional AI and compliance service',
     critical: true,
-    timeout: 5000,
+    timeout: 5000
   },
   integrity: {
     name: 'Integrity Service',
@@ -76,7 +76,7 @@ export const ACGS_SERVICES: Record<string, ServiceConfig> = {
     healthEndpoint: '/health',
     description: 'Cryptographic integrity and verification service',
     critical: true,
-    timeout: 5000,
+    timeout: 5000
   },
   fv: {
     name: 'Formal Verification Service',
@@ -85,7 +85,7 @@ export const ACGS_SERVICES: Record<string, ServiceConfig> = {
     healthEndpoint: '/health',
     description: 'Formal verification service',
     critical: false,
-    timeout: 10000, // FV operations can take longer
+    timeout: 10000 // FV operations can take longer
   },
   gs: {
     name: 'Governance Synthesis Service',
@@ -94,7 +94,7 @@ export const ACGS_SERVICES: Record<string, ServiceConfig> = {
     healthEndpoint: '/health',
     description: 'Governance synthesis service',
     critical: true,
-    timeout: 5000,
+    timeout: 5000
   },
   pgc: {
     name: 'Policy Governance Service',
@@ -103,7 +103,7 @@ export const ACGS_SERVICES: Record<string, ServiceConfig> = {
     healthEndpoint: '/health',
     description: 'Policy governance and compliance service',
     critical: true,
-    timeout: 5000,
+    timeout: 5000
   },
   ec: {
     name: 'Executive Council Service',
@@ -112,8 +112,8 @@ export const ACGS_SERVICES: Record<string, ServiceConfig> = {
     healthEndpoint: '/health',
     description: 'Executive council and oversight service',
     critical: false,
-    timeout: 5000,
-  },
+    timeout: 5000
+  }
 };
 
 // Health Monitor Class
@@ -130,7 +130,7 @@ export class ACGSHealthMonitor {
       errorRateThreshold: 5, // 5%
       uptimeThreshold: 99.5, // 99.5%
       consecutiveFailuresThreshold: 3,
-      ...alertConfig,
+      ...alertConfig
     };
 
     // Initialize metrics for all services
@@ -141,7 +141,7 @@ export class ACGSHealthMonitor {
         averageResponseTime: 0,
         errorRate: 0,
         lastHealthCheck: 0,
-        healthHistory: [],
+        healthHistory: []
       });
     });
   }
@@ -158,7 +158,7 @@ export class ACGSHealthMonitor {
       service: serviceKey,
       status: 'unknown',
       responseTime: 0,
-      timestamp: startTime,
+      timestamp: startTime
     };
 
     try {
@@ -167,9 +167,9 @@ export class ACGSHealthMonitor {
         {
           timeout: service.timeout,
           headers: {
-            'Accept': 'application/json',
-            'User-Agent': 'ACGS-Health-Monitor/1.0',
-          },
+            Accept: 'application/json',
+            'User-Agent': 'ACGS-Health-Monitor/1.0'
+          }
         }
       );
 
@@ -179,7 +179,6 @@ export class ACGSHealthMonitor {
       result.details = response.data;
       result.version = response.data?.version;
       result.dependencies = response.data?.dependencies || response.data?.services;
-
     } catch (error: any) {
       result.responseTime = Date.now() - startTime;
       result.status = 'unhealthy';
@@ -205,8 +204,8 @@ export class ACGSHealthMonitor {
   // Check health of all services
   async checkAllServices(): Promise<Record<string, HealthCheckResult>> {
     const results: Record<string, HealthCheckResult> = {};
-    
-    const healthChecks = Object.keys(ACGS_SERVICES).map(async (serviceKey) => {
+
+    const healthChecks = Object.keys(ACGS_SERVICES).map(async serviceKey => {
       try {
         results[serviceKey] = await this.checkServiceHealth(serviceKey);
       } catch (error) {
@@ -215,7 +214,7 @@ export class ACGSHealthMonitor {
           status: 'unhealthy',
           responseTime: 0,
           timestamp: Date.now(),
-          error: error instanceof Error ? error.message : 'Unknown error',
+          error: error instanceof Error ? error.message : 'Unknown error'
         };
       }
     });
@@ -256,7 +255,11 @@ export class ACGSHealthMonitor {
   }
 
   // Check for alert conditions
-  private checkAlerts(serviceKey: string, metrics: ServiceMetrics, latestResult: HealthCheckResult): void {
+  private checkAlerts(
+    serviceKey: string,
+    metrics: ServiceMetrics,
+    latestResult: HealthCheckResult
+  ): void {
     if (!this.alertConfig.enabled) return;
 
     const service = ACGS_SERVICES[serviceKey];
@@ -271,7 +274,7 @@ export class ACGSHealthMonitor {
         message: `${service.name} response time (${latestResult.responseTime}ms) exceeds threshold (${this.alertConfig.responseTimeThreshold}ms)`,
         value: latestResult.responseTime,
         threshold: this.alertConfig.responseTimeThreshold,
-        timestamp: latestResult.timestamp,
+        timestamp: latestResult.timestamp
       });
     }
 
@@ -284,7 +287,7 @@ export class ACGSHealthMonitor {
         message: `${service.name} error rate (${metrics.errorRate.toFixed(1)}%) exceeds threshold (${this.alertConfig.errorRateThreshold}%)`,
         value: metrics.errorRate,
         threshold: this.alertConfig.errorRateThreshold,
-        timestamp: latestResult.timestamp,
+        timestamp: latestResult.timestamp
       });
     }
 
@@ -297,14 +300,18 @@ export class ACGSHealthMonitor {
         message: `${service.name} uptime (${metrics.uptime.toFixed(1)}%) below threshold (${this.alertConfig.uptimeThreshold}%)`,
         value: metrics.uptime,
         threshold: this.alertConfig.uptimeThreshold,
-        timestamp: latestResult.timestamp,
+        timestamp: latestResult.timestamp
       });
     }
 
     // Consecutive failures alert
-    const recentFailures = metrics.healthHistory.slice(-this.alertConfig.consecutiveFailuresThreshold);
-    if (recentFailures.length === this.alertConfig.consecutiveFailuresThreshold &&
-        recentFailures.every(check => check.status === 'unhealthy')) {
+    const recentFailures = metrics.healthHistory.slice(
+      -this.alertConfig.consecutiveFailuresThreshold
+    );
+    if (
+      recentFailures.length === this.alertConfig.consecutiveFailuresThreshold &&
+      recentFailures.every(check => check.status === 'unhealthy')
+    ) {
       alerts.push({
         type: 'consecutive_failures',
         service: serviceKey,
@@ -312,7 +319,7 @@ export class ACGSHealthMonitor {
         message: `${service.name} has ${this.alertConfig.consecutiveFailuresThreshold} consecutive failures`,
         value: this.alertConfig.consecutiveFailuresThreshold,
         threshold: this.alertConfig.consecutiveFailuresThreshold,
-        timestamp: latestResult.timestamp,
+        timestamp: latestResult.timestamp
       });
     }
 
@@ -331,9 +338,9 @@ export class ACGSHealthMonitor {
   // Get service metrics
   getServiceMetrics(serviceKey?: string): ServiceMetrics | Record<string, ServiceMetrics> {
     if (serviceKey) {
-      return this.metrics.get(serviceKey) || {} as ServiceMetrics;
+      return this.metrics.get(serviceKey) || ({} as ServiceMetrics);
     }
-    
+
     const allMetrics: Record<string, ServiceMetrics> = {};
     this.metrics.forEach((metrics, key) => {
       allMetrics[key] = metrics;
@@ -352,7 +359,7 @@ export class ACGSHealthMonitor {
   } {
     const allMetrics = this.getServiceMetrics() as Record<string, ServiceMetrics>;
     const serviceKeys = Object.keys(allMetrics);
-    
+
     let healthyServices = 0;
     let criticalServicesDown = 0;
     let totalResponseTime = 0;
@@ -361,10 +368,10 @@ export class ACGSHealthMonitor {
     serviceKeys.forEach(key => {
       const metrics = allMetrics[key];
       const service = ACGS_SERVICES[key];
-      
+
       if (metrics.uptime > 95) healthyServices++;
       if (service.critical && metrics.uptime < 95) criticalServicesDown++;
-      
+
       totalResponseTime += metrics.averageResponseTime;
       totalUptime += metrics.uptime;
     });
@@ -385,7 +392,7 @@ export class ACGSHealthMonitor {
       totalServices: serviceKeys.length,
       criticalServicesDown,
       averageResponseTime,
-      overallUptime,
+      overallUptime
     };
   }
 
@@ -439,8 +446,8 @@ export class ACGSHealthMonitor {
       services: serviceMetrics,
       configuration: {
         alertConfig: this.alertConfig,
-        services: ACGS_SERVICES,
-      },
+        services: ACGS_SERVICES
+      }
     };
   }
 }

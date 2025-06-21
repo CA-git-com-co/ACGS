@@ -35,16 +35,18 @@ ACGS-1/
 ### Development Environment Setup
 
 1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/CA-git-com-co/ACGS.git
    cd ACGS-1
    ```
 
 2. **Install Solana & Anchor** (for blockchain development):
+
    ```bash
    # Install Solana CLI
    sh -c "$(curl -sSfL https://release.solana.com/v1.18.22/install)"
-   
+
    # Install Anchor CLI
    cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
    avm install 0.29.0
@@ -52,6 +54,7 @@ ACGS-1/
    ```
 
 3. **Set up Python environment** (for backend services):
+
    ```bash
    # Using UV package manager (recommended)
    curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -65,6 +68,7 @@ ACGS-1/
    ```
 
 4. **Install Node.js dependencies** (for frontend applications):
+
    ```bash
    cd applications/governance-dashboard
    npm install
@@ -85,6 +89,7 @@ ACGS-1/
 **Location**: `blockchain/programs/`
 
 1. **Program Development**:
+
    ```bash
    cd blockchain
    anchor build                    # Build all programs
@@ -102,6 +107,7 @@ ACGS-1/
 **Location**: `services/core/` or `services/platform/`
 
 1. **Core Services** (Constitutional AI, Governance Synthesis, etc.):
+
    ```bash
    cd services/core/your-service
    # Using UV (recommended)
@@ -112,6 +118,7 @@ ACGS-1/
    ```
 
 2. **Platform Services** (Authentication, Integrity, etc.):
+
    ```bash
    cd services/platform/your-service
    # Using UV (recommended)
@@ -132,6 +139,7 @@ ACGS-1/
 **Location**: `applications/`
 
 1. **Governance Dashboard**:
+
    ```bash
    cd applications/governance-dashboard
    npm start                       # Development server
@@ -155,6 +163,7 @@ ACGS-1/
 **Location**: `services/core/dgm-service/`
 
 1. **Darwin Gödel Machine Service** (Port 8007):
+
    ```bash
    cd services/core/dgm-service
    # Using UV (recommended)
@@ -245,6 +254,7 @@ cd applications/governance-dashboard && npm test
 ### Development Deployment
 
 1. **Local Development**:
+
    ```bash
    docker-compose -f infrastructure/docker/docker-compose.yml up -d
    ```

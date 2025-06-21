@@ -10,13 +10,9 @@ export { default as PolicyCard } from '../PolicyCard';
 export { default as PolicyProposal } from '../PolicyProposal';
 
 // Protected versions of policy components
-export const ProtectedPolicyCard = withPolicyProtection(
-  require('../PolicyCard').default
-);
+export const ProtectedPolicyCard = withPolicyProtection(require('../PolicyCard').default);
 
-export const ProtectedPolicyProposal = withPolicyProtection(
-  require('../PolicyProposal').default
-);
+export const ProtectedPolicyProposal = withPolicyProtection(require('../PolicyProposal').default);
 
 // Container components for policy features
 export { default as PolicyList } from '../containers/PolicyList';

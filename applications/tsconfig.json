@@ -16,14 +16,14 @@
     "lib": ["dom", "dom.iterable", "esnext"], // Add "dom" for browser-like environment (JSDOM)
     "allowSyntheticDefaultImports": true, // For SWR and other libraries
     "resolveJsonModule": true, // To import JSON files
-    "isolatedModules": true, // Recommended for Babel or other transpilers
+    "isolatedModules": true // Recommended for Babel or other transpilers
     // "noEmit": true, // If jest/ts-jest handles emit, can be true. Set to false if you need tsc to emit.
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     "**/*.js", // If allowJs is true
-    "**/*.jsx"  // If allowJs is true and you have jsx files
+    "**/*.jsx" // If allowJs is true and you have jsx files
   ],
   "exclude": [
     "node_modules"

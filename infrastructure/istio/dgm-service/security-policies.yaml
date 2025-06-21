@@ -10,18 +10,18 @@ spec:
     matchLabels:
       app: dgm-service
   jwtRules:
-  - issuer: "https://auth.acgs.local"
-    jwksUri: "https://auth.acgs.local/.well-known/jwks.json"
-    audiences:
-    - "acgs-platform"
-    - "dgm-service"
-    forwardOriginalToken: true
-    fromHeaders:
-    - name: Authorization
-      prefix: "Bearer "
-    fromParams:
-    - "access_token"
-    outputPayloadToHeader: "x-jwt-payload"
+    - issuer: 'https://auth.acgs.local'
+      jwksUri: 'https://auth.acgs.local/.well-known/jwks.json'
+      audiences:
+        - 'acgs-platform'
+        - 'dgm-service'
+      forwardOriginalToken: true
+      fromHeaders:
+        - name: Authorization
+          prefix: 'Bearer '
+      fromParams:
+        - 'access_token'
+      outputPayloadToHeader: 'x-jwt-payload'
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
@@ -35,76 +35,77 @@ spec:
     matchLabels:
       app: dgm-service
   rules:
-  # Allow authenticated users with DGM permissions
-  - from:
-    - source:
-        requestPrincipals: ["https://auth.acgs.local/*"]
-    to:
-    - operation:
-        methods: ["GET"]
-        paths: ["/api/v1/dgm/improvements", "/api/v1/dgm/performance", "/api/v1/dgm/bandit/stats"]
-    when:
-    - key: request.auth.claims[permissions]
-      values: ["dgm:read"]
-  
-  - from:
-    - source:
-        requestPrincipals: ["https://auth.acgs.local/*"]
-    to:
-    - operation:
-        methods: ["POST"]
-        paths: ["/api/v1/dgm/improve"]
-    when:
-    - key: request.auth.claims[permissions]
-      values: ["dgm:write"]
-  
-  - from:
-    - source:
-        requestPrincipals: ["https://auth.acgs.local/*"]
-    to:
-    - operation:
-        methods: ["POST"]
-        paths: ["/api/v1/dgm/execute/*", "/api/v1/dgm/rollback/*"]
-    when:
-    - key: request.auth.claims[permissions]
-      values: ["dgm:execute"]
-  
-  # Allow service-to-service communication
-  - from:
-    - source:
-        principals: ["cluster.local/ns/acgs/sa/auth-service"]
-    to:
-    - operation:
-        methods: ["POST"]
-        paths: ["/api/v1/dgm/auth/validate"]
-  
-  - from:
-    - source:
-        principals: ["cluster.local/ns/acgs/sa/ac-service"]
-    to:
-    - operation:
-        methods: ["POST", "GET"]
-        paths: ["/api/v1/dgm/constitutional/*"]
-  
-  - from:
-    - source:
-        principals: ["cluster.local/ns/acgs/sa/gs-service"]
-    to:
-    - operation:
-        methods: ["GET", "POST"]
-        paths: ["/api/v1/dgm/performance/*", "/api/v1/dgm/improvements/*"]
-  
-  # Allow monitoring and health checks
-  - from:
-    - source:
-        namespaces: ["acgs", "istio-system", "monitoring"]
-    to:
-    - operation:
-        methods: ["GET"]
-        paths: ["/health", "/ready", "/metrics"]
-  
-  # Deny all other traffic
-  - {}
+    # Allow authenticated users with DGM permissions
+    - from:
+        - source:
+            requestPrincipals: ['https://auth.acgs.local/*']
+      to:
+        - operation:
+            methods: ['GET']
+            paths:
+              ['/api/v1/dgm/improvements', '/api/v1/dgm/performance', '/api/v1/dgm/bandit/stats']
+      when:
+        - key: request.auth.claims[permissions]
+          values: ['dgm:read']
+
+    - from:
+        - source:
+            requestPrincipals: ['https://auth.acgs.local/*']
+      to:
+        - operation:
+            methods: ['POST']
+            paths: ['/api/v1/dgm/improve']
+      when:
+        - key: request.auth.claims[permissions]
+          values: ['dgm:write']
+
+    - from:
+        - source:
+            requestPrincipals: ['https://auth.acgs.local/*']
+      to:
+        - operation:
+            methods: ['POST']
+            paths: ['/api/v1/dgm/execute/*', '/api/v1/dgm/rollback/*']
+      when:
+        - key: request.auth.claims[permissions]
+          values: ['dgm:execute']
+
+    # Allow service-to-service communication
+    - from:
+        - source:
+            principals: ['cluster.local/ns/acgs/sa/auth-service']
+      to:
+        - operation:
+            methods: ['POST']
+            paths: ['/api/v1/dgm/auth/validate']
+
+    - from:
+        - source:
+            principals: ['cluster.local/ns/acgs/sa/ac-service']
+      to:
+        - operation:
+            methods: ['POST', 'GET']
+            paths: ['/api/v1/dgm/constitutional/*']
+
+    - from:
+        - source:
+            principals: ['cluster.local/ns/acgs/sa/gs-service']
+      to:
+        - operation:
+            methods: ['GET', 'POST']
+            paths: ['/api/v1/dgm/performance/*', '/api/v1/dgm/improvements/*']
+
+    # Allow monitoring and health checks
+    - from:
+        - source:
+            namespaces: ['acgs', 'istio-system', 'monitoring']
+      to:
+        - operation:
+            methods: ['GET']
+            paths: ['/health', '/ready', '/metrics']
+
+    # Deny all other traffic
+    - {}
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
@@ -119,48 +120,48 @@ spec:
     matchLabels:
       app: dgm-service
   rules:
-  # Require constitutional hash validation for critical operations
-  - from:
-    - source:
-        requestPrincipals: ["https://auth.acgs.local/*"]
-    to:
-    - operation:
-        methods: ["POST"]
-        paths: ["/api/v1/dgm/execute/*"]
-    when:
-    - key: request.headers[x-constitutional-hash]
-      values: ["cdd01ef066bc6cf2"]
-    - key: request.auth.claims[constitutional_compliance]
-      values: ["verified"]
-  
-  # Require democratic approval for high-impact changes
-  - from:
-    - source:
-        requestPrincipals: ["https://auth.acgs.local/*"]
-    to:
-    - operation:
-        methods: ["POST"]
-        paths: ["/api/v1/dgm/improve"]
-    when:
-    - key: request.headers[x-democratic-approval]
-      values: ["approved"]
-    - key: request.headers[x-impact-level]
-      values: ["low", "medium"]
-  
-  # Block high-impact changes without proper approval
-  - from:
-    - source:
-        requestPrincipals: ["https://auth.acgs.local/*"]
-    to:
-    - operation:
-        methods: ["POST"]
-        paths: ["/api/v1/dgm/improve"]
-    when:
-    - key: request.headers[x-impact-level]
-      values: ["high", "critical"]
-    - key: request.headers[x-democratic-approval]
-      notValues: ["approved"]
-    action: DENY
+    # Require constitutional hash validation for critical operations
+    - from:
+        - source:
+            requestPrincipals: ['https://auth.acgs.local/*']
+      to:
+        - operation:
+            methods: ['POST']
+            paths: ['/api/v1/dgm/execute/*']
+      when:
+        - key: request.headers[x-constitutional-hash]
+          values: ['cdd01ef066bc6cf2']
+        - key: request.auth.claims[constitutional_compliance]
+          values: ['verified']
+
+    # Require democratic approval for high-impact changes
+    - from:
+        - source:
+            requestPrincipals: ['https://auth.acgs.local/*']
+      to:
+        - operation:
+            methods: ['POST']
+            paths: ['/api/v1/dgm/improve']
+      when:
+        - key: request.headers[x-democratic-approval]
+          values: ['approved']
+        - key: request.headers[x-impact-level]
+          values: ['low', 'medium']
+
+    # Block high-impact changes without proper approval
+    - from:
+        - source:
+            requestPrincipals: ['https://auth.acgs.local/*']
+      to:
+        - operation:
+            methods: ['POST']
+            paths: ['/api/v1/dgm/improve']
+      when:
+        - key: request.headers[x-impact-level]
+          values: ['high', 'critical']
+        - key: request.headers[x-democratic-approval]
+          notValues: ['approved']
+      action: DENY
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: ServiceEntry
@@ -171,16 +172,16 @@ metadata:
     app: dgm-service
 spec:
   hosts:
-  - auth.acgs.local
-  - constitutional-ai.acgs.local
-  - governance-synthesis.acgs.local
+    - auth.acgs.local
+    - constitutional-ai.acgs.local
+    - governance-synthesis.acgs.local
   ports:
-  - number: 443
-    name: https
-    protocol: HTTPS
-  - number: 80
-    name: http
-    protocol: HTTP
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
   location: MESH_EXTERNAL
   resolution: DNS
 ---
@@ -196,43 +197,43 @@ spec:
     labels:
       app: dgm-service
   ingress:
-  - port:
-      number: 8007
-      protocol: HTTP
-      name: http
-    defaultEndpoint: 127.0.0.1:8007
-  - port:
-      number: 9090
-      protocol: HTTP
-      name: metrics
-    defaultEndpoint: 127.0.0.1:9090
+    - port:
+        number: 8007
+        protocol: HTTP
+        name: http
+      defaultEndpoint: 127.0.0.1:8007
+    - port:
+        number: 9090
+        protocol: HTTP
+        name: metrics
+      defaultEndpoint: 127.0.0.1:9090
   egress:
-  - hosts:
-    - "./*"  # Same namespace
-    - "istio-system/*"  # Istio system namespace
-    - "monitoring/*"  # Monitoring namespace
-  - hosts:
-    - "auth.acgs.local"
-    - "constitutional-ai.acgs.local"
-    - "governance-synthesis.acgs.local"
-    port:
-      number: 443
-      protocol: HTTPS
-  - hosts:
-    - "nats.acgs.svc.cluster.local"
-    port:
-      number: 4222
-      protocol: TCP
-  - hosts:
-    - "postgres.acgs.svc.cluster.local"
-    port:
-      number: 5432
-      protocol: TCP
-  - hosts:
-    - "redis.acgs.svc.cluster.local"
-    port:
-      number: 6379
-      protocol: TCP
+    - hosts:
+        - './*' # Same namespace
+        - 'istio-system/*' # Istio system namespace
+        - 'monitoring/*' # Monitoring namespace
+    - hosts:
+        - 'auth.acgs.local'
+        - 'constitutional-ai.acgs.local'
+        - 'governance-synthesis.acgs.local'
+      port:
+        number: 443
+        protocol: HTTPS
+    - hosts:
+        - 'nats.acgs.svc.cluster.local'
+      port:
+        number: 4222
+        protocol: TCP
+    - hosts:
+        - 'postgres.acgs.svc.cluster.local'
+      port:
+        number: 5432
+        protocol: TCP
+    - hosts:
+        - 'redis.acgs.svc.cluster.local'
+      port:
+        number: 6379
+        protocol: TCP
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
@@ -246,41 +247,41 @@ spec:
     labels:
       app: dgm-service
   configPatches:
-  - applyTo: HTTP_FILTER
-    match:
-      context: SIDECAR_INBOUND
-      listener:
-        filterChain:
-          filter:
-            name: "envoy.filters.network.http_connection_manager"
-    patch:
-      operation: INSERT_BEFORE
-      value:
-        name: envoy.filters.http.local_ratelimit
-        typed_config:
-          "@type": type.googleapis.com/udpa.type.v1.TypedStruct
-          type_url: type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
-          value:
-            stat_prefix: dgm_service_rate_limiter
-            token_bucket:
-              max_tokens: 100
-              tokens_per_fill: 10
-              fill_interval: 1s
-            filter_enabled:
-              runtime_key: dgm_service_rate_limit_enabled
-              default_value:
-                numerator: 100
-                denominator: HUNDRED
-            filter_enforced:
-              runtime_key: dgm_service_rate_limit_enforced
-              default_value:
-                numerator: 100
-                denominator: HUNDRED
-            response_headers_to_add:
-            - append: false
-              header:
-                key: x-local-rate-limit
-                value: 'true'
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_INBOUND
+        listener:
+          filterChain:
+            filter:
+              name: 'envoy.filters.network.http_connection_manager'
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.local_ratelimit
+          typed_config:
+            '@type': type.googleapis.com/udpa.type.v1.TypedStruct
+            type_url: type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+            value:
+              stat_prefix: dgm_service_rate_limiter
+              token_bucket:
+                max_tokens: 100
+                tokens_per_fill: 10
+                fill_interval: 1s
+              filter_enabled:
+                runtime_key: dgm_service_rate_limit_enabled
+                default_value:
+                  numerator: 100
+                  denominator: HUNDRED
+              filter_enforced:
+                runtime_key: dgm_service_rate_limit_enforced
+                default_value:
+                  numerator: 100
+                  denominator: HUNDRED
+              response_headers_to_add:
+                - append: false
+                  header:
+                    key: x-local-rate-limit
+                    value: 'true'
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
@@ -294,42 +295,42 @@ spec:
     labels:
       app: dgm-service
   configPatches:
-  - applyTo: HTTP_FILTER
-    match:
-      context: SIDECAR_INBOUND
-      listener:
-        filterChain:
-          filter:
-            name: "envoy.filters.network.http_connection_manager"
-    patch:
-      operation: INSERT_BEFORE
-      value:
-        name: envoy.filters.http.lua
-        typed_config:
-          "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
-          inline_code: |
-            function envoy_on_request(request_handle)
-              -- Add constitutional compliance headers
-              request_handle:headers():add("x-constitutional-framework", "acgs-v1.0")
-              request_handle:headers():add("x-governance-mode", "democratic")
-              request_handle:headers():add("x-safety-level", "high")
-              
-              -- Validate constitutional hash for critical operations
-              local path = request_handle:headers():get(":path")
-              if string.match(path, "/api/v1/dgm/execute/") then
-                local const_hash = request_handle:headers():get("x-constitutional-hash")
-                if const_hash ~= "cdd01ef066bc6cf2" then
-                  request_handle:respond(
-                    {[":status"] = "403"},
-                    "Constitutional hash validation failed"
-                  )
-                  return
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_INBOUND
+        listener:
+          filterChain:
+            filter:
+              name: 'envoy.filters.network.http_connection_manager'
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.lua
+          typed_config:
+            '@type': type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+            inline_code: |
+              function envoy_on_request(request_handle)
+                -- Add constitutional compliance headers
+                request_handle:headers():add("x-constitutional-framework", "acgs-v1.0")
+                request_handle:headers():add("x-governance-mode", "democratic")
+                request_handle:headers():add("x-safety-level", "high")
+                
+                -- Validate constitutional hash for critical operations
+                local path = request_handle:headers():get(":path")
+                if string.match(path, "/api/v1/dgm/execute/") then
+                  local const_hash = request_handle:headers():get("x-constitutional-hash")
+                  if const_hash ~= "cdd01ef066bc6cf2" then
+                    request_handle:respond(
+                      {[":status"] = "403"},
+                      "Constitutional hash validation failed"
+                    )
+                    return
+                  end
                 end
               end
-            end
-            
-            function envoy_on_response(response_handle)
-              -- Add constitutional compliance to response
-              response_handle:headers():add("x-constitutional-compliant", "true")
-              response_handle:headers():add("x-governance-verified", "true")
-            end
+
+              function envoy_on_response(response_handle)
+                -- Add constitutional compliance to response
+                response_handle:headers():add("x-constitutional-compliant", "true")
+                response_handle:headers():add("x-governance-verified", "true")
+              end

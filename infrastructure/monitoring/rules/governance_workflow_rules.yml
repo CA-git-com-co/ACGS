@@ -13,9 +13,9 @@ groups:
           workflow: policy_creation
           component: governance_workflow
         annotations:
-          summary: "Policy Creation workflow health degraded"
-          description: "Policy Creation workflow health: {{ $value }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/policy-creation-workflow"
+          summary: 'Policy Creation workflow health degraded'
+          description: 'Policy Creation workflow health: {{ $value }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/policy-creation-workflow'
 
       # Policy Draft Processing Time
       - alert: PolicyDraftProcessingDelay
@@ -26,8 +26,8 @@ groups:
           workflow: policy_creation
           component: policy_drafting
         annotations:
-          summary: "Policy draft processing taking too long"
-          description: "95th percentile processing time: {{ $value }}s"
+          summary: 'Policy draft processing taking too long'
+          description: '95th percentile processing time: {{ $value }}s'
 
       # Policy Review Backlog
       - alert: PolicyReviewBacklog
@@ -38,8 +38,8 @@ groups:
           workflow: policy_creation
           component: policy_review
         annotations:
-          summary: "Policy review queue backing up"
-          description: "{{ $value }} policies waiting for review"
+          summary: 'Policy review queue backing up'
+          description: '{{ $value }} policies waiting for review'
 
   - name: constitutional_compliance_workflow
     rules:
@@ -52,9 +52,9 @@ groups:
           workflow: constitutional_compliance
           component: governance_workflow
         annotations:
-          summary: "Constitutional Compliance workflow critical"
-          description: "Constitutional Compliance workflow health: {{ $value }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/constitutional-compliance"
+          summary: 'Constitutional Compliance workflow critical'
+          description: 'Constitutional Compliance workflow health: {{ $value }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/constitutional-compliance'
 
       # Compliance Check Failures
       - alert: ComplianceCheckFailures
@@ -65,8 +65,8 @@ groups:
           workflow: constitutional_compliance
           component: compliance_validation
         annotations:
-          summary: "High rate of compliance check failures"
-          description: "{{ $value }} compliance check failures per second"
+          summary: 'High rate of compliance check failures'
+          description: '{{ $value }} compliance check failures per second'
 
       # Constitutional Hash Mismatch
       - alert: ConstitutionalHashMismatch
@@ -77,8 +77,8 @@ groups:
           workflow: constitutional_compliance
           component: constitutional_integrity
         annotations:
-          summary: "Constitutional hash mismatch detected"
-          description: "Constitutional integrity compromised - immediate investigation required"
+          summary: 'Constitutional hash mismatch detected'
+          description: 'Constitutional integrity compromised - immediate investigation required'
 
       # PGC Service Response Time
       - alert: PGCServiceSlowResponse
@@ -89,8 +89,8 @@ groups:
           workflow: constitutional_compliance
           component: pgc_service
         annotations:
-          summary: "PGC service responding slowly"
-          description: "95th percentile PGC response time: {{ $value }}s (target: <50ms)"
+          summary: 'PGC service responding slowly'
+          description: '95th percentile PGC response time: {{ $value }}s (target: <50ms)'
 
   - name: policy_enforcement_workflow
     rules:
@@ -103,8 +103,8 @@ groups:
           workflow: policy_enforcement
           component: governance_workflow
         annotations:
-          summary: "Policy Enforcement workflow degraded"
-          description: "Policy Enforcement workflow health: {{ $value }}"
+          summary: 'Policy Enforcement workflow degraded'
+          description: 'Policy Enforcement workflow health: {{ $value }}'
 
       # Policy Violation Detection
       - alert: PolicyViolationDetected
@@ -115,8 +115,8 @@ groups:
           workflow: policy_enforcement
           component: violation_detection
         annotations:
-          summary: "Policy violations detected"
-          description: "{{ $value }} policy violations per second"
+          summary: 'Policy violations detected'
+          description: '{{ $value }} policy violations per second'
 
       # Enforcement Action Failures
       - alert: EnforcementActionFailures
@@ -127,8 +127,8 @@ groups:
           workflow: policy_enforcement
           component: enforcement_actions
         annotations:
-          summary: "Enforcement actions failing"
-          description: "{{ $value }} enforcement action failures per second"
+          summary: 'Enforcement actions failing'
+          description: '{{ $value }} enforcement action failures per second'
 
   - name: wina_oversight_workflow
     rules:
@@ -141,8 +141,8 @@ groups:
           workflow: wina_oversight
           component: governance_workflow
         annotations:
-          summary: "WINA Oversight workflow degraded"
-          description: "WINA Oversight workflow health: {{ $value }}"
+          summary: 'WINA Oversight workflow degraded'
+          description: 'WINA Oversight workflow health: {{ $value }}'
 
       # WINA Algorithm Performance
       - alert: WINAAlgorithmPerformanceDegraded
@@ -153,8 +153,8 @@ groups:
           workflow: wina_oversight
           component: wina_algorithm
         annotations:
-          summary: "WINA algorithm performance degraded"
-          description: "WINA performance score: {{ $value }}"
+          summary: 'WINA algorithm performance degraded'
+          description: 'WINA performance score: {{ $value }}'
 
       # Evolutionary Computation Stagnation
       - alert: EvolutionaryComputationStagnation
@@ -165,8 +165,8 @@ groups:
           workflow: wina_oversight
           component: evolutionary_computation
         annotations:
-          summary: "Evolutionary computation showing no improvement"
-          description: "No significant improvements in the last 30 minutes"
+          summary: 'Evolutionary computation showing no improvement'
+          description: 'No significant improvements in the last 30 minutes'
 
   - name: audit_transparency_workflow
     rules:
@@ -179,8 +179,8 @@ groups:
           workflow: audit_transparency
           component: governance_workflow
         annotations:
-          summary: "Audit and Transparency workflow degraded"
-          description: "Audit and Transparency workflow health: {{ $value }}"
+          summary: 'Audit and Transparency workflow degraded'
+          description: 'Audit and Transparency workflow health: {{ $value }}'
 
       # Audit Log Integrity Issues
       - alert: AuditLogIntegrityIssues
@@ -191,8 +191,8 @@ groups:
           workflow: audit_transparency
           component: audit_logging
         annotations:
-          summary: "Audit log integrity compromised"
-          description: "{{ $value }} audit log integrity failures per second"
+          summary: 'Audit log integrity compromised'
+          description: '{{ $value }} audit log integrity failures per second'
 
       # Transparency Report Generation Failures
       - alert: TransparencyReportFailures
@@ -203,8 +203,8 @@ groups:
           workflow: audit_transparency
           component: transparency_reporting
         annotations:
-          summary: "Transparency report generation failing"
-          description: "{{ $value }} transparency report failures per second"
+          summary: 'Transparency report generation failing'
+          description: '{{ $value }} transparency report failures per second'
 
   - name: cross_workflow_coordination
     rules:
@@ -216,8 +216,8 @@ groups:
           severity: warning
           component: workflow_coordination
         annotations:
-          summary: "Workflow coordination issues detected"
-          description: "{{ $value }} workflow coordination failures"
+          summary: 'Workflow coordination issues detected'
+          description: '{{ $value }} workflow coordination failures'
 
       # Inter-Service Communication Failures
       - alert: InterServiceCommunicationFailures
@@ -227,8 +227,8 @@ groups:
           severity: warning
           component: service_communication
         annotations:
-          summary: "Inter-service communication issues"
-          description: "{{ $value }} communication failures per second between services"
+          summary: 'Inter-service communication issues'
+          description: '{{ $value }} communication failures per second between services'
 
       # Governance State Inconsistency
       - alert: GovernanceStateInconsistency
@@ -238,8 +238,8 @@ groups:
           severity: critical
           component: governance_state
         annotations:
-          summary: "Governance state inconsistency detected"
-          description: "Critical: Governance state inconsistency requires immediate attention"
+          summary: 'Governance state inconsistency detected'
+          description: 'Critical: Governance state inconsistency requires immediate attention'
 
       # Workflow Performance Degradation
       - alert: WorkflowPerformanceDegradation
@@ -249,5 +249,5 @@ groups:
           severity: warning
           component: overall_performance
         annotations:
-          summary: "Overall workflow performance degraded"
-          description: "Average workflow health: {{ $value }}"
+          summary: 'Overall workflow performance degraded'
+          description: 'Average workflow health: {{ $value }}'

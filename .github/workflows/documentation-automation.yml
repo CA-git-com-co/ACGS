@@ -2,7 +2,7 @@ name: ACGS-1 Documentation Automation
 
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: [main, master, develop]
     paths:
       - 'docs/**'
       - 'README.md'
@@ -11,7 +11,7 @@ on:
       - '**/*.js'
       - '**/*.ts'
   pull_request:
-    branches: [ main, master, develop ]
+    branches: [main, master, develop]
     paths:
       - 'docs/**'
       - 'README.md'
@@ -23,11 +23,11 @@ on:
         default: 'all'
         type: choice
         options:
-        - all
-        - api
-        - architecture
-        - deployment
-        - user_guide
+          - all
+          - api
+          - architecture
+          - deployment
+          - user_guide
 
 permissions:
   contents: write
@@ -70,44 +70,44 @@ jobs:
       - name: Generate Python API documentation
         run: |
           echo "📚 Generating Python API documentation..."
-          
+
           # Create docs directory structure
           mkdir -p docs/api/python
-          
+
           # Generate Sphinx documentation
           sphinx-quickstart -q -p "ACGS-1 API" -a "ACGS Team" -v "1.0" --ext-autodoc --ext-viewcode docs/api/python
-          
+
           # Configure Sphinx
           cat >> docs/api/python/conf.py << EOF
-          
+
           import os
           import sys
           sys.path.insert(0, os.path.abspath('../../../'))
-          
+
           extensions.extend([
               'sphinx.ext.autodoc',
               'sphinx.ext.viewcode',
               'sphinx.ext.napoleon',
               'sphinxcontrib.openapi'
           ])
-          
+
           html_theme = 'sphinx_rtd_theme'
           EOF
-          
+
           # Generate API docs
           cd docs/api/python
           sphinx-apidoc -o . ../../../services/
           make html
           cd ../../..
-          
+
           echo "✅ Python API documentation generated"
 
       - name: Generate OpenAPI documentation
         run: |
           echo "📖 Generating OpenAPI documentation..."
-          
+
           mkdir -p docs/api/openapi
-          
+
           # Extract OpenAPI specs from FastAPI services
           find services -name "main.py" | while read service_main; do
             service_name=$(dirname "$service_main" | xargs basename)
@@ -116,7 +116,7 @@ jobs:
             # This would extract OpenAPI spec from FastAPI app
             # python extract_openapi.py "$service_main" > "docs/api/openapi/${service_name}-openapi.json"
           done
-          
+
           echo "✅ OpenAPI documentation generated"
 
       - name: Upload API documentation
@@ -148,9 +148,9 @@ jobs:
       - name: Generate architecture diagrams
         run: |
           echo "🏗️ Generating architecture diagrams..."
-          
+
           mkdir -p docs/architecture/diagrams
-          
+
           # Create system architecture diagram
           cat > docs/architecture/diagrams/system-architecture.mmd << EOF
           graph TB
@@ -208,16 +208,16 @@ jobs:
               AC --> SOL
               INT --> SMART
           EOF
-          
+
           # Generate diagram images
           mmdc -i docs/architecture/diagrams/system-architecture.mmd -o docs/architecture/diagrams/system-architecture.png
-          
+
           echo "✅ Architecture diagrams generated"
 
       - name: Generate dependency graphs
         run: |
           echo "🔗 Generating dependency graphs..."
-          
+
           # Generate dependency graphs for services
           find services -name "package.json" | while read package_file; do
             service_dir=$(dirname "$package_file")
@@ -228,7 +228,7 @@ jobs:
             madge --image "../../../docs/architecture/diagrams/${service_name}-dependencies.png" .
             cd - > /dev/null
           done
-          
+
           echo "✅ Dependency graphs generated"
 
       - name: Upload architecture documentation
@@ -250,61 +250,61 @@ jobs:
       - name: Generate deployment documentation
         run: |
           echo "🚀 Generating deployment documentation..."
-          
+
           mkdir -p docs/deployment/generated
-          
+
           # Generate environment-specific deployment guides
           for env in development staging production; do
             cat > "docs/deployment/generated/${env}-deployment.md" << EOF
           # ACGS-1 ${env^} Deployment Guide
-          
+
           This document provides step-by-step instructions for deploying ACGS-1 to the ${env} environment.
-          
+
           ## Prerequisites
-          
+
           - Docker and Docker Compose
           - Kubernetes cluster (for staging/production)
           - Terraform (for infrastructure)
           - Required environment variables
-          
+
           ## Environment Configuration
-          
+
           \`\`\`bash
           # Set environment
           export ENVIRONMENT=${env}
-          
+
           # Load environment-specific variables
           source config/environments/${env}.env
           \`\`\`
-          
+
           ## Infrastructure Deployment
-          
+
           \`\`\`bash
           # Deploy infrastructure
           ./scripts/terraform/deploy-infrastructure.sh apply --environment ${env}
           \`\`\`
-          
+
           ## Application Deployment
-          
+
           \`\`\`bash
           # Deploy application
           ./scripts/deploy.sh --environment ${env}
           \`\`\`
-          
+
           ## Verification
-          
+
           \`\`\`bash
           # Run health checks
           ./scripts/health-check.sh --environment ${env}
           \`\`\`
-          
+
           ## Troubleshooting
-          
+
           Common issues and solutions for ${env} deployments.
-          
+
           EOF
           done
-          
+
           echo "✅ Deployment documentation generated"
 
       - name: Upload deployment documentation
@@ -336,13 +336,13 @@ jobs:
       - name: Generate user guide
         run: |
           echo "👥 Generating user guide documentation..."
-          
+
           # Create MkDocs configuration
           cat > mkdocs.yml << EOF
           site_name: ACGS-1 Constitutional Governance System
           site_description: User Guide for ACGS-1 Constitutional Governance System
           site_author: ACGS Development Team
-          
+
           theme:
             name: material
             palette:
@@ -353,11 +353,11 @@ jobs:
               - navigation.sections
               - navigation.expand
               - search.highlight
-          
+
           plugins:
             - search
             - mermaid2
-          
+
           nav:
             - Home: index.md
             - Getting Started:
@@ -377,7 +377,7 @@ jobs:
               - Deployment: admin/deployment.md
               - Monitoring: admin/monitoring.md
               - Troubleshooting: admin/troubleshooting.md
-          
+
           markdown_extensions:
             - admonition
             - codehilite
@@ -387,34 +387,34 @@ jobs:
                     class: mermaid
                     format: !!python/name:mermaid2.fence_mermaid
           EOF
-          
+
           # Create documentation structure
           mkdir -p docs/{getting-started,user-guide,api,admin}
-          
+
           # Generate index page
           cat > docs/index.md << EOF
           # ACGS-1 Constitutional Governance System
-          
+
           Welcome to the ACGS-1 Constitutional Governance System documentation.
-          
+
           ## What is ACGS-1?
-          
+
           ACGS-1 is a comprehensive constitutional governance system that combines:
-          
+
           - **Constitutional AI** for intelligent governance
           - **Formal Verification** for policy validation
           - **Blockchain Integration** for transparency
           - **Democratic Processes** for stakeholder participation
-          
+
           ## Quick Links
-          
+
           - [Getting Started](getting-started/overview.md)
           - [User Guide](user-guide/constitutional-documents.md)
           - [API Reference](api/authentication.md)
           - [Administration](admin/deployment.md)
-          
+
           ## System Architecture
-          
+
           \`\`\`mermaid
           graph TB
               A[Citizens] --> B[Constitutional UI]
@@ -425,10 +425,10 @@ jobs:
               E --> F
           \`\`\`
           EOF
-          
+
           # Build documentation
           mkdocs build
-          
+
           echo "✅ User guide documentation generated"
 
       - name: Upload user guide documentation
@@ -442,7 +442,13 @@ jobs:
   deploy_documentation:
     runs-on: ubuntu-latest
     name: Deploy Documentation Site
-    needs: [api_documentation, architecture_documentation, deployment_documentation, user_guide_documentation]
+    needs:
+      [
+        api_documentation,
+        architecture_documentation,
+        deployment_documentation,
+        user_guide_documentation,
+      ]
     if: github.ref == 'refs/heads/main' && (github.event.inputs.doc_type == 'all' || github.event.inputs.doc_type == '')
     environment:
       name: github-pages
@@ -459,32 +465,32 @@ jobs:
       - name: Combine documentation
         run: |
           echo "📚 Combining all documentation..."
-          
+
           mkdir -p public
-          
+
           # Copy user guide as main site
           if [ -d "/tmp/docs/user-guide-documentation" ]; then
             cp -r /tmp/docs/user-guide-documentation/* public/
           fi
-          
+
           # Add API documentation
           if [ -d "/tmp/docs/api-documentation" ]; then
             mkdir -p public/api-docs
             cp -r /tmp/docs/api-documentation/* public/api-docs/
           fi
-          
+
           # Add architecture documentation
           if [ -d "/tmp/docs/architecture-documentation" ]; then
             mkdir -p public/architecture
             cp -r /tmp/docs/architecture-documentation/* public/architecture/
           fi
-          
+
           # Add deployment documentation
           if [ -d "/tmp/docs/deployment-documentation" ]; then
             mkdir -p public/deployment
             cp -r /tmp/docs/deployment-documentation/* public/deployment/
           fi
-          
+
           # Create index page if it doesn't exist
           if [ ! -f "public/index.html" ]; then
             cat > public/index.html << EOF
@@ -522,7 +528,7 @@ jobs:
           </html>
           EOF
           fi
-          
+
           echo "✅ Documentation combined"
 
       - name: Setup Pages
@@ -541,7 +547,13 @@ jobs:
   documentation_quality_check:
     runs-on: ubuntu-latest
     name: Documentation Quality Check
-    needs: [api_documentation, architecture_documentation, deployment_documentation, user_guide_documentation]
+    needs:
+      [
+        api_documentation,
+        architecture_documentation,
+        deployment_documentation,
+        user_guide_documentation,
+      ]
     if: always()
     steps:
       - name: Check out repository
@@ -555,7 +567,7 @@ jobs:
       - name: Lint Markdown files
         run: |
           echo "📝 Linting Markdown files..."
-          
+
           # Create markdownlint config
           cat > .markdownlint.json << EOF
           {
@@ -564,26 +576,26 @@ jobs:
             "MD041": false
           }
           EOF
-          
+
           # Lint all markdown files
           markdownlint docs/ README.md || true
-          
+
           echo "✅ Markdown linting completed"
 
       - name: Check documentation coverage
         run: |
           echo "📊 Checking documentation coverage..."
-          
+
           # Count documented vs undocumented files
           TOTAL_FILES=$(find services -name "*.py" -o -name "*.js" -o -name "*.ts" | wc -l)
           DOCUMENTED_FILES=$(find docs -name "*.md" | wc -l)
-          
+
           COVERAGE=$((DOCUMENTED_FILES * 100 / TOTAL_FILES))
-          
+
           echo "Documentation coverage: $COVERAGE%"
           echo "Total files: $TOTAL_FILES"
           echo "Documented files: $DOCUMENTED_FILES"
-          
+
           if [ $COVERAGE -lt 50 ]; then
             echo "⚠️ Documentation coverage is below 50%"
           else

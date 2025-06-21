@@ -1,29 +1,38 @@
 /**
  * Quantumagi Validation Dashboard Component
- * 
+ *
  * Real-time dashboard for monitoring Quantumagi Solana integration,
  * constitutional compliance, and governance workflow validation.
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  quantumagiValidator, 
-  IntegrationValidationReport, 
-  ValidationResult 
+import {
+  quantumagiValidator,
+  IntegrationValidationReport,
+  ValidationResult
 } from '../testing/quantumagiIntegrationValidator';
 
 // Validation status indicator
-const ValidationStatusIndicator: React.FC<{ status: 'passed' | 'failed' | 'warning' }> = ({ status }) => {
+const ValidationStatusIndicator: React.FC<{ status: 'passed' | 'failed' | 'warning' }> = ({
+  status
+}) => {
   const statusConfig = {
     passed: { icon: '✅', color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-200' },
     failed: { icon: '❌', color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200' },
-    warning: { icon: '⚠️', color: 'text-yellow-600', bg: 'bg-yellow-50', border: 'border-yellow-200' }
+    warning: {
+      icon: '⚠️',
+      color: 'text-yellow-600',
+      bg: 'bg-yellow-50',
+      border: 'border-yellow-200'
+    }
   };
 
   const config = statusConfig[status];
-  
+
   return (
-    <div className={`flex items-center space-x-2 px-2 py-1 rounded ${config.bg} ${config.border} border`}>
+    <div
+      className={`flex items-center space-x-2 px-2 py-1 rounded ${config.bg} ${config.border} border`}
+    >
       <span>{config.icon}</span>
       <span className={`text-sm font-medium ${config.color}`}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -35,7 +44,7 @@ const ValidationStatusIndicator: React.FC<{ status: 'passed' | 'failed' | 'warni
 // Validation result card
 const ValidationResultCard: React.FC<{ result: ValidationResult }> = ({ result }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  
+
   const statusColors = {
     passed: 'border-green-500 bg-green-50',
     failed: 'border-red-500 bg-red-50',
@@ -48,7 +57,9 @@ const ValidationResultCard: React.FC<{ result: ValidationResult }> = ({ result }
         <div className="flex-1">
           <div className="flex items-center space-x-3">
             <ValidationStatusIndicator status={result.status} />
-            <h3 className="font-semibold text-gray-900">{result.component.replace(/_/g, ' ').toUpperCase()}</h3>
+            <h3 className="font-semibold text-gray-900">
+              {result.component.replace(/_/g, ' ').toUpperCase()}
+            </h3>
           </div>
           <p className="text-sm text-gray-700 mt-2">{result.message}</p>
           <div className="text-xs text-gray-500 mt-1">
@@ -62,8 +73,16 @@ const ValidationResultCard: React.FC<{ result: ValidationResult }> = ({ result }
             className="p-2 hover:bg-white hover:bg-opacity-50 rounded"
             title="Toggle details"
           >
-            <svg className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+            <svg
+              className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
             </svg>
           </button>
         )}
@@ -82,7 +101,9 @@ const ValidationResultCard: React.FC<{ result: ValidationResult }> = ({ result }
 };
 
 // Overall status card
-const OverallStatusCard: React.FC<{ report: IntegrationValidationReport | null }> = ({ report }) => {
+const OverallStatusCard: React.FC<{ report: IntegrationValidationReport | null }> = ({
+  report
+}) => {
   if (!report) {
     return (
       <div className="bg-white p-6 rounded-lg shadow-sm border">
@@ -108,7 +129,7 @@ const OverallStatusCard: React.FC<{ report: IntegrationValidationReport | null }
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm border">
       <h2 className="text-xl font-semibold mb-4">Quantumagi Integration Status</h2>
-      
+
       <div className={`p-4 rounded-lg ${config.bg} mb-4`}>
         <div className="flex items-center space-x-3">
           <span className="text-2xl">{config.icon}</span>
@@ -146,13 +167,15 @@ const OverallStatusCard: React.FC<{ report: IntegrationValidationReport | null }
 };
 
 // Deployment info card
-const DeploymentInfoCard: React.FC<{ report: IntegrationValidationReport | null }> = ({ report }) => {
+const DeploymentInfoCard: React.FC<{ report: IntegrationValidationReport | null }> = ({
+  report
+}) => {
   if (!report) return null;
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm border">
       <h2 className="text-xl font-semibold mb-4">Deployment Information</h2>
-      
+
       <div className="space-y-3">
         <div className="flex justify-between">
           <span className="text-gray-600">Cluster:</span>
@@ -176,9 +199,7 @@ const DeploymentInfoCard: React.FC<{ report: IntegrationValidationReport | null 
           {Object.entries(report.deploymentInfo.programIds).map(([name, id]) => (
             <div key={name} className="flex justify-between items-center">
               <span className="text-sm text-gray-600">{name}:</span>
-              <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
-                {id}
-              </span>
+              <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">{id}</span>
             </div>
           ))}
         </div>
@@ -188,13 +209,15 @@ const DeploymentInfoCard: React.FC<{ report: IntegrationValidationReport | null 
 };
 
 // Performance metrics card
-const PerformanceMetricsCard: React.FC<{ report: IntegrationValidationReport | null }> = ({ report }) => {
+const PerformanceMetricsCard: React.FC<{ report: IntegrationValidationReport | null }> = ({
+  report
+}) => {
   if (!report) return null;
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm border">
       <h2 className="text-xl font-semibold mb-4">Performance Metrics</h2>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="text-center p-4 bg-blue-50 rounded-lg">
           <div className="text-2xl font-bold text-blue-600">
@@ -221,7 +244,9 @@ const PerformanceMetricsCard: React.FC<{ report: IntegrationValidationReport | n
 
 // Main dashboard component
 export const QuantumagiValidationDashboard: React.FC = () => {
-  const [validationReport, setValidationReport] = useState<IntegrationValidationReport | null>(null);
+  const [validationReport, setValidationReport] = useState<IntegrationValidationReport | null>(
+    null
+  );
   const [isRunning, setIsRunning] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(false);
@@ -256,9 +281,7 @@ export const QuantumagiValidationDashboard: React.FC = () => {
   // Filter validation results by category
   const getResultsByCategory = (category: string) => {
     if (!validationReport) return [];
-    return validationReport.validationResults.filter(result => 
-      result.component.includes(category)
-    );
+    return validationReport.validationResults.filter(result => result.component.includes(category));
   };
 
   return (
@@ -277,7 +300,7 @@ export const QuantumagiValidationDashboard: React.FC = () => {
               <input
                 type="checkbox"
                 checked={autoRefresh}
-                onChange={(e) => setAutoRefresh(e.target.checked)}
+                onChange={e => setAutoRefresh(e.target.checked)}
                 className="rounded"
               />
               <span className="text-sm text-gray-600">Auto-refresh</span>
@@ -291,7 +314,7 @@ export const QuantumagiValidationDashboard: React.FC = () => {
               onClick={runValidation}
               disabled={isRunning}
               className={`px-6 py-2 rounded-lg transition-colors ${
-                isRunning 
+                isRunning
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : 'bg-blue-600 text-white hover:bg-blue-700'
               }`}
@@ -319,9 +342,11 @@ export const QuantumagiValidationDashboard: React.FC = () => {
             <div>
               <h2 className="text-xl font-semibold mb-4">Solana Infrastructure</h2>
               <div className="space-y-3">
-                {getResultsByCategory('solana').concat(getResultsByCategory('program')).map((result, index) => (
-                  <ValidationResultCard key={index} result={result} />
-                ))}
+                {getResultsByCategory('solana')
+                  .concat(getResultsByCategory('program'))
+                  .map((result, index) => (
+                    <ValidationResultCard key={index} result={result} />
+                  ))}
               </div>
             </div>
 
@@ -366,7 +391,9 @@ export const QuantumagiValidationDashboard: React.FC = () => {
         {/* Footer */}
         <div className="mt-8 text-center text-sm text-gray-500">
           <p>Quantumagi Validation Dashboard v1.0 - Constitutional Governance on Solana</p>
-          <p>Targets: &gt;95% success rate, &lt;500ms response times, 100% constitutional compliance</p>
+          <p>
+            Targets: &gt;95% success rate, &lt;500ms response times, 100% constitutional compliance
+          </p>
         </div>
       </div>
     </div>

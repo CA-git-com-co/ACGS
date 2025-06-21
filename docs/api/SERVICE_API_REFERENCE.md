@@ -6,16 +6,16 @@ This document provides comprehensive API documentation for all 8 core services i
 
 ACGS-1 operates with 8 core services running on dedicated ports:
 
-| Service | Port | Purpose | Authentication |
-|---------|------|---------|----------------|
-| Authentication Service | 8000 | User auth, MFA, RBAC | OAuth 2.0, JWT |
-| Constitutional AI Service | 8001 | Constitutional validation | API Key + JWT |
-| Integrity Service | 8002 | Cryptographic integrity | PGP + API Key |
-| Formal Verification Service | 8003 | Mathematical verification | API Key |
-| Governance Synthesis Service | 8004 | Policy synthesis | API Key + JWT |
-| Policy Governance Service | 8005 | Policy enforcement | API Key + JWT |
-| Evolutionary Computation Service | 8006 | WINA oversight | API Key |
-| Darwin Gödel Machine Service | 8007 | Self-improvement & optimization | API Key + JWT |
+| Service                          | Port | Purpose                         | Authentication |
+| -------------------------------- | ---- | ------------------------------- | -------------- |
+| Authentication Service           | 8000 | User auth, MFA, RBAC            | OAuth 2.0, JWT |
+| Constitutional AI Service        | 8001 | Constitutional validation       | API Key + JWT  |
+| Integrity Service                | 8002 | Cryptographic integrity         | PGP + API Key  |
+| Formal Verification Service      | 8003 | Mathematical verification       | API Key        |
+| Governance Synthesis Service     | 8004 | Policy synthesis                | API Key + JWT  |
+| Policy Governance Service        | 8005 | Policy enforcement              | API Key + JWT  |
+| Evolutionary Computation Service | 8006 | WINA oversight                  | API Key        |
+| Darwin Gödel Machine Service     | 8007 | Self-improvement & optimization | API Key + JWT  |
 
 ## Authentication Service (Port 8000)
 
@@ -25,7 +25,9 @@ ACGS-1 operates with 8 core services running on dedicated ports:
 ### Core Endpoints
 
 #### POST /auth/login
+
 Authenticate user with credentials
+
 ```json
 {
   "username": "string",
@@ -35,7 +37,9 @@ Authenticate user with credentials
 ```
 
 #### POST /auth/register
+
 Register new user account
+
 ```json
 {
   "username": "string",
@@ -46,12 +50,15 @@ Register new user account
 ```
 
 #### GET /auth/profile
+
 Get current user profile (requires JWT)
 
 #### POST /auth/refresh
+
 Refresh JWT token
 
 ### Dependencies
+
 - PostgreSQL database for user storage
 - Redis for session management
 - OAuth 2.0 providers (optional)
@@ -64,7 +71,9 @@ Refresh JWT token
 ### Core Endpoints
 
 #### POST /constitutional/validate
+
 Validate content against constitutional principles
+
 ```json
 {
   "content": "string",
@@ -74,10 +83,13 @@ Validate content against constitutional principles
 ```
 
 #### GET /constitutional/principles
+
 List all constitutional principles
 
 #### POST /constitutional/human-in-loop
+
 Submit content for human review
+
 ```json
 {
   "content": "string",
@@ -87,9 +99,11 @@ Submit content for human review
 ```
 
 #### GET /constitutional/compliance/{policy_id}
+
 Check policy compliance status
 
 ### Dependencies
+
 - OpenAI API for LLM processing
 - Gemini API for multi-model validation
 - PostgreSQL for principle storage
@@ -102,7 +116,9 @@ Check policy compliance status
 ### Core Endpoints
 
 #### POST /integrity/verify
+
 Verify cryptographic integrity
+
 ```json
 {
   "data": "string",
@@ -112,7 +128,9 @@ Verify cryptographic integrity
 ```
 
 #### POST /integrity/sign
+
 Create digital signature
+
 ```json
 {
   "data": "string",
@@ -121,7 +139,9 @@ Create digital signature
 ```
 
 #### POST /integrity/appeals
+
 Submit governance appeal
+
 ```json
 {
   "case_id": "string",
@@ -131,9 +151,11 @@ Submit governance appeal
 ```
 
 #### GET /integrity/appeals/{appeal_id}
+
 Get appeal status
 
 ### Dependencies
+
 - PGP cryptographic libraries
 - PostgreSQL for appeal storage
 - Research data pipeline integration
@@ -146,7 +168,9 @@ Get appeal status
 ### Core Endpoints
 
 #### POST /verification/verify
+
 Formally verify policy or contract
+
 ```json
 {
   "code": "string",
@@ -156,7 +180,9 @@ Formally verify policy or contract
 ```
 
 #### POST /verification/batch
+
 Batch verification of multiple items
+
 ```json
 {
   "items": [
@@ -170,10 +196,13 @@ Batch verification of multiple items
 ```
 
 #### GET /verification/status/{verification_id}
+
 Get verification status
 
 #### POST /verification/adversarial
+
 Run adversarial robustness testing
+
 ```json
 {
   "target": "string",
@@ -183,6 +212,7 @@ Run adversarial robustness testing
 ```
 
 ### Dependencies
+
 - Z3 SMT solver
 - Parallel processing infrastructure
 - Mathematical verification libraries
@@ -195,7 +225,9 @@ Run adversarial robustness testing
 ### Core Endpoints
 
 #### POST /synthesis/generate
+
 Generate policy from principles
+
 ```json
 {
   "principles": ["string"],
@@ -206,7 +238,9 @@ Generate policy from principles
 ```
 
 #### POST /synthesis/validate
+
 Validate synthesized policy
+
 ```json
 {
   "policy": "string",
@@ -216,10 +250,13 @@ Validate synthesized policy
 ```
 
 #### GET /synthesis/history/{synthesis_id}
+
 Get synthesis history
 
 #### POST /synthesis/alphaevolve
+
 Enhanced synthesis with AlphaEvolve
+
 ```json
 {
   "base_policy": "string",
@@ -229,6 +266,7 @@ Enhanced synthesis with AlphaEvolve
 ```
 
 ### Dependencies
+
 - Multiple LLM APIs (OpenAI, Gemini)
 - AlphaEvolve integration
 - QEC error correction algorithms
@@ -241,7 +279,9 @@ Enhanced synthesis with AlphaEvolve
 ### Core Endpoints
 
 #### POST /governance/enforce
+
 Enforce policy decision
+
 ```json
 {
   "policy_id": "string",
@@ -251,10 +291,13 @@ Enforce policy decision
 ```
 
 #### GET /governance/workflows
+
 List all governance workflows
 
 #### POST /governance/workflows/{workflow_type}
+
 Execute specific governance workflow
+
 ```json
 {
   "workflow_type": "policy_creation|compliance|enforcement|audit",
@@ -264,10 +307,13 @@ Execute specific governance workflow
 ```
 
 #### GET /governance/policies
+
 List all active policies
 
 #### POST /governance/amendment
+
 Submit constitutional amendment
+
 ```json
 {
   "amendment_text": "string",
@@ -277,6 +323,7 @@ Submit constitutional amendment
 ```
 
 ### Dependencies
+
 - Open Policy Agent (OPA)
 - Constitutional AI Service
 - Multi-stakeholder coordination system
@@ -289,7 +336,9 @@ Submit constitutional amendment
 ### Core Endpoints
 
 #### GET /wina/oversight
+
 Get WINA oversight status
+
 ```json
 {
   "metrics": {
@@ -301,7 +350,9 @@ Get WINA oversight status
 ```
 
 #### POST /wina/optimize
+
 Run governance optimization
+
 ```json
 {
   "target_metrics": ["performance", "compliance"],
@@ -311,10 +362,13 @@ Run governance optimization
 ```
 
 #### GET /wina/performance
+
 Get performance monitoring data
 
 #### POST /wina/feedback
+
 Submit learning feedback
+
 ```json
 {
   "feedback_type": "performance|compliance|optimization",
@@ -324,6 +378,7 @@ Submit learning feedback
 ```
 
 ### Dependencies
+
 - WINA optimization algorithms
 - Performance monitoring infrastructure
 - Constitutional compliance verification
@@ -336,7 +391,9 @@ Submit learning feedback
 ### Core Endpoints
 
 #### GET /dgm/status
+
 Get comprehensive DGM system status
+
 ```json
 {
   "status": "operational",
@@ -350,7 +407,9 @@ Get comprehensive DGM system status
 ```
 
 #### POST /dgm/improve
+
 Trigger a new improvement cycle
+
 ```json
 {
   "description": "Optimize query performance",
@@ -361,7 +420,9 @@ Trigger a new improvement cycle
 ```
 
 #### POST /dgm/bandit/select-arm
+
 Select an arm using bandit algorithm
+
 ```json
 {
   "context_key": "improvement_context",
@@ -372,7 +433,9 @@ Select an arm using bandit algorithm
 ```
 
 #### POST /dgm/bandit/reward-feedback
+
 Provide reward feedback for bandit learning
+
 ```json
 {
   "context_key": "improvement_context",
@@ -383,10 +446,13 @@ Provide reward feedback for bandit learning
 ```
 
 #### GET /dgm/performance
+
 Get performance report for specified time period
 
 #### POST /dgm/rollback
+
 Rollback a specific improvement
+
 ```json
 {
   "improvement_id": "uuid",
@@ -396,6 +462,7 @@ Rollback a specific improvement
 ```
 
 ### Dependencies
+
 - Darwin Gödel Machine engine
 - Bandit algorithm implementations
 - Performance monitoring system
@@ -405,6 +472,7 @@ Rollback a specific improvement
 ## Inter-Service Communication
 
 Services communicate through:
+
 - **HTTP REST APIs** for synchronous operations
 - **Message queues** for asynchronous workflows
 - **Shared database** for persistent state
@@ -413,6 +481,7 @@ Services communicate through:
 ## Error Handling
 
 All services follow consistent error response format:
+
 ```json
 {
   "error": {
@@ -433,6 +502,7 @@ All services follow consistent error response format:
 ## Health Checks
 
 All services expose health check endpoints:
+
 - `GET /health` - Basic health status
 - `GET /health/detailed` - Comprehensive health metrics
 - `GET /metrics` - Prometheus-compatible metrics

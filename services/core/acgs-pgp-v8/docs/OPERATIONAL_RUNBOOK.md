@@ -18,23 +18,25 @@ This runbook provides operational procedures for managing the ACGS-PGP v8 servic
 ### Production Deployment
 
 1. **Pre-deployment Checklist**
+
    ```bash
    # Verify dependencies
    curl http://localhost:8000/health  # Auth Service
    curl http://localhost:8004/health  # GS Service
    curl http://localhost:8005/health  # PGC Service
-   
+
    # Check database connectivity
    psql -h localhost -U acgs_user -d acgs_db -c "SELECT 1;"
-   
+
    # Verify Redis connectivity
    redis-cli ping
    ```
 
 2. **Deploy Service**
+
    ```bash
    cd services/core/acgs-pgp-v8
-   
+
    # Build and deploy
    docker build -t acgs-pgp-v8:latest .
    docker run -d \
@@ -47,13 +49,14 @@ This runbook provides operational procedures for managing the ACGS-PGP v8 servic
    ```
 
 3. **Post-deployment Validation**
+
    ```bash
    # Health check
    curl http://localhost:8010/health
-   
+
    # Metrics validation
    curl http://localhost:8010/metrics | grep acgs_pgp_v8_system_uptime_seconds
-   
+
    # Run monitoring integration test
    python test_monitoring_integration.py
    ```
@@ -61,11 +64,13 @@ This runbook provides operational procedures for managing the ACGS-PGP v8 servic
 ### Rolling Updates
 
 1. **Prepare New Version**
+
    ```bash
    docker build -t acgs-pgp-v8:v8.0.1 .
    ```
 
 2. **Deploy with Zero Downtime**
+
    ```bash
    # Start new container
    docker run -d \
@@ -74,15 +79,15 @@ This runbook provides operational procedures for managing the ACGS-PGP v8 servic
      -e DATABASE_URL=postgresql://acgs_user:acgs_password@localhost:5432/acgs_db \
      -e REDIS_URL=redis://localhost:6379/0 \
      acgs-pgp-v8:v8.0.1
-   
+
    # Validate new container
    curl http://localhost:8011/health
-   
+
    # Update load balancer to point to new container
    # Stop old container
    docker stop acgs-pgp-v8
    docker rm acgs-pgp-v8
-   
+
    # Rename new container
    docker stop acgs-pgp-v8-new
    docker run -d \
@@ -96,10 +101,12 @@ This runbook provides operational procedures for managing the ACGS-PGP v8 servic
 ### Key Metrics to Monitor
 
 1. **Service Health**
+
    - `up{job="acgs-pgp-v8-service"}` - Service availability
    - `acgs_pgp_v8_component_health` - Component health status
 
 2. **Performance Metrics**
+
    - `acgs_pgp_v8_policy_generation_duration_seconds` - Response times
    - `acgs_pgp_v8_policy_generation_requests_total` - Request rates
    - `acgs_pgp_v8_constitutional_compliance_score` - Compliance scores
@@ -121,23 +128,23 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "ACGS-PGP v8 service is down"
-      
+          summary: 'ACGS-PGP v8 service is down'
+
       - alert: ACGSPGPv8HighResponseTime
         expr: histogram_quantile(0.95, rate(acgs_pgp_v8_policy_generation_duration_seconds_bucket[5m])) > 0.5
         for: 5m
         labels:
           severity: warning
         annotations:
-          summary: "ACGS-PGP v8 high response time"
-      
+          summary: 'ACGS-PGP v8 high response time'
+
       - alert: ACGSPGPv8LowCompliance
         expr: histogram_quantile(0.50, rate(acgs_pgp_v8_constitutional_compliance_score_bucket[5m])) < 0.8
         for: 10m
         labels:
           severity: critical
         annotations:
-          summary: "ACGS-PGP v8 constitutional compliance below threshold"
+          summary: 'ACGS-PGP v8 constitutional compliance below threshold'
 ```
 
 ## Troubleshooting Guide
@@ -149,6 +156,7 @@ groups:
 **Symptoms**: Container exits immediately or health check fails
 
 **Diagnosis**:
+
 ```bash
 # Check container logs
 docker logs acgs-pgp-v8
@@ -159,6 +167,7 @@ redis-cli ping              # Redis
 ```
 
 **Resolution**:
+
 - Verify database connection string
 - Ensure Redis is accessible
 - Check environment variables
@@ -169,6 +178,7 @@ redis-cli ping              # Redis
 **Symptoms**: Policy generation taking >500ms
 
 **Diagnosis**:
+
 ```bash
 # Check metrics
 curl http://localhost:8010/metrics | grep duration
@@ -181,6 +191,7 @@ psql -c "SELECT * FROM pg_stat_activity WHERE state = 'active';"
 ```
 
 **Resolution**:
+
 - Scale horizontally if CPU bound
 - Optimize database queries
 - Increase cache TTL
@@ -191,6 +202,7 @@ psql -c "SELECT * FROM pg_stat_activity WHERE state = 'active';"
 **Symptoms**: Compliance scores below 0.8
 
 **Diagnosis**:
+
 ```bash
 # Check PGC service health
 curl http://localhost:8005/health
@@ -203,6 +215,7 @@ curl http://localhost:8005/api/v1/constitutional/validate
 ```
 
 **Resolution**:
+
 - Verify PGC service is healthy
 - Validate constitutional hash matches expected value
 - Check policy generation parameters
@@ -213,6 +226,7 @@ curl http://localhost:8005/api/v1/constitutional/validate
 **Symptoms**: Requests failing with circuit breaker errors
 
 **Diagnosis**:
+
 ```bash
 # Check circuit breaker states
 curl http://localhost:8010/metrics | grep circuit_breaker_state
@@ -222,6 +236,7 @@ curl http://localhost:8010/metrics | grep error_correction_events
 ```
 
 **Resolution**:
+
 - Wait for circuit breaker to reset (30 seconds)
 - Fix underlying service issues
 - Restart service if circuit breaker stuck
@@ -274,18 +289,21 @@ redis-cli ping
 ### Regular Maintenance
 
 #### Daily Tasks
+
 - Monitor service health and performance metrics
 - Review error logs for anomalies
 - Validate constitutional compliance scores
 - Check resource utilization
 
 #### Weekly Tasks
+
 - Review and rotate logs
 - Update security patches
 - Performance optimization review
 - Backup validation
 
 #### Monthly Tasks
+
 - Capacity planning review
 - Security audit
 - Dependency updates
@@ -294,6 +312,7 @@ redis-cli ping
 ### Backup and Recovery
 
 #### Database Backup
+
 ```bash
 # Create backup
 pg_dump -h localhost -U acgs_user acgs_db > acgs_pgp_v8_backup_$(date +%Y%m%d).sql
@@ -303,6 +322,7 @@ psql -h localhost -U acgs_user -d acgs_db < acgs_pgp_v8_backup_20240616.sql
 ```
 
 #### Configuration Backup
+
 ```bash
 # Backup configuration
 cp config/acgs_pgp_v8_config.yaml backups/config_$(date +%Y%m%d).yaml
@@ -314,6 +334,7 @@ env | grep ACGS > backups/env_$(date +%Y%m%d).txt
 ### Performance Tuning
 
 #### Database Optimization
+
 ```sql
 -- Analyze query performance
 EXPLAIN ANALYZE SELECT * FROM policy_generations WHERE created_at > NOW() - INTERVAL '1 day';
@@ -322,11 +343,12 @@ EXPLAIN ANALYZE SELECT * FROM policy_generations WHERE created_at > NOW() - INTE
 ANALYZE;
 
 -- Check index usage
-SELECT schemaname, tablename, indexname, idx_scan, idx_tup_read, idx_tup_fetch 
+SELECT schemaname, tablename, indexname, idx_scan, idx_tup_read, idx_tup_fetch
 FROM pg_stat_user_indexes;
 ```
 
 #### Cache Optimization
+
 ```bash
 # Monitor cache hit rates
 redis-cli INFO stats | grep keyspace_hits
@@ -338,12 +360,14 @@ redis-cli CONFIG SET maxmemory-policy allkeys-lru
 ## Security Procedures
 
 ### Security Monitoring
+
 - Monitor authentication failures
 - Track constitutional compliance violations
 - Review access patterns
 - Validate JWT token integrity
 
 ### Incident Response
+
 1. Isolate affected components
 2. Preserve logs and evidence
 3. Notify security team
@@ -351,6 +375,7 @@ redis-cli CONFIG SET maxmemory-policy allkeys-lru
 5. Document incident details
 
 ### Security Updates
+
 ```bash
 # Update base image
 docker pull python:3.11-slim

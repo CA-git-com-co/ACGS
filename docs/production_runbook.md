@@ -7,17 +7,20 @@ This runbook provides step-by-step procedures for common production operations, 
 ## Quick Reference
 
 ### Emergency Contacts
+
 - **On-Call Engineer**: +1-XXX-XXX-XXXX
 - **DevOps Team**: devops@company.com
 - **Engineering Manager**: manager@company.com
 
 ### Critical URLs
+
 - **Grafana Dashboards**: http://localhost:3001 (admin/admin123)
 - **Prometheus Metrics**: http://localhost:9090
 - **API Gateway**: http://localhost:8000
 - **Production API**: https://api.acgs-pgp.example.com
 
 ### Service Health Checks
+
 ```bash
 # Quick health check all services
 for port in 8000 8001 8002 8003 8004 8005; do
@@ -30,16 +33,19 @@ done
 ### Severity Levels
 
 #### P0 - Critical (Complete System Down)
+
 - **Response Time**: Immediate (< 5 minutes)
 - **Escalation**: Immediate to on-call engineer and manager
 - **Communication**: Update status page every 15 minutes
 
 #### P1 - High (Service Degradation)
+
 - **Response Time**: 15 minutes
 - **Escalation**: After 30 minutes if not resolved
 - **Communication**: Update status page every 30 minutes
 
 #### P2 - Medium (Non-critical Issues)
+
 - **Response Time**: 2 hours
 - **Escalation**: After 4 hours if not resolved
 - **Communication**: Internal team notification
@@ -49,11 +55,13 @@ done
 #### Scenario 1: Service Completely Down
 
 **Symptoms:**
+
 - Health checks failing
 - 5xx errors in logs
 - Grafana showing service as down
 
 **Immediate Actions:**
+
 ```bash
 # 1. Check service status
 docker-compose ps
@@ -69,6 +77,7 @@ curl http://localhost:PORT/health
 ```
 
 **If restart doesn't work:**
+
 ```bash
 # 1. Check resource usage
 docker stats
@@ -86,11 +95,13 @@ docker-compose -f infrastructure/docker/docker-compose.yml down && docker-compos
 #### Scenario 2: High Response Times
 
 **Symptoms:**
+
 - API response times > 500ms
 - Grafana showing high latency
 - User complaints about slow performance
 
 **Investigation Steps:**
+
 ```bash
 # 1. Check current response times
 curl -s "http://localhost:9090/api/v1/query?query=histogram_quantile(0.95, rate(acgs_http_request_duration_seconds_bucket[5m]))"
@@ -106,6 +117,7 @@ docker stats
 ```
 
 **Mitigation Actions:**
+
 ```bash
 # 1. Scale up if resource constrained
 docker-compose -f infrastructure/docker/docker-compose.yml up -d --scale auth_service=2
@@ -120,11 +132,13 @@ docker-compose restart auth_service ac_service
 #### Scenario 3: Authentication Failures
 
 **Symptoms:**
+
 - Users cannot log in
 - High authentication failure rate in Grafana
 - JWT validation errors
 
 **Investigation:**
+
 ```bash
 # 1. Check authentication metrics
 curl -s "http://localhost:9090/api/v1/query?query=rate(acgs_auth_failures_total[5m])"
@@ -139,6 +153,7 @@ curl -X POST http://localhost:8000/auth/login \
 ```
 
 **Resolution:**
+
 ```bash
 # 1. Verify JWT secret is set
 echo $AUTH_SERVICE_SECRET_KEY
@@ -159,21 +174,25 @@ docker-compose restart auth_service
 ### Key Dashboards
 
 #### 1. ACGS-PGP Overview Dashboard
+
 - **URL**: http://localhost:3001/d/acgs-overview
 - **Purpose**: System-wide health and performance
 - **Key Metrics**: Service uptime, response times, error rates
 
 #### 2. Service Performance Dashboard
+
 - **URL**: http://localhost:3001/d/acgs-services
 - **Purpose**: Individual service metrics
 - **Key Metrics**: CPU, memory, request rates per service
 
 #### 3. Authentication Dashboard
+
 - **URL**: http://localhost:3001/d/acgs-auth
 - **Purpose**: Authentication and security metrics
 - **Key Metrics**: Login success rates, failed attempts, JWT usage
 
 #### 4. Database Performance Dashboard
+
 - **URL**: http://localhost:3001/d/acgs-database
 - **Purpose**: Database health and performance
 - **Key Metrics**: Connection pools, query times, lock waits
@@ -181,6 +200,7 @@ docker-compose restart auth_service
 ### Alert Investigation
 
 #### High Error Rate Alert
+
 ```bash
 # 1. Check which service has errors
 curl -s "http://localhost:9090/api/v1/query?query=rate(acgs_http_requests_total{status=~'5..'}[5m])"
@@ -197,6 +217,7 @@ curl http://localhost:8002/health  # Check Integrity service
 ```
 
 #### Database Connection Alert
+
 ```bash
 # 1. Check connection count
 docker exec acgs_postgres_db psql -U acgs_user -d acgs_pgp_db -c "SELECT count(*) FROM pg_stat_activity;"
@@ -213,6 +234,7 @@ docker exec acgs_postgres_db psql -U acgs_user -d acgs_pgp_db -c "SELECT pg_term
 ### Planned Maintenance
 
 #### Service Updates
+
 ```bash
 # 1. Announce maintenance window
 # 2. Create backup
@@ -231,6 +253,7 @@ docker-compose -f infrastructure/docker/docker-compose.yml up -d service_name
 ```
 
 #### Database Maintenance
+
 ```bash
 # 1. Create backup
 docker exec acgs_postgres_db pg_dump -U acgs_user acgs_pgp_db > backup_$(date +%Y%m%d_%H%M%S).sql
@@ -248,6 +271,7 @@ docker exec acgs_postgres_db psql -U acgs_user -d acgs_pgp_db -c "SELECT scheman
 ### Emergency Procedures
 
 #### Complete System Recovery
+
 ```bash
 # 1. Stop all services
 docker-compose -f infrastructure/docker/docker-compose.yml down
@@ -271,6 +295,7 @@ docker-compose -f infrastructure/docker/docker-compose.yml up -d
 ```
 
 #### Database Recovery
+
 ```bash
 # 1. Stop services that use database
 docker-compose stop auth_service ac_service integrity_service fv_service gs_service pgc_service
@@ -293,11 +318,12 @@ docker-compose -f infrastructure/docker/docker-compose.yml up -d
 ## Performance Optimization
 
 ### Database Optimization
+
 ```sql
 -- Identify slow queries
-SELECT query, mean_time, calls, total_time 
-FROM pg_stat_statements 
-ORDER BY mean_time DESC 
+SELECT query, mean_time, calls, total_time
+FROM pg_stat_statements
+ORDER BY mean_time DESC
 LIMIT 10;
 
 -- Add indexes for common queries
@@ -312,6 +338,7 @@ ANALYZE users;
 ```
 
 ### Application Optimization
+
 ```bash
 # 1. Monitor memory usage
 docker stats --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}"
@@ -332,6 +359,7 @@ CACHE_TTL=300
 ## Security Procedures
 
 ### Security Incident Response
+
 ```bash
 # 1. Identify the threat
 docker-compose logs | grep -i "security\|attack\|breach"
@@ -351,6 +379,7 @@ curl -s "http://localhost:9090/api/v1/query?query=acgs_security_events_total"
 ```
 
 ### Regular Security Tasks
+
 ```bash
 # Weekly security log review
 docker-compose logs | grep -E "(SECURITY|WARNING|ERROR)" | tail -100
@@ -366,6 +395,7 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 ## Backup and Recovery
 
 ### Automated Backups
+
 ```bash
 # Daily database backup
 0 2 * * * docker exec acgs_postgres_db pg_dump -U acgs_user acgs_pgp_db | gzip > /backups/daily/acgs_$(date +\%Y\%m\%d).sql.gz
@@ -378,6 +408,7 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 ```
 
 ### Recovery Testing
+
 ```bash
 # Monthly recovery test
 # 1. Create test environment
@@ -389,12 +420,14 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 ## Contact Information
 
 ### Escalation Matrix
+
 1. **On-Call Engineer**: Primary contact for all incidents
 2. **DevOps Team Lead**: Escalate after 30 minutes for P0, 2 hours for P1
 3. **Engineering Manager**: Escalate after 1 hour for P0, 4 hours for P1
 4. **CTO**: Escalate for extended outages or security incidents
 
 ### External Contacts
+
 - **Cloud Provider Support**: [Provider-specific contact]
 - **Database Support**: [PostgreSQL support if applicable]
 - **Security Team**: security@company.com

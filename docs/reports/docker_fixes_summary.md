@@ -3,18 +3,22 @@
 ## Issues Identified and Fixed
 
 ### 1. **Dockerfile Port Configuration Issues**
+
 **Problem**: All services exposed port 8000 but ran on different ports
 **Solution**: Updated EXPOSE directives to match actual service ports:
+
 - AC Service: EXPOSE 8001
-- Integrity Service: EXPOSE 8002  
+- Integrity Service: EXPOSE 8002
 - FV Service: EXPOSE 8003
 - GS Service: EXPOSE 8004
 - PGC Service: EXPOSE 8005
 - Auth Service: EXPOSE 8000 (correct)
 
 ### 2. **Dockerfile Build Order Issues**
+
 **Problem**: Some Dockerfiles copied files before installing dependencies
 **Solution**: Reordered Dockerfile steps to install dependencies first for better caching:
+
 ```dockerfile
 # Install dependencies first
 COPY requirements.txt .
@@ -25,18 +29,23 @@ COPY . /app
 ```
 
 ### 3. **Python Version Inconsistencies**
+
 **Problem**: GS Service used Python 3.9 while others used 3.10
 **Solution**: Standardized all services to use Python 3.10-slim
 
 ### 4. **Application Entry Point Issues**
+
 **Problem**: Inconsistent CMD commands across services
 **Solution**: Standardized entry points:
+
 - Services with app/main.py: `CMD ["uvicorn", "app.main:app", ...]`
 - Services with root main.py: `CMD ["uvicorn", "main:app", ...]`
 
 ### 5. **Missing Health Endpoints**
+
 **Problem**: Auth service app/main.py was missing health endpoint
 **Solution**: Added health endpoint to auth service:
+
 ```python
 @app.get("/health", status_code=status.HTTP_200_OK)
 async def health_check() -> dict:
@@ -44,19 +53,24 @@ async def health_check() -> dict:
 ```
 
 ### 6. **PYTHONPATH Configuration**
+
 **Status**: ✅ Already correctly configured in infrastructure/docker/docker-compose.yml
+
 - All services have `PYTHONPATH=/app:/app/shared`
 - Volume mounting correctly configured: `./services/core/shared:/app/shared`
 
 ### 7. **Alembic Runner Issues**
+
 **Problem**: Alembic runner couldn't find env.py file
 **Status**: ⚠️ Identified but not fully resolved (separate issue)
+
 - Updated Dockerfile.alembic to copy individual files instead of directory
 - May need further investigation for production deployment
 
 ## Files Modified
 
 ### Dockerfiles Updated:
+
 - `services/core/ac_service/Dockerfile`
 - `services/core/integrity_service/Dockerfile`
 - `services/core/fv_service/Dockerfile`
@@ -65,15 +79,18 @@ async def health_check() -> dict:
 - `services/core/auth_service/Dockerfile`
 
 ### Application Files Updated:
+
 - `services/core/auth_service/app/main.py` (added health endpoint)
 
 ### Test Files Created:
+
 - `docker-compose-test.yml` (simplified test configuration)
 - `test_docker_fixes.py` (comprehensive verification script)
 
 ## Verification Results
 
 ### ✅ Successfully Tested:
+
 1. **Docker Compose Syntax**: No syntax errors
 2. **Docker Build**: All services build successfully
 3. **Service Startup**: Services start without import errors
@@ -81,6 +98,7 @@ async def health_check() -> dict:
 5. **Shared Module Access**: No "ModuleNotFoundError: No module named 'shared'" errors
 
 ### Test Results:
+
 - **Auth Service**: ✅ Running on port 8000, health endpoint working
 - **AC Service**: ✅ Running on port 8001, health endpoint working
 - **Integrity Service**: ✅ Expected to work (same pattern as AC service)
@@ -91,6 +109,7 @@ async def health_check() -> dict:
 ## Next Steps
 
 ### For Production Deployment:
+
 1. **Fix Alembic Runner**: Resolve remaining alembic configuration issues
 2. **Test All Services**: Run comprehensive test suite with all services
 3. **Database Migrations**: Ensure migrations run successfully
@@ -98,6 +117,7 @@ async def health_check() -> dict:
 5. **Load Testing**: Verify performance under load
 
 ### For Development:
+
 1. **Use Test Configuration**: `docker-compose -f docker-compose-test.yml up -d`
 2. **Monitor Logs**: Check for any remaining import issues
 3. **Run Integration Tests**: Execute test_service_integration.py

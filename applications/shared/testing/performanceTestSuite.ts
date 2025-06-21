@@ -1,11 +1,15 @@
 /**
  * Performance Testing Suite
- * 
+ *
  * Comprehensive performance testing framework for measuring bundle size,
  * loading times, memory usage, and other performance metrics during migration.
  */
 
-import { performanceMetrics, PerformanceMetric, PerformanceBaseline } from '../services/performanceMetrics';
+import {
+  performanceMetrics,
+  PerformanceMetric,
+  PerformanceBaseline
+} from '../services/performanceMetrics';
 
 // Performance test configuration
 export interface PerformanceTestConfig {
@@ -91,7 +95,7 @@ const DEFAULT_THRESHOLDS: PerformanceThresholds = {
   cumulativeLayoutShift: 0.1,
   bundleSize: 1000,
   memoryUsage: 100,
-  networkRequests: 50,
+  networkRequests: 50
 };
 
 // ACGS-specific test configurations
@@ -156,10 +160,7 @@ const ACGS_TEST_CONFIGS: PerformanceTestConfig[] = [
       {
         name: 'Bundle Analysis',
         description: 'Analyze bundle size and composition',
-        actions: [
-          { type: 'navigate', target: '/' },
-          { type: 'measure' }
-        ],
+        actions: [{ type: 'navigate', target: '/' }, { type: 'measure' }],
         assertions: [
           { metric: 'bundleSize', operator: 'lt', value: 1000, unit: 'KB' },
           { metric: 'networkRequests', operator: 'lt', value: 50, unit: 'count' }
@@ -194,7 +195,7 @@ export class PerformanceTestSuite {
 
     try {
       console.log('Starting performance test suite...');
-      
+
       for (const config of this.testConfigs) {
         console.log(`Running test: ${config.name}`);
         const result = await this.runTest(config);
@@ -238,7 +239,6 @@ export class PerformanceTestSuite {
           assertions.push(result);
         }
       }
-
     } catch (error) {
       errors.push(error instanceof Error ? error.message : 'Unknown error');
     }
@@ -261,7 +261,7 @@ export class PerformanceTestSuite {
         passedAssertions,
         failedAssertions: assertions.length - passedAssertions,
         averageLoadTime: this.calculateAverageMetric(metrics, 'loadTime'),
-        averageMemoryUsage: this.calculateAverageMetric(metrics, 'memoryUsage'),
+        averageMemoryUsage: this.calculateAverageMetric(metrics, 'memoryUsage')
       }
     };
   }
@@ -269,7 +269,10 @@ export class PerformanceTestSuite {
   /**
    * Run test scenarios
    */
-  private async runScenarios(scenarios: PerformanceScenario[], isWarmup: boolean): Promise<PerformanceMetric[]> {
+  private async runScenarios(
+    scenarios: PerformanceScenario[],
+    isWarmup: boolean
+  ): Promise<PerformanceMetric[]> {
     const metrics: PerformanceMetric[] = [];
 
     for (const scenario of scenarios) {
@@ -289,7 +292,10 @@ export class PerformanceTestSuite {
   /**
    * Run a single scenario
    */
-  private async runScenario(scenario: PerformanceScenario, isWarmup: boolean): Promise<PerformanceMetric[]> {
+  private async runScenario(
+    scenario: PerformanceScenario,
+    isWarmup: boolean
+  ): Promise<PerformanceMetric[]> {
     const metrics: PerformanceMetric[] = [];
     const startTime = Date.now();
 
@@ -316,7 +322,7 @@ export class PerformanceTestSuite {
         await this.navigate(action.target || '/');
         break;
       case 'wait':
-        await this.wait(action.value as number || 1000);
+        await this.wait((action.value as number) || 1000);
         break;
       case 'measure':
         await this.measurePerformance();
@@ -325,10 +331,10 @@ export class PerformanceTestSuite {
         await this.click(action.target || '');
         break;
       case 'type':
-        await this.type(action.target || '', action.value as string || '');
+        await this.type(action.target || '', (action.value as string) || '');
         break;
       case 'scroll':
-        await this.scroll(action.value as number || 0);
+        await this.scroll((action.value as number) || 0);
         break;
       default:
         console.warn(`Unknown action type: ${action.type}`);
@@ -389,7 +395,7 @@ export class PerformanceTestSuite {
    */
   private async collectMetrics(scenarioName: string): Promise<PerformanceMetric[]> {
     const timestamp = Date.now();
-    
+
     // In a real implementation, these would be actual browser metrics
     const mockMetrics: PerformanceMetric[] = [
       {
@@ -432,9 +438,12 @@ export class PerformanceTestSuite {
   /**
    * Evaluate performance assertion
    */
-  private evaluateAssertion(assertion: PerformanceAssertion, metrics: PerformanceMetric[]): AssertionResult {
+  private evaluateAssertion(
+    assertion: PerformanceAssertion,
+    metrics: PerformanceMetric[]
+  ): AssertionResult {
     const relevantMetrics = metrics.filter(m => m.name === assertion.metric);
-    
+
     if (relevantMetrics.length === 0) {
       return {
         assertion,
@@ -483,7 +492,7 @@ export class PerformanceTestSuite {
   private calculateAverageMetric(metrics: PerformanceMetric[], metricName: string): number {
     const relevantMetrics = metrics.filter(m => m.name === metricName);
     if (relevantMetrics.length === 0) return 0;
-    
+
     const sum = relevantMetrics.reduce((total, metric) => total + metric.value, 0);
     return sum / relevantMetrics.length;
   }
@@ -510,7 +519,7 @@ export class PerformanceTestSuite {
     const passedTests = this.testResults.filter(r => r.passed).length;
     const failedTests = totalTests - passedTests;
     const totalDuration = this.testResults.reduce((sum, r) => sum + r.duration, 0);
-    
+
     const allMetrics = this.testResults.flatMap(r => r.metrics);
     const averageLoadTime = this.calculateAverageMetric(allMetrics, 'loadTime');
     const averageMemoryUsage = this.calculateAverageMetric(allMetrics, 'memoryUsage');

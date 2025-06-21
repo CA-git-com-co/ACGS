@@ -5,6 +5,7 @@ This guide provides comprehensive solutions for common issues encountered when d
 ## 📋 Quick Reference
 
 ### Service Health Status
+
 ```bash
 # Check all services at once
 curl -s http://localhost:8000/health | jq '.status'  # Auth Service
@@ -17,6 +18,7 @@ curl -s http://localhost:8006/health | jq '.status'  # Evolutionary Computation
 ```
 
 ### Emergency Commands
+
 ```bash
 # Stop all services immediately
 pkill -f "uvicorn.*main:app"
@@ -31,6 +33,7 @@ python scripts/emergency_rollback_procedures.py
 ## Quick Diagnostics
 
 ### **System Health Check**
+
 ```bash
 # Check all services status
 docker-compose -f infrastructure/docker/docker-compose.yml ps
@@ -43,6 +46,7 @@ python scripts/health_check.sh
 ```
 
 ### **Service Logs**
+
 ```bash
 # View all service logs
 docker-compose -f infrastructure/docker/docker-compose.yml logs
@@ -58,11 +62,13 @@ docker-compose -f infrastructure/docker/docker-compose.yml logs fv_service
 ### **1. Database Connection Issues**
 
 #### **Symptoms:**
+
 - Services failing to start
 - "Connection refused" errors
 - Database migration failures
 
 #### **Solutions:**
+
 ```bash
 # Check PostgreSQL container status
 docker-compose -f infrastructure/docker/docker-compose.yml ps postgres
@@ -78,6 +84,7 @@ docker-compose -f infrastructure/docker/docker-compose.yml exec postgres psql -U
 ```
 
 #### **Common Fixes:**
+
 - Ensure `DATABASE_URL` uses service name: `postgresql://acgs_user:acgs_password@postgres:5432/acgs_db`
 - Check PostgreSQL container logs for startup errors
 - Verify database credentials match between services and PostgreSQL configuration
@@ -85,11 +92,13 @@ docker-compose -f infrastructure/docker/docker-compose.yml exec postgres psql -U
 ### **2. LLM Integration Issues**
 
 #### **Symptoms:**
+
 - Constitutional prompting failures
 - "OpenAI API key not found" errors
 - Policy synthesis timeouts
 
 #### **Solutions:**
+
 ```bash
 # Verify OpenAI API key
 grep OPENAI_API_KEY .env
@@ -111,6 +120,7 @@ docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml
 ```
 
 #### **Common Fixes:**
+
 - Ensure valid OpenAI API key is set in environment variables
 - Check API key permissions and billing status
 - Verify network connectivity to OpenAI services
@@ -119,11 +129,13 @@ docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml
 ### **3. Z3 Formal Verification Issues**
 
 #### **Symptoms:**
+
 - Verification timeouts
 - Z3 solver crashes
 - "Z3 not found" errors
 
 #### **Solutions:**
+
 ```bash
 # Check Z3 installation in FV service
 docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml exec fv_service python -c "import z3; print(z3.get_version_string())"
@@ -142,6 +154,7 @@ docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml
 ```
 
 #### **Common Fixes:**
+
 - Increase Z3 timeout values in environment configuration
 - Reduce memory usage by limiting Z3 solver complexity
 - Check Z3 installation in Docker container
@@ -150,11 +163,13 @@ docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml
 ### **4. PGP Cryptographic Integrity Issues**
 
 #### **Symptoms:**
+
 - Signature verification failures
 - "PGP key not found" errors
 - Cryptographic integrity check failures
 
 #### **Solutions:**
+
 ```bash
 # Check PGP key configuration
 grep PGP_ .env
@@ -175,6 +190,7 @@ docker-compose -f infrastructure/docker/docker-compose.yml logs integrity_servic
 ```
 
 #### **Common Fixes:**
+
 - Generate PGP keys if not present: `gpg --gen-key`
 - Import existing PGP keys into container
 - Verify PGP key ID and passphrase in environment
@@ -183,11 +199,13 @@ docker-compose -f infrastructure/docker/docker-compose.yml logs integrity_servic
 ### **5. Constitutional Council Issues**
 
 #### **Symptoms:**
+
 - Amendment proposal failures
 - Voting mechanism errors
 - Constitutional Council access denied
 
 #### **Solutions:**
+
 ```bash
 # Check Constitutional Council user roles
 docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml exec ac_service python -c "
@@ -207,6 +225,7 @@ docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml
 ```
 
 #### **Common Fixes:**
+
 - Ensure users have correct Constitutional Council role
 - Verify amendment proposal format and validation
 - Check voting deadline and status
@@ -215,20 +234,22 @@ docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml
 ### **6. Performance Issues**
 
 #### **Symptoms:**
+
 - Slow governance decisions (>20ms)
 - High memory usage
 - Database query timeouts
 
 #### **Solutions:**
+
 ```bash
 # Monitor system resources
 docker stats
 
 # Check database performance
 docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml exec postgres psql -U acgs_user -d acgs_db -c "
-SELECT query, mean_time, calls 
-FROM pg_stat_statements 
-ORDER BY mean_time DESC 
+SELECT query, mean_time, calls
+FROM pg_stat_statements
+ORDER BY mean_time DESC
 LIMIT 10;
 "
 
@@ -237,6 +258,7 @@ docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml
 ```
 
 #### **Common Fixes:**
+
 - Add database indexes for frequently queried fields
 - Implement caching for constitutional principles
 - Optimize database connection pooling
@@ -245,31 +267,37 @@ docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml
 ## Service-Specific Troubleshooting
 
 ### **Auth Service Issues**
+
 - JWT token validation failures
 - User registration/login problems
 - RBAC permission errors
 
 ### **AC Service Issues**
+
 - Principle management errors
 - Meta-rule conflicts
 - Constitutional amendment workflow problems
 
 ### **GS Service Issues**
+
 - Policy synthesis failures
 - Constitutional prompting errors
 - AlphaEvolve integration problems
 
 ### **FV Service Issues**
+
 - Formal verification timeouts
 - Z3 solver memory issues
 - Bias detection failures
 
 ### **Integrity Service Issues**
+
 - Audit log corruption
 - PGP signature failures
 - Hash chain validation errors
 
 ### **PGC Service Issues**
+
 - Runtime enforcement failures
 - Governance penalty calculation errors
 - Performance optimization issues
@@ -277,6 +305,7 @@ docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml
 ## Emergency Procedures
 
 ### **System Recovery**
+
 ```bash
 # Stop all services
 docker-compose -f infrastructure/docker/docker-compose.yml down
@@ -293,6 +322,7 @@ docker-compose -f infrastructure/docker/docker-compose.yml up --build -d
 ```
 
 ### **Database Recovery**
+
 ```bash
 # Create database backup
 python scripts/backup_database.sh
@@ -304,6 +334,7 @@ python scripts/restore_database.sh backup_2024_01_15.sql
 ## Getting Help
 
 ### **Log Collection**
+
 ```bash
 # Collect all logs for support
 mkdir -p logs
@@ -312,6 +343,7 @@ docker-compose -f infrastructure/docker/docker-compose.yml ps > logs/service_sta
 ```
 
 ### **System Information**
+
 ```bash
 # Collect system information
 docker version > logs/docker_version.log
@@ -320,6 +352,7 @@ python --version > logs/python_version.log
 ```
 
 ### **Support Channels**
+
 - GitHub Issues: Report bugs and feature requests
 - Documentation: Check latest documentation updates
 - Community Forum: Ask questions and share solutions

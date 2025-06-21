@@ -1,10 +1,9 @@
+import * as anchor from '@coral-xyz/anchor';
+import { Program } from '@coral-xyz/anchor';
+import { QuantumagiCore } from '../target/types/quantumagi_core';
+import { expect } from 'chai';
 
-import * as anchor from "@coral-xyz/anchor";
-import { Program } from "@coral-xyz/anchor";
-import { QuantumagiCore } from "../target/types/quantumagi_core";
-import { expect } from "chai";
-
-describe("quantumagi-core", () => {
+describe('quantumagi-core', () => {
   // Configure the client to use the local cluster
   anchor.setProvider(anchor.AnchorProvider.env());
 
@@ -17,12 +16,12 @@ describe("quantumagi-core", () => {
 
   before(async () => {
     // Test isolation - unique governance per test suite
-    const testSuiteId = "quantumagi-core_comprehensive_" + Date.now();
+    const testSuiteId = 'quantumagi-core_comprehensive_' + Date.now();
     authority = anchor.web3.Keypair.generate();
 
     // Generate PDAs - Use short seeds to avoid max length error
     [governancePDA] = anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from("governance"), Buffer.from("comp")],
+      [Buffer.from('governance'), Buffer.from('comp')],
       program.programId
     );
 
@@ -35,13 +34,13 @@ describe("quantumagi-core", () => {
     );
   });
 
-  describe("Governance Management", () => {
-    it("Should initialize governance successfully", async () => {
+  describe('Governance Management', () => {
+    it('Should initialize governance successfully', async () => {
       // Test governance initialization
       const principles = [
-        "PC-001: No unauthorized state mutations",
-        "GV-001: Democratic governance required",
-        "FN-001: Treasury protection mandatory"
+        'PC-001: No unauthorized state mutations',
+        'GV-001: Democratic governance required',
+        'FN-001: Treasury protection mandatory',
       ];
 
       await program.methods
@@ -54,23 +53,16 @@ describe("quantumagi-core", () => {
         .signers([authority])
         .rpc();
 
-      const governanceAccount = await program.account.governanceState.fetch(
-        governancePDA
-      );
+      const governanceAccount = await program.account.governanceState.fetch(governancePDA);
 
       expect(governanceAccount.principles.length).to.equal(principles.length);
-      expect(governanceAccount.authority.toString()).to.equal(
-        authority.publicKey.toString()
-      );
+      expect(governanceAccount.authority.toString()).to.equal(authority.publicKey.toString());
     });
 
-    it("Should execute emergency actions with proper authority", async () => {
+    it('Should execute emergency actions with proper authority', async () => {
       // Test emergency governance actions
       await program.methods
-        .emergencyAction(
-          { systemMaintenance: {} },
-          null
-        )
+        .emergencyAction({ systemMaintenance: {} }, null)
         .accounts({
           governance: governancePDA,
           authority: authority.publicKey,
@@ -79,18 +71,15 @@ describe("quantumagi-core", () => {
         .rpc();
 
       // Emergency action should complete without error
-      console.log("Emergency action executed successfully");
+      console.log('Emergency action executed successfully');
     });
 
-    it("Should reject unauthorized emergency actions", async () => {
+    it('Should reject unauthorized emergency actions', async () => {
       const unauthorizedUser = anchor.web3.Keypair.generate();
 
       try {
         await program.methods
-          .emergencyAction(
-            { systemMaintenance: {} },
-            null
-          )
+          .emergencyAction({ systemMaintenance: {} }, null)
           .accounts({
             governance: governancePDA,
             authority: unauthorizedUser.publicKey,
@@ -98,22 +87,22 @@ describe("quantumagi-core", () => {
           .signers([unauthorizedUser])
           .rpc();
 
-        expect.fail("Should have thrown an error");
+        expect.fail('Should have thrown an error');
       } catch (error) {
-        expect(error.message).to.include("unauthorized");
+        expect(error.message).to.include('unauthorized');
       }
     });
   });
 
-  describe("Policy Management", () => {
-    it("Should create policy proposal successfully", async () => {
+  describe('Policy Management', () => {
+    it('Should create policy proposal successfully', async () => {
       const policyId = new anchor.BN(Date.now());
-      const title = "Test Policy";
-      const description = "Test policy description";
-      const policyText = "ENFORCE: Test policy content for safety compliance";
+      const title = 'Test Policy';
+      const description = 'Test policy description';
+      const policyText = 'ENFORCE: Test policy content for safety compliance';
 
       [proposalPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from("proposal"), policyId.toBuffer("le", 8)],
+        [Buffer.from('proposal'), policyId.toBuffer('le', 8)],
         program.programId
       );
 
@@ -135,17 +124,13 @@ describe("quantumagi-core", () => {
       expect(proposalAccount.status).to.deep.equal({ active: {} });
     });
 
-    it("Should vote on proposal", async () => {
+    it('Should vote on proposal', async () => {
       const policyId = new anchor.BN(Date.now() - 1000); // Use the policy ID from previous test
       const vote = true; // Support
       const votingPower = new anchor.BN(1);
 
       const [voteRecordPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("vote_record"),
-          policyId.toBuffer("le", 8),
-          authority.publicKey.toBuffer(),
-        ],
+        [Buffer.from('vote_record'), policyId.toBuffer('le', 8), authority.publicKey.toBuffer()],
         program.programId
       );
 
@@ -165,7 +150,7 @@ describe("quantumagi-core", () => {
       expect(voteRecordAccount.votingPower.toNumber()).to.equal(1);
     });
 
-    it("Should finalize proposal after voting", async () => {
+    it('Should finalize proposal after voting', async () => {
       const policyId = new anchor.BN(Date.now() - 1000); // Use the same policy ID
 
       await program.methods
@@ -183,8 +168,8 @@ describe("quantumagi-core", () => {
     });
   });
 
-  describe("System Validation", () => {
-    it("Should validate governance state", async () => {
+  describe('System Validation', () => {
+    it('Should validate governance state', async () => {
       const governanceAccount = await program.account.governanceState.fetch(governancePDA);
 
       expect(governanceAccount.authority.toString()).to.equal(authority.publicKey.toString());
@@ -192,7 +177,7 @@ describe("quantumagi-core", () => {
       expect(governanceAccount.totalPolicies).to.be.greaterThan(0);
     });
 
-    it("Should validate proposal state", async () => {
+    it('Should validate proposal state', async () => {
       const proposalAccount = await program.account.policyProposal.fetch(proposalPDA);
 
       expect(proposalAccount.status).to.deep.equal({ approved: {} });
@@ -201,15 +186,12 @@ describe("quantumagi-core", () => {
     });
   });
 
-  describe("Emergency Actions", () => {
-    it("Should execute emergency suspension", async () => {
+  describe('Emergency Actions', () => {
+    it('Should execute emergency suspension', async () => {
       const policyId = new anchor.BN(Date.now() - 1000);
 
       await program.methods
-        .emergencyAction(
-          { suspendProposal: {} },
-          policyId
-        )
+        .emergencyAction({ suspendProposal: {} }, policyId)
         .accounts({
           governance: governancePDA,
           authority: authority.publicKey,
@@ -218,7 +200,7 @@ describe("quantumagi-core", () => {
         .rpc();
 
       // Emergency action should complete successfully
-      console.log("Emergency suspension executed successfully");
+      console.log('Emergency suspension executed successfully');
     });
   });
 });

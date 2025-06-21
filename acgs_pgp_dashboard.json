@@ -2,9 +2,7 @@
   "dashboard": {
     "id": null,
     "title": "ACGS-PGP System Overview",
-    "tags": [
-      "acgs-pgp"
-    ],
+    "tags": ["acgs-pgp"],
     "timezone": "browser",
     "panels": [
       {

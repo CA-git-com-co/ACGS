@@ -7,6 +7,7 @@
 The ACGS-1 CI/CD pipeline provides comprehensive automation for the constitutional governance system with enterprise-grade security, performance optimization, and constitutional governance integration.
 
 ### **Key Metrics**
+
 - **Pipeline Health Score**: 100% (improved from 95.8%)
 - **Security Coverage**: 100% (4-tool scanning with custom ACGS rules)
 - **Workflow Success Rate**: >99.5%
@@ -18,16 +19,16 @@ The ACGS-1 CI/CD pipeline provides comprehensive automation for the constitution
 
 ### **Core Workflows**
 
-| Workflow | Purpose | Triggers | Duration |
-|----------|---------|----------|----------|
-| **ci.yml** | Main CI/CD pipeline | Push/PR to main/master, Daily 2 AM | ~8 min |
-| **solana-anchor.yml** | Blockchain testing | Push/PR to blockchain/, Daily 6 AM | ~5 min |
-| **secret-scanning.yml** | Security validation | Push/PR, Daily 3 AM | ~3 min |
-| **production-deploy.yml** | Production deployment | Push to main, Manual | ~15 min |
-| **codeql.yml** | Static analysis | Push/PR, Weekly Monday | ~10 min |
-| **image-build.yml** | Docker validation | Push/PR to services/ | ~6 min |
-| **defender-for-devops.yml** | Microsoft security | Push/PR, Weekly Tuesday | ~4 min |
-| **workflow-config-validation.yml** | Config validation | Push/PR to .github/, Weekly Monday | ~2 min |
+| Workflow                           | Purpose               | Triggers                           | Duration |
+| ---------------------------------- | --------------------- | ---------------------------------- | -------- |
+| **ci.yml**                         | Main CI/CD pipeline   | Push/PR to main/master, Daily 2 AM | ~8 min   |
+| **solana-anchor.yml**              | Blockchain testing    | Push/PR to blockchain/, Daily 6 AM | ~5 min   |
+| **secret-scanning.yml**            | Security validation   | Push/PR, Daily 3 AM                | ~3 min   |
+| **production-deploy.yml**          | Production deployment | Push to main, Manual               | ~15 min  |
+| **codeql.yml**                     | Static analysis       | Push/PR, Weekly Monday             | ~10 min  |
+| **image-build.yml**                | Docker validation     | Push/PR to services/               | ~6 min   |
+| **defender-for-devops.yml**        | Microsoft security    | Push/PR, Weekly Tuesday            | ~4 min   |
+| **workflow-config-validation.yml** | Config validation     | Push/PR to .github/, Weekly Monday | ~2 min   |
 
 ### **Execution Flow**
 
@@ -55,21 +56,25 @@ graph TD
 The pipeline implements comprehensive security scanning with 4 specialized tools:
 
 #### **1. detect-secrets**
+
 - **Purpose**: Baseline secret detection and management
 - **Features**: Baseline scanning, audit workflows, custom patterns
 - **Integration**: Pre-commit hooks, CI/CD validation
 
 #### **2. TruffleHog**
+
 - **Purpose**: Git history secret scanning
 - **Features**: Historical analysis, entropy detection, custom rules
 - **Integration**: Full repository scanning, JSON reporting
 
 #### **3. GitLeaks**
+
 - **Purpose**: Real-time secret detection
 - **Features**: Custom ACGS-1 rules, SARIF reporting, allowlist management
 - **Integration**: GitHub Security tab upload, automated remediation
 
 #### **4. Semgrep**
+
 - **Purpose**: Security pattern analysis
 - **Features**: Code quality, security vulnerabilities, best practices
 - **Integration**: Automated scanning, detailed reporting
@@ -143,13 +148,13 @@ regex = '''(?i)(governance[_-]?secret|constitutional[_-]?key)['"]*\s*[:=]\s*['"]
 ```yaml
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
     paths:
       - 'blockchain/**'
       - 'services/**'
       - '.github/workflows/**'
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
     paths:
       - 'blockchain/**'
       - 'services/**'
@@ -253,9 +258,9 @@ ENDPOINTS=(
 ### **Branch Strategy**
 
 - **main/master**: Production-ready code
-- **feature/***: Feature development branches
-- **hotfix/***: Critical production fixes
-- **release/***: Release preparation branches
+- **feature/\***: Feature development branches
+- **hotfix/\***: Critical production fixes
+- **release/\***: Release preparation branches
 
 ### **Pull Request Process**
 

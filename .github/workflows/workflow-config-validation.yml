@@ -2,17 +2,17 @@ name: Workflow Configuration Validation
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
     paths:
       - '.github/workflows/**'
       - '.github/workflows/enhanced_testing_config.json'
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
     paths:
       - '.github/workflows/**'
       - '.github/workflows/enhanced_testing_config.json'
   schedule:
-    - cron: '0 4 * * 1'  # Weekly on Monday at 4 AM
+    - cron: '0 4 * * 1' # Weekly on Monday at 4 AM
 
 permissions:
   contents: read
@@ -39,7 +39,7 @@ jobs:
       - name: Validate YAML syntax
         run: |
           echo "🔍 Validating YAML syntax for all workflow files..."
-          
+
           for file in .github/workflows/*.yml .github/workflows/*.yaml; do
             if [ -f "$file" ]; then
               echo "Validating $file..."
@@ -63,7 +63,7 @@ jobs:
       - name: Validate JSON configuration files
         run: |
           echo "🔍 Validating JSON configuration files..."
-          
+
           for file in .github/workflows/*.json; do
             if [ -f "$file" ]; then
               echo "Validating $file..."
@@ -87,16 +87,16 @@ jobs:
       - name: Validate workflow structure
         run: |
           echo "🔍 Validating workflow structure..."
-          
+
           python << 'EOF'
           import yaml
           import os
           import sys
-          
+
           workflow_dir = '.github/workflows'
           required_fields = ['name', 'on', 'jobs']
           issues = []
-          
+
           for filename in os.listdir(workflow_dir):
               if filename.endswith(('.yml', '.yaml')) and not filename.startswith('.'):
                   filepath = os.path.join(workflow_dir, filename)
@@ -139,7 +139,7 @@ jobs:
                       
                   except Exception as e:
                       issues.append(f"{filename}: Error reading file - {str(e)}")
-          
+
           if issues:
               print("\n❌ Workflow validation issues found:")
               for issue in issues:
@@ -152,11 +152,11 @@ jobs:
       - name: Validate ACGS-1 specific requirements
         run: |
           echo "🔍 Validating ACGS-1 specific workflow requirements..."
-          
+
           python << 'EOF'
           import yaml
           import os
-          
+
           workflow_dir = '.github/workflows'
           acgs_requirements = {
               'technology_coverage': {
@@ -172,7 +172,7 @@ jobs:
                   'constitutional_compliance': False
               }
           }
-          
+
           for filename in os.listdir(workflow_dir):
               if filename.endswith(('.yml', '.yaml')):
                   filepath = os.path.join(workflow_dir, filename)
@@ -208,25 +208,25 @@ jobs:
                       
                   except Exception as e:
                       print(f"Warning: Could not analyze {filename}: {e}")
-          
+
           # Report results
           print("📊 ACGS-1 Technology Coverage:")
           for tech, covered in acgs_requirements['technology_coverage'].items():
               status = "✅" if covered else "❌"
               print(f"  {status} {tech.replace('_', ' ').title()}")
-          
+
           print("\n📊 ACGS-1 Governance Integration:")
           for feature, covered in acgs_requirements['governance_integration'].items():
               status = "✅" if covered else "❌"
               print(f"  {status} {feature.replace('_', ' ').title()}")
-          
+
           # Calculate coverage scores
           tech_score = sum(acgs_requirements['technology_coverage'].values()) / len(acgs_requirements['technology_coverage']) * 100
           governance_score = sum(acgs_requirements['governance_integration'].values()) / len(acgs_requirements['governance_integration']) * 100
-          
+
           print(f"\n📈 Technology Coverage Score: {tech_score:.1f}%")
           print(f"📈 Governance Integration Score: {governance_score:.1f}%")
-          
+
           if tech_score >= 80 and governance_score >= 80:
               print("\n🎉 ACGS-1 workflow requirements: PASSED")
           else:
@@ -236,39 +236,39 @@ jobs:
       - name: Validate enhanced testing configuration
         run: |
           echo "🔍 Validating enhanced testing configuration..."
-          
+
           if [ -f ".github/workflows/enhanced_testing_config.json" ]; then
               python << 'EOF'
           import json
-          
+
           with open('.github/workflows/enhanced_testing_config.json', 'r') as f:
               config = json.load(f)
-          
+
           required_fields = [
               'anchor_test_coverage_threshold',
               'python_test_coverage_threshold',
               'e2e_test_timeout',
               'performance_benchmark_enabled'
           ]
-          
+
           print("📋 Enhanced Testing Configuration:")
           for field in required_fields:
               if field in config:
                   print(f"  ✅ {field}: {config[field]}")
               else:
                   print(f"  ❌ {field}: Missing")
-          
+
           # Validate thresholds
           if config.get('anchor_test_coverage_threshold', 0) >= 80:
               print("  ✅ Anchor test coverage threshold meets ACGS-1 requirements (≥80%)")
           else:
               print("  ⚠️ Anchor test coverage threshold below ACGS-1 requirements")
-          
+
           if config.get('python_test_coverage_threshold', 0) >= 80:
               print("  ✅ Python test coverage threshold meets ACGS-1 requirements (≥80%)")
           else:
               print("  ⚠️ Python test coverage threshold below ACGS-1 requirements")
-          
+
           print("\n✅ Enhanced testing configuration validated")
           EOF
           else
@@ -278,31 +278,31 @@ jobs:
       - name: Generate workflow validation report
         run: |
           echo "📊 Generating workflow validation report..."
-          
+
           cat > workflow-validation-report.md << 'EOF'
           # ACGS-1 Workflow Configuration Validation Report
-          
+
           **Generated:** $(date)
           **Workflow Run:** https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          
+
           ## Validation Summary
-          
+
           ### YAML Syntax Validation
           - All workflow files validated for proper YAML syntax
           - JSON configuration files validated
-          
+
           ### Workflow Structure Validation
           - Required fields validation completed
           - Trigger configuration validation completed
           - Jobs structure validation completed
-          
+
           ### ACGS-1 Specific Requirements
           - Technology coverage validation completed
           - Governance integration validation completed
           - Enhanced testing configuration validated
-          
+
           ## Configuration Status
-          
+
           ### Workflow Files Validated
           - ci.yml: Main CI/CD pipeline
           - solana-anchor.yml: Blockchain testing
@@ -312,19 +312,19 @@ jobs:
           - defender-for-devops.yml: Microsoft security
           - secret-scanning.yml: Secret detection
           - workflow-config-validation.yml: Configuration validation
-          
+
           ### Configuration Files
           - enhanced_testing_config.json: Testing thresholds and settings
-          
+
           ## Recommendations
-          
+
           1. **Maintain Standards**: Keep all workflows following GitHub Actions best practices
           2. **Regular Validation**: Run this validation weekly to catch configuration drift
           3. **Documentation**: Update workflow documentation when making changes
           4. **Testing**: Test workflow changes in feature branches before merging
-          
+
           ## Next Steps
-          
+
           - Address any validation warnings
           - Update configuration files as needed
           - Ensure all ACGS-1 requirements are met

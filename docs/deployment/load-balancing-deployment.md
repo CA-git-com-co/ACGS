@@ -60,17 +60,20 @@ sudo apt install -y htop iotop netstat-nat
 ### Step 1: Environment Setup
 
 1. **Clone Repository**
+
 ```bash
 git clone https://github.com/CA-git-com-co/ACGS.git
 cd ACGS
 ```
 
 2. **Create Environment Configuration**
+
 ```bash
 cp .env.example .env.production
 ```
 
 3. **Configure Environment Variables**
+
 ```bash
 # Edit .env.production
 ENVIRONMENT=production
@@ -85,6 +88,7 @@ HAPROXY_STATS_PASSWORD=secure_password_here
 #### Option A: Docker Deployment (Recommended)
 
 1. **Build and Deploy Services**
+
 ```bash
 # Build load balancer image
 cd infrastructure/load-balancer
@@ -96,6 +100,7 @@ docker-compose -f docker-compose.yml up -d
 ```
 
 2. **Verify Deployment**
+
 ```bash
 # Check service status
 docker-compose ps
@@ -107,6 +112,7 @@ curl http://localhost:8080/stats
 #### Option B: Host-Based Deployment
 
 1. **Install Python Dependencies**
+
 ```bash
 python3.9 -m venv venv
 source venv/bin/activate
@@ -114,6 +120,7 @@ pip install -r requirements.txt
 ```
 
 2. **Configure HAProxy**
+
 ```bash
 sudo cp infrastructure/load-balancer/haproxy.cfg /etc/haproxy/
 sudo systemctl restart haproxy
@@ -121,6 +128,7 @@ sudo systemctl enable haproxy
 ```
 
 3. **Start ACGS Services**
+
 ```bash
 # Start each service on designated ports
 python -m services.core.auth.main --port 8000 &
@@ -135,6 +143,7 @@ python -m services.core.ec.main --port 8006 &
 ### Step 3: Database Setup
 
 1. **Initialize PostgreSQL Schema**
+
 ```bash
 # Connect to PostgreSQL
 psql -U postgres -h localhost
@@ -146,6 +155,7 @@ GRANT ALL PRIVILEGES ON DATABASE acgs_lb TO acgs_lb_user;
 ```
 
 2. **Run Schema Migrations**
+
 ```bash
 python -c "
 from services.shared.service_mesh.infrastructure_integration import initialize_load_balancing_schema, DatabaseConnectionManager, ConnectionPoolConfig
@@ -164,6 +174,7 @@ asyncio.run(init_schema())
 ### Step 4: Redis Configuration
 
 1. **Configure Redis for Load Balancing**
+
 ```bash
 # Edit Redis configuration
 sudo nano /etc/redis/redis.conf
@@ -177,6 +188,7 @@ save 60 10000
 ```
 
 2. **Restart Redis**
+
 ```bash
 sudo systemctl restart redis-server
 sudo systemctl enable redis-server
@@ -185,6 +197,7 @@ sudo systemctl enable redis-server
 ### Step 5: Service Discovery Configuration
 
 1. **Configure Service Registry**
+
 ```python
 # services/shared/service_mesh/registry.py
 SERVICE_REGISTRY = {
@@ -199,6 +212,7 @@ SERVICE_REGISTRY = {
 ```
 
 2. **Start Service Discovery**
+
 ```bash
 python -c "
 from services.shared.service_mesh.discovery import get_service_discovery
@@ -272,6 +286,7 @@ THRESHOLDS = {
 ### HAProxy Statistics
 
 Access HAProxy statistics dashboard:
+
 - URL: `http://your-server:8080/stats`
 - Username: `admin`
 - Password: `[configured password]`
@@ -279,6 +294,7 @@ Access HAProxy statistics dashboard:
 ### Performance Monitoring
 
 1. **Real-time Metrics**
+
 ```bash
 # Check service health
 curl http://localhost:8080/health
@@ -298,6 +314,7 @@ asyncio.run(get_stats())
 ```
 
 2. **Alert Configuration**
+
 ```python
 # Configure alert callbacks
 def email_alert_handler(alert):
@@ -316,6 +333,7 @@ monitor.register_alert_callback(slack_alert_handler)
 ### Log Monitoring
 
 1. **HAProxy Logs**
+
 ```bash
 # View HAProxy logs
 sudo tail -f /var/log/haproxy/haproxy.log
@@ -325,6 +343,7 @@ grep "5[0-9][0-9]" /var/log/haproxy/haproxy.log | wc -l
 ```
 
 2. **Service Discovery Logs**
+
 ```bash
 # View service discovery logs
 tail -f logs/service_discovery.log
@@ -338,6 +357,7 @@ grep "health check failed" logs/service_discovery.log
 ### Horizontal Scaling
 
 1. **Add Service Instances**
+
 ```python
 # Register new instance
 instance = ServiceInstance(
@@ -351,6 +371,7 @@ discovery.register_instance(instance)
 ```
 
 2. **Load Balancer Scaling**
+
 ```bash
 # Deploy additional HAProxy instances
 docker run -d --name haproxy-2 \
@@ -362,6 +383,7 @@ docker run -d --name haproxy-2 \
 ### Performance Optimization
 
 1. **Database Connection Pooling**
+
 ```python
 # Optimize connection pool settings
 config = ConnectionPoolConfig(
@@ -372,6 +394,7 @@ config = ConnectionPoolConfig(
 ```
 
 2. **Redis Optimization**
+
 ```bash
 # Increase Redis memory
 redis-cli CONFIG SET maxmemory 4gb
@@ -381,6 +404,7 @@ redis-cli CONFIG SET save "900 1 300 10 60 10000"
 ```
 
 3. **HAProxy Tuning**
+
 ```haproxy
 # Increase connection limits
 maxconn 8192
@@ -397,6 +421,7 @@ timeout server 30s
 ### SSL/TLS Configuration
 
 1. **Generate SSL Certificates**
+
 ```bash
 # Generate self-signed certificate for testing
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
@@ -407,6 +432,7 @@ cat acgs.crt acgs.key > acgs.pem
 ```
 
 2. **Configure HTTPS in HAProxy**
+
 ```haproxy
 frontend acgs_frontend
     bind *:443 ssl crt /etc/ssl/certs/acgs.pem
@@ -416,6 +442,7 @@ frontend acgs_frontend
 ### Access Control
 
 1. **IP Whitelisting**
+
 ```haproxy
 # Restrict admin access
 acl admin_networks src 10.0.0.0/8 192.168.0.0/16
@@ -423,6 +450,7 @@ http-request deny if { path_beg /admin } !admin_networks
 ```
 
 2. **Rate Limiting**
+
 ```haproxy
 # Rate limiting configuration
 stick-table type ip size 100k expire 30s store http_req_rate(10s)
@@ -435,6 +463,7 @@ http-request reject if { sc_http_req_rate(0) gt 20 }
 ### Common Issues
 
 1. **Service Discovery Failures**
+
 ```bash
 # Check service registration
 python -c "
@@ -452,6 +481,7 @@ asyncio.run(check_services())
 ```
 
 2. **Load Balancing Issues**
+
 ```bash
 # Check HAProxy backend status
 echo "show stat" | socat stdio /var/run/haproxy/admin.sock
@@ -463,6 +493,7 @@ done
 ```
 
 3. **Performance Issues**
+
 ```bash
 # Monitor system resources
 htop
@@ -476,6 +507,7 @@ psql -U acgs_lb_user -d acgs_lb -c "SELECT count(*) FROM pg_stat_activity;"
 ### Recovery Procedures
 
 1. **Service Recovery**
+
 ```bash
 # Restart failed service
 docker-compose restart gs_service
@@ -486,6 +518,7 @@ python -m services.core.gs.main --port 8004 &
 ```
 
 2. **Load Balancer Recovery**
+
 ```bash
 # Restart HAProxy
 sudo systemctl restart haproxy
@@ -499,9 +532,10 @@ docker-compose restart haproxy_load_balancer
 ### Regular Maintenance Tasks
 
 1. **Database Maintenance**
+
 ```sql
 -- Clean old metrics (run weekly)
-DELETE FROM load_balancing_metrics 
+DELETE FROM load_balancing_metrics
 WHERE timestamp < EXTRACT(EPOCH FROM NOW() - INTERVAL '30 days');
 
 -- Vacuum and analyze
@@ -509,6 +543,7 @@ VACUUM ANALYZE load_balancing_metrics;
 ```
 
 2. **Log Rotation**
+
 ```bash
 # Configure logrotate for HAProxy
 sudo nano /etc/logrotate.d/haproxy
@@ -528,6 +563,7 @@ sudo nano /etc/logrotate.d/haproxy
 ```
 
 3. **Performance Review**
+
 ```bash
 # Weekly performance report
 python scripts/generate_performance_report.py --days 7
@@ -539,6 +575,7 @@ python scripts/capacity_planning_analysis.py --month $(date +%m)
 ### Backup and Recovery
 
 1. **Configuration Backup**
+
 ```bash
 # Backup configurations
 tar -czf acgs-lb-config-$(date +%Y%m%d).tar.gz \
@@ -548,6 +585,7 @@ tar -czf acgs-lb-config-$(date +%Y%m%d).tar.gz \
 ```
 
 2. **Database Backup**
+
 ```bash
 # Backup metrics database
 pg_dump -U acgs_lb_user acgs_lb > acgs_lb_backup_$(date +%Y%m%d).sql
@@ -556,6 +594,7 @@ pg_dump -U acgs_lb_user acgs_lb > acgs_lb_backup_$(date +%Y%m%d).sql
 ## Support and Contact
 
 For deployment support and issues:
+
 - **Documentation**: [ACGS-1 Wiki](https://github.com/CA-git-com-co/ACGS/wiki)
 - **Issues**: [GitHub Issues](https://github.com/CA-git-com-co/ACGS/issues)
 - **Email**: support@acgs.ai
@@ -567,6 +606,7 @@ For deployment support and issues:
 ### Grafana Dashboard Setup
 
 1. **Install Grafana**
+
 ```bash
 # Add Grafana repository
 sudo apt-get install -y software-properties-common
@@ -581,6 +621,7 @@ sudo systemctl enable grafana-server
 ```
 
 2. **Configure Data Sources**
+
 ```json
 {
   "name": "ACGS-PostgreSQL",
@@ -593,6 +634,7 @@ sudo systemctl enable grafana-server
 ```
 
 3. **Import Dashboard Configuration**
+
 ```bash
 # Copy dashboard configuration
 cp infrastructure/monitoring/grafana/dashboards/acgs-load-balancing.json \
@@ -602,6 +644,7 @@ cp infrastructure/monitoring/grafana/dashboards/acgs-load-balancing.json \
 ### Prometheus Integration
 
 1. **Configure Prometheus**
+
 ```yaml
 # prometheus.yml
 global:
@@ -616,13 +659,14 @@ scrape_configs:
   - job_name: 'acgs-services'
     static_configs:
       - targets:
-        - 'localhost:8000'  # Auth
-        - 'localhost:8001'  # AC
-        - 'localhost:8004'  # GS
-        - 'localhost:8005'  # PGC
+          - 'localhost:8000' # Auth
+          - 'localhost:8001' # AC
+          - 'localhost:8004' # GS
+          - 'localhost:8005' # PGC
 ```
 
 2. **Key Metrics to Monitor**
+
 - Response time percentiles (P50, P95, P99)
 - Request rate and error rate
 - Active connections and queue depth
@@ -642,7 +686,7 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: "High response time detected"
+          summary: 'High response time detected'
 
       - alert: LowAvailability
         expr: (up / count(up)) * 100 < 99.9
@@ -650,7 +694,7 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "Service availability below target"
+          summary: 'Service availability below target'
 ```
 
 ---

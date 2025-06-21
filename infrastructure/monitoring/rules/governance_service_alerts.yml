@@ -19,10 +19,10 @@ groups:
           team: governance
           escalation: immediate
         annotations:
-          summary: "Governance synthesis service is down"
-          description: "Governance synthesis service has been down for more than 30 seconds"
-          runbook_url: "https://docs.acgs.ai/runbooks/governance-synthesis-down"
-          impact: "Policy synthesis and LLM operations unavailable"
+          summary: 'Governance synthesis service is down'
+          description: 'Governance synthesis service has been down for more than 30 seconds'
+          runbook_url: 'https://docs.acgs.ai/runbooks/governance-synthesis-down'
+          impact: 'Policy synthesis and LLM operations unavailable'
 
       # LLM Processing Failures
       - alert: LLMProcessingFailures
@@ -34,9 +34,9 @@ groups:
           component: llm_processing
           team: governance
         annotations:
-          summary: "LLM processing failures detected"
-          description: "LLM processing operations are failing for {{ $labels.model_type }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/llm-processing-failures"
+          summary: 'LLM processing failures detected'
+          description: 'LLM processing operations are failing for {{ $labels.model_type }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/llm-processing-failures'
 
       # High LLM Response Time
       - alert: HighLLMResponseTime
@@ -48,9 +48,9 @@ groups:
           component: performance
           team: governance
         annotations:
-          summary: "High LLM response time"
-          description: "95th percentile LLM response time is {{ $value }}s, exceeding 2s target"
-          runbook_url: "https://docs.acgs.ai/runbooks/llm-latency"
+          summary: 'High LLM response time'
+          description: '95th percentile LLM response time is {{ $value }}s, exceeding 2s target'
+          runbook_url: 'https://docs.acgs.ai/runbooks/llm-latency'
 
       # Policy Synthesis Failures
       - alert: PolicySynthesisFailures
@@ -62,9 +62,9 @@ groups:
           component: policy_synthesis
           team: governance
         annotations:
-          summary: "Policy synthesis failures detected"
-          description: "{{ $value }} policy synthesis failures per second for {{ $labels.synthesis_type }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/policy-synthesis-failures"
+          summary: 'Policy synthesis failures detected'
+          description: '{{ $value }} policy synthesis failures per second for {{ $labels.synthesis_type }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/policy-synthesis-failures'
 
       # Multi-Model Consensus Failures
       - alert: MultiModelConsensusFailures
@@ -76,9 +76,9 @@ groups:
           component: consensus
           team: governance
         annotations:
-          summary: "Multi-model consensus failures detected"
-          description: "{{ $value }} consensus failures per second with {{ $labels.model_count }} models"
-          runbook_url: "https://docs.acgs.ai/runbooks/consensus-failures"
+          summary: 'Multi-model consensus failures detected'
+          description: '{{ $value }} consensus failures per second with {{ $labels.model_count }} models'
+          runbook_url: 'https://docs.acgs.ai/runbooks/consensus-failures'
 
       # Low Multi-Model Consensus Score
       - alert: LowMultiModelConsensusScore
@@ -90,9 +90,9 @@ groups:
           component: consensus
           team: governance
         annotations:
-          summary: "Multi-model consensus score below threshold"
-          description: "Consensus score is {{ $value }} for {{ $labels.consensus_type }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/low-consensus-score"
+          summary: 'Multi-model consensus score below threshold'
+          description: 'Consensus score is {{ $value }} for {{ $labels.consensus_type }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/low-consensus-score'
 
       # High Risk Assessment Alerts
       - alert: HighRiskAssessmentAlerts
@@ -104,9 +104,9 @@ groups:
           component: risk_assessment
           team: governance
         annotations:
-          summary: "High number of high-risk assessments"
-          description: "{{ $value }} high-risk assessments per second"
-          runbook_url: "https://docs.acgs.ai/runbooks/high-risk-assessments"
+          summary: 'High number of high-risk assessments'
+          description: '{{ $value }} high-risk assessments per second'
+          runbook_url: 'https://docs.acgs.ai/runbooks/high-risk-assessments'
 
   # ============================================================================
   # POLICY GOVERNANCE CONTROL (PGC) SERVICE ALERTS
@@ -124,10 +124,10 @@ groups:
           team: governance
           escalation: immediate
         annotations:
-          summary: "PGC service is down"
-          description: "Policy Governance Control service has been down for more than 30 seconds"
-          runbook_url: "https://docs.acgs.ai/runbooks/pgc-service-down"
-          impact: "Policy validation and enforcement unavailable"
+          summary: 'PGC service is down'
+          description: 'Policy Governance Control service has been down for more than 30 seconds'
+          runbook_url: 'https://docs.acgs.ai/runbooks/pgc-service-down'
+          impact: 'Policy validation and enforcement unavailable'
 
       # PGC Validation Latency Critical (>50ms target)
       - alert: PGCValidationLatencyCritical
@@ -140,10 +140,10 @@ groups:
           team: governance
           escalation: immediate
         annotations:
-          summary: "PGC validation latency exceeds 50ms target"
-          description: "95th percentile PGC validation latency is {{ $value }}s, exceeding 50ms target"
-          runbook_url: "https://docs.acgs.ai/runbooks/pgc-latency-critical"
-          impact: "Constitutional governance performance degraded"
+          summary: 'PGC validation latency exceeds 50ms target'
+          description: '95th percentile PGC validation latency is {{ $value }}s, exceeding 50ms target'
+          runbook_url: 'https://docs.acgs.ai/runbooks/pgc-latency-critical'
+          impact: 'Constitutional governance performance degraded'
 
       # PGC Validation Latency Warning (>25ms)
       - alert: PGCValidationLatencyWarning
@@ -155,9 +155,9 @@ groups:
           component: validation_latency
           team: governance
         annotations:
-          summary: "PGC validation latency elevated"
-          description: "95th percentile PGC validation latency is {{ $value }}s"
-          runbook_url: "https://docs.acgs.ai/runbooks/pgc-latency-warning"
+          summary: 'PGC validation latency elevated'
+          description: '95th percentile PGC validation latency is {{ $value }}s'
+          runbook_url: 'https://docs.acgs.ai/runbooks/pgc-latency-warning'
 
       # Policy Enforcement Failures
       - alert: PolicyEnforcementFailures
@@ -169,9 +169,9 @@ groups:
           component: enforcement
           team: governance
         annotations:
-          summary: "Policy enforcement failures detected"
-          description: "{{ $value }} enforcement failures per second for {{ $labels.action_type }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/enforcement-failures"
+          summary: 'Policy enforcement failures detected'
+          description: '{{ $value }} enforcement failures per second for {{ $labels.action_type }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/enforcement-failures'
 
       # Constitutional Compliance Score Critical
       - alert: ConstitutionalComplianceScoreCritical
@@ -184,10 +184,10 @@ groups:
           team: governance
           escalation: immediate
         annotations:
-          summary: "Constitutional compliance score below 100%"
-          description: "Compliance score is {{ $value }} for {{ $labels.policy_type }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/compliance-critical"
-          impact: "Constitutional governance integrity compromised"
+          summary: 'Constitutional compliance score below 100%'
+          description: 'Compliance score is {{ $value }} for {{ $labels.policy_type }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/compliance-critical'
+          impact: 'Constitutional governance integrity compromised'
 
       # Policy Violation Detection
       - alert: PolicyViolationDetection
@@ -199,9 +199,9 @@ groups:
           component: violation_detection
           team: governance
         annotations:
-          summary: "Policy violations detected"
-          description: "{{ $value }} policy violations per second - {{ $labels.violation_type }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/policy-violations"
+          summary: 'Policy violations detected'
+          description: '{{ $value }} policy violations per second - {{ $labels.violation_type }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/policy-violations'
 
       # Governance Action Approval Failures
       - alert: GovernanceActionApprovalFailures
@@ -213,9 +213,9 @@ groups:
           component: approval_system
           team: governance
         annotations:
-          summary: "Governance action approval failures"
-          description: "{{ $value }} approval failures per second for {{ $labels.action_type }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/approval-failures"
+          summary: 'Governance action approval failures'
+          description: '{{ $value }} approval failures per second for {{ $labels.action_type }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/approval-failures'
 
   # ============================================================================
   # EVOLUTIONARY COMPUTATION SERVICE ALERTS
@@ -233,10 +233,10 @@ groups:
           team: governance
           escalation: immediate
         annotations:
-          summary: "Evolutionary computation service is down"
-          description: "Evolutionary computation service has been down for more than 30 seconds"
-          runbook_url: "https://docs.acgs.ai/runbooks/evolutionary-computation-down"
-          impact: "WINA optimization and evolutionary algorithms unavailable"
+          summary: 'Evolutionary computation service is down'
+          description: 'Evolutionary computation service has been down for more than 30 seconds'
+          runbook_url: 'https://docs.acgs.ai/runbooks/evolutionary-computation-down'
+          impact: 'WINA optimization and evolutionary algorithms unavailable'
 
       # WINA Optimization Score Low
       - alert: WINAOptimizationScoreLow
@@ -248,9 +248,9 @@ groups:
           component: wina_optimization
           team: governance
         annotations:
-          summary: "WINA optimization score below threshold"
-          description: "WINA optimization score is {{ $value }} for {{ $labels.optimization_type }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/wina-optimization-low"
+          summary: 'WINA optimization score below threshold'
+          description: 'WINA optimization score is {{ $value }} for {{ $labels.optimization_type }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/wina-optimization-low'
 
       # Evolutionary Algorithm Failures
       - alert: EvolutionaryAlgorithmFailures
@@ -262,9 +262,9 @@ groups:
           component: algorithms
           team: governance
         annotations:
-          summary: "Evolutionary algorithm failures detected"
-          description: "{{ $value }} algorithm failures per second for {{ $labels.algorithm_type }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/algorithm-failures"
+          summary: 'Evolutionary algorithm failures detected'
+          description: '{{ $value }} algorithm failures per second for {{ $labels.algorithm_type }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/algorithm-failures'
 
       # Poor Optimization Convergence
       - alert: PoorOptimizationConvergence
@@ -276,9 +276,9 @@ groups:
           component: convergence
           team: governance
         annotations:
-          summary: "Poor optimization convergence detected"
-          description: "Convergence rate is {{ $value }} for {{ $labels.optimization_type }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/poor-convergence"
+          summary: 'Poor optimization convergence detected'
+          description: 'Convergence rate is {{ $value }} for {{ $labels.optimization_type }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/poor-convergence'
 
       # Low Population Diversity
       - alert: LowPopulationDiversity
@@ -290,9 +290,9 @@ groups:
           component: population_diversity
           team: governance
         annotations:
-          summary: "Low population diversity detected"
-          description: "Population diversity score is {{ $value }} for {{ $labels.population_type }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/low-diversity"
+          summary: 'Low population diversity detected'
+          description: 'Population diversity score is {{ $value }} for {{ $labels.population_type }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/low-diversity'
 
       # System Performance Score Low
       - alert: SystemPerformanceScoreLow
@@ -304,6 +304,6 @@ groups:
           component: system_performance
           team: governance
         annotations:
-          summary: "System performance score below threshold"
-          description: "System performance score is {{ $value }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/system-performance-low"
+          summary: 'System performance score below threshold'
+          description: 'System performance score is {{ $value }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/system-performance-low'

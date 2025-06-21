@@ -107,9 +107,7 @@ describe('ComplianceChecker', () => {
     });
 
     it('should render without policies (using mock data)', () => {
-      render(
-        <ComplianceChecker onComplianceCheck={mockOnComplianceCheck} />
-      );
+      render(<ComplianceChecker onComplianceCheck={mockOnComplianceCheck} />);
 
       expect(screen.getByText('🔍 PGC Compliance Checker')).toBeInTheDocument();
       expect(screen.getByLabelText(/select policy/i)).toBeInTheDocument();
@@ -302,10 +300,10 @@ describe('ComplianceChecker', () => {
   describe('Error Handling', () => {
     it('should handle missing action gracefully', async () => {
       const user = userEvent.setup();
-      
+
       // Mock alert to capture the error message
       const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
-      
+
       render(
         <ComplianceChecker
           activePolicies={mockActivePolicies}
@@ -320,15 +318,15 @@ describe('ComplianceChecker', () => {
       await user.click(submitButton);
 
       expect(alertSpy).toHaveBeenCalledWith('Please enter an action and select a policy');
-      
+
       alertSpy.mockRestore();
     });
 
     it('should handle missing policy selection gracefully', async () => {
       const user = userEvent.setup();
-      
+
       const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
-      
+
       render(
         <ComplianceChecker
           activePolicies={mockActivePolicies}
@@ -343,7 +341,7 @@ describe('ComplianceChecker', () => {
       await user.click(submitButton);
 
       expect(alertSpy).toHaveBeenCalledWith('Please enter an action and select a policy');
-      
+
       alertSpy.mockRestore();
     });
   });

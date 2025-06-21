@@ -6,67 +6,67 @@ vulnerability_scanning:
   # Dependency scanning settings
   dependency_scanning:
     enabled: true
-    schedule: "0 6 * * *"  # Daily at 6 AM UTC
+    schedule: '0 6 * * *' # Daily at 6 AM UTC
     alert_levels:
-      production: "high"
-      staging: "medium"
-      development: "low"
-    
+      production: 'high'
+      staging: 'medium'
+      development: 'low'
+
     # Python-specific settings
     python:
       tools:
         - safety
         - pip-audit
       ignore_vulnerabilities: []
-      
+
     # Node.js-specific settings
     nodejs:
       tools:
         - npm-audit
         - audit-ci
       ignore_vulnerabilities: []
-      
+
     # Rust-specific settings
     rust:
       tools:
         - cargo-audit
         - cargo-deny
       ignore_vulnerabilities:
-        - "RUSTSEC-2021-0145"  # atty unsound read (CLI only)
-        - "RUSTSEC-2023-0033"  # borsh ZST issue (doesn't affect Solana usage)
-        - "RUSTSEC-2024-0375"  # atty unmaintained (CLI only)
-        - "RUSTSEC-2024-0388"  # derivative unmaintained (compile-time only)
-        - "RUSTSEC-2024-0436"  # paste unmaintained (compile-time only)
+        - 'RUSTSEC-2021-0145' # atty unsound read (CLI only)
+        - 'RUSTSEC-2023-0033' # borsh ZST issue (doesn't affect Solana usage)
+        - 'RUSTSEC-2024-0375' # atty unmaintained (CLI only)
+        - 'RUSTSEC-2024-0388' # derivative unmaintained (compile-time only)
+        - 'RUSTSEC-2024-0436' # paste unmaintained (compile-time only)
 
   # Static code analysis settings
   static_analysis:
     enabled: true
     tools:
-      - bandit      # Python security linter
-      - semgrep     # Multi-language static analysis
-      - eslint      # JavaScript/TypeScript linting
-      - clippy      # Rust linting
-    
+      - bandit # Python security linter
+      - semgrep # Multi-language static analysis
+      - eslint # JavaScript/TypeScript linting
+      - clippy # Rust linting
+
     # Semgrep rule sets
     semgrep_rulesets:
-      - "p/security-audit"
-      - "p/secrets"
-      - "p/owasp-top-ten"
-      - "p/python"
-      - "p/javascript"
-      - "p/typescript"
-    
+      - 'p/security-audit'
+      - 'p/secrets'
+      - 'p/owasp-top-ten'
+      - 'p/python'
+      - 'p/javascript'
+      - 'p/typescript'
+
     # Custom security patterns
     custom_patterns:
-      - pattern: "password.*=.*['\"].*['\"]"
-        message: "Potential hardcoded password"
-        severity: "high"
-      - pattern: "api_key.*=.*['\"].*['\"]"
-        message: "Potential hardcoded API key"
-        severity: "high"
-      - pattern: "secret.*=.*['\"].*['\"]"
-        message: "Potential hardcoded secret"
-        severity: "high"
+      - pattern: 'password.*=.*[''"].*[''"]'
+        message: 'Potential hardcoded password'
+        severity: 'high'
+      - pattern: 'api_key.*=.*[''"].*[''"]'
+        message: 'Potential hardcoded API key'
+        severity: 'high'
+      - pattern: 'secret.*=.*[''"].*[''"]'
+        message: 'Potential hardcoded secret'
+        severity: 'high'
 
   # Container security settings
   container_security:
@@ -74,13 +74,13 @@ vulnerability_scanning:
     tools:
       - trivy
       - docker-bench-security
-    
+
     # Trivy configuration
     trivy:
-      severity_levels: ["CRITICAL", "HIGH", "MEDIUM"]
-      scan_types: ["vuln", "config", "secret"]
+      severity_levels: ['CRITICAL', 'HIGH', 'MEDIUM']
+      scan_types: ['vuln', 'config', 'secret']
       ignore_unfixed: false
-    
+
     # Docker security best practices
     docker_security:
       require_user_instruction: true
@@ -95,14 +95,14 @@ vulnerability_scanning:
       - checkov
       - tfsec
       - kube-score
-    
+
     # Kubernetes security policies
     kubernetes:
       require_security_context: true
       prohibit_privileged_pods: true
       require_network_policies: true
       require_pod_security_standards: true
-    
+
     # Terraform security policies
     terraform:
       require_encryption: true
@@ -114,12 +114,12 @@ vulnerability_scanning:
 authentication:
   # JWT configuration
   jwt:
-    algorithm: "HS256"
+    algorithm: 'HS256'
     expiration_hours:
       production: 4
       staging: 8
       development: 24
-    
+
   # Password policies
   password_policy:
     min_length: 12
@@ -128,26 +128,26 @@ authentication:
     require_numbers: true
     require_special_chars: true
     prohibit_common_passwords: true
-    
+
   # Multi-factor authentication
   mfa:
     required_for_production: true
     required_for_staging: false
     required_for_development: false
-    methods: ["totp", "sms", "email"]
+    methods: ['totp', 'sms', 'email']
 
 # Encryption Configuration
 encryption:
   # Data at rest
   data_at_rest:
-    algorithm: "AES-256-GCM"
+    algorithm: 'AES-256-GCM'
     key_rotation_days: 90
-    
+
   # Data in transit
   data_in_transit:
-    tls_version: "1.3"
-    cipher_suites: ["TLS_AES_256_GCM_SHA384", "TLS_CHACHA20_POLY1305_SHA256"]
-    
+    tls_version: '1.3'
+    cipher_suites: ['TLS_AES_256_GCM_SHA384', 'TLS_CHACHA20_POLY1305_SHA256']
+
   # Database encryption
   database:
     encrypt_connections: true
@@ -158,12 +158,12 @@ encryption:
 network_security:
   # Firewall rules
   firewall:
-    default_policy: "deny"
+    default_policy: 'deny'
     allowed_ports:
-      - 80    # HTTP
-      - 443   # HTTPS
-      - 22    # SSH (admin only)
-    
+      - 80 # HTTP
+      - 443 # HTTPS
+      - 22 # SSH (admin only)
+
   # Rate limiting
   rate_limiting:
     enabled: true
@@ -171,19 +171,19 @@ network_security:
       production: 100
       staging: 500
       development: 1000
-    
+
   # CORS configuration
   cors:
     production:
-      origins: ["https://api.acgs-pgp.com", "https://acgs-pgp.com"]
+      origins: ['https://api.acgs-pgp.com', 'https://acgs-pgp.com']
       credentials: true
       max_age: 86400
     staging:
-      origins: ["https://staging.acgs-pgp.com"]
+      origins: ['https://staging.acgs-pgp.com']
       credentials: true
       max_age: 3600
     development:
-      origins: ["http://localhost:3000", "http://localhost:8080"]
+      origins: ['http://localhost:3000', 'http://localhost:8080']
       credentials: true
       max_age: 300
 
@@ -192,88 +192,88 @@ security_monitoring:
   # Log monitoring
   log_monitoring:
     enabled: true
-    log_levels: ["ERROR", "WARNING", "INFO"]
+    log_levels: ['ERROR', 'WARNING', 'INFO']
     retention_days:
       production: 365
       staging: 90
       development: 30
-    
+
   # Intrusion detection
   intrusion_detection:
     enabled: true
     alert_on_failed_logins: 5
     alert_on_privilege_escalation: true
     alert_on_unusual_access_patterns: true
-    
+
   # Vulnerability alerts
   vulnerability_alerts:
     enabled: true
-    channels: ["email", "slack", "github-issues"]
+    channels: ['email', 'slack', 'github-issues']
     severity_thresholds:
-      critical: "immediate"
-      high: "1_hour"
-      medium: "24_hours"
-      low: "weekly"
+      critical: 'immediate'
+      high: '1_hour'
+      medium: '24_hours'
+      low: 'weekly'
 
 # Compliance Configuration
 compliance:
   # Standards compliance
   standards:
-    - "SOC2"
-    - "GDPR"
-    - "HIPAA"
-    - "FedRAMP"
-    
+    - 'SOC2'
+    - 'GDPR'
+    - 'HIPAA'
+    - 'FedRAMP'
+
   # Audit requirements
   audit:
     enabled: true
     log_all_access: true
     log_all_changes: true
     retention_years: 7
-    
+
   # Data protection
   data_protection:
     anonymize_logs: true
     encrypt_pii: true
-    data_retention_days: 2555  # 7 years
+    data_retention_days: 2555 # 7 years
     right_to_deletion: true
 
 # Incident Response
 incident_response:
   # Response team contacts
   contacts:
-    security_team: "security@acgs-pgp.com"
-    platform_team: "platform@acgs-pgp.com"
-    on_call: "oncall@acgs-pgp.com"
-    
+    security_team: 'security@acgs-pgp.com'
+    platform_team: 'platform@acgs-pgp.com'
+    on_call: 'oncall@acgs-pgp.com'
+
   # Escalation procedures
   escalation:
-    critical: "immediate"
-    high: "15_minutes"
-    medium: "1_hour"
-    low: "24_hours"
-    
+    critical: 'immediate'
+    high: '15_minutes'
+    medium: '1_hour'
+    low: '24_hours'
+
   # Communication channels
   communication:
-    primary: "slack"
-    backup: "email"
-    emergency: "phone"
+    primary: 'slack'
+    backup: 'email'
+    emergency: 'phone'
 
 # Security Testing
 security_testing:
   # Penetration testing
   penetration_testing:
-    frequency: "quarterly"
-    scope: ["web_application", "api", "infrastructure"]
-    
+    frequency: 'quarterly'
+    scope: ['web_application', 'api', 'infrastructure']
+
   # Security assessments
   security_assessments:
-    frequency: "monthly"
+    frequency: 'monthly'
     automated: true
     manual_review: true
-    
+
   # Bug bounty program
   bug_bounty:
-    enabled: false  # To be enabled post-launch
-    scope: ["web_application", "api"]
+    enabled: false # To be enabled post-launch
+    scope: ['web_application', 'api']
     rewards: true

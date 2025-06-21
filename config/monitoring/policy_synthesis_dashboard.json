@@ -9,7 +9,7 @@
         "id": 1,
         "title": "Synthesis Response Times",
         "type": "graph",
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
         "targets": [
           {
             "expr": "policy_synthesis_response_time_seconds",
@@ -41,7 +41,7 @@
         "id": 2,
         "title": "Error Prediction Accuracy",
         "type": "stat",
-        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+        "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
         "targets": [
           {
             "expr": "policy_synthesis_error_prediction_accuracy",
@@ -49,9 +49,9 @@
           }
         ],
         "thresholds": [
-          {"color": "red", "value": 0.90},
-          {"color": "yellow", "value": 0.95},
-          {"color": "green", "value": 0.98}
+          { "color": "red", "value": 0.9 },
+          { "color": "yellow", "value": 0.95 },
+          { "color": "green", "value": 0.98 }
         ],
         "unit": "percentunit",
         "min": 0.8,
@@ -61,7 +61,7 @@
         "id": 3,
         "title": "Multi-Model Consensus Success Rate",
         "type": "stat",
-        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+        "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
         "targets": [
           {
             "expr": "multi_model_consensus_success_rate",
@@ -69,9 +69,9 @@
           }
         ],
         "thresholds": [
-          {"color": "red", "value": 0.90},
-          {"color": "yellow", "value": 0.95},
-          {"color": "green", "value": 0.98}
+          { "color": "red", "value": 0.9 },
+          { "color": "yellow", "value": 0.95 },
+          { "color": "green", "value": 0.98 }
         ],
         "unit": "percentunit"
       },
@@ -79,7 +79,7 @@
         "id": 4,
         "title": "Strategy Selection Distribution",
         "type": "piechart",
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
         "targets": [
           {
             "expr": "policy_synthesis_strategy_selection_count",
@@ -91,7 +91,7 @@
         "id": 5,
         "title": "Synthesis Quality Score",
         "type": "graph",
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
         "targets": [
           {
             "expr": "policy_synthesis_quality_score",
@@ -110,7 +110,7 @@
         "id": 6,
         "title": "System Performance Metrics",
         "type": "table",
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
         "targets": [
           {
             "expr": "policy_synthesis_cpu_usage",
@@ -133,7 +133,7 @@
         "id": 7,
         "title": "Error Rate Trends",
         "type": "graph",
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
         "targets": [
           {
             "expr": "rate(policy_synthesis_errors_total[5m])",
@@ -151,7 +151,7 @@
         "id": 8,
         "title": "Threshold Optimization Status",
         "type": "stat",
-        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 20},
+        "gridPos": { "h": 4, "w": 6, "x": 12, "y": 20 },
         "targets": [
           {
             "expr": "policy_synthesis_threshold_optimization_status",
@@ -159,23 +159,23 @@
           }
         ],
         "mappings": [
-          {"value": 0, "text": "Not Optimized"},
-          {"value": 1, "text": "Optimized"},
-          {"value": 2, "text": "Optimizing"}
+          { "value": 0, "text": "Not Optimized" },
+          { "value": 1, "text": "Optimized" },
+          { "value": 2, "text": "Optimizing" }
         ]
       },
       {
         "id": 9,
         "title": "A/B Test Performance",
         "type": "graph",
-        "gridPos": {"h": 8, "w": 12, "x": 18, "y": 16},
+        "gridPos": { "h": 8, "w": 12, "x": 18, "y": 16 },
         "targets": [
           {
             "expr": "policy_synthesis_ab_test_enhanced_performance",
             "legendFormat": "Enhanced Strategy"
           },
           {
-            "expr": "policy_synthesis_ab_test_standard_performance", 
+            "expr": "policy_synthesis_ab_test_standard_performance",
             "legendFormat": "Standard Strategy"
           }
         ]

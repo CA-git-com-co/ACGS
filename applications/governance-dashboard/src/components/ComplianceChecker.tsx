@@ -30,7 +30,7 @@ const ComplianceChecker: React.FC = () => {
   const { connection } = useConnection();
   const { publicKey } = useWallet();
   const [program, setProgram] = useState<Program<QuantumagiCore> | null>(null);
-  
+
   // Form state
   const [actionToCheck, setActionToCheck] = useState('');
   const [selectedPolicyId, setSelectedPolicyId] = useState('');
@@ -51,61 +51,85 @@ const ComplianceChecker: React.FC = () => {
   // Mock active policies
   const mockActivePolicies: ActivePolicy[] = [
     {
-      id: "PC-001",
-      title: "No Extrajudicial State Mutation",
-      rule: "DENY unauthorized_state_mutations WITHOUT governance_approval",
-      category: "Prompt Constitution",
-      isActive: true
+      id: 'PC-001',
+      title: 'No Extrajudicial State Mutation',
+      rule: 'DENY unauthorized_state_mutations WITHOUT governance_approval',
+      category: 'Prompt Constitution',
+      isActive: true,
     },
     {
-      id: "GV-001",
-      title: "Democratic Policy Approval", 
-      rule: "REQUIRE governance_approval FOR policy_changes",
-      category: "Governance",
-      isActive: true
+      id: 'GV-001',
+      title: 'Democratic Policy Approval',
+      rule: 'REQUIRE governance_approval FOR policy_changes',
+      category: 'Governance',
+      isActive: true,
     },
     {
-      id: "FN-001",
-      title: "Treasury Protection",
-      rule: "LIMIT treasury_operations TO authorized_amounts AND REQUIRE multi_sig_approval",
-      category: "Financial",
-      isActive: true
+      id: 'FN-001',
+      title: 'Treasury Protection',
+      rule: 'LIMIT treasury_operations TO authorized_amounts AND REQUIRE multi_sig_approval',
+      category: 'Financial',
+      isActive: true,
     },
     {
-      id: "SF-001",
-      title: "Safety-First AI Operations",
-      rule: "REQUIRE safety_validation BEFORE ai_system_deployment",
-      category: "Safety",
-      isActive: true
-    }
+      id: 'SF-001',
+      title: 'Safety-First AI Operations',
+      rule: 'REQUIRE safety_validation BEFORE ai_system_deployment',
+      category: 'Safety',
+      isActive: true,
+    },
   ];
 
   // Predefined test scenarios
   const testScenarios = [
     {
-      name: "Authorized Treasury Transfer",
-      action: "treasury_transfer_with_authorization",
-      context: { requiresGovernance: false, hasGovernanceApproval: true, involvesFunds: true, amount: 1000, authorizedLimit: 5000 },
-      expectedResult: "PASS"
+      name: 'Authorized Treasury Transfer',
+      action: 'treasury_transfer_with_authorization',
+      context: {
+        requiresGovernance: false,
+        hasGovernanceApproval: true,
+        involvesFunds: true,
+        amount: 1000,
+        authorizedLimit: 5000,
+      },
+      expectedResult: 'PASS',
     },
     {
-      name: "Unauthorized State Mutation",
-      action: "unauthorized_state_mutation_bypass",
-      context: { requiresGovernance: true, hasGovernanceApproval: false, involvesFunds: false, amount: 0, authorizedLimit: 0 },
-      expectedResult: "FAIL"
+      name: 'Unauthorized State Mutation',
+      action: 'unauthorized_state_mutation_bypass',
+      context: {
+        requiresGovernance: true,
+        hasGovernanceApproval: false,
+        involvesFunds: false,
+        amount: 0,
+        authorizedLimit: 0,
+      },
+      expectedResult: 'FAIL',
     },
     {
-      name: "Excessive Treasury Withdrawal",
-      action: "treasury_withdrawal_excessive_amount",
-      context: { requiresGovernance: false, hasGovernanceApproval: false, involvesFunds: true, amount: 10000, authorizedLimit: 5000 },
-      expectedResult: "FAIL"
+      name: 'Excessive Treasury Withdrawal',
+      action: 'treasury_withdrawal_excessive_amount',
+      context: {
+        requiresGovernance: false,
+        hasGovernanceApproval: false,
+        involvesFunds: true,
+        amount: 10000,
+        authorizedLimit: 5000,
+      },
+      expectedResult: 'FAIL',
     },
     {
-      name: "Governance Decision with Approval",
-      action: "governance_decision_with_proper_voting",
-      context: { requiresGovernance: true, hasGovernanceApproval: true, involvesFunds: false, amount: 0, authorizedLimit: 0 },
-      expectedResult: "PASS"
-    }
+      name: 'Governance Decision with Approval',
+      action: 'governance_decision_with_proper_voting',
+      context: {
+        requiresGovernance: true,
+        hasGovernanceApproval: true,
+        involvesFunds: false,
+        amount: 0,
+        authorizedLimit: 0,
+      },
+      expectedResult: 'PASS',
+    },
   ];
 
   useEffect(() => {
@@ -122,13 +146,13 @@ const ComplianceChecker: React.FC = () => {
         window.solana,
         AnchorProvider.defaultOptions()
       );
-      
-      const programId = new PublicKey("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+
+      const programId = new PublicKey('Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS');
       const program = new Program(idl as any, programId, provider) as Program<QuantumagiCore>;
-      
+
       setProgram(program);
     } catch (error) {
-      console.error("Failed to initialize program:", error);
+      console.error('Failed to initialize program:', error);
     }
   };
 
@@ -140,7 +164,7 @@ const ComplianceChecker: React.FC = () => {
         setSelectedPolicyId(mockActivePolicies[0].id);
       }
     } catch (error) {
-      console.error("Failed to load active policies:", error);
+      console.error('Failed to load active policies:', error);
     }
   };
 
@@ -150,7 +174,7 @@ const ComplianceChecker: React.FC = () => {
     const targetPolicyId = policyId || selectedPolicyId;
 
     if (!actionText || !targetPolicyId) {
-      alert("Please enter an action and select a policy");
+      alert('Please enter an action and select a policy');
       return;
     }
 
@@ -160,16 +184,16 @@ const ComplianceChecker: React.FC = () => {
     try {
       console.log(`🔍 Checking compliance for: "${actionText}"`);
       console.log(`📋 Against policy: ${targetPolicyId}`);
-      
+
       // Simulate PGC compliance checking
-      await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 500));
-      
-      const selectedPolicy = activePolicies.find(p => p.id === targetPolicyId);
+      await new Promise((resolve) => setTimeout(resolve, Math.random() * 1000 + 500));
+
+      const selectedPolicy = activePolicies.find((p) => p.id === targetPolicyId);
       const processingTime = Date.now() - startTime;
-      
+
       // Mock compliance logic based on policy rules and action context
       const complianceResult = mockPGCCheck(actionText, contextData, selectedPolicy);
-      
+
       const result: ComplianceResult = {
         isCompliant: complianceResult.isCompliant,
         confidence: complianceResult.confidence,
@@ -177,16 +201,17 @@ const ComplianceChecker: React.FC = () => {
         policyId: targetPolicyId,
         policyTitle: selectedPolicy?.title || 'Unknown Policy',
         processingTime,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
 
-      setComplianceResults(prev => [result, ...prev.slice(0, 9)]); // Keep last 10 results
-      
-      console.log(`${result.isCompliant ? '✅ COMPLIANT' : '❌ VIOLATION'} - ${result.confidence}% confidence`);
-      
+      setComplianceResults((prev) => [result, ...prev.slice(0, 9)]); // Keep last 10 results
+
+      console.log(
+        `${result.isCompliant ? '✅ COMPLIANT' : '❌ VIOLATION'} - ${result.confidence}% confidence`
+      );
     } catch (error) {
-      console.error("Compliance check failed:", error);
-      alert("Compliance check failed. Please try again.");
+      console.error('Compliance check failed:', error);
+      alert('Compliance check failed. Please try again.');
     } finally {
       setChecking(false);
     }
@@ -194,35 +219,54 @@ const ComplianceChecker: React.FC = () => {
 
   const mockPGCCheck = (action: string, context: any, policy?: ActivePolicy) => {
     const actionLower = action.toLowerCase();
-    
+
     // PC-001: No unauthorized state mutations
     if (policy?.id === 'PC-001') {
       if (actionLower.includes('unauthorized') || actionLower.includes('bypass')) {
-        return { isCompliant: false, confidence: 95, violationReason: 'Unauthorized state mutation detected' };
+        return {
+          isCompliant: false,
+          confidence: 95,
+          violationReason: 'Unauthorized state mutation detected',
+        };
       }
     }
-    
+
     // GV-001: Democratic governance
     if (policy?.id === 'GV-001') {
       if (context.requiresGovernance && !context.hasGovernanceApproval) {
-        return { isCompliant: false, confidence: 90, violationReason: 'Governance approval required' };
+        return {
+          isCompliant: false,
+          confidence: 90,
+          violationReason: 'Governance approval required',
+        };
       }
     }
-    
+
     // FN-001: Treasury protection
     if (policy?.id === 'FN-001') {
       if (context.involvesFunds && context.amount > context.authorizedLimit) {
-        return { isCompliant: false, confidence: 99, violationReason: 'Amount exceeds authorized limit' };
+        return {
+          isCompliant: false,
+          confidence: 99,
+          violationReason: 'Amount exceeds authorized limit',
+        };
       }
     }
-    
+
     // SF-001: Safety validation
     if (policy?.id === 'SF-001') {
-      if (actionLower.includes('unsafe') || actionLower.includes('deploy') && !actionLower.includes('validated')) {
-        return { isCompliant: false, confidence: 98, violationReason: 'Safety validation required' };
+      if (
+        actionLower.includes('unsafe') ||
+        (actionLower.includes('deploy') && !actionLower.includes('validated'))
+      ) {
+        return {
+          isCompliant: false,
+          confidence: 98,
+          violationReason: 'Safety validation required',
+        };
       }
     }
-    
+
     // Default: compliant
     return { isCompliant: true, confidence: 85, violationReason: undefined };
   };
@@ -236,12 +280,14 @@ const ComplianceChecker: React.FC = () => {
   const runAllTests = async () => {
     for (const scenario of testScenarios) {
       await performComplianceCheck(scenario.action, scenario.context, selectedPolicyId);
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Delay between tests
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Delay between tests
     }
   };
 
   const getResultColor = (isCompliant: boolean) => {
-    return isCompliant ? 'text-green-600 bg-green-50 border-green-200' : 'text-red-600 bg-red-50 border-red-200';
+    return isCompliant
+      ? 'text-green-600 bg-green-50 border-green-200'
+      : 'text-red-600 bg-red-50 border-red-200';
   };
 
   const getConfidenceColor = (confidence: number) => {
@@ -271,9 +317,7 @@ const ComplianceChecker: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Action to Check
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Action to Check</label>
             <textarea
               value={actionToCheck}
               onChange={(e) => setActionToCheck(e.target.value)}
@@ -292,7 +336,7 @@ const ComplianceChecker: React.FC = () => {
               onChange={(e) => setSelectedPolicyId(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              {activePolicies.map(policy => (
+              {activePolicies.map((policy) => (
                 <option key={policy.id} value={policy.id}>
                   {policy.id} - {policy.title}
                 </option>
@@ -303,33 +347,39 @@ const ComplianceChecker: React.FC = () => {
 
         <div className="space-y-4">
           <h3 className="text-sm font-medium text-gray-700">Action Context</h3>
-          
+
           <div className="grid grid-cols-2 gap-3">
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
                 checked={actionContext.requiresGovernance}
-                onChange={(e) => setActionContext(prev => ({ ...prev, requiresGovernance: e.target.checked }))}
+                onChange={(e) =>
+                  setActionContext((prev) => ({ ...prev, requiresGovernance: e.target.checked }))
+                }
                 className="rounded"
               />
               Requires Governance
             </label>
-            
+
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
                 checked={actionContext.hasGovernanceApproval}
-                onChange={(e) => setActionContext(prev => ({ ...prev, hasGovernanceApproval: e.target.checked }))}
+                onChange={(e) =>
+                  setActionContext((prev) => ({ ...prev, hasGovernanceApproval: e.target.checked }))
+                }
                 className="rounded"
               />
               Has Approval
             </label>
-            
+
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
                 checked={actionContext.involvesFunds}
-                onChange={(e) => setActionContext(prev => ({ ...prev, involvesFunds: e.target.checked }))}
+                onChange={(e) =>
+                  setActionContext((prev) => ({ ...prev, involvesFunds: e.target.checked }))
+                }
                 className="rounded"
               />
               Involves Funds
@@ -343,7 +393,9 @@ const ComplianceChecker: React.FC = () => {
                 <input
                   type="number"
                   value={actionContext.amount}
-                  onChange={(e) => setActionContext(prev => ({ ...prev, amount: parseInt(e.target.value) || 0 }))}
+                  onChange={(e) =>
+                    setActionContext((prev) => ({ ...prev, amount: parseInt(e.target.value) || 0 }))
+                  }
                   className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
                 />
               </div>
@@ -352,7 +404,12 @@ const ComplianceChecker: React.FC = () => {
                 <input
                   type="number"
                   value={actionContext.authorizedLimit}
-                  onChange={(e) => setActionContext(prev => ({ ...prev, authorizedLimit: parseInt(e.target.value) || 0 }))}
+                  onChange={(e) =>
+                    setActionContext((prev) => ({
+                      ...prev,
+                      authorizedLimit: parseInt(e.target.value) || 0,
+                    }))
+                  }
                   className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
                 />
               </div>
@@ -368,7 +425,9 @@ const ComplianceChecker: React.FC = () => {
           disabled={checking || !actionToCheck || !selectedPolicyId}
           className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
         >
-          {checking && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>}
+          {checking && (
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+          )}
           {checking ? 'Checking...' : 'Check Compliance'}
         </button>
 
@@ -395,7 +454,7 @@ const ComplianceChecker: React.FC = () => {
       {/* Results */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-gray-900">Compliance Results</h3>
-        
+
         {complianceResults.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             <p>No compliance checks performed yet.</p>
@@ -411,21 +470,25 @@ const ComplianceChecker: React.FC = () => {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <span className="text-lg">
-                        {result.isCompliant ? '✅' : '❌'}
-                      </span>
+                      <span className="text-lg">{result.isCompliant ? '✅' : '❌'}</span>
                       <span className="font-semibold">
                         {result.isCompliant ? 'COMPLIANT' : 'VIOLATION DETECTED'}
                       </span>
-                      <span className={`text-sm font-medium ${getConfidenceColor(result.confidence)}`}>
+                      <span
+                        className={`text-sm font-medium ${getConfidenceColor(result.confidence)}`}
+                      >
                         {result.confidence}% confidence
                       </span>
                     </div>
-                    
+
                     <div className="text-sm space-y-1">
-                      <div><strong>Policy:</strong> {result.policyId} - {result.policyTitle}</div>
+                      <div>
+                        <strong>Policy:</strong> {result.policyId} - {result.policyTitle}
+                      </div>
                       {result.violationReason && (
-                        <div><strong>Reason:</strong> {result.violationReason}</div>
+                        <div>
+                          <strong>Reason:</strong> {result.violationReason}
+                        </div>
                       )}
                       <div className="flex gap-4 text-xs text-gray-600">
                         <span>Processing: {result.processingTime}ms</span>

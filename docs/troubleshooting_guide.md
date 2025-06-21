@@ -7,12 +7,14 @@ This guide provides step-by-step troubleshooting procedures for common issues in
 ## 🚨 Current Critical Issues (Phase 2.3)
 
 ### **Integrity Service Database DNS Resolution Failure**
+
 - **Status:** ❌ CRITICAL - Service Down
 - **Impact:** Cryptographic verification and PGP assurance unavailable
 - **Symptoms:** Integrity service fails to start, database connection errors
 - **Quick Fix:** See [Integrity Service DNS Resolution](#integrity-service-dns-resolution) section below
 
 ### **Security Middleware Health Endpoint Blocking**
+
 - **Status:** ⚠️ MEDIUM - Workaround Available
 - **Impact:** Health monitoring may show false negatives
 - **Symptoms:** Health checks return 405 Method Not Allowed
@@ -23,9 +25,11 @@ This guide provides step-by-step troubleshooting procedures for common issues in
 ### Integrity Service DNS Resolution
 
 #### Problem
+
 The Integrity Service fails to start due to database DNS resolution issues, preventing cryptographic verification and PGP assurance functionality.
 
 #### Symptoms
+
 ```bash
 # Container logs show DNS resolution errors
 docker-compose logs integrity_service
@@ -36,6 +40,7 @@ docker-compose logs integrity_service
 ```
 
 #### Solution
+
 ```bash
 # 1. Check database connectivity from host
 ping postgres_db
@@ -53,6 +58,7 @@ curl http://localhost:8002/health
 ```
 
 #### Permanent Fix
+
 ```bash
 # 1. Update Docker Compose network configuration
 # Add explicit network aliases in infrastructure/docker/docker-compose.yml:
@@ -71,9 +77,11 @@ services:
 ### Security Middleware Configuration
 
 #### Problem
+
 Security middleware blocks health check endpoints, causing monitoring to show false negatives.
 
 #### Symptoms
+
 ```bash
 # Health checks return 405 Method Not Allowed
 curl -X GET http://localhost:8002/health
@@ -81,6 +89,7 @@ curl -X GET http://localhost:8002/health
 ```
 
 #### Solution
+
 ```bash
 # 1. Update security middleware configuration
 # In services/core/shared/security_middleware.py, whitelist health endpoints
@@ -95,6 +104,7 @@ curl http://localhost:8003/health  # FV Service
 ```
 
 #### Configuration Update
+
 ```python
 # In security_middleware.py, ensure health endpoints are whitelisted:
 HEALTH_ENDPOINTS = ["/health", "/api/health", "/api/v1/health"]
@@ -107,6 +117,7 @@ if request.url.path in HEALTH_ENDPOINTS:
 ## Quick Diagnostic Commands
 
 ### System Health Check
+
 ```bash
 # Check all container status
 docker-compose ps
@@ -126,6 +137,7 @@ curl http://localhost:3001/api/health  # Grafana
 ```
 
 ### Resource Usage
+
 ```bash
 # Check container resource usage
 docker stats
@@ -145,11 +157,13 @@ uptime
 ### 1. Service Not Starting
 
 #### Symptoms
+
 - Container exits immediately
 - Health check fails
 - Service not accessible
 
 #### Diagnosis
+
 ```bash
 # Check container logs
 docker-compose logs service_name
@@ -164,6 +178,7 @@ netstat -tulpn | grep :8000
 #### Common Causes and Solutions
 
 **Database Connection Issues**
+
 ```bash
 # Check database connectivity
 docker exec acgs_postgres_db pg_isready -U acgs_user
@@ -176,6 +191,7 @@ docker-compose logs postgres_db
 ```
 
 **Missing Dependencies**
+
 ```bash
 # Rebuild container with latest dependencies
 docker-compose -f infrastructure/docker/docker-compose.yml build service_name --no-cache
@@ -185,6 +201,7 @@ cat backend/service_name/requirements.txt
 ```
 
 **Environment Variables**
+
 ```bash
 # Check environment variables
 docker-compose config
@@ -196,11 +213,13 @@ cat .env
 ### 2. High Response Times
 
 #### Symptoms
+
 - API responses > 200ms
 - Grafana dashboard shows high latency
 - Prometheus alerts firing
 
 #### Diagnosis
+
 ```bash
 # Check current response times
 curl -s "http://localhost:9090/api/v1/query?query=histogram_quantile(0.95, rate(acgs_http_request_duration_seconds_bucket[5m]))"
@@ -215,6 +234,7 @@ docker stats
 #### Solutions
 
 **Database Optimization**
+
 ```sql
 -- Add missing indexes
 CREATE INDEX CONCURRENTLY idx_policies_created_at ON policies(created_at);
@@ -225,6 +245,7 @@ EXPLAIN ANALYZE SELECT * FROM policies WHERE status = 'active';
 ```
 
 **Connection Pool Tuning**
+
 ```python
 # Increase connection pool size
 DATABASE_POOL_SIZE=30
@@ -232,6 +253,7 @@ DATABASE_MAX_OVERFLOW=50
 ```
 
 **Caching Implementation**
+
 ```python
 # Add Redis caching for frequently accessed data
 REDIS_URL=redis://redis:6379/0
@@ -241,11 +263,13 @@ CACHE_TTL=300  # 5 minutes
 ### 3. Authentication Failures
 
 #### Symptoms
+
 - Users cannot log in
 - JWT token validation fails
 - CSRF errors
 
 #### Diagnosis
+
 ```bash
 # Check authentication metrics
 curl -s "http://localhost:9090/api/v1/query?query=acgs_auth_attempts_total"
@@ -262,6 +286,7 @@ curl -X POST http://localhost:8000/auth/login \
 #### Solutions
 
 **JWT Secret Key Issues**
+
 ```bash
 # Verify JWT secret is set
 echo $AUTH_SERVICE_SECRET_KEY
@@ -271,6 +296,7 @@ openssl rand -base64 32
 ```
 
 **CSRF Token Problems**
+
 ```bash
 # Get CSRF token
 curl -X GET http://localhost:8000/auth/csrf-token \
@@ -281,6 +307,7 @@ echo $AUTH_SERVICE_CSRF_SECRET_KEY
 ```
 
 **Database User Issues**
+
 ```sql
 -- Check user exists
 SELECT * FROM users WHERE email = 'user@example.com';
@@ -292,11 +319,13 @@ UPDATE users SET password_hash = '$2b$12$...' WHERE email = 'user@example.com';
 ### 4. Database Connection Issues
 
 #### Symptoms
+
 - "Connection refused" errors
 - "Too many connections" errors
 - Slow database queries
 
 #### Diagnosis
+
 ```bash
 # Check database container
 docker-compose logs postgres_db
@@ -311,6 +340,7 @@ docker exec acgs_postgres_db psql -U acgs_user -d acgs_pgp_db -c "SHOW max_conne
 #### Solutions
 
 **Connection Pool Configuration**
+
 ```bash
 # Increase PostgreSQL max connections
 echo "max_connections = 200" >> postgresql.conf
@@ -322,6 +352,7 @@ DATABASE_POOL_TIMEOUT=30
 ```
 
 **Connection Leaks**
+
 ```python
 # Ensure proper connection cleanup
 async def get_db():
@@ -335,11 +366,13 @@ async def get_db():
 ### 5. Monitoring Issues
 
 #### Symptoms
+
 - Prometheus not collecting metrics
 - Grafana dashboards empty
 - Alerts not firing
 
 #### Diagnosis
+
 ```bash
 # Check Prometheus targets
 curl http://localhost:9090/api/v1/targets
@@ -355,6 +388,7 @@ docker exec acgs_prometheus cat /etc/prometheus/prometheus.yml
 #### Solutions
 
 **Metrics Collection**
+
 ```bash
 # Restart Prometheus to reload config
 docker-compose restart prometheus
@@ -364,6 +398,7 @@ curl http://localhost:9090/api/v1/targets | jq '.data.activeTargets[] | select(.
 ```
 
 **Grafana Dashboard Issues**
+
 ```bash
 # Check Grafana logs
 docker-compose logs grafana
@@ -375,11 +410,13 @@ curl -u admin:admin123 http://localhost:3001/api/datasources
 ### 6. Load Balancing Issues
 
 #### Symptoms
+
 - Uneven load distribution
 - Some instances not receiving traffic
 - Session persistence problems
 
 #### Diagnosis
+
 ```bash
 # Check Nginx upstream status
 curl http://localhost:8000/nginx_health
@@ -394,6 +431,7 @@ for i in {1..10}; do curl -s http://localhost:8000/auth/health; done
 #### Solutions
 
 **Nginx Configuration**
+
 ```nginx
 # Verify upstream configuration
 upstream auth_service_upstream {
@@ -404,6 +442,7 @@ upstream auth_service_upstream {
 ```
 
 **Health Check Configuration**
+
 ```bash
 # Ensure health checks are working
 curl http://localhost:8000/health
@@ -413,12 +452,14 @@ curl http://localhost:8001/health
 ### 7. WINA Optimization Issues (EC Service)
 
 #### Symptoms
+
 - Poor policy synthesis accuracy
 - High GFLOPs usage despite optimization
 - Constitutional compliance failures
 - EC service performance degradation
 
 #### Diagnosis
+
 ```bash
 # Check EC service logs
 docker-compose logs ec_service | grep -i "wina\|optimization\|gflops"
@@ -436,6 +477,7 @@ docker-compose exec ec_service env | grep WINA
 #### Solutions
 
 **WINA Configuration Tuning**
+
 ```bash
 # Adjust optimization targets (less aggressive)
 WINA_GFLOPS_REDUCTION_TARGET=0.45  # Reduced from 0.55
@@ -447,6 +489,7 @@ WINA_GATING_ENABLED=false  # Disable if causing issues
 ```
 
 **Constitutional Compliance Issues**
+
 ```bash
 # Check constitutional principles integration
 curl http://localhost:8001/api/v1/principles/ | jq '.[] | select(.is_active == true)'
@@ -459,6 +502,7 @@ curl -X POST http://localhost:8006/api/v1/monitoring/validate-governance
 ```
 
 **Performance Optimization**
+
 ```bash
 # Monitor GFLOPs reduction
 curl http://localhost:8006/api/v1/wina/performance/gflops
@@ -473,12 +517,14 @@ curl -X POST http://localhost:8006/api/v1/wina/performance/benchmark
 ### 8. Constitutional Council Issues
 
 #### Symptoms
+
 - Amendment proposals not being processed
 - Voting mechanisms failing
 - Council member authentication issues
 - Democratic governance workflow failures
 
 #### Diagnosis
+
 ```bash
 # Check Constitutional Council status
 curl http://localhost:8001/api/v1/constitutional-council/amendments
@@ -497,6 +543,7 @@ docker-compose logs ac_service | grep -i "council\|amendment\|vote"
 #### Solutions
 
 **Council Member Management**
+
 ```sql
 -- Add council member
 INSERT INTO users (email, username, full_name, role, is_active)
@@ -511,6 +558,7 @@ GROUP BY u.id, u.email, u.role;
 ```
 
 **Amendment Workflow Issues**
+
 ```bash
 # Check voting period configuration
 echo $AC_VOTING_PERIOD_HOURS
@@ -528,11 +576,12 @@ WHERE voting_deadline < NOW() AND status = 'voting';"
 ## Performance Optimization
 
 ### Database Optimization
+
 ```sql
 -- Identify slow queries
-SELECT query, mean_time, calls, total_time 
-FROM pg_stat_statements 
-ORDER BY mean_time DESC 
+SELECT query, mean_time, calls, total_time
+FROM pg_stat_statements
+ORDER BY mean_time DESC
 LIMIT 10;
 
 -- Add indexes for common queries
@@ -545,6 +594,7 @@ ANALYZE audit_logs;
 ```
 
 ### Application Optimization
+
 ```python
 # Use connection pooling
 from sqlalchemy.pool import QueuePool
@@ -566,17 +616,19 @@ async def get_cached_policy(policy_id: str):
 ```
 
 ### Monitoring Optimization
+
 ```yaml
 # Reduce scrape intervals for high-volume metrics
 scrape_configs:
   - job_name: 'acgs-services'
-    scrape_interval: 30s  # Increased from 15s
+    scrape_interval: 30s # Increased from 15s
     metrics_path: '/metrics'
 ```
 
 ## Emergency Procedures
 
 ### Service Recovery
+
 ```bash
 # Quick service restart
 docker-compose restart service_name
@@ -591,6 +643,7 @@ docker-compose -f infrastructure/docker/docker-compose.yml up -d --build
 ```
 
 ### Database Recovery
+
 ```bash
 # Restore from backup
 docker exec acgs_postgres_db pg_restore -U acgs_user -d acgs_pgp_db /backup/latest.dump
@@ -600,6 +653,7 @@ docker exec acgs_postgres_db pg_basebackup -U acgs_user -D /recovery -Ft -z -P
 ```
 
 ### Security Incident Response
+
 ```bash
 # Block suspicious IP
 iptables -A INPUT -s SUSPICIOUS_IP -j DROP
@@ -617,9 +671,11 @@ echo "maintenance" > /tmp/maintenance_mode
 ### Grafana Dashboard Interpretation
 
 #### ACGS-PGP Overview Dashboard
+
 Access at: http://localhost:3001/d/acgs-overview
 
 **Key Panels to Monitor:**
+
 ```bash
 # Service Health Status
 - Green: All services operational (target: 100%)
@@ -643,6 +699,7 @@ Access at: http://localhost:3001/d/acgs-overview
 ```
 
 #### Authentication Metrics Dashboard
+
 ```bash
 # Login Success Rate
 curl -s "http://localhost:9090/api/v1/query?query=rate(acgs_auth_success_total[5m]) / rate(acgs_auth_attempts_total[5m]) * 100"
@@ -655,6 +712,7 @@ curl -s "http://localhost:9090/api/v1/query?query=acgs_jwt_tokens_active"
 ```
 
 #### Performance Monitoring Queries
+
 ```bash
 # Top 10 slowest endpoints
 curl -s "http://localhost:9090/api/v1/query?query=topk(10, histogram_quantile(0.95, rate(acgs_http_request_duration_seconds_bucket[5m])))"
@@ -669,6 +727,7 @@ curl -s "http://localhost:9090/api/v1/query?query=rate(container_cpu_usage_secon
 ### Key Metrics to Monitor
 
 #### Performance Targets
+
 - **API Response Time**: 95th percentile < 200ms
 - **Service Uptime**: >99.5% availability
 - **Error Rate**: <5% across all services
@@ -677,6 +736,7 @@ curl -s "http://localhost:9090/api/v1/query?query=rate(container_cpu_usage_secon
 - **Concurrent Users**: Support 100+ without degradation
 
 #### Resource Utilization Targets
+
 - **CPU Usage**: <70% average per service
 - **Memory Usage**: <80% of allocated memory
 - **Database Connections**: <80% of max pool size
@@ -686,6 +746,7 @@ curl -s "http://localhost:9090/api/v1/query?query=rate(container_cpu_usage_secon
 ### Advanced Alert Rules
 
 #### Custom Prometheus Queries for Troubleshooting
+
 ```bash
 # Detect service communication failures
 curl -s "http://localhost:9090/api/v1/query?query=rate(acgs_service_calls_total{status='error'}[5m])"
@@ -702,14 +763,15 @@ curl -s "http://localhost:9090/api/v1/query?query=topk(10, rate(acgs_http_reques
 
 ### Alert Escalation Matrix
 
-| Severity | Response Time | Notification Method | Escalation |
-|----------|---------------|-------------------|------------|
-| **Info** | 24 hours | Log only | None |
-| **Warning** | 4 hours | Email to team | After 8 hours |
-| **Critical** | 30 minutes | SMS + Email | After 1 hour |
-| **Emergency** | Immediate | Phone call + SMS | After 15 minutes |
+| Severity      | Response Time | Notification Method | Escalation       |
+| ------------- | ------------- | ------------------- | ---------------- |
+| **Info**      | 24 hours      | Log only            | None             |
+| **Warning**   | 4 hours       | Email to team       | After 8 hours    |
+| **Critical**  | 30 minutes    | SMS + Email         | After 1 hour     |
+| **Emergency** | Immediate     | Phone call + SMS    | After 15 minutes |
 
 #### Alert Routing Configuration
+
 ```yaml
 # AlertManager routing rules
 route:
@@ -719,27 +781,28 @@ route:
   repeat_interval: 12h
   receiver: 'default'
   routes:
-  - match:
-      severity: critical
-    receiver: 'critical-alerts'
-  - match:
-      severity: warning
-    receiver: 'warning-alerts'
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+    - match:
+        severity: warning
+      receiver: 'warning-alerts'
 
 receivers:
-- name: 'critical-alerts'
-  slack_configs:
-  - api_url: 'YOUR_SLACK_WEBHOOK'
-    channel: '#acgs-alerts'
-    title: 'ACGS-PGP Critical Alert'
-  email_configs:
-  - to: 'oncall@company.com'
-    subject: 'ACGS-PGP Critical Alert'
+  - name: 'critical-alerts'
+    slack_configs:
+      - api_url: 'YOUR_SLACK_WEBHOOK'
+        channel: '#acgs-alerts'
+        title: 'ACGS-PGP Critical Alert'
+    email_configs:
+      - to: 'oncall@company.com'
+        subject: 'ACGS-PGP Critical Alert'
 ```
 
 ### Log Analysis and Correlation
 
 #### Centralized Logging Queries
+
 ```bash
 # Correlate errors across services
 docker-compose logs --since=1h | grep -E "(ERROR|CRITICAL)" | sort
@@ -757,6 +820,7 @@ docker-compose logs nginx_gateway | grep "429" | \
 ```
 
 #### Performance Correlation
+
 ```bash
 # Correlate high response times with resource usage
 curl -s "http://localhost:9090/api/v1/query_range?query=acgs_http_request_duration_seconds&start=$(date -d '1 hour ago' +%s)&end=$(date +%s)&step=60"
@@ -768,18 +832,21 @@ curl -s "http://localhost:9090/api/v1/query_range?query=container_memory_usage_b
 ## Preventive Maintenance
 
 ### Daily Tasks
+
 - [ ] Check service health endpoints
 - [ ] Review error logs
 - [ ] Monitor resource usage
 - [ ] Verify backup completion
 
 ### Weekly Tasks
+
 - [ ] Analyze performance metrics
 - [ ] Review security logs
 - [ ] Update dependencies
 - [ ] Test disaster recovery procedures
 
 ### Monthly Tasks
+
 - [ ] Performance optimization review
 - [ ] Security vulnerability scan
 - [ ] Capacity planning assessment
@@ -788,11 +855,13 @@ curl -s "http://localhost:9090/api/v1/query_range?query=container_memory_usage_b
 ## Contact Information
 
 ### Escalation Contacts
+
 - **Level 1**: DevOps Team (devops@company.com)
 - **Level 2**: Engineering Manager (manager@company.com)
 - **Level 3**: CTO (cto@company.com)
 
 ### External Support
+
 - **Database**: PostgreSQL Support
 - **Monitoring**: Grafana Labs Support
 - **Infrastructure**: Cloud Provider Support

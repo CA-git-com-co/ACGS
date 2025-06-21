@@ -7,6 +7,7 @@ This guide provides comprehensive troubleshooting procedures for the QEC (Qualit
 ## Quick Diagnostic Commands
 
 ### System Health Check
+
 ```bash
 # Check all service status
 docker-compose ps
@@ -22,6 +23,7 @@ redis-cli ping
 ```
 
 ### Performance Metrics
+
 ```bash
 # Check API response times
 curl -w "@curl-format.txt" -s -o /dev/null http://localhost:8001/health
@@ -38,11 +40,13 @@ psql $DATABASE_URL -c "SELECT schemaname,tablename,n_tup_ins,n_tup_upd,n_tup_del
 ### 1. QEC Components Not Available
 
 **Symptoms:**
+
 - API returns `501 Not Implemented` for QEC endpoints
 - Logs show "QEC components not available"
 - Constitutional fidelity endpoint returns error
 
 **Diagnosis:**
+
 ```bash
 # Check QEC module installation
 python -c "from alphaevolve_gs_engine.services.qec_enhancement import ConstitutionalDistanceCalculator; print('QEC available')"
@@ -55,6 +59,7 @@ python -c "import sys; print('\n'.join(sys.path))"
 ```
 
 **Solutions:**
+
 ```bash
 # Install QEC modules
 cd src/alphaevolve_gs_engine
@@ -70,11 +75,13 @@ docker-compose restart ac_service gs_service
 ### 2. High Constitutional Fidelity Calculation Time
 
 **Symptoms:**
+
 - Fidelity endpoint timeouts
 - High CPU usage during fidelity calculations
 - Slow system response times
 
 **Diagnosis:**
+
 ```bash
 # Monitor fidelity calculation performance
 curl -w "Time: %{time_total}s\n" http://localhost:8001/api/v1/fidelity/current
@@ -87,6 +94,7 @@ top -p $(pgrep -f ac_service)
 ```
 
 **Solutions:**
+
 ```bash
 # Enable Redis caching
 export REDIS_URL=redis://localhost:6379/0
@@ -102,11 +110,13 @@ psql $DATABASE_URL -c "CREATE INDEX CONCURRENTLY idx_principles_distance_score O
 ### 3. Error Prediction Model Accuracy Issues
 
 **Symptoms:**
+
 - Low prediction confidence scores
 - Frequent prediction failures
 - Inconsistent error predictions
 
 **Diagnosis:**
+
 ```bash
 # Check model accuracy
 curl http://localhost:8001/api/v1/qec/model-stats
@@ -119,6 +129,7 @@ psql $DATABASE_URL -c "SELECT COUNT(*) FROM qec_synthesis_attempt_logs;"
 ```
 
 **Solutions:**
+
 ```bash
 # Retrain model with more data
 curl -X POST http://localhost:8001/api/v1/qec/retrain-model
@@ -134,11 +145,13 @@ redis-cli FLUSHDB
 ### 4. Recovery Strategy Failures
 
 **Symptoms:**
+
 - High failure rates in conflict resolution
 - Recovery strategies not being applied
 - Escalation to human too frequently
 
 **Diagnosis:**
+
 ```bash
 # Check recovery strategy performance
 curl http://localhost:8001/api/v1/qec/recovery-stats
@@ -151,6 +164,7 @@ psql $DATABASE_URL -c "SELECT recovery_strategy, COUNT(*) FROM qec_synthesis_att
 ```
 
 **Solutions:**
+
 ```bash
 # Update strategy configuration
 # Edit config/qec_recovery_strategies.yaml
@@ -168,11 +182,13 @@ docker-compose restart ac_service
 ### 5. Database Performance Issues
 
 **Symptoms:**
+
 - Slow query responses
 - High database CPU usage
 - Connection pool exhaustion
 
 **Diagnosis:**
+
 ```bash
 # Check slow queries
 psql $DATABASE_URL -c "SELECT query, mean_exec_time, calls FROM pg_stat_statements ORDER BY mean_exec_time DESC LIMIT 10;"
@@ -185,6 +201,7 @@ psql $DATABASE_URL -c "SELECT schemaname,tablename,pg_size_pretty(pg_total_relat
 ```
 
 **Solutions:**
+
 ```bash
 # Add missing indexes
 psql $DATABASE_URL -c "
@@ -207,11 +224,13 @@ psql $DATABASE_URL -c "DELETE FROM qec_synthesis_attempt_logs WHERE timestamp < 
 ### 6. Memory Leaks and High Memory Usage
 
 **Symptoms:**
+
 - Gradually increasing memory usage
 - Out of memory errors
 - Service crashes
 
 **Diagnosis:**
+
 ```bash
 # Monitor memory usage over time
 docker stats --format "table {{.Container}}\t{{.MemUsage}}\t{{.MemPerc}}" --no-stream
@@ -230,6 +249,7 @@ python -m memory_profiler your_script.py
 ```
 
 **Solutions:**
+
 ```bash
 # Restart services periodically
 # Add to crontab
@@ -250,11 +270,13 @@ services:
 ### 7. Cross-Service Communication Failures
 
 **Symptoms:**
+
 - Services unable to communicate
 - Timeout errors between services
 - Inconsistent data across services
 
 **Diagnosis:**
+
 ```bash
 # Test service connectivity
 curl http://ac_service:8001/health
@@ -269,6 +291,7 @@ docker-compose logs -f --tail=100
 ```
 
 **Solutions:**
+
 ```bash
 # Restart networking
 docker-compose -f infrastructure/docker/docker-compose.yml down
@@ -289,6 +312,7 @@ healthcheck:
 ## Performance Tuning
 
 ### Database Optimization
+
 ```sql
 -- Analyze table statistics
 ANALYZE constitutional_principles;
@@ -300,13 +324,14 @@ VACUUM ANALYZE constitutional_principles;
 VACUUM ANALYZE qec_distance_calculations;
 
 -- Check index usage
-SELECT schemaname, tablename, indexname, idx_scan, idx_tup_read, idx_tup_fetch 
-FROM pg_stat_user_indexes 
-WHERE schemaname = 'public' 
+SELECT schemaname, tablename, indexname, idx_scan, idx_tup_read, idx_tup_fetch
+FROM pg_stat_user_indexes
+WHERE schemaname = 'public'
 ORDER BY idx_scan DESC;
 ```
 
 ### Redis Optimization
+
 ```bash
 # Monitor Redis performance
 redis-cli INFO stats
@@ -321,6 +346,7 @@ redis-cli SLOWLOG GET 10
 ```
 
 ### Application Tuning
+
 ```python
 # Optimize QEC component initialization
 # In your application startup
@@ -335,6 +361,7 @@ await fidelity_monitor.warm_cache()
 ## Monitoring and Alerting
 
 ### Key Metrics to Monitor
+
 ```yaml
 # Prometheus metrics
 - constitutional_fidelity_score
@@ -347,20 +374,21 @@ await fidelity_monitor.warm_cache()
 ```
 
 ### Alert Thresholds
+
 ```yaml
 alerts:
   - name: LowFidelityScore
     condition: constitutional_fidelity_score < 0.70
     severity: warning
-    
+
   - name: HighErrorRate
     condition: error_rate > 0.05
     severity: critical
-    
+
   - name: SlowAPIResponse
     condition: api_response_time_p95 > 1.0
     severity: warning
-    
+
   - name: HighMemoryUsage
     condition: memory_usage_percent > 85
     severity: warning
@@ -369,6 +397,7 @@ alerts:
 ## Log Analysis
 
 ### Important Log Patterns
+
 ```bash
 # QEC component errors
 grep -i "qec.*error\|constitutional.*error\|fidelity.*error" /var/log/acgs/*.log
@@ -384,6 +413,7 @@ grep -i "database.*error\|connection.*error\|sql.*error" /var/log/acgs/*.log
 ```
 
 ### Log Aggregation
+
 ```bash
 # Centralized logging with ELK stack
 # logstash.conf
@@ -413,6 +443,7 @@ output {
 ## Emergency Procedures
 
 ### Service Recovery
+
 ```bash
 # Emergency restart all services
 docker-compose -f infrastructure/docker/docker-compose.yml down --remove-orphans
@@ -425,6 +456,7 @@ docker-compose -f infrastructure/docker/docker-compose.yml up -d
 ```
 
 ### Data Recovery
+
 ```bash
 # Restore from backup
 psql $DATABASE_URL < /backups/acgs_backup_latest.sql
@@ -434,6 +466,7 @@ curl -X POST http://localhost:8001/api/v1/qec/rebuild-cache
 ```
 
 ### Failover Procedures
+
 ```bash
 # Switch to backup database
 export DATABASE_URL=postgresql://backup-db:5432/acgs_db
@@ -446,6 +479,7 @@ curl -X POST http://localhost:8001/api/v1/maintenance/enable
 ## Contact Information
 
 For additional support:
+
 - **Technical Issues**: Create issue in GitHub repository
 - **Performance Problems**: Contact DevOps team
 - **Security Concerns**: Contact security team immediately

@@ -37,16 +37,19 @@ The Darwin Gödel Machine (DGM) service implements comprehensive database perfor
 The DGM performance optimizer implements intelligent indexing based on workload patterns:
 
 #### Composite Indexes
+
 - **Archive Performance Index**: `(status, constitutional_compliance_score DESC, created_at DESC)`
 - **Metrics Time-Series Index**: `(metric_name, timestamp DESC)`
 - **Bandit Context Index**: `(context_key, average_reward DESC, last_updated DESC)`
 
 #### Partial Indexes
+
 - **Recent Metrics**: `WHERE timestamp > NOW() - INTERVAL '30 days'`
 - **Active Workspaces**: `WHERE status IN ('active', 'pending')`
 - **Critical Compliance**: `WHERE compliance_level IN ('violation', 'critical')`
 
 #### GIN Indexes for JSONB
+
 - **Metadata Search**: `USING GIN (metadata)`
 - **Tags Search**: `USING GIN (tags)`
 - **Violations Search**: `USING GIN (violations)`
@@ -59,7 +62,7 @@ Performance metrics and compliance logs use monthly partitioning:
 
 ```sql
 -- Automatic partition creation
-CREATE TABLE dgm.performance_metrics_y2025m01 PARTITION OF dgm.performance_metrics_partitioned 
+CREATE TABLE dgm.performance_metrics_y2025m01 PARTITION OF dgm.performance_metrics_partitioned
 FOR VALUES FROM ('2025-01-01') TO ('2025-02-01');
 ```
 
@@ -77,11 +80,13 @@ PARTITION BY LIST (status);
 ### 3. Query Optimization
 
 #### Automatic Statistics Updates
+
 - **ANALYZE** commands on all DGM tables
 - **Custom statistics targets** for high-cardinality columns
 - **Correlation statistics** for time-series data
 
 #### Query Plan Optimization
+
 - **work_mem** tuning for complex queries
 - **random_page_cost** optimization for SSD storage
 - **effective_io_concurrency** for parallel operations
@@ -89,6 +94,7 @@ PARTITION BY LIST (status);
 ### 4. Vacuum and Maintenance
 
 #### Autovacuum Tuning
+
 ```sql
 -- High-write tables (performance metrics)
 ALTER TABLE dgm.performance_metrics SET (
@@ -99,6 +105,7 @@ ALTER TABLE dgm.performance_metrics SET (
 ```
 
 #### Maintenance Scheduling
+
 - **Daily partition maintenance**: Create future partitions, cleanup old ones
 - **Weekly index maintenance**: Rebuild fragmented indexes
 - **Monthly statistics updates**: Full table analysis
@@ -160,16 +167,19 @@ report = await monitor.get_monitoring_report()
 ### Key Performance Indicators
 
 1. **Query Performance**
+
    - Average query execution time
    - Slow query count and patterns
    - Query plan efficiency
 
 2. **Resource Utilization**
+
    - Connection pool utilization
    - Memory usage and cache hit ratios
    - Disk I/O patterns
 
 3. **Index Effectiveness**
+
    - Index usage statistics
    - Index hit ratios
    - Unused index identification
@@ -266,12 +276,14 @@ optimization_result = {
 ### Daily Operations
 
 1. **Performance Review**
+
    ```bash
    # Generate performance report
    python -m dgm_service.database.performance_optimizer --report
    ```
 
 2. **Alert Review**
+
    ```bash
    # Check active alerts
    python -m dgm_service.database.monitoring --alerts
@@ -286,12 +298,14 @@ optimization_result = {
 ### Weekly Operations
 
 1. **Index Analysis**
+
    ```sql
    -- Review index usage
    SELECT * FROM dgm.index_usage ORDER BY idx_scan DESC;
    ```
 
 2. **Query Performance Review**
+
    ```sql
    -- Analyze slow queries
    SELECT * FROM dgm.slow_queries LIMIT 10;
@@ -306,12 +320,14 @@ optimization_result = {
 ### Monthly Operations
 
 1. **Comprehensive Optimization**
+
    ```python
    # Run full optimization cycle
    result = await optimizer.optimize_database()
    ```
 
 2. **Partition Cleanup**
+
    ```sql
    -- Clean up old partitions
    SELECT dgm.cleanup_old_partitions(12);
@@ -328,16 +344,19 @@ optimization_result = {
 ### Common Performance Issues
 
 1. **Slow Queries**
+
    - **Symptoms**: High average query time, timeout errors
    - **Diagnosis**: Check `dgm.slow_queries` view
    - **Resolution**: Add indexes, optimize queries, update statistics
 
 2. **High Connection Utilization**
+
    - **Symptoms**: Connection pool exhaustion, application timeouts
    - **Diagnosis**: Monitor connection metrics
    - **Resolution**: Optimize connection pooling, reduce connection leaks
 
 3. **Low Cache Hit Ratio**
+
    - **Symptoms**: High disk I/O, slow query performance
    - **Diagnosis**: Check cache hit ratio metrics
    - **Resolution**: Increase shared_buffers, optimize queries
@@ -369,12 +388,14 @@ print(f"Active alerts: {len(monitoring_report['active_alerts'])}")
 ### Development
 
 1. **Query Design**
+
    - Use appropriate indexes for query patterns
-   - Avoid SELECT * in production queries
+   - Avoid SELECT \* in production queries
    - Use LIMIT for large result sets
    - Leverage partition pruning
 
 2. **Schema Design**
+
    - Design tables for partitioning from the start
    - Use appropriate data types
    - Normalize appropriately for workload
@@ -389,12 +410,14 @@ print(f"Active alerts: {len(monitoring_report['active_alerts'])}")
 ### Production
 
 1. **Monitoring**
+
    - Set up comprehensive alerting
    - Monitor key performance metrics
    - Regular performance reviews
    - Capacity planning
 
 2. **Maintenance**
+
    - Schedule regular optimization runs
    - Automate partition maintenance
    - Monitor and tune autovacuum

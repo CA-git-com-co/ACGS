@@ -20,14 +20,14 @@ services:
       - MODEL_NAME=nanonets/Nanonets-OCR-s
       - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN}
     ports:
-      - "8666:8666"
-      - "8667:8667"
+      - '8666:8666'
+      - '8667:8667'
     ipc: host
     restart: unless-stopped
     networks:
       - acgs_network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8667/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8667/health']
       interval: 30s
       timeout: 10s
       retries: 3

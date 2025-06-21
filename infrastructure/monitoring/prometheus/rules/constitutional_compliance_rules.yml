@@ -1,254 +1,254 @@
 groups:
-- name: acgs_constitutional_compliance
-  interval: 15s
-  rules:
-  # Constitutional Hash Validation Metrics
-  - record: acgs:constitutional_hash_integrity
-    expr: |
-      (
-        sum(rate(acgs_constitutional_hash_validations_total{hash="cdd01ef066bc6cf2", status="success"}[5m])) /
-        sum(rate(acgs_constitutional_hash_validations_total{hash="cdd01ef066bc6cf2"}[5m]))
-      ) * 100
-    labels:
-      metric_type: "constitutional"
-      category: "hash_validation"
-      constitutional_hash: "cdd01ef066bc6cf2"
+  - name: acgs_constitutional_compliance
+    interval: 15s
+    rules:
+      # Constitutional Hash Validation Metrics
+      - record: acgs:constitutional_hash_integrity
+        expr: |
+          (
+            sum(rate(acgs_constitutional_hash_validations_total{hash="cdd01ef066bc6cf2", status="success"}[5m])) /
+            sum(rate(acgs_constitutional_hash_validations_total{hash="cdd01ef066bc6cf2"}[5m]))
+          ) * 100
+        labels:
+          metric_type: 'constitutional'
+          category: 'hash_validation'
+          constitutional_hash: 'cdd01ef066bc6cf2'
 
-  # Policy Compliance Metrics
-  - record: acgs:policy_compliance_score
-    expr: |
-      avg(acgs_policy_compliance_score) by (policy_id)
-    labels:
-      metric_type: "constitutional"
-      category: "policy_compliance"
+      # Policy Compliance Metrics
+      - record: acgs:policy_compliance_score
+        expr: |
+          avg(acgs_policy_compliance_score) by (policy_id)
+        labels:
+          metric_type: 'constitutional'
+          category: 'policy_compliance'
 
-  - record: acgs:constitutional_drift_detection
-    expr: |
-      rate(acgs_constitutional_drift_events_total[1h])
-    labels:
-      metric_type: "constitutional"
-      category: "drift_detection"
+      - record: acgs:constitutional_drift_detection
+        expr: |
+          rate(acgs_constitutional_drift_events_total[1h])
+        labels:
+          metric_type: 'constitutional'
+          category: 'drift_detection'
 
-  # Governance Decision Validation
-  - record: acgs:governance_decision_constitutional_compliance
-    expr: |
-      (
-        sum(rate(acgs_governance_decisions_total{constitutional_compliant="true"}[5m])) /
-        sum(rate(acgs_governance_decisions_total[5m]))
-      ) * 100
-    labels:
-      metric_type: "constitutional"
-      category: "decision_compliance"
+      # Governance Decision Validation
+      - record: acgs:governance_decision_constitutional_compliance
+        expr: |
+          (
+            sum(rate(acgs_governance_decisions_total{constitutional_compliant="true"}[5m])) /
+            sum(rate(acgs_governance_decisions_total[5m]))
+          ) * 100
+        labels:
+          metric_type: 'constitutional'
+          category: 'decision_compliance'
 
-  # Multi-Model Consensus Metrics
-  - record: acgs:multi_model_consensus_agreement_rate
-    expr: |
-      (
-        sum(rate(acgs_multi_model_consensus_total{consensus_reached="true"}[5m])) /
-        sum(rate(acgs_multi_model_consensus_total[5m]))
-      ) * 100
-    labels:
-      metric_type: "constitutional"
-      category: "consensus_validation"
+      # Multi-Model Consensus Metrics
+      - record: acgs:multi_model_consensus_agreement_rate
+        expr: |
+          (
+            sum(rate(acgs_multi_model_consensus_total{consensus_reached="true"}[5m])) /
+            sum(rate(acgs_multi_model_consensus_total[5m]))
+          ) * 100
+        labels:
+          metric_type: 'constitutional'
+          category: 'consensus_validation'
 
-  # Constitutional Amendment Tracking
-  - record: acgs:constitutional_amendment_success_rate
-    expr: |
-      (
-        sum(rate(acgs_constitutional_amendments_total{status="approved"}[24h])) /
-        sum(rate(acgs_constitutional_amendments_total[24h]))
-      ) * 100
-    labels:
-      metric_type: "constitutional"
-      category: "amendment_tracking"
+      # Constitutional Amendment Tracking
+      - record: acgs:constitutional_amendment_success_rate
+        expr: |
+          (
+            sum(rate(acgs_constitutional_amendments_total{status="approved"}[24h])) /
+            sum(rate(acgs_constitutional_amendments_total[24h]))
+          ) * 100
+        labels:
+          metric_type: 'constitutional'
+          category: 'amendment_tracking'
 
-- name: acgs_constitutional_alerts
-  rules:
-  # Critical Constitutional Alerts
-  - alert: ConstitutionalHashValidationFailure
-    expr: acgs:constitutional_hash_integrity < 100
-    for: 30s
-    labels:
-      severity: critical
-      category: constitutional_integrity
-      business_impact: critical
-    annotations:
-      summary: "Constitutional hash validation failure detected"
-      description: "Constitutional hash validation success rate is {{ $value }}% for hash cdd01ef066bc6cf2"
-      runbook_url: "https://docs.acgs.local/runbooks/constitutional-hash-validation"
-      business_impact: "Constitutional integrity compromised - immediate investigation required"
+  - name: acgs_constitutional_alerts
+    rules:
+      # Critical Constitutional Alerts
+      - alert: ConstitutionalHashValidationFailure
+        expr: acgs:constitutional_hash_integrity < 100
+        for: 30s
+        labels:
+          severity: critical
+          category: constitutional_integrity
+          business_impact: critical
+        annotations:
+          summary: 'Constitutional hash validation failure detected'
+          description: 'Constitutional hash validation success rate is {{ $value }}% for hash cdd01ef066bc6cf2'
+          runbook_url: 'https://docs.acgs.local/runbooks/constitutional-hash-validation'
+          business_impact: 'Constitutional integrity compromised - immediate investigation required'
 
-  - alert: PolicyComplianceScoreLow
-    expr: acgs:policy_compliance_score < 0.8
-    for: 2m
-    labels:
-      severity: warning
-      category: policy_compliance
-      business_impact: medium
-    annotations:
-      summary: "Policy compliance score below threshold"
-      description: "Policy compliance score is {{ $value }}, below 0.8 threshold for policy {{ $labels.policy_id }}"
-      runbook_url: "https://docs.acgs.local/runbooks/policy-compliance"
+      - alert: PolicyComplianceScoreLow
+        expr: acgs:policy_compliance_score < 0.8
+        for: 2m
+        labels:
+          severity: warning
+          category: policy_compliance
+          business_impact: medium
+        annotations:
+          summary: 'Policy compliance score below threshold'
+          description: 'Policy compliance score is {{ $value }}, below 0.8 threshold for policy {{ $labels.policy_id }}'
+          runbook_url: 'https://docs.acgs.local/runbooks/policy-compliance'
 
-  - alert: ConstitutionalDriftDetected
-    expr: acgs:constitutional_drift_detection > 0
-    for: 1m
-    labels:
-      severity: critical
-      category: constitutional_drift
-      business_impact: high
-    annotations:
-      summary: "Constitutional drift detected"
-      description: "{{ $value }} constitutional drift events detected in the last hour"
-      runbook_url: "https://docs.acgs.local/runbooks/constitutional-drift"
-      business_impact: "Constitutional stability at risk"
+      - alert: ConstitutionalDriftDetected
+        expr: acgs:constitutional_drift_detection > 0
+        for: 1m
+        labels:
+          severity: critical
+          category: constitutional_drift
+          business_impact: high
+        annotations:
+          summary: 'Constitutional drift detected'
+          description: '{{ $value }} constitutional drift events detected in the last hour'
+          runbook_url: 'https://docs.acgs.local/runbooks/constitutional-drift'
+          business_impact: 'Constitutional stability at risk'
 
-  - alert: GovernanceDecisionNonCompliant
-    expr: acgs:governance_decision_constitutional_compliance < 95
-    for: 3m
-    labels:
-      severity: warning
-      category: decision_compliance
-      business_impact: medium
-    annotations:
-      summary: "Governance decisions not meeting constitutional compliance"
-      description: "Only {{ $value }}% of governance decisions are constitutionally compliant"
-      runbook_url: "https://docs.acgs.local/runbooks/governance-compliance"
+      - alert: GovernanceDecisionNonCompliant
+        expr: acgs:governance_decision_constitutional_compliance < 95
+        for: 3m
+        labels:
+          severity: warning
+          category: decision_compliance
+          business_impact: medium
+        annotations:
+          summary: 'Governance decisions not meeting constitutional compliance'
+          description: 'Only {{ $value }}% of governance decisions are constitutionally compliant'
+          runbook_url: 'https://docs.acgs.local/runbooks/governance-compliance'
 
-  - alert: MultiModelConsensusFailure
-    expr: acgs:multi_model_consensus_agreement_rate < 80
-    for: 2m
-    labels:
-      severity: warning
-      category: consensus_validation
-      business_impact: medium
-    annotations:
-      summary: "Multi-model consensus agreement rate low"
-      description: "Multi-model consensus agreement rate is {{ $value }}%, below 80% threshold"
-      runbook_url: "https://docs.acgs.local/runbooks/multi-model-consensus"
+      - alert: MultiModelConsensusFailure
+        expr: acgs:multi_model_consensus_agreement_rate < 80
+        for: 2m
+        labels:
+          severity: warning
+          category: consensus_validation
+          business_impact: medium
+        annotations:
+          summary: 'Multi-model consensus agreement rate low'
+          description: 'Multi-model consensus agreement rate is {{ $value }}%, below 80% threshold'
+          runbook_url: 'https://docs.acgs.local/runbooks/multi-model-consensus'
 
-  - alert: ConstitutionalAmendmentProcessIssue
-    expr: acgs:constitutional_amendment_success_rate < 50
-    for: 10m
-    labels:
-      severity: warning
-      category: amendment_tracking
-      business_impact: low
-    annotations:
-      summary: "Constitutional amendment process showing low success rate"
-      description: "Constitutional amendment success rate is {{ $value }}% in the last 24 hours"
-      runbook_url: "https://docs.acgs.local/runbooks/constitutional-amendments"
+      - alert: ConstitutionalAmendmentProcessIssue
+        expr: acgs:constitutional_amendment_success_rate < 50
+        for: 10m
+        labels:
+          severity: warning
+          category: amendment_tracking
+          business_impact: low
+        annotations:
+          summary: 'Constitutional amendment process showing low success rate'
+          description: 'Constitutional amendment success rate is {{ $value }}% in the last 24 hours'
+          runbook_url: 'https://docs.acgs.local/runbooks/constitutional-amendments'
 
-- name: acgs_pgc_service_metrics
-  interval: 10s
-  rules:
-  # PGC Service Specific Metrics
-  - record: acgs:pgc_latency_optimization_target
-    expr: |
-      histogram_quantile(0.95, 
-        sum(rate(acgs_http_request_duration_seconds_bucket{service="pgc"}[5m])) by (le)
-      ) * 1000
-    labels:
-      metric_type: "performance"
-      category: "pgc_optimization"
-      target: "25ms"
+  - name: acgs_pgc_service_metrics
+    interval: 10s
+    rules:
+      # PGC Service Specific Metrics
+      - record: acgs:pgc_latency_optimization_target
+        expr: |
+          histogram_quantile(0.95, 
+            sum(rate(acgs_http_request_duration_seconds_bucket{service="pgc"}[5m])) by (le)
+          ) * 1000
+        labels:
+          metric_type: 'performance'
+          category: 'pgc_optimization'
+          target: '25ms'
 
-  - record: acgs:pgc_constitutional_validation_throughput
-    expr: |
-      sum(rate(acgs_constitutional_validations_total{service="pgc"}[5m]))
-    labels:
-      metric_type: "performance"
-      category: "pgc_throughput"
+      - record: acgs:pgc_constitutional_validation_throughput
+        expr: |
+          sum(rate(acgs_constitutional_validations_total{service="pgc"}[5m]))
+        labels:
+          metric_type: 'performance'
+          category: 'pgc_throughput'
 
-  - record: acgs:pgc_principle_rule_traceability_accuracy
-    expr: |
-      (
-        sum(rate(acgs_principle_rule_traceability_total{status="success"}[5m])) /
-        sum(rate(acgs_principle_rule_traceability_total[5m]))
-      ) * 100
-    labels:
-      metric_type: "business"
-      category: "traceability"
+      - record: acgs:pgc_principle_rule_traceability_accuracy
+        expr: |
+          (
+            sum(rate(acgs_principle_rule_traceability_total{status="success"}[5m])) /
+            sum(rate(acgs_principle_rule_traceability_total[5m]))
+          ) * 100
+        labels:
+          metric_type: 'business'
+          category: 'traceability'
 
-  - record: acgs:pgc_lipschitz_monitoring_threshold
-    expr: |
-      avg(acgs_lipschitz_constant_value)
-    labels:
-      metric_type: "mathematical"
-      category: "lipschitz_monitoring"
-      threshold: "0.8"
+      - record: acgs:pgc_lipschitz_monitoring_threshold
+        expr: |
+          avg(acgs_lipschitz_constant_value)
+        labels:
+          metric_type: 'mathematical'
+          category: 'lipschitz_monitoring'
+          threshold: '0.8'
 
-  - record: acgs:pgc_weighted_voting_quorum_achievement
-    expr: |
-      (
-        sum(rate(acgs_weighted_voting_total{quorum_reached="true"}[5m])) /
-        sum(rate(acgs_weighted_voting_total[5m]))
-      ) * 100
-    labels:
-      metric_type: "governance"
-      category: "voting_quorum"
-      target: "60_percent"
+      - record: acgs:pgc_weighted_voting_quorum_achievement
+        expr: |
+          (
+            sum(rate(acgs_weighted_voting_total{quorum_reached="true"}[5m])) /
+            sum(rate(acgs_weighted_voting_total[5m]))
+          ) * 100
+        labels:
+          metric_type: 'governance'
+          category: 'voting_quorum'
+          target: '60_percent'
 
-- name: acgs_pgc_alerts
-  rules:
-  # PGC Service Critical Alerts
-  - alert: PGCLatencyExceeds25ms
-    expr: acgs:pgc_latency_optimization_target > 25
-    for: 1m
-    labels:
-      severity: warning
-      category: pgc_performance
-      business_impact: medium
-    annotations:
-      summary: "PGC service latency exceeds 25ms target"
-      description: "PGC service P95 latency is {{ $value }}ms, exceeding 25ms target"
-      runbook_url: "https://docs.acgs.local/runbooks/pgc-performance"
+  - name: acgs_pgc_alerts
+    rules:
+      # PGC Service Critical Alerts
+      - alert: PGCLatencyExceeds25ms
+        expr: acgs:pgc_latency_optimization_target > 25
+        for: 1m
+        labels:
+          severity: warning
+          category: pgc_performance
+          business_impact: medium
+        annotations:
+          summary: 'PGC service latency exceeds 25ms target'
+          description: 'PGC service P95 latency is {{ $value }}ms, exceeding 25ms target'
+          runbook_url: 'https://docs.acgs.local/runbooks/pgc-performance'
 
-  - alert: PGCConstitutionalValidationThroughputLow
-    expr: acgs:pgc_constitutional_validation_throughput < 10
-    for: 2m
-    labels:
-      severity: warning
-      category: pgc_throughput
-      business_impact: medium
-    annotations:
-      summary: "PGC constitutional validation throughput low"
-      description: "PGC constitutional validation throughput is {{ $value }} validations/sec"
-      runbook_url: "https://docs.acgs.local/runbooks/pgc-throughput"
+      - alert: PGCConstitutionalValidationThroughputLow
+        expr: acgs:pgc_constitutional_validation_throughput < 10
+        for: 2m
+        labels:
+          severity: warning
+          category: pgc_throughput
+          business_impact: medium
+        annotations:
+          summary: 'PGC constitutional validation throughput low'
+          description: 'PGC constitutional validation throughput is {{ $value }} validations/sec'
+          runbook_url: 'https://docs.acgs.local/runbooks/pgc-throughput'
 
-  - alert: PGCTraceabilityAccuracyLow
-    expr: acgs:pgc_principle_rule_traceability_accuracy < 95
-    for: 3m
-    labels:
-      severity: warning
-      category: traceability
-      business_impact: medium
-    annotations:
-      summary: "PGC principle-rule traceability accuracy below 95%"
-      description: "PGC traceability accuracy is {{ $value }}%, below 95% target"
-      runbook_url: "https://docs.acgs.local/runbooks/pgc-traceability"
+      - alert: PGCTraceabilityAccuracyLow
+        expr: acgs:pgc_principle_rule_traceability_accuracy < 95
+        for: 3m
+        labels:
+          severity: warning
+          category: traceability
+          business_impact: medium
+        annotations:
+          summary: 'PGC principle-rule traceability accuracy below 95%'
+          description: 'PGC traceability accuracy is {{ $value }}%, below 95% target'
+          runbook_url: 'https://docs.acgs.local/runbooks/pgc-traceability'
 
-  - alert: LipschitzConstantExceedsThreshold
-    expr: acgs:pgc_lipschitz_monitoring_threshold > 0.8
-    for: 5m
-    labels:
-      severity: warning
-      category: mathematical_stability
-      business_impact: low
-    annotations:
-      summary: "Lipschitz constant exceeds 0.8 threshold"
-      description: "Lipschitz constant value is {{ $value }}, exceeding 0.8 threshold"
-      runbook_url: "https://docs.acgs.local/runbooks/lipschitz-monitoring"
+      - alert: LipschitzConstantExceedsThreshold
+        expr: acgs:pgc_lipschitz_monitoring_threshold > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          category: mathematical_stability
+          business_impact: low
+        annotations:
+          summary: 'Lipschitz constant exceeds 0.8 threshold'
+          description: 'Lipschitz constant value is {{ $value }}, exceeding 0.8 threshold'
+          runbook_url: 'https://docs.acgs.local/runbooks/lipschitz-monitoring'
 
-  - alert: WeightedVotingQuorumNotMet
-    expr: acgs:pgc_weighted_voting_quorum_achievement < 60
-    for: 2m
-    labels:
-      severity: critical
-      category: voting_governance
-      business_impact: high
-    annotations:
-      summary: "Weighted voting quorum not meeting 60% threshold"
-      description: "Weighted voting quorum achievement is {{ $value }}%, below 60% requirement"
-      runbook_url: "https://docs.acgs.local/runbooks/voting-quorum"
-      business_impact: "Governance decisions may be invalid"
+      - alert: WeightedVotingQuorumNotMet
+        expr: acgs:pgc_weighted_voting_quorum_achievement < 60
+        for: 2m
+        labels:
+          severity: critical
+          category: voting_governance
+          business_impact: high
+        annotations:
+          summary: 'Weighted voting quorum not meeting 60% threshold'
+          description: 'Weighted voting quorum achievement is {{ $value }}%, below 60% requirement'
+          runbook_url: 'https://docs.acgs.local/runbooks/voting-quorum'
+          business_impact: 'Governance decisions may be invalid'

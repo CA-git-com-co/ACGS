@@ -20,76 +20,76 @@ spec:
         version: v8.0.0
     spec:
       containers:
-      - name: qec-sft-service
-        image: acgs/qec-sft-service:latest
-        ports:
-        - containerPort: 8010
-          name: http
-        env:
-        - name: LOG_LEVEL
-          value: "INFO"
-        - name: STABILIZER_REGISTRY_PATH
-          value: "/app/stabilizers"
-        - name: MAX_CONCURRENT_STABILIZERS
-          value: "10"
-        - name: CONSTITUTIONAL_HASH
-          value: "cdd01ef066bc6cf2"
-        - name: REDIS_URL
-          value: "redis://redis-service:6379/0"
-        - name: POSTGRES_URL
-          value: "postgresql://acgs_user:acgs_password@postgres-service:5432/acgs_db"
-        - name: RESPONSE_TIME_TARGET_MS
-          value: "500"
-        - name: ENABLE_CIRCUIT_BREAKER
-          value: "true"
-        volumeMounts:
-        - name: config-volume
-          mountPath: /app/config
-        - name: stabilizers-volume
-          mountPath: /app/stabilizers
-        - name: schemas-volume
-          mountPath: /app/schemas
-        resources:
-          limits:
-            cpu: "2"
-            memory: "4Gi"
-          requests:
-            cpu: "1"
-            memory: "2Gi"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8010
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8010
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          timeoutSeconds: 3
-          failureThreshold: 2
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 1000
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
+        - name: qec-sft-service
+          image: acgs/qec-sft-service:latest
+          ports:
+            - containerPort: 8010
+              name: http
+          env:
+            - name: LOG_LEVEL
+              value: 'INFO'
+            - name: STABILIZER_REGISTRY_PATH
+              value: '/app/stabilizers'
+            - name: MAX_CONCURRENT_STABILIZERS
+              value: '10'
+            - name: CONSTITUTIONAL_HASH
+              value: 'cdd01ef066bc6cf2'
+            - name: REDIS_URL
+              value: 'redis://redis-service:6379/0'
+            - name: POSTGRES_URL
+              value: 'postgresql://acgs_user:acgs_password@postgres-service:5432/acgs_db'
+            - name: RESPONSE_TIME_TARGET_MS
+              value: '500'
+            - name: ENABLE_CIRCUIT_BREAKER
+              value: 'true'
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+            - name: stabilizers-volume
+              mountPath: /app/stabilizers
+            - name: schemas-volume
+              mountPath: /app/schemas
+          resources:
+            limits:
+              cpu: '2'
+              memory: '4Gi'
+            requests:
+              cpu: '1'
+              memory: '2Gi'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8010
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8010
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
       volumes:
-      - name: config-volume
-        configMap:
-          name: qec-sft-config
-      - name: stabilizers-volume
-        persistentVolumeClaim:
-          claimName: stabilizers-pvc
-      - name: schemas-volume
-        configMap:
-          name: qec-sft-schemas
+        - name: config-volume
+          configMap:
+            name: qec-sft-config
+        - name: stabilizers-volume
+          persistentVolumeClaim:
+            claimName: stabilizers-pvc
+        - name: schemas-volume
+          configMap:
+            name: qec-sft-schemas
       serviceAccountName: qec-sft-service-account
       securityContext:
         fsGroup: 1000
@@ -106,10 +106,10 @@ spec:
   selector:
     app: qec-sft-service
   ports:
-  - port: 80
-    targetPort: 8010
-    protocol: TCP
-    name: http
+    - port: 80
+      targetPort: 8010
+      protocol: TCP
+      name: http
   type: ClusterIP
 ---
 apiVersion: v1
@@ -124,13 +124,13 @@ data:
       version: "8.0.0"
       port: 8010
       host: "0.0.0.0"
-    
+
     constitutional:
       hash: "cdd01ef066bc6cf2"
       compliance_threshold: 0.8
       validation_enabled: true
       enforcement_mode: "strict"
-    
+
     stabilizer_execution:
       max_concurrent_executions: 10
       default_timeout_seconds: 60
@@ -139,13 +139,13 @@ data:
       enable_circuit_breaker: true
       circuit_breaker_threshold: 3
       circuit_breaker_timeout: 30
-    
+
     syndrome_diagnostic:
       enable_ml_models: true
       error_classification_threshold: 0.7
       auto_recovery_enabled: true
       diagnostic_timeout_seconds: 30
-    
+
     performance:
       response_time_target_ms: 500
       max_memory_usage_mb: 2048
@@ -221,12 +221,12 @@ metadata:
   namespace: acgs-pgp-v8
   name: qec-sft-role
 rules:
-- apiGroups: [""]
-  resources: ["configmaps", "secrets"]
-  verbs: ["get", "list", "watch"]
-- apiGroups: [""]
-  resources: ["pods"]
-  verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: ['']
+    resources: ['configmaps', 'secrets']
+    verbs: ['get', 'list', 'watch']
+  - apiGroups: ['']
+    resources: ['pods']
+    verbs: ['get', 'list', 'watch', 'create', 'delete']
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -234,9 +234,9 @@ metadata:
   name: qec-sft-rolebinding
   namespace: acgs-pgp-v8
 subjects:
-- kind: ServiceAccount
-  name: qec-sft-service-account
-  namespace: acgs-pgp-v8
+  - kind: ServiceAccount
+    name: qec-sft-service-account
+    namespace: acgs-pgp-v8
 roleRef:
   kind: Role
   name: qec-sft-role

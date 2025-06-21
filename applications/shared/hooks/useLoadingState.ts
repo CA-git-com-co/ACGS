@@ -113,22 +113,25 @@ export const useLoadingState = (config: LoadingConfig = {}): [LoadingState, Load
     }
   }, [onSuccess]);
 
-  const setError = useCallback((error: Error | null) => {
-    setState(prev => ({
-      ...prev,
-      isLoading: false,
-      error
-    }));
+  const setError = useCallback(
+    (error: Error | null) => {
+      setState(prev => ({
+        ...prev,
+        isLoading: false,
+        error
+      }));
 
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
 
-    if (error && onError) {
-      onError(error);
-    }
-  }, [onError]);
+      if (error && onError) {
+        onError(error);
+      }
+    },
+    [onError]
+  );
 
   const setProgress = useCallback((progress: number) => {
     setState(prev => ({
@@ -195,10 +198,7 @@ export const useLoadingState = (config: LoadingConfig = {}): [LoadingState, Load
 /**
  * Custom hook for wrapping async operations with loading state
  */
-export const useAsyncOperation = <T>(
-  operation: AsyncOperation<T>,
-  config: LoadingConfig = {}
-) => {
+export const useAsyncOperation = <T>(operation: AsyncOperation<T>, config: LoadingConfig = {}) => {
   const [loadingState, actions] = useLoadingState(config);
 
   const execute = useCallback(async (): Promise<T | null> => {
@@ -218,13 +218,17 @@ export const useAsyncOperation = <T>(
 
   const executeWithRetry = useCallback(async (): Promise<T | null> => {
     let result = await execute();
-    
+
     // Auto-retry on failure if configured
-    while (result === null && loadingState.retryCount < (config.retryAttempts || 3) && !loadingState.isTimeout) {
+    while (
+      result === null &&
+      loadingState.retryCount < (config.retryAttempts || 3) &&
+      !loadingState.isTimeout
+    ) {
       await actions.retry();
       result = await execute();
     }
-    
+
     return result;
   }, [execute, actions, loadingState.retryCount, loadingState.isTimeout, config.retryAttempts]);
 
@@ -243,16 +247,19 @@ export const useAsyncOperation = <T>(
  */
 export const useMultipleLoadingStates = (keys: string[], config: LoadingConfig = {}) => {
   const [states, setStates] = useState<Record<string, LoadingState>>(() =>
-    keys.reduce((acc, key) => ({
-      ...acc,
-      [key]: {
-        isLoading: false,
-        error: null,
-        isTimeout: false,
-        retryCount: 0,
-        progress: 0
-      }
-    }), {})
+    keys.reduce(
+      (acc, key) => ({
+        ...acc,
+        [key]: {
+          isLoading: false,
+          error: null,
+          isTimeout: false,
+          retryCount: 0,
+          progress: 0
+        }
+      }),
+      {}
+    )
   );
 
   const updateState = useCallback((key: string, updates: Partial<LoadingState>) => {
@@ -262,31 +269,46 @@ export const useMultipleLoadingStates = (keys: string[], config: LoadingConfig =
     }));
   }, []);
 
-  const startLoading = useCallback((key: string) => {
-    updateState(key, { isLoading: true, error: null, isTimeout: false, progress: 0 });
-  }, [updateState]);
+  const startLoading = useCallback(
+    (key: string) => {
+      updateState(key, { isLoading: true, error: null, isTimeout: false, progress: 0 });
+    },
+    [updateState]
+  );
 
-  const stopLoading = useCallback((key: string) => {
-    updateState(key, { isLoading: false });
-  }, [updateState]);
+  const stopLoading = useCallback(
+    (key: string) => {
+      updateState(key, { isLoading: false });
+    },
+    [updateState]
+  );
 
-  const setError = useCallback((key: string, error: Error | null) => {
-    updateState(key, { isLoading: false, error });
-  }, [updateState]);
+  const setError = useCallback(
+    (key: string, error: Error | null) => {
+      updateState(key, { isLoading: false, error });
+    },
+    [updateState]
+  );
 
-  const setProgress = useCallback((key: string, progress: number) => {
-    updateState(key, { progress: Math.min(Math.max(progress, 0), 100) });
-  }, [updateState]);
+  const setProgress = useCallback(
+    (key: string, progress: number) => {
+      updateState(key, { progress: Math.min(Math.max(progress, 0), 100) });
+    },
+    [updateState]
+  );
 
-  const reset = useCallback((key: string) => {
-    updateState(key, {
-      isLoading: false,
-      error: null,
-      isTimeout: false,
-      retryCount: 0,
-      progress: 0
-    });
-  }, [updateState]);
+  const reset = useCallback(
+    (key: string) => {
+      updateState(key, {
+        isLoading: false,
+        error: null,
+        isTimeout: false,
+        retryCount: 0,
+        progress: 0
+      });
+    },
+    [updateState]
+  );
 
   const resetAll = useCallback(() => {
     keys.forEach(key => reset(key));

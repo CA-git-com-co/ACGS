@@ -64,7 +64,7 @@ graph TB
     D --> E[Formal Verification:8004]
     E --> F[Integrity:8005]
     F --> G[Evolutionary Computation:8006]
-    
+
     H[Blockchain Programs] --> D
     I[Frontend Applications] --> A
     J[External Integrations] --> C

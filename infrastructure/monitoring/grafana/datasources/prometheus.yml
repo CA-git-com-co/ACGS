@@ -12,56 +12,56 @@ datasources:
     isDefault: true
     version: 1
     editable: false
-    
+
     # Connection settings
     httpMethod: POST
     timeout: 60
-    
+
     # Query settings optimized for constitutional governance metrics
     jsonData:
-      timeInterval: "15s"
-      queryTimeout: "60s"
-      httpMethod: "POST"
+      timeInterval: '15s'
+      queryTimeout: '60s'
+      httpMethod: 'POST'
       manageAlerts: true
-      alertmanagerUid: "acgs-alertmanager"
-      
+      alertmanagerUid: 'acgs-alertmanager'
+
       # Performance optimizations
       incrementalQuerying: true
-      incrementalQueryOverlapWindow: "10m"
+      incrementalQueryOverlapWindow: '10m'
       disableMetricsLookup: false
-      customQueryParameters: ""
-      
+      customQueryParameters: ''
+
       # Exemplars configuration
       exemplarTraceIdDestinations:
-        - name: "trace_id"
-          datasourceUid: "acgs-jaeger"
-          url: "http://jaeger:16686/trace/${__value.raw}"
-      
+        - name: 'trace_id'
+          datasourceUid: 'acgs-jaeger'
+          url: 'http://jaeger:16686/trace/${__value.raw}'
+
       # Advanced settings for high-volume metrics
       maxLines: 1000
       maxDataPoints: 1000
-      
+
     # Security settings
     secureJsonData:
-      httpHeaderName1: "X-ACGS-Source"
-      httpHeaderValue1: "grafana-dashboard"
+      httpHeaderName1: 'X-ACGS-Source'
+      httpHeaderValue1: 'grafana-dashboard'
 
   # Alertmanager datasource for alert management
   - name: ACGS-Alertmanager
     type: alertmanager
-    uid: "acgs-alertmanager"
+    uid: 'acgs-alertmanager'
     access: proxy
     url: http://alertmanager:9093
     version: 1
     editable: false
-    
+
     jsonData:
-      implementation: "prometheus"
+      implementation: 'prometheus'
       handleGrafanaManagedAlerts: true
-      
+
     # Alert notification settings
     secureJsonData:
-      basicAuthPassword: ""
+      basicAuthPassword: ''
 
   # Loki datasource for log aggregation (if implemented)
   - name: ACGS-Loki
@@ -70,35 +70,35 @@ datasources:
     url: http://loki:3100
     version: 1
     editable: false
-    
+
     jsonData:
       maxLines: 1000
       timeout: 60
-      
+
     # Log parsing settings for ACGS services
     derivedFields:
-      - name: "TraceID"
+      - name: 'TraceID'
         matcherRegex: "trace_id=(\\w+)"
-        url: "http://jaeger:16686/trace/${__value.raw}"
-        datasourceUid: "acgs-jaeger"
+        url: 'http://jaeger:16686/trace/${__value.raw}'
+        datasourceUid: 'acgs-jaeger'
 
   # Jaeger datasource for distributed tracing (if implemented)
   - name: ACGS-Jaeger
     type: jaeger
-    uid: "acgs-jaeger"
+    uid: 'acgs-jaeger'
     access: proxy
     url: http://jaeger:16686
     version: 1
     editable: false
-    
+
     jsonData:
       tracesToLogs:
-        datasourceUid: "acgs-loki"
-        tags: ["job", "instance", "pod", "namespace"]
-        mappedTags: [{"key": "service.name", "value": "service"}]
+        datasourceUid: 'acgs-loki'
+        tags: ['job', 'instance', 'pod', 'namespace']
+        mappedTags: [{ 'key': 'service.name', 'value': 'service' }]
         mapTagNamesEnabled: true
-        spanStartTimeShift: "1h"
-        spanEndTimeShift: "1h"
+        spanStartTimeShift: '1h'
+        spanEndTimeShift: '1h'
         filterByTraceID: true
         filterBySpanID: false
 
@@ -111,18 +111,18 @@ datasources:
     user: grafana_readonly
     version: 1
     editable: false
-    
+
     # Read-only access for governance data visualization
     jsonData:
-      sslmode: "disable"
+      sslmode: 'disable'
       maxOpenConns: 5
       maxIdleConns: 2
       connMaxLifetime: 14400
       postgresVersion: 1300
       timescaledb: false
-      
+
     secureJsonData:
-      password: "readonly_password_here"
+      password: 'readonly_password_here'
 
   # Redis datasource for cache monitoring
   - name: ACGS-Redis
@@ -131,25 +131,25 @@ datasources:
     url: redis://redis:6379
     version: 1
     editable: false
-    
+
     jsonData:
-      client: "standalone"
+      client: 'standalone'
       poolSize: 5
       timeout: 10
       pingInterval: 0
       pipelineWindow: 0
-      
+
     secureJsonData:
-      password: ""
+      password: ''
 
 # Notification channels for alert integration
 notifiers:
-  - name: "ACGS Email Alerts"
-    type: "email"
-    uid: "acgs-email-alerts"
+  - name: 'ACGS Email Alerts'
+    type: 'email'
+    uid: 'acgs-email-alerts'
     settings:
-      addresses: "ops-team@constitutional-governance.ai"
-      subject: "[ACGS-1] Grafana Alert: {{ .Title }}"
+      addresses: 'ops-team@constitutional-governance.ai'
+      subject: '[ACGS-1] Grafana Alert: {{ .Title }}'
       body: |
         {{ range .Alerts }}
         Alert: {{ .Name }}
@@ -158,28 +158,28 @@ notifiers:
         {{ end }}
     isDefault: true
 
-  - name: "ACGS Slack Critical"
-    type: "slack"
-    uid: "acgs-slack-critical"
+  - name: 'ACGS Slack Critical'
+    type: 'slack'
+    uid: 'acgs-slack-critical'
     settings:
-      url: "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"
-      channel: "#acgs-critical-alerts"
-      username: "ACGS-1 Grafana"
-      title: "ACGS-1 Critical Alert"
+      url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+      channel: '#acgs-critical-alerts'
+      username: 'ACGS-1 Grafana'
+      title: 'ACGS-1 Critical Alert'
       text: |
         {{ range .Alerts }}
         🚨 **{{ .Name }}**
-        
+
         **Message:** {{ .Message }}
         **State:** {{ .State }}
         **Dashboard:** {{ .DashboardURL }}
         {{ end }}
 
-  - name: "ACGS Webhook"
-    type: "webhook"
-    uid: "acgs-webhook"
+  - name: 'ACGS Webhook'
+    type: 'webhook'
+    uid: 'acgs-webhook'
     settings:
-      url: "http://localhost:5001/grafana/alerts"
-      httpMethod: "POST"
-      username: "grafana"
-      password: "webhook_secret"
+      url: 'http://localhost:5001/grafana/alerts'
+      httpMethod: 'POST'
+      username: 'grafana'
+      password: 'webhook_secret'

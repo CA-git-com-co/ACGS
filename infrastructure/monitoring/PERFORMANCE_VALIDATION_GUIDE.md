@@ -22,6 +22,7 @@ The performance validation suite tests the monitoring infrastructure under vario
 **Purpose**: End-to-end monitoring infrastructure performance validation
 
 **Features**:
+
 - Monitoring services health validation
 - Load testing with configurable concurrent users
 - Alert system performance testing
@@ -31,6 +32,7 @@ The performance validation suite tests the monitoring infrastructure under vario
 - Monitoring overhead measurement
 
 **Usage**:
+
 ```bash
 python3 infrastructure/monitoring/performance-validation.py \
     --users 1000 \
@@ -45,6 +47,7 @@ python3 infrastructure/monitoring/performance-validation.py \
 **Purpose**: Specialized load testing for monitoring infrastructure
 
 **Features**:
+
 - Prometheus query load testing (40% of requests)
 - Grafana dashboard load testing (30% of requests)
 - Metrics scraping load testing (20% of requests)
@@ -53,6 +56,7 @@ python3 infrastructure/monitoring/performance-validation.py \
 - Realistic usage pattern simulation
 
 **Usage**:
+
 ```bash
 python3 infrastructure/monitoring/load-test-monitoring.py \
     --users 1000 \
@@ -67,6 +71,7 @@ python3 infrastructure/monitoring/load-test-monitoring.py \
 **Purpose**: Alert system responsiveness and accuracy validation
 
 **Features**:
+
 - Alert rules loading verification
 - Alert rule evaluation performance testing
 - Alertmanager API responsiveness testing
@@ -76,6 +81,7 @@ python3 infrastructure/monitoring/load-test-monitoring.py \
 - Alert recovery and resolution testing
 
 **Usage**:
+
 ```bash
 python3 infrastructure/monitoring/test-alert-system.py \
     --duration 300 \
@@ -88,6 +94,7 @@ python3 infrastructure/monitoring/test-alert-system.py \
 **Purpose**: Grafana dashboard performance validation
 
 **Features**:
+
 - Individual dashboard loading performance
 - Dashboard query performance testing
 - Real-time dashboard update validation
@@ -96,6 +103,7 @@ python3 infrastructure/monitoring/test-alert-system.py \
 - Dashboard performance under sustained load
 
 **Usage**:
+
 ```bash
 python3 infrastructure/monitoring/test-dashboard-performance.py \
     --users 100 \
@@ -111,6 +119,7 @@ python3 infrastructure/monitoring/test-dashboard-performance.py \
 **Purpose**: Orchestrates all performance validation tests
 
 **Features**:
+
 - Environment initialization and dependency checking
 - Monitoring services health verification
 - Sequential execution of all test suites
@@ -118,6 +127,7 @@ python3 infrastructure/monitoring/test-dashboard-performance.py \
 - Performance summary and results analysis
 
 **Usage**:
+
 ```bash
 # Basic execution
 ./infrastructure/monitoring/run-performance-validation.sh
@@ -130,22 +140,26 @@ CONCURRENT_USERS=1500 TEST_DURATION=900 \
 ## Performance Targets and Success Criteria
 
 ### Response Time Targets
+
 - **Prometheus Queries**: <500ms for 95th percentile
 - **Grafana Dashboards**: <2000ms loading time
 - **Alert System**: <30s detection and notification
 - **Metrics Collection**: <100ms scraping latency
 
 ### Availability Targets
+
 - **Overall System**: >99.9% availability
 - **Individual Services**: >99.5% availability
 - **Load Test Success Rate**: >95% successful requests
 
 ### Resource Overhead Targets
+
 - **CPU Overhead**: <1% of total system resources
 - **Memory Overhead**: <2% of total system resources
 - **Network Overhead**: <5% of total bandwidth
 
 ### Scalability Targets
+
 - **Concurrent Users**: >1000 simultaneous users
 - **Request Throughput**: >100 requests/second per service
 - **Data Retention**: 15 days without performance degradation
@@ -189,16 +203,19 @@ cat /var/log/acgs/performance-validation-results/consolidated-performance-report
 ### Performance Metrics Interpretation
 
 **Response Time Analysis**:
+
 - Average response times indicate typical performance
 - 95th percentile times show worst-case scenarios
 - Consistent times across test duration indicate stability
 
 **Success Rate Analysis**:
-- >95% success rate indicates robust system
+
+- > 95% success rate indicates robust system
 - Error patterns help identify bottlenecks
 - Recovery time shows system resilience
 
 **Resource Utilization Analysis**:
+
 - CPU/Memory usage during peak load
 - Resource efficiency under sustained load
 - Overhead impact on ACGS services
@@ -206,18 +223,21 @@ cat /var/log/acgs/performance-validation-results/consolidated-performance-report
 ### Common Performance Issues
 
 **High Response Times**:
+
 - Database query optimization needed
 - Insufficient system resources
 - Network latency issues
 - Inefficient alert rules
 
 **Low Success Rates**:
+
 - Service overload or misconfiguration
 - Resource exhaustion
 - Network connectivity issues
 - Authentication/authorization problems
 
 **High Resource Overhead**:
+
 - Inefficient metrics collection
 - Too frequent scraping intervals
 - Excessive alert rule complexity
@@ -228,6 +248,7 @@ cat /var/log/acgs/performance-validation-results/consolidated-performance-report
 ### Performance Optimization
 
 **Prometheus Optimization**:
+
 ```yaml
 # Optimize scraping intervals
 global:
@@ -240,6 +261,7 @@ global:
 ```
 
 **Grafana Optimization**:
+
 ```yaml
 # Optimize dashboard queries
 - Use appropriate time ranges
@@ -249,6 +271,7 @@ global:
 ```
 
 **Alertmanager Optimization**:
+
 ```yaml
 # Optimize alert grouping
 route:
@@ -261,12 +284,14 @@ route:
 ### Performance Monitoring
 
 **Continuous Monitoring**:
+
 - Set up automated performance tests
 - Monitor key performance indicators
 - Alert on performance degradation
 - Regular performance baseline updates
 
 **Capacity Planning**:
+
 - Monitor resource utilization trends
 - Plan for growth in metrics volume
 - Scale monitoring infrastructure proactively
@@ -287,6 +312,7 @@ The performance validation includes testing of ACGS-specific metrics:
 ### Quantumagi Deployment Compatibility
 
 All performance tests validate compatibility with:
+
 - Quantumagi Solana devnet deployment
 - Constitutional governance workflows
 - Policy synthesis engine performance
@@ -297,6 +323,7 @@ All performance tests validate compatibility with:
 ### Automated Reports
 
 Each test generates detailed JSON reports including:
+
 - Test metadata and configuration
 - Performance metrics and statistics
 - Error analysis and recommendations
@@ -305,6 +332,7 @@ Each test generates detailed JSON reports including:
 ### Performance Baselines
 
 Establish performance baselines for:
+
 - Response time benchmarks
 - Resource utilization patterns
 - Scalability limits

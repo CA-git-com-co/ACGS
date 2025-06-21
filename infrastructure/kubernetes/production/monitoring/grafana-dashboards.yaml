@@ -5,7 +5,7 @@ metadata:
   name: acgs-pgp-dashboard
   namespace: acgs-pgp
   labels:
-    grafana_dashboard: "1"
+    grafana_dashboard: '1'
 data:
   acgs-pgp-overview.json: |
     {
@@ -191,7 +191,7 @@ metadata:
   name: acgs-pgp-sla-dashboard
   namespace: acgs-pgp
   labels:
-    grafana_dashboard: "1"
+    grafana_dashboard: '1'
 data:
   acgs-pgp-sla.json: |
     {
@@ -307,7 +307,7 @@ metadata:
   name: acgs-pgp-business-dashboard
   namespace: acgs-pgp
   labels:
-    grafana_dashboard: "1"
+    grafana_dashboard: '1'
 data:
   acgs-pgp-business.json: |
     {

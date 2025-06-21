@@ -1,4 +1,4 @@
-import { DashboardCards } from '@/components/dashboard/DashboardCards'
+import { DashboardCards } from '@/components/dashboard/DashboardCards';
 
 export default function DashboardPage() {
   return (
@@ -11,8 +11,8 @@ export default function DashboardPage() {
           Here's what's happening with your governance system today.
         </p>
       </div>
-      
+
       <DashboardCards />
     </div>
-  )
+  );
 }

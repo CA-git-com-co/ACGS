@@ -15,20 +15,24 @@ Successfully completed the systematic migration from MD5 to SHA-256 hashing acro
 **Files Successfully Updated:**
 
 1. **tests/unit/test_data_preparation.py**
+
    - ✅ Replaced `compute_md5()` function with `compute_sha256()`
    - ✅ Updated all test assertions to validate SHA-256 hash format (64 characters)
    - ✅ Added security upgrade comments for documentation
 
 2. **tools/NeMo-Skills/tests/test_data_preparation.py**
+
    - ✅ Replaced `compute_md5()` function with `compute_sha256()`
    - ✅ Updated all test assertions to validate SHA-256 hash format
    - ✅ Maintained test functionality while improving security
 
 3. **tools/NeMo-Skills/recipes/openmathreasoning/scripts/genselect/prepare_labeling_data.py**
+
    - ✅ Updated `hash_signature()` function from `hashlib.md5()` to `hashlib.sha256()`
    - ✅ Preserved function signature and behavior
 
 4. **infrastructure/monitoring/intelligent_alerting.py**
+
    - ✅ Updated `generate_alert_id()` function to use SHA-256
    - ✅ Maintained 12-character alert ID format using SHA-256 truncation
    - ✅ Added security upgrade documentation
@@ -43,15 +47,19 @@ Successfully completed the systematic migration from MD5 to SHA-256 hashing acro
 **Database Authentication Hardening:**
 
 1. **infrastructure/database/pgbouncer_replicas.ini**
+
    - ✅ Changed `auth_type = md5` to `auth_type = scram-sha-256`
 
 2. **infrastructure/database/pgbouncer.ini**
+
    - ✅ Changed `auth_type = md5` to `auth_type = scram-sha-256`
 
 3. **infrastructure/ansible/playbooks/site.yml**
+
    - ✅ Updated PostgreSQL HBA method from `md5` to `scram-sha-256`
 
 4. **infrastructure/database/userlist.txt**
+
    - ✅ Updated format to SCRAM-SHA-256 placeholder hashes
    - ✅ Added migration documentation and password reset requirements
 
@@ -62,6 +70,7 @@ Successfully completed the systematic migration from MD5 to SHA-256 hashing acro
 ### Phase 3: Comprehensive Validation ✅
 
 **Security Verification:**
+
 - ✅ Zero MD5 instances remaining in main codebase (verified via grep scan)
 - ✅ All MD5 references now exist only in:
   - Virtual environment packages (external dependencies)
@@ -69,11 +78,13 @@ Successfully completed the systematic migration from MD5 to SHA-256 hashing acro
   - Backup directories (historical)
 
 **Functional Testing:**
+
 - ✅ SHA-256 hash generation validated (64-character hexadecimal output)
 - ✅ Alert ID generation function tested and working
 - ✅ Database authentication configuration updated
 
 **Performance Validation:**
+
 - ✅ Hash function performance maintained (SHA-256 vs MD5 negligible difference)
 - ✅ No impact on response times or system availability
 - ✅ All 7 core ACGS services remain operational
@@ -81,12 +92,14 @@ Successfully completed the systematic migration from MD5 to SHA-256 hashing acro
 ## Security Improvements Achieved
 
 ### Before Migration:
+
 - ❌ MD5 hash algorithm (vulnerable to collision attacks)
 - ❌ MD5 database authentication (weak security)
 - ❌ Multiple MD5 instances across codebase
 - ❌ Security score <90%
 
 ### After Migration:
+
 - ✅ SHA-256 hash algorithm (cryptographically secure)
 - ✅ SCRAM-SHA-256 database authentication (enterprise-grade)
 - ✅ Zero MD5 instances in production code

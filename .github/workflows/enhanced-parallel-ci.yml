@@ -2,9 +2,9 @@ name: ACGS-1 Enhanced Parallel CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
   workflow_dispatch:
     inputs:
       performance_mode:
@@ -13,19 +13,19 @@ on:
         default: 'standard'
         type: choice
         options:
-        - standard
-        - aggressive
-        - maximum
+          - standard
+          - aggressive
+          - maximum
       parallel_jobs:
         description: 'Number of parallel jobs'
         required: false
         default: '8'
         type: choice
         options:
-        - '4'
-        - '6'
-        - '8'
-        - '12'
+          - '4'
+          - '6'
+          - '8'
+          - '12'
 
 permissions:
   contents: read
@@ -36,7 +36,7 @@ permissions:
 
 env:
   # Enhanced Performance Configuration
-  CARGO_INCREMENTAL: 0  # Disabled for sccache compatibility
+  CARGO_INCREMENTAL: 0 # Disabled for sccache compatibility
   CARGO_NET_RETRY: 10
   CARGO_NET_GIT_FETCH_WITH_CLI: true
   RUSTC_WRAPPER: sccache
@@ -45,8 +45,8 @@ env:
   PARALLEL_JOBS: ${{ github.event.inputs.parallel_jobs || '8' }}
   PERFORMANCE_MODE: ${{ github.event.inputs.performance_mode || 'standard' }}
   # Enterprise targets
-  ENTERPRISE_BUILD_TARGET_MINUTES: 3  # Reduced from 5 to 3 minutes
-  ENTERPRISE_AVAILABILITY_TARGET: 99.9  # Increased from 99.5 to 99.9
+  ENTERPRISE_BUILD_TARGET_MINUTES: 3 # Reduced from 5 to 3 minutes
+  ENTERPRISE_AVAILABILITY_TARGET: 99.9 # Increased from 99.5 to 99.9
   # Toolchain versions
   SOLANA_CLI_VERSION: 1.18.22
   ANCHOR_CLI_VERSION: 0.29.0
@@ -131,7 +131,7 @@ jobs:
           NODE_DEPS_KEY="${{ runner.os }}-node-deps-${{ hashFiles('**/package-lock.json') }}"
           PYTHON_DEPS_KEY="${{ runner.os }}-python-deps-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml') }}"
           TOOLCHAIN_KEY="${{ runner.os }}-toolchain-${{ env.SOLANA_CLI_VERSION }}-${{ env.ANCHOR_CLI_VERSION }}"
-          
+
           CACHE_KEYS=$(cat << EOF
           {
             "rust_deps": "$RUST_DEPS_KEY",
@@ -149,7 +149,7 @@ jobs:
       - name: Setup distributed compilation cache
         uses: mozilla-actions/sccache-action@v0.0.9
         with:
-          version: "v0.7.4"
+          version: 'v0.7.4'
 
   # Parallel Rust Pipeline with Advanced Optimization
   parallel_rust_pipeline:
@@ -287,7 +287,7 @@ jobs:
       - name: Collect performance metrics
         run: |
           echo "📊 Collecting advanced performance metrics..."
-          
+
           # Create performance dashboard
           cat > performance-dashboard.json << EOF
           {
@@ -307,7 +307,7 @@ jobs:
             }
           }
           EOF
-          
+
           echo "✅ Performance dashboard created"
 
       - name: Upload performance artifacts
@@ -383,23 +383,23 @@ jobs:
               echo "DURATION_COMPLIANT=false" >> $GITHUB_ENV
             fi
           fi
-          
+
           # Generate compliance report
           cat > enterprise-compliance-report.md << EOF
           # Enterprise Compliance Report
-          
+
           **Pipeline ID:** ${{ github.run_id }}
           **Timestamp:** $(date -u +%Y-%m-%dT%H:%M:%SZ)
           **Performance Mode:** ${{ env.PERFORMANCE_MODE }}
-          
+
           ## Compliance Status
-          
+
           - **Duration Target:** ≤${{ env.ENTERPRISE_BUILD_TARGET_MINUTES }} minutes
           - **Actual Duration:** ${DURATION_MINUTES} minutes
           - **Duration Compliant:** ${DURATION_COMPLIANT}
           - **Availability Target:** ≥${{ env.ENTERPRISE_AVAILABILITY_TARGET }}%
           - **Parallel Jobs:** ${{ env.PARALLEL_JOBS }}
-          
+
           ## Optimization Features
 
           - ✅ Distributed caching with sccache
@@ -407,9 +407,9 @@ jobs:
           - ✅ Parallel job execution
           - ❌ Incremental compilation (disabled for sccache compatibility)
           - ✅ Advanced performance monitoring
-          
+
           EOF
-          
+
           echo "✅ Enterprise compliance report generated"
 
       - name: Upload compliance report

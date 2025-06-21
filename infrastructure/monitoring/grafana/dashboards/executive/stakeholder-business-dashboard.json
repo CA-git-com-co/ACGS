@@ -70,9 +70,9 @@
             },
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "yellow", "value": 90},
-                {"color": "green", "value": 95}
+                { "color": "red", "value": 0 },
+                { "color": "yellow", "value": 90 },
+                { "color": "green", "value": 95 }
               ]
             },
             "unit": "percent",
@@ -80,7 +80,7 @@
             "max": 100
           }
         },
-        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0}
+        "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 }
       },
       {
         "id": 2,
@@ -118,26 +118,20 @@
           },
           "overrides": [
             {
-              "matcher": {"id": "byName", "options": "Active Users"},
-              "properties": [
-                {"id": "unit", "value": "short"}
-              ]
+              "matcher": { "id": "byName", "options": "Active Users" },
+              "properties": [{ "id": "unit", "value": "short" }]
             },
             {
-              "matcher": {"id": "byName", "options": "Governance Actions/Hour"},
-              "properties": [
-                {"id": "unit", "value": "short"}
-              ]
+              "matcher": { "id": "byName", "options": "Governance Actions/Hour" },
+              "properties": [{ "id": "unit", "value": "short" }]
             },
             {
-              "matcher": {"id": "byName", "options": "Avg Session Duration (min)"},
-              "properties": [
-                {"id": "unit", "value": "m"}
-              ]
+              "matcher": { "id": "byName", "options": "Avg Session Duration (min)" },
+              "properties": [{ "id": "unit", "value": "m" }]
             }
           ]
         },
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 }
       },
       {
         "id": 3,
@@ -158,9 +152,9 @@
             },
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "yellow", "value": 80},
-                {"color": "green", "value": 95}
+                { "color": "red", "value": 0 },
+                { "color": "yellow", "value": 80 },
+                { "color": "green", "value": 95 }
               ]
             },
             "unit": "percent",
@@ -169,7 +163,7 @@
             "displayName": "Effectiveness Score"
           }
         },
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 }
       },
       {
         "id": 4,
@@ -200,9 +194,9 @@
             },
             "thresholds": {
               "steps": [
-                {"color": "green", "value": 0},
-                {"color": "yellow", "value": 0.005},
-                {"color": "red", "value": 0.01}
+                { "color": "green", "value": 0 },
+                { "color": "yellow", "value": 0.005 },
+                { "color": "red", "value": 0.01 }
               ]
             },
             "unit": "short",
@@ -210,15 +204,15 @@
           },
           "overrides": [
             {
-              "matcher": {"id": "byName", "options": "Daily Blockchain Cost (SOL)"},
+              "matcher": { "id": "byName", "options": "Daily Blockchain Cost (SOL)" },
               "properties": [
-                {"id": "unit", "value": "short"},
-                {"id": "decimals", "value": 4}
+                { "id": "unit", "value": "short" },
+                { "id": "decimals", "value": 4 }
               ]
             }
           ]
         },
-        "gridPos": {"h": 6, "w": 12, "x": 0, "y": 16}
+        "gridPos": { "h": 6, "w": 12, "x": 0, "y": 16 }
       },
       {
         "id": 5,
@@ -255,30 +249,30 @@
           },
           "overrides": [
             {
-              "matcher": {"id": "byName", "options": "Availability SLA (99.9% target)"},
+              "matcher": { "id": "byName", "options": "Availability SLA (99.9% target)" },
               "properties": [
-                {"id": "unit", "value": "percent"},
-                {"id": "min", "value": 99},
-                {"id": "max", "value": 100}
+                { "id": "unit", "value": "percent" },
+                { "id": "min", "value": 99 },
+                { "id": "max", "value": 100 }
               ]
             },
             {
-              "matcher": {"id": "byName", "options": "Response Time SLA (500ms target)"},
+              "matcher": { "id": "byName", "options": "Response Time SLA (500ms target)" },
               "properties": [
-                {"id": "unit", "value": "ms"},
-                {"id": "max", "value": 1000}
+                { "id": "unit", "value": "ms" },
+                { "id": "max", "value": 1000 }
               ]
             },
             {
-              "matcher": {"id": "byName", "options": "Capacity Utilization (1000 user target)"},
+              "matcher": { "id": "byName", "options": "Capacity Utilization (1000 user target)" },
               "properties": [
-                {"id": "unit", "value": "percent"},
-                {"id": "max", "value": 100}
+                { "id": "unit", "value": "percent" },
+                { "id": "max", "value": 100 }
               ]
             }
           ]
         },
-        "gridPos": {"h": 6, "w": 12, "x": 12, "y": 16}
+        "gridPos": { "h": 6, "w": 12, "x": 12, "y": 16 }
       },
       {
         "id": 6,
@@ -322,14 +316,14 @@
             "unit": "ms",
             "thresholds": {
               "steps": [
-                {"color": "green", "value": 0},
-                {"color": "yellow", "value": 500},
-                {"color": "red", "value": 1000}
+                { "color": "green", "value": 0 },
+                { "color": "yellow", "value": 500 },
+                { "color": "red", "value": 1000 }
               ]
             }
           }
         },
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 22}
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 22 }
       },
       {
         "id": 7,
@@ -360,29 +354,32 @@
             },
             "thresholds": {
               "steps": [
-                {"color": "green", "value": 0},
-                {"color": "yellow", "value": 1},
-                {"color": "red", "value": 5}
+                { "color": "green", "value": 0 },
+                { "color": "yellow", "value": 1 },
+                { "color": "red", "value": 5 }
               ]
             }
           },
           "overrides": [
             {
-              "matcher": {"id": "byName", "options": "Compliance Gap %"},
+              "matcher": { "id": "byName", "options": "Compliance Gap %" },
               "properties": [
-                {"id": "unit", "value": "percent"},
-                {"id": "thresholds", "value": {
-                  "steps": [
-                    {"color": "green", "value": 0},
-                    {"color": "yellow", "value": 2},
-                    {"color": "red", "value": 5}
-                  ]
-                }}
+                { "id": "unit", "value": "percent" },
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "steps": [
+                      { "color": "green", "value": 0 },
+                      { "color": "yellow", "value": 2 },
+                      { "color": "red", "value": 5 }
+                    ]
+                  }
+                }
               ]
             }
           ]
         },
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 22}
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 22 }
       },
       {
         "id": 8,
@@ -419,7 +416,7 @@
             }
           }
         },
-        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 30}
+        "gridPos": { "h": 8, "w": 24, "x": 0, "y": 30 }
       },
       {
         "id": 9,
@@ -450,34 +447,28 @@
             },
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "yellow", "value": 80},
-                {"color": "green", "value": 95}
+                { "color": "red", "value": 0 },
+                { "color": "yellow", "value": 80 },
+                { "color": "green", "value": 95 }
               ]
             }
           },
           "overrides": [
             {
-              "matcher": {"id": "byName", "options": "Effective User Capacity"},
-              "properties": [
-                {"id": "unit", "value": "short"}
-              ]
+              "matcher": { "id": "byName", "options": "Effective User Capacity" },
+              "properties": [{ "id": "unit", "value": "short" }]
             },
             {
-              "matcher": {"id": "byName", "options": "Governance Quality Score"},
-              "properties": [
-                {"id": "unit", "value": "percent"}
-              ]
+              "matcher": { "id": "byName", "options": "Governance Quality Score" },
+              "properties": [{ "id": "unit", "value": "percent" }]
             },
             {
-              "matcher": {"id": "byName", "options": "Service Quality Index"},
-              "properties": [
-                {"id": "unit", "value": "short"}
-              ]
+              "matcher": { "id": "byName", "options": "Service Quality Index" },
+              "properties": [{ "id": "unit", "value": "short" }]
             }
           ]
         },
-        "gridPos": {"h": 6, "w": 24, "x": 0, "y": 38}
+        "gridPos": { "h": 6, "w": 24, "x": 0, "y": 38 }
       }
     ],
     "links": [

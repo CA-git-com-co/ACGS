@@ -12,9 +12,7 @@ const mockPrinciple = { id: '1', title: 'Principle 1', content: 'Details for pri
 // eslint-disable-next-line react/prop-types
 const AllTheProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
-      {children}
-    </SWRConfig>
+    <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>{children}</SWRConfig>
   );
 };
 
@@ -46,7 +44,7 @@ describe('usePrinciple Hook', () => {
       ok: false,
       status: 500,
       json: async () => ({ message: 'Server Error' }), // Optional error details
-      text: async () => 'Server Error'
+      text: async () => 'Server Error',
     });
 
     const { result } = renderHook(() => usePrinciple('1'), { wrapper: AllTheProviders });
@@ -72,8 +70,9 @@ describe('usePrinciple Hook', () => {
 
   it('should not fetch if principleId is undefined', () => {
     // Pass undefined explicitly to the hook call
-    const { result } = renderHook(() => usePrinciple(undefined as string | null | undefined), { wrapper: AllTheProviders });
-
+    const { result } = renderHook(() => usePrinciple(undefined as string | null | undefined), {
+      wrapper: AllTheProviders,
+    });
 
     expect(fetch).not.toHaveBeenCalled();
     expect(result.current.isLoading).toBe(false);
@@ -84,7 +83,9 @@ describe('usePrinciple Hook', () => {
   it('should return an error if JSON parsing fails with a valid ID', async () => {
     (fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
-      json: async () => { throw new SyntaxError("Unexpected token < in JSON at position 0"); },
+      json: async () => {
+        throw new SyntaxError('Unexpected token < in JSON at position 0');
+      },
     });
 
     const { result } = renderHook(() => usePrinciple('1'), { wrapper: AllTheProviders });

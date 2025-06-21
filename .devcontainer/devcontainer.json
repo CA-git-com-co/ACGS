@@ -59,20 +59,20 @@
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally
   "forwardPorts": [
-    3000,  // Frontend applications
-    8000,  // Authentication service
-    8001,  // Constitutional AI service
-    8002,  // Integrity service
-    8003,  // Formal verification service
-    8004,  // Governance synthesis service
-    8005,  // Policy governance service
-    8006,  // Evolutionary computation service
-    8007,  // Darwin Gödel Machine service
-    8010,  // Data Flywheel integration
-    8011,  // Quantumagi Bridge
-    8012,  // AlphaEvolve Engine
-    5432,  // PostgreSQL
-    6379   // Redis
+    3000, // Frontend applications
+    8000, // Authentication service
+    8001, // Constitutional AI service
+    8002, // Integrity service
+    8003, // Formal verification service
+    8004, // Governance synthesis service
+    8005, // Policy governance service
+    8006, // Evolutionary computation service
+    8007, // Darwin Gödel Machine service
+    8010, // Data Flywheel integration
+    8011, // Quantumagi Bridge
+    8012, // AlphaEvolve Engine
+    5432, // PostgreSQL
+    6379 // Redis
   ],
 
   // Configure port attributes

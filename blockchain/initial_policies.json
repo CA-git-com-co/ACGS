@@ -19,14 +19,9 @@
     "title": "Emergency Response Protocol",
     "description": "Procedures for handling critical security incidents",
     "content": {
-      "emergency_contacts": [
-        "governance@quantumagi.org"
-      ],
+      "emergency_contacts": ["governance@quantumagi.org"],
       "escalation_timeline_hours": 24,
-      "automatic_suspension_triggers": [
-        "security_breach",
-        "fund_loss"
-      ],
+      "automatic_suspension_triggers": ["security_breach", "fund_loss"],
       "override_authority": "emergency_committee"
     },
     "status": "active",

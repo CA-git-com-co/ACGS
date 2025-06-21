@@ -9,6 +9,7 @@
 The ACGS-1 Advanced Reasoning Models Integration enhances the constitutional governance system with state-of-the-art AI reasoning capabilities. This integration provides sophisticated constitutional analysis, policy synthesis, and governance decision support using two complementary models.
 
 ### **Key Features**
+
 - ✅ **Dual Model Architecture**: NVIDIA AceReason + Microsoft Phi-4
 - ✅ **Constitutional Reasoning**: Advanced constitutional compliance analysis
 - ✅ **Ensemble Intelligence**: Multi-model reasoning for enhanced accuracy
@@ -20,18 +21,20 @@ The ACGS-1 Advanced Reasoning Models Integration enhances the constitutional gov
 ## 🧠 Model Architecture
 
 ### **NVIDIA AceReason-Nemotron-1.1-7B**
+
 - **Specialization**: Governance and Accountability reasoning
 - **Context Length**: 32,768 tokens
 - **Reasoning Strength**: 95%
-- **Primary Use Cases**: 
+- **Primary Use Cases**:
   - Constitutional compliance analysis
   - Governance decision support
   - Policy impact assessment
   - Accountability framework validation
 
 ### **Microsoft Phi-4-mini-reasoning**
+
 - **Specialization**: Ethics and Fairness reasoning
-- **Context Length**: 16,384 tokens  
+- **Context Length**: 16,384 tokens
 - **Reasoning Strength**: 90%
 - **Primary Use Cases**:
   - Ethical AI reasoning
@@ -64,12 +67,14 @@ graph TD
 ### **1. System Requirements**
 
 **Minimum Requirements**:
+
 - **GPU**: NVIDIA GPU with 16GB+ VRAM (recommended: RTX 4090, A100)
 - **RAM**: 32GB+ system memory
 - **Storage**: 100GB+ available space
 - **Python**: 3.8+ with CUDA support
 
 **Recommended Requirements**:
+
 - **GPU**: 2x NVIDIA GPUs with 24GB+ VRAM each
 - **RAM**: 64GB+ system memory
 - **Storage**: 200GB+ NVMe SSD
@@ -108,11 +113,11 @@ pytest tests/e2e/test_reasoning_models_integration.py -v
 
 ### **Deployment Architecture**
 
-| **Component** | **Port** | **GPU** | **Memory** | **Purpose** |
-|---------------|----------|---------|------------|-------------|
-| **NVIDIA AceReason** | 8000 | GPU:0 | 16GB | Governance reasoning |
-| **Microsoft Phi-4** | 8001 | GPU:1 | 12GB | Ethics reasoning |
-| **Reasoning Service** | 8002 | - | 4GB | Orchestration layer |
+| **Component**         | **Port** | **GPU** | **Memory** | **Purpose**          |
+| --------------------- | -------- | ------- | ---------- | -------------------- |
+| **NVIDIA AceReason**  | 8000     | GPU:0   | 16GB       | Governance reasoning |
+| **Microsoft Phi-4**   | 8001     | GPU:1   | 12GB       | Ethics reasoning     |
+| **Reasoning Service** | 8002     | -       | 4GB        | Orchestration layer  |
 
 ### **Deployment Commands**
 
@@ -125,7 +130,7 @@ vllm serve "nvidia/AceReason-Nemotron-1.1-7B" \
     --max-model-len 32768 \
     --gpu-memory-utilization 0.8
 
-# Deploy Microsoft Phi-4-mini-reasoning  
+# Deploy Microsoft Phi-4-mini-reasoning
 vllm serve "microsoft/Phi-4-mini-reasoning" \
     --host 0.0.0.0 \
     --port 8001 \
@@ -150,7 +155,7 @@ curl -X POST "http://localhost:8000/v1/chat/completions" \
 curl -X POST "http://localhost:8001/v1/chat/completions" \
     -H "Content-Type: application/json" \
     --data '{
-        "model": "microsoft/Phi-4-mini-reasoning", 
+        "model": "microsoft/Phi-4-mini-reasoning",
         "messages": [{"role": "user", "content": "What is ethical AI reasoning?"}],
         "max_tokens": 100
     }'
@@ -164,8 +169,8 @@ curl -X POST "http://localhost:8001/v1/chat/completions" \
 
 ```python
 from services.reasoning_models.vllm_integration import (
-    VLLMReasoningService, 
-    ReasoningRequest, 
+    VLLMReasoningService,
+    ReasoningRequest,
     ConstitutionalDomain
 )
 
@@ -218,8 +223,8 @@ nvidia_config:
   gpu_memory_utilization: 0.8
   swap_space: 4
   max_num_seqs: 256
-  
-# Microsoft Phi-4 Configuration  
+
+# Microsoft Phi-4 Configuration
 microsoft_config:
   tensor_parallel_size: 1
   max_model_len: 16384
@@ -230,12 +235,12 @@ microsoft_config:
 
 ### **Performance Targets**
 
-| **Metric** | **Target** | **Current** | **Status** |
-|------------|------------|-------------|------------|
-| **Response Time** | <2000ms | 1500ms | ✅ Met |
-| **Throughput** | >10 req/sec | 15 req/sec | ✅ Exceeded |
-| **GPU Utilization** | 70-90% | 85% | ✅ Optimal |
-| **Memory Usage** | <80% | 75% | ✅ Good |
+| **Metric**          | **Target**  | **Current** | **Status**  |
+| ------------------- | ----------- | ----------- | ----------- |
+| **Response Time**   | <2000ms     | 1500ms      | ✅ Met      |
+| **Throughput**      | >10 req/sec | 15 req/sec  | ✅ Exceeded |
+| **GPU Utilization** | 70-90%      | 85%         | ✅ Optimal  |
+| **Memory Usage**    | <80%        | 75%         | ✅ Good     |
 
 ---
 
@@ -243,14 +248,14 @@ microsoft_config:
 
 ### **Domain Specialization**
 
-| **Domain** | **Primary Model** | **Fallback Model** | **Use Cases** |
-|------------|------------------|-------------------|---------------|
-| **Governance** | NVIDIA AceReason | Microsoft Phi-4 | Policy decisions, Authority validation |
-| **Accountability** | NVIDIA AceReason | Microsoft Phi-4 | Oversight, Responsibility tracking |
-| **Privacy** | Microsoft Phi-4 | NVIDIA AceReason | Data protection, Consent validation |
-| **Transparency** | Microsoft Phi-4 | NVIDIA AceReason | Disclosure requirements, Openness |
-| **Fairness** | Microsoft Phi-4 | NVIDIA AceReason | Bias detection, Equal treatment |
-| **Ethics** | Microsoft Phi-4 | NVIDIA AceReason | Moral reasoning, Value alignment |
+| **Domain**         | **Primary Model** | **Fallback Model** | **Use Cases**                          |
+| ------------------ | ----------------- | ------------------ | -------------------------------------- |
+| **Governance**     | NVIDIA AceReason  | Microsoft Phi-4    | Policy decisions, Authority validation |
+| **Accountability** | NVIDIA AceReason  | Microsoft Phi-4    | Oversight, Responsibility tracking     |
+| **Privacy**        | Microsoft Phi-4   | NVIDIA AceReason   | Data protection, Consent validation    |
+| **Transparency**   | Microsoft Phi-4   | NVIDIA AceReason   | Disclosure requirements, Openness      |
+| **Fairness**       | Microsoft Phi-4   | NVIDIA AceReason   | Bias detection, Equal treatment        |
+| **Ethics**         | Microsoft Phi-4   | NVIDIA AceReason   | Moral reasoning, Value alignment       |
 
 ### **Compliance Scoring**
 
@@ -293,15 +298,15 @@ pytest tests/e2e/test_reasoning_models_integration.py -m "integration" -v
 # Benchmark reasoning performance
 async def benchmark_reasoning():
     service = VLLMReasoningService()
-    
+
     # Test constitutional reasoning speed
     start_time = time.time()
     response = await service.constitutional_reasoning(request)
     duration = (time.time() - start_time) * 1000
-    
+
     print(f"Reasoning completed in {duration:.2f}ms")
     print(f"Confidence score: {response.confidence_score:.2f}")
-    
+
     # Performance assertions
     assert duration <= 2000, "Reasoning too slow"
     assert response.confidence_score >= 0.7, "Confidence too low"
@@ -314,28 +319,31 @@ async def benchmark_reasoning():
 ### **Common Issues**
 
 1. **Model Loading Failures**
+
    ```bash
    # Check GPU memory
    nvidia-smi
-   
+
    # Reduce memory utilization
    vllm serve "model-name" --gpu-memory-utilization 0.6
    ```
 
 2. **Port Conflicts**
+
    ```bash
    # Check port usage
    lsof -i :8000
-   
+
    # Use different port
    vllm serve "model-name" --port 8002
    ```
 
 3. **Performance Issues**
+
    ```bash
    # Monitor resource usage
    ./scripts/reasoning-models/monitor-models.sh
-   
+
    # Optimize batch size
    vllm serve "model-name" --max-num-seqs 128
    ```
@@ -405,12 +413,14 @@ print(f"NVIDIA model available: {nvidia_available}")
 ## 🎯 Next Steps
 
 ### **Immediate Actions**
+
 1. **Deploy Models**: Run deployment script
 2. **Validate Integration**: Execute test suite
 3. **Performance Tuning**: Optimize for your hardware
 4. **Team Training**: Onboard developers on reasoning API
 
 ### **Future Enhancements**
+
 1. **Model Fine-tuning**: Domain-specific constitutional training
 2. **Advanced Ensemble**: Weighted voting mechanisms
 3. **Caching Layer**: Redis-based response caching

@@ -9,24 +9,28 @@ This runbook defines change management procedures for the ACGS-1 Constitutional 
 ### Change Types
 
 #### Standard Changes (Pre-approved)
+
 - **Definition:** Low-risk, routine changes with established procedures
 - **Examples:** Security patches, configuration updates, routine maintenance
 - **Approval:** Pre-approved by Change Advisory Board (CAB)
 - **Lead Time:** 24 hours notice
 
 #### Normal Changes (CAB Approval Required)
+
 - **Definition:** Medium-risk changes requiring evaluation and approval
 - **Examples:** Feature deployments, service updates, infrastructure changes
 - **Approval:** Change Advisory Board review and approval
 - **Lead Time:** 5-7 business days
 
 #### Emergency Changes (Expedited Process)
+
 - **Definition:** High-risk changes required to resolve critical issues
 - **Examples:** Security hotfixes, critical bug fixes, incident resolution
 - **Approval:** Emergency Change Authority (ECA)
 - **Lead Time:** Immediate to 4 hours
 
 #### Constitutional Changes (Special Process)
+
 - **Definition:** Changes affecting constitutional governance framework
 - **Examples:** Constitutional amendments, governance policy changes
 - **Approval:** Constitutional Committee + Stakeholder approval
@@ -35,6 +39,7 @@ This runbook defines change management procedures for the ACGS-1 Constitutional 
 ## Change Advisory Board (CAB)
 
 ### CAB Members
+
 - **Chair:** Engineering Manager
 - **Technical Lead:** System Architect
 - **Operations Lead:** Operations Manager
@@ -43,6 +48,7 @@ This runbook defines change management procedures for the ACGS-1 Constitutional 
 - **Business Representative:** Product Manager
 
 ### CAB Meeting Schedule
+
 - **Regular Meetings:** Weekly (Tuesdays 2:00 PM)
 - **Emergency Meetings:** As needed (4-hour notice)
 - **Constitutional Reviews:** Monthly (First Friday)
@@ -52,6 +58,7 @@ This runbook defines change management procedures for the ACGS-1 Constitutional 
 ### 1. Change Request Submission
 
 #### Standard Change Request Form
+
 ```bash
 # Create change request
 ./scripts/create_change_request.py \
@@ -65,6 +72,7 @@ This runbook defines change management procedures for the ACGS-1 Constitutional 
 ```
 
 #### Required Information
+
 - **Change Title:** Brief, descriptive title
 - **Change Description:** Detailed technical description
 - **Business Justification:** Why the change is needed
@@ -77,12 +85,14 @@ This runbook defines change management procedures for the ACGS-1 Constitutional 
 ### 2. Risk Assessment
 
 #### Risk Categories
+
 - **Technical Risk:** System stability, performance impact
 - **Security Risk:** Security vulnerabilities, access changes
 - **Constitutional Risk:** Governance compliance impact
 - **Business Risk:** Service availability, user impact
 
 #### Risk Assessment Matrix
+
 ```bash
 # Generate risk assessment
 ./scripts/assess_change_risk.py \
@@ -96,12 +106,14 @@ This runbook defines change management procedures for the ACGS-1 Constitutional 
 ### 3. Change Approval Process
 
 #### Standard Changes
+
 ```bash
 # Auto-approve standard changes
 ./scripts/approve_standard_change.py --change-id {change_id}
 ```
 
 #### Normal Changes
+
 ```bash
 # Submit to CAB for review
 ./scripts/submit_to_cab.py --change-id {change_id} --meeting-date "YYYY-MM-DD"
@@ -111,6 +123,7 @@ This runbook defines change management procedures for the ACGS-1 Constitutional 
 ```
 
 #### Emergency Changes
+
 ```bash
 # Emergency approval process
 ./scripts/emergency_change_approval.py \
@@ -120,6 +133,7 @@ This runbook defines change management procedures for the ACGS-1 Constitutional 
 ```
 
 #### Constitutional Changes
+
 ```bash
 # Constitutional change process
 ./scripts/constitutional_change_process.py \
@@ -134,6 +148,7 @@ This runbook defines change management procedures for the ACGS-1 Constitutional 
 ### 4. Pre-Implementation Checklist
 
 #### Technical Preparation
+
 ```bash
 # Verify system health before change
 python3 /home/dislove/ACGS-1/scripts/comprehensive_health_check.py
@@ -149,6 +164,7 @@ python3 /home/dislove/ACGS-1/scripts/simple_backup_recovery.py backup
 ```
 
 #### Constitutional Compliance Check
+
 ```bash
 # Verify constitutional compliance
 curl -f http://localhost:8005/api/v1/governance/compliance/status
@@ -162,6 +178,7 @@ CURRENT_HASH=$(curl -s http://localhost:8005/api/v1/constitution/hash | jq -r '.
 ### 5. Implementation Execution
 
 #### Change Implementation
+
 ```bash
 # Start change implementation
 ./scripts/implement_change.py --change-id {change_id} --start
@@ -174,6 +191,7 @@ CURRENT_HASH=$(curl -s http://localhost:8005/api/v1/constitution/hash | jq -r '.
 ```
 
 #### Real-Time Monitoring
+
 ```bash
 # Monitor system health during change
 watch -n 30 'python3 /home/dislove/ACGS-1/scripts/emergency_rollback_procedures.py health'
@@ -188,6 +206,7 @@ watch -n 30 'for port in {8000..8006}; do echo -n "Port $port: "; time curl -s h
 ### 6. Post-Implementation Validation
 
 #### Technical Validation
+
 ```bash
 # Comprehensive system validation
 python3 /home/dislove/ACGS-1/scripts/comprehensive_health_check.py
@@ -200,6 +219,7 @@ python3 /home/dislove/ACGS-1/scripts/comprehensive_health_check.py
 ```
 
 #### Constitutional Validation
+
 ```bash
 # Validate constitutional compliance
 curl -X POST http://localhost:8005/api/v1/governance/compliance/validate-all
@@ -212,6 +232,7 @@ python3 /home/dislove/ACGS-1/scripts/test_governance_workflows.py
 ```
 
 #### Business Validation
+
 ```bash
 # User acceptance testing
 ./scripts/user_acceptance_test.py --change-id {change_id}
@@ -225,12 +246,14 @@ python3 /home/dislove/ACGS-1/scripts/test_governance_workflows.py
 ### 7. Rollback Decision Criteria
 
 #### Automatic Rollback Triggers
+
 - System health degradation >20%
 - Constitutional compliance <90%
 - Critical service failure
 - Security breach detection
 
 #### Manual Rollback Triggers
+
 - User acceptance test failure
 - Performance degradation >50%
 - Stakeholder escalation
@@ -239,6 +262,7 @@ python3 /home/dislove/ACGS-1/scripts/test_governance_workflows.py
 ### 8. Rollback Execution
 
 #### Emergency Rollback
+
 ```bash
 # Immediate rollback
 ./scripts/emergency_rollback.py --change-id {change_id} --reason "Critical issue detected"
@@ -251,6 +275,7 @@ python3 /home/dislove/ACGS-1/scripts/simple_backup_recovery.py restore --backup-
 ```
 
 #### Planned Rollback
+
 ```bash
 # Scheduled rollback
 ./scripts/planned_rollback.py --change-id {change_id} --schedule "YYYY-MM-DD HH:MM"
@@ -262,6 +287,7 @@ python3 /home/dislove/ACGS-1/scripts/simple_backup_recovery.py restore --backup-
 ## Service-Specific Change Procedures
 
 ### Auth Service Changes
+
 ```bash
 # Pre-change validation
 curl -f http://localhost:8000/api/v1/auth/health
@@ -274,6 +300,7 @@ curl -f http://localhost:8000/api/v1/auth/health
 ```
 
 ### Constitutional Amendment Service Changes
+
 ```bash
 # Stakeholder notification required
 ./scripts/notify_amendment_stakeholders.py --change-id {change_id}
@@ -286,6 +313,7 @@ curl -f http://localhost:8001/api/v1/amendments/compliance-check
 ```
 
 ### Policy Governance Compliance Service Changes
+
 ```bash
 # Critical constitutional compliance validation
 curl -f http://localhost:8005/api/v1/governance/compliance/pre-change-check
@@ -302,6 +330,7 @@ curl -f http://localhost:8005/api/v1/blockchain/health
 ### 9. Constitutional Amendment Process
 
 #### Amendment Proposal
+
 ```bash
 # Create constitutional amendment proposal
 ./scripts/create_constitutional_amendment.py \
@@ -312,6 +341,7 @@ curl -f http://localhost:8005/api/v1/blockchain/health
 ```
 
 #### Stakeholder Engagement
+
 ```bash
 # Notify all stakeholders
 ./scripts/notify_constitutional_stakeholders.py --amendment-id {amendment_id}
@@ -324,6 +354,7 @@ curl -f http://localhost:8005/api/v1/blockchain/health
 ```
 
 #### Constitutional Voting
+
 ```bash
 # Initiate constitutional vote
 ./scripts/initiate_constitutional_vote.py --amendment-id {amendment_id}
@@ -340,6 +371,7 @@ curl -f http://localhost:8005/api/v1/blockchain/health
 ### 10. Change Documentation
 
 #### Change Record Maintenance
+
 ```bash
 # Update change record
 ./scripts/update_change_record.py \
@@ -350,6 +382,7 @@ curl -f http://localhost:8005/api/v1/blockchain/health
 ```
 
 #### Audit Trail
+
 ```bash
 # Generate change audit trail
 ./scripts/generate_change_audit.py --change-id {change_id}
@@ -361,11 +394,13 @@ curl -f http://localhost:8005/api/v1/blockchain/health
 ### 11. Post-Change Review
 
 #### Change Review Meeting
+
 - **Participants:** Change implementer, CAB members, stakeholders
 - **Agenda:** Implementation review, lessons learned, process improvements
 - **Documentation:** Meeting minutes, action items, process updates
 
 #### Metrics and KPIs
+
 ```bash
 # Change success metrics
 ./scripts/calculate_change_metrics.py --period "last_month"
@@ -379,12 +414,14 @@ curl -f http://localhost:8005/api/v1/blockchain/health
 ### 12. Emergency Change Authority (ECA)
 
 #### ECA Members
+
 - **Primary:** Operations Manager
 - **Secondary:** Engineering Manager
 - **Tertiary:** System Architect
 - **Constitutional:** Governance Specialist
 
 #### Emergency Change Process
+
 ```bash
 # Initiate emergency change
 ./scripts/emergency_change.py \
@@ -403,17 +440,20 @@ curl -f http://localhost:8005/api/v1/blockchain/health
 ## Change Management Tools
 
 ### Automated Tools
+
 - **Change Request System:** `scripts/create_change_request.py`
 - **Risk Assessment:** `scripts/assess_change_risk.py`
 - **Implementation Automation:** `scripts/implement_change.py`
 - **Rollback Automation:** `scripts/emergency_rollback.py`
 
 ### Monitoring and Validation
+
 - **Health Monitoring:** `scripts/comprehensive_health_check.py`
 - **Performance Validation:** `scripts/performance_validation.py`
 - **Constitutional Compliance:** `scripts/verify_constitutional_principles.py`
 
 ### Communication Tools
+
 - **Stakeholder Notifications:** `scripts/notify_stakeholders.py`
 - **Status Updates:** Slack integration, email notifications
 - **Audit Reports:** `scripts/generate_change_audit.py`
@@ -423,21 +463,25 @@ curl -f http://localhost:8005/api/v1/blockchain/health
 ### 13. Change Windows
 
 #### Standard Change Windows
+
 - **Low-Risk Changes:** Any time with 24-hour notice
 - **Medium-Risk Changes:** Weekends, maintenance windows
 - **High-Risk Changes:** Scheduled maintenance windows only
 
 #### Maintenance Windows
+
 - **Weekly:** Sundays 2:00 AM - 6:00 AM
 - **Monthly:** First Saturday 10:00 PM - 6:00 AM
 - **Quarterly:** Scheduled 8-hour windows
 
 #### Change Freeze Periods
+
 - **Constitutional Voting Periods:** No changes affecting governance
 - **Major Releases:** 48-hour freeze before/after
 - **Holiday Periods:** Reduced change activity
 
 ---
+
 **Last Updated:** 2024-01-01  
 **Version:** 1.0  
 **Owner:** ACGS Change Advisory Board

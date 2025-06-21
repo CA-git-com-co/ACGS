@@ -28,6 +28,7 @@ Returns the current health status of the Governance Synthesis Service.
 **Authentication**: Not required
 
 **Response (200 OK)**:
+
 ```json
 {
   "status": "healthy",
@@ -50,18 +51,21 @@ Synthesize policy from multiple inputs and requirements.
 **Authentication**: Required
 
 **Request Body**:
+
 ```json
-{"inputs": ["req1", "req2"], "stakeholders": ["citizens"], "principles": ["fairness"]}
+{ "inputs": ["req1", "req2"], "stakeholders": ["citizens"], "principles": ["fairness"] }
 ```
 
 **Response (200 OK)**:
+
 ```json
-{"synthesized_policy": "policy_text", "confidence": 0.88, "alternatives": []}
+{ "synthesized_policy": "policy_text", "confidence": 0.88, "alternatives": [] }
 ```
 
 ## Error Responses
 
 ### 400 Bad Request
+
 ```json
 {
   "status": "error",
@@ -75,6 +79,7 @@ Synthesize policy from multiple inputs and requirements.
 ```
 
 ### 401 Unauthorized
+
 ```json
 {
   "status": "error",
@@ -95,6 +100,7 @@ Synthesize policy from multiple inputs and requirements.
 ## Examples
 
 ### cURL Examples
+
 ```bash
 # Health check
 curl http://localhost:8004/health
@@ -107,6 +113,7 @@ curl -X POST http://localhost:8004/api/v1/example \
 ```
 
 ### Python Client Example
+
 ```python
 import httpx
 import asyncio
@@ -115,7 +122,7 @@ class GovernanceSynthesisServiceClient:
     def __init__(self, base_url="http://localhost:8004", token=None):
         self.base_url = base_url
         self.headers = {"Authorization": f"Bearer {token}"} if token else {}
-    
+
     async def health_check(self):
         async with httpx.AsyncClient() as client:
             response = await client.get(f"{self.base_url}/health")

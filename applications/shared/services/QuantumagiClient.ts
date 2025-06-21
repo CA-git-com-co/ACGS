@@ -75,7 +75,7 @@ export class QuantumagiClient {
         this.wallet as any,
         AnchorProvider.defaultOptions()
       );
-      
+
       // Initialize programs when IDLs are available
       // For now, we'll use direct instruction building
     } catch (error) {
@@ -95,7 +95,7 @@ export class QuantumagiClient {
       );
 
       const accountInfo = await this.connection.getAccountInfo(constitutionPDA);
-      
+
       if (!accountInfo) {
         return null;
       }
@@ -117,7 +117,9 @@ export class QuantumagiClient {
   /**
    * Submit a new policy proposal
    */
-  async submitPolicyProposal(proposal: Omit<PolicyProposal, 'id' | 'proposer' | 'yesVotes' | 'noVotes' | 'status'>): Promise<string> {
+  async submitPolicyProposal(
+    proposal: Omit<PolicyProposal, 'id' | 'proposer' | 'yesVotes' | 'noVotes' | 'status'>
+  ): Promise<string> {
     if (!this.wallet.publicKey || !this.wallet.signTransaction) {
       throw new Error('Wallet not connected');
     }
@@ -125,7 +127,7 @@ export class QuantumagiClient {
     try {
       // Generate proposal ID
       const proposalId = `PROP-${Date.now()}`;
-      
+
       // Derive proposal PDA
       const [proposalPDA] = PublicKey.findProgramAddressSync(
         [Buffer.from('proposal'), Buffer.from(proposalId)],
@@ -136,7 +138,7 @@ export class QuantumagiClient {
       const instruction = new TransactionInstruction({
         keys: [
           { pubkey: this.wallet.publicKey, isSigner: true, isWritable: false },
-          { pubkey: proposalPDA, isSigner: false, isWritable: true },
+          { pubkey: proposalPDA, isSigner: false, isWritable: true }
         ],
         programId: new PublicKey(PROGRAM_IDS.QUANTUMAGI_CORE),
         data: Buffer.from([0]) // Simplified instruction data
@@ -144,9 +146,9 @@ export class QuantumagiClient {
 
       const transaction = new Transaction().add(instruction);
       const signature = await this.wallet.sendTransaction(transaction, this.connection);
-      
+
       await this.connection.confirmTransaction(signature);
-      
+
       return proposalId;
     } catch (error) {
       console.error('Failed to submit proposal:', error);
@@ -179,7 +181,7 @@ export class QuantumagiClient {
         keys: [
           { pubkey: this.wallet.publicKey, isSigner: true, isWritable: false },
           { pubkey: proposalPDA, isSigner: false, isWritable: true },
-          { pubkey: votePDA, isSigner: false, isWritable: true },
+          { pubkey: votePDA, isSigner: false, isWritable: true }
         ],
         programId: new PublicKey(PROGRAM_IDS.QUANTUMAGI_CORE),
         data: Buffer.from([1, vote === 'yes' ? 1 : 0]) // Simplified instruction data
@@ -187,9 +189,9 @@ export class QuantumagiClient {
 
       const transaction = new Transaction().add(instruction);
       const signature = await this.wallet.sendTransaction(transaction, this.connection);
-      
+
       await this.connection.confirmTransaction(signature);
-      
+
       return signature;
     } catch (error) {
       console.error('Failed to vote on proposal:', error);
@@ -204,7 +206,7 @@ export class QuantumagiClient {
     try {
       // This would typically call the PGC program for real-time compliance checking
       // For now, we'll simulate the check
-      
+
       const result: ComplianceCheck = {
         action,
         policyId: 'PC-001',
@@ -216,7 +218,7 @@ export class QuantumagiClient {
 
       // Log the compliance check
       await this.logEvent('compliance_check', result);
-      
+
       return result;
     } catch (error) {
       console.error('Failed to check compliance:', error);
@@ -234,7 +236,7 @@ export class QuantumagiClient {
 
     try {
       const appealId = `APPEAL-${Date.now()}`;
-      
+
       // Derive appeal PDA
       const [appealPDA] = PublicKey.findProgramAddressSync(
         [Buffer.from('appeal'), Buffer.from(appealId)],
@@ -245,7 +247,7 @@ export class QuantumagiClient {
       const instruction = new TransactionInstruction({
         keys: [
           { pubkey: this.wallet.publicKey, isSigner: true, isWritable: false },
-          { pubkey: appealPDA, isSigner: false, isWritable: true },
+          { pubkey: appealPDA, isSigner: false, isWritable: true }
         ],
         programId: new PublicKey(PROGRAM_IDS.APPEALS),
         data: Buffer.from([0]) // Simplified instruction data
@@ -253,9 +255,9 @@ export class QuantumagiClient {
 
       const transaction = new Transaction().add(instruction);
       const signature = await this.wallet.sendTransaction(transaction, this.connection);
-      
+
       await this.connection.confirmTransaction(signature);
-      
+
       return appealId;
     } catch (error) {
       console.error('Failed to submit appeal:', error);
@@ -281,9 +283,9 @@ export class QuantumagiClient {
   /**
    * Get program deployment status
    */
-  async getProgramStatuses(): Promise<Array<{name: string, programId: string, status: string}>> {
+  async getProgramStatuses(): Promise<Array<{ name: string; programId: string; status: string }>> {
     const statuses = [];
-    
+
     for (const [name, programId] of Object.entries(PROGRAM_IDS)) {
       try {
         const accountInfo = await this.connection.getAccountInfo(new PublicKey(programId));
@@ -300,7 +302,7 @@ export class QuantumagiClient {
         });
       }
     }
-    
+
     return statuses;
   }
 }

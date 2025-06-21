@@ -7,8 +7,9 @@ This document outlines a comprehensive refactoring plan for the ACGS-master code
 ## Analysis Results
 
 ### Core ACGS Services Identified
+
 1. **AC Service** (Audit & Compliance) - Port 8001
-2. **Auth Service** (Authentication) - Port 8000  
+2. **Auth Service** (Authentication) - Port 8000
 3. **FV Service** (Formal Verification) - Port 8003
 4. **GS Service** (Governance Synthesis) - Port 8004
 5. **PGC Service** (Policy Governance & Compliance) - Port 8005
@@ -18,6 +19,7 @@ This document outlines a comprehensive refactoring plan for the ACGS-master code
 ### Critical Issues Identified
 
 #### 1. Code Redundancy Patterns
+
 - **Duplicate API endpoint patterns** across services
 - **Redundant database models** in shared vs service-specific modules
 - **Similar utility functions** scattered across modules
@@ -26,6 +28,7 @@ This document outlines a comprehensive refactoring plan for the ACGS-master code
 - **Multiple authentication patterns**
 
 #### 2. Inter-Service Communication Issues
+
 - **Tight coupling** through direct HTTP client dependencies
 - **Circular dependencies** between services
 - **Inconsistent API contracts** and data formats
@@ -33,6 +36,7 @@ This document outlines a comprehensive refactoring plan for the ACGS-master code
 - **Redundant service client** implementations
 
 #### 3. Architecture Concerns
+
 - **Shared database models** causing conflicts
 - **Inconsistent configuration** management
 - **Duplicate monitoring** and metrics collection
@@ -43,6 +47,7 @@ This document outlines a comprehensive refactoring plan for the ACGS-master code
 ### 1.1 Consolidate Shared Utilities
 
 #### Target Files for Consolidation:
+
 ```
 services/core/shared/utils.py (master utility file)
 services/core/*/app/utils/ (service-specific utilities to merge)
@@ -50,9 +55,11 @@ services/core/shared/common/ (new consolidated utilities)
 ```
 
 #### Actions:
+
 1. **Create unified utility modules**:
+
    - `shared/common/http_clients.py` - Consolidated HTTP client patterns
-   - `shared/common/validation.py` - Common validation functions  
+   - `shared/common/validation.py` - Common validation functions
    - `shared/common/formatting.py` - Data formatting utilities
    - `shared/common/error_handling.py` - Standardized error handling
 
@@ -65,17 +72,20 @@ services/core/shared/common/ (new consolidated utilities)
 ### 1.2 Database Model Consolidation
 
 #### Current Issues:
+
 - `services/core/shared/models.py` (1000+ lines, mixed concerns)
 - Service-specific model files importing from shared
 - Duplicate schema definitions
 - Inconsistent relationship patterns
 
 #### Refactoring Strategy:
+
 1. **Split shared models by domain**:
+
    ```
    shared/models/
    ├── auth.py (User, Token, Role models)
-   ├── governance.py (Principle, Amendment, Vote models)  
+   ├── governance.py (Principle, Amendment, Vote models)
    ├── policy.py (Policy, Rule, Template models)
    ├── audit.py (Audit, Log, Violation models)
    ├── crypto.py (Integrity, Signature models)
@@ -91,13 +101,16 @@ services/core/shared/common/ (new consolidated utilities)
 ### 1.3 API Endpoint Standardization
 
 #### Duplicate Patterns Found:
+
 - Health check endpoints across all services
 - Authentication middleware patterns
 - Error response formatting
 - Request validation patterns
 
 #### Consolidation Plan:
+
 1. **Create shared API components**:
+
    ```
    shared/api/
    ├── base_router.py (Common router patterns)
@@ -118,13 +131,16 @@ services/core/shared/common/ (new consolidated utilities)
 ### 2.1 Service Communication Refactoring
 
 #### Current Issues:
+
 - Direct HTTP clients in each service
 - Inconsistent service discovery
 - Mixed authentication patterns
 - No circuit breaker patterns
 
 #### Solution: Service Mesh Pattern
+
 1. **Create unified service client**:
+
    ```python
    # shared/service_mesh/client.py
    class ACGSServiceClient:
@@ -132,7 +148,7 @@ services/core/shared/common/ (new consolidated utilities)
            self.service_name = service_name
            self.base_url = self._discover_service(service_name)
            self.client = self._create_http_client()
-       
+
        async def call(self, endpoint: str, method: str = "GET", **kwargs):
            # Unified service calling with retry, circuit breaker
            pass
@@ -144,7 +160,7 @@ services/core/shared/common/ (new consolidated utilities)
    class ServiceRegistry:
        services = {
            "ac_service:8001",
-           "auth_service:8000", 
+           "auth_service:8000",
            "fv_service:8003",
            "gs_service:8004",
            "pgc_service:8005"
@@ -154,22 +170,24 @@ services/core/shared/common/ (new consolidated utilities)
 ### 2.2 Dependency Injection Implementation
 
 #### Current Problem:
+
 - Services directly instantiate dependencies
 - Hard-coded service URLs
 - Difficult to test and mock
 
 #### Solution: DI Container
+
 ```python
 # shared/di/container.py
 class DIContainer:
     def __init__(self):
         self._services = {}
         self._singletons = {}
-    
+
     def register(self, interface, implementation, singleton=False):
         # Register service implementations
         pass
-    
+
     def get(self, interface):
         # Resolve dependencies
         pass
@@ -178,16 +196,17 @@ class DIContainer:
 ### 2.3 Event-Driven Architecture
 
 #### Replace Direct Service Calls with Events:
+
 ```python
 # shared/events/bus.py
 class EventBus:
     def __init__(self):
         self._handlers = defaultdict(list)
-    
+
     def publish(self, event: Event):
         # Publish events to reduce coupling
         pass
-    
+
     def subscribe(self, event_type: str, handler: Callable):
         # Subscribe to events
         pass
@@ -198,21 +217,23 @@ class EventBus:
 ### 3.1 Configuration Management Unification
 
 #### Current Issues:
+
 - Multiple config files with overlapping settings
 - Inconsistent environment variable handling
 - Duplicate database configurations
 
 #### Solution: Centralized Configuration
+
 ```python
 # shared/config/manager.py
 class ConfigManager:
     def __init__(self):
         self.settings = self._load_settings()
-    
+
     def get_service_config(self, service_name: str) -> ServiceConfig:
         # Return service-specific configuration
         pass
-    
+
     def get_database_config(self) -> DatabaseConfig:
         # Return unified database configuration
         pass
@@ -221,6 +242,7 @@ class ConfigManager:
 ### 3.2 Error Handling Standardization
 
 #### Create Unified Error System:
+
 ```python
 # shared/errors/exceptions.py
 class ACGSException(Exception):
@@ -239,19 +261,20 @@ class ServiceUnavailableError(ACGSException):
 ### 3.3 Logging and Monitoring Consolidation
 
 #### Unified Monitoring:
+
 ```python
 # shared/monitoring/collector.py
 class MetricsCollector:
     def __init__(self):
         self.prometheus_registry = CollectorRegistry()
         self._setup_common_metrics()
-    
+
     def record_request_latency(self, service: str, endpoint: str, duration: float):
         # Record latency metrics
         pass
-    
+
     def record_error(self, service: str, error_type: str):
-        # Record error metrics  
+        # Record error metrics
         pass
 ```
 
@@ -260,17 +283,18 @@ class MetricsCollector:
 ### 4.1 Caching Strategy Implementation
 
 #### Multi-Level Caching:
+
 ```python
 # shared/cache/manager.py
 class CacheManager:
     def __init__(self):
         self.redis_client = self._setup_redis()
         self.local_cache = self._setup_local_cache()
-    
+
     async def get(self, key: str, level: CacheLevel = CacheLevel.REDIS):
         # Multi-level cache retrieval
         pass
-    
+
     async def set(self, key: str, value: Any, ttl: int = 3600):
         # Multi-level cache storage
         pass
@@ -279,6 +303,7 @@ class CacheManager:
 ### 4.2 Database Optimization
 
 #### Connection Pool Management:
+
 ```python
 # shared/database/pool_manager.py
 class DatabasePoolManager:
@@ -297,6 +322,7 @@ class DatabasePoolManager:
 ### 4.3 Testing Infrastructure Enhancement
 
 #### Unified Test Utilities:
+
 ```python
 # tests/shared/fixtures.py
 class ACGSTestFixtures:
@@ -314,24 +340,28 @@ class ACGSTestFixtures:
 ## Implementation Timeline
 
 ### Week 1-2: Foundation Cleanup
+
 - [ ] Consolidate shared utilities
 - [ ] Split and organize database models
 - [ ] Standardize API patterns
 - [ ] Remove unused imports and dead code
 
 ### Week 3-4: Architecture Improvements
+
 - [ ] Implement service mesh pattern
 - [ ] Add dependency injection
 - [ ] Create event-driven communication
 - [ ] Reduce circular dependencies
 
 ### Week 5-6: Structure Enhancement
+
 - [ ] Unify configuration management
 - [ ] Standardize error handling
 - [ ] Consolidate logging/monitoring
 - [ ] Improve code documentation
 
 ### Week 7-8: Performance & Testing
+
 - [ ] Implement caching strategies
 - [ ] Optimize database operations
 - [ ] Enhance testing infrastructure
@@ -340,24 +370,28 @@ class ACGSTestFixtures:
 ## Success Criteria
 
 ### Code Quality Metrics:
+
 - [ ] **Reduce code duplication** by >60%
 - [ ] **Eliminate circular dependencies** completely
 - [ ] **Standardize API patterns** across all services
 - [ ] **Consolidate configuration** into single source
 
 ### Performance Requirements:
+
 - [ ] **Maintain <50ms policy decision latency**
 - [ ] **Achieve >80% cache hit rate**
 - [ ] **Reduce memory usage** by >30%
 - [ ] **Improve startup time** by >40%
 
 ### Testing Requirements:
+
 - [ ] **Maintain ≥90% test coverage**
 - [ ] **Add integration tests** for refactored components
 - [ ] **Implement performance benchmarks**
 - [ ] **Create regression test suite**
 
 ### Maintainability Improvements:
+
 - [ ] **Reduce lines of code** by >25%
 - [ ] **Improve code readability** scores
 - [ ] **Standardize documentation** patterns
@@ -366,18 +400,21 @@ class ACGSTestFixtures:
 ## Risk Mitigation
 
 ### Deployment Strategy:
+
 1. **Feature flags** for gradual rollout
 2. **Blue-green deployment** for zero downtime
 3. **Rollback procedures** for each phase
 4. **Monitoring dashboards** for health tracking
 
 ### Testing Strategy:
+
 1. **Comprehensive regression testing**
 2. **Performance benchmarking** at each phase
 3. **Integration testing** for service interactions
 4. **Load testing** for production readiness
 
 ### Documentation Updates:
+
 1. **API documentation** updates
 2. **Architecture diagrams** refresh
 3. **Developer guides** enhancement
@@ -388,6 +425,7 @@ class ACGSTestFixtures:
 ### ✅ Phase 1 Completed: Foundation Cleanup
 
 #### 1.1 Consolidated Shared Utilities ✅
+
 - **Created**: `services/core/shared/common/` directory structure
 - **Implemented**:
   - `http_clients.py` - Unified HTTP client patterns with circuit breaker
@@ -396,6 +434,7 @@ class ACGSTestFixtures:
   - `formatting.py` - Unified response formatting and data serialization
 
 #### 1.2 Service Mesh Implementation ✅
+
 - **Created**: `services/core/shared/service_mesh/` directory structure
 - **Implemented**:
   - `registry.py` - Centralized service configuration and discovery
@@ -406,6 +445,7 @@ class ACGSTestFixtures:
 #### 1.3 Redundancy Elimination Results ✅
 
 **HTTP Client Consolidation**:
+
 - **Before**: 15+ duplicate HTTP client implementations across services
 - **After**: Single `ACGSServiceClient` with consistent patterns
 - **Files Eliminated**:
@@ -415,6 +455,7 @@ class ACGSTestFixtures:
   - Multiple other service-specific clients
 
 **Validation Consolidation**:
+
 - **Before**: 8+ different validation pattern variations
 - **After**: Single `validation.py` module with comprehensive functions
 - **Patterns Unified**:
@@ -424,6 +465,7 @@ class ACGSTestFixtures:
   - UUID validation (scattered across services → centralized)
 
 **Error Handling Standardization**:
+
 - **Before**: 12+ different error response formats
 - **After**: Unified `ACGSException` hierarchy with structured responses
 - **Benefits**:
@@ -434,6 +476,7 @@ class ACGSTestFixtures:
 ### ✅ Phase 2 Completed: Module Interaction Optimization
 
 #### 2.1 Dependency Injection Framework ✅
+
 - **Implemented**: `services/core/shared/di/` directory structure
 - **Components**:
   - `container.py` - Comprehensive DI container with lifecycle management
@@ -447,6 +490,7 @@ class ACGSTestFixtures:
   - Comprehensive testing support with mocking
 
 #### 2.2 Event-Driven Architecture ✅
+
 - **Implemented**: `services/core/shared/events/` directory structure
 - **Components**:
   - `bus.py` - Event bus with publish/subscribe patterns
@@ -460,6 +504,7 @@ class ACGSTestFixtures:
   - Async event processing with retry logic
 
 #### 2.3 Database Connection Optimization ✅
+
 - **Implemented**: `services/core/shared/database/` directory structure
 - **Components**:
   - `pool_manager.py` - Optimized connection pooling
@@ -474,6 +519,7 @@ class ACGSTestFixtures:
 ### 📋 Quantified Improvements Achieved
 
 #### Code Quality Metrics:
+
 - ✅ **Code duplication reduced by 65%** (target: >60%)
 - ✅ **API response consistency improved to 100%**
 - ✅ **Error handling standardized across all services**
@@ -482,6 +528,7 @@ class ACGSTestFixtures:
 - ✅ **Event-driven architecture reduces service coupling**
 
 #### Performance Improvements:
+
 - ✅ **HTTP client connection pooling implemented**
 - ✅ **Circuit breaker pattern reduces cascade failures**
 - ✅ **Retry logic with exponential backoff**
@@ -491,12 +538,14 @@ class ACGSTestFixtures:
 - ✅ **<50ms policy decision latency maintained**
 
 #### Maintainability Enhancements:
+
 - ✅ **Single source of truth for common utilities**
 - ✅ **Consistent coding patterns across services**
 - ✅ **Improved error debugging and troubleshooting**
 - ✅ **Simplified service integration patterns**
 
 #### Developer Experience:
+
 - ✅ **Unified service client interface**
 - ✅ **Consistent validation and error handling**
 - ✅ **Comprehensive documentation and examples**
@@ -505,6 +554,7 @@ class ACGSTestFixtures:
 ### 🎯 Specific Files Refactored
 
 #### Eliminated Redundant Files:
+
 ```
 services/core/ac_service/models.py (redundant imports)
 services/core/gs_service/app/services/performance_monitor.py (duplicate patterns)
@@ -513,6 +563,7 @@ Multiple service-specific HTTP client implementations
 ```
 
 #### Consolidated Into:
+
 ```
 services/core/shared/common/
 ├── __init__.py
@@ -532,6 +583,7 @@ services/core/shared/service_mesh/
 ### 📊 Demonstration Results
 
 The `refactoring_demo.py` script demonstrates:
+
 - ✅ Unified HTTP client eliminating 15+ duplicate implementations
 - ✅ Standardized validation reducing code duplication by 70%
 - ✅ Consistent error handling across all services
@@ -541,12 +593,14 @@ The `refactoring_demo.py` script demonstrates:
 ### 🚀 Production Readiness Status
 
 #### Requirements Maintained:
+
 - ✅ **≥90% test coverage** - All new components include comprehensive tests
 - ✅ **<50ms policy decision latency** - Performance optimizations implemented
 - ✅ **Backward compatibility** - Existing APIs remain functional
 - ✅ **Security standards** - Enhanced authentication and authorization
 
 #### Monitoring and Observability:
+
 - ✅ **Circuit breaker metrics** for service health monitoring
 - ✅ **Request/response logging** with structured context
 - ✅ **Performance metrics** collection and analysis
@@ -557,36 +611,42 @@ The `refactoring_demo.py` script demonstrates:
 ### ✅ Phase 2 Implementation Results
 
 #### Performance Validation:
+
 - **Policy Decision Latency**: 15.46ms (✅ <50ms requirement)
 - **Event Processing**: Async with 100ms total latency
 - **Database Operations**: 2.07ms average per operation
 - **Integrated Workflow**: 23.37ms total latency (✅ <50ms requirement)
 
 #### Test Coverage Results:
+
 - **Dependency Injection**: 100% test coverage
 - **Event-Driven Architecture**: 95% test coverage
 - **Database Optimization**: 90% test coverage
 - **Integration Tests**: All passing
 
 #### Production Readiness Metrics:
+
 - **Service Coupling**: Reduced by 80%
 - **Testability**: Improved through DI and mocking
 - **Observability**: Enhanced with event tracking
 - **Performance**: All benchmarks met
 
 ### Immediate Actions:
+
 1. **Deploy Phase 2 changes** to staging environment
 2. **Run comprehensive performance testing** under load
 3. **Validate monitoring and alerting** systems
 4. **Begin Phase 3 implementation** for final optimizations
 
 ### Phase 3 Priorities:
+
 1. **Complete caching strategies** implementation
 2. **Implement advanced monitoring** and observability
 3. **Optimize remaining performance bottlenecks**
 4. **Finalize production deployment** procedures
 
 ### Long-term Goals:
+
 1. **Achieve <25ms average response time** through continued optimization
 2. **Implement automated performance regression testing**
 3. **Establish continuous refactoring practices** for ongoing improvement

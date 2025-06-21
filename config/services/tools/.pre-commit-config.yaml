@@ -38,7 +38,7 @@ repos:
       - id: isort
         name: Format imports
         exclude: docs/
-        args: ["--profile", "black"]
+        args: ['--profile', 'black']
 
   - repo: https://github.com/psf/black
     rev: 24.10.0

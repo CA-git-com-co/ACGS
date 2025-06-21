@@ -77,11 +77,12 @@ cat .taskmaster/tasks/tasks.json | jq '.tasks | group_by(.priority) | map({prior
 ## 📊 TaskMaster Configuration
 
 ### **Current Configuration**
+
 ```json
 {
   "models": {
     "main": "google/gemini-2.5-pro-preview-05-06",
-    "research": "google/gemini-2.5-pro-preview-05-06", 
+    "research": "google/gemini-2.5-pro-preview-05-06",
     "fallback": "google/gemini-2.5-flash-preview-05-20"
   },
   "global": {
@@ -93,6 +94,7 @@ cat .taskmaster/tasks/tasks.json | jq '.tasks | group_by(.priority) | map({prior
 ```
 
 ### **Modifying Configuration**
+
 ```bash
 # Backup current config
 cp .taskmaster/config.json .taskmaster/config.json.bak
@@ -191,14 +193,14 @@ EOF"
 ```bash
 # Find tasks with unmet dependencies
 cat .taskmaster/tasks/tasks.json | jq -r '
-.tasks[] | 
-select(.dependencies | length > 0) | 
+.tasks[] |
+select(.dependencies | length > 0) |
 select(.status != "done") |
 "Task \(.id): \(.title) - Depends on: \(.dependencies | join(", "))"'
 
 # Find circular dependencies (basic check)
 cat .taskmaster/tasks/tasks.json | jq -r '
-.tasks[] | 
+.tasks[] |
 select(.dependencies | length > 0) |
 select(.dependencies[] as $dep | .id == $dep) |
 "Circular dependency detected in Task \(.id)"'
@@ -292,18 +294,21 @@ EOF
 ## 📚 Best Practices
 
 ### **Task Management**
+
 1. **Regular Backups**: Backup TaskMaster data before major changes
 2. **Atomic Updates**: Make one change at a time to avoid corruption
 3. **Validation**: Always validate JSON after manual edits
 4. **Documentation**: Keep task descriptions detailed and current
 
 ### **Development Workflow**
+
 1. **Branch per Task**: Create git branches for major tasks
 2. **Status Updates**: Regularly update task status as work progresses
 3. **Dependency Tracking**: Ensure dependencies are accurate and up-to-date
 4. **Completion Criteria**: Define clear success criteria for each task
 
 ### **Monitoring**
+
 1. **Regular Reviews**: Weekly review of task progress
 2. **Metrics Tracking**: Monitor completion rates and bottlenecks
 3. **Dependency Analysis**: Check for blocking dependencies

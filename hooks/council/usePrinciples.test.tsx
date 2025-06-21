@@ -13,13 +13,8 @@ const mockPrinciples = [
 
 // Wrapper to provide SWRConfig cache to the hook. This helps reset cache between tests.
 const AllTheProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return (
-    <SWRConfig value={{ provider: () => new Map() }}>
-      {children}
-    </SWRConfig>
-  );
+  return <SWRConfig value={{ provider: () => new Map() }}>{children}</SWRConfig>;
 };
-
 
 describe('usePrinciples Hook', () => {
   beforeEach(() => {
@@ -51,7 +46,7 @@ describe('usePrinciples Hook', () => {
       ok: false,
       status: 500,
       json: async () => errorResponse, // Optional: if your fetcher tries to parse error.info
-      text: async () => 'Server Error' // Optional: if your fetcher tries to parse error.info as text
+      text: async () => 'Server Error', // Optional: if your fetcher tries to parse error.info as text
     });
 
     const { result } = renderHook(() => usePrinciples(), { wrapper: AllTheProviders });
@@ -70,7 +65,9 @@ describe('usePrinciples Hook', () => {
   it('should return an error if JSON parsing fails', async () => {
     (fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
-      json: async () => { throw new SyntaxError("Unexpected token < in JSON at position 0"); },
+      json: async () => {
+        throw new SyntaxError('Unexpected token < in JSON at position 0');
+      },
       // SWR fetcher might try to call .text() if .json() fails, or it might depend on the exact fetcher implementation.
       // For this test, we assume the error from .json() is what gets caught and propagated.
     });

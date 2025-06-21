@@ -1,9 +1,8 @@
+import { expect } from 'chai';
+import * as anchor from '@project-serum/anchor';
+import { Program } from '@project-serum/anchor';
 
-import { expect } from "chai";
-import * as anchor from "@project-serum/anchor";
-import { Program } from "@project-serum/anchor";
-
-describe("E2E: complete_governance_workflow", () => {
+describe('E2E: complete_governance_workflow', () => {
   let program: Program;
   let provider: anchor.AnchorProvider;
 
@@ -13,7 +12,7 @@ describe("E2E: complete_governance_workflow", () => {
     program = anchor.workspace.QuantumagiCore;
   });
 
-  it("should complete Constitution deployment → Policy creation → Voting → Enactment", async () => {
+  it('should complete Constitution deployment → Policy creation → Voting → Enactment', async () => {
     // Test implementation for complete_governance_workflow
     const startTime = Date.now();
 
@@ -22,7 +21,7 @@ describe("E2E: complete_governance_workflow", () => {
 
       // Deploy constitution
       const constitution = anchor.web3.Keypair.generate();
-      const constitutionHash = "e2e_test_constitution_hash";
+      const constitutionHash = 'e2e_test_constitution_hash';
 
       await program.methods
         .initialize(constitutionHash)
@@ -34,15 +33,14 @@ describe("E2E: complete_governance_workflow", () => {
         .signers([constitution])
         .rpc();
 
-      console.log("✅ Constitution deployed");
-
+      console.log('✅ Constitution deployed');
 
       // Propose policy
       const policy = anchor.web3.Keypair.generate();
-      const policyContent = "E2E test policy content";
+      const policyContent = 'E2E test policy content';
 
       await program.methods
-        .proposePolicy(policyContent, "Safety")
+        .proposePolicy(policyContent, 'Safety')
         .accounts({
           policy: policy.publicKey,
           proposer: provider.wallet.publicKey,
@@ -52,8 +50,7 @@ describe("E2E: complete_governance_workflow", () => {
         .signers([policy])
         .rpc();
 
-      console.log("✅ Policy proposed");
-
+      console.log('✅ Policy proposed');
 
       // Vote on policy
       await program.methods
@@ -64,8 +61,7 @@ describe("E2E: complete_governance_workflow", () => {
         })
         .rpc();
 
-      console.log("✅ Vote cast");
-
+      console.log('✅ Vote cast');
 
       // Enact policy
       await program.methods
@@ -76,12 +72,11 @@ describe("E2E: complete_governance_workflow", () => {
         })
         .rpc();
 
-      console.log("✅ Policy enacted");
-
+      console.log('✅ Policy enacted');
 
       // Validate compliance
       const result = await program.methods
-        .checkCompliance("test_action", "test_context")
+        .checkCompliance('test_action', 'test_context')
         .accounts({
           policy: policy.publicKey,
           constitution: constitution.publicKey,
@@ -89,14 +84,13 @@ describe("E2E: complete_governance_workflow", () => {
         .view();
 
       expect(result.isCompliant).to.be.true;
-      console.log("✅ Compliance validated");
+      console.log('✅ Compliance validated');
 
       const endTime = Date.now();
       const duration = endTime - startTime;
 
       console.log(`E2E test completed in ${duration}ms`);
       expect(duration).to.be.lessThan(30000); // 30 second timeout
-
     } catch (error) {
       console.error(`E2E test failed: ${error.message}`);
       throw error;

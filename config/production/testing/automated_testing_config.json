@@ -22,20 +22,12 @@
   },
   "alerting": {
     "performance_degradation_threshold": 20,
-    "immediate_alert_channels": [
-      "slack",
-      "email",
-      "pagerduty"
-    ],
+    "immediate_alert_channels": ["slack", "email", "pagerduty"],
     "escalation_timeout_minutes": 15
   },
   "automated_rollback": {
     "enabled": true,
-    "trigger_conditions": [
-      "response_time_increase > 50%",
-      "availability < 99%",
-      "error_rate > 5%"
-    ],
+    "trigger_conditions": ["response_time_increase > 50%", "availability < 99%", "error_rate > 5%"],
     "rollback_timeout_minutes": 5
   }
 }

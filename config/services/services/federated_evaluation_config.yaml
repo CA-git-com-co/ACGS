@@ -3,9 +3,9 @@
 
 # Core Framework Settings
 framework:
-  name: "ACGS-PGP Federated Evaluation Framework"
-  version: "2.0.0"
-  description: "Enhanced federated evaluation with multi-node support and Byzantine fault tolerance"
+  name: 'ACGS-PGP Federated Evaluation Framework'
+  version: '2.0.0'
+  description: 'Enhanced federated evaluation with multi-node support and Byzantine fault tolerance'
 
 # Multi-Node Configuration
 nodes:
@@ -13,15 +13,15 @@ nodes:
   min_nodes_per_evaluation: 2
   max_nodes_per_evaluation: 10
   max_concurrent_evaluations_per_node: 5
-  
+
   # Node health monitoring
   health_check_interval_seconds: 30
   node_timeout_threshold_seconds: 120
   heartbeat_required: true
-  
+
   # Load balancing strategy
   load_balancing:
-    strategy: "least_loaded"  # Options: "round_robin", "least_loaded", "performance_based"
+    strategy: 'least_loaded' # Options: "round_robin", "least_loaded", "performance_based"
     weight_update_frequency_seconds: 60
     performance_weight: 0.6
     availability_weight: 0.3
@@ -34,13 +34,13 @@ byzantine_fault_tolerance:
   consensus_threshold: 0.67
   max_byzantine_nodes: 3
   quarantine_duration_seconds: 300
-  
+
   # Detection methods
   detection_methods:
     statistical_outlier: true
     performance_anomaly: true
     consensus_validation: true
-    
+
   # Anomaly thresholds
   anomaly_thresholds:
     max_failure_rate: 0.5
@@ -56,7 +56,7 @@ platforms:
     - cloud_groq
     - local_ollama
     - acgs_internal
-  
+
   # Platform-specific configurations
   platform_configs:
     cloud_openai:
@@ -79,30 +79,30 @@ platforms:
 # Secure Aggregation
 secure_aggregation:
   enabled: true
-  default_method: "federated_averaging"
-  
+  default_method: 'federated_averaging'
+
   # Available aggregation methods
   methods:
     federated_averaging:
-      description: "Weighted average of node results"
-      privacy_level: "medium"
-      performance: "high"
+      description: 'Weighted average of node results'
+      privacy_level: 'medium'
+      performance: 'high'
     secure_sum:
-      description: "Cryptographically secure summation"
-      privacy_level: "high"
-      performance: "medium"
+      description: 'Cryptographically secure summation'
+      privacy_level: 'high'
+      performance: 'medium'
     differential_private:
-      description: "Differential privacy with noise addition"
-      privacy_level: "very_high"
-      performance: "medium"
+      description: 'Differential privacy with noise addition'
+      privacy_level: 'very_high'
+      performance: 'medium'
     byzantine_robust:
-      description: "Byzantine fault tolerant aggregation"
-      privacy_level: "medium"
-      performance: "low"
-  
+      description: 'Byzantine fault tolerant aggregation'
+      privacy_level: 'medium'
+      performance: 'low'
+
   # Cryptographic settings
   encryption:
-    scheme: "homomorphic"  # Options: "homomorphic", "secret_sharing"
+    scheme: 'homomorphic' # Options: "homomorphic", "secret_sharing"
     key_size: 2048
     key_rotation_hours: 24
 
@@ -111,15 +111,15 @@ privacy:
   differential_privacy:
     default_epsilon: 1.0
     default_delta: 1e-5
-    noise_mechanism: "laplace"  # Options: "laplace", "gaussian"
+    noise_mechanism: 'laplace' # Options: "laplace", "gaussian"
     privacy_budget_tracking: true
-  
+
   # Compliance frameworks
   compliance:
     gdpr_enabled: true
     ccpa_enabled: true
     hipaa_enabled: false
-  
+
   # Data minimization
   data_minimization:
     enabled: true
@@ -129,15 +129,15 @@ privacy:
 # MAB Integration (from Task 5)
 mab_integration:
   enabled: true
-  gs_service_url: "http://gs_service:8004/api/v1/mab"
-  
+  gs_service_url: 'http://gs_service:8004/api/v1/mab'
+
   # Template optimization
   template_optimization:
     enabled: true
     confidence_threshold: 0.8
     exploration_rate: 0.1
     update_frequency_evaluations: 10
-  
+
   # Performance tracking
   performance_tracking:
     track_template_performance: true
@@ -147,14 +147,14 @@ mab_integration:
 # Constitutional Integration
 constitutional_integration:
   enabled: true
-  ac_service_url: "http://ac_service:8001/api/v1"
-  
+  ac_service_url: 'http://ac_service:8001/api/v1'
+
   # Validation settings
   validation:
     require_constitutional_compliance: true
     compliance_threshold: 0.85
     auto_council_review_threshold: 0.7
-    
+
   # Principle validation
   principle_validation:
     validate_against_principles: true
@@ -167,7 +167,7 @@ performance_targets:
   evaluation_completion_time_minutes: 5
   concurrent_evaluations: 50
   uptime_percentage: 99.5
-  
+
   # Scaling targets
   scaling:
     min_nodes: 2
@@ -179,7 +179,7 @@ performance_targets:
 monitoring:
   enabled: true
   metrics_collection_interval_seconds: 30
-  
+
   # Metrics to track
   metrics:
     - node_health_scores
@@ -188,7 +188,7 @@ monitoring:
     - privacy_budget_consumption
     - byzantine_detections
     - constitutional_compliance_scores
-  
+
   # Alerting thresholds
   alerts:
     node_failure_threshold: 2
@@ -204,7 +204,7 @@ database:
     max_overflow: 30
     pool_timeout_seconds: 30
     pool_recycle_seconds: 3600
-  
+
   # Table settings
   tables:
     federated_evaluations:
@@ -222,7 +222,7 @@ error_handling:
   max_retry_attempts: 3
   retry_delay_seconds: 5
   exponential_backoff: true
-  
+
   # Error categories
   error_categories:
     network_errors:
@@ -241,9 +241,9 @@ error_handling:
 
 # Logging Configuration
 logging:
-  level: "INFO"
-  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-  
+  level: 'INFO'
+  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
   # Log categories
   categories:
     evaluation_logs: true
@@ -251,12 +251,12 @@ logging:
     byzantine_detection_logs: true
     privacy_logs: true
     performance_logs: true
-  
+
   # Log retention
   retention:
     days: 30
     max_size_mb: 100
-    rotation: "daily"
+    rotation: 'daily'
 
 # Development and Testing
 development:
@@ -264,7 +264,7 @@ development:
   test_mode: false
   debug_byzantine_detection: false
   simulate_node_failures: false
-  
+
   # Test configurations
   test_settings:
     mock_node_count: 5

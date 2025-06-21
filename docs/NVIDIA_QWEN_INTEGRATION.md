@@ -7,17 +7,20 @@ This document describes the integration of NVIDIA's API with Qwen 3 235B model f
 ## Features
 
 ### 🧠 **Advanced Reasoning Capabilities**
+
 - **Step-by-step reasoning**: The model provides detailed reasoning processes for complex constitutional analysis
 - **Multi-perspective analysis**: Considers multiple viewpoints and edge cases in governance decisions
 - **Constitutional interpretation**: Deep understanding of constitutional principles and their applications
 
 ### 🏛️ **Constitutional Governance Specialization**
+
 - **Policy synthesis**: Generate comprehensive policies aligned with constitutional principles
 - **Compliance analysis**: Evaluate existing policies against constitutional requirements
 - **Conflict resolution**: Resolve conflicts between competing constitutional principles
 - **Amendment analysis**: Analyze proposed constitutional amendments for consistency and implications
 
 ### ⚡ **Performance Characteristics**
+
 - **Model**: `qwen/qwen3-235b-a22b`
 - **Max tokens**: 8,192 tokens
 - **Response time**: ~20-50 seconds for complex reasoning tasks
@@ -170,6 +173,7 @@ Based on comprehensive testing:
 ### Token Usage
 
 Typical token usage patterns:
+
 - **Prompt tokens**: 50-200 tokens for constitutional queries
 - **Completion tokens**: 1,500-2,500 tokens for detailed analysis
 - **Total tokens**: 2,000-3,000 tokens per complex reasoning task
@@ -177,6 +181,7 @@ Typical token usage patterns:
 ### Response Quality
 
 The model demonstrates:
+
 - **High constitutional understanding**: Accurate interpretation of constitutional principles
 - **Comprehensive analysis**: Multi-faceted examination of governance issues
 - **Practical recommendations**: Actionable policy suggestions
@@ -243,12 +248,14 @@ except Exception as e:
 ### Common Issues
 
 1. **API Key Issues**
+
    ```bash
    Error: NVIDIA_API_KEY not found
    Solution: Set NVIDIA_API_KEY environment variable
    ```
 
 2. **Timeout Errors**
+
    ```python
    # Increase timeout for complex reasoning tasks
    config = QwenModelConfig(timeout_seconds=120)

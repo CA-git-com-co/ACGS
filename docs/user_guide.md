@@ -5,11 +5,12 @@ Welcome to the AI Compliance Governance System - Policy Generation Platform (ACG
 ## 1. Introduction
 
 ACGS-PGP is a web-based platform designed to help organizations:
--   Understand core AI governance principles and guidelines.
--   Generate AI policies tailored to their specific needs.
--   Customize and manage these policies.
--   (Future) Formally verify policies or system designs.
--   (Future) Track compliance and audit activities.
+
+- Understand core AI governance principles and guidelines.
+- Generate AI policies tailored to their specific needs.
+- Customize and manage these policies.
+- (Future) Formally verify policies or system designs.
+- (Future) Track compliance and audit activities.
 
 ## 2. Accessing the Platform
 
@@ -21,22 +22,23 @@ ACGS-PGP is a web-based platform designed to help organizations:
 1.  You will be greeted by the **Login Page**.
 2.  Enter your **username** and **password**.
 3.  Click the **"Login"** button.
-    *   If your credentials are correct, you will be redirected to the Dashboard.
-    *   If there's an error, a message will be displayed. Contact your administrator if you have trouble logging in.
+    - If your credentials are correct, you will be redirected to the Dashboard.
+    - If there's an error, a message will be displayed. Contact your administrator if you have trouble logging in.
 
 ## 4. Dashboard
 
 The Dashboard is your main landing page after logging in. It provides:
--   An overview of system activity and quick links to different sections of the platform. (Note: Specific widgets and detailed analytics on the dashboard are currently placeholders and will be populated in future development iterations.)
+
+- An overview of system activity and quick links to different sections of the platform. (Note: Specific widgets and detailed analytics on the dashboard are currently placeholders and will be populated in future development iterations.)
 
 ## 5. Navigating the Platform
 
 Use the navigation bar (usually at the top of the page) to access different sections:
 
-*   **Dashboard:** Returns you to the main dashboard view.
-*   **Principles:** Browse AI governance principles and their detailed guidelines.
-*   **Policy Management:** Generate new policies and manage existing ones.
-*   **Login/Logout:** Depending on your authentication status.
+- **Dashboard:** Returns you to the main dashboard view.
+- **Principles:** Browse AI governance principles and their detailed guidelines.
+- **Policy Management:** Generate new policies and manage existing ones.
+- **Login/Logout:** Depending on your authentication status.
 
 ## 6. Understanding AI Principles & Guidelines (Principles Page)
 
@@ -44,9 +46,9 @@ Use the navigation bar (usually at the top of the page) to access different sect
 2.  The page will display a list of core AI governance principles (e.g., Accountability, Fairness, Transparency).
 3.  **Click on a principle name** from the list on the left.
 4.  The right side of the page will display:
-    *   The name and detailed description of the selected principle.
-    *   A list of specific guidelines associated with that principle.
-    *   This section helps you understand the foundational elements of AI governance that can inform your policies.
+    - The name and detailed description of the selected principle.
+    - A list of specific guidelines associated with that principle.
+    - This section helps you understand the foundational elements of AI governance that can inform your policies.
 
 ## 7. Managing Policies (Policy Management Page)
 
@@ -57,18 +59,18 @@ This section allows you to generate new AI policies and customize them.
 1.  Click on **"Policy Management"** in the navigation bar.
 2.  Find the **"Generate New Policy"** section.
 3.  In the text area provided (e.g., "Enter policy requirements..."), type in details about the policy you need. This could include:
-    *   The domain or area the policy applies to (e.g., data privacy, model development, AI procurement).
-    *   Specific AI principles you want to emphasize.
-    *   Key objectives or risks the policy should address.
-    *   Any specific clauses or requirements you have in mind.
+    - The domain or area the policy applies to (e.g., data privacy, model development, AI procurement).
+    - Specific AI principles you want to emphasize.
+    - Key objectives or risks the policy should address.
+    - Any specific clauses or requirements you have in mind.
 4.  Click the **"Generate Policy"** button.
 5.  The system will process your requirements (this is a mock function for now) and a new draft policy will appear in the "Generated Policies" list.
 
 ### 7.2. Viewing and Selecting Policies
 
-*   The **"Generated Policies"** list displays policies that have been created.
-*   It may show the policy content (or a summary) and its current status (e.g., "draft", "active", "archived").
-*   Click on a policy in the list to select it for further actions (like customization).
+- The **"Generated Policies"** list displays policies that have been created.
+- It may show the policy content (or a summary) and its current status (e.g., "draft", "active", "archived").
+- Click on a policy in the list to select it for further actions (like customization).
 
 ### 7.3. Customizing a Policy
 
@@ -83,13 +85,13 @@ This section allows you to generate new AI policies and customize them.
 
 The following areas represent potential future directions or advanced capabilities that are not part of the current system's core scope but could be considered for future development cycles:
 
-*   **Advanced Formal Verification:** Capabilities to submit policies or system designs for formal verification against defined properties.
-*   **Detailed Governance Structure Mapping:** Tools to link policies to specific roles and responsibilities within an organization's governance structure.
-*   **Comprehensive Audit Trail Analysis:** Advanced interfaces for detailed views and analysis of audit logs related to policy changes, user actions, and system events.
-*   **Granular User Role Management:** Enhanced features for administrators to manage user accounts and roles with more specific permissions.
-*   **Sophisticated Policy Editing Tools:** A rich text editor or a more structured interface for advanced policy editing and lifecycle management.
-*   **Robust Policy Versioning and History:** Comprehensive tracking of changes to policies over time, including diffing and rollback capabilities.
-*   **Integrated Compliance Tracking:** Tools designed to help assess and track compliance with implemented policies against various regulatory frameworks.
+- **Advanced Formal Verification:** Capabilities to submit policies or system designs for formal verification against defined properties.
+- **Detailed Governance Structure Mapping:** Tools to link policies to specific roles and responsibilities within an organization's governance structure.
+- **Comprehensive Audit Trail Analysis:** Advanced interfaces for detailed views and analysis of audit logs related to policy changes, user actions, and system events.
+- **Granular User Role Management:** Enhanced features for administrators to manage user accounts and roles with more specific permissions.
+- **Sophisticated Policy Editing Tools:** A rich text editor or a more structured interface for advanced policy editing and lifecycle management.
+- **Robust Policy Versioning and History:** Comprehensive tracking of changes to policies over time, including diffing and rollback capabilities.
+- **Integrated Compliance Tracking:** Tools designed to help assess and track compliance with implemented policies against various regulatory frameworks.
 
 Further enhancements and features will be prioritized based on user feedback and evolving project goals.
 
@@ -100,7 +102,7 @@ Further enhancements and features will be prioritized based on user feedback and
 
 ## 10. Troubleshooting & Support
 
-*   If you encounter any issues or have questions, please refer to the `docs/deployment.md` for troubleshooting common setup issues (if applicable to your access method).
-*   For application-specific problems or errors, contact your system administrator or the support team designated for ACGS-PGP in your organization.
+- If you encounter any issues or have questions, please refer to the `docs/deployment.md` for troubleshooting common setup issues (if applicable to your access method).
+- For application-specific problems or errors, contact your system administrator or the support team designated for ACGS-PGP in your organization.
 
 Thank you for using ACGS-PGP!

@@ -7,7 +7,7 @@ global:
   smtp_from: 'alerts@acgs.ai'
   smtp_auth_username: 'alerts@acgs.ai'
   smtp_auth_password: '${SMTP_PASSWORD}'
-  
+
   # Slack webhook URL for general notifications
   slack_api_url: '${SLACK_WEBHOOK_URL}'
 
@@ -22,7 +22,7 @@ route:
   group_interval: 10s
   repeat_interval: 1h
   receiver: 'dgm-default'
-  
+
   routes:
     # Critical alerts - immediate notification
     - match:
@@ -31,7 +31,7 @@ route:
       group_wait: 0s
       repeat_interval: 5m
       continue: true
-    
+
     # Constitutional violations - special handling
     - match:
         component: constitutional
@@ -39,35 +39,35 @@ route:
       group_wait: 0s
       repeat_interval: 15m
       continue: true
-    
+
     # Performance alerts
     - match:
         component: performance
       receiver: 'dgm-performance'
       group_interval: 5m
       repeat_interval: 30m
-    
+
     # Security alerts
     - match:
         component: security
       receiver: 'dgm-security'
       group_wait: 5s
       repeat_interval: 15m
-    
+
     # Database alerts
     - match:
         component: database
       receiver: 'dgm-database'
       group_interval: 2m
       repeat_interval: 20m
-    
+
     # Model/AI alerts
     - match:
         component: models
       receiver: 'dgm-models'
       group_interval: 5m
       repeat_interval: 30m
-    
+
     # Info level alerts - less frequent notifications
     - match:
         severity: info
@@ -83,14 +83,14 @@ inhibit_rules:
     target_match:
       service: dgm-service
     equal: ['service']
-  
+
   # If there are constitutional violations, inhibit low compliance score alerts
   - source_match:
       alertname: DGMConstitutionalViolation
     target_match:
       alertname: DGMLowComplianceScore
     equal: ['service']
-  
+
   # If database is slow, inhibit high response time alerts
   - source_match:
       alertname: DGMDatabaseSlowQueries
@@ -116,7 +116,7 @@ receivers:
           {{ if .Annotations.runbook_url }}*Runbook:* {{ .Annotations.runbook_url }}{{ end }}
           {{ end }}
         send_resolved: true
-    
+
     email_configs:
       - to: 'dgm-team@acgs.ai'
         subject: 'DGM Service Alert: {{ .GroupLabels.alertname }}'
@@ -128,7 +128,7 @@ receivers:
           Service: {{ .Labels.service }}
           Component: {{ .Labels.component }}
           {{ if .Annotations.runbook_url }}Runbook: {{ .Annotations.runbook_url }}{{ end }}
-          
+
           {{ end }}
 
   # Critical alerts - immediate escalation
@@ -147,22 +147,22 @@ receivers:
           {{ if .Annotations.runbook_url }}*Runbook:* {{ .Annotations.runbook_url }}{{ end }}
           {{ end }}
         send_resolved: true
-    
+
     email_configs:
       - to: 'dgm-oncall@acgs.ai,sre-team@acgs.ai'
         subject: '🚨 CRITICAL: DGM Service Alert - {{ .GroupLabels.alertname }}'
         body: |
           CRITICAL ALERT DETECTED
-          
+
           {{ range .Alerts }}
           Alert: {{ .Annotations.summary }}
           Description: {{ .Annotations.description }}
           Service: {{ .Labels.service }}
           Component: {{ .Labels.component }}
           {{ if .Annotations.runbook_url }}Runbook: {{ .Annotations.runbook_url }}{{ end }}
-          
+
           {{ end }}
-    
+
     # PagerDuty integration for critical alerts
     pagerduty_configs:
       - routing_key: '${PAGERDUTY_ROUTING_KEY}'
@@ -187,19 +187,19 @@ receivers:
           {{ if .Annotations.runbook_url }}*Runbook:* {{ .Annotations.runbook_url }}{{ end }}
           {{ end }}
         send_resolved: true
-    
+
     email_configs:
       - to: 'constitutional-team@acgs.ai,compliance@acgs.ai'
         subject: '⚖️ Constitutional Compliance Alert - {{ .GroupLabels.alertname }}'
         body: |
           Constitutional compliance issue detected in DGM Service.
-          
+
           {{ range .Alerts }}
           Alert: {{ .Annotations.summary }}
           Description: {{ .Annotations.description }}
           Principle: {{ .Labels.principle }}
           {{ if .Annotations.runbook_url }}Runbook: {{ .Annotations.runbook_url }}{{ end }}
-          
+
           {{ end }}
 
   # Performance alerts
@@ -229,7 +229,7 @@ receivers:
           {{ if .Annotations.runbook_url }}*Runbook:* {{ .Annotations.runbook_url }}{{ end }}
           {{ end }}
         send_resolved: true
-    
+
     email_configs:
       - to: 'security-team@acgs.ai'
         subject: '🔒 DGM Security Alert - {{ .GroupLabels.alertname }}'

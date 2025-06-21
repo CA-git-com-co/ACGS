@@ -1,6 +1,6 @@
 /**
  * Feature Flag Configuration for Legacy Frontend Migration
- * 
+ *
  * This file configures feature flags specifically for the legacy-frontend
  * application during the migration to shared architecture.
  */
@@ -10,8 +10,8 @@ import { FeatureFlags } from '@acgs/shared/utils/featureFlags';
 // Migration phase configurations
 export const MIGRATION_PHASES = {
   PHASE_1: 'foundation', // Days 1-4: Infrastructure and low-risk components
-  PHASE_2: 'services',   // Days 5-8: Service and medium-risk components  
-  PHASE_3: 'critical',   // Days 9-12: Critical components and final migration
+  PHASE_2: 'services', // Days 5-8: Service and medium-risk components
+  PHASE_3: 'critical', // Days 9-12: Critical components and final migration
 } as const;
 
 // Current migration phase (update as migration progresses)
@@ -27,7 +27,7 @@ export const getPhaseFlags = (phase: string): Partial<FeatureFlags> => {
         useSharedAuth: true,
         useSharedLayout: false, // Start with legacy layout
         useSharedErrorHandling: false,
-        
+
         // Keep all other components legacy
         useSharedDashboard: false,
         useSharedQuantumagi: false,
@@ -36,7 +36,7 @@ export const getPhaseFlags = (phase: string): Partial<FeatureFlags> => {
         useSharedAmendment: false,
         useSharedPages: false,
         useSharedRouting: false,
-        
+
         // Emergency flags
         emergencyRollback: false,
         maintenanceMode: false,
@@ -49,18 +49,18 @@ export const getPhaseFlags = (phase: string): Partial<FeatureFlags> => {
         useSharedAuth: true,
         useSharedLayout: true,
         useSharedErrorHandling: true,
-        
+
         // Enable medium-risk components
         useSharedMonitoring: true,
         useSharedConsultation: true,
         useSharedAmendment: true,
-        
+
         // Keep critical components legacy for now
         useSharedDashboard: false,
         useSharedQuantumagi: false, // CRITICAL - keep legacy
         useSharedPages: false,
         useSharedRouting: false,
-        
+
         // Emergency flags
         emergencyRollback: false,
         maintenanceMode: false,
@@ -73,18 +73,18 @@ export const getPhaseFlags = (phase: string): Partial<FeatureFlags> => {
         useSharedAuth: true,
         useSharedLayout: true,
         useSharedErrorHandling: true,
-        
+
         // All services enabled
         useSharedMonitoring: true,
         useSharedConsultation: true,
         useSharedAmendment: true,
-        
+
         // Enable critical components (with caution)
         useSharedDashboard: true,
         useSharedQuantumagi: true, // CRITICAL - enable with extensive testing
         useSharedPages: true,
         useSharedRouting: true,
-        
+
         // Emergency flags
         emergencyRollback: false,
         maintenanceMode: false,
@@ -100,7 +100,7 @@ export const getPhaseFlags = (phase: string): Partial<FeatureFlags> => {
 export const LEGACY_OVERRIDES: Partial<FeatureFlags> = {
   // Override environment variables for legacy-specific behavior
   ...getPhaseFlags(CURRENT_PHASE),
-  
+
   // Legacy-specific overrides based on environment
   ...(process.env.REACT_APP_LEGACY_MODE === 'true' && {
     // Force all flags to false for pure legacy mode
@@ -126,7 +126,7 @@ export const COMPONENT_MIGRATION_CONFIG = {
     validationRequired: true,
     rollbackTime: '< 30 seconds',
   },
-  
+
   // Quantumagi Dashboard (CRITICAL)
   quantumagi: {
     flag: 'useSharedQuantumagi' as keyof FeatureFlags,
@@ -136,7 +136,7 @@ export const COMPONENT_MIGRATION_CONFIG = {
     rollbackTime: '< 10 seconds',
     specialValidation: 'Solana devnet connectivity required',
   },
-  
+
   // Constitutional Fidelity Monitor
   monitoring: {
     flag: 'useSharedMonitoring' as keyof FeatureFlags,
@@ -145,7 +145,7 @@ export const COMPONENT_MIGRATION_CONFIG = {
     validationRequired: true,
     rollbackTime: '< 60 seconds',
   },
-  
+
   // Public Consultation Service
   consultation: {
     flag: 'useSharedConsultation' as keyof FeatureFlags,
@@ -154,7 +154,7 @@ export const COMPONENT_MIGRATION_CONFIG = {
     validationRequired: true,
     rollbackTime: '< 60 seconds',
   },
-  
+
   // Amendment Service
   amendment: {
     flag: 'useSharedAmendment' as keyof FeatureFlags,
@@ -167,7 +167,8 @@ export const COMPONENT_MIGRATION_CONFIG = {
 
 // Validation functions for each component
 export const validateComponentMigration = async (componentKey: string): Promise<boolean> => {
-  const config = COMPONENT_MIGRATION_CONFIG[componentKey as keyof typeof COMPONENT_MIGRATION_CONFIG];
+  const config =
+    COMPONENT_MIGRATION_CONFIG[componentKey as keyof typeof COMPONENT_MIGRATION_CONFIG];
   if (!config) return false;
 
   try {
@@ -207,10 +208,10 @@ const validateQuantumagiIntegration = async (): Promise<boolean> => {
       body: JSON.stringify({
         jsonrpc: '2.0',
         id: 1,
-        method: 'getHealth'
-      })
+        method: 'getHealth',
+      }),
     });
-    
+
     return response.ok;
   } catch (error) {
     console.error('Quantumagi validation failed:', error);
@@ -222,11 +223,15 @@ const validateQuantumagiIntegration = async (): Promise<boolean> => {
 const validateDashboardIntegration = async (): Promise<boolean> => {
   try {
     // Check AC Service connectivity
-    const acResponse = await fetch(`${process.env.REACT_APP_AC_API_URL || 'http://localhost:8001'}/api/v1/health`);
-    
+    const acResponse = await fetch(
+      `${process.env.REACT_APP_AC_API_URL || 'http://localhost:8001'}/api/v1/health`
+    );
+
     // Check GS Service connectivity
-    const gsResponse = await fetch(`${process.env.REACT_APP_GS_API_URL || 'http://localhost:8003'}/api/v1/health`);
-    
+    const gsResponse = await fetch(
+      `${process.env.REACT_APP_GS_API_URL || 'http://localhost:8003'}/api/v1/health`
+    );
+
     return acResponse.ok && gsResponse.ok;
   } catch (error) {
     console.error('Dashboard validation failed:', error);
@@ -242,7 +247,7 @@ export const EMERGENCY_ROLLBACK_CONFIG = {
     responseTime: 5000, // 5 second response time
     failedHealthChecks: 3, // 3 consecutive failed health checks
   },
-  
+
   // Rollback actions
   actions: {
     disableAllSharedComponents: true,
@@ -250,7 +255,7 @@ export const EMERGENCY_ROLLBACK_CONFIG = {
     notifyAdministrators: true,
     logRollbackEvent: true,
   },
-  
+
   // Recovery configuration
   recovery: {
     autoRetryAfter: 300000, // 5 minutes
@@ -269,14 +274,14 @@ export const MONITORING_CONFIG = {
     'performance_impact',
     'rollback_frequency',
   ],
-  
+
   // Alerting thresholds
   alerts: {
     errorRateThreshold: 0.02, // 2%
     performanceDegradation: 0.2, // 20% slower
     rollbackFrequency: 3, // 3 rollbacks per hour
   },
-  
+
   // Reporting configuration
   reporting: {
     interval: 300000, // 5 minutes

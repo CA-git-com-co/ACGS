@@ -33,19 +33,19 @@ scrape_configs:
             user_id: user_id
             event_type: event_type
             component: component
-      
+
       # Extract timestamp
       - timestamp:
           source: timestamp
           format: RFC3339Nano
-      
+
       # Set log level
       - labels:
           level:
           service:
           event_type:
           component:
-      
+
       # Add additional labels for DGM-specific events
       - match:
           selector: '{event_type="dgm_improvement"}'
@@ -57,7 +57,7 @@ scrape_configs:
             - labels:
                 improvement_id:
                 improvement_event:
-      
+
       # Constitutional compliance events
       - match:
           selector: '{event_type="constitutional_compliance"}'
@@ -70,7 +70,7 @@ scrape_configs:
             - labels:
                 principle:
                 compliant:
-      
+
       # Performance events
       - match:
           selector: '{event_type="performance_metric"}'
@@ -90,10 +90,10 @@ scrape_configs:
         refresh_interval: 5s
         filters:
           - name: label
-            values: ["com.docker.compose.service=dgm-service"]
+            values: ['com.docker.compose.service=dgm-service']
     relabel_configs:
       - source_labels: ['__meta_docker_container_name']
-        regex: '/(.*)' 
+        regex: '/(.*)'
         target_label: 'container_name'
         replacement: '${1}'
       - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
@@ -111,8 +111,8 @@ scrape_configs:
           source: timestamp
           format: RFC3339Nano
           fallback_formats:
-            - "2006-01-02T15:04:05.000000000Z07:00"
-            - "2006-01-02T15:04:05Z07:00"
+            - '2006-01-02T15:04:05.000000000Z07:00'
+            - '2006-01-02T15:04:05Z07:00'
       - labels:
           level:
           service:
@@ -131,7 +131,7 @@ scrape_configs:
           expression: '^(?P<timestamp>\w+\s+\d+\s+\d+:\d+:\d+)\s+(?P<hostname>\S+)\s+(?P<process>\S+):\s+(?P<message>.*)$'
       - timestamp:
           source: timestamp
-          format: "Jan 02 15:04:05"
+          format: 'Jan 02 15:04:05'
       - labels:
           hostname:
           process:

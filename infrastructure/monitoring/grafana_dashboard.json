@@ -1,11 +1,7 @@
 {
   "dashboard": {
     "title": "ACGS-1 Constitutional Governance System",
-    "tags": [
-      "acgs",
-      "constitutional",
-      "governance"
-    ],
+    "tags": ["acgs", "constitutional", "governance"],
     "timezone": "browser",
     "panels": [
       {

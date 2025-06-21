@@ -21,18 +21,18 @@ handlers:
 loggers:
   acgs:
     handlers:
-    - console
-    - file
+      - console
+      - file
     level: INFO
     propagate: false
   uvicorn:
     handlers:
-    - console
-    - file
+      - console
+      - file
     level: INFO
     propagate: false
 root:
   handlers:
-  - console
+    - console
   level: WARNING
 version: 1

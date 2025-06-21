@@ -14,11 +14,7 @@
       {
         "title": "Improvement Pipeline Status",
         "type": "table",
-        "metrics": [
-          "pending_optimizations",
-          "implemented_optimizations",
-          "validation_status"
-        ]
+        "metrics": ["pending_optimizations", "implemented_optimizations", "validation_status"]
       }
     ]
   }

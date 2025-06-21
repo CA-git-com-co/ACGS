@@ -129,7 +129,6 @@ model:
   masked_softmax_fusion: True # Use a kernel that fuses the attention softmax with it's mask.
   get_attention_mask_from_fusion: True # When using fused softmax it will create the attention mask so we won't copy it to the pipeline stages.
 
-
   # Miscellaneous
   seed: 1234
   resume_from_checkpoint: null # manually set the checkpoint file to load from
@@ -185,7 +184,7 @@ model:
   use_emha: False # Use fused multi-head attention for large sequence-length. Note this is not yet supported. Please set to False.
 
   data:
-   # Path to data must be specified by the user.
+    # Path to data must be specified by the user.
     # Supports List, String and Dictionary
     # List : can override from the CLI: "model.data.data_prefix=[.5,/raid/data/pile/my-gpt3_00_text_document,.5,/raid/data/pile/my-gpt3_01_text_document]",
     # Or see example below:
@@ -216,7 +215,7 @@ model:
   # Nsys profiling options
   nsys_profile:
     enabled: False
-    start_step: 10  # Global batch to start profiling
+    start_step: 10 # Global batch to start profiling
     end_step: 10 # Global batch to end profiling
     ranks: [0] # Global rank IDs to profile
     gen_shape: False # Generate model and kernel details including input shapes
@@ -226,8 +225,8 @@ model:
     lr: 2e-4
     weight_decay: 0.01
     betas:
-    - 0.9
-    - 0.98
+      - 0.9
+      - 0.98
     sched:
       name: CosineAnnealing
       warmup_steps: 500

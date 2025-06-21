@@ -58,7 +58,11 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({
       <div className="flex items-start">
         <div className="flex-shrink-0">
           <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clipRule="evenodd"
+            />
           </svg>
         </div>
         <div className="ml-3 flex-1">
@@ -67,11 +71,11 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({
           </h3>
           <div className="mt-2 text-sm text-red-700">
             <p>
-              We're sorry, but something unexpected happened. 
+              We're sorry, but something unexpected happened.
               {isDevelopment && error ? ` Error: ${error.message}` : ''}
             </p>
           </div>
-          
+
           {/* Development mode details */}
           {isDevelopment && showDetails && error && (
             <div className="mt-4 p-3 bg-red-100 rounded border">
@@ -110,7 +114,7 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({
               </details>
             </div>
           )}
-          
+
           {/* Action buttons */}
           <div className="mt-4 flex space-x-3">
             <button
@@ -118,7 +122,12 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({
               className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
             >
               <svg className="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
               </svg>
               Try Again
             </button>
@@ -127,7 +136,12 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({
               className="inline-flex items-center px-3 py-2 border border-red-300 text-sm leading-4 font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
             >
               <svg className="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
               </svg>
               Refresh Page
             </button>
@@ -140,7 +154,7 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({
 
 /**
  * Enhanced Error Boundary component with comprehensive error handling
- * 
+ *
  * Features:
  * - Graceful error fallbacks with user-friendly messages
  * - Development mode error details with stack traces
@@ -160,7 +174,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     // Generate unique error ID for tracking
     const errorId = `err_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     return {
       hasError: true,
       error,
@@ -170,10 +184,10 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     const { onError, componentName } = this.props;
-    
+
     // Update state with error info
     this.setState({ errorInfo });
-    
+
     // Log error with structured context
     const errorContext = {
       errorId: this.state.errorId,
@@ -192,7 +206,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     };
 
     console.error('ErrorBoundary caught an error:', errorContext);
-    
+
     // Call custom error handler if provided
     if (onError) {
       onError(error, errorInfo);

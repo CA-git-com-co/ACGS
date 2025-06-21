@@ -17,7 +17,7 @@ inhibit_rules:
     target_match:
       severity: 'warning'
     equal: ['service', 'instance']
-  
+
   # Inhibit service alerts if entire system is down
   - source_match:
       alertname: 'SystemDown'
@@ -32,7 +32,7 @@ route:
   group_interval: 5m
   repeat_interval: 12h
   receiver: 'intelligent-alerting-webhook'
-  
+
   routes:
     # Critical alerts - immediate response with intelligent alerting
     - match:
@@ -42,7 +42,7 @@ route:
       group_interval: 2m
       repeat_interval: 5m
       continue: true
-    
+
     # High severity alerts
     - match:
         severity: high
@@ -51,7 +51,7 @@ route:
       group_interval: 5m
       repeat_interval: 30m
       continue: true
-    
+
     # Constitutional governance specific alerts
     - match:
         component: constitutional_governance
@@ -60,7 +60,7 @@ route:
       group_interval: 2m
       repeat_interval: 10m
       continue: true
-    
+
     # Security alerts
     - match:
         category: security
@@ -69,7 +69,7 @@ route:
       group_interval: 1m
       repeat_interval: 5m
       continue: true
-    
+
     # Performance alerts
     - match:
         category: performance
@@ -77,7 +77,7 @@ route:
       group_wait: 30s
       group_interval: 10m
       repeat_interval: 1h
-    
+
     # Default for all other alerts
     - receiver: 'default-alerts'
 
@@ -119,12 +119,12 @@ receivers:
         text: |
           {{ range .Alerts }}
           CRITICAL ALERT: {{ .Annotations.summary }}
-          
+
           Description: {{ .Annotations.description }}
           Service: {{ .Labels.service }}
           Instance: {{ .Labels.instance }}
           Severity: {{ .Labels.severity }}
-          
+
           Automated remediation will be attempted.
           {{ end }}
 

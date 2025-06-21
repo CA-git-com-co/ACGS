@@ -35,7 +35,7 @@
               },
               {
                 "color": "yellow",
-                "value": 0.70
+                "value": 0.7
               },
               {
                 "color": "green",
@@ -60,9 +60,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "values": false,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": ""
         },
         "showThresholdLabels": false,
@@ -126,7 +124,7 @@
               },
               {
                 "color": "red",
-                "value": 0.70
+                "value": 0.7
               }
             ]
           },
@@ -197,9 +195,7 @@
         "pieType": "pie",
         "reduceOptions": {
           "values": false,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": ""
         },
         "tooltip": {
@@ -256,9 +252,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "values": false,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": ""
         },
         "text": {},
@@ -380,11 +374,11 @@
               },
               {
                 "color": "yellow",
-                "value": 0.70
+                "value": 0.7
               },
               {
                 "color": "green",
-                "value": 0.80
+                "value": 0.8
               }
             ]
           },
@@ -405,9 +399,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "values": false,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": ""
         },
         "showThresholdLabels": false,

@@ -10,7 +10,7 @@ services:
       - '--storage.tsdb.path=/prometheus'
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=720h'  # 30 days retention for AI governance
+      - '--storage.tsdb.retention.time=720h' # 30 days retention for AI governance
       - '--web.enable-lifecycle'
       - '--web.enable-admin-api'
       - '--storage.tsdb.max-block-duration=2h'
@@ -20,7 +20,7 @@ services:
       - ./config/constitutional-ai-rules.yml:/etc/prometheus/constitutional-ai-rules.yml:ro
       - prometheus_ai_governance_data:/prometheus
     ports:
-      - "9091:9090"  # Different port to avoid conflicts
+      - '9091:9090' # Different port to avoid conflicts
     networks:
       - ai_governance_monitoring
     restart: unless-stopped
@@ -51,7 +51,7 @@ services:
       - ./dashboards/constitutional-ai:/var/lib/grafana/dashboards/constitutional-ai
       - ./dashboards/bandit-algorithms:/var/lib/grafana/dashboards/bandit-algorithms
     ports:
-      - "3001:3000"
+      - '3001:3000'
     networks:
       - ai_governance_monitoring
     depends_on:
@@ -76,7 +76,7 @@ services:
       - evidently_data:/workspace/data
       - ./evidently-projects:/workspace/projects
     ports:
-      - "8080:8080"
+      - '8080:8080'
     networks:
       - ai_governance_monitoring
     restart: unless-stopped
@@ -99,7 +99,7 @@ services:
       - ./config/alertmanager-ai-governance.yml:/etc/alertmanager/alertmanager.yml:ro
       - alertmanager_ai_governance_data:/alertmanager
     ports:
-      - "9094:9093"
+      - '9094:9093'
     networks:
       - ai_governance_monitoring
     restart: unless-stopped
@@ -109,19 +109,19 @@ services:
     image: openpolicyagent/opa:0.58.0-envoy
     container_name: acgs_opa_policy_engine
     command:
-      - "run"
-      - "--server"
-      - "--config-file=/config/opa-config.yaml"
-      - "--addr=0.0.0.0:8181"
-      - "--diagnostic-addr=0.0.0.0:8282"
-      - "/policies"
+      - 'run'
+      - '--server'
+      - '--config-file=/config/opa-config.yaml'
+      - '--addr=0.0.0.0:8181'
+      - '--diagnostic-addr=0.0.0.0:8282'
+      - '/policies'
     volumes:
       - ./config/opa-ai-governance-config.yaml:/config/opa-config.yaml:ro
       - ./policies:/policies:ro
       - opa_data:/data
     ports:
-      - "8181:8181"  # OPA API
-      - "8282:8282"  # OPA Diagnostics
+      - '8181:8181' # OPA API
+      - '8282:8282' # OPA Diagnostics
     networks:
       - ai_governance_monitoring
     restart: unless-stopped
@@ -141,7 +141,7 @@ services:
     volumes:
       - /:/host:ro,rslave
     ports:
-      - "9101:9100"
+      - '9101:9100'
     networks:
       - ai_governance_monitoring
     restart: unless-stopped
@@ -165,7 +165,7 @@ services:
       - /var/lib/docker:/var/lib/docker:ro
       - /cgroup:/cgroup:ro
     ports:
-      - "8081:8080"
+      - '8081:8080'
     networks:
       - ai_governance_monitoring
     restart: unless-stopped
@@ -183,10 +183,10 @@ services:
       - COLLECTOR_OTLP_ENABLED=true
       - COLLECTOR_ZIPKIN_HOST_PORT=:9411
     ports:
-      - "16686:16686"  # Jaeger UI
-      - "14268:14268"  # Jaeger collector HTTP
-      - "14250:14250"  # Jaeger collector gRPC
-      - "9411:9411"    # Zipkin collector
+      - '16686:16686' # Jaeger UI
+      - '14268:14268' # Jaeger collector HTTP
+      - '14250:14250' # Jaeger collector gRPC
+      - '9411:9411' # Zipkin collector
     networks:
       - ai_governance_monitoring
     restart: unless-stopped
@@ -204,7 +204,7 @@ services:
     volumes:
       - redis_ai_governance_data:/data
     ports:
-      - "6380:6379"  # Different port to avoid conflicts
+      - '6380:6379' # Different port to avoid conflicts
     networks:
       - ai_governance_monitoring
     restart: unless-stopped

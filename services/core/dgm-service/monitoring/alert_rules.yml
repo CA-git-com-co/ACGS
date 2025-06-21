@@ -12,9 +12,9 @@ groups:
           service: dgm-service
           component: health
         annotations:
-          summary: "DGM Service is down"
-          description: "DGM Service has been down for more than 1 minute. This affects all improvement operations."
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-service-down"
+          summary: 'DGM Service is down'
+          description: 'DGM Service has been down for more than 1 minute. This affects all improvement operations.'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-service-down'
 
       - alert: DGMHighErrorRate
         expr: rate(dgm_http_requests_total{status_code=~"5.."}[5m]) > 0.05
@@ -24,9 +24,9 @@ groups:
           service: dgm-service
           component: api
         annotations:
-          summary: "High error rate in DGM Service"
-          description: "DGM Service error rate is {{ $value | humanizePercentage }} over the last 5 minutes"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-high-error-rate"
+          summary: 'High error rate in DGM Service'
+          description: 'DGM Service error rate is {{ $value | humanizePercentage }} over the last 5 minutes'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-high-error-rate'
 
       - alert: DGMHighResponseTime
         expr: histogram_quantile(0.95, rate(dgm_http_request_duration_seconds_bucket[5m])) > 2.0
@@ -36,9 +36,9 @@ groups:
           service: dgm-service
           component: api
         annotations:
-          summary: "High response time in DGM Service"
-          description: "95th percentile response time is {{ $value }}s, exceeding 2s SLA target"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-high-response-time"
+          summary: 'High response time in DGM Service'
+          description: '95th percentile response time is {{ $value }}s, exceeding 2s SLA target'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-high-response-time'
 
   - name: dgm_improvements
     rules:
@@ -50,9 +50,9 @@ groups:
           service: dgm-service
           component: improvements
         annotations:
-          summary: "High improvement failure rate"
-          description: "DGM improvement failure rate is {{ $value | humanizePercentage }} over the last 10 minutes"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-improvement-failures"
+          summary: 'High improvement failure rate'
+          description: 'DGM improvement failure rate is {{ $value | humanizePercentage }} over the last 10 minutes'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-improvement-failures'
 
       - alert: DGMNoImprovements
         expr: increase(dgm_improvements_total[1h]) == 0
@@ -62,9 +62,9 @@ groups:
           service: dgm-service
           component: improvements
         annotations:
-          summary: "No improvements generated"
-          description: "DGM Service has not generated any improvements in the last hour"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-no-improvements"
+          summary: 'No improvements generated'
+          description: 'DGM Service has not generated any improvements in the last hour'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-no-improvements'
 
       - alert: DGMTooManyActiveImprovements
         expr: dgm_active_improvements > 50
@@ -74,9 +74,9 @@ groups:
           service: dgm-service
           component: improvements
         annotations:
-          summary: "Too many active improvements"
-          description: "DGM Service has {{ $value }} active improvements, which may indicate resource constraints"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-too-many-improvements"
+          summary: 'Too many active improvements'
+          description: 'DGM Service has {{ $value }} active improvements, which may indicate resource constraints'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-too-many-improvements'
 
       - alert: DGMLowImprovementSuccessRate
         expr: dgm_improvement_success_rate < 0.7
@@ -86,9 +86,9 @@ groups:
           service: dgm-service
           component: improvements
         annotations:
-          summary: "Low improvement success rate"
-          description: "DGM improvement success rate is {{ $value | humanizePercentage }}, below 70% threshold"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-low-success-rate"
+          summary: 'Low improvement success rate'
+          description: 'DGM improvement success rate is {{ $value | humanizePercentage }}, below 70% threshold'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-low-success-rate'
 
   - name: dgm_constitutional_compliance
     rules:
@@ -100,9 +100,9 @@ groups:
           service: dgm-service
           component: constitutional
         annotations:
-          summary: "Constitutional violation detected"
-          description: "DGM Service has detected {{ $value }} constitutional violations in the last 5 minutes"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-constitutional-violation"
+          summary: 'Constitutional violation detected'
+          description: 'DGM Service has detected {{ $value }} constitutional violations in the last 5 minutes'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-constitutional-violation'
 
       - alert: DGMLowComplianceScore
         expr: dgm_average_compliance_score < 0.95
@@ -112,9 +112,9 @@ groups:
           service: dgm-service
           component: constitutional
         annotations:
-          summary: "Low constitutional compliance score"
-          description: "Average constitutional compliance score is {{ $value | humanizePercentage }}, below 95% threshold"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-low-compliance"
+          summary: 'Low constitutional compliance score'
+          description: 'Average constitutional compliance score is {{ $value | humanizePercentage }}, below 95% threshold'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-low-compliance'
 
       - alert: DGMConstitutionalValidationFailure
         expr: rate(dgm_constitutional_validations_total{result="failed"}[10m]) > 0.1
@@ -124,9 +124,9 @@ groups:
           service: dgm-service
           component: constitutional
         annotations:
-          summary: "High constitutional validation failure rate"
-          description: "Constitutional validation failure rate is {{ $value | humanizePercentage }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-validation-failures"
+          summary: 'High constitutional validation failure rate'
+          description: 'Constitutional validation failure rate is {{ $value | humanizePercentage }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-validation-failures'
 
   - name: dgm_performance
     rules:
@@ -138,9 +138,9 @@ groups:
           service: dgm-service
           component: performance
         annotations:
-          summary: "Performance degradation detected"
-          description: "Performance score for {{ $labels.service }} is {{ $value }}, below 0.8 threshold"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-performance-degradation"
+          summary: 'Performance degradation detected'
+          description: 'Performance score for {{ $labels.service }} is {{ $value }}, below 0.8 threshold'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-performance-degradation'
 
       - alert: DGMNegativePerformanceImprovement
         expr: histogram_quantile(0.5, rate(dgm_performance_improvement_percent_bucket[15m])) < -10
@@ -150,9 +150,9 @@ groups:
           service: dgm-service
           component: performance
         annotations:
-          summary: "Negative performance improvements"
-          description: "Median performance improvement is {{ $value }}%, indicating degradation"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-negative-improvements"
+          summary: 'Negative performance improvements'
+          description: 'Median performance improvement is {{ $value }}%, indicating degradation'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-negative-improvements'
 
   - name: dgm_bandit_algorithms
     rules:
@@ -164,9 +164,9 @@ groups:
           service: dgm-service
           component: bandit
         annotations:
-          summary: "Low bandit algorithm rewards"
-          description: "95th percentile bandit rewards are {{ $value }}, indicating poor exploration"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-low-bandit-rewards"
+          summary: 'Low bandit algorithm rewards'
+          description: '95th percentile bandit rewards are {{ $value }}, indicating poor exploration'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-low-bandit-rewards'
 
       - alert: DGMBanditHighExploration
         expr: dgm_bandit_exploration_rate > 0.8
@@ -176,9 +176,9 @@ groups:
           service: dgm-service
           component: bandit
         annotations:
-          summary: "High exploration rate"
-          description: "Bandit exploration rate is {{ $value | humanizePercentage }}, may indicate uncertainty"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-high-exploration"
+          summary: 'High exploration rate'
+          description: 'Bandit exploration rate is {{ $value | humanizePercentage }}, may indicate uncertainty'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-high-exploration'
 
   - name: dgm_database
     rules:
@@ -190,9 +190,9 @@ groups:
           service: dgm-service
           component: database
         annotations:
-          summary: "Slow database queries"
-          description: "95th percentile database query time is {{ $value }}s, exceeding 1s threshold"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-slow-queries"
+          summary: 'Slow database queries'
+          description: '95th percentile database query time is {{ $value }}s, exceeding 1s threshold'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-slow-queries'
 
       - alert: DGMDatabaseConnectionsHigh
         expr: dgm_database_connections{state="active"} > 80
@@ -202,9 +202,9 @@ groups:
           service: dgm-service
           component: database
         annotations:
-          summary: "High database connections"
-          description: "Active database connections: {{ $value }}, approaching connection limit"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-high-db-connections"
+          summary: 'High database connections'
+          description: 'Active database connections: {{ $value }}, approaching connection limit'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-high-db-connections'
 
   - name: dgm_cache
     rules:
@@ -216,9 +216,9 @@ groups:
           service: dgm-service
           component: cache
         annotations:
-          summary: "Low cache hit rate"
-          description: "Cache hit rate is {{ $value | humanizePercentage }}, below 70% threshold"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-low-cache-hit-rate"
+          summary: 'Low cache hit rate'
+          description: 'Cache hit rate is {{ $value | humanizePercentage }}, below 70% threshold'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-low-cache-hit-rate'
 
   - name: dgm_foundation_models
     rules:
@@ -230,9 +230,9 @@ groups:
           service: dgm-service
           component: models
         annotations:
-          summary: "High model request failure rate"
-          description: "Model request failure rate is {{ $value | humanizePercentage }} for {{ $labels.provider }}/{{ $labels.model }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-model-failures"
+          summary: 'High model request failure rate'
+          description: 'Model request failure rate is {{ $value | humanizePercentage }} for {{ $labels.provider }}/{{ $labels.model }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-model-failures'
 
       - alert: DGMModelHighLatency
         expr: histogram_quantile(0.95, rate(dgm_model_request_duration_seconds_bucket[10m])) > 60
@@ -242,9 +242,9 @@ groups:
           service: dgm-service
           component: models
         annotations:
-          summary: "High model request latency"
-          description: "95th percentile model request latency is {{ $value }}s for {{ $labels.provider }}/{{ $labels.model }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-model-latency"
+          summary: 'High model request latency'
+          description: '95th percentile model request latency is {{ $value }}s for {{ $labels.provider }}/{{ $labels.model }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-model-latency'
 
       - alert: DGMModelHighCost
         expr: increase(dgm_model_cost_total[1h]) > 100
@@ -254,9 +254,9 @@ groups:
           service: dgm-service
           component: models
         annotations:
-          summary: "High model usage cost"
-          description: "Model usage cost is ${{ $value }} in the last hour for {{ $labels.provider }}/{{ $labels.model }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-high-model-cost"
+          summary: 'High model usage cost'
+          description: 'Model usage cost is ${{ $value }} in the last hour for {{ $labels.provider }}/{{ $labels.model }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-high-model-cost'
 
   - name: dgm_security
     rules:
@@ -268,9 +268,9 @@ groups:
           service: dgm-service
           component: security
         annotations:
-          summary: "High authentication failure rate"
-          description: "Authentication failure rate is {{ $value | humanizePercentage }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-auth-failures"
+          summary: 'High authentication failure rate'
+          description: 'Authentication failure rate is {{ $value | humanizePercentage }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-auth-failures'
 
       - alert: DGMPermissionDenied
         expr: rate(dgm_permission_checks_total{result="denied"}[10m]) > 0.2
@@ -280,32 +280,32 @@ groups:
           service: dgm-service
           component: security
         annotations:
-          summary: "High permission denial rate"
-          description: "Permission denial rate is {{ $value | humanizePercentage }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-permission-denied"
+          summary: 'High permission denial rate'
+          description: 'Permission denial rate is {{ $value | humanizePercentage }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-permission-denied'
 
   - name: dgm_archive
     rules:
       - alert: DGMArchiveGrowthRate
-        expr: increase(dgm_archive_size_bytes[1h]) > 1073741824  # 1GB
+        expr: increase(dgm_archive_size_bytes[1h]) > 1073741824 # 1GB
         for: 0s
         labels:
           severity: info
           service: dgm-service
           component: archive
         annotations:
-          summary: "High archive growth rate"
-          description: "Archive has grown by {{ $value | humanizeBytes }} in the last hour"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-archive-growth"
+          summary: 'High archive growth rate'
+          description: 'Archive has grown by {{ $value | humanizeBytes }} in the last hour'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-archive-growth'
 
       - alert: DGMArchiveSizeLimit
-        expr: dgm_archive_size_bytes > 107374182400  # 100GB
+        expr: dgm_archive_size_bytes > 107374182400 # 100GB
         for: 5m
         labels:
           severity: warning
           service: dgm-service
           component: archive
         annotations:
-          summary: "Archive approaching size limit"
-          description: "Archive size is {{ $value | humanizeBytes }}, approaching 100GB limit"
-          runbook_url: "https://docs.acgs.ai/runbooks/dgm-archive-size-limit"
+          summary: 'Archive approaching size limit'
+          description: 'Archive size is {{ $value | humanizeBytes }}, approaching 100GB limit'
+          runbook_url: 'https://docs.acgs.ai/runbooks/dgm-archive-size-limit'

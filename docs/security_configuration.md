@@ -9,6 +9,7 @@ This guide covers the security configuration for the ACGS-PGP production deploym
 ### JWT Configuration
 
 #### Environment Variables
+
 ```bash
 # Strong JWT secret key (minimum 32 characters)
 AUTH_SERVICE_SECRET_KEY=your_strong_jwt_secret_key_minimum_32_chars_long
@@ -22,6 +23,7 @@ AUTH_SERVICE_REFRESH_TOKEN_EXPIRE_DAYS=7
 ```
 
 #### Security Best Practices
+
 - Use cryptographically secure random keys
 - Rotate JWT secrets regularly (every 90 days)
 - Use short-lived access tokens (15-30 minutes)
@@ -31,6 +33,7 @@ AUTH_SERVICE_REFRESH_TOKEN_EXPIRE_DAYS=7
 ### CSRF Protection
 
 #### Configuration
+
 ```bash
 # Strong CSRF secret key
 AUTH_SERVICE_CSRF_SECRET_KEY=your_strong_csrf_secret_key_minimum_32_chars
@@ -42,6 +45,7 @@ CSRF_COOKIE_HTTPONLY=true
 ```
 
 #### Implementation
+
 - All state-changing operations require CSRF tokens
 - CSRF tokens are tied to user sessions
 - Tokens expire with the session
@@ -50,6 +54,7 @@ CSRF_COOKIE_HTTPONLY=true
 ### Password Security
 
 #### Requirements
+
 - Minimum 8 characters
 - Must contain uppercase, lowercase, numbers
 - Special characters recommended
@@ -57,6 +62,7 @@ CSRF_COOKIE_HTTPONLY=true
 - Account lockout after 5 failed attempts
 
 #### Hashing
+
 ```python
 # Using bcrypt with salt rounds = 12
 import bcrypt
@@ -69,23 +75,26 @@ password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(rounds=12
 ### Role-Based Access Control (RBAC)
 
 #### Roles
+
 1. **Admin**: Full system access
 2. **Policy Manager**: Policy creation and management
 3. **Auditor**: Read-only access to audit logs
 4. **User**: Basic authenticated access
 
 #### Permissions Matrix
-| Resource | Admin | Policy Manager | Auditor | User |
-|----------|-------|----------------|---------|------|
-| Principles | CRUD | CRUD | R | R |
-| Policies | CRUD | CRUD | R | R |
-| Audit Logs | CRUD | R | R | - |
-| User Management | CRUD | - | - | R (self) |
-| System Config | CRUD | - | - | - |
+
+| Resource        | Admin | Policy Manager | Auditor | User     |
+| --------------- | ----- | -------------- | ------- | -------- |
+| Principles      | CRUD  | CRUD           | R       | R        |
+| Policies        | CRUD  | CRUD           | R       | R        |
+| Audit Logs      | CRUD  | R              | R       | -        |
+| User Management | CRUD  | -              | -       | R (self) |
+| System Config   | CRUD  | -              | -       | -        |
 
 ### API Endpoint Security
 
 #### Protected Endpoints
+
 ```python
 # Require authentication
 @require_auth
@@ -103,6 +112,7 @@ password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(rounds=12
 ## Rate Limiting
 
 ### Configuration
+
 ```python
 # Default rate limits
 DEFAULT_RATE_LIMIT = "100/minute"
@@ -118,6 +128,7 @@ RATE_LIMITS = {
 ```
 
 ### Implementation
+
 - IP-based rate limiting
 - User-based rate limiting for authenticated endpoints
 - Sliding window algorithm
@@ -127,6 +138,7 @@ RATE_LIMITS = {
 ## Network Security
 
 ### CORS Configuration
+
 ```python
 CORS_SETTINGS = {
     "allow_origins": [
@@ -141,6 +153,7 @@ CORS_SETTINGS = {
 ```
 
 ### Security Headers
+
 ```nginx
 # Nginx security headers
 add_header X-Frame-Options "SAMEORIGIN" always;
@@ -154,6 +167,7 @@ add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" alway
 ## Database Security
 
 ### Connection Security
+
 ```bash
 # Use SSL connections
 DATABASE_URL=postgresql+asyncpg://user:pass@host:5432/db?ssl=require
@@ -165,12 +179,14 @@ DB_POOL_TIMEOUT=30
 ```
 
 ### Query Security
+
 - Use parameterized queries (SQLAlchemy ORM)
 - Input validation and sanitization
 - Principle of least privilege for database users
 - Regular security updates
 
 ### Backup Security
+
 - Encrypted backups
 - Secure backup storage
 - Regular backup testing
@@ -179,6 +195,7 @@ DB_POOL_TIMEOUT=30
 ## Cryptographic Security
 
 ### PGP Assurance (Phase 3)
+
 ```python
 # Key management
 PGP_KEY_SIZE = 4096  # RSA key size
@@ -190,6 +207,7 @@ ACGS_MASTER_KEY = "your_256_bit_master_encryption_key"
 ```
 
 ### Hashing and Integrity
+
 ```python
 # SHA3-256 for integrity verification
 import hashlib
@@ -204,6 +222,7 @@ class MerkleTree:
 ```
 
 ### Timestamping
+
 - RFC 3161 compliant timestamping
 - Trusted timestamp authorities
 - Cryptographic proof of existence
@@ -211,6 +230,7 @@ class MerkleTree:
 ## Input Validation
 
 ### Pydantic Models
+
 ```python
 from pydantic import BaseModel, validator, EmailStr
 from typing import Optional
@@ -219,7 +239,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
     full_name: str
-    
+
     @validator('password')
     def validate_password(cls, v):
         if len(v) < 8:
@@ -234,12 +254,14 @@ class UserCreate(BaseModel):
 ```
 
 ### SQL Injection Prevention
+
 - Use SQLAlchemy ORM exclusively
 - Parameterized queries for raw SQL
 - Input sanitization
 - Query result validation
 
 ### XSS Prevention
+
 - Output encoding
 - Content Security Policy headers
 - Input validation
@@ -248,6 +270,7 @@ class UserCreate(BaseModel):
 ## Monitoring and Alerting
 
 ### Security Metrics Collection
+
 ```python
 # Track security events with detailed context
 security_events = Counter(
@@ -286,6 +309,7 @@ privilege_escalation = Counter(
 ```
 
 ### Real-time Threat Detection
+
 ```python
 # Anomaly detection for authentication patterns
 def detect_auth_anomalies(user_id: str, source_ip: str, user_agent: str):
@@ -322,91 +346,93 @@ def detect_brute_force(source_ip: str):
 ```
 
 ### Advanced Alert Rules
+
 ```yaml
 # Prometheus alerting rules for security monitoring
 groups:
-- name: acgs_security_alerts
-  rules:
-  # High authentication failure rate
-  - alert: HighAuthFailureRate
-    expr: rate(acgs_auth_failures_total[5m]) > 0.1
-    for: 2m
-    labels:
-      severity: warning
-      category: authentication
-    annotations:
-      summary: "High authentication failure rate detected"
-      description: "Authentication failure rate is {{ $value }} failures/second"
-      runbook_url: "https://docs.acgs-pgp.example.com/runbooks/auth-failures"
+  - name: acgs_security_alerts
+    rules:
+      # High authentication failure rate
+      - alert: HighAuthFailureRate
+        expr: rate(acgs_auth_failures_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          category: authentication
+        annotations:
+          summary: 'High authentication failure rate detected'
+          description: 'Authentication failure rate is {{ $value }} failures/second'
+          runbook_url: 'https://docs.acgs-pgp.example.com/runbooks/auth-failures'
 
-  # Brute force attack detection
-  - alert: BruteForceAttack
-    expr: increase(acgs_auth_failures_total[15m]) > 10
-    for: 1m
-    labels:
-      severity: critical
-      category: attack
-    annotations:
-      summary: "Potential brute force attack detected"
-      description: "{{ $labels.source_ip }} has {{ $value }} failed login attempts"
+      # Brute force attack detection
+      - alert: BruteForceAttack
+        expr: increase(acgs_auth_failures_total[15m]) > 10
+        for: 1m
+        labels:
+          severity: critical
+          category: attack
+        annotations:
+          summary: 'Potential brute force attack detected'
+          description: '{{ $labels.source_ip }} has {{ $value }} failed login attempts'
 
-  # Unusual privilege escalation
-  - alert: PrivilegeEscalationAttempt
-    expr: acgs_privilege_escalation_total > 0
-    for: 0s
-    labels:
-      severity: critical
-      category: authorization
-    annotations:
-      summary: "Privilege escalation attempt detected"
-      description: "User {{ $labels.user_id }} attempted to access {{ $labels.attempted_role }}"
+      # Unusual privilege escalation
+      - alert: PrivilegeEscalationAttempt
+        expr: acgs_privilege_escalation_total > 0
+        for: 0s
+        labels:
+          severity: critical
+          category: authorization
+        annotations:
+          summary: 'Privilege escalation attempt detected'
+          description: 'User {{ $labels.user_id }} attempted to access {{ $labels.attempted_role }}'
 
-  # High rate limit violations
-  - alert: HighRateLimitViolations
-    expr: rate(acgs_rate_limit_violations_total[5m]) > 1
-    for: 5m
-    labels:
-      severity: warning
-      category: abuse
-    annotations:
-      summary: "High rate of rate limit violations"
-      description: "Rate limit violations: {{ $value }}/second on {{ $labels.endpoint }}"
+      # High rate limit violations
+      - alert: HighRateLimitViolations
+        expr: rate(acgs_rate_limit_violations_total[5m]) > 1
+        for: 5m
+        labels:
+          severity: warning
+          category: abuse
+        annotations:
+          summary: 'High rate of rate limit violations'
+          description: 'Rate limit violations: {{ $value }}/second on {{ $labels.endpoint }}'
 
-  # CSRF attack detection
-  - alert: CSRFAttackDetected
-    expr: acgs_csrf_events_total{event_type="csrf_failure"} > 0
-    for: 0s
-    labels:
-      severity: high
-      category: attack
-    annotations:
-      summary: "Potential CSRF attack detected"
-      description: "CSRF protection triggered for {{ $labels.source_ip }}"
+      # CSRF attack detection
+      - alert: CSRFAttackDetected
+        expr: acgs_csrf_events_total{event_type="csrf_failure"} > 0
+        for: 0s
+        labels:
+          severity: high
+          category: attack
+        annotations:
+          summary: 'Potential CSRF attack detected'
+          description: 'CSRF protection triggered for {{ $labels.source_ip }}'
 
-  # Service security degradation
-  - alert: SecurityServiceDown
-    expr: up{job=~"acgs-.*"} == 0
-    for: 1m
-    labels:
-      severity: critical
-      category: availability
-    annotations:
-      summary: "Security-critical service is down"
-      description: "Service {{ $labels.job }} is not responding"
+      # Service security degradation
+      - alert: SecurityServiceDown
+        expr: up{job=~"acgs-.*"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          category: availability
+        annotations:
+          summary: 'Security-critical service is down'
+          description: 'Service {{ $labels.job }} is not responding'
 
-  # Database security events
-  - alert: DatabaseSecurityEvent
-    expr: acgs_security_events_total{event_type=~"sql_injection|unauthorized_query"} > 0
-    for: 0s
-    labels:
-      severity: critical
-      category: database
-    annotations:
-      summary: "Database security event detected"
-      description: "{{ $labels.event_type }} detected from {{ $labels.source }}"
+      # Database security events
+      - alert: DatabaseSecurityEvent
+        expr: acgs_security_events_total{event_type=~"sql_injection|unauthorized_query"} > 0
+        for: 0s
+        labels:
+          severity: critical
+          category: database
+        annotations:
+          summary: 'Database security event detected'
+          description: '{{ $labels.event_type }} detected from {{ $labels.source }}'
 ```
 
 ### Grafana Security Dashboards
+
 ```json
 {
   "dashboard": {
@@ -460,6 +486,7 @@ groups:
 ## Incident Response
 
 ### Security Event Logging
+
 ```python
 import logging
 
@@ -481,6 +508,7 @@ def log_security_event(event_type: str, details: dict, severity: str = "info"):
 ```
 
 ### Automated Response
+
 - Account lockout after failed attempts
 - IP blocking for suspicious activity
 - Automatic token revocation
@@ -489,18 +517,21 @@ def log_security_event(event_type: str, details: dict, severity: str = "info"):
 ## Compliance and Auditing
 
 ### Audit Trail
+
 - All API calls logged with user context
 - Database changes tracked
 - Authentication events recorded
 - Policy modifications audited
 
 ### Data Protection
+
 - GDPR compliance for EU users
 - Data encryption at rest and in transit
 - Right to be forgotten implementation
 - Data retention policies
 
 ### Regular Security Tasks
+
 - [ ] Weekly security log review
 - [ ] Monthly vulnerability scans
 - [ ] Quarterly penetration testing
@@ -512,6 +543,7 @@ def log_security_event(event_type: str, details: dict, severity: str = "info"):
 ## Production Checklist
 
 ### Pre-deployment Security
+
 - [ ] All secrets properly configured
 - [ ] SSL certificates installed
 - [ ] Security headers configured
@@ -521,6 +553,7 @@ def log_security_event(event_type: str, details: dict, severity: str = "info"):
 - [ ] Monitoring alerts configured
 
 ### Post-deployment Verification
+
 - [ ] Authentication flow tested
 - [ ] CSRF protection verified
 - [ ] Rate limiting functional
@@ -530,6 +563,7 @@ def log_security_event(event_type: str, details: dict, severity: str = "info"):
 - [ ] Backup procedures tested
 
 ### Ongoing Security Maintenance
+
 - [ ] Regular security updates
 - [ ] Log monitoring and analysis
 - [ ] Performance impact assessment

@@ -71,6 +71,7 @@ anchor --version
 ### Platform-Specific Installation
 
 #### Ubuntu/Debian
+
 ```bash
 # Update system packages
 sudo apt update && sudo apt upgrade -y
@@ -98,6 +99,7 @@ cargo --version
 ```
 
 #### macOS
+
 ```bash
 # Install Xcode command line tools
 xcode-select --install
@@ -123,6 +125,7 @@ rustup target add bpf-unknown-unknown
 ```
 
 #### Windows
+
 ```powershell
 # Download and run rustup-init.exe from https://rustup.rs/
 # Or use winget
@@ -143,6 +146,7 @@ rustup target add bpf-unknown-unknown
 ### Advanced Rust Configuration
 
 #### Performance Optimization
+
 ```bash
 # Enable parallel compilation
 echo 'export CARGO_BUILD_JOBS=4' >> ~/.bashrc
@@ -162,6 +166,7 @@ echo 'rustflags = ["-C", "link-arg=-fuse-ld=/usr/bin/ld"]' >> ~/.cargo/config.to
 ```
 
 #### Development Tools
+
 ```bash
 # Install essential Rust tools
 cargo install cargo-watch      # Auto-rebuild on file changes
@@ -178,6 +183,7 @@ cargo install spl-token-cli     # SPL token management
 #### IDE Configuration
 
 **VS Code Setup**
+
 ```bash
 # Install VS Code extensions
 code --install-extension rust-lang.rust-analyzer
@@ -187,13 +193,14 @@ code --install-extension tamasfe.even-better-toml
 ```
 
 **VS Code settings.json**
+
 ```json
 {
-    "rust-analyzer.cargo.features": "all",
-    "rust-analyzer.checkOnSave.command": "clippy",
-    "rust-analyzer.completion.addCallArgumentSnippets": true,
-    "rust-analyzer.completion.addCallParenthesis": true,
-    "rust-analyzer.inlayHints.enable": true
+  "rust-analyzer.cargo.features": "all",
+  "rust-analyzer.checkOnSave.command": "clippy",
+  "rust-analyzer.completion.addCallArgumentSnippets": true,
+  "rust-analyzer.completion.addCallParenthesis": true,
+  "rust-analyzer.inlayHints.enable": true
 }
 ```
 
@@ -296,6 +303,7 @@ echo "🎉 Rust blockchain development setup verified successfully!"
 ### Troubleshooting Common Issues
 
 #### Issue: Rust installation fails
+
 ```bash
 # Solution: Install dependencies first
 sudo apt update
@@ -306,6 +314,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
 #### Issue: Linker errors on Linux
+
 ```bash
 # Solution: Install build essentials
 sudo apt install build-essential pkg-config libudev-dev
@@ -315,12 +324,14 @@ sudo apt install lld
 ```
 
 #### Issue: Permission denied errors
+
 ```bash
 # Solution: Fix cargo permissions
 sudo chown -R $USER:$USER ~/.cargo
 ```
 
 #### Issue: Slow compilation times
+
 ```bash
 # Solution: Enable parallel compilation
 export CARGO_BUILD_JOBS=$(nproc)
@@ -331,6 +342,7 @@ sudo apt install lld  # Linux
 ```
 
 #### Issue: Target not found errors
+
 ```bash
 # Solution: Add missing targets
 rustup target add wasm32-unknown-unknown
@@ -457,12 +469,12 @@ blockchain/
 
 ### Replaced Tools
 
-| Old JavaScript Tool | New Rust Tool | Status |
-|-------------------|---------------|---------|
-| `deploy_quantumagi.py` | `deploy_quantumagi.rs` | ✅ Complete |
-| `initialize_constitution.py` | `initialize_constitution.rs` | ✅ Complete |
-| `validate_devnet_deployment.py` | `validate_deployment.rs` | ✅ Complete |
-| TypeScript tests | Rust integration tests | ✅ Complete |
+| Old JavaScript Tool             | New Rust Tool                | Status      |
+| ------------------------------- | ---------------------------- | ----------- |
+| `deploy_quantumagi.py`          | `deploy_quantumagi.rs`       | ✅ Complete |
+| `initialize_constitution.py`    | `initialize_constitution.rs` | ✅ Complete |
+| `validate_devnet_deployment.py` | `validate_deployment.rs`     | ✅ Complete |
+| TypeScript tests                | Rust integration tests       | ✅ Complete |
 
 ### Maintained Compatibility
 
@@ -488,6 +500,7 @@ cargo test -- --nocapture --test-threads=1
 ### CI/CD Integration
 
 The CI/CD pipeline automatically:
+
 1. Builds all Rust tools
 2. Tests tool functionality
 3. Validates deployment capabilities
@@ -498,6 +511,7 @@ The CI/CD pipeline automatically:
 ### Common Issues
 
 **Issue**: Rust version incompatibility
+
 ```bash
 # Solution: Update to Rust 1.81.0+
 rustup update
@@ -505,6 +519,7 @@ rustup default 1.81.0
 ```
 
 **Issue**: Missing Solana targets
+
 ```bash
 # Solution: Add required targets
 rustup target add wasm32-unknown-unknown
@@ -512,6 +527,7 @@ rustup target add bpf-unknown-unknown
 ```
 
 **Issue**: Cargo build failures
+
 ```bash
 # Solution: Clean and rebuild
 cargo clean
@@ -528,12 +544,12 @@ cargo build --release
 
 ### Benchmarks
 
-| Operation | JavaScript | Rust | Improvement |
-|-----------|------------|------|-------------|
-| Deployment | 45s | 12s | 73% faster |
-| Validation | 8s | 2s | 75% faster |
-| Key Generation | 3s | 0.5s | 83% faster |
-| Program ID Generation | 2s | 0.2s | 90% faster |
+| Operation             | JavaScript | Rust | Improvement |
+| --------------------- | ---------- | ---- | ----------- |
+| Deployment            | 45s        | 12s  | 73% faster  |
+| Validation            | 8s         | 2s   | 75% faster  |
+| Key Generation        | 3s         | 0.5s | 83% faster  |
+| Program ID Generation | 2s         | 0.2s | 90% faster  |
 
 ### Resource Usage
 

@@ -3,15 +3,7 @@
     "concurrent_users": 500,
     "duration_seconds": 120,
     "target_response_time_ms": 500.0,
-    "services_tested": [
-      "auth",
-      "ac",
-      "integrity",
-      "fv",
-      "gs",
-      "pgc",
-      "ec"
-    ]
+    "services_tested": ["auth", "ac", "integrity", "fv", "gs", "pgc", "ec"]
   },
   "execution_summary": {
     "start_time": "2025-06-18T02:06:51.405149+00:00",

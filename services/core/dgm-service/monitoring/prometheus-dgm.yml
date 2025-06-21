@@ -14,11 +14,11 @@ alerting:
   alertmanagers:
     - static_configs:
         - targets:
-          - dgm-alertmanager:9093
+            - dgm-alertmanager:9093
 
 # Load alert rules
 rule_files:
-  - "alert_rules.yml"
+  - 'alert_rules.yml'
 
 # Scrape configurations
 scrape_configs:
@@ -106,9 +106,9 @@ scrape_configs:
       module: [http_2xx]
     static_configs:
       - targets:
-        - http://dgm-service:8007/health
-        - http://dgm-service:8007/api/v1/health
-        - http://dgm-service:8007/metrics
+          - http://dgm-service:8007/health
+          - http://dgm-service:8007/api/v1/health
+          - http://dgm-service:8007/metrics
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -124,9 +124,9 @@ scrape_configs:
       module: [tcp_connect]
     static_configs:
       - targets:
-        - dgm-service:8007
-        - dgm-postgres:5432
-        - dgm-redis:6379
+          - dgm-service:8007
+          - dgm-postgres:5432
+          - dgm-redis:6379
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target

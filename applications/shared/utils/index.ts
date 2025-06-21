@@ -35,7 +35,7 @@ export const formatRelativeTime = (date: Date | string): string => {
   if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
   if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
   if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-  
+
   return formatDate(d);
 };
 
@@ -51,7 +51,8 @@ export const truncateText = (text: string, maxLength: number): string => {
  * Generate a random ID
  */
 export const generateId = (prefix?: string): string => {
-  const id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  const id =
+    Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   return prefix ? `${prefix}-${id}` : id;
 };
 
@@ -111,9 +112,7 @@ export const slugify = (text: string): string => {
  * Capitalize first letter of each word
  */
 export const titleCase = (text: string): string => {
-  return text.replace(/\w\S*/g, (txt) => 
-    txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
-  );
+  return text.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 };
 
 /**
@@ -178,7 +177,11 @@ export const copyToClipboard = async (text: string): Promise<boolean> => {
 /**
  * Download data as file
  */
-export const downloadAsFile = (data: string, filename: string, type: string = 'text/plain'): void => {
+export const downloadAsFile = (
+  data: string,
+  filename: string,
+  type: string = 'text/plain'
+): void => {
   const blob = new Blob([data], { type });
   const url = window.URL.createObjectURL(blob);
   const link = document.createElement('a');

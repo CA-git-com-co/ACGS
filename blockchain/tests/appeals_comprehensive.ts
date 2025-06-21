@@ -2,12 +2,12 @@
 // requires: Appeals program deployed with correct method signatures
 // ensures: >90% test pass rate, <0.01 SOL cost per operation
 
-import * as anchor from "@coral-xyz/anchor";
-import { Program } from "@coral-xyz/anchor";
-import { expect } from "chai";
-import { TestInfrastructure, addFormalVerificationComment } from "./test_setup_helper";
+import * as anchor from '@coral-xyz/anchor';
+import { Program } from '@coral-xyz/anchor';
+import { expect } from 'chai';
+import { TestInfrastructure, addFormalVerificationComment } from './test_setup_helper';
 
-describe("appeals", () => {
+describe('appeals', () => {
   // Configure the client to use the local cluster
   anchor.setProvider(anchor.AnchorProvider.env());
 
@@ -19,36 +19,34 @@ describe("appeals", () => {
   let testEnvironment: any;
 
   before(async () => {
-    console.log(addFormalVerificationComment(
-      "Appeals Test Setup",
-      "Clean test environment with proper funding",
-      "Isolated test accounts with >2 SOL funding each"
-    ));
+    console.log(
+      addFormalVerificationComment(
+        'Appeals Test Setup',
+        'Clean test environment with proper funding',
+        'Isolated test accounts with >2 SOL funding each'
+      )
+    );
 
     testEnvironment = await TestInfrastructure.createTestEnvironment(
       program,
-      "appeals_comprehensive"
+      'appeals_comprehensive'
     );
 
     authority = testEnvironment.authority;
     testUsers = testEnvironment.testUsers;
   });
 
-  describe("Appeal Submission and Management", () => {
-    it("Should submit appeal successfully", async () => {
+  describe('Appeal Submission and Management', () => {
+    it('Should submit appeal successfully', async () => {
       // requires: Valid policy violation details and evidence
       // ensures: Appeal created with proper status and metadata
       const policyId = new anchor.BN(1001);
-      const violationDetails = "Unauthorized state mutation detected in governance action";
+      const violationDetails = 'Unauthorized state mutation detected in governance action';
       const evidenceHash = Array.from(Buffer.alloc(32, 1)); // Mock evidence hash
       const appealType = { policyViolation: {} }; // AppealType enum
 
       const [appealPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("appeal"),
-          policyId.toBuffer("le", 8),
-          authority.publicKey.toBuffer(),
-        ],
+        [Buffer.from('appeal'), policyId.toBuffer('le', 8), authority.publicKey.toBuffer()],
         program.programId
       );
 
@@ -65,29 +63,25 @@ describe("appeals", () => {
         .rpc();
 
       const finalBalance = await program.provider.connection.getBalance(authority.publicKey);
-      TestInfrastructure.validateCost(initialBalance, finalBalance, "Submit Appeal");
+      TestInfrastructure.validateCost(initialBalance, finalBalance, 'Submit Appeal');
 
       const appealAccount = await program.account.appeal.fetch(appealPDA);
       expect(appealAccount.policyId.toString()).to.equal(policyId.toString());
       expect(appealAccount.violationDetails).to.equal(violationDetails);
       expect(appealAccount.appellant.toString()).to.equal(authority.publicKey.toString());
-      console.log("✅ Appeal submitted successfully");
+      console.log('✅ Appeal submitted successfully');
     });
 
-    it("Should review appeal with proper authority", async () => {
+    it('Should review appeal with proper authority', async () => {
       // requires: Existing appeal and authorized reviewer
       // ensures: Appeal status updated with review decision
       const policyId = new anchor.BN(1002);
-      const violationDetails = "Test violation for review";
+      const violationDetails = 'Test violation for review';
       const evidenceHash = Array.from(Buffer.alloc(32, 2));
       const appealType = { policyViolation: {} };
 
       const [appealPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("appeal"),
-          policyId.toBuffer("le", 8),
-          authority.publicKey.toBuffer(),
-        ],
+        [Buffer.from('appeal'), policyId.toBuffer('le', 8), authority.publicKey.toBuffer()],
         program.programId
       );
 
@@ -104,7 +98,7 @@ describe("appeals", () => {
 
       // Then review it with correct method signature
       const reviewDecision = { approve: {} }; // ReviewDecision enum
-      const reviewEvidence = "Appeal approved after evidence review";
+      const reviewEvidence = 'Appeal approved after evidence review';
       const confidenceScore = 95; // 95% confidence
 
       await program.methods
@@ -118,25 +112,21 @@ describe("appeals", () => {
 
       const appealAccount = await program.account.appeal.fetch(appealPDA);
       expect(appealAccount.status).to.deep.equal({ underReview: {} });
-      console.log("✅ Appeal reviewed successfully");
+      console.log('✅ Appeal reviewed successfully');
     });
   });
 
-  describe("Appeal Escalation and Resolution", () => {
-    it("Should escalate appeal to human committee", async () => {
+  describe('Appeal Escalation and Resolution', () => {
+    it('Should escalate appeal to human committee', async () => {
       // requires: Existing appeal eligible for escalation
       // ensures: Appeal escalated with proper committee assignment
       const policyId = new anchor.BN(1003);
-      const violationDetails = "Complex violation requiring human review";
+      const violationDetails = 'Complex violation requiring human review';
       const evidenceHash = Array.from(Buffer.alloc(32, 3));
       const appealType = { policyViolation: {} };
 
       const [appealPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("appeal"),
-          policyId.toBuffer("le", 8),
-          authority.publicKey.toBuffer(),
-        ],
+        [Buffer.from('appeal'), policyId.toBuffer('le', 8), authority.publicKey.toBuffer()],
         program.programId
       );
 
@@ -152,7 +142,7 @@ describe("appeals", () => {
         .rpc();
 
       // Escalate to human committee with correct method signature
-      const escalationReason = "Requires human judgment for complex policy interpretation";
+      const escalationReason = 'Requires human judgment for complex policy interpretation';
       const committeeType = { technical: {} }; // CommitteeType enum
 
       await program.methods
@@ -166,23 +156,19 @@ describe("appeals", () => {
 
       const appealAccount = await program.account.appeal.fetch(appealPDA);
       expect(appealAccount.escalationCount).to.be.greaterThan(0);
-      console.log("✅ Appeal escalated to human committee");
+      console.log('✅ Appeal escalated to human committee');
     });
 
-    it("Should resolve appeal with final ruling", async () => {
+    it('Should resolve appeal with final ruling', async () => {
       // requires: Appeal ready for resolution
       // ensures: Final ruling applied with enforcement action
       const policyId = new anchor.BN(1004);
-      const violationDetails = "Final resolution test case";
+      const violationDetails = 'Final resolution test case';
       const evidenceHash = Array.from(Buffer.alloc(32, 4));
       const appealType = { policyViolation: {} };
 
       const [appealPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("appeal"),
-          policyId.toBuffer("le", 8),
-          authority.publicKey.toBuffer(),
-        ],
+        [Buffer.from('appeal'), policyId.toBuffer('le', 8), authority.publicKey.toBuffer()],
         program.programId
       );
 
@@ -199,7 +185,7 @@ describe("appeals", () => {
 
       // Resolve with ruling using correct method signature
       const finalDecision = { uphold: {} }; // FinalDecision enum
-      const rulingDetails = "Appeal resolved after thorough review";
+      const rulingDetails = 'Appeal resolved after thorough review';
       const enforcementAction = { systemAlert: {} }; // EnforcementAction enum
 
       await program.methods
@@ -213,17 +199,17 @@ describe("appeals", () => {
 
       const appealAccount = await program.account.appeal.fetch(appealPDA);
       expect(appealAccount.status).to.deep.equal({ resolved: {} });
-      console.log("✅ Appeal resolved with final ruling");
+      console.log('✅ Appeal resolved with final ruling');
     });
   });
 
-  describe("Appeal Statistics and Monitoring", () => {
-    it("Should retrieve appeal statistics", async () => {
+  describe('Appeal Statistics and Monitoring', () => {
+    it('Should retrieve appeal statistics', async () => {
       // requires: Appeal statistics account initialized
       // ensures: Accurate statistics returned for monitoring
       try {
         const [appealStatsPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-          [Buffer.from("appeal_stats")],
+          [Buffer.from('appeal_stats')],
           program.programId
         );
 
@@ -239,26 +225,22 @@ describe("appeals", () => {
         expect(result).to.have.property('approvedAppeals');
         expect(result).to.have.property('rejectedAppeals');
         expect(result).to.have.property('pendingAppeals');
-        console.log("✅ Appeal statistics retrieved successfully");
+        console.log('✅ Appeal statistics retrieved successfully');
       } catch (error) {
-        console.log("ℹ️  Appeal statistics may need initialization");
+        console.log('ℹ️  Appeal statistics may need initialization');
       }
     });
 
-    it("Should handle edge cases gracefully", async () => {
+    it('Should handle edge cases gracefully', async () => {
       // requires: Invalid appeal parameters
       // ensures: Proper error handling and validation
       const invalidPolicyId = new anchor.BN(0);
-      const emptyViolationDetails = "";
+      const emptyViolationDetails = '';
       const invalidEvidenceHash = Array.from(Buffer.alloc(31, 0)); // Wrong size
       const appealType = { policyViolation: {} };
 
       const [appealPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("appeal"),
-          invalidPolicyId.toBuffer("le", 8),
-          authority.publicKey.toBuffer(),
-        ],
+        [Buffer.from('appeal'), invalidPolicyId.toBuffer('le', 8), authority.publicKey.toBuffer()],
         program.programId
       );
 
@@ -273,15 +255,15 @@ describe("appeals", () => {
           .signers([authority])
           .rpc();
 
-        console.log("⚠️  Invalid appeal parameters accepted (may need validation)");
+        console.log('⚠️  Invalid appeal parameters accepted (may need validation)');
       } catch (error) {
-        console.log("✅ Invalid appeal parameters properly rejected");
+        console.log('✅ Invalid appeal parameters properly rejected');
       }
     });
   });
 
-  describe("Performance and Cost Validation", () => {
-    it("Should meet performance targets for appeal operations", async () => {
+  describe('Performance and Cost Validation', () => {
+    it('Should meet performance targets for appeal operations', async () => {
       // requires: Multiple appeal operations under load
       // ensures: <0.01 SOL cost per operation, <2s response time
       const startTime = Date.now();
@@ -295,11 +277,7 @@ describe("appeals", () => {
         const appealType = { policyViolation: {} };
 
         const [appealPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-          [
-            Buffer.from("appeal"),
-            policyId.toBuffer("le", 8),
-            authority.publicKey.toBuffer(),
-          ],
+          [Buffer.from('appeal'), policyId.toBuffer('le', 8), authority.publicKey.toBuffer()],
           program.programId
         );
 
@@ -328,7 +306,9 @@ describe("appeals", () => {
       );
 
       expect(averageTime).to.be.lessThan(2000); // <2s per operation
-      console.log(`✅ Performance targets met: ${averageTime.toFixed(0)}ms avg, ${appealCount} appeals`);
+      console.log(
+        `✅ Performance targets met: ${averageTime.toFixed(0)}ms avg, ${appealCount} appeals`
+      );
     });
   });
 });

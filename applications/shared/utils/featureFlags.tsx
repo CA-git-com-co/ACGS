@@ -1,6 +1,6 @@
 /**
  * Feature Flag System for ACGS-PGP Legacy Deprecation
- * 
+ *
  * Provides comprehensive feature flag management for gradual rollout
  * and rollback capabilities during legacy frontend migration.
  */
@@ -14,20 +14,20 @@ export interface FeatureFlags {
   useSharedQuantumagi: boolean;
   useSharedMonitoring: boolean;
   useSharedLayout: boolean;
-  
+
   // Service migration flags
   useSharedConsultation: boolean;
   useSharedAmendment: boolean;
   useSharedErrorHandling: boolean;
-  
+
   // Page migration flags
   useSharedPages: boolean;
   useSharedRouting: boolean;
-  
+
   // Infrastructure flags
   useSharedTheme: boolean;
   useSharedAuth: boolean;
-  
+
   // Emergency flags
   emergencyRollback: boolean;
   maintenanceMode: boolean;
@@ -40,52 +40,52 @@ const DEFAULT_FLAGS: FeatureFlags = {
   useSharedQuantumagi: false,
   useSharedMonitoring: false,
   useSharedLayout: false,
-  
+
   // Service migration flags - start disabled for safety
   useSharedConsultation: false,
   useSharedAmendment: false,
   useSharedErrorHandling: false,
-  
+
   // Page migration flags - start disabled for safety
   useSharedPages: false,
   useSharedRouting: false,
-  
+
   // Infrastructure flags - can be enabled early
   useSharedTheme: true,
   useSharedAuth: true,
-  
+
   // Emergency flags - always start disabled
   emergencyRollback: false,
-  maintenanceMode: false,
+  maintenanceMode: false
 };
 
 // Environment-based flag overrides
 const getEnvironmentFlags = (): Partial<FeatureFlags> => {
   const env = process.env;
-  
+
   return {
     // Component flags
     useSharedDashboard: env.REACT_APP_USE_SHARED_DASHBOARD === 'true',
     useSharedQuantumagi: env.REACT_APP_USE_SHARED_QUANTUMAGI === 'true',
     useSharedMonitoring: env.REACT_APP_USE_SHARED_MONITORING === 'true',
     useSharedLayout: env.REACT_APP_USE_SHARED_LAYOUT === 'true',
-    
+
     // Service flags
     useSharedConsultation: env.REACT_APP_USE_SHARED_CONSULTATION === 'true',
     useSharedAmendment: env.REACT_APP_USE_SHARED_AMENDMENT === 'true',
     useSharedErrorHandling: env.REACT_APP_USE_SHARED_ERROR_HANDLING === 'true',
-    
+
     // Page flags
     useSharedPages: env.REACT_APP_USE_SHARED_PAGES === 'true',
     useSharedRouting: env.REACT_APP_USE_SHARED_ROUTING === 'true',
-    
+
     // Infrastructure flags
     useSharedTheme: env.REACT_APP_USE_SHARED_THEME !== 'false', // Default true
     useSharedAuth: env.REACT_APP_USE_SHARED_AUTH !== 'false', // Default true
-    
+
     // Emergency flags
     emergencyRollback: env.REACT_APP_EMERGENCY_ROLLBACK === 'true',
-    maintenanceMode: env.REACT_APP_MAINTENANCE_MODE === 'true',
+    maintenanceMode: env.REACT_APP_MAINTENANCE_MODE === 'true'
   };
 };
 
@@ -114,13 +114,13 @@ export const FeatureFlagProvider: React.FC<FeatureFlagProviderProps> = ({
   children,
   initialFlags = {},
   enableRemoteConfig = false,
-  remoteConfigUrl,
+  remoteConfigUrl
 }) => {
   // Merge default flags with environment and initial overrides
   const [flags, setFlags] = useState<FeatureFlags>(() => ({
     ...DEFAULT_FLAGS,
     ...getEnvironmentFlags(),
-    ...initialFlags,
+    ...initialFlags
   }));
 
   // Load remote configuration if enabled
@@ -158,7 +158,7 @@ export const FeatureFlagProvider: React.FC<FeatureFlagProviderProps> = ({
     setFlags({
       ...DEFAULT_FLAGS,
       ...getEnvironmentFlags(),
-      ...initialFlags,
+      ...initialFlags
     });
   };
 
@@ -168,12 +168,15 @@ export const FeatureFlagProvider: React.FC<FeatureFlagProviderProps> = ({
     if (flags.emergencyRollback && key !== 'emergencyRollback' && key !== 'maintenanceMode') {
       return false;
     }
-    
+
     // Maintenance mode disables most features
-    if (flags.maintenanceMode && !['emergencyRollback', 'maintenanceMode', 'useSharedAuth'].includes(key)) {
+    if (
+      flags.maintenanceMode &&
+      !['emergencyRollback', 'maintenanceMode', 'useSharedAuth'].includes(key)
+    ) {
       return false;
     }
-    
+
     return flags[key];
   };
 
@@ -188,14 +191,10 @@ export const FeatureFlagProvider: React.FC<FeatureFlagProviderProps> = ({
     updateFlags,
     resetFlags,
     isEnabled,
-    isDisabled,
+    isDisabled
   };
 
-  return (
-    <FeatureFlagContext.Provider value={contextValue}>
-      {children}
-    </FeatureFlagContext.Provider>
-  );
+  return <FeatureFlagContext.Provider value={contextValue}>{children}</FeatureFlagContext.Provider>;
 };
 
 // Hook to use feature flags
@@ -223,7 +222,7 @@ interface WithFeatureFlagProps {
 export const WithFeatureFlag: React.FC<WithFeatureFlagProps> = ({
   flag,
   fallback = null,
-  children,
+  children
 }) => {
   const isEnabled = useFeatureFlag(flag);
   return <>{isEnabled ? children : fallback}</>;
@@ -239,7 +238,7 @@ interface FeatureToggleProps {
 export const FeatureToggle: React.FC<FeatureToggleProps> = ({
   flag,
   enabled = null,
-  disabled = null,
+  disabled = null
 }) => {
   const isEnabled = useFeatureFlag(flag);
   return <>{isEnabled ? enabled : disabled}</>;
@@ -257,7 +256,7 @@ export const MigrationToggle: React.FC<MigrationToggleProps> = ({
   flag,
   legacyComponent,
   sharedComponent,
-  loadingComponent = null,
+  loadingComponent = null
 }) => {
   const { isEnabled, flags } = useFeatureFlags();
   const [isLoading, setIsLoading] = useState(false);
@@ -293,19 +292,21 @@ export const FeatureFlagDebugger: React.FC = () => {
   }
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 10,
-      right: 10,
-      background: 'rgba(0,0,0,0.8)',
-      color: 'white',
-      padding: '10px',
-      borderRadius: '5px',
-      fontSize: '12px',
-      zIndex: 9999,
-      maxHeight: '300px',
-      overflow: 'auto'
-    }}>
+    <div
+      style={{
+        position: 'fixed',
+        top: 10,
+        right: 10,
+        background: 'rgba(0,0,0,0.8)',
+        color: 'white',
+        padding: '10px',
+        borderRadius: '5px',
+        fontSize: '12px',
+        zIndex: 9999,
+        maxHeight: '300px',
+        overflow: 'auto'
+      }}
+    >
       <h4>Feature Flags (Dev Only)</h4>
       {Object.entries(flags).map(([key, value]) => (
         <div key={key} style={{ margin: '5px 0' }}>
@@ -313,7 +314,7 @@ export const FeatureFlagDebugger: React.FC = () => {
             <input
               type="checkbox"
               checked={value}
-              onChange={(e) => updateFlag(key as keyof FeatureFlags, e.target.checked)}
+              onChange={e => updateFlag(key as keyof FeatureFlags, e.target.checked)}
             />
             {key}: {value ? 'ON' : 'OFF'}
           </label>

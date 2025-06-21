@@ -17,8 +17,8 @@ interface SynthesizedPolicy {
   complianceComplexity: 'Low' | 'Medium' | 'High';
 }
 
-const PolicyProposal: React.FC<PolicyProposalProps> = ({ 
-  selectedPrinciple, 
+const PolicyProposal: React.FC<PolicyProposalProps> = ({
+  selectedPrinciple,
   onProposalSubmitted,
   onPolicySynthesized,
   className = ''
@@ -28,15 +28,17 @@ const PolicyProposal: React.FC<PolicyProposalProps> = ({
   const [principleContent, setPrincipleContent] = useState('');
   const [principleCategory, setPrincipleCategory] = useState('governance');
   const [principleRationale, setPrincipleRationale] = useState('');
-  
+
   // GS Engine state
   const [synthesizing, setSynthesizing] = useState(false);
   const [synthesizedPolicy, setSynthesizedPolicy] = useState<SynthesizedPolicy | null>(null);
   const [validationResults, setValidationResults] = useState<any>(null);
-  
+
   // Proposal state
   const [submitting, setSubmitting] = useState(false);
-  const [proposalStatus, setProposalStatus] = useState<'draft' | 'synthesized' | 'submitted'>('draft');
+  const [proposalStatus, setProposalStatus] = useState<'draft' | 'synthesized' | 'submitted'>(
+    'draft'
+  );
 
   useEffect(() => {
     if (selectedPrinciple) {
@@ -48,17 +50,17 @@ const PolicyProposal: React.FC<PolicyProposalProps> = ({
 
   const handleSynthesizePolicy = async () => {
     if (!principleTitle || !principleContent) {
-      alert("Please fill in the principle title and content");
+      alert('Please fill in the principle title and content');
       return;
     }
 
     setSynthesizing(true);
     try {
-      console.log("🧠 Initiating GS Engine policy synthesis...");
-      
+      console.log('🧠 Initiating GS Engine policy synthesis...');
+
       // Simulate processing time
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       const mockSynthesizedPolicy: SynthesizedPolicy = {
         id: `POL-${Date.now()}`,
         rule: generatePolicyRule(principleTitle, principleContent, principleCategory),
@@ -75,20 +77,21 @@ const PolicyProposal: React.FC<PolicyProposalProps> = ({
         safety: Math.random() * 0.1 + 0.9,
         bias: Math.random() * 0.1 + 0.85,
         conflict: Math.random() * 0.1 + 0.9,
-        consensus: 0,
+        consensus: 0
       };
-      
-      mockValidationResults.consensus = 
-        (mockValidationResults.syntactic + 
-         mockValidationResults.semantic + 
-         mockValidationResults.safety + 
-         mockValidationResults.bias + 
-         mockValidationResults.conflict) / 5;
+
+      mockValidationResults.consensus =
+        (mockValidationResults.syntactic +
+          mockValidationResults.semantic +
+          mockValidationResults.safety +
+          mockValidationResults.bias +
+          mockValidationResults.conflict) /
+        5;
 
       setSynthesizedPolicy(mockSynthesizedPolicy);
       setValidationResults(mockValidationResults);
       setProposalStatus('synthesized');
-      
+
       // Create Policy object for callback
       if (onPolicySynthesized) {
         const policy: Policy = {
@@ -106,11 +109,14 @@ const PolicyProposal: React.FC<PolicyProposalProps> = ({
         };
         onPolicySynthesized(policy);
       }
-      
-      console.log("✅ Policy synthesis completed with validation score:", mockValidationResults.consensus);
+
+      console.log(
+        '✅ Policy synthesis completed with validation score:',
+        mockValidationResults.consensus
+      );
     } catch (error) {
-      console.error("Policy synthesis failed:", error);
-      alert("Policy synthesis failed. Please try again.");
+      console.error('Policy synthesis failed:', error);
+      alert('Policy synthesis failed. Please try again.');
     } finally {
       setSynthesizing(false);
     }
@@ -118,17 +124,17 @@ const PolicyProposal: React.FC<PolicyProposalProps> = ({
 
   const handleSubmitProposal = async () => {
     if (!synthesizedPolicy) {
-      alert("Please synthesize policy first");
+      alert('Please synthesize policy first');
       return;
     }
 
     setSubmitting(true);
     try {
-      console.log("📋 Submitting policy proposal...");
-      
+      console.log('📋 Submitting policy proposal...');
+
       // Simulate submission
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       const proposalData = {
         id: synthesizedPolicy.id,
         rule: synthesizedPolicy.rule,
@@ -141,12 +147,11 @@ const PolicyProposal: React.FC<PolicyProposalProps> = ({
 
       setProposalStatus('submitted');
       onProposalSubmitted?.(proposalData);
-      
+
       alert(`Policy proposal submitted successfully!\nPolicy ID: ${synthesizedPolicy.id}`);
-      
     } catch (error) {
-      console.error("Failed to submit proposal:", error);
-      alert("Failed to submit proposal. Please try again.");
+      console.error('Failed to submit proposal:', error);
+      alert('Failed to submit proposal. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -160,9 +165,11 @@ const PolicyProposal: React.FC<PolicyProposalProps> = ({
       prompt_constitution: `DENY unauthorized_state_mutations WITHOUT governance_approval`,
       transparency: `REQUIRE public_audit_trail FOR ${title.toLowerCase().replace(/\s+/g, '_')}`
     };
-    
-    return ruleTemplates[category as keyof typeof ruleTemplates] || 
-           `ENFORCE ${title.toUpperCase().replace(/\s+/g, '_')}: ${content.substring(0, 100)}`;
+
+    return (
+      ruleTemplates[category as keyof typeof ruleTemplates] ||
+      `ENFORCE ${title.toUpperCase().replace(/\s+/g, '_')}: ${content.substring(0, 100)}`
+    );
   };
 
   const determinePriority = (category: string): string => {
@@ -193,11 +200,15 @@ const PolicyProposal: React.FC<PolicyProposalProps> = ({
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Policy Proposal</h2>
         <div className="flex items-center gap-2">
-          <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-            proposalStatus === 'draft' ? 'bg-gray-100 text-gray-600' :
-            proposalStatus === 'synthesized' ? 'bg-blue-100 text-blue-600' :
-            'bg-green-100 text-green-600'
-          }`}>
+          <span
+            className={`px-3 py-1 rounded-full text-sm font-medium ${
+              proposalStatus === 'draft'
+                ? 'bg-gray-100 text-gray-600'
+                : proposalStatus === 'synthesized'
+                  ? 'bg-blue-100 text-blue-600'
+                  : 'bg-green-100 text-green-600'
+            }`}
+          >
             {proposalStatus.toUpperCase()}
           </span>
         </div>
@@ -206,25 +217,21 @@ const PolicyProposal: React.FC<PolicyProposalProps> = ({
       {/* Principle Input Form */}
       <div className="space-y-4 mb-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Principle Title
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Principle Title</label>
           <input
             type="text"
             value={principleTitle}
-            onChange={(e) => setPrincipleTitle(e.target.value)}
+            onChange={e => setPrincipleTitle(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter constitutional principle title"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Principle Content
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Principle Content</label>
           <textarea
             value={principleContent}
-            onChange={(e) => setPrincipleContent(e.target.value)}
+            onChange={e => setPrincipleContent(e.target.value)}
             rows={4}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Describe the constitutional principle in detail"
@@ -233,12 +240,10 @@ const PolicyProposal: React.FC<PolicyProposalProps> = ({
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Category
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
             <select
               value={principleCategory}
-              onChange={(e) => setPrincipleCategory(e.target.value)}
+              onChange={e => setPrincipleCategory(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="governance">Governance</option>
@@ -250,13 +255,11 @@ const PolicyProposal: React.FC<PolicyProposalProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Rationale
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Rationale</label>
             <input
               type="text"
               value={principleRationale}
-              onChange={(e) => setPrincipleRationale(e.target.value)}
+              onChange={e => setPrincipleRationale(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Why is this principle important?"
             />
@@ -273,7 +276,9 @@ const PolicyProposal: React.FC<PolicyProposalProps> = ({
             disabled={synthesizing || !principleTitle || !principleContent}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
           >
-            {synthesizing && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>}
+            {synthesizing && (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+            )}
             {synthesizing ? 'Synthesizing...' : 'Synthesize Policy'}
           </button>
         </div>
@@ -285,19 +290,24 @@ const PolicyProposal: React.FC<PolicyProposalProps> = ({
               <span className="font-medium">Running Multi-Model Validation...</span>
             </div>
             <div className="mt-2 text-sm text-blue-600">
-              • Syntactic validation in progress...<br/>
-              • Semantic analysis running...<br/>
-              • Safety property verification...<br/>
-              • Bias detection analysis...<br/>
-              • Conflict resolution check...
+              • Syntactic validation in progress...
+              <br />
+              • Semantic analysis running...
+              <br />
+              • Safety property verification...
+              <br />
+              • Bias detection analysis...
+              <br />• Conflict resolution check...
             </div>
           </div>
         )}
 
         {synthesizedPolicy && validationResults && (
           <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <h4 className="font-semibold text-green-800 mb-3">✅ Policy Successfully Synthesized</h4>
-            
+            <h4 className="font-semibold text-green-800 mb-3">
+              ✅ Policy Successfully Synthesized
+            </h4>
+
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
                 <span className="text-sm font-medium text-gray-700">Generated Rule:</span>
@@ -308,30 +318,38 @@ const PolicyProposal: React.FC<PolicyProposalProps> = ({
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Validation Score:</span>
-                  <span className={`text-sm font-semibold ${getValidationColor(validationResults.consensus)}`}>
+                  <span
+                    className={`text-sm font-semibold ${getValidationColor(validationResults.consensus)}`}
+                  >
                     {(validationResults.consensus * 100).toFixed(1)}%
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Priority:</span>
-                  <span className="text-sm font-semibold">{synthesizedPolicy.priority.toUpperCase()}</span>
+                  <span className="text-sm font-semibold">
+                    {synthesizedPolicy.priority.toUpperCase()}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Complexity:</span>
-                  <span className="text-sm font-semibold">{synthesizedPolicy.complianceComplexity}</span>
+                  <span className="text-sm font-semibold">
+                    {synthesizedPolicy.complianceComplexity}
+                  </span>
                 </div>
               </div>
             </div>
 
             <div className="grid grid-cols-5 gap-2 text-xs">
-              {Object.entries(validationResults).filter(([key]) => key !== 'consensus').map(([key, value]) => (
-                <div key={key} className="text-center">
-                  <div className="font-medium text-gray-700 capitalize">{key}</div>
-                  <div className={`font-semibold ${getValidationColor(value as number)}`}>
-                    {((value as number) * 100).toFixed(0)}%
+              {Object.entries(validationResults)
+                .filter(([key]) => key !== 'consensus')
+                .map(([key, value]) => (
+                  <div key={key} className="text-center">
+                    <div className="font-medium text-gray-700 capitalize">{key}</div>
+                    <div className={`font-semibold ${getValidationColor(value as number)}`}>
+                      {((value as number) * 100).toFixed(0)}%
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         )}
@@ -350,8 +368,14 @@ const PolicyProposal: React.FC<PolicyProposalProps> = ({
               disabled={submitting || proposalStatus === 'submitted'}
               className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              {submitting && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>}
-              {submitting ? 'Submitting...' : proposalStatus === 'submitted' ? 'Submitted ✓' : 'Submit Proposal'}
+              {submitting && (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              )}
+              {submitting
+                ? 'Submitting...'
+                : proposalStatus === 'submitted'
+                  ? 'Submitted ✓'
+                  : 'Submit Proposal'}
             </button>
           </div>
         </div>

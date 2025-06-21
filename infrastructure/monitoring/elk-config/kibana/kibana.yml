@@ -2,19 +2,19 @@
 # Security dashboards and visualization platform
 
 server.name: acgs-kibana-security
-server.host: "0.0.0.0"
+server.host: '0.0.0.0'
 server.port: 5601
 
 # Elasticsearch configuration
-elasticsearch.hosts: ["http://elasticsearch-security:9200"]
+elasticsearch.hosts: ['http://elasticsearch-security:9200']
 elasticsearch.username: elastic
 elasticsearch.password: acgs_security_2024
 
 # Security settings
 xpack.security.enabled: true
-xpack.encryptedSavedObjects.encryptionKey: "acgs_security_encryption_key_32_chars"
-xpack.reporting.encryptionKey: "acgs_reporting_encryption_key_32_chars"
-xpack.security.encryptionKey: "acgs_kibana_encryption_key_32_chars"
+xpack.encryptedSavedObjects.encryptionKey: 'acgs_security_encryption_key_32_chars'
+xpack.reporting.encryptionKey: 'acgs_reporting_encryption_key_32_chars'
+xpack.security.encryptionKey: 'acgs_kibana_encryption_key_32_chars'
 
 # Machine Learning
 xpack.ml.enabled: true
@@ -69,7 +69,7 @@ xpack.remote_clusters.enabled: true
 xpack.spaces.enabled: true
 
 # Translations
-i18n.locale: "en"
+i18n.locale: 'en'
 
 # Logging
 logging.appenders:
@@ -82,7 +82,7 @@ logging.appenders:
     type: console
     layout:
       type: pattern
-      pattern: "[%date][%level][%logger] %message"
+      pattern: '[%date][%level][%logger] %message'
 
 logging.loggers:
   - name: http.server.response
@@ -108,13 +108,13 @@ telemetry.enabled: false
 telemetry.optIn: false
 
 # Security headers
-server.securityResponseHeaders.strictTransportSecurity: "max-age=31536000"
-server.securityResponseHeaders.xContentTypeOptions: "nosniff"
-server.securityResponseHeaders.xFrameOptions: "DENY"
+server.securityResponseHeaders.strictTransportSecurity: 'max-age=31536000'
+server.securityResponseHeaders.xContentTypeOptions: 'nosniff'
+server.securityResponseHeaders.xFrameOptions: 'DENY'
 
 # ACGS-specific settings
-kibana.index: ".kibana-acgs-security"
-kibana.defaultAppId: "dashboard"
+kibana.index: '.kibana-acgs-security'
+kibana.defaultAppId: 'dashboard'
 
 # Data views
 data.search.aggs.shardDelay.enabled: true

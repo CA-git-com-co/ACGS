@@ -10,6 +10,7 @@
 All API endpoints require JWT authentication except health endpoints.
 
 ### Headers
+
 ```
 Authorization: Bearer <jwt_token>
 Content-Type: application/json
@@ -19,9 +20,11 @@ X-Request-ID: <uuid> (optional)
 ### Authentication Endpoints
 
 #### POST /auth/login
+
 Authenticate user and receive JWT tokens.
 
 **Request**:
+
 ```json
 {
   "username": "string",
@@ -31,6 +34,7 @@ Authenticate user and receive JWT tokens.
 ```
 
 **Response**:
+
 ```json
 {
   "status": "success",
@@ -52,9 +56,11 @@ Authenticate user and receive JWT tokens.
 ### Auth Service (Port 8000)
 
 #### GET /health
+
 Service health check.
 
 **Response**:
+
 ```json
 {
   "status": "healthy",
@@ -65,9 +71,11 @@ Service health check.
 ```
 
 #### POST /auth/refresh
+
 Refresh JWT access token.
 
 **Request**:
+
 ```json
 {
   "refresh_token": "jwt_token"
@@ -77,9 +85,11 @@ Refresh JWT access token.
 ### AC Service (Port 8001)
 
 #### GET /api/v1/constitutional-council/members
+
 Get constitutional council members.
 
 **Response**:
+
 ```json
 {
   "status": "success",
@@ -99,9 +109,11 @@ Get constitutional council members.
 ```
 
 #### GET /api/v1/voting/mechanisms
+
 Get available voting mechanisms.
 
 **Response**:
+
 ```json
 {
   "status": "success",
@@ -121,9 +133,11 @@ Get available voting mechanisms.
 ```
 
 #### POST /api/v1/constitutional/validate
+
 Validate constitutional compliance.
 
 **Request**:
+
 ```json
 {
   "action": "string",
@@ -137,6 +151,7 @@ Validate constitutional compliance.
 ```
 
 **Response**:
+
 ```json
 {
   "status": "success",
@@ -157,9 +172,11 @@ Validate constitutional compliance.
 ### Integrity Service (Port 8002)
 
 #### POST /api/v1/verify/signature
+
 Verify digital signature.
 
 **Request**:
+
 ```json
 {
   "data": "string",
@@ -170,6 +187,7 @@ Verify digital signature.
 ```
 
 **Response**:
+
 ```json
 {
   "status": "success",
@@ -183,9 +201,11 @@ Verify digital signature.
 ```
 
 #### POST /api/v1/verify/hash
+
 Verify hash integrity.
 
 **Request**:
+
 ```json
 {
   "data": "string",
@@ -197,9 +217,11 @@ Verify hash integrity.
 ### FV Service (Port 8003)
 
 #### POST /api/v1/verify/policy
+
 Formally verify policy.
 
 **Request**:
+
 ```json
 {
   "policy": {
@@ -212,6 +234,7 @@ Formally verify policy.
 ```
 
 **Response**:
+
 ```json
 {
   "status": "success",
@@ -228,9 +251,11 @@ Formally verify policy.
 ### GS Service (Port 8004)
 
 #### POST /api/v1/synthesize/policy
+
 Synthesize new policy using AI.
 
 **Request**:
+
 ```json
 {
   "requirements": "string",
@@ -241,6 +266,7 @@ Synthesize new policy using AI.
 ```
 
 **Response**:
+
 ```json
 {
   "status": "success",
@@ -263,9 +289,11 @@ Synthesize new policy using AI.
 ### PGC Service (Port 8005)
 
 #### POST /api/v1/governance-workflows/policy-creation
+
 Initiate policy creation workflow.
 
 **Request**:
+
 ```json
 {
   "policy_data": {
@@ -283,6 +311,7 @@ Initiate policy creation workflow.
 ```
 
 **Response**:
+
 ```json
 {
   "status": "success",
@@ -301,9 +330,11 @@ Initiate policy creation workflow.
 ```
 
 #### GET /api/v1/compliance/status
+
 Get compliance status overview.
 
 **Response**:
+
 ```json
 {
   "status": "success",
@@ -320,9 +351,11 @@ Get compliance status overview.
 ### EC Service (Port 8006)
 
 #### POST /api/v1/oversight/decision
+
 Record executive decision.
 
 **Request**:
+
 ```json
 {
   "decision": {
@@ -337,9 +370,11 @@ Record executive decision.
 ```
 
 #### GET /api/v1/audit/trail
+
 Get audit trail.
 
 **Query Parameters**:
+
 - `start_date`: ISO 8601 date
 - `end_date`: ISO 8601 date
 - `category`: Filter by category
@@ -348,6 +383,7 @@ Get audit trail.
 ## Error Handling
 
 ### Error Response Format
+
 ```json
 {
   "status": "error",
@@ -365,6 +401,7 @@ Get audit trail.
 ```
 
 ### Common Error Codes
+
 - `AUTHENTICATION_FAILED` - Invalid credentials
 - `AUTHORIZATION_DENIED` - Insufficient permissions
 - `VALIDATION_ERROR` - Input validation failed
@@ -376,12 +413,14 @@ Get audit trail.
 ## Rate Limiting
 
 ### Limits
+
 - **Authentication**: 10 requests/minute
 - **General APIs**: 100 requests/minute
 - **Health Checks**: 1000 requests/minute
 - **Constitutional Validation**: 50 requests/minute
 
 ### Headers
+
 ```
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 95
@@ -391,6 +430,7 @@ X-RateLimit-Reset: 1640995200
 ## Governance Workflow APIs
 
 ### Policy Lifecycle States
+
 1. `draft` - Initial creation
 2. `review` - Under constitutional review
 3. `verification` - Formal verification in progress
@@ -402,20 +442,25 @@ X-RateLimit-Reset: 1640995200
 ### Workflow Status Endpoints
 
 #### GET /api/v1/workflows/{workflow_id}/status
+
 Get workflow status.
 
 #### POST /api/v1/workflows/{workflow_id}/advance
+
 Advance workflow to next stage.
 
 #### GET /api/v1/workflows/active
+
 List active workflows.
 
 ## WebSocket APIs
 
 ### Real-time Updates
+
 Connect to `ws://localhost:8005/ws/governance` for real-time governance updates.
 
 **Message Format**:
+
 ```json
 {
   "type": "policy_update|compliance_alert|workflow_status",

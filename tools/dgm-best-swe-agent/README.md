@@ -10,7 +10,6 @@
   <a href="https://drive.google.com/drive/folders/1Kcu9TbIa9Z50pJ7S6hH9omzzD1pxIYZC?usp=sharing"><img src="https://img.shields.io/badge/Experiment%20Logs-4285F4?style=for-the-badge&logo=googledrive&logoColor=white"></a>
 </p>
 
-
 Repository for **Darwin Gödel Machine (DGM)**, a novel self-improving system that iteratively modifies its own code (thereby also improving its ability to modify its own codebase) and empirically validates each change using coding benchmarks.
 
 <p align="center">
@@ -20,8 +19,8 @@ Repository for **Darwin Gödel Machine (DGM)**, a novel self-improving system th
 <img src="./misc/conceptual.svg"/></a><br>
 </p> -->
 
-
 ## Setup
+
 ```bash
 # API keys, add to ~/.bashrc
 # Copy environment templates
@@ -33,7 +32,7 @@ cp .env.example .env
 ```bash
 # Verify that Docker is properly configured in your environment.
 docker run hello-world
- 
+
 # If a permission error occurs, add the user to the Docker group
 sudo usermod -aG docker $USER
 newgrp docker
@@ -65,12 +64,15 @@ python polyglot/prepare_polyglot_dataset.py
 ```
 
 ## Running the DGM
+
 ```bash
 python DGM_outer.py
 ```
+
 By default, outputs will be saved in the `output_dgm/` directory.
 
 ## File Structure
+
 - `analysis/` scripts used for plotting and analysis
 - `initial/` SWE-bench logs and performance of the initial agent
 - `initial_polyglot/` Polyglot logs and performance of the initial agent
@@ -83,9 +85,11 @@ By default, outputs will be saved in the `output_dgm/` directory.
 - `DGM_outer.py` entry point for running the DGM algorithm
 
 ## Logs from Experiments
+
 This [google drive folder](https://drive.google.com/drive/folders/1Kcu9TbIa9Z50pJ7S6hH9omzzD1pxIYZC?usp=sharing) contains all the foundation model output logs from the experiments shown in the paper.
 
 ## Safety Consideration
+
 > [!WARNING]  
 > This repository involves executing untrusted, model-generated code. We strongly advise users to be aware of the associated safety risks. While it is highly unlikely that such code will perform overtly malicious actions under our current settings and with the models we use, it may still behave destructively due to limitations in model capability or alignment. By using this repository, you acknowledge and accept these risks.
 
@@ -94,7 +98,9 @@ This [google drive folder](https://drive.google.com/drive/folders/1Kcu9TbIa9Z50p
 The evaluation framework implementations are based on the [SWE-bench](https://github.com/swe-bench/SWE-bench) and [polyglot-benchmark](https://github.com/Aider-AI/polyglot-benchmark) repositories.
 
 ## Citing
+
 If you find this project useful, please consider citing:
+
 ```bibtex
 @article{zhang2025darwin,
   title={Darwin Godel Machine: Open-Ended Evolution of Self-Improving Agents},

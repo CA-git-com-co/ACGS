@@ -14,7 +14,7 @@ services:
       POSTGRES_DB: acgs_db
       PGUSER: acgs_user
     ports:
-      - "5433:5432"
+      - '5433:5432'
     volumes:
       - postgres_replica1_data:/var/lib/postgresql/data
       - ./replica_setup.sh:/docker-entrypoint-initdb.d/replica_setup.sh
@@ -41,7 +41,7 @@ services:
       POSTGRES_DB: acgs_db
       PGUSER: acgs_user
     ports:
-      - "5434:5432"
+      - '5434:5432'
     volumes:
       - postgres_replica2_data:/var/lib/postgresql/data
       - ./replica_setup.sh:/docker-entrypoint-initdb.d/replica_setup.sh
@@ -72,7 +72,7 @@ services:
       MAX_CLIENT_CONN: 500
       DEFAULT_POOL_SIZE: 20
     ports:
-      - "6433:5432"
+      - '6433:5432'
     volumes:
       - ./pgbouncer_replicas.ini:/etc/pgbouncer/pgbouncer.ini
       - ./userlist.txt:/etc/pgbouncer/userlist.txt

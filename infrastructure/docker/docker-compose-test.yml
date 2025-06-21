@@ -12,9 +12,10 @@ services:
     volumes:
       - postgres_data_test:/var/lib/postgresql/data
     ports:
-      - "5434:5432" # Expose PostgreSQL port to host (optional, for direct access)
+      - '5434:5432' # Expose PostgreSQL port to host (optional, for direct access)
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-acgs_user} -d ${POSTGRES_DB:-acgs_pgp_db}"]
+      test:
+        ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-acgs_user} -d ${POSTGRES_DB:-acgs_pgp_db}']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,7 +25,7 @@ services:
     build: ./services/platform/authentication/auth_service
     container_name: acgs_auth_service_test
     ports:
-      - "8000:8000" # Internal port
+      - '8000:8000' # Internal port
     environment:
       - DATABASE_URL=${DATABASE_URL:-postgresql+asyncpg://acgs_user:acgs_password@postgres_db:5432/acgs_pgp_db}
       - SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-your_strong_jwt_secret_key_for_auth_service}
@@ -47,7 +48,7 @@ services:
     build: ./services/core/constitutional-ai/ac_service
     container_name: acgs_ac_service_test
     ports:
-      - "8001:8001" # Internal port
+      - '8001:8001' # Internal port
     environment:
       - DATABASE_URL=${DATABASE_URL:-postgresql+asyncpg://acgs_user:acgs_password@postgres_db:5432/acgs_pgp_db}
       - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}
@@ -65,7 +66,7 @@ services:
     build: ./services/platform/integrity/integrity_service
     container_name: acgs_integrity_service_test
     ports:
-      - "8002:8002" # Internal port
+      - '8002:8002' # Internal port
     environment:
       - DATABASE_URL=${DATABASE_URL:-postgresql+asyncpg://acgs_user:acgs_password@postgres_db:5432/acgs_pgp_db}
       - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}
@@ -83,7 +84,7 @@ services:
     build: ./services/core/formal-verification/fv_service
     container_name: acgs_fv_service_test
     ports:
-      - "8003:8003" # Internal port
+      - '8003:8003' # Internal port
     environment:
       - VERIFICATION_TOOL_ENDPOINT=${VERIFICATION_TOOL_ENDPOINT:-http://mock_verification_tool:80/verify}
       - AC_SERVICE_URL=${AC_SERVICE_URL:-http://ac_service:8001/api/v1}
@@ -105,7 +106,7 @@ services:
     build: ./services/core/governance-synthesis/gs_service
     container_name: acgs_gs_service_test
     ports:
-      - "8004:8004" # Internal port
+      - '8004:8004' # Internal port
     environment:
       - LLM_API_ENDPOINT=${LLM_API_ENDPOINT:-http://mock_llm_service/generate}
       - AC_SERVICE_URL=${AC_SERVICE_URL:-http://ac_service:8001/api/v1}
@@ -130,7 +131,7 @@ services:
     build: ./services/core/policy-governance/pgc_service
     container_name: acgs_pgc_service_test
     ports:
-      - "8005:8005" # Internal port
+      - '8005:8005' # Internal port
     environment:
       - INTEGRITY_SERVICE_URL=${INTEGRITY_SERVICE_URL:-http://integrity_service:8002/api/v1}
       - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}

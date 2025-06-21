@@ -42,6 +42,7 @@ tests/e2e/
 ### Prerequisites
 
 1. **System Requirements**:
+
    ```bash
    # Rust 1.81.0+ (for blockchain)
    rustc --version
@@ -58,20 +59,22 @@ tests/e2e/
    ```
 
 2. **Optional: Multimodal VL Model** (for integration tests):
+
    ```bash
    # Deploy NVIDIA Llama-3.1-Nemotron-Nano-VL-8B-V1 on localhost:8002
    # Required only for @pytest.mark.integration tests
    curl http://localhost:8002/health  # Verify deployment
    ```
 
-2. **ACGS-1 System Running**:
+3. **ACGS-1 System Running**:
+
    ```bash
    # Start all 8 core services
    ./scripts/start_all_services.sh
-   
+
    # Deploy blockchain programs to devnet
    cd blockchain && anchor deploy --provider.cluster devnet
-   
+
    # Start frontend applications
    cd applications && npm start
    ```
@@ -146,6 +149,7 @@ python tests/e2e/run_comprehensive_e2e_test.py --report-format html
 ```
 
 **Validation Criteria**:
+
 - ✅ All services respond within 500ms
 - ✅ Blockchain operations cost <0.01 SOL
 - ✅ Constitutional compliance score >0.8
@@ -165,6 +169,7 @@ python tests/e2e/run_comprehensive_e2e_test.py --report-format html
 ```
 
 **Validation Criteria**:
+
 - ✅ Emergency response time <2s
 - ✅ Authority validation successful
 - ✅ Complete audit trail maintained
@@ -184,6 +189,7 @@ python tests/e2e/run_comprehensive_e2e_test.py --report-format html
 ```
 
 **Validation Criteria**:
+
 - ✅ Appeal processing workflow complete
 - ✅ Evidence integrity maintained
 - ✅ Resolution properly documented
@@ -221,29 +227,32 @@ services = {
 
 ## 📈 Performance Targets
 
-| **Metric** | **Target** | **Validation** |
-|------------|------------|----------------|
-| **Service Response Time** | <500ms | ✅ All endpoints |
-| **Blockchain Cost** | <0.01 SOL | ✅ Per operation |
-| **Test Success Rate** | >90% | ✅ Overall suite |
-| **Constitutional Compliance** | >0.8 | ✅ All policies |
-| **Frontend Load Time** | <2s | ✅ All pages |
+| **Metric**                    | **Target** | **Validation**   |
+| ----------------------------- | ---------- | ---------------- |
+| **Service Response Time**     | <500ms     | ✅ All endpoints |
+| **Blockchain Cost**           | <0.01 SOL  | ✅ Per operation |
+| **Test Success Rate**         | >90%       | ✅ Overall suite |
+| **Constitutional Compliance** | >0.8       | ✅ All policies  |
+| **Frontend Load Time**        | <2s        | ✅ All pages     |
 
 ## 🔒 Security Validation
 
 ### Authentication & Authorization
+
 - ✅ JWT token validation
 - ✅ Role-based access control
 - ✅ Session management
 - ✅ Multi-factor authentication
 
 ### Cryptographic Security
+
 - ✅ Encryption strength (AES-256)
 - ✅ Digital signature validation
 - ✅ Key management security
 - ✅ Data integrity verification
 
 ### Constitutional Compliance
+
 - ✅ Principle adherence validation
 - ✅ Bias detection and mitigation
 - ✅ Transparency requirements
@@ -305,6 +314,7 @@ tests/logs/
 ### Common Issues
 
 **Issue**: Services not responding
+
 ```bash
 # Solution: Check service health
 curl http://localhost:8000/health
@@ -313,6 +323,7 @@ curl http://localhost:8001/health
 ```
 
 **Issue**: Blockchain deployment fails
+
 ```bash
 # Solution: Check Solana configuration
 solana config get
@@ -321,6 +332,7 @@ anchor build && anchor deploy
 ```
 
 **Issue**: Frontend automation fails
+
 ```bash
 # Solution: Check frontend server
 curl http://localhost:3000
@@ -340,6 +352,7 @@ pytest tests/e2e/ -v -s --tb=long
 ## 🤝 Contributing
 
 1. **Adding New Test Scenarios**:
+
    ```python
    # Create new scenario in tests/e2e/scenarios/
    async def test_new_governance_scenario(self):
@@ -348,6 +361,7 @@ pytest tests/e2e/ -v -s --tb=long
    ```
 
 2. **Extending Service Integration**:
+
    ```python
    # Add new service endpoints in modules/service_integration.py
    "new_service": {

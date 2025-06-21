@@ -10,7 +10,7 @@ trainer:
 
   grpo:
     max_epochs: 2
-    max_steps: -1  # max PPO steps (-1 to go through the whole train set)
+    max_steps: -1 # max PPO steps (-1 to go through the whole train set)
     val_check_interval: ${.save_interval}
     save_interval: 100
     gradient_clip_val: 1.0
@@ -18,7 +18,7 @@ trainer:
     greedy_on_validation: True
 
     # GRPO args to generate the data for training
-    initial_policy_kl_penalty: 0.00000001  # cannot be set to zero currently
+    initial_policy_kl_penalty: 0.00000001 # cannot be set to zero currently
     use_leave_one_out_baseline: True
     normalize_rewards: True
 
@@ -35,7 +35,7 @@ trainer:
     samples_per_prompt: 64
 
     val_prompt_micro_batch_size: ${int_div:${.val_num_prompts_per_grpo_step}, ${.dp_size}}
-    val_num_prompts_per_grpo_step: 1024  # TODO: double check they are not duplicated?
+    val_num_prompts_per_grpo_step: 1024 # TODO: double check they are not duplicated?
     val_samples_per_prompt: 1
 
     generation_save_dir: null
@@ -59,7 +59,7 @@ trainer:
 
     # Speed-up training by accelerating inference stage using backends like TRT-LLM, vLLM
     inference_backend:
-      type: vllm  # Can be 'trt_llm', 'trt_llm_pytorch', 'sglang', 'vllm'.
+      type: vllm # Can be 'trt_llm', 'trt_llm_pytorch', 'sglang', 'vllm'.
 
       # Common settings for all backends
       enable: True
@@ -75,7 +75,7 @@ trainer:
         trt_llm:
           # for supported values see: https://github.com/NVIDIA/NeMo/blob/db6244857af3b012f645c7f4672522978bb608b1/nemo/export/trt_llm/converter/utils.py#L26
           enable: False
-          model_type: llama  # Can be gptj, gptnext, llama, gemma, falcon
+          model_type: llama # Can be gptj, gptnext, llama, gemma, falcon
           unload_engine_train: False
 
         vllm:
@@ -161,7 +161,7 @@ model:
       compute_logprob: False
       # will be used in NeMo version > 1.20.0
       # keeping it for now
-      end_strings: ["<|endoftext|>", "<extra_id_1>"]
+      end_strings: ['<|endoftext|>', '<extra_id_1>']
 
     # length argument for autoregressive sampling
     # max length means max amount of tokens to generate
@@ -178,7 +178,7 @@ model:
     inference_backend: ${trainer.grpo.inference_backend}
 
   peft:
-    peft_scheme: "none"  # ["lora", "none"]
+    peft_scheme: 'none' # ["lora", "none"]
     restore_from_path: null
     restore_from_ckpt:
       checkpoint_dir: null
@@ -190,7 +190,7 @@ model:
       adapter_dropout: 0.0
       column_init_method: 'xavier' # IGNORED if linear_adapter is used, options: xavier, zero or normal
       row_init_method: 'zero' # IGNORED if linear_adapter is used, options: xavier, zero or normal
-      layer_selection:  null  # selects in which layers to add lora adapters. e.g. [1,12] will add lora to layer 1 (lowest) and 12. null will apply adapters to all layers
+      layer_selection: null # selects in which layers to add lora adapters. e.g. [1,12] will add lora to layer 1 (lowest) and 12. null will apply adapters to all layers
       weight_tying: False
       position_embedding_strategy: null # used only when weight_tying is True
 
@@ -219,8 +219,8 @@ model:
     lr: 3e-7
     weight_decay: 0.01
     betas:
-    - 0.9
-    - 0.98
+      - 0.9
+      - 0.98
     sched:
       name: CosineAnnealing
       warmup_steps: 0
@@ -245,7 +245,7 @@ model:
     system_prompt_file: null
     shuffle_train_data: True
     task_to_prompt_key:
-      math: input  # set to problem if apply_chat_template is True
+      math: input # set to problem if apply_chat_template is True
 
   dist_ckpt_format: torch_dist
   dist_ckpt_load_on_device: True

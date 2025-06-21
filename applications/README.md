@@ -26,17 +26,20 @@ A modern, minimalist governance dashboard built with Next.js 14, TypeScript, and
 ## 📦 Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd governance-dashboard-nextjs
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Run the development server:
+
 ```bash
 npm run dev
 ```
@@ -46,32 +49,40 @@ npm run dev
 ## 🎨 Design System
 
 ### Colors
+
 - **Base**: White (`#FFFFFF`), Light Gray (`#F5F7FA`), Dark Gray (`#1F2937`)
 - **Primary Accent**: Blue (`#3B82F6`)
 - **Status**: Success (`#10B981`), Warning (`#F59E0B`), Error (`#EF4444`)
 
 ### Typography
+
 - **Font**: Inter with fallbacks
 - **Scale**: Caption (12px), Body (14px), Subheading (16px), Heading (20px), Large Heading (24px)
 
 ### Spacing
+
 - Based on 4px grid system (4px, 8px, 16px, 24px, etc.)
 
 ## 🚀 Key Features
 
 ### Command Palette
+
 Press `⌘K` (Mac) or `Ctrl+K` (Windows/Linux) to open the global command palette for quick actions:
+
 - Create new policies and proposals
 - Navigate to different sections
 - Search across the application
 
 ### Draggable Dashboard
+
 Customize your dashboard by dragging and dropping cards to rearrange the layout. Your preferences are automatically saved.
 
 ### Theme System
+
 Toggle between light and dark themes using the theme toggle in the header. Your preference is saved locally.
 
 ### Responsive Navigation
+
 - Collapsible sidebar on desktop
 - Mobile-optimized navigation
 - Keyboard-accessible navigation
@@ -101,33 +112,40 @@ governance-dashboard-nextjs/
 ## 🧩 Component Architecture
 
 ### UI Components
+
 - **Button**: Flexible button component with variants
 - **Input**: Form input with validation support
 - **Card**: Draggable content cards with header/content sections
 
 ### Layout Components
+
 - **Sidebar**: Collapsible navigation sidebar
 - **CommandBar**: Global command palette
 - **ThemeToggle**: Dark/light mode toggle
 
 ### Hooks
+
 - **useKeyboard**: Handle keyboard shortcuts
 - **useLocalStorage**: Persistent local storage
 
 ## 🔧 Customization
 
 ### Adding New Routes
+
 1. Create a new page in the `app/(dashboard)` directory
 2. Add the route to the sidebar navigation in `components/layout/Sidebar.tsx`
 
 ### Creating New Components
+
 Follow the established patterns:
+
 - Use TypeScript interfaces for props
 - Include accessibility attributes
 - Support both light and dark themes
 - Use the established design tokens
 
 ### Adding Commands
+
 Add new commands to the command palette in `components/layout/CommandBar.tsx`:
 
 ```typescript
@@ -168,6 +186,7 @@ Add new commands to the command palette in `components/layout/CommandBar.tsx`:
 ## 🧪 Development
 
 ### Scripts
+
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
 - `npm run start` - Start production server
@@ -175,6 +194,7 @@ Add new commands to the command palette in `components/layout/CommandBar.tsx`:
 - `npm run type-check` - Run TypeScript compiler
 
 ### Code Quality
+
 - ESLint with Next.js configuration
 - TypeScript strict mode
 - Consistent code formatting

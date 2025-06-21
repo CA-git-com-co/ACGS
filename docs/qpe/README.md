@@ -1,9 +1,10 @@
 # Quantum Policy Evaluator (QPE)
+
 ## ACGS-1 Constitutional Governance Enhancement
 
 **Version**: 1.0  
 **Status**: ✅ **PRODUCTION READY**  
-**Compliance**: ACGS-1 Governance Specialist Protocol v2.0  
+**Compliance**: ACGS-1 Governance Specialist Protocol v2.0
 
 ---
 
@@ -60,12 +61,14 @@ Client Applications → QPE Service (port 8012) → PGC/OPA Service (port 8005)
 ### **Deployment**
 
 1. **Start QPE Service**:
+
    ```bash
    cd /home/dislove/ACGS-1
    docker-compose -f infrastructure/docker/docker-compose.yml up -d qpe_service
    ```
 
 2. **Verify Health**:
+
    ```bash
    curl http://localhost:8013/metrics  # Prometheus metrics
    grpc_health_probe -addr=localhost:8012  # gRPC health check
@@ -103,34 +106,42 @@ print(f"Policy state: {result.state.name}")
 ### **gRPC Service: QuantumPolicyEvaluator**
 
 #### **Register**
+
 ```protobuf
 rpc Register(RegisterRequest) returns (RegisterResponse)
 ```
+
 Initialize a new policy in quantum superposition.
 
 **Request**:
+
 - `policy_id`: Unique policy identifier
 - `criticality`: Policy criticality (HIGH, MEDIUM, LOW)
 - `deadline_hours`: Hours until automatic collapse (default: 24)
 - `deterministic_mode`: Use hash-based deterministic collapse
 
 **Response**:
+
 - `policy_id`: Confirmed policy ID
 - `entanglement_tag`: 32-byte HMAC constitutional entanglement
 - `quantum_state`: Initial superposition state
 
 #### **Measure**
+
 ```protobuf
 rpc Measure(MeasureRequest) returns (MeasureResponse)
 ```
+
 Collapse quantum superposition and evaluate policy.
 
 **Request**:
+
 - `policy_id`: Policy to measure
 - `context`: Evaluation context for PGC
 - `force_collapse`: Force collapse even if not needed
 
 **Response**:
+
 - `state`: Collapsed state (APPROVED, REJECTED, PENDING)
 - `pgc_result`: Actual PGC evaluation result
 - `latency_ms`: Total latency including QPE overhead
@@ -138,30 +149,38 @@ Collapse quantum superposition and evaluate policy.
 - `collapse_reason`: Reason for collapse (MEASUREMENT, OBSERVATION, etc.)
 
 #### **SetUncertainty**
+
 ```protobuf
 rpc SetUncertainty(UncertaintyRequest) returns (UncertaintyResponse)
 ```
+
 Configure uncertainty parameter λ for speed-accuracy trade-off.
 
 **Request**:
+
 - `lambda`: Uncertainty parameter ∈ [0,1]
 
 **Response**:
+
 - `lambda`: Confirmed λ value
 - `effect_description`: Human-readable effect description
 
 #### **Observe**
+
 ```protobuf
 rpc Observe(ObserveRequest) returns (ObserveResponse)
 ```
+
 Trigger observer effect to force quantum state collapse.
 
 **Request**:
+
 - `policy_id`: Policy to observe
 - `observer_id`: Stakeholder identifier
 - `observation_reason`: Reason for observation
 
 **Response**:
+
 - `state`: Final collapsed state
 - `was_collapsed`: Whether collapse occurred
 - `observation_timestamp`: Unix timestamp of observation
@@ -169,6 +188,7 @@ Trigger observer effect to force quantum state collapse.
 ### **REST API Integration (via PGC)**
 
 #### **Quantum Enforcement**
+
 ```http
 POST /api/v1/quantum/enforce
 Content-Type: application/json
@@ -182,6 +202,7 @@ Content-Type: application/json
 ```
 
 **Response**:
+
 ```json
 {
   "policy_id": "policy-123",
@@ -207,23 +228,23 @@ Content-Type: application/json
 
 ### **Environment Variables**
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `REDIS_URL` | `redis:6379` | Redis connection string |
-| `PGC_SERVICE_URL` | `pgc_service:8005` | PGC service endpoint |
-| `QPE_PORT` | `:8012` | QPE gRPC listen port |
-| `CONSTITUTIONAL_HASH` | `cdd01ef066bc6cf2` | Constitutional hash for entanglement |
-| `DEFAULT_UNCERTAINTY` | `0.5` | Default λ uncertainty parameter |
-| `MAX_LATENCY_OVERHEAD_MS` | `2.0` | Maximum QPE latency overhead |
-| `DETERMINISTIC_MODE` | `false` | Enable deterministic collapse mode |
+| Variable                  | Default            | Description                          |
+| ------------------------- | ------------------ | ------------------------------------ |
+| `REDIS_URL`               | `redis:6379`       | Redis connection string              |
+| `PGC_SERVICE_URL`         | `pgc_service:8005` | PGC service endpoint                 |
+| `QPE_PORT`                | `:8012`            | QPE gRPC listen port                 |
+| `CONSTITUTIONAL_HASH`     | `cdd01ef066bc6cf2` | Constitutional hash for entanglement |
+| `DEFAULT_UNCERTAINTY`     | `0.5`              | Default λ uncertainty parameter      |
+| `MAX_LATENCY_OVERHEAD_MS` | `2.0`              | Maximum QPE latency overhead         |
+| `DETERMINISTIC_MODE`      | `false`            | Enable deterministic collapse mode   |
 
 ### **Uncertainty Parameter (λ) Effects**
 
-| λ Range | Effect | Use Case |
-|---------|--------|----------|
-| 0.0 - 0.3 | **High Speed Mode** | Fast processing, fewer validation checks |
-| 0.3 - 0.7 | **Balanced Mode** | Moderate speed-accuracy trade-off |
-| 0.7 - 1.0 | **High Accuracy Mode** | Thorough validation, slower processing |
+| λ Range   | Effect                 | Use Case                                 |
+| --------- | ---------------------- | ---------------------------------------- |
+| 0.0 - 0.3 | **High Speed Mode**    | Fast processing, fewer validation checks |
+| 0.3 - 0.7 | **Balanced Mode**      | Moderate speed-accuracy trade-off        |
+| 0.7 - 1.0 | **High Accuracy Mode** | Thorough validation, slower processing   |
 
 ### **Collapse Rules**
 
@@ -272,32 +293,43 @@ All quantum operations include comprehensive audit trails:
 ## 🔬 **Quantum Mechanics Principles**
 
 ### **Superposition**
+
 Policies exist in linear combination of basis states:
+
 ```
 |ψ⟩ = α|approved⟩ + β|rejected⟩ + γ|pending⟩
 ```
+
 Where |α|² + |β|² + |γ|² = 1
 
 ### **Entanglement**
+
 Constitutional entanglement via HMAC-SHA256:
+
 ```
 etag = HMAC_SHA256("cdd01ef066bc6cf2", policy_id)
 ```
 
 ### **Observer Effect**
+
 Stakeholder observation immediately collapses superposition:
+
 ```
 |ψ⟩ → |definite_state⟩
 ```
 
 ### **Uncertainty Principle**
+
 Heisenberg-like uncertainty relation:
+
 ```
 Δ(accuracy) × Δ(speed) ≥ K
 ```
 
 ### **Wave Function Collapse**
+
 Probabilistic collapse based on amplitude weights:
+
 ```
 P(state_i) = |amplitude_i|²
 ```
@@ -307,17 +339,20 @@ P(state_i) = |amplitude_i|²
 ## 🧪 **Testing**
 
 ### **Unit Tests**
+
 ```bash
 cd services/core/policy-governance/qpe_service
 go test -v -cover ./...
 ```
 
 **Coverage Requirements**:
+
 - ≥90% test pass rate
 - ≥80% code coverage
 - All quantum mechanics principles validated
 
 ### **Integration Tests**
+
 ```bash
 # Test quantum enforcement workflow
 curl -X POST http://localhost:8005/api/v1/quantum/enforce \
@@ -326,12 +361,14 @@ curl -X POST http://localhost:8005/api/v1/quantum/enforce \
 ```
 
 ### **Performance Tests**
+
 ```bash
 # Benchmark QPE latency
 go test -bench=BenchmarkMeasure -benchtime=10s
 ```
 
 **Performance Targets**:
+
 - QPE latency: <2ms (95th percentile)
 - Total latency: <25ms (QPE + PGC)
 - Throughput: >1000 RPS
@@ -343,11 +380,13 @@ go test -bench=BenchmarkMeasure -benchtime=10s
 ### **Common Issues**
 
 1. **High Latency**:
+
    - Check Redis connectivity
    - Verify uncertainty parameter (lower λ for speed)
    - Monitor Prometheus metrics
 
 2. **Entanglement Failures**:
+
    - Verify constitutional hash configuration
    - Check HMAC calculation integrity
    - Review audit logs
@@ -378,12 +417,14 @@ curl http://localhost:8013/metrics | grep qpe_
 ## 🔮 **Future Enhancements**
 
 ### **Planned Features**
+
 - **Quantum Entanglement Networks**: Multi-policy entanglement
 - **Decoherence Modeling**: Environmental noise effects
 - **Quantum Error Correction**: Fault-tolerant quantum states
 - **Many-Body Quantum Systems**: Complex policy interactions
 
 ### **Research Opportunities**
+
 - Quantum machine learning for policy optimization
 - Topological quantum computing for governance
 - Quantum cryptography for enhanced security
@@ -394,12 +435,14 @@ curl http://localhost:8013/metrics | grep qpe_
 ## 📞 **Support**
 
 ### **Documentation**
+
 - **Design Specification**: `docs/qpe/design-specification.md`
 - **Integration Guide**: `docs/qpe/integration-guide.md`
 - **Performance Tuning**: `docs/qpe/performance-tuning.md`
 - **Audit Log Format**: `docs/qpe/audit-log-format.md`
 
 ### **Contact**
+
 - **Technical Issues**: Check GitHub issues
 - **Performance Questions**: Review Prometheus metrics
 - **Integration Support**: See integration guide

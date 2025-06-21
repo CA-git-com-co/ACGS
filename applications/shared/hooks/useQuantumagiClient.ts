@@ -14,7 +14,7 @@ export const useQuantumagiClient = () => {
     if (!wallet.publicKey || !connection) {
       return null;
     }
-    
+
     return new QuantumagiClient(connection, wallet);
   }, [connection, wallet.publicKey, wallet.connected]);
 

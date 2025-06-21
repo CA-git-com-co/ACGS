@@ -13,41 +13,41 @@ graph TB
         PGC[PGC Service:8005]
         EC[EC Service:8006]
     end
-    
+
     subgraph "NeMo-Skills Mathematical Reasoning Layer"
         TIR[Tool-Integrated Reasoning Engine]
         SANDBOX[Code Execution Sandbox]
         BACKENDS[Multi-Backend Inference]
         EVAL[Mathematical Evaluation Engine]
     end
-    
+
     subgraph "Constitutional Governance Integration"
         MATH_POLICY[Mathematical Policy Synthesis]
         QUANT_COMPLIANCE[Quantitative Compliance Validation]
         RISK_ANALYSIS[Mathematical Risk Assessment]
         DECISION_SUPPORT[Governance Decision Support]
     end
-    
+
     subgraph "Infrastructure Layer"
         REDIS[(Redis Cache)]
         POSTGRES[(PostgreSQL)]
         QUANTUMAGI[Quantumagi Solana]
         MONITORING[Prometheus/Grafana]
     end
-    
+
     GS --> TIR
     PGC --> QUANT_COMPLIANCE
     FV --> MATH_POLICY
     AC --> RISK_ANALYSIS
-    
+
     TIR --> SANDBOX
     TIR --> BACKENDS
     TIR --> EVAL
-    
+
     MATH_POLICY --> DECISION_SUPPORT
     QUANT_COMPLIANCE --> DECISION_SUPPORT
     RISK_ANALYSIS --> DECISION_SUPPORT
-    
+
     DECISION_SUPPORT --> REDIS
     DECISION_SUPPORT --> POSTGRES
     DECISION_SUPPORT --> QUANTUMAGI
@@ -61,12 +61,14 @@ graph TB
 **Location:** `services/core/mathematical-reasoning/mrs_service/`
 
 **Responsibilities:**
+
 - Tool-Integrated Reasoning (TIR) orchestration
 - Mathematical problem solving and validation
 - Code execution management and security
 - Integration with constitutional governance workflows
 
 **API Endpoints:**
+
 ```python
 # Mathematical reasoning endpoints
 POST /math/solve                    # Solve mathematical problems
@@ -77,29 +79,30 @@ GET  /math/health                   # Service health and metrics
 ```
 
 **Configuration:**
+
 ```yaml
 mrs_config:
   service:
-    name: "mathematical_reasoning_service"
-    host: "0.0.0.0"
+    name: 'mathematical_reasoning_service'
+    host: '0.0.0.0'
     port: 8007
     workers: 4
     timeout_seconds: 60
-  
+
   nemo_skills:
     tir_config:
       max_code_executions: 8
       timeout_ms: 30000
-      sandbox_type: "local"
+      sandbox_type: 'local'
       enable_caching: true
-    
+
     server_backends:
-      primary: "vllm"
-      fallback: ["trtllm", "sglang"]
-      model_name: "meta/llama-3.3-70b-instruct"
-    
+      primary: 'vllm'
+      fallback: ['trtllm', 'sglang']
+      model_name: 'meta/llama-3.3-70b-instruct'
+
     evaluation:
-      benchmarks: ["gsm8k", "math", "aime24"]
+      benchmarks: ['gsm8k', 'math', 'aime24']
       accuracy_threshold: 0.85
       performance_target_ms: 2000
 ```
@@ -109,12 +112,13 @@ mrs_config:
 **Location:** `services/core/constitutional-ai/ac_service/mathematical/`
 
 **Integration Points:**
+
 ```python
 class ConstitutionalMathematicalAnalyzer:
     """
     Integrates mathematical reasoning with constitutional compliance.
     """
-    
+
     async def analyze_policy_mathematics(
         self,
         policy_content: str,
@@ -123,16 +127,16 @@ class ConstitutionalMathematicalAnalyzer:
     ) -> MathematicalAnalysisResult:
         """
         Analyze mathematical aspects of policy proposals.
-        
+
         Args:
             policy_content: Policy text to analyze
             mathematical_context: Numerical data and constraints
             compliance_requirements: Constitutional math requirements
-            
+
         Returns:
             Mathematical analysis with compliance scoring
         """
-        
+
     async def validate_quantitative_compliance(
         self,
         governance_decision: dict,
@@ -142,7 +146,7 @@ class ConstitutionalMathematicalAnalyzer:
         """
         Validate governance decisions using mathematical models.
         """
-        
+
     async def generate_mathematical_policy_rules(
         self,
         constitutional_principle: str,
@@ -159,12 +163,13 @@ class ConstitutionalMathematicalAnalyzer:
 **Location:** `services/core/governance-synthesis/gs_service/quantitative/`
 
 **Enhanced Policy Synthesis:**
+
 ```python
 class QuantitativeGovernanceEngine:
     """
     Enhanced policy synthesis with mathematical reasoning capabilities.
     """
-    
+
     async def synthesize_mathematical_policy(
         self,
         requirements: PolicyRequirements,
@@ -174,7 +179,7 @@ class QuantitativeGovernanceEngine:
         """
         Synthesize policies with mathematical optimization.
         """
-        
+
     async def analyze_policy_impact_quantitatively(
         self,
         policy_proposal: dict,
@@ -184,7 +189,7 @@ class QuantitativeGovernanceEngine:
         """
         Quantitative analysis of policy impact using mathematical models.
         """
-        
+
     async def optimize_governance_parameters(
         self,
         current_parameters: dict,
@@ -201,31 +206,32 @@ class QuantitativeGovernanceEngine:
 ### 4. Service Integration Patterns
 
 **Mathematical Reasoning Workflow:**
+
 ```python
 # Example integration with PGC Service
 async def enhanced_policy_compliance_check(
     policy_content: str,
     mathematical_requirements: dict
 ) -> ComplianceResult:
-    
+
     # Step 1: Extract mathematical components
     math_components = await mrs_service.extract_mathematical_elements(
         policy_content
     )
-    
+
     # Step 2: Validate mathematical consistency
     consistency_result = await mrs_service.validate_mathematical_consistency(
         math_components,
         mathematical_requirements
     )
-    
+
     # Step 3: Constitutional compliance with quantitative analysis
     compliance_result = await ac_service.analyze_mathematical_compliance(
         policy_content,
         math_components,
         consistency_result
     )
-    
+
     # Step 4: Generate compliance report
     return ComplianceResult(
         mathematical_validity=consistency_result.is_valid,
@@ -238,13 +244,14 @@ async def enhanced_policy_compliance_check(
 ### 5. Performance Optimization
 
 **Caching Strategy:**
+
 ```python
 # Redis caching for mathematical computations
 class MathematicalResultCache:
     """
     Intelligent caching for mathematical reasoning results.
     """
-    
+
     async def cache_mathematical_result(
         self,
         problem_hash: str,
@@ -252,13 +259,13 @@ class MathematicalResultCache:
         ttl_seconds: int = 3600
     ) -> None:
         """Cache mathematical solutions with TTL."""
-        
+
     async def get_cached_result(
         self,
         problem_hash: str
     ) -> Optional[MathematicalSolution]:
         """Retrieve cached mathematical solutions."""
-        
+
     async def invalidate_related_cache(
         self,
         policy_id: str,
@@ -268,6 +275,7 @@ class MathematicalResultCache:
 ```
 
 **Database Schema Extensions:**
+
 ```sql
 -- Mathematical reasoning results storage
 CREATE TABLE mathematical_reasoning_results (
@@ -312,6 +320,7 @@ CREATE TABLE quantitative_compliance_metrics (
 ### 6. Mathematical Code Execution Security
 
 **Sandbox Configuration:**
+
 ```yaml
 sandbox_security:
   execution_limits:
@@ -319,25 +328,26 @@ sandbox_security:
     memory_limit_mb: 512
     cpu_limit_percent: 50
     network_access: false
-    file_system_access: "read_only"
-  
+    file_system_access: 'read_only'
+
   allowed_libraries:
-    - "numpy"
-    - "scipy"
-    - "sympy"
-    - "matplotlib"
-    - "pandas"
-    - "sklearn"
-  
+    - 'numpy'
+    - 'scipy'
+    - 'sympy'
+    - 'matplotlib'
+    - 'pandas'
+    - 'sklearn'
+
   prohibited_operations:
-    - "file_write"
-    - "network_request"
-    - "subprocess_execution"
-    - "system_calls"
-    - "import_external_modules"
+    - 'file_write'
+    - 'network_request'
+    - 'subprocess_execution'
+    - 'system_calls'
+    - 'import_external_modules'
 ```
 
 **Constitutional Compliance Validation:**
+
 ```python
 async def validate_mathematical_constitutional_compliance(
     mathematical_solution: MathematicalSolution,
@@ -345,21 +355,21 @@ async def validate_mathematical_constitutional_compliance(
 ) -> ComplianceValidationResult:
     """
     Ensure mathematical solutions comply with constitutional principles.
-    
+
     Validation includes:
     - Fairness in mathematical models
     - Transparency in calculations
     - Accountability in decision algorithms
     - Privacy preservation in data analysis
     """
-    
+
     compliance_checks = [
         check_mathematical_fairness(mathematical_solution),
         check_calculation_transparency(mathematical_solution),
         check_algorithmic_accountability(mathematical_solution),
         check_privacy_preservation(mathematical_solution)
     ]
-    
+
     return ComplianceValidationResult(
         overall_compliance=all(check.passed for check in compliance_checks),
         individual_checks=compliance_checks,
@@ -372,11 +382,12 @@ async def validate_mathematical_constitutional_compliance(
 ### 7. Performance Metrics
 
 **Key Performance Indicators:**
+
 ```python
 # Mathematical reasoning performance metrics
 MATHEMATICAL_REASONING_METRICS = {
     "accuracy_gsm8k": "Accuracy on GSM8K benchmark",
-    "accuracy_math": "Accuracy on MATH benchmark", 
+    "accuracy_math": "Accuracy on MATH benchmark",
     "accuracy_aime": "Accuracy on AIME benchmark",
     "avg_response_time_ms": "Average response time in milliseconds",
     "concurrent_executions": "Number of concurrent mathematical executions",
@@ -388,23 +399,24 @@ MATHEMATICAL_REASONING_METRICS = {
 ```
 
 **Prometheus Metrics Configuration:**
+
 ```yaml
 prometheus_metrics:
   mathematical_reasoning:
-    - name: "acgs_mathematical_accuracy"
-      type: "gauge"
-      description: "Mathematical reasoning accuracy by benchmark"
-      labels: ["benchmark", "model", "configuration"]
-    
-    - name: "acgs_mathematical_response_time"
-      type: "histogram"
-      description: "Mathematical reasoning response time distribution"
+    - name: 'acgs_mathematical_accuracy'
+      type: 'gauge'
+      description: 'Mathematical reasoning accuracy by benchmark'
+      labels: ['benchmark', 'model', 'configuration']
+
+    - name: 'acgs_mathematical_response_time'
+      type: 'histogram'
+      description: 'Mathematical reasoning response time distribution'
       buckets: [100, 500, 1000, 2000, 5000, 10000]
-    
-    - name: "acgs_constitutional_math_compliance"
-      type: "gauge"
-      description: "Constitutional compliance rate for mathematical decisions"
-      labels: ["policy_type", "mathematical_model"]
+
+    - name: 'acgs_constitutional_math_compliance'
+      type: 'gauge'
+      description: 'Constitutional compliance rate for mathematical decisions'
+      labels: ['policy_type', 'mathematical_model']
 ```
 
 ## Deployment Configuration
@@ -412,6 +424,7 @@ prometheus_metrics:
 ### 8. Docker Configuration
 
 **Mathematical Reasoning Service Dockerfile:**
+
 ```dockerfile
 FROM nvidia/cuda:12.1-devel-ubuntu22.04
 

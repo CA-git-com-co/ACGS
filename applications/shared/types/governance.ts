@@ -181,29 +181,29 @@ export interface AuthContextType {
 
 // Legacy types for backward compatibility
 export interface Proposal {
-  id: string
-  title: string
-  description: string
-  proposer: string
-  status: 'pending' | 'voting' | 'approved' | 'rejected'
-  votingDeadline: Date
-  createdAt: Date
-  votes: Vote[]
+  id: string;
+  title: string;
+  description: string;
+  proposer: string;
+  status: 'pending' | 'voting' | 'approved' | 'rejected';
+  votingDeadline: Date;
+  createdAt: Date;
+  votes: Vote[];
 }
 
 export interface Vote {
-  id: string
-  proposalId: string
-  userId: string
-  vote: 'yes' | 'no' | 'abstain'
-  comment?: string
-  createdAt: Date
+  id: string;
+  proposalId: string;
+  userId: string;
+  vote: 'yes' | 'no' | 'abstain';
+  comment?: string;
+  createdAt: Date;
 }
 
 export interface DashboardCard {
-  id: string
-  title: string
-  content: React.ReactNode
-  position: number
-  size: 'small' | 'medium' | 'large'
+  id: string;
+  title: string;
+  content: React.ReactNode;
+  position: number;
+  size: 'small' | 'medium' | 'large';
 }

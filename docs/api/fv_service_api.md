@@ -17,11 +17,13 @@ Enterprise-grade formal verification with advanced algorithms, cryptographic val
 ## 📋 API Endpoints
 
 ### Health Check
+
 ```http
 GET /health
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": "healthy",
@@ -36,6 +38,7 @@ GET /health
 ```
 
 **Error Response (503 Service Unavailable):**
+
 ```json
 {
   "status": "unhealthy",
@@ -47,9 +50,11 @@ GET /health
 ### Core Endpoints
 
 #### GET /api/v1/enterprise/status
+
 Get enterprise formal verification status and capabilities.
 
 **Response (200 OK):**
+
 ```json
 {
   "enterprise_verification_enabled": true,
@@ -71,9 +76,11 @@ Get enterprise formal verification status and capabilities.
 ### Verification Endpoints
 
 #### POST /api/v1/validate
+
 Validate content for security threats and constitutional compliance.
 
 **Request:**
+
 ```json
 {
   "content": "Policy content to validate",
@@ -84,6 +91,7 @@ Validate content for security threats and constitutional compliance.
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "validation_id": "VAL-1234567890",
@@ -104,9 +112,11 @@ Validate content for security threats and constitutional compliance.
 ```
 
 #### POST /api/v1/verify/constitutional-compliance
+
 Verify constitutional compliance with formal verification.
 
 **Request:**
+
 ```json
 {
   "content": "Policy content",
@@ -116,6 +126,7 @@ Verify constitutional compliance with formal verification.
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "verification_status": "verified",
@@ -131,9 +142,11 @@ Verify constitutional compliance with formal verification.
 ```
 
 #### POST /api/v1/verify
+
 Orchestrate formal verification of Datalog policy rules against AC principles.
 
 **Request:**
+
 ```json
 {
   "policy_rule_refs": [
@@ -147,12 +160,15 @@ Orchestrate formal verification of Datalog policy rules against AC principles.
 ```
 
 #### POST /api/v1/verify/tiered-verification
+
 Phase 3 tiered formal verification with Automated, HITL, and Rigorous validation levels.
 
 #### POST /api/v1/verify/generate-formal-proof
+
 Generate formal mathematical proof for constitutional property verification.
 
 **Request:**
+
 ```json
 {
   "property_specification": "Property to prove",
@@ -164,9 +180,11 @@ Generate formal mathematical proof for constitutional property verification.
 ### Performance & Monitoring
 
 #### GET /api/v1/performance/metrics
+
 Get performance metrics and optimization status.
 
 **Response (200 OK):**
+
 ```json
 {
   "performance_optimization_enabled": true,
@@ -192,9 +210,11 @@ Get performance metrics and optimization status.
 ```
 
 #### GET /api/v1/validation/error-reports
+
 Get comprehensive error handling and validation reports.
 
 #### Service-Specific Features
+
 - Z3 SMT solver integration for mathematical proofs
 - Tiered validation pipeline (Automated, HITL, Rigorous)
 - Parallel processing and caching optimization
@@ -204,10 +224,10 @@ Get comprehensive error handling and validation reports.
 - Advanced security threat detection
 - Performance optimization with load balancing
 
-
 ## 🔧 Error Handling
 
 ### Standard Error Codes
+
 - **400 Bad Request:** Invalid input parameters
 - **401 Unauthorized:** Authentication required
 - **403 Forbidden:** Insufficient permissions
@@ -217,6 +237,7 @@ Get comprehensive error handling and validation reports.
 - **503 Service Unavailable:** Service temporarily unavailable
 
 ### Error Response Format
+
 ```json
 {
   "error": {
@@ -242,11 +263,13 @@ Get comprehensive error handling and validation reports.
 ## 🔐 Authentication
 
 ### JWT Token Authentication
+
 ```http
 Authorization: Bearer <jwt_token>
 ```
 
 ### API Key Authentication (Optional)
+
 ```http
 X-API-Key: <api_key>
 ```

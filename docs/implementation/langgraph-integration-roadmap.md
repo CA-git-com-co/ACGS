@@ -9,6 +9,7 @@ This roadmap outlines the practical implementation steps for integrating LangGra
 ### 1.1 Dependencies and Infrastructure
 
 **Add LangGraph Dependencies**:
+
 ```bash
 # Backend services requiring LangGraph
 cd services/core/ac_service && pip install langgraph>=0.2.6 langchain>=0.3.19 langchain-google-genai
@@ -16,6 +17,7 @@ cd services/core/gs_service && pip install langgraph>=0.2.6 langchain>=0.3.19 la
 ```
 
 **Environment Configuration**:
+
 ```bash
 # Add to .env.example
 GEMINI_API_KEY=your_gemini_api_key_here
@@ -24,23 +26,25 @@ LANGGRAPH_POSTGRES_URL=postgresql://acgs_user:acgs_password@localhost:5433/acgs_
 ```
 
 **Docker Compose Updates**:
+
 ```yaml
 # Add to infrastructure/docker/docker-compose.yml
-  langgraph-redis:
-    image: redis:6
-    container_name: acgs_langgraph_redis
-    ports:
-      - "6380:6379"
-    healthcheck:
-      test: redis-cli ping
-      interval: 5s
-      timeout: 1s
-      retries: 5
+langgraph-redis:
+  image: redis:6
+  container_name: acgs_langgraph_redis
+  ports:
+    - '6380:6379'
+  healthcheck:
+    test: redis-cli ping
+    interval: 5s
+    timeout: 1s
+    retries: 5
 ```
 
 ### 1.2 Base State Management Classes
 
 **Create shared state management**:
+
 ```python
 # services/core/shared/langgraph_states.py
 from typing import TypedDict, Annotated, List, Dict, Any
@@ -84,6 +88,7 @@ class PolicySynthesisState(BaseACGSState):
 **Implementation Location**: `services/core/ac_service/app/workflows/constitutional_council.py`
 
 **Key Components**:
+
 1. Amendment proposal generation
 2. Stakeholder feedback collection
 3. Constitutional analysis
@@ -91,6 +96,7 @@ class PolicySynthesisState(BaseACGSState):
 5. Democratic voting process
 
 **Integration Points**:
+
 - AC Service: Amendment management and constitutional analysis
 - Auth Service: Stakeholder authentication and role validation
 - Frontend: Real-time workflow monitoring
@@ -100,6 +106,7 @@ class PolicySynthesisState(BaseACGSState):
 **Implementation Location**: `services/core/ac_service/app/core/constitutional_models.py`
 
 **Model Specialization**:
+
 - Constitutional Analysis: Gemini 2.5 Pro (high accuracy)
 - Amendment Drafting: Gemini 2.0 Flash (speed)
 - Stakeholder Communication: Gemini 2.5 Flash (balanced)
@@ -108,14 +115,15 @@ class PolicySynthesisState(BaseACGSState):
 ### 2.3 Frontend Integration
 
 **Real-time Amendment Tracking**:
+
 ```typescript
 // applications/src/components/ConstitutionalCouncilDashboard.tsx
-import { useStream } from "@langchain/langgraph-sdk/react";
+import { useStream } from '@langchain/langgraph-sdk/react';
 
 export function ConstitutionalCouncilDashboard() {
   const amendmentStream = useStream({
-    apiUrl: "http://localhost:8001",
-    assistantId: "constitutional-council",
+    apiUrl: 'http://localhost:8001',
+    assistantId: 'constitutional-council',
     onUpdateEvent: (event) => {
       // Handle amendment workflow events
       if (event.amendment_proposal) {
@@ -127,9 +135,9 @@ export function ConstitutionalCouncilDashboard() {
       if (event.constitutional_analysis) {
         updateAnalysisResults(event);
       }
-    }
+    },
   });
-  
+
   // Component implementation
 }
 ```
@@ -141,6 +149,7 @@ export function ConstitutionalCouncilDashboard() {
 **Implementation Location**: `services/core/gs_service/app/workflows/policy_synthesis.py`
 
 **Workflow Steps**:
+
 1. Constitutional principle analysis
 2. Context-aware policy generation
 3. Constitutional compliance validation
@@ -152,6 +161,7 @@ export function ConstitutionalCouncilDashboard() {
 **Implementation Location**: `services/core/gs_service/app/core/multi_model_manager.py`
 
 **Features**:
+
 - Role-based model selection
 - Automatic fallback mechanisms
 - Retry logic with exponential backoff
@@ -161,6 +171,7 @@ export function ConstitutionalCouncilDashboard() {
 ### 3.3 Structured Output Validation
 
 **Policy Generation Schemas**:
+
 ```python
 # services/core/gs_service/app/schemas/policy_schemas.py
 from pydantic import BaseModel, Field
@@ -187,6 +198,7 @@ class PolicyGenerationResponse(BaseModel):
 **Implementation Location**: `applications/src/components/ConstitutionalFidelityMonitor.tsx`
 
 **Features**:
+
 - Real-time fidelity score tracking
 - Constitutional violation alerts
 - Corrective action recommendations
@@ -197,6 +209,7 @@ class PolicyGenerationResponse(BaseModel):
 **Implementation Location**: `services/core/gs_service/app/workflows/qec_correction.py`
 
 **Error Correction Workflow**:
+
 1. Constitutional distance scoring
 2. Error prediction and detection
 3. Automatic correction strategies
@@ -205,6 +218,7 @@ class PolicyGenerationResponse(BaseModel):
 ### 4.3 Performance Monitoring Integration
 
 **Metrics Collection**:
+
 - Constitutional fidelity scores
 - Policy synthesis success rates
 - Model performance metrics
@@ -215,6 +229,7 @@ class PolicyGenerationResponse(BaseModel):
 ### 5.1 Integration Testing
 
 **Test Scenarios**:
+
 1. End-to-end Constitutional Council workflows
 2. Multi-model GS Engine policy synthesis
 3. Real-time monitoring and alerting
@@ -223,6 +238,7 @@ class PolicyGenerationResponse(BaseModel):
 ### 5.2 Performance Validation
 
 **Target Metrics**:
+
 - Constitutional fidelity score: >0.85
 - Policy synthesis success rate: >95%
 - Response time: <200ms for monitoring
@@ -231,6 +247,7 @@ class PolicyGenerationResponse(BaseModel):
 ### 5.3 User Acceptance Testing
 
 **Stakeholder Validation**:
+
 - Constitutional Council members
 - Policy administrators
 - System auditors
@@ -239,6 +256,7 @@ class PolicyGenerationResponse(BaseModel):
 ## Implementation Checklist
 
 ### Week 1-2: Foundation
+
 - [ ] Install LangGraph dependencies
 - [ ] Configure environment variables
 - [ ] Update Docker Compose configuration
@@ -246,6 +264,7 @@ class PolicyGenerationResponse(BaseModel):
 - [ ] Set up Redis for LangGraph state management
 
 ### Week 3-4: Constitutional Council
+
 - [ ] Implement Constitutional Council workflow graph
 - [ ] Configure multi-model support for constitutional analysis
 - [ ] Create frontend dashboard for amendment tracking
@@ -253,6 +272,7 @@ class PolicyGenerationResponse(BaseModel):
 - [ ] Test amendment proposal workflows
 
 ### Week 5-6: GS Engine Enhancement
+
 - [ ] Implement policy synthesis workflow graph
 - [ ] Create multi-model manager with fallback support
 - [ ] Add structured output validation
@@ -260,6 +280,7 @@ class PolicyGenerationResponse(BaseModel):
 - [ ] Test policy generation workflows
 
 ### Week 7-8: Monitoring and QEC
+
 - [ ] Implement constitutional fidelity monitor
 - [ ] Create QEC-inspired error correction workflows
 - [ ] Add performance monitoring and metrics
@@ -267,6 +288,7 @@ class PolicyGenerationResponse(BaseModel):
 - [ ] Test error correction mechanisms
 
 ### Week 9-10: Testing and Validation
+
 - [ ] Conduct comprehensive integration testing
 - [ ] Validate performance against target metrics
 - [ ] Perform user acceptance testing

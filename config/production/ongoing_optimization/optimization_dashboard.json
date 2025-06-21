@@ -1,11 +1,7 @@
 {
   "dashboard": {
     "title": "ACGS-1 Ongoing Optimization Monitor",
-    "tags": [
-      "acgs",
-      "optimization",
-      "production"
-    ],
+    "tags": ["acgs", "optimization", "production"],
     "panels": [
       {
         "id": 1,

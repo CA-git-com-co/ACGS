@@ -1,6 +1,6 @@
 /**
  * Health Monitor Service Integration for Legacy Frontend
- * 
+ *
  * Provides health monitoring capabilities specifically for the legacy-frontend
  * application with integration to the shared health monitoring system.
  */
@@ -10,19 +10,19 @@ import { healthMonitor, ACGS_SERVICES } from '@acgs/shared/services/healthMonito
 // Legacy-specific health monitoring configuration
 const LEGACY_HEALTH_CONFIG = {
   // Monitoring intervals
-  FAST_INTERVAL: 10000,    // 10 seconds for critical monitoring
-  NORMAL_INTERVAL: 30000,  // 30 seconds for normal monitoring
-  SLOW_INTERVAL: 60000,    // 60 seconds for background monitoring
-  
+  FAST_INTERVAL: 10000, // 10 seconds for critical monitoring
+  NORMAL_INTERVAL: 30000, // 30 seconds for normal monitoring
+  SLOW_INTERVAL: 60000, // 60 seconds for background monitoring
+
   // Alert thresholds for legacy frontend
-  RESPONSE_TIME_THRESHOLD: 2000,  // 2 seconds
-  ERROR_RATE_THRESHOLD: 5,        // 5%
-  UPTIME_THRESHOLD: 99.5,         // 99.5%
-  CONSECUTIVE_FAILURES: 3,        // 3 consecutive failures
-  
+  RESPONSE_TIME_THRESHOLD: 2000, // 2 seconds
+  ERROR_RATE_THRESHOLD: 5, // 5%
+  UPTIME_THRESHOLD: 99.5, // 99.5%
+  CONSECUTIVE_FAILURES: 3, // 3 consecutive failures
+
   // Critical services for legacy frontend
   CRITICAL_SERVICES: ['auth', 'ac', 'gs', 'pgc'],
-  
+
   // Services required for Quantumagi functionality
   QUANTUMAGI_SERVICES: ['auth', 'ac', 'pgc'],
 };
@@ -47,7 +47,7 @@ class LegacyHealthMonitorService {
     this.alertCallbacks = [];
     this.statusCallbacks = [];
     this.criticalServiceFailures = new Set();
-    
+
     // Bind methods
     this.handleAlert = this.handleAlert.bind(this);
     this.handleStatusChange = this.handleStatusChange.bind(this);
@@ -92,7 +92,7 @@ class LegacyHealthMonitorService {
   async checkAllServices() {
     try {
       const results = await healthMonitor.checkAllServices();
-      
+
       // Update cache
       healthStatusCache = {
         lastUpdate: Date.now(),
@@ -104,7 +104,7 @@ class LegacyHealthMonitorService {
       this.checkCriticalServices(results);
 
       // Notify status callbacks
-      this.statusCallbacks.forEach(callback => {
+      this.statusCallbacks.forEach((callback) => {
         try {
           callback(results);
         } catch (error) {
@@ -163,11 +163,11 @@ class LegacyHealthMonitorService {
     const previousFailures = new Set(this.criticalServiceFailures);
     this.criticalServiceFailures.clear();
 
-    LEGACY_HEALTH_CONFIG.CRITICAL_SERVICES.forEach(serviceKey => {
+    LEGACY_HEALTH_CONFIG.CRITICAL_SERVICES.forEach((serviceKey) => {
       const result = results[serviceKey];
       if (result && result.status === 'unhealthy') {
         this.criticalServiceFailures.add(serviceKey);
-        
+
         // If this is a new failure, trigger immediate alert
         if (!previousFailures.has(serviceKey)) {
           this.triggerCriticalServiceAlert(serviceKey, result);
@@ -176,7 +176,7 @@ class LegacyHealthMonitorService {
     });
 
     // Check for recovery
-    previousFailures.forEach(serviceKey => {
+    previousFailures.forEach((serviceKey) => {
       if (!this.criticalServiceFailures.has(serviceKey)) {
         this.triggerServiceRecoveryAlert(serviceKey);
       }
@@ -190,7 +190,7 @@ class LegacyHealthMonitorService {
     const cached = this.getCachedHealthStatus();
     if (!cached) return null;
 
-    return LEGACY_HEALTH_CONFIG.QUANTUMAGI_SERVICES.every(serviceKey => {
+    return LEGACY_HEALTH_CONFIG.QUANTUMAGI_SERVICES.every((serviceKey) => {
       const result = cached[serviceKey];
       return result && result.status === 'healthy';
     });
@@ -205,7 +205,7 @@ class LegacyHealthMonitorService {
     }
 
     this.monitoringMode = mode;
-    
+
     if (this.isInitialized) {
       this.stopMonitoring();
       this.startMonitoring();
@@ -229,7 +229,9 @@ class LegacyHealthMonitorService {
     }
 
     healthMonitor.startMonitoring(interval);
-    console.log(`Health monitoring started in ${this.monitoringMode} mode (${interval}ms interval)`);
+    console.log(
+      `Health monitoring started in ${this.monitoringMode} mode (${interval}ms interval)`
+    );
   }
 
   /**
@@ -247,12 +249,12 @@ class LegacyHealthMonitorService {
     const alertKey = `${alert.service}-${alert.type}`;
     const lastAlert = alertHistory.get(alertKey);
     const now = Date.now();
-    
+
     // Don't send duplicate alerts within 5 minutes
-    if (lastAlert && (now - lastAlert) < 300000) {
+    if (lastAlert && now - lastAlert < 300000) {
       return;
     }
-    
+
     alertHistory.set(alertKey, now);
 
     // Add legacy-specific context
@@ -267,7 +269,7 @@ class LegacyHealthMonitorService {
     };
 
     // Notify alert callbacks
-    this.alertCallbacks.forEach(callback => {
+    this.alertCallbacks.forEach((callback) => {
       try {
         callback(enhancedAlert);
       } catch (error) {
@@ -292,7 +294,7 @@ class LegacyHealthMonitorService {
    */
   getRecommendedAction(alert) {
     const service = ACGS_SERVICES[alert.service];
-    
+
     switch (alert.type) {
       case 'response_time':
         return `Check ${service?.name || alert.service} performance and server load`;
@@ -411,7 +413,7 @@ export { LEGACY_HEALTH_CONFIG, ACGS_SERVICES };
 if (typeof window !== 'undefined') {
   // Initialize after a short delay to allow other services to start
   setTimeout(() => {
-    legacyHealthMonitorService.initialize().catch(error => {
+    legacyHealthMonitorService.initialize().catch((error) => {
       console.error('Failed to auto-initialize health monitor:', error);
     });
   }, 1000);

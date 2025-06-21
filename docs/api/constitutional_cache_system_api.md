@@ -3,7 +3,7 @@
 **Version**: v3.0.0  
 **Last Updated**: 2025-06-20  
 **Service**: Shared Constitutional Cache System  
-**Base URL**: Integrated across all services  
+**Base URL**: Integrated across all services
 
 ## Overview
 
@@ -12,11 +12,13 @@ The Constitutional Cache System provides enterprise-grade Redis-based caching fo
 ## Architecture
 
 ### Multi-Layer Caching
+
 - **L1 Memory Cache**: In-memory LRU cache for ultra-fast access
 - **L2 Redis Cache**: Distributed Redis cache for persistence and sharing
 - **Constitutional Validation**: Automatic constitutional hash validation for all cached data
 
 ### Performance Targets
+
 - **Cache Hit Rate**: >80%
 - **Lookup Latency**: <2ms for 95% of requests
 - **Constitutional Validation**: <5ms for 95% of validations
@@ -27,6 +29,7 @@ The Constitutional Cache System provides enterprise-grade Redis-based caching fo
 ### ConstitutionalCache Class
 
 #### Initialization
+
 ```python
 from shared.constitutional_cache import ConstitutionalCache
 
@@ -41,6 +44,7 @@ await cache.initialize()
 #### Cache Operations
 
 ##### Set Validation Result
+
 ```python
 await cache.set_validation_result(
     cache_key="policy_validation_123",
@@ -54,6 +58,7 @@ await cache.set_validation_result(
 ```
 
 ##### Get Validation Result
+
 ```python
 result = await cache.get_validation_result("policy_validation_123")
 if result:
@@ -61,6 +66,7 @@ if result:
 ```
 
 ##### Cache Key Generation
+
 ```python
 cache_key = cache.generate_cache_key(
     operation_type="policy_validation",
@@ -71,6 +77,7 @@ cache_key = cache.generate_cache_key(
 ## Cache Strategies
 
 ### Policy Fragment Caching
+
 ```json
 {
   "ttl_seconds": 300,
@@ -81,6 +88,7 @@ cache_key = cache.generate_cache_key(
 ```
 
 ### Constitutional Validation Caching
+
 ```json
 {
   "ttl_seconds": 3600,
@@ -91,6 +99,7 @@ cache_key = cache.generate_cache_key(
 ```
 
 ### LLM Response Caching
+
 ```json
 {
   "ttl_seconds": 1800,
@@ -101,6 +110,7 @@ cache_key = cache.generate_cache_key(
 ```
 
 ### Governance Decision Caching
+
 ```json
 {
   "ttl_seconds": 600,
@@ -113,12 +123,14 @@ cache_key = cache.generate_cache_key(
 ## Configuration
 
 ### Environment Variables
+
 - `REDIS_URL`: Redis connection string (default: redis://localhost:6379)
 - `CONSTITUTIONAL_HASH`: Reference constitutional hash (default: cdd01ef066bc6cf2)
 - `CACHE_TTL_DEFAULT`: Default TTL in seconds (default: 300)
 - `CACHE_MAX_MEMORY_SIZE`: Maximum memory cache size (default: 1000)
 
 ### Redis Configuration
+
 ```json
 {
   "host": "localhost",
@@ -133,11 +145,13 @@ cache_key = cache.generate_cache_key(
 ## API Endpoints
 
 ### Cache Health Check
+
 ```http
 GET /api/v1/cache/health
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": "healthy",
@@ -152,11 +166,13 @@ GET /api/v1/cache/health
 ```
 
 ### Cache Statistics
+
 ```http
 GET /api/v1/cache/stats
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "performance_metrics": {
@@ -179,11 +195,13 @@ GET /api/v1/cache/stats
 ```
 
 ### Cache Invalidation
+
 ```http
 POST /api/v1/cache/invalidate
 ```
 
 **Request Body:**
+
 ```json
 {
   "pattern": "policy_validation_*",
@@ -193,6 +211,7 @@ POST /api/v1/cache/invalidate
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "invalidated_keys": 45,
@@ -204,16 +223,19 @@ POST /api/v1/cache/invalidate
 ## Security Features
 
 ### HMAC Integrity Protection
+
 - All cached data includes HMAC signatures for integrity verification
 - Automatic detection and handling of corrupted cache entries
 - Secure key derivation for HMAC generation
 
 ### Constitutional Compliance
+
 - Automatic constitutional hash validation for all cache operations
 - Cache invalidation on constitutional hash changes
 - Compliance scoring and monitoring
 
 ### Circuit Breaker Pattern
+
 - Automatic failure detection and isolation
 - Graceful degradation to memory-only caching
 - Configurable failure thresholds and recovery
@@ -221,18 +243,21 @@ POST /api/v1/cache/invalidate
 ## Monitoring and Observability
 
 ### Metrics
+
 - **Cache Hit Rate**: Percentage of successful cache lookups
 - **Lookup Latency**: Time taken for cache operations
 - **Constitutional Validation Rate**: Success rate of constitutional validations
 - **Memory Usage**: L1 and L2 cache memory consumption
 
 ### Logging
+
 - Cache operation events with correlation IDs
 - Constitutional validation results
 - Performance warnings for slow operations
 - Circuit breaker state changes
 
 ### Health Checks
+
 - Redis connectivity status
 - Constitutional hash validation status
 - Cache performance metrics
@@ -241,6 +266,7 @@ POST /api/v1/cache/invalidate
 ## Usage Examples
 
 ### Basic Cache Usage
+
 ```python
 from shared.constitutional_cache import get_constitutional_cache
 
@@ -259,6 +285,7 @@ result = await cache.get_validation_result("policy_123_validation")
 ```
 
 ### Batch Operations
+
 ```python
 # Cache multiple validation results
 batch_data = {
@@ -272,6 +299,7 @@ for policy_id, result in batch_data.items():
 ```
 
 ### Cache Warming
+
 ```python
 # Pre-populate cache with common validations
 common_policies = await get_common_policies()
@@ -286,6 +314,7 @@ for policy in common_policies:
 ### Common Issues
 
 #### High Cache Miss Rate
+
 ```bash
 # Check cache configuration
 curl http://localhost:8005/api/v1/cache/stats
@@ -295,6 +324,7 @@ redis-cli monitor | grep "acgs:constitutional"
 ```
 
 #### Redis Connection Issues
+
 ```bash
 # Test Redis connectivity
 redis-cli ping
@@ -304,6 +334,7 @@ redis-cli info memory
 ```
 
 #### Constitutional Validation Failures
+
 ```bash
 # Check constitutional hash
 curl http://localhost:8005/api/v1/cache/health
@@ -317,12 +348,14 @@ curl -X POST http://localhost:8005/api/v1/cache/invalidate \
 ## Performance Optimization
 
 ### Cache Tuning
+
 - Adjust TTL values based on data volatility
 - Configure appropriate cache sizes for workload
 - Enable compression for large cached objects
 - Use cache warming for frequently accessed data
 
 ### Redis Optimization
+
 - Configure Redis memory policies
 - Enable Redis persistence for durability
 - Use Redis clustering for high availability

@@ -3,15 +3,7 @@
     "concurrent_users": 300,
     "duration_seconds": 120,
     "target_response_time_ms": 500.0,
-    "services_tested": [
-      "auth",
-      "ac",
-      "integrity",
-      "fv",
-      "gs",
-      "pgc",
-      "ec"
-    ]
+    "services_tested": ["auth", "ac", "integrity", "fv", "gs", "pgc", "ec"]
   },
   "execution_summary": {
     "start_time": "2025-06-18T02:11:27.745447+00:00",
@@ -72,8 +64,6 @@
   "performance_evaluation": {
     "grade": "B",
     "target_met": false,
-    "recommendations": [
-      "Optimize service response times"
-    ]
+    "recommendations": ["Optimize service response times"]
   }
 }

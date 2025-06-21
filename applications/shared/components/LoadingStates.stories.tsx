@@ -1,19 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { 
-  Spinner, 
-  Skeleton, 
-  Progress, 
-  LoadingOverlay, 
-  CardSkeleton, 
-  TableSkeleton, 
-  FormSkeleton, 
-  LoadingButton, 
-  TimeoutLoader 
+import {
+  Spinner,
+  Skeleton,
+  Progress,
+  LoadingOverlay,
+  CardSkeleton,
+  TableSkeleton,
+  FormSkeleton,
+  LoadingButton,
+  TimeoutLoader
 } from './LoadingStates';
 
 /**
  * Loading States Components for ACGS-PGP Framework
- * 
+ *
  * These components provide consistent loading experiences across the application,
  * supporting various use cases from quick spinners to complex skeleton loaders.
  * All components integrate with the ACGS service architecture and follow
@@ -28,7 +28,8 @@ const spinnerMeta: Meta<typeof Spinner> = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Basic spinner component for quick loading states. Used throughout ACGS services for API calls and data fetching.'
+        component:
+          'Basic spinner component for quick loading states. Used throughout ACGS services for API calls and data fetching.'
       }
     }
   },
@@ -112,7 +113,8 @@ const skeletonMeta: Meta<typeof Skeleton> = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Skeleton loader for content placeholders. Provides visual feedback while data is loading from ACGS services.'
+        component:
+          'Skeleton loader for content placeholders. Provides visual feedback while data is loading from ACGS services.'
       }
     }
   },
@@ -190,7 +192,8 @@ const loadingButtonMeta: Meta<typeof LoadingButton> = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Button component with integrated loading state. Used for form submissions and API calls to ACGS services.'
+        component:
+          'Button component with integrated loading state. Used for form submissions and API calls to ACGS services.'
       }
     }
   },
@@ -222,7 +225,8 @@ const cardSkeletonMeta: Meta<typeof CardSkeleton> = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Skeleton loader for card components. Used while loading principles, policies, or other governance data.'
+        component:
+          'Skeleton loader for card components. Used while loading principles, policies, or other governance data.'
       }
     }
   },
@@ -281,7 +285,8 @@ const loadingOverlayMeta: Meta<typeof LoadingOverlay> = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Overlay component that shows loading state over existing content. Used for form submissions and data updates.'
+        component:
+          'Overlay component that shows loading state over existing content. Used for form submissions and data updates.'
       }
     }
   },
@@ -297,9 +302,7 @@ export const LoadingOverlayDefault: StoryObj<typeof loadingOverlayMeta> = {
         <p className="text-gray-600 mb-4">
           This is some content that will be overlaid with a loading state when the component is processing.
         </p>
-        <button className="px-4 py-2 bg-blue-600 text-white rounded">
-          Edit Principle
-        </button>
+        <button className="px-4 py-2 bg-blue-600 text-white rounded">Edit Principle</button>
       </div>
     )
   }
@@ -311,12 +314,8 @@ export const LoadingOverlayNotLoading: StoryObj<typeof loadingOverlayMeta> = {
     children: (
       <div className="p-8 bg-white border rounded-lg">
         <h3 className="text-lg font-semibold mb-4">Constitutional Principle</h3>
-        <p className="text-gray-600 mb-4">
-          This content is fully interactive when not in loading state.
-        </p>
-        <button className="px-4 py-2 bg-blue-600 text-white rounded">
-          Edit Principle
-        </button>
+        <p className="text-gray-600 mb-4">This content is fully interactive when not in loading state.</p>
+        <button className="px-4 py-2 bg-blue-600 text-white rounded">Edit Principle</button>
       </div>
     )
   }

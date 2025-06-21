@@ -9,42 +9,42 @@
 # sha256: evolutionary_tensor_decomposition_pgc_performance_v1.0
 
 # Core Performance Settings
-optimization_level: "Enhanced"  # Basic | Enhanced | Maximum
-latency_target_ms: 25           # Target latency for 95% of requests
-throughput_target_rps: 1000     # Requests per second target
+optimization_level: 'Enhanced' # Basic | Enhanced | Maximum
+latency_target_ms: 25 # Target latency for 95% of requests
+throughput_target_rps: 1000 # Requests per second target
 cost_optimization_enabled: true
 
 # Caching Configuration
 caching:
   enabled: true
-  backend: "redis"  # redis | memory | hybrid
-  
+  backend: 'redis' # redis | memory | hybrid
+
   # Fragment-level caching for policy components
   policy_fragment_cache:
     enabled: true
-    ttl_seconds: 300        # 5 minutes
+    ttl_seconds: 300 # 5 minutes
     max_size_mb: 128
     compression_enabled: true
-    
+
   # Constitutional hash caching for governance validation
   constitutional_hash_cache:
     enabled: true
-    ttl_seconds: 3600       # 1 hour
+    ttl_seconds: 3600 # 1 hour
     max_size_mb: 64
-    preload_enabled: true   # Preload common constitutional hashes
-    
+    preload_enabled: true # Preload common constitutional hashes
+
   # Validation result caching
   validation_result_cache:
     enabled: true
-    ttl_seconds: 600        # 10 minutes
+    ttl_seconds: 600 # 10 minutes
     max_size_mb: 256
-    invalidation_strategy: "smart"  # smart | time_based | manual
-    
+    invalidation_strategy: 'smart' # smart | time_based | manual
+
   # Cache warming configuration
   cache_warming:
     enabled: true
-    schedule: "0 */6 * * *"  # Every 6 hours
-    priority_policies: ["POL-001", "POL-002", "POL-003"]  # Core policies
+    schedule: '0 */6 * * *' # Every 6 hours
+    priority_policies: ['POL-001', 'POL-002', 'POL-003'] # Core policies
 
 # Parallel Processing Configuration
 parallel_processing:
@@ -53,7 +53,7 @@ parallel_processing:
   batch_size: 16
   worker_pool_size: 8
   queue_timeout_ms: 1000
-  
+
   # Speculative execution for predictive validation
   speculative_execution:
     enabled: true
@@ -67,26 +67,26 @@ database:
     min_connections: 5
     max_connections: 20
     connection_timeout_ms: 5000
-    idle_timeout_ms: 300000  # 5 minutes
-    
+    idle_timeout_ms: 300000 # 5 minutes
+
   query_optimization:
     prepared_statements: true
     query_cache_size_mb: 64
     index_optimization: true
     batch_operations: true
-    
+
   # Read replicas for scaling read operations
   read_replicas:
-    enabled: false  # Enable for production
+    enabled: false # Enable for production
     replica_count: 2
-    load_balancing: "round_robin"
+    load_balancing: 'round_robin'
 
 # Memory Management
 memory:
   heap_size_mb: 512
   gc_optimization: true
   memory_pool_enabled: true
-  
+
   # Object pooling for frequently used objects
   object_pooling:
     policy_objects: true
@@ -98,9 +98,9 @@ memory:
 network:
   connection_pooling: true
   keep_alive_enabled: true
-  compression: "gzip"
+  compression: 'gzip'
   timeout_ms: 5000
-  
+
   # Circuit breaker for external service calls
   circuit_breaker:
     enabled: true
@@ -113,7 +113,7 @@ monitoring:
   enabled: true
   interval_seconds: 30
   detailed_metrics: true
-  
+
   # Performance metrics collection
   metrics:
     latency_percentiles: [50, 90, 95, 99]
@@ -121,38 +121,38 @@ monitoring:
     error_rate_tracking: true
     cache_hit_rate_tracking: true
     memory_usage_tracking: true
-    
+
   # Alerting thresholds
   alerts:
-    latency_threshold_ms: 50      # Alert if >50ms average
-    error_rate_threshold: 0.05    # Alert if >5% error rate
+    latency_threshold_ms: 50 # Alert if >50ms average
+    error_rate_threshold: 0.05 # Alert if >5% error rate
     cache_hit_rate_threshold: 0.8 # Alert if <80% cache hit rate
-    memory_usage_threshold: 0.85  # Alert if >85% memory usage
+    memory_usage_threshold: 0.85 # Alert if >85% memory usage
 
 # Cost Optimization for Solana Integration
 cost_optimization:
-  target_cost_per_action_sol: 0.01  # <0.01 SOL per governance action
-  
+  target_cost_per_action_sol: 0.01 # <0.01 SOL per governance action
+
   # Transaction batching to reduce costs
   transaction_batching:
     enabled: true
     batch_size: 10
     batch_timeout_ms: 1000
     compression_enabled: true
-    
+
   # Gas optimization strategies
   gas_optimization:
     enabled: true
-    priority_fee_strategy: "dynamic"  # dynamic | fixed | adaptive
+    priority_fee_strategy: 'dynamic' # dynamic | fixed | adaptive
     compute_unit_optimization: true
     account_compression: true
-    
+
   # Cost monitoring and budgeting
   cost_monitoring:
     enabled: true
     daily_budget_sol: 1.0
     alert_threshold_sol: 0.8
-    cost_tracking_granularity: "per_operation"
+    cost_tracking_granularity: 'per_operation'
 
 # Feature Flags for Gradual Rollout
 feature_flags:
@@ -161,7 +161,7 @@ feature_flags:
   parallel_validation: true
   cost_optimization: true
   advanced_monitoring: true
-  
+
   # Experimental features
   experimental:
     ml_based_prediction: false
@@ -171,18 +171,18 @@ feature_flags:
 # Environment-specific Overrides
 environments:
   development:
-    optimization_level: "Basic"
+    optimization_level: 'Basic'
     latency_target_ms: 100
     caching.enabled: false
     monitoring.detailed_metrics: false
-    
+
   staging:
-    optimization_level: "Enhanced"
+    optimization_level: 'Enhanced'
     latency_target_ms: 50
     parallel_processing.max_concurrent_validations: 25
-    
+
   production:
-    optimization_level: "Maximum"
+    optimization_level: 'Maximum'
     latency_target_ms: 25
     database.read_replicas.enabled: true
     cost_optimization.target_cost_per_action_sol: 0.005
@@ -192,23 +192,23 @@ integrations:
   # Quantumagi Solana devnet compatibility
   quantumagi:
     enabled: true
-    constitutional_hash: "cdd01ef066bc6cf2"
-    devnet_endpoint: "https://api.devnet.solana.com"
-    program_id: "8eRUCnQs..."  # Quantumagi program ID
-    
+    constitutional_hash: 'cdd01ef066bc6cf2'
+    devnet_endpoint: 'https://api.devnet.solana.com'
+    program_id: '8eRUCnQs...' # Quantumagi program ID
+
   # ACGS services integration
   acgs_services:
-    auth_service_url: "http://auth_service:8000"
-    ac_service_url: "http://ac_service:8001"
-    integrity_service_url: "http://integrity_service:8002"
-    fv_service_url: "http://fv_service:8003"
-    gs_service_url: "http://gs_service:8004"
-    ec_service_url: "http://ec_service:8006"
-    
+    auth_service_url: 'http://auth_service:8000'
+    ac_service_url: 'http://ac_service:8001'
+    integrity_service_url: 'http://integrity_service:8002'
+    fv_service_url: 'http://fv_service:8003'
+    gs_service_url: 'http://gs_service:8004'
+    ec_service_url: 'http://ec_service:8006'
+
     # Service mesh configuration
     service_mesh:
       enabled: true
-      load_balancing: "least_connections"
+      load_balancing: 'least_connections'
       health_check_interval_ms: 10000
       circuit_breaker_enabled: true
 

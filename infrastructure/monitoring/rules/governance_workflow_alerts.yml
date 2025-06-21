@@ -18,9 +18,9 @@ groups:
           component: pipeline
           team: governance
         annotations:
-          summary: "Policy creation pipeline failures detected"
-          description: "{{ $value }} pipeline failures per second in {{ $labels.stage }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/policy-creation-failures"
+          summary: 'Policy creation pipeline failures detected'
+          description: '{{ $value }} pipeline failures per second in {{ $labels.stage }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/policy-creation-failures'
 
       # Policy Creation Stage Transition Issues
       - alert: PolicyCreationStageTransitionIssues
@@ -32,9 +32,9 @@ groups:
           component: stage_transitions
           team: governance
         annotations:
-          summary: "Policy creation stage transition issues"
-          description: "{{ $value }} transition failures per second in {{ $labels.stage }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/stage-transition-issues"
+          summary: 'Policy creation stage transition issues'
+          description: '{{ $value }} transition failures per second in {{ $labels.stage }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/stage-transition-issues'
 
       # Policy Creation Bottleneck
       - alert: PolicyCreationBottleneck
@@ -46,9 +46,9 @@ groups:
           component: bottleneck
           team: governance
         annotations:
-          summary: "Policy creation bottleneck detected"
-          description: "{{ $value }} policies waiting in creation queue"
-          runbook_url: "https://docs.acgs.ai/runbooks/policy-creation-bottleneck"
+          summary: 'Policy creation bottleneck detected'
+          description: '{{ $value }} policies waiting in creation queue'
+          runbook_url: 'https://docs.acgs.ai/runbooks/policy-creation-bottleneck'
 
       # Policy Approval Bottleneck
       - alert: PolicyApprovalBottleneck
@@ -60,9 +60,9 @@ groups:
           component: approval_bottleneck
           team: governance
         annotations:
-          summary: "Policy approval bottleneck detected"
-          description: "{{ $value }} policies waiting for review"
-          runbook_url: "https://docs.acgs.ai/runbooks/policy-approval-bottleneck"
+          summary: 'Policy approval bottleneck detected'
+          description: '{{ $value }} policies waiting for review'
+          runbook_url: 'https://docs.acgs.ai/runbooks/policy-approval-bottleneck'
 
       # Policy Voting Stagnation
       - alert: PolicyVotingStagnation
@@ -74,9 +74,9 @@ groups:
           component: voting_stagnation
           team: governance
         annotations:
-          summary: "Policy voting stagnation detected"
-          description: "{{ $value }} policies stuck in voting stage"
-          runbook_url: "https://docs.acgs.ai/runbooks/policy-voting-stagnation"
+          summary: 'Policy voting stagnation detected'
+          description: '{{ $value }} policies stuck in voting stage'
+          runbook_url: 'https://docs.acgs.ai/runbooks/policy-voting-stagnation'
 
       # Low Policy Implementation Rate
       - alert: LowPolicyImplementationRate
@@ -88,9 +88,9 @@ groups:
           component: implementation_rate
           team: governance
         annotations:
-          summary: "Low policy implementation rate"
-          description: "Policy implementation rate is {{ $value }} policies per hour"
-          runbook_url: "https://docs.acgs.ai/runbooks/low-implementation-rate"
+          summary: 'Low policy implementation rate'
+          description: 'Policy implementation rate is {{ $value }} policies per hour'
+          runbook_url: 'https://docs.acgs.ai/runbooks/low-implementation-rate'
 
   # ============================================================================
   # CONSTITUTIONAL COMPLIANCE WORKFLOW ALERTS
@@ -108,10 +108,10 @@ groups:
           team: governance
           escalation: immediate
         annotations:
-          summary: "Constitutional compliance workflow failures"
-          description: "{{ $value }} compliance workflow failures per second in {{ $labels.stage }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/compliance-workflow-failures"
-          impact: "Constitutional governance integrity at risk"
+          summary: 'Constitutional compliance workflow failures'
+          description: '{{ $value }} compliance workflow failures per second in {{ $labels.stage }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/compliance-workflow-failures'
+          impact: 'Constitutional governance integrity at risk'
 
       # Compliance Validation Accuracy Low
       - alert: ComplianceValidationAccuracyLow
@@ -123,9 +123,9 @@ groups:
           component: validation_accuracy
           team: governance
         annotations:
-          summary: "Compliance validation accuracy below threshold"
-          description: "Validation accuracy is {{ $value | humanizePercentage }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/compliance-accuracy-low"
+          summary: 'Compliance validation accuracy below threshold'
+          description: 'Validation accuracy is {{ $value | humanizePercentage }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/compliance-accuracy-low'
 
       # Constitutional Hash Validation Failures
       - alert: ConstitutionalHashValidationFailures
@@ -138,10 +138,10 @@ groups:
           team: governance
           escalation: immediate
         annotations:
-          summary: "Constitutional hash validation failures"
-          description: "{{ $value }} hash validation failures per second for {{ $labels.validation_type }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/hash-validation-failures"
-          impact: "Constitutional integrity compromised"
+          summary: 'Constitutional hash validation failures'
+          description: '{{ $value }} hash validation failures per second for {{ $labels.validation_type }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/hash-validation-failures'
+          impact: 'Constitutional integrity compromised'
 
       # Compliance Assessment Backlog
       - alert: ComplianceAssessmentBacklog
@@ -153,9 +153,9 @@ groups:
           component: assessment_backlog
           team: governance
         annotations:
-          summary: "Compliance assessment backlog detected"
-          description: "{{ $value }} assessments waiting for processing"
-          runbook_url: "https://docs.acgs.ai/runbooks/compliance-backlog"
+          summary: 'Compliance assessment backlog detected'
+          description: '{{ $value }} assessments waiting for processing'
+          runbook_url: 'https://docs.acgs.ai/runbooks/compliance-backlog'
 
       # Compliance Violations Detected
       - alert: ComplianceViolationsDetected
@@ -168,10 +168,10 @@ groups:
           team: governance
           escalation: immediate
         annotations:
-          summary: "Constitutional compliance violations detected"
-          description: "{{ $value }} compliance violations detected"
-          runbook_url: "https://docs.acgs.ai/runbooks/compliance-violations"
-          impact: "Constitutional violations require immediate attention"
+          summary: 'Constitutional compliance violations detected'
+          description: '{{ $value }} compliance violations detected'
+          runbook_url: 'https://docs.acgs.ai/runbooks/compliance-violations'
+          impact: 'Constitutional violations require immediate attention'
 
   # ============================================================================
   # POLICY ENFORCEMENT WORKFLOW ALERTS
@@ -188,9 +188,9 @@ groups:
           component: workflow
           team: governance
         annotations:
-          summary: "Policy enforcement workflow failures"
-          description: "{{ $value }} enforcement workflow failures per second in {{ $labels.stage }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/enforcement-workflow-failures"
+          summary: 'Policy enforcement workflow failures'
+          description: '{{ $value }} enforcement workflow failures per second in {{ $labels.stage }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/enforcement-workflow-failures'
 
       # High Policy Violation Detection Rate
       - alert: HighPolicyViolationDetectionRate
@@ -202,9 +202,9 @@ groups:
           component: violation_detection
           team: governance
         annotations:
-          summary: "High policy violation detection rate"
-          description: "{{ $value }} violations per second detected for {{ $labels.violation_type }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/high-violation-rate"
+          summary: 'High policy violation detection rate'
+          description: '{{ $value }} violations per second detected for {{ $labels.violation_type }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/high-violation-rate'
 
       # Enforcement Action Failures
       - alert: EnforcementActionFailures
@@ -216,9 +216,9 @@ groups:
           component: enforcement_actions
           team: governance
         annotations:
-          summary: "Enforcement action failures detected"
-          description: "{{ $value }} enforcement action failures per second for {{ $labels.action_type }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/enforcement-action-failures"
+          summary: 'Enforcement action failures detected'
+          description: '{{ $value }} enforcement action failures per second for {{ $labels.action_type }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/enforcement-action-failures'
 
       # Remediation Failures
       - alert: RemediationFailures
@@ -230,9 +230,9 @@ groups:
           component: remediation
           team: governance
         annotations:
-          summary: "Remediation operation failures"
-          description: "{{ $value }} remediation failures per second"
-          runbook_url: "https://docs.acgs.ai/runbooks/remediation-failures"
+          summary: 'Remediation operation failures'
+          description: '{{ $value }} remediation failures per second'
+          runbook_url: 'https://docs.acgs.ai/runbooks/remediation-failures'
 
       # Enforcement Response Time High
       - alert: EnforcementResponseTimeHigh
@@ -244,9 +244,9 @@ groups:
           component: response_time
           team: governance
         annotations:
-          summary: "High enforcement response time"
-          description: "95th percentile enforcement response time is {{ $value }}s"
-          runbook_url: "https://docs.acgs.ai/runbooks/enforcement-response-time"
+          summary: 'High enforcement response time'
+          description: '95th percentile enforcement response time is {{ $value }}s'
+          runbook_url: 'https://docs.acgs.ai/runbooks/enforcement-response-time'
 
   # ============================================================================
   # WINA OVERSIGHT WORKFLOW ALERTS
@@ -263,9 +263,9 @@ groups:
           component: oversight
           team: governance
         annotations:
-          summary: "WINA oversight operation failures"
-          description: "{{ $value }} WINA oversight failures per second for {{ $labels.oversight_type }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/wina-oversight-failures"
+          summary: 'WINA oversight operation failures'
+          description: '{{ $value }} WINA oversight failures per second for {{ $labels.oversight_type }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/wina-oversight-failures'
 
       # WINA Performance Monitoring Issues
       - alert: WINAPerformanceMonitoringIssues
@@ -277,9 +277,9 @@ groups:
           component: performance_monitoring
           team: governance
         annotations:
-          summary: "WINA performance monitoring issues"
-          description: "WINA optimization score is {{ $value }}"
-          runbook_url: "https://docs.acgs.ai/runbooks/wina-performance-issues"
+          summary: 'WINA performance monitoring issues'
+          description: 'WINA optimization score is {{ $value }}'
+          runbook_url: 'https://docs.acgs.ai/runbooks/wina-performance-issues'
 
   # ============================================================================
   # AUDIT AND TRANSPARENCY WORKFLOW ALERTS
@@ -296,9 +296,9 @@ groups:
           component: data_collection
           team: governance
         annotations:
-          summary: "Audit data collection failures"
-          description: "{{ $value }} audit data collection failures per second"
-          runbook_url: "https://docs.acgs.ai/runbooks/audit-collection-failures"
+          summary: 'Audit data collection failures'
+          description: '{{ $value }} audit data collection failures per second'
+          runbook_url: 'https://docs.acgs.ai/runbooks/audit-collection-failures'
 
       # Transparency Report Generation Failures
       - alert: TransparencyReportGenerationFailures
@@ -310,6 +310,6 @@ groups:
           component: report_generation
           team: governance
         annotations:
-          summary: "Transparency report generation failures"
-          description: "{{ $value }} report generation failures per second"
-          runbook_url: "https://docs.acgs.ai/runbooks/report-generation-failures"
+          summary: 'Transparency report generation failures'
+          description: '{{ $value }} report generation failures per second'
+          runbook_url: 'https://docs.acgs.ai/runbooks/report-generation-failures'

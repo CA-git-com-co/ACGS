@@ -5,6 +5,7 @@
 The governance dashboard is configured for production deployment with multiple provider options, optimized CI/CD pipelines, and comprehensive monitoring.
 
 ### Supported Deployment Providers
+
 - **Vercel** (Recommended for Next.js applications)
 - **Netlify** (Static site deployment)
 - **AWS Amplify** (Full-stack deployment)
@@ -13,6 +14,7 @@ The governance dashboard is configured for production deployment with multiple p
 ## Environment Configuration ✅
 
 ### Environment Variables
+
 ```bash
 # .env.production
 # Application Configuration
@@ -40,6 +42,7 @@ NEXT_PUBLIC_ENABLE_CONSTITUTIONAL_COUNCIL=true
 ```
 
 ### Build Configuration
+
 ```javascript
 // next.config.js
 /** @type {import('next').NextConfig} */
@@ -48,11 +51,11 @@ const nextConfig = {
   experimental: {
     typedRoutes: true,
   },
-  
+
   // Performance optimizations
   compress: true,
   poweredByHeader: false,
-  
+
   // Security headers
   async headers() {
     return [
@@ -73,19 +76,20 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:;",
+            value:
+              "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:;",
           },
         ],
       },
     ];
   },
-  
+
   // Asset optimization
   images: {
     domains: ['images.pexels.com', 'via.placeholder.com'],
     formats: ['image/webp', 'image/avif'],
   },
-  
+
   // Bundle analysis
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     if (process.env.ANALYZE === 'true') {
@@ -97,7 +101,7 @@ const nextConfig = {
         })
       );
     }
-    
+
     return config;
   },
 };
@@ -108,6 +112,7 @@ module.exports = nextConfig;
 ## Vercel Deployment ✅
 
 ### Vercel Configuration
+
 ```json
 {
   "version": 2,
@@ -135,6 +140,7 @@ module.exports = nextConfig;
 ```
 
 ### Deployment Script
+
 ```bash
 #!/bin/bash
 # deploy-vercel.sh
@@ -155,6 +161,7 @@ echo "✅ Deployment completed successfully!"
 ## Docker Deployment ✅
 
 ### Multi-stage Dockerfile
+
 ```dockerfile
 # Dockerfile
 FROM node:18-alpine AS base
@@ -216,6 +223,7 @@ CMD ["node", "server.js"]
 ```
 
 ### Docker Compose for Development
+
 ```yaml
 # docker-compose.yml
 version: '3.8'
@@ -226,7 +234,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://user:password@db:5432/governance
@@ -244,13 +252,13 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - '5432:5432'
 
   nginx:
     image: nginx:alpine
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./ssl:/etc/nginx/ssl
@@ -264,6 +272,7 @@ volumes:
 ## CI/CD Pipeline ✅
 
 ### GitHub Actions Workflow
+
 ```yaml
 # .github/workflows/deploy.yml
 name: Deploy to Production
@@ -279,28 +288,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run type check
         run: npm run type-check
-      
+
       - name: Run linting
         run: npm run lint
-      
+
       - name: Run unit tests
         run: npm run test:coverage
-      
+
       - name: Run accessibility tests
         run: npm run test:a11y
-      
+
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
 
@@ -311,19 +320,19 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Install Playwright
         run: npx playwright install --with-deps
-      
+
       - name: Build application
         run: npm run build
-      
+
       - name: Run E2E tests
         run: npm run test:e2e
-      
+
       - name: Upload E2E test results
         uses: actions/upload-artifact@v3
         if: failure()
@@ -338,13 +347,13 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Build application
         run: npm run build
-      
+
       - name: Run Lighthouse CI
         run: npm run lhci:autorun
         env:
@@ -354,14 +363,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
           format: 'sarif'
           output: 'trivy-results.sarif'
-      
+
       - name: Upload Trivy scan results
         uses: github/codeql-action/upload-sarif@v2
         with:
@@ -370,24 +379,24 @@ jobs:
   build-and-deploy:
     needs: [test, e2e-test, lighthouse, security-scan]
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Build application
         run: npm run build
         env:
           NODE_ENV: production
-      
+
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
         with:
@@ -395,7 +404,7 @@ jobs:
           vercel-args: '--prod'
           vercel-org-id: ${{ secrets.ORG_ID }}
           vercel-project-id: ${{ secrets.PROJECT_ID }}
-      
+
       - name: Post-deployment tests
         run: npm run test:production
         env:
@@ -405,7 +414,7 @@ jobs:
     needs: [build-and-deploy]
     runs-on: ubuntu-latest
     if: always()
-    
+
     steps:
       - name: Notify Slack
         uses: 8398a7/action-slack@v3
@@ -416,6 +425,7 @@ jobs:
 ```
 
 ### Release Automation
+
 ```yaml
 # .github/workflows/release.yml
 name: Release
@@ -432,14 +442,14 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      
+
       - name: Generate changelog
         id: changelog
         uses: requarks/changelog-action@v1
         with:
           token: ${{ github.token }}
           tag: ${{ github.ref_name }}
-      
+
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
@@ -449,7 +459,7 @@ jobs:
           name: ${{ github.ref_name }}
           body: ${{ steps.changelog.outputs.changes }}
           token: ${{ github.token }}
-      
+
       - name: Deploy to production
         run: npm run deploy:production
         env:
@@ -459,6 +469,7 @@ jobs:
 ## Monitoring and Observability ✅
 
 ### Application Monitoring
+
 ```typescript
 // lib/monitoring.ts
 import * as Sentry from '@sentry/nextjs';
@@ -507,6 +518,7 @@ export const trackError = (error: Error, context?: Record<string, any>) => {
 ```
 
 ### Health Check Endpoint
+
 ```typescript
 // pages/api/health.ts
 import { NextApiRequest, NextApiResponse } from 'next';
@@ -528,24 +540,21 @@ interface HealthStatus {
   };
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<HealthStatus>
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<HealthStatus>) {
   try {
     const startTime = process.hrtime.bigint();
-    
+
     // Check database connectivity
     const dbCheck = await checkDatabase();
-    
+
     // Check external API connectivity
     const apiCheck = await checkExternalAPIs();
-    
+
     const endTime = process.hrtime.bigint();
     const responseTime = Number(endTime - startTime) / 1000000; // Convert to milliseconds
-    
+
     const memoryUsage = process.memoryUsage();
-    
+
     const health: HealthStatus = {
       status: dbCheck && apiCheck ? 'healthy' : 'degraded',
       timestamp: new Date().toISOString(),
@@ -602,8 +611,8 @@ async function checkExternalAPIs(): Promise<boolean> {
       fetch(`${process.env.NEXT_PUBLIC_AC_API_URL}/health`),
       fetch(`${process.env.NEXT_PUBLIC_GS_API_URL}/health`),
     ]);
-    
-    return checks.every(check => check.status === 'fulfilled');
+
+    return checks.every((check) => check.status === 'fulfilled');
   } catch {
     return false;
   }
@@ -611,6 +620,7 @@ async function checkExternalAPIs(): Promise<boolean> {
 ```
 
 ### Performance Monitoring
+
 ```typescript
 // lib/analytics.ts
 import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
@@ -645,7 +655,7 @@ function sendToAnalytics(name: string, value: number, rating: string) {
       custom_parameter_2: rating,
     });
   }
-  
+
   // Also send to custom monitoring
   fetch('/api/analytics', {
     method: 'POST',
@@ -658,6 +668,7 @@ function sendToAnalytics(name: string, value: number, rating: string) {
 ## Security Configuration ✅
 
 ### Content Security Policy
+
 ```typescript
 // lib/csp.ts
 export const ContentSecurityPolicy = `
@@ -677,6 +688,7 @@ export const ContentSecurityPolicy = `
 ```
 
 ### Security Headers
+
 ```typescript
 // middleware.ts
 import { NextResponse } from 'next/server';
@@ -698,15 +710,14 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
-  ],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };
 ```
 
 ## Performance Optimization ✅
 
 ### Bundle Analysis
+
 ```bash
 # Analyze bundle size
 npm run build
@@ -717,6 +728,7 @@ npm run lighthouse:budget
 ```
 
 ### Caching Strategy
+
 ```typescript
 // next.config.js cache headers
 const nextConfig = {
@@ -748,6 +760,7 @@ const nextConfig = {
 ## Backup and Recovery ✅
 
 ### Database Backup Strategy
+
 ```bash
 #!/bin/bash
 # backup-database.sh
@@ -768,6 +781,7 @@ echo "Database backup completed: $BACKUP_FILE"
 ```
 
 ### Disaster Recovery Plan
+
 1. **Database Recovery**: Restore from latest automated backup
 2. **Application Recovery**: Redeploy from last known good commit
 3. **CDN Purge**: Clear CDN cache if needed

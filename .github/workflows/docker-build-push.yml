@@ -2,10 +2,10 @@ name: ACGS-1 Docker Build and Push
 
 on:
   push:
-    branches: [ main, master, develop ]
-    tags: [ 'v*' ]
+    branches: [main, master, develop]
+    tags: ['v*']
   pull_request:
-    branches: [ main, master, develop ]
+    branches: [main, master, develop]
   workflow_dispatch:
     inputs:
       build_target:
@@ -14,9 +14,9 @@ on:
         default: 'production-runtime'
         type: choice
         options:
-        - production-runtime
-        - development
-        - all
+          - production-runtime
+          - development
+          - all
       push_images:
         description: 'Push images to registry'
         required: false
@@ -142,28 +142,28 @@ jobs:
       - name: Test Docker Compose build
         run: |
           echo "🏗️ Testing Docker Compose build..."
-          
+
           # Test development environment
           docker-compose -f infrastructure/docker/docker-compose.development.yml build --parallel
-          
+
           # Test staging environment
           docker-compose -f infrastructure/docker/docker-compose.staging.yml build --parallel
-          
+
           # Test production environment
           docker-compose -f docker-compose.production.yml build --parallel
-          
+
           echo "✅ Docker Compose builds completed successfully"
 
       - name: Test service startup
         run: |
           echo "🚀 Testing service startup..."
-          
+
           # Start development environment
           docker-compose -f infrastructure/docker/docker-compose.development.yml up -d
-          
+
           # Wait for services to be ready
           sleep 60
-          
+
           # Check service health
           for port in 8000 8001 8002 8003 8004 8005 8006; do
             if curl -f http://localhost:$port/health 2>/dev/null; then
@@ -172,10 +172,10 @@ jobs:
               echo "⚠️ Service on port $port health check failed"
             fi
           done
-          
+
           # Cleanup
           docker-compose -f infrastructure/docker/docker-compose.development.yml down
-          
+
           echo "✅ Service startup test completed"
 
   # Image Security and Quality Checks
@@ -191,36 +191,36 @@ jobs:
       - name: Run Docker Bench Security
         run: |
           echo "🔒 Running Docker Bench Security..."
-          
+
           # Clone Docker Bench Security
           git clone https://github.com/docker/docker-bench-security.git
           cd docker-bench-security
-          
+
           # Run security benchmark
           sudo sh docker-bench-security.sh -l /tmp/docker-bench-results.log
-          
+
           echo "✅ Docker Bench Security completed"
 
       - name: Analyze image layers
         run: |
           echo "🔍 Analyzing Docker image layers..."
-          
+
           # Install dive for layer analysis
-          wget https://github.com/wagoodman/dive/releases/download/v0.10.0/dive_0.10.0_linux_amd64.deb
+          timeout 120 wget --retry-connrefused --waitretry=5 https://github.com/wagoodman/dive/releases/download/v0.10.0/dive_0.10.0_linux_amd64.deb
           sudo apt install ./dive_0.10.0_linux_amd64.deb
-          
+
           # Analyze main image
           dive ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/auth:${{ github.sha }} --ci
-          
+
           echo "✅ Image layer analysis completed"
 
       - name: Check image size optimization
         run: |
           echo "📏 Checking image size optimization..."
-          
+
           # Get image sizes
           docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}" | grep ${{ env.IMAGE_NAME }}
-          
+
           # Check if images are within reasonable size limits
           for service in auth ac integrity fv gs pgc ec; do
             SIZE=$(docker image inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/$service:${{ github.sha }} --format='{{.Size}}')
@@ -247,7 +247,7 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            
+
             // Get all packages for the repository
             const packages = await github.rest.packages.getAllPackageVersionsForPackageOwnedByOrg({
               package_type: 'container',
@@ -255,10 +255,10 @@ jobs:
               org: owner,
               per_page: 100
             });
-            
+
             // Keep only the latest 10 versions
             const versionsToDelete = packages.data.slice(10);
-            
+
             for (const version of versionsToDelete) {
               try {
                 await github.rest.packages.deletePackageVersionForOrg({
@@ -283,7 +283,7 @@ jobs:
       - name: Generate build report
         run: |
           echo "📊 Generating Docker build report..."
-          
+
           cat > docker-build-report.json << EOF
           {
             "build_id": "${{ github.run_id }}",
@@ -307,7 +307,7 @@ jobs:
             ]
           }
           EOF
-          
+
           echo "✅ Build report generated"
 
       - name: Upload build artifacts

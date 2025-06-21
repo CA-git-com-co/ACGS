@@ -85,17 +85,17 @@ TARGET_CONCURRENT_USERS=1000
 
 ### Service Ports
 
-| Service | Port | Description |
-|---------|------|-------------|
-| HAProxy | 80/443 | Load balancer |
-| HAProxy Stats | 8080 | Statistics dashboard |
-| Auth Service | 8000 | Authentication |
-| AC Service | 8001 | Constitutional AI |
-| Integrity Service | 8002 | Data integrity |
-| FV Service | 8003 | Formal verification |
-| GS Service | 8004 | Governance synthesis |
-| PGC Service | 8005 | Policy governance |
-| EC Service | 8006 | Evolutionary computation |
+| Service           | Port   | Description              |
+| ----------------- | ------ | ------------------------ |
+| HAProxy           | 80/443 | Load balancer            |
+| HAProxy Stats     | 8080   | Statistics dashboard     |
+| Auth Service      | 8000   | Authentication           |
+| AC Service        | 8001   | Constitutional AI        |
+| Integrity Service | 8002   | Data integrity           |
+| FV Service        | 8003   | Formal verification      |
+| GS Service        | 8004   | Governance synthesis     |
+| PGC Service       | 8005   | Policy governance        |
+| EC Service        | 8006   | Evolutionary computation |
 
 ## 📊 Monitoring
 
@@ -146,11 +146,11 @@ async def test_load():
         for i in range(100):
             task = client.get('http://localhost/api/v1/auth/health')
             tasks.append(task)
-        
+
         start = time.time()
         responses = await asyncio.gather(*tasks)
         end = time.time()
-        
+
         success_count = sum(1 for r in responses if r.status_code == 200)
         print(f'Completed {len(responses)} requests in {end-start:.2f}s')
         print(f'Success rate: {success_count/len(responses)*100:.1f}%')
@@ -190,6 +190,7 @@ docker-compose start auth_service
 ### Common Issues
 
 1. **Services not starting**
+
 ```bash
 # Check logs
 docker-compose logs auth_service
@@ -200,6 +201,7 @@ netstat -tuln | grep -E "800[0-6]|80|443"
 ```
 
 2. **Load balancing not working**
+
 ```bash
 # Check HAProxy configuration
 docker exec acgs_haproxy_lb cat /usr/local/etc/haproxy/haproxy.cfg
@@ -209,6 +211,7 @@ echo "show stat" | docker exec -i acgs_haproxy_lb socat stdio /var/run/haproxy/a
 ```
 
 3. **High response times**
+
 ```bash
 # Check resource usage
 docker stats
@@ -236,6 +239,7 @@ docker-compose ps
 ### Quick Optimizations
 
 1. **Increase connection limits**
+
 ```bash
 # Edit HAProxy config
 docker exec acgs_haproxy_lb sed -i 's/maxconn 4096/maxconn 8192/' /usr/local/etc/haproxy/haproxy.cfg
@@ -243,12 +247,14 @@ docker-compose restart haproxy_load_balancer
 ```
 
 2. **Optimize Redis**
+
 ```bash
 # Increase Redis memory
 docker exec acgs_redis redis-cli CONFIG SET maxmemory 2gb
 ```
 
 3. **Scale services**
+
 ```bash
 # Scale up services
 docker-compose -f infrastructure/docker/docker-compose.yml up -d --scale gs_service=3 --scale auth_service=2
@@ -285,6 +291,7 @@ docker-compose -f infrastructure/docker/docker-compose.yml down && docker-compos
 ## 📚 Next Steps
 
 ### Production Deployment
+
 - Review [Production Deployment Guide](load-balancing-deployment.md)
 - Complete [Production Readiness Checklist](production-readiness-checklist.md)
 - Set up monitoring and alerting
@@ -292,6 +299,7 @@ docker-compose -f infrastructure/docker/docker-compose.yml down && docker-compos
 - Implement backup procedures
 
 ### Advanced Configuration
+
 - Configure custom load balancing strategies
 - Set up multi-region deployment
 - Implement advanced monitoring
@@ -299,6 +307,7 @@ docker-compose -f infrastructure/docker/docker-compose.yml down && docker-compos
 - Set up disaster recovery
 
 ### Integration
+
 - Integrate with existing systems
 - Configure LDAP/SSO authentication
 - Set up external monitoring

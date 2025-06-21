@@ -1,15 +1,21 @@
 # ACGS-PGP Framework Coding Guidelines
 
-This document outlines the coding standards and best practices for the ACGS-PGP (Artificial Constitution Governance System - Prompt Governance Protocol) shared component library.
+This document outlines the coding standards and best practices for the ACGS-PGP
+(Artificial Constitution Governance System - Prompt Governance Protocol) shared
+component library.
 
 ## 🏛️ Constitutional Governance Principles
 
-All code in this library should reflect the democratic and transparent values of the ACGS system:
+All code in this library should reflect the democratic and transparent values of
+the ACGS system:
 
-- **Transparency**: Code should be self-documenting with clear naming and comprehensive comments
-- **Accessibility**: All UI components must be accessible to users with disabilities
+- **Transparency**: Code should be self-documenting with clear naming and
+  comprehensive comments
+- **Accessibility**: All UI components must be accessible to users with
+  disabilities
 - **Reliability**: Robust error handling and graceful degradation
-- **Accountability**: Comprehensive logging and audit trails for governance actions
+- **Accountability**: Comprehensive logging and audit trails for governance
+  actions
 
 ## 📁 Project Structure
 
@@ -30,6 +36,7 @@ applications/shared/
 ## 🎯 Naming Conventions
 
 ### Files and Directories
+
 - **Components**: PascalCase (e.g., `ComplianceChecker.tsx`)
 - **Hooks**: camelCase starting with "use" (e.g., `useAuthExtended.ts`)
 - **Services**: PascalCase with "Service" suffix (e.g., `ACService.ts`)
@@ -37,23 +44,30 @@ applications/shared/
 - **Utilities**: camelCase (e.g., `propValidation.ts`)
 
 ### Variables and Functions
+
 - **Variables**: camelCase (e.g., `activePolicies`, `isLoading`)
-- **Functions**: camelCase with descriptive verbs (e.g., `validateCompliance`, `synthesizePolicies`)
-- **Constants**: SCREAMING_SNAKE_CASE (e.g., `MAX_RETRY_ATTEMPTS`, `DEFAULT_TIMEOUT`)
-- **Environment Variables**: SCREAMING_SNAKE_CASE with service prefix (e.g., `REACT_APP_AC_API_URL`)
+- **Functions**: camelCase with descriptive verbs (e.g., `validateCompliance`,
+  `synthesizePolicies`)
+- **Constants**: SCREAMING_SNAKE_CASE (e.g., `MAX_RETRY_ATTEMPTS`,
+  `DEFAULT_TIMEOUT`)
+- **Environment Variables**: SCREAMING_SNAKE_CASE with service prefix (e.g.,
+  `REACT_APP_AC_API_URL`)
 
 ### Components and Interfaces
+
 - **React Components**: PascalCase (e.g., `PolicyCard`, `ComplianceChecker`)
-- **Interfaces**: PascalCase with descriptive names (e.g., `ComplianceResult`, `PolicyRule`)
+- **Interfaces**: PascalCase with descriptive names (e.g., `ComplianceResult`,
+  `PolicyRule`)
 - **Types**: PascalCase (e.g., `ServiceType`, `LoadingState`)
 
 ## 🔧 TypeScript Guidelines
 
 ### Interface Definitions
-```typescript
+
+````typescript
 /**
  * Interface for constitutional principle data
- * 
+ *
  * @example
  * ```typescript
  * const principle: Principle = {
@@ -83,20 +97,21 @@ interface Principle {
   /** Author identifier */
   author?: string;
 }
-```
+````
 
 ### Function Documentation
-```typescript
+
+````typescript
 /**
  * Validates action compliance against governance policies
- * 
+ *
  * @param action - The action to validate
  * @param context - Action context including governance state
  * @param policy - The policy to check against
  * @returns Promise resolving to compliance result
- * 
+ *
  * @throws {Error} When PGC service is unavailable
- * 
+ *
  * @example
  * ```typescript
  * const result = await validateCompliance(
@@ -113,11 +128,12 @@ async function validateCompliance(
 ): Promise<ComplianceResult> {
   // Implementation
 }
-```
+````
 
 ## ⚛️ React Component Guidelines
 
 ### Component Structure
+
 ```typescript
 import React from 'react';
 import { z } from 'zod';
@@ -142,7 +158,7 @@ const ComponentPropsSchema = z.object({
 
 /**
  * Component description with ACGS context
- * 
+ *
  * This component provides [functionality] for the constitutional governance
  * system, integrating with [relevant services] to [purpose].
  */
@@ -168,15 +184,16 @@ export default MyComponent;
 ```
 
 ### Hook Guidelines
-```typescript
+
+````typescript
 import { useState, useCallback, useEffect } from 'react';
 
 /**
  * Custom hook for [functionality] with ACGS integration
- * 
+ *
  * @param config - Hook configuration options
  * @returns Hook state and actions
- * 
+ *
  * @example
  * ```typescript
  * const { data, isLoading, error, refetch } = useMyHook({
@@ -201,27 +218,34 @@ export const useMyHook = (config: HookConfig) => {
     // Return object
   };
 };
-```
+````
 
 ## 🌐 Service Integration Patterns
 
 ### Service Client Structure
+
 ```typescript
 import api from './api';
 import { validateApiResponse } from '../utils/propValidation';
 
 class ACService {
-  private static readonly API_URL = process.env.REACT_APP_AC_API_URL || 'http://localhost:8001/api/v1';
+  private static readonly API_URL =
+    process.env.REACT_APP_AC_API_URL || 'http://localhost:8001/api/v1';
 
   /**
    * Creates a new constitutional principle
-   * 
+   *
    * @param principleData - Principle data to create
    * @returns Promise resolving to created principle
    */
-  static async createPrinciple(principleData: PrincipleFormData): Promise<Principle> {
+  static async createPrinciple(
+    principleData: PrincipleFormData
+  ): Promise<Principle> {
     try {
-      const response = await api.post(`${this.API_URL}/principles/`, principleData);
+      const response = await api.post(
+        `${this.API_URL}/principles/`,
+        principleData
+      );
       return validateApiResponse(PrincipleSchema, response.data, 'AC Service');
     } catch (error) {
       console.error('AC Service - Create principle failed:', error);
@@ -234,10 +258,11 @@ export default ACService;
 ```
 
 ### Error Handling Patterns
+
 ```typescript
 // Service-specific error boundary usage
-<ServiceErrorBoundary 
-  serviceName="AC" 
+<ServiceErrorBoundary
+  serviceName="AC"
   serviceUrl={process.env.REACT_APP_AC_API_URL}
 >
   <PrincipleManager />
@@ -255,6 +280,7 @@ const [loadingState, loadingActions] = useLoadingState({
 ## 🎨 Styling Guidelines
 
 ### CSS Classes
+
 - Use descriptive, kebab-case class names
 - Follow BEM methodology for complex components
 - Use Tailwind CSS utilities for consistent spacing and colors
@@ -276,18 +302,19 @@ const [loadingState, loadingActions] = useLoadingState({
 ```
 
 ### Responsive Design
+
 ```typescript
 // Mobile-first responsive classes
 <div className="
-  w-full 
-  p-4 
-  md:p-6 
-  lg:p-8 
-  grid 
-  grid-cols-1 
-  md:grid-cols-2 
-  lg:grid-cols-3 
-  gap-4 
+  w-full
+  p-4
+  md:p-6
+  lg:p-8
+  grid
+  grid-cols-1
+  md:grid-cols-2
+  lg:grid-cols-3
+  gap-4
   md:gap-6
 ">
 ```
@@ -295,6 +322,7 @@ const [loadingState, loadingActions] = useLoadingState({
 ## 🧪 Testing Guidelines
 
 ### Unit Test Structure
+
 ```typescript
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ComplianceChecker } from '../ComplianceChecker';
@@ -311,20 +339,20 @@ describe('ComplianceChecker', () => {
 
   it('should render compliance checker form', () => {
     render(<ComplianceChecker {...mockProps} />);
-    
+
     expect(screen.getByText('PGC Compliance Checker')).toBeInTheDocument();
     expect(screen.getByLabelText('Action to Check')).toBeInTheDocument();
   });
 
   it('should handle compliance check submission', async () => {
     render(<ComplianceChecker {...mockProps} />);
-    
+
     fireEvent.change(screen.getByLabelText('Action to Check'), {
       target: { value: 'test action' }
     });
-    
+
     fireEvent.click(screen.getByText('Check Compliance'));
-    
+
     await waitFor(() => {
       expect(mockProps.onComplianceCheck).toHaveBeenCalled();
     });
@@ -335,6 +363,7 @@ describe('ComplianceChecker', () => {
 ## 📚 Documentation Standards
 
 ### Component Documentation
+
 - Include comprehensive JSDoc comments
 - Provide usage examples
 - Document integration with ACGS services
@@ -342,6 +371,7 @@ describe('ComplianceChecker', () => {
 - Document performance considerations
 
 ### Storybook Stories
+
 ```typescript
 export default {
   title: 'Components/Governance/ComplianceChecker',
@@ -349,7 +379,8 @@ export default {
   parameters: {
     docs: {
       description: {
-        component: 'Comprehensive description of component purpose and ACGS integration'
+        component:
+          'Comprehensive description of component purpose and ACGS integration'
       }
     }
   }
@@ -359,12 +390,14 @@ export default {
 ## 🔒 Security Guidelines
 
 ### Input Validation
+
 - Always validate props with Zod schemas
 - Sanitize user inputs before API calls
 - Use TypeScript for compile-time type safety
 - Validate API responses before using data
 
 ### Authentication Integration
+
 ```typescript
 // Use authentication hooks
 const { isAuthenticated, hasRole, canPerformAction } = useAuthExtended();
@@ -378,6 +411,7 @@ if (!canPerformAction('create_principle')) {
 ## 🚀 Performance Guidelines
 
 ### Code Splitting
+
 ```typescript
 // Lazy load heavy components
 const PolicyEditor = React.lazy(() => import('./PolicyEditor'));
@@ -389,6 +423,7 @@ const PolicyEditor = React.lazy(() => import('./PolicyEditor'));
 ```
 
 ### Memoization
+
 ```typescript
 // Memoize expensive calculations
 const expensiveValue = useMemo(() => {
@@ -396,14 +431,18 @@ const expensiveValue = useMemo(() => {
 }, [data]);
 
 // Memoize callbacks
-const handleSubmit = useCallback((formData) => {
-  // Handle submission
-}, [dependencies]);
+const handleSubmit = useCallback(
+  formData => {
+    // Handle submission
+  },
+  [dependencies]
+);
 ```
 
 ## 🔄 Git Workflow
 
 ### Commit Messages
+
 ```
 feat(compliance): add real-time policy validation
 
@@ -415,6 +454,7 @@ Closes #123
 ```
 
 ### Branch Naming
+
 - `feature/component-name` - New features
 - `fix/issue-description` - Bug fixes
 - `refactor/area-name` - Code refactoring
@@ -435,4 +475,5 @@ Closes #123
 
 ---
 
-*These guidelines ensure that all code in the ACGS-PGP Framework maintains high quality, consistency, and alignment with constitutional governance principles.*
+_These guidelines ensure that all code in the ACGS-PGP Framework maintains high
+quality, consistency, and alignment with constitutional governance principles._

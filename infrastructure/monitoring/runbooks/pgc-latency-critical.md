@@ -5,7 +5,7 @@
 **Alert Name**: `PGCValidationLatencyCritical`  
 **Severity**: Critical  
 **Response Time Target**: <5 minutes  
-**Escalation**: Immediate  
+**Escalation**: Immediate
 
 ## Alert Description
 
@@ -21,6 +21,7 @@ The Policy Governance Control (PGC) service validation latency has exceeded the 
 ## Immediate Actions (First 5 Minutes)
 
 ### 1. Acknowledge Alert
+
 ```bash
 # Acknowledge the alert in Alertmanager
 curl -X POST http://localhost:9093/api/v1/alerts \
@@ -29,6 +30,7 @@ curl -X POST http://localhost:9093/api/v1/alerts \
 ```
 
 ### 2. Check Service Health
+
 ```bash
 # Check PGC service status
 curl -f http://localhost:8005/health
@@ -38,12 +40,14 @@ curl -s http://localhost:8005/metrics | grep pgc_validation_latency
 ```
 
 ### 3. Review Current Latency
+
 ```bash
 # Query current latency from Prometheus
 curl -s "http://localhost:9090/api/v1/query?query=histogram_quantile(0.95,%20rate(acgs_pgc_validation_latency_seconds_bucket{service=\"pgc\"}[5m]))"
 ```
 
 ### 4. Check System Resources
+
 ```bash
 # Check CPU and memory usage
 top -p $(pgrep -f pgc-service)
@@ -60,6 +64,7 @@ netstat -an | grep :8005
 ### 1. Service-Level Diagnostics
 
 #### Check PGC Service Logs
+
 ```bash
 # View recent PGC service logs
 journalctl -u acgs-pgc-service -n 100 --no-pager
@@ -69,6 +74,7 @@ journalctl -u acgs-pgc-service -n 1000 | grep -i "error\|timeout\|slow"
 ```
 
 #### Analyze Validation Operations
+
 ```bash
 # Check validation operation metrics
 curl -s http://localhost:8005/metrics | grep -E "(validation_operations|compliance_checks)"
@@ -80,6 +86,7 @@ curl -s http://localhost:8005/metrics | grep database_query_duration
 ### 2. Infrastructure-Level Diagnostics
 
 #### Database Performance
+
 ```bash
 # Check PostgreSQL performance
 sudo -u postgres psql -c "SELECT query, mean_time, calls FROM pg_stat_statements ORDER BY mean_time DESC LIMIT 10;"
@@ -89,6 +96,7 @@ sudo -u postgres psql -c "SELECT count(*) FROM pg_stat_activity WHERE state = 'a
 ```
 
 #### Cache Performance
+
 ```bash
 # Check Redis cache hit rate
 redis-cli info stats | grep keyspace_hits
@@ -98,6 +106,7 @@ redis-cli --latency -i 1
 ```
 
 #### Load Balancer Status
+
 ```bash
 # Check HAProxy stats
 curl -s http://localhost:8404/stats | grep pgc-service
@@ -109,6 +118,7 @@ curl -s http://localhost:9090/api/v1/query?query=acgs_backend_server_health{serv
 ### 3. Constitutional Governance Impact
 
 #### Check Workflow Status
+
 ```bash
 # Check governance workflow metrics
 curl -s http://localhost:9090/api/v1/query?query=acgs_governance_workflow_operations_total{service=\"pgc\"}
@@ -123,6 +133,7 @@ curl -s http://localhost:9090/api/v1/query?query=acgs_compliance_assessments{ser
 
 **Symptoms**: High database query times, connection pool exhaustion
 **Solution**:
+
 ```bash
 # Restart database connection pool
 systemctl restart acgs-pgc-service
@@ -138,6 +149,7 @@ sudo -u postgres psql -c "SELECT pid, query, state FROM pg_stat_activity WHERE s
 
 **Symptoms**: Low cache hit rate, high cache response times
 **Solution**:
+
 ```bash
 # Clear and restart Redis cache
 redis-cli FLUSHALL
@@ -151,6 +163,7 @@ curl -X POST http://localhost:8005/admin/cache/warmup
 
 **Symptoms**: High CPU/memory usage, slow response times
 **Solution**:
+
 ```bash
 # Scale PGC service instances
 docker-compose -f infrastructure/docker/docker-compose.yml up --scale pgc-service=3
@@ -164,6 +177,7 @@ systemctl edit acgs-pgc-service
 
 **Symptoms**: High network latency, connection timeouts
 **Solution**:
+
 ```bash
 # Check network connectivity
 ping -c 5 localhost
@@ -176,15 +190,17 @@ systemctl restart networking
 ## Escalation Procedures
 
 ### Immediate Escalation (If no improvement in 5 minutes)
+
 1. **Contact**: Governance Team Lead + Platform On-Call
-2. **Channels**: 
+2. **Channels**:
    - Phone: Primary on-call number
    - Slack: #acgs-critical-alerts
    - Email: critical-alerts@acgs.ai
 
 ### Management Escalation (If no resolution in 15 minutes)
+
 1. **Contact**: Engineering Manager + Product Manager
-2. **Prepare**: 
+2. **Prepare**:
    - Current impact assessment
    - Actions taken so far
    - Estimated time to resolution
@@ -192,6 +208,7 @@ systemctl restart networking
 ## Recovery Procedures
 
 ### 1. Service Restart
+
 ```bash
 # Graceful restart
 systemctl restart acgs-pgc-service
@@ -204,6 +221,7 @@ curl -s "http://localhost:9090/api/v1/query?query=histogram_quantile(0.95,%20rat
 ```
 
 ### 2. Database Optimization
+
 ```bash
 # Run database maintenance
 sudo -u postgres psql -c "VACUUM ANALYZE;"
@@ -216,6 +234,7 @@ sudo -u postgres psql -c "SELECT query, mean_time FROM pg_stat_statements ORDER 
 ```
 
 ### 3. Cache Optimization
+
 ```bash
 # Optimize cache configuration
 redis-cli CONFIG SET maxmemory-policy allkeys-lru
@@ -227,6 +246,7 @@ redis-cli info memory
 ## Verification Steps
 
 ### 1. Latency Verification
+
 ```bash
 # Check current latency (should be <50ms)
 curl -s "http://localhost:9090/api/v1/query?query=histogram_quantile(0.95,%20rate(acgs_pgc_validation_latency_seconds_bucket{service=\"pgc\"}[5m]))"
@@ -240,6 +260,7 @@ done
 ```
 
 ### 2. Service Health Verification
+
 ```bash
 # Verify all health checks pass
 curl -f http://localhost:8005/health
@@ -250,6 +271,7 @@ curl -s http://localhost:9090/api/v1/query?query=rate(acgs_errors_total{service=
 ```
 
 ### 3. Constitutional Governance Verification
+
 ```bash
 # Verify compliance validation is working
 curl -s http://localhost:9090/api/v1/query?query=acgs_constitutional_compliance_score{service=\"pgc\"}
@@ -261,16 +283,19 @@ curl -s http://localhost:9090/api/v1/query?query=acgs_governance_workflow_status
 ## Post-Incident Actions
 
 ### 1. Documentation
+
 - Update incident log with root cause and resolution
 - Document any configuration changes made
 - Update monitoring thresholds if necessary
 
 ### 2. Follow-up Tasks
+
 - Schedule post-incident review meeting
 - Create tickets for any identified improvements
 - Update runbook based on lessons learned
 
 ### 3. Communication
+
 - Notify stakeholders of resolution
 - Update status page if applicable
 - Send post-incident summary to governance team
@@ -278,16 +303,19 @@ curl -s http://localhost:9090/api/v1/query?query=acgs_governance_workflow_status
 ## Prevention Measures
 
 ### 1. Monitoring Enhancements
+
 - Add more granular latency monitoring
 - Implement predictive alerting for latency trends
 - Monitor database query performance continuously
 
 ### 2. Performance Optimization
+
 - Implement query result caching
 - Optimize database indexes
 - Consider read replicas for heavy queries
 
 ### 3. Capacity Planning
+
 - Monitor resource utilization trends
 - Plan for governance load growth
 - Implement auto-scaling policies

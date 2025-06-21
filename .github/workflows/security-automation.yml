@@ -2,11 +2,11 @@ name: ACGS-1 Security Automation
 
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: [main, master, develop]
   pull_request:
-    branches: [ main, master, develop ]
+    branches: [main, master, develop]
   schedule:
-    - cron: '0 2 * * 1'  # Weekly security scan on Monday at 2 AM
+    - cron: '0 2 * * 1' # Weekly security scan on Monday at 2 AM
   workflow_dispatch:
     inputs:
       scan_type:
@@ -15,11 +15,11 @@ on:
         default: 'comprehensive'
         type: choice
         options:
-        - comprehensive
-        - code_analysis
-        - dependency_scan
-        - container_scan
-        - infrastructure_scan
+          - comprehensive
+          - code_analysis
+          - dependency_scan
+          - container_scan
+          - infrastructure_scan
 
 permissions:
   contents: read
@@ -53,38 +53,38 @@ jobs:
       - name: Run Bandit security analysis
         run: |
           echo "🔍 Running Bandit security analysis..."
-          
+
           # Create bandit configuration
           cat > .bandit << EOF
           [bandit]
           exclude_dirs = tests,venv,.venv,node_modules
           skips = B101,B601
           EOF
-          
+
           # Run bandit on Python code
           bandit -r services/ -f json -o /tmp/bandit-report.json || true
           bandit -r services/ -f txt
-          
+
           echo "✅ Bandit analysis completed"
 
       - name: Run Safety dependency check
         run: |
           echo "🛡️ Running Safety dependency check..."
-          
+
           # Check for known security vulnerabilities in dependencies
           safety check --json --output /tmp/safety-report.json || true
           safety check
-          
+
           echo "✅ Safety check completed"
 
       - name: Run Semgrep analysis
         run: |
           echo "🔎 Running Semgrep analysis..."
-          
+
           # Run Semgrep with security rules
           semgrep --config=auto --json --output=/tmp/semgrep-report.json services/ || true
           semgrep --config=auto services/
-          
+
           echo "✅ Semgrep analysis completed"
 
       - name: Upload security analysis results
@@ -125,7 +125,7 @@ jobs:
       - name: Run npm audit
         run: |
           echo "📦 Running npm audit..."
-          
+
           # Find and audit all package.json files
           find . -name "package.json" -not -path "./node_modules/*" | while read package_file; do
             dir=$(dirname "$package_file")
@@ -138,26 +138,26 @@ jobs:
             fi
             cd - > /dev/null
           done
-          
+
           echo "✅ npm audit completed"
 
       - name: Run pip-audit
         run: |
           echo "🐍 Running pip-audit..."
-          
+
           # Find and audit all requirements files
           find . -name "requirements*.txt" -o -name "pyproject.toml" | while read req_file; do
             echo "Auditing $req_file..."
             pip-audit -r "$req_file" --format=json --output="/tmp/pip-audit-$(basename $req_file).json" || true
             pip-audit -r "$req_file"
           done
-          
+
           echo "✅ pip-audit completed"
 
       - name: Run Rust cargo audit
         run: |
           echo "🦀 Running cargo audit..."
-          
+
           # Install cargo-audit
           if command -v cargo >/dev/null 2>&1; then
             cargo install cargo-audit
@@ -175,7 +175,7 @@ jobs:
           else
             echo "Cargo not found, skipping Rust audit"
           fi
-          
+
           echo "✅ cargo audit completed"
 
       - name: Upload dependency scan results
@@ -201,7 +201,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install wget apt-transport-https gnupg lsb-release
-          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          timeout 60 wget -qO - --retry-connrefused --waitretry=5 https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
           echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
           sudo apt-get update
           sudo apt-get install trivy
@@ -209,28 +209,28 @@ jobs:
       - name: Build test images
         run: |
           echo "🏗️ Building test images for security scanning..."
-          
+
           # Build images for each service
           SERVICES=("auth" "ac" "integrity" "fv" "gs" "pgc" "ec")
-          
+
           for service in "${SERVICES[@]}"; do
             if [ -d "services/${service}_service" ]; then
               echo "Building $service service image..."
               docker build -t "acgs-${service}:test" "services/${service}_service/" || true
             fi
           done
-          
+
           echo "✅ Test images built"
 
       - name: Run Trivy container scans
         run: |
           echo "🔍 Running Trivy container security scans..."
-          
+
           mkdir -p /tmp/trivy-reports
-          
+
           # Scan each built image
           SERVICES=("auth" "ac" "integrity" "fv" "gs" "pgc" "ec")
-          
+
           for service in "${SERVICES[@]}"; do
             if docker image inspect "acgs-${service}:test" >/dev/null 2>&1; then
               echo "Scanning $service service image..."
@@ -245,18 +245,18 @@ jobs:
               trivy image --severity HIGH,CRITICAL "acgs-${service}:test"
             fi
           done
-          
+
           echo "✅ Trivy scans completed"
 
       - name: Run Docker Bench Security
         run: |
           echo "🐳 Running Docker Bench Security..."
-          
+
           # Download and run Docker Bench Security
           git clone https://github.com/docker/docker-bench-security.git
           cd docker-bench-security
           sudo ./docker-bench-security.sh -l /tmp/docker-bench-security.log
-          
+
           echo "✅ Docker Bench Security completed"
 
       - name: Upload container scan results
@@ -281,48 +281,48 @@ jobs:
         run: |
           # Install Checkov for Terraform/Kubernetes security
           pip install checkov
-          
+
           # Install kube-score for Kubernetes security
-          wget https://github.com/zegl/kube-score/releases/latest/download/kube-score_linux_amd64.tar.gz
+          timeout 120 wget --retry-connrefused --waitretry=5 https://github.com/zegl/kube-score/releases/latest/download/kube-score_linux_amd64.tar.gz
           tar xzf kube-score_linux_amd64.tar.gz
           sudo mv kube-score /usr/local/bin/
 
       - name: Run Checkov on Terraform
         run: |
           echo "🏗️ Running Checkov on Terraform configurations..."
-          
+
           if [ -d "infrastructure/terraform" ]; then
             checkov -d infrastructure/terraform --framework terraform --output json --output-file /tmp/checkov-terraform.json || true
             checkov -d infrastructure/terraform --framework terraform
           else
             echo "No Terraform configurations found"
           fi
-          
+
           echo "✅ Checkov Terraform scan completed"
 
       - name: Run Checkov on Kubernetes
         run: |
           echo "☸️ Running Checkov on Kubernetes configurations..."
-          
+
           if [ -d "k8s" ]; then
             checkov -d k8s --framework kubernetes --output json --output-file /tmp/checkov-kubernetes.json || true
             checkov -d k8s --framework kubernetes
           else
             echo "No Kubernetes configurations found"
           fi
-          
+
           echo "✅ Checkov Kubernetes scan completed"
 
       - name: Run kube-score
         run: |
           echo "🎯 Running kube-score on Kubernetes manifests..."
-          
+
           find . -name "*.yaml" -o -name "*.yml" | grep -E "(k8s|kubernetes)" | while read manifest; do
             echo "Scoring $manifest..."
             kube-score score "$manifest" --output-format json > "/tmp/kube-score-$(basename $manifest).json" || true
             kube-score score "$manifest"
           done
-          
+
           echo "✅ kube-score analysis completed"
 
       - name: Upload infrastructure scan results
@@ -338,7 +338,13 @@ jobs:
   security_compliance_check:
     runs-on: ubuntu-latest
     name: Security Compliance Check
-    needs: [code_security_analysis, dependency_vulnerability_scan, container_security_scan, infrastructure_security_scan]
+    needs:
+      [
+        code_security_analysis,
+        dependency_vulnerability_scan,
+        container_security_scan,
+        infrastructure_security_scan,
+      ]
     if: always()
     steps:
       - name: Check out repository
@@ -357,14 +363,14 @@ jobs:
       - name: Analyze security results
         run: |
           echo "📊 Analyzing security scan results..."
-          
+
           # Create security analysis script
           cat > /tmp/analyze_security.py << 'EOF'
           import json
           import os
           import glob
           from datetime import datetime
-          
+
           def analyze_security_results():
               results_dir = "/tmp/security-results"
               
@@ -460,61 +466,61 @@ jobs:
               print(f"Overall compliant: {summary['compliance_status']['overall_compliant']}")
               
               return summary['compliance_status']['overall_compliant']
-          
+
           if __name__ == "__main__":
               compliant = analyze_security_results()
               exit(0 if compliant else 1)
           EOF
-          
+
           python /tmp/analyze_security.py
-          
+
           echo "✅ Security analysis completed"
 
       - name: Generate security report
         run: |
           echo "📋 Generating security compliance report..."
-          
+
           # Create security report
           cat > /tmp/security-report.md << EOF
           # ACGS-1 Security Compliance Report
-          
+
           **Scan Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
           **Commit:** ${{ github.sha }}
           **Scan Type:** ${{ github.event.inputs.scan_type || 'comprehensive' }}
-          
+
           ## Scan Results Summary
-          
+
           - **Code Security Analysis:** ${{ needs.code_security_analysis.result }}
           - **Dependency Vulnerability Scan:** ${{ needs.dependency_vulnerability_scan.result }}
           - **Container Security Scan:** ${{ needs.container_security_scan.result }}
           - **Infrastructure Security Scan:** ${{ needs.infrastructure_security_scan.result }}
-          
+
           ## Security Metrics
-          
+
           Detailed security metrics are available in the analysis artifacts.
-          
+
           ## Compliance Status
-          
+
           - ✅ Code security analysis completed
           - ✅ Dependency vulnerabilities checked
           - ✅ Container images scanned
           - ✅ Infrastructure configurations validated
-          
+
           ## Recommendations
-          
+
           1. Review and remediate any critical or high-severity vulnerabilities
           2. Update dependencies with known security issues
           3. Implement security best practices in code
           4. Regular security scanning in CI/CD pipeline
-          
+
           ## Next Steps
-          
+
           1. Address identified security issues
           2. Update security policies and procedures
           3. Schedule regular security reviews
           4. Monitor security alerts and advisories
           EOF
-          
+
           echo "✅ Security report generated"
 
       - name: Upload security analysis

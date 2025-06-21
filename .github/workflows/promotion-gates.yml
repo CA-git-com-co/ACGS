@@ -8,24 +8,24 @@ on:
         required: true
         type: choice
         options:
-        - development
-        - staging
+          - development
+          - staging
       target_environment:
         description: 'Target environment'
         required: true
         type: choice
         options:
-        - staging
-        - production
+          - staging
+          - production
       promotion_type:
         description: 'Type of promotion'
         required: true
         default: 'standard'
         type: choice
         options:
-        - standard
-        - hotfix
-        - rollback
+          - standard
+          - hotfix
+          - rollback
       skip_tests:
         description: 'Skip automated tests (emergency only)'
         required: false
@@ -60,11 +60,11 @@ jobs:
         id: validate
         run: |
           echo "🔍 Validating promotion from ${{ github.event.inputs.source_environment }} to ${{ github.event.inputs.target_environment }}..."
-          
+
           PROMOTION_ID="${{ github.run_id }}-$(date +%s)"
           ALLOWED="false"
           REQUIRED_APPROVALS=1
-          
+
           # Validate promotion path
           case "${{ github.event.inputs.source_environment }}-${{ github.event.inputs.target_environment }}" in
             "development-staging")
@@ -82,7 +82,7 @@ jobs:
               exit 1
               ;;
           esac
-          
+
           # Additional validation for production promotions
           if [ "${{ github.event.inputs.target_environment }}" = "production" ]; then
             # Check if it's business hours (UTC)
@@ -99,11 +99,11 @@ jobs:
               fi
             fi
           fi
-          
+
           echo "promotion_id=$PROMOTION_ID" >> $GITHUB_OUTPUT
           echo "allowed=$ALLOWED" >> $GITHUB_OUTPUT
           echo "required_approvals=$REQUIRED_APPROVALS" >> $GITHUB_OUTPUT
-          
+
           echo "✅ Promotion validation completed"
 
   # Automated Testing Gate
@@ -119,7 +119,7 @@ jobs:
       - name: Run comprehensive test suite
         run: |
           echo "🧪 Running comprehensive test suite for promotion gate..."
-          
+
           # Set environment-specific test configuration
           case "${{ github.event.inputs.target_environment }}" in
             "staging")
@@ -133,7 +133,7 @@ jobs:
               export COVERAGE_THRESHOLD=95
               ;;
           esac
-          
+
           # Run tests based on promotion type
           case "${{ github.event.inputs.promotion_type }}" in
             "standard")
@@ -152,7 +152,7 @@ jobs:
               echo "✅ Rollback validation tests would run here"
               ;;
           esac
-          
+
           echo "✅ Automated testing gate passed"
 
   # Security Scanning Gate
@@ -168,7 +168,7 @@ jobs:
       - name: Run security scans
         run: |
           echo "🔒 Running security scans for promotion gate..."
-          
+
           # Enhanced security scanning for production
           if [ "${{ github.event.inputs.target_environment }}" = "production" ]; then
             echo "Running enhanced security scanning for production promotion..."
@@ -179,7 +179,7 @@ jobs:
             # This would run standard security scans
             echo "✅ Standard security scanning would run here"
           fi
-          
+
           echo "✅ Security scanning gate passed"
 
   # Performance Testing Gate
@@ -195,17 +195,17 @@ jobs:
       - name: Run performance tests
         run: |
           echo "⚡ Running performance tests for production promotion..."
-          
+
           # Performance benchmarks for production
           echo "Running load testing..."
           echo "Running stress testing..."
           echo "Running endurance testing..."
-          
+
           # Validate performance metrics
           echo "Validating response times < 2 seconds..."
           echo "Validating throughput > 1000 RPS..."
           echo "Validating 99.9% uptime..."
-          
+
           echo "✅ Performance testing gate passed"
 
   # Manual Approval Gate
@@ -214,7 +214,7 @@ jobs:
     name: Manual Approval Gate
     needs: [promotion_validation, automated_testing_gate, security_scanning_gate]
     if: needs.promotion_validation.outputs.promotion_allowed == 'true'
-    environment: 
+    environment:
       name: approval-${{ github.event.inputs.target_environment }}
     steps:
       - name: Request manual approval
@@ -225,7 +225,7 @@ jobs:
           echo "Target: ${{ github.event.inputs.target_environment }}"
           echo "Type: ${{ github.event.inputs.promotion_type }}"
           echo "Required approvals: ${{ needs.promotion_validation.outputs.required_approvals }}"
-          
+
           # This step will pause until manual approval is granted
           echo "✅ Manual approval received"
 
@@ -233,9 +233,10 @@ jobs:
   execute_promotion:
     runs-on: ubuntu-latest
     name: Execute Promotion
-    needs: [promotion_validation, automated_testing_gate, security_scanning_gate, manual_approval_gate]
+    needs:
+      [promotion_validation, automated_testing_gate, security_scanning_gate, manual_approval_gate]
     if: always() && needs.promotion_validation.outputs.promotion_allowed == 'true' && (needs.manual_approval_gate.result == 'success' || github.event.inputs.skip_tests == 'true')
-    environment: 
+    environment:
       name: ${{ github.event.inputs.target_environment }}
     steps:
       - name: Check out repository
@@ -244,7 +245,7 @@ jobs:
       - name: Execute promotion
         run: |
           echo "🚀 Executing promotion to ${{ github.event.inputs.target_environment }}..."
-          
+
           # Set deployment strategy based on target environment
           case "${{ github.event.inputs.target_environment }}" in
             "staging")
@@ -254,27 +255,27 @@ jobs:
               STRATEGY="blue-green"
               ;;
           esac
-          
+
           echo "Using deployment strategy: $STRATEGY"
-          
+
           # Execute deployment
           echo "Deploying to ${{ github.event.inputs.target_environment }} using $STRATEGY strategy..."
-          
+
           # This would trigger the actual deployment
           echo "✅ Promotion executed successfully"
 
       - name: Post-deployment validation
         run: |
           echo "🔍 Running post-deployment validation..."
-          
+
           # Wait for deployment to stabilize
           sleep 60
-          
+
           # Run health checks
           echo "Running health checks..."
           echo "Validating service availability..."
           echo "Checking performance metrics..."
-          
+
           echo "✅ Post-deployment validation completed"
 
   # Notification and Reporting
@@ -287,10 +288,10 @@ jobs:
       - name: Send promotion notification
         run: |
           echo "📢 Sending promotion notification..."
-          
+
           STATUS="${{ needs.execute_promotion.result }}"
           PROMOTION_ID="${{ needs.promotion_validation.outputs.promotion_id }}"
-          
+
           # Create promotion report
           cat > /tmp/promotion-report.json << EOF
           {
@@ -309,7 +310,7 @@ jobs:
             }
           }
           EOF
-          
+
           if [ "$STATUS" = "success" ]; then
             echo "✅ Promotion to ${{ github.event.inputs.target_environment }} completed successfully"
           else

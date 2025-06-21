@@ -28,6 +28,7 @@ Returns the current health status of the Formal Verification Service.
 **Authentication**: Not required
 
 **Response (200 OK)**:
+
 ```json
 {
   "status": "healthy",
@@ -50,18 +51,21 @@ Formally verify policy consistency and completeness.
 **Authentication**: Required
 
 **Request Body**:
+
 ```json
-{"policy": "policy_text", "rules": ["consistency", "completeness"]}
+{ "policy": "policy_text", "rules": ["consistency", "completeness"] }
 ```
 
 **Response (200 OK)**:
+
 ```json
-{"verified": true, "issues": [], "confidence": 0.95}
+{ "verified": true, "issues": [], "confidence": 0.95 }
 ```
 
 ## Error Responses
 
 ### 400 Bad Request
+
 ```json
 {
   "status": "error",
@@ -75,6 +79,7 @@ Formally verify policy consistency and completeness.
 ```
 
 ### 401 Unauthorized
+
 ```json
 {
   "status": "error",
@@ -95,6 +100,7 @@ Formally verify policy consistency and completeness.
 ## Examples
 
 ### cURL Examples
+
 ```bash
 # Health check
 curl http://localhost:8003/health
@@ -107,6 +113,7 @@ curl -X POST http://localhost:8003/api/v1/example \
 ```
 
 ### Python Client Example
+
 ```python
 import httpx
 import asyncio
@@ -115,7 +122,7 @@ class FormalVerificationServiceClient:
     def __init__(self, base_url="http://localhost:8003", token=None):
         self.base_url = base_url
         self.headers = {"Authorization": f"Bearer {token}"} if token else {}
-    
+
     async def health_check(self):
         async with httpx.AsyncClient() as client:
             response = await client.get(f"{self.base_url}/health")

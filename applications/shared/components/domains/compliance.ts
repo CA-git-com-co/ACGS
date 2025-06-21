@@ -29,6 +29,4 @@ export { useComplianceHistory } from '../../hooks/useComplianceHistory';
 export { useViolationTracking } from '../../hooks/useViolationTracking';
 
 // Compliance types
-export type {
-  ComplianceResult
-} from '../../types/governance';
+export type { ComplianceResult } from '../../types/governance';

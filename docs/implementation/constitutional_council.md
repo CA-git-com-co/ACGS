@@ -23,9 +23,9 @@ The approval or rejection of constitutional amendments is determined through a r
 1.  **Voting Period**: A clearly defined voting period is initiated once the deliberation and refinement phases are complete. This period is announced well in advance to ensure maximum participation.
 2.  **Secure Voting**: Voting is conducted through a cryptographically secure and auditable mechanism, ensuring anonymity, preventing double-voting, and guaranteeing the integrity of the results. Each authorized voting entity's vote is weighted according to predefined governance rules (e.g., based on stake, reputation, or designated roles within the ACGS).
 3.  **Approval Criteria**: For an amendment to be approved, it must meet stringent criteria, typically involving a supermajority threshold. This often includes:
-    *   **Overall Majority**: A significant percentage (e.g., 66.7% or 75%) of all votes cast must be in favor of the amendment.
-    *   **Quorum**: A minimum percentage of eligible voters must participate in the vote to ensure representativeness.
-    *   **Categorical Consensus (Optional)**: For highly sensitive amendments, consensus across specific stakeholder categories or system components might be required.
+    - **Overall Majority**: A significant percentage (e.g., 66.7% or 75%) of all votes cast must be in favor of the amendment.
+    - **Quorum**: A minimum percentage of eligible voters must participate in the vote to ensure representativeness.
+    - **Categorical Consensus (Optional)**: For highly sensitive amendments, consensus across specific stakeholder categories or system components might be required.
 4.  **Rejection**: If an amendment fails to meet the approval criteria, it is rejected. Rejected proposals may be resubmitted after a cooling-off period and significant revisions addressing the reasons for their initial failure.
 5.  **Implementation**: Approved amendments are automatically integrated into the ACGS's constitutional framework, triggering necessary updates to relevant policies, codebases, and operational parameters.
 

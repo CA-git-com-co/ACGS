@@ -28,42 +28,45 @@ export const ROUTES = {
   DASHBOARD: '/dashboard',
   LOGIN: '/login',
   REGISTER: '/register',
-  
+
   // AC Management
   AC_MANAGEMENT: '/ac-management',
   PRINCIPLES: '/principles', // Redirect to AC_MANAGEMENT
-  
+
   // Policy Management
   POLICY_SYNTHESIS: '/policy-synthesis',
   POLICIES: '/policies',
   POLICY_LIST: '/policies',
-  
+
   // Governance
   CONSTITUTIONAL_COUNCIL: '/constitutional-council-dashboard',
   CONSTITUTIONAL_AMENDMENT: '/constitutional-amendment',
   COMPLIANCE_CHECKER: '/compliance-checker',
   GOVERNANCE_DASHBOARD: '/governance-dashboard',
-  
+
   // Public
   PUBLIC_CONSULTATION: '/public-consultation',
-  
+
   // Solana-specific
   QUANTUMAGI: '/quantumagi',
   SOLANA_DASHBOARD: '/solana-dashboard',
   BLOCKCHAIN: '/blockchain',
-  
+
   // Legacy redirects
   HOME_OLD: '/home',
   DASHBOARD_OLD: '/dashboard-old',
   AC_MGMT: '/ac-mgmt',
-  QUANTUMAGI_DASHBOARD: '/quantumagi-dashboard',
+  QUANTUMAGI_DASHBOARD: '/quantumagi-dashboard'
 } as const;
 
 // Navigation items for different user types
-export const getNavigationItems = (userRole?: string, isAuthenticated?: boolean): NavigationItem[] => {
+export const getNavigationItems = (
+  userRole?: string,
+  isAuthenticated?: boolean
+): NavigationItem[] => {
   const publicItems: NavigationItem[] = [
     { path: ROUTES.HOME, label: 'Home', icon: '🏠' },
-    { path: ROUTES.PUBLIC_CONSULTATION, label: 'Public Consultation', icon: '💬' },
+    { path: ROUTES.PUBLIC_CONSULTATION, label: 'Public Consultation', icon: '💬' }
   ];
 
   const authenticatedItems: NavigationItem[] = [
@@ -71,25 +74,42 @@ export const getNavigationItems = (userRole?: string, isAuthenticated?: boolean)
     { path: ROUTES.AC_MANAGEMENT, label: 'AC Management', icon: '📜', requiresAuth: true },
     { path: ROUTES.POLICY_SYNTHESIS, label: 'Synthesize', icon: '⚙️', requiresAuth: true },
     { path: ROUTES.POLICIES, label: 'View Policies', icon: '📋', requiresAuth: true },
-    { path: ROUTES.CONSTITUTIONAL_COUNCIL, label: 'Council Dashboard', icon: '🏛️', requiresAuth: true },
-    { path: ROUTES.COMPLIANCE_CHECKER, label: 'Compliance', icon: '🔍', requiresAuth: true },
+    {
+      path: ROUTES.CONSTITUTIONAL_COUNCIL,
+      label: 'Council Dashboard',
+      icon: '🏛️',
+      requiresAuth: true
+    },
+    { path: ROUTES.COMPLIANCE_CHECKER, label: 'Compliance', icon: '🔍', requiresAuth: true }
   ];
 
   const solanaItems: NavigationItem[] = [
     { path: ROUTES.QUANTUMAGI, label: 'Quantumagi', icon: '⚡', solana: true },
-    { path: ROUTES.BLOCKCHAIN, label: 'Blockchain', icon: '🔗', solana: true },
+    { path: ROUTES.BLOCKCHAIN, label: 'Blockchain', icon: '🔗', solana: true }
   ];
 
   const adminItems: NavigationItem[] = [
-    { path: ROUTES.GOVERNANCE_DASHBOARD, label: 'Governance Admin', icon: '👑', requiresAuth: true, adminOnly: true },
-    { path: ROUTES.CONSTITUTIONAL_AMENDMENT, label: 'Amendments', icon: '📝', requiresAuth: true, adminOnly: true },
+    {
+      path: ROUTES.GOVERNANCE_DASHBOARD,
+      label: 'Governance Admin',
+      icon: '👑',
+      requiresAuth: true,
+      adminOnly: true
+    },
+    {
+      path: ROUTES.CONSTITUTIONAL_AMENDMENT,
+      label: 'Amendments',
+      icon: '📝',
+      requiresAuth: true,
+      adminOnly: true
+    }
   ];
 
   let items = [...publicItems];
 
   if (isAuthenticated) {
     items = [...items, ...authenticatedItems, ...solanaItems];
-    
+
     if (userRole === 'admin' || userRole === 'council_member') {
       items = [...items, ...adminItems];
     }
@@ -105,7 +125,7 @@ export const getRedirectPath = (path: string): string | null => {
     [ROUTES.DASHBOARD_OLD]: ROUTES.DASHBOARD,
     [ROUTES.AC_MGMT]: ROUTES.AC_MANAGEMENT,
     [ROUTES.PRINCIPLES]: ROUTES.AC_MANAGEMENT,
-    [ROUTES.QUANTUMAGI_DASHBOARD]: ROUTES.QUANTUMAGI,
+    [ROUTES.QUANTUMAGI_DASHBOARD]: ROUTES.QUANTUMAGI
   };
 
   return redirectMap[path] || null;
@@ -121,7 +141,7 @@ export const isProtectedRoute = (path: string): boolean => {
     ROUTES.CONSTITUTIONAL_COUNCIL,
     ROUTES.CONSTITUTIONAL_AMENDMENT,
     ROUTES.COMPLIANCE_CHECKER,
-    ROUTES.GOVERNANCE_DASHBOARD,
+    ROUTES.GOVERNANCE_DASHBOARD
   ];
 
   return protectedRoutes.includes(path as any);
@@ -135,7 +155,7 @@ export const isLegacyRoute = (path: string): boolean => {
     ROUTES.POLICIES,
     ROUTES.PUBLIC_CONSULTATION,
     ROUTES.CONSTITUTIONAL_COUNCIL,
-    ROUTES.CONSTITUTIONAL_AMENDMENT,
+    ROUTES.CONSTITUTIONAL_AMENDMENT
   ];
 
   return legacyRoutes.includes(path as any);
@@ -143,11 +163,7 @@ export const isLegacyRoute = (path: string): boolean => {
 
 // Check if a route is Solana-specific
 export const isSolanaRoute = (path: string): boolean => {
-  const solanaRoutes = [
-    ROUTES.QUANTUMAGI,
-    ROUTES.SOLANA_DASHBOARD,
-    ROUTES.BLOCKCHAIN,
-  ];
+  const solanaRoutes = [ROUTES.QUANTUMAGI, ROUTES.SOLANA_DASHBOARD, ROUTES.BLOCKCHAIN];
 
   return solanaRoutes.includes(path as any);
 };
@@ -198,7 +214,7 @@ export const getRouteMetadata = (path: string): { title: string; description: st
     [ROUTES.QUANTUMAGI]: {
       title: 'Quantumagi',
       description: 'Solana blockchain governance dashboard'
-    },
+    }
   };
 
   return metadata[path] || { title: 'ACGS-PGP', description: 'Constitutional governance system' };
@@ -212,7 +228,7 @@ export const logRouteAccess = (path: string, userAgent?: string): void => {
     isLegacy: isLegacyRoute(path),
     isSolana: isSolanaRoute(path),
     isProtected: isProtectedRoute(path),
-    userAgent: userAgent || navigator.userAgent,
+    userAgent: userAgent || navigator.userAgent
   };
 
   // In production, this would send to analytics service
@@ -225,12 +241,12 @@ export const logRouteAccess = (path: string, userAgent?: string): void => {
     const existingData = localStorage.getItem('acgs_route_analytics') || '[]';
     const analytics = JSON.parse(existingData);
     analytics.push(routeData);
-    
+
     // Keep only last 100 entries
     if (analytics.length > 100) {
       analytics.splice(0, analytics.length - 100);
     }
-    
+
     localStorage.setItem('acgs_route_analytics', JSON.stringify(analytics));
   } catch (error) {
     console.warn('Failed to store route analytics:', error);

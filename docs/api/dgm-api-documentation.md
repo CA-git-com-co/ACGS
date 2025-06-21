@@ -27,6 +27,7 @@ Authorization: Bearer <token>
 Get comprehensive DGM system status.
 
 **Response:**
+
 ```json
 {
   "status": "operational",
@@ -53,6 +54,7 @@ Get comprehensive DGM system status.
 Trigger a new improvement cycle.
 
 **Request:**
+
 ```json
 {
   "target_service": "dgm-service",
@@ -68,6 +70,7 @@ Trigger a new improvement cycle.
 ```
 
 **Response:**
+
 ```json
 {
   "improvement_id": "123e4567-e89b-12d3-a456-426614174000",
@@ -87,6 +90,7 @@ Trigger a new improvement cycle.
 Select an arm using bandit algorithm.
 
 **Request:**
+
 ```json
 {
   "context_key": "improvement_context",
@@ -97,6 +101,7 @@ Select an arm using bandit algorithm.
 ```
 
 **Response:**
+
 ```json
 {
   "selected_arm": "code_optimization",
@@ -113,6 +118,7 @@ Select an arm using bandit algorithm.
 Provide reward feedback for bandit algorithm learning.
 
 **Request:**
+
 ```json
 {
   "context_key": "improvement_context",
@@ -126,6 +132,7 @@ Provide reward feedback for bandit algorithm learning.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -144,6 +151,7 @@ Provide reward feedback for bandit algorithm learning.
 Query performance metrics for a specific time range.
 
 **Request:**
+
 ```json
 {
   "metric_name": "response_time",
@@ -155,6 +163,7 @@ Query performance metrics for a specific time range.
 ```
 
 **Response:**
+
 ```json
 {
   "metric_name": "response_time",
@@ -188,10 +197,12 @@ Query performance metrics for a specific time range.
 Get performance metrics summary.
 
 **Parameters:**
+
 - `hours` (int): Hours to include in summary (1-168, default: 24)
 - `service_name` (string, optional): Filter by service name
 
 **Response:**
+
 ```json
 {
   "time_period": {
@@ -222,15 +233,12 @@ Get performance metrics summary.
 Trigger database performance optimization.
 
 **Response:**
+
 ```json
 {
   "optimization_id": "456e7890-e89b-12d3-a456-426614174001",
   "status": "completed",
-  "optimizations_applied": [
-    "index_creation",
-    "vacuum_tuning",
-    "query_optimization"
-  ],
+  "optimizations_applied": ["index_creation", "vacuum_tuning", "query_optimization"],
   "performance_improvement": {
     "query_time_reduction": 25.0,
     "cache_hit_ratio_improvement": 5.0
@@ -249,6 +257,7 @@ Trigger database performance optimization.
 Get database performance optimization report.
 
 **Response:**
+
 ```json
 {
   "generated_at": "2025-01-20T12:00:00Z",
@@ -293,6 +302,7 @@ Get database performance optimization report.
 Get cache performance statistics.
 
 **Response:**
+
 ```json
 {
   "memory_cache": {
@@ -324,9 +334,11 @@ Get cache performance statistics.
 Clear cache entries.
 
 **Parameters:**
+
 - `pattern` (string, optional): Pattern to match cache keys
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -343,6 +355,7 @@ Clear cache entries.
 Get current constitutional compliance status.
 
 **Response:**
+
 ```json
 {
   "compliance_status": "validated",
@@ -361,6 +374,7 @@ Get current constitutional compliance status.
 Validate content for constitutional compliance.
 
 **Request:**
+
 ```json
 {
   "content": "Proposed algorithm improvement",
@@ -374,6 +388,7 @@ Validate content for constitutional compliance.
 ```
 
 **Response:**
+
 ```json
 {
   "validation_id": "789e0123-e89b-12d3-a456-426614174002",
@@ -381,10 +396,7 @@ Validate content for constitutional compliance.
   "compliance_score": 0.92,
   "constitutional_hash": "cdd01ef066bc6cf2",
   "violations": [],
-  "recommendations": [
-    "Consider additional safety checks",
-    "Add more comprehensive testing"
-  ],
+  "recommendations": ["Consider additional safety checks", "Add more comprehensive testing"],
   "assessment_details": {
     "method": "automated",
     "confidence": 0.95,

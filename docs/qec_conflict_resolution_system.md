@@ -9,21 +9,25 @@ The QEC-Enhanced Conflict Resolution System integrates Quantum Error Correction 
 ### Core Components
 
 1. **Constitutional Distance Calculator**
+
    - Measures principle robustness through language ambiguity analysis
    - Assesses criteria formality and historical success rates
    - Provides constitutional distance scores for prioritization
 
 2. **Error Prediction Model**
+
    - Predicts potential synthesis challenges using historical patterns
    - Classifies failure types (8 categories)
    - Provides proactive error detection and mitigation strategies
 
 3. **Recovery Strategy Dispatcher**
+
    - Intelligent recovery strategy selection (8 configurable strategies)
    - Performance tracking and strategy optimization
    - Context-aware patch application and selection
 
 4. **Validation DSL Parser**
+
    - Transforms natural language validation criteria into machine-actionable tests
    - Supports multiple output formats (Rego assertions, SMT constraints)
    - Integrated linting and validation
@@ -46,17 +50,20 @@ The QEC-Enhanced Conflict Resolution System integrates Quantum Error Correction 
 ### Conflict Resolution
 
 #### Create Conflict Resolution
+
 ```http
 POST /api/v1/conflict-resolution/
 ```
 
 Creates a new conflict resolution with automatic QEC enhancement:
+
 - Calculates constitutional distances for involved principles
 - Predicts potential synthesis challenges
 - Recommends recovery strategies
 - Generates validation scenarios
 
 #### List Conflicts with QEC Prioritization
+
 ```http
 GET /api/v1/conflict-resolution/?priority_order=qec
 ```
@@ -64,21 +71,25 @@ GET /api/v1/conflict-resolution/?priority_order=qec
 Lists conflicts sorted by QEC priority scores (higher score = higher priority).
 
 #### Generate Automated Patch
+
 ```http
 POST /api/v1/conflict-resolution/{conflict_id}/generate-patch
 ```
 
 Generates automated patches using QEC components:
+
 - Uses recovery strategy dispatcher for intelligent patch selection
 - Creates validation tests from DSL parser output
 - Provides confidence scores and metadata
 
 #### Get QEC Insights
+
 ```http
 GET /api/v1/conflict-resolution/{conflict_id}/qec-insights
 ```
 
 Returns comprehensive QEC analysis for a specific conflict:
+
 - Constitutional distance scores
 - Error predictions and recommended strategies
 - Priority scores and validation scenarios
@@ -87,6 +98,7 @@ Returns comprehensive QEC analysis for a specific conflict:
 ### Constitutional Fidelity Monitor
 
 #### Current Fidelity
+
 ```http
 GET /api/v1/fidelity/current
 ```
@@ -94,6 +106,7 @@ GET /api/v1/fidelity/current
 Returns current constitutional fidelity score and components.
 
 #### Fidelity History
+
 ```http
 GET /api/v1/fidelity/history?hours=24
 ```
@@ -101,6 +114,7 @@ GET /api/v1/fidelity/history?hours=24
 Returns historical fidelity data for time-series analysis.
 
 #### Active Alerts
+
 ```http
 GET /api/v1/fidelity/alerts
 ```
@@ -108,6 +122,7 @@ GET /api/v1/fidelity/alerts
 Returns currently active fidelity alerts with recommended actions.
 
 #### Start/Stop Monitoring
+
 ```http
 POST /api/v1/fidelity/start-monitoring
 POST /api/v1/fidelity/stop-monitoring
@@ -122,12 +137,14 @@ Controls continuous fidelity monitoring (admin only).
 When a conflict is identified:
 
 1. **Constitutional Distance Calculation**
+
    - Analyzes language ambiguity in principle descriptions
    - Assesses criteria formality and structure
    - Calculates historical success rates
    - Generates composite distance score (0-1, lower = more robust)
 
 2. **Error Prediction**
+
    - Extracts features from principles (complexity, ambiguity, dependencies)
    - Predicts failure probabilities for 8 failure types:
      - Synthesis failures
@@ -149,6 +166,7 @@ When a conflict is identified:
 For automated conflict resolution:
 
 1. **Strategy Selection**
+
    - Recovery dispatcher analyzes conflict type and predictions
    - Selects appropriate strategy from 8 options:
      - Standard synthesis
@@ -161,6 +179,7 @@ For automated conflict resolution:
      - Emergency fallback
 
 2. **Validation Test Generation**
+
    - DSL parser converts validation criteria to test specifications
    - Generates Rego assertions, SMT constraints, or natural language tests
    - Creates comprehensive test suites for patch validation
@@ -175,6 +194,7 @@ For automated conflict resolution:
 Constitutional Fidelity Monitor provides continuous oversight:
 
 1. **Composite Scoring**
+
    - Principle coverage (completeness of constitutional framework)
    - Synthesis success rate (LLM reliability)
    - Enforcement reliability (policy compliance)
@@ -183,6 +203,7 @@ Constitutional Fidelity Monitor provides continuous oversight:
    - Appeal frequency (system stability)
 
 2. **Alert Thresholds**
+
    - **Green**: ≥0.85 (healthy operation)
    - **Amber**: 0.70-0.84 (attention required)
    - **Red**: <0.70 (critical intervention needed)
@@ -213,6 +234,7 @@ Constitutional Fidelity Monitor provides continuous oversight:
 ## Database Schema
 
 ### QEC Conflict Analysis Logs
+
 ```sql
 CREATE TABLE qec_conflict_analysis_logs (
     id SERIAL PRIMARY KEY,
@@ -230,6 +252,7 @@ CREATE TABLE qec_conflict_analysis_logs (
 ```
 
 ### QEC Patch Generation Logs
+
 ```sql
 CREATE TABLE qec_patch_generation_logs (
     id SERIAL PRIMARY KEY,
@@ -246,6 +269,7 @@ CREATE TABLE qec_patch_generation_logs (
 ```
 
 ### Constitutional Fidelity History
+
 ```sql
 CREATE TABLE constitutional_fidelity_history (
     id SERIAL PRIMARY KEY,
@@ -317,6 +341,7 @@ FIDELITY_CONFIG = {
 ## Testing
 
 ### Unit Tests
+
 - `test_qec_conflict_resolution.py`: Core QEC resolver functionality
 - `test_constitutional_distance_calculator.py`: Distance calculation logic
 - `test_error_prediction_model.py`: Error prediction accuracy
@@ -325,12 +350,14 @@ FIDELITY_CONFIG = {
 - `test_constitutional_fidelity_monitor.py`: Fidelity monitoring and alerts
 
 ### Integration Tests
+
 - `test_qec_conflict_resolution_integration.py`: End-to-end workflow testing
 - API endpoint testing with mock data
 - Database integration testing
 - Cross-service communication validation
 
 ### Performance Tests
+
 - Load testing with multiple concurrent conflicts
 - Stress testing with complex principle hierarchies
 - Latency testing for real-time fidelity monitoring
@@ -339,6 +366,7 @@ FIDELITY_CONFIG = {
 ## Deployment
 
 ### Prerequisites
+
 - PostgreSQL 13+ with JSONB support
 - Python 3.9+ with asyncio support
 - FastAPI and SQLAlchemy 2.0
@@ -346,6 +374,7 @@ FIDELITY_CONFIG = {
 - Grafana for monitoring dashboards
 
 ### Environment Variables
+
 ```bash
 # QEC Configuration
 QEC_ENABLED=true
@@ -364,6 +393,7 @@ GRAFANA_ENABLED=true
 ```
 
 ### Migration
+
 ```bash
 # Apply QEC database schema
 cd services/core/ac_service
@@ -375,16 +405,19 @@ alembic upgrade head
 ### Common Issues
 
 1. **QEC Components Not Available**
+
    - Check import paths for alphaevolve_gs_engine
    - Verify QEC enhancement package installation
    - Review fallback behavior in logs
 
 2. **Low Fidelity Scores**
+
    - Check principle coverage completeness
    - Review synthesis success rates
    - Validate enforcement reliability metrics
 
 3. **Patch Generation Failures**
+
    - Review error prediction accuracy
    - Check recovery strategy configuration
    - Validate DSL parser output
@@ -405,16 +438,19 @@ alembic upgrade head
 ## Future Enhancements
 
 1. **Machine Learning Integration**
+
    - Improved error prediction models
    - Adaptive strategy selection
    - Automated threshold tuning
 
 2. **Advanced Validation**
+
    - Formal verification integration
    - Automated test case generation
    - Continuous validation pipelines
 
 3. **Enhanced Monitoring**
+
    - Predictive fidelity modeling
    - Anomaly detection
    - Automated remediation

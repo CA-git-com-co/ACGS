@@ -7,14 +7,14 @@ services:
 
 bundles:
   authz:
-    resource: "/policies"
+    resource: '/policies'
     persist: true
     polling:
       min_delay_seconds: 10
       max_delay_seconds: 20
     signing:
-      keyid: "acgs_pgp_key"
-      scope: "write"
+      keyid: 'acgs_pgp_key'
+      scope: 'write'
 
 decision_logs:
   console: true
@@ -33,7 +33,7 @@ plugins:
 # Performance optimizations for incremental compilation
 caching:
   inter_query_builtin_cache:
-    max_size_bytes: 100000000  # 100MB cache for built-in functions
+    max_size_bytes: 100000000 # 100MB cache for built-in functions
 
 # Distributed tracing for performance monitoring
 distributed_tracing:
@@ -49,7 +49,7 @@ server:
       min_length: 1024
   diagnostic:
     addr: 0.0.0.0:8282
-    
+
 # Storage configuration for policy persistence
 storage:
   disk:

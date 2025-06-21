@@ -5,13 +5,16 @@ This directory contains the platform services that provide foundational capabili
 ## Service Overview
 
 ### Authentication Service (`authentication/`)
+
 **Purpose**: User authentication, authorization, and access control
+
 - User registration, login, and session management
 - JWT token issuance and validation
 - Role-Based Access Control (RBAC) implementation
 - Multi-factor authentication support
 
 **Key Features**:
+
 - OAuth2/OpenID Connect integration
 - Session management
 - Permission-based access control
@@ -21,13 +24,16 @@ This directory contains the platform services that provide foundational capabili
 **API Base**: `/api/authentication/`
 
 ### Integrity Service (`integrity/`)
+
 **Purpose**: Cryptographic integrity and data assurance
+
 - Policy storage and versioning
 - Audit log management
 - Cryptographic integrity (PGP Assurance)
 - Data validation and verification
 
 **Key Features**:
+
 - PGP signature verification
 - Audit trail management
 - Data integrity checking
@@ -37,13 +43,16 @@ This directory contains the platform services that provide foundational capabili
 **API Base**: `/api/integrity/`
 
 ### Workflow Service (`workflow/`)
+
 **Purpose**: Workflow orchestration and process automation
+
 - Business process management
 - Task scheduling and execution
 - Workflow state management
 - Process monitoring and analytics
 
 **Key Features**:
+
 - Workflow definition and execution
 - Task queue management
 - Process automation
@@ -55,6 +64,7 @@ This directory contains the platform services that provide foundational capabili
 ## Service Architecture
 
 ### Communication Patterns
+
 ```
 Authentication ──→ All Services (Auth validation)
        │
@@ -66,11 +76,13 @@ Authentication ──→ All Services (Auth validation)
 ```
 
 ### Data Flow
+
 1. **Authentication** validates all incoming requests
 2. **Integrity** ensures data consistency and audit trails
 3. **Workflow** orchestrates complex governance processes
 
 ### Integration Points
+
 - **Core Services**: Provides authentication and data integrity
 - **Blockchain Integration**: Ensures integrity of on-chain operations
 - **Applications**: Provides user authentication and workflow management
@@ -79,6 +91,7 @@ Authentication ──→ All Services (Auth validation)
 ## Development
 
 ### Running All Platform Services
+
 ```bash
 # Start all platform services
 docker-compose -f infrastructure/docker/docker-compose.platform.yml up -d
@@ -95,6 +108,7 @@ cd services/platform/workflow && python -m uvicorn app.main:app --reload --port 
 ```
 
 ### Testing Platform Services
+
 ```bash
 # Run platform service tests
 python -m pytest tests/unit/platform/
@@ -108,6 +122,7 @@ python scripts/validation/test_integrity_verification.py
 ```
 
 ### Service Dependencies
+
 - **Database**: PostgreSQL for user data and audit logs
 - **Cache**: Redis for session storage and caching
 - **Message Queue**: NATS for workflow coordination
@@ -116,26 +131,32 @@ python scripts/validation/test_integrity_verification.py
 ## Configuration
 
 ### Environment Variables
+
 Platform services use these environment variables:
 
 **Authentication Service**:
+
 - `JWT_SECRET_KEY`: Secret key for JWT token signing
 - `JWT_EXPIRATION_HOURS`: Token expiration time
 - `OAUTH_CLIENT_ID`: OAuth client identifier
 - `OAUTH_CLIENT_SECRET`: OAuth client secret
 
 **Integrity Service**:
+
 - `PGP_KEY_PATH`: Path to PGP private key
 - `AUDIT_LOG_RETENTION_DAYS`: Audit log retention period
 - `INTEGRITY_CHECK_INTERVAL`: Data integrity check frequency
 
 **Workflow Service**:
+
 - `WORKFLOW_ENGINE`: Workflow engine type (celery, temporal)
 - `TASK_QUEUE_URL`: Task queue connection string
 - `WORKFLOW_TIMEOUT`: Default workflow timeout
 
 ### Service Registry
+
 Platform services register with the shared service registry:
+
 ```python
 # services/shared/config/service_registry.py
 PLATFORM_SERVICES = {
@@ -148,18 +169,21 @@ PLATFORM_SERVICES = {
 ## Security Features
 
 ### Authentication Security
+
 - **Multi-factor Authentication**: TOTP, SMS, email verification
 - **Password Policies**: Complexity requirements, rotation policies
 - **Session Security**: Secure session management, automatic timeout
 - **Audit Logging**: Complete authentication audit trail
 
 ### Integrity Security
+
 - **Cryptographic Signatures**: PGP/GPG signature verification
 - **Hash Verification**: SHA-256 integrity checking
 - **Tamper Detection**: Automatic detection of data modifications
 - **Secure Storage**: Encrypted storage of sensitive data
 
 ### Workflow Security
+
 - **Process Isolation**: Secure execution environments
 - **Access Control**: Role-based workflow permissions
 - **Audit Trail**: Complete workflow execution logging
@@ -168,13 +192,16 @@ PLATFORM_SERVICES = {
 ## Monitoring & Health Checks
 
 ### Health Endpoints
+
 Each platform service provides:
+
 - `GET /health` - Basic health check
 - `GET /health/detailed` - Detailed health information
 - `GET /metrics` - Prometheus metrics
 - `GET /status` - Service status and dependencies
 
 ### Service Monitoring
+
 - **Authentication Metrics**: Login success/failure rates, token usage
 - **Integrity Metrics**: Verification success rates, audit log volume
 - **Workflow Metrics**: Process execution times, success rates
@@ -183,6 +210,7 @@ Each platform service provides:
 ## API Examples
 
 ### Authentication Service
+
 ```bash
 # User login
 curl -X POST http://localhost:8005/api/authentication/login \
@@ -195,6 +223,7 @@ curl -X GET http://localhost:8005/api/authentication/validate \
 ```
 
 ### Integrity Service
+
 ```bash
 # Verify data integrity
 curl -X POST http://localhost:8006/api/integrity/verify \
@@ -206,6 +235,7 @@ curl -X GET http://localhost:8006/api/integrity/audit-log?entity_id=123
 ```
 
 ### Workflow Service
+
 ```bash
 # Start workflow
 curl -X POST http://localhost:8007/api/workflow/start \

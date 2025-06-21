@@ -11,12 +11,14 @@
 {Brief description of the service's purpose and role in the ACGS-1 system}
 
 ### Key Features
+
 - {Feature 1}: {Description}
 - {Feature 2}: {Description}
 - {Feature 3}: {Description}
 - {Feature 4}: {Description}
 
 ### Integration Points
+
 - **Authentication Service**: JWT token validation and RBAC
 - **Constitutional AI Service**: Constitutional principle validation
 - **Integrity Service**: Audit logging and data integrity
@@ -27,6 +29,7 @@
 ### Health and Status
 
 #### Health Check
+
 ```http
 GET /health
 ```
@@ -34,6 +37,7 @@ GET /health
 **Description:** Basic service health check
 
 **Response (200 OK):**
+
 ```json
 {
   "status": "healthy",
@@ -49,6 +53,7 @@ GET /health
 ```
 
 **Error Response (503 Service Unavailable):**
+
 ```json
 {
   "status": "unhealthy",
@@ -58,6 +63,7 @@ GET /health
 ```
 
 #### Service Status
+
 ```http
 GET /api/v1/status
 ```
@@ -65,15 +71,13 @@ GET /api/v1/status
 **Description:** Comprehensive service status and capabilities
 
 **Response (200 OK):**
+
 ```json
 {
   "service": "{service_name}",
   "version": "{version}",
   "status": "operational",
-  "capabilities": [
-    "{capability_1}",
-    "{capability_2}"
-  ],
+  "capabilities": ["{capability_1}", "{capability_2}"],
   "performance_metrics": {
     "avg_response_time_ms": 45,
     "requests_per_second": 120,
@@ -90,6 +94,7 @@ GET /api/v1/status
 ### Core Functionality
 
 #### {Primary Endpoint 1}
+
 ```http
 {METHOD} /api/v1/{endpoint}
 ```
@@ -97,6 +102,7 @@ GET /api/v1/status
 **Description:** {Endpoint description}
 
 **Request Body:**
+
 ```json
 {
   "{param1}": "{value1}",
@@ -108,6 +114,7 @@ GET /api/v1/status
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "result": {
@@ -123,6 +130,7 @@ GET /api/v1/status
 ```
 
 #### {Primary Endpoint 2}
+
 ```http
 {METHOD} /api/v1/{endpoint}
 ```
@@ -130,11 +138,13 @@ GET /api/v1/status
 **Description:** {Endpoint description}
 
 **Query Parameters:**
+
 - `{param1}` (string, optional): {Description}
 - `{param2}` (integer, required): {Description}
 - `{param3}` (boolean, optional): {Description} (default: false)
 
 **Response (200 OK):**
+
 ```json
 {
   "data": [
@@ -155,6 +165,7 @@ GET /api/v1/status
 ### Configuration and Management
 
 #### Get Configuration
+
 ```http
 GET /api/v1/config
 ```
@@ -162,6 +173,7 @@ GET /api/v1/config
 **Description:** Retrieve current service configuration
 
 **Response (200 OK):**
+
 ```json
 {
   "configuration": {
@@ -177,6 +189,7 @@ GET /api/v1/config
 ```
 
 #### Update Configuration
+
 ```http
 PUT /api/v1/config
 ```
@@ -184,6 +197,7 @@ PUT /api/v1/config
 **Description:** Update service configuration
 
 **Request Body:**
+
 ```json
 {
   "{config_key}": "{new_value}",
@@ -196,6 +210,7 @@ PUT /api/v1/config
 ### Monitoring and Metrics
 
 #### Performance Metrics
+
 ```http
 GET /metrics
 ```
@@ -203,6 +218,7 @@ GET /metrics
 **Description:** Prometheus-compatible metrics endpoint
 
 **Response (200 OK):**
+
 ```
 # HELP {service_name}_requests_total Total number of requests
 # TYPE {service_name}_requests_total counter
@@ -217,6 +233,7 @@ GET /metrics
 ## 🔧 Error Handling
 
 ### Standard Error Codes
+
 - **400 Bad Request:** Invalid input parameters or malformed request
 - **401 Unauthorized:** Authentication required or invalid credentials
 - **403 Forbidden:** Insufficient permissions for requested operation
@@ -227,6 +244,7 @@ GET /metrics
 - **503 Service Unavailable:** Service temporarily unavailable
 
 ### Error Response Format
+
 ```json
 {
   "error": {
@@ -248,6 +266,7 @@ GET /metrics
 ```
 
 ### Constitutional Compliance Errors
+
 ```json
 {
   "error": {
@@ -257,7 +276,7 @@ GET /metrics
       "constitutional_hash": "cdd01ef066bc6cf2",
       "violated_principles": ["{principle1}", "{principle2}"],
       "compliance_score": 0.45,
-      "required_score": 0.80
+      "required_score": 0.8
     },
     "timestamp": "{timestamp}",
     "request_id": "req_{id}"
@@ -268,17 +287,20 @@ GET /metrics
 ## 📊 Performance Specifications
 
 ### Response Time Targets
+
 - **Health Check**: <50ms for 95% of requests
 - **Core Operations**: <500ms for 95% of requests
 - **Complex Operations**: <2s for 95% of requests
 - **Batch Operations**: <10s for 95% of requests
 
 ### Throughput Targets
+
 - **Standard Operations**: 1000 requests/minute
 - **Authenticated Operations**: 500 requests/minute
 - **Administrative Operations**: 100 requests/minute
 
 ### Availability Targets
+
 - **Service Availability**: >99.9% uptime
 - **Response Success Rate**: >99.5%
 - **Constitutional Compliance**: >95% validation success
@@ -286,22 +308,26 @@ GET /metrics
 ## 🔐 Authentication and Authorization
 
 ### JWT Token Authentication
+
 ```http
 Authorization: Bearer <jwt_token>
 ```
 
 **Token Requirements:**
+
 - Valid JWT token from ACGS-1 authentication service
 - Token must include required scopes for operation
 - Token expiration handled with automatic refresh
 
 ### API Key Authentication (Service-to-Service)
+
 ```http
 X-API-Key: <api_key>
 X-Service-Name: <calling_service>
 ```
 
 ### Role-Based Access Control
+
 - **Admin**: Full access to all endpoints and operations
 - **Operator**: Access to operational endpoints and monitoring
 - **User**: Access to standard functionality endpoints
@@ -310,7 +336,9 @@ X-Service-Name: <calling_service>
 ## 📈 Rate Limiting
 
 ### Rate Limit Headers
+
 All responses include rate limiting information:
+
 ```
 X-RateLimit-Limit: 1000
 X-RateLimit-Remaining: 999
@@ -319,6 +347,7 @@ X-RateLimit-Window: 3600
 ```
 
 ### Rate Limit Tiers
+
 - **Anonymous**: 100 requests/hour
 - **Authenticated Users**: 1000 requests/hour
 - **Premium Users**: 5000 requests/hour
@@ -327,6 +356,7 @@ X-RateLimit-Window: 3600
 ## 🔍 Monitoring Headers
 
 All responses include monitoring and debugging headers:
+
 ```
 X-Request-ID: req_1234567890
 X-Response-Time-Ms: 123
@@ -339,6 +369,7 @@ X-Cache-Status: hit|miss|bypass
 ## 📚 SDK Examples
 
 ### Python SDK
+
 ```python
 from acgs_client import ACGSClient
 
@@ -361,6 +392,7 @@ except ACGSError as e:
 ```
 
 ### JavaScript SDK
+
 ```javascript
 import { ACGSClient } from '@acgs/client';
 
@@ -386,17 +418,20 @@ try {
 ## 🧪 Testing
 
 ### Health Check Test
+
 ```bash
 curl -f http://localhost:{PORT}/health
 ```
 
 ### Authentication Test
+
 ```bash
 curl -H "Authorization: Bearer $JWT_TOKEN" \
      http://localhost:{PORT}/api/v1/status
 ```
 
 ### Load Testing
+
 ```bash
 # Using Apache Bench
 ab -n 1000 -c 10 http://localhost:{PORT}/health

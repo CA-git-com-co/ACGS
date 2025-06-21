@@ -9,18 +9,18 @@ services:
       POSTGRES_DB: acgs_production
       POSTGRES_USER: acgs_user
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+      POSTGRES_INITDB_ARGS: '--auth-host=scram-sha-256'
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./config/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
       - ./config/postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf
     ports:
-      - "5432:5432"
+      - '5432:5432'
     networks:
       - acgs-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U acgs_user -d acgs_production"]
+      test: ['CMD-SHELL', 'pg_isready -U acgs_user -d acgs_production']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -41,12 +41,12 @@ services:
       - redis_data:/data
       - ./config/redis/redis.conf:/usr/local/etc/redis/redis.conf
     ports:
-      - "6379:6379"
+      - '6379:6379'
     networks:
       - acgs-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -69,7 +69,7 @@ services:
     env_file:
       - ./config/production.env
     ports:
-      - "8000:8000"
+      - '8000:8000'
     networks:
       - acgs-network
     depends_on:
@@ -79,7 +79,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -101,7 +101,7 @@ services:
     env_file:
       - ./config/production.env
     ports:
-      - "8001:8001"
+      - '8001:8001'
     networks:
       - acgs-network
     depends_on:
@@ -111,7 +111,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8001/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -133,7 +133,7 @@ services:
     env_file:
       - ./config/production.env
     ports:
-      - "8002:8002"
+      - '8002:8002'
     networks:
       - acgs-network
     depends_on:
@@ -143,7 +143,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8002/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -165,7 +165,7 @@ services:
     env_file:
       - ./config/production.env
     ports:
-      - "8003:8003"
+      - '8003:8003'
     networks:
       - acgs-network
     depends_on:
@@ -175,7 +175,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8003/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -197,7 +197,7 @@ services:
     env_file:
       - ./config/production.env
     ports:
-      - "8004:8004"
+      - '8004:8004'
     networks:
       - acgs-network
     depends_on:
@@ -207,7 +207,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8004/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -229,7 +229,7 @@ services:
     env_file:
       - ./config/production.env
     ports:
-      - "8005:8005"
+      - '8005:8005'
     networks:
       - acgs-network
     depends_on:
@@ -239,7 +239,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8005/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8005/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -261,7 +261,7 @@ services:
     env_file:
       - ./config/production.env
     ports:
-      - "8006:8006"
+      - '8006:8006'
     networks:
       - acgs-network
     depends_on:
@@ -271,7 +271,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8006/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -296,7 +296,7 @@ services:
       - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     ports:
-      - "9090:9090"
+      - '9090:9090'
     networks:
       - acgs-network
     restart: unless-stopped
@@ -311,7 +311,7 @@ services:
       - grafana_data:/var/lib/grafana
       - ./config/grafana/provisioning:/etc/grafana/provisioning
     ports:
-      - "3000:3000"
+      - '3000:3000'
     networks:
       - acgs-network
     depends_on:
@@ -327,8 +327,8 @@ services:
       - ./config/nginx/ssl:/etc/nginx/ssl
       - ./logs/nginx:/var/log/nginx
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     networks:
       - acgs-network
     depends_on:

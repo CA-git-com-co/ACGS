@@ -12,9 +12,9 @@ groups:
           severity: critical
           component: service_health
         annotations:
-          summary: "ACGS service {{ $labels.service }} is down"
-          description: "Service {{ $labels.service }} has been down for more than 30 seconds"
-          runbook_url: "https://docs.acgs.ai/runbooks/service-down"
+          summary: 'ACGS service {{ $labels.service }} is down'
+          description: 'Service {{ $labels.service }} has been down for more than 30 seconds'
+          runbook_url: 'https://docs.acgs.ai/runbooks/service-down'
 
       # System Health Degradation
       - alert: ACGSSystemHealthDegraded
@@ -24,8 +24,8 @@ groups:
           severity: warning
           component: system_health
         annotations:
-          summary: "ACGS system health degraded"
-          description: "System health ratio is {{ $value | humanizePercentage }}, less than 87.5%"
+          summary: 'ACGS system health degraded'
+          description: 'System health ratio is {{ $value | humanizePercentage }}, less than 87.5%'
 
       # Critical System Health
       - alert: ACGSSystemHealthCritical
@@ -35,8 +35,8 @@ groups:
           severity: critical
           component: system_health
         annotations:
-          summary: "ACGS system health critical"
-          description: "System health ratio is {{ $value | humanizePercentage }}, less than 75%"
+          summary: 'ACGS system health critical'
+          description: 'System health ratio is {{ $value | humanizePercentage }}, less than 75%'
 
       # High Error Rate Alerts
       - alert: ACGSHighErrorRate
@@ -46,8 +46,8 @@ groups:
           severity: warning
           component: error_monitoring
         annotations:
-          summary: "High error rate detected for {{ $labels.service }}"
-          description: "Error rate is {{ $value | humanizePercentage }} for service {{ $labels.service }}"
+          summary: 'High error rate detected for {{ $labels.service }}'
+          description: 'Error rate is {{ $value | humanizePercentage }} for service {{ $labels.service }}'
 
       # Response Time Alerts (Target: <500ms for health checks)
       - alert: ACGSHighResponseTime
@@ -57,8 +57,8 @@ groups:
           severity: warning
           component: performance
         annotations:
-          summary: "High response time for {{ $labels.service }}"
-          description: "Health check response time is {{ $value }}s for service {{ $labels.service }}"
+          summary: 'High response time for {{ $labels.service }}'
+          description: 'Health check response time is {{ $value }}s for service {{ $labels.service }}'
 
       # Critical Response Time Alert
       - alert: ACGSCriticalResponseTime
@@ -68,8 +68,8 @@ groups:
           severity: critical
           component: performance
         annotations:
-          summary: "Critical response time for {{ $labels.service }}"
-          description: "Health check response time is {{ $value }}s for service {{ $labels.service }}"
+          summary: 'Critical response time for {{ $labels.service }}'
+          description: 'Health check response time is {{ $value }}s for service {{ $labels.service }}'
 
       # Service Response Time Degradation
       - alert: ACGSServiceResponseTimeDegraded
@@ -79,8 +79,8 @@ groups:
           severity: warning
           component: performance
         annotations:
-          summary: "Service {{ $labels.service }} response time degrading"
-          description: "Response time increased by {{ $value }}s in the last 5 minutes"
+          summary: 'Service {{ $labels.service }} response time degrading'
+          description: 'Response time increased by {{ $value }}s in the last 5 minutes'
 
   - name: acgs_load_balancer
     rules:
@@ -92,8 +92,8 @@ groups:
           severity: critical
           component: load_balancer
         annotations:
-          summary: "HAProxy backend {{ $labels.backend }} is down"
-          description: "Backend {{ $labels.backend }} has been down for more than 1 minute"
+          summary: 'HAProxy backend {{ $labels.backend }} is down'
+          description: 'Backend {{ $labels.backend }} has been down for more than 1 minute'
 
       # High Session Count
       - alert: HAProxyHighSessions
@@ -103,8 +103,8 @@ groups:
           severity: warning
           component: load_balancer
         annotations:
-          summary: "High session count on backend {{ $labels.backend }}"
-          description: "Current sessions: {{ $value }} on backend {{ $labels.backend }}"
+          summary: 'High session count on backend {{ $labels.backend }}'
+          description: 'Current sessions: {{ $value }} on backend {{ $labels.backend }}'
 
       # Circuit Breaker Triggered
       - alert: HAProxyCircuitBreakerTriggered
@@ -114,8 +114,8 @@ groups:
           severity: critical
           component: load_balancer
         annotations:
-          summary: "Circuit breaker triggered for {{ $labels.backend }}"
-          description: "{{ $value }} connection errors in the last 5 minutes"
+          summary: 'Circuit breaker triggered for {{ $labels.backend }}'
+          description: '{{ $value }} connection errors in the last 5 minutes'
 
   - name: acgs_governance_workflows
     rules:
@@ -127,8 +127,8 @@ groups:
           severity: critical
           component: constitutional_governance
         annotations:
-          summary: "Constitutional compliance failures detected"
-          description: "{{ $value }} compliance failures per second in the last 5 minutes"
+          summary: 'Constitutional compliance failures detected'
+          description: '{{ $value }} compliance failures per second in the last 5 minutes'
 
       # Policy Creation Bottleneck
       - alert: PolicyCreationBottleneck
@@ -138,8 +138,8 @@ groups:
           severity: warning
           component: policy_creation
         annotations:
-          summary: "Policy creation queue is backing up"
-          description: "{{ $value }} policies waiting in creation queue"
+          summary: 'Policy creation queue is backing up'
+          description: '{{ $value }} policies waiting in creation queue'
 
       # Voting Anomaly Detection
       - alert: VotingAnomalyDetected
@@ -149,8 +149,8 @@ groups:
           severity: warning
           component: voting_system
         annotations:
-          summary: "Voting anomalies detected"
-          description: "{{ $value }} voting anomalies detected in the last 10 minutes"
+          summary: 'Voting anomalies detected'
+          description: '{{ $value }} voting anomalies detected in the last 10 minutes'
 
       # WINA Oversight Alert
       - alert: WINAOversightAlert
@@ -160,8 +160,8 @@ groups:
           severity: warning
           component: wina_oversight
         annotations:
-          summary: "WINA oversight score below threshold"
-          description: "Current WINA oversight score: {{ $value }}"
+          summary: 'WINA oversight score below threshold'
+          description: 'Current WINA oversight score: {{ $value }}'
 
   - name: acgs_infrastructure
     rules:
@@ -173,8 +173,8 @@ groups:
           severity: critical
           component: database
         annotations:
-          summary: "PostgreSQL database is down"
-          description: "Database connection has been down for more than 1 minute"
+          summary: 'PostgreSQL database is down'
+          description: 'Database connection has been down for more than 1 minute'
 
       # High Database Query Time
       - alert: HighDatabaseQueryTime
@@ -184,8 +184,8 @@ groups:
           severity: warning
           component: database
         annotations:
-          summary: "High database query execution time"
-          description: "Maximum transaction duration: {{ $value }}s"
+          summary: 'High database query execution time'
+          description: 'Maximum transaction duration: {{ $value }}s'
 
       # Redis Cache Issues
       - alert: RedisCacheDown
@@ -195,8 +195,8 @@ groups:
           severity: critical
           component: caching
         annotations:
-          summary: "Redis cache is down"
-          description: "Redis cache has been down for more than 1 minute"
+          summary: 'Redis cache is down'
+          description: 'Redis cache has been down for more than 1 minute'
 
       # Low Cache Hit Rate
       - alert: LowCacheHitRate
@@ -206,8 +206,8 @@ groups:
           severity: warning
           component: caching
         annotations:
-          summary: "Low Redis cache hit rate"
-          description: "Cache hit rate: {{ $value | humanizePercentage }}"
+          summary: 'Low Redis cache hit rate'
+          description: 'Cache hit rate: {{ $value | humanizePercentage }}'
 
   - name: acgs_security
     rules:
@@ -219,8 +219,8 @@ groups:
           severity: warning
           component: security
         annotations:
-          summary: "High authentication failure rate"
-          description: "{{ $value }} authentication failures per second"
+          summary: 'High authentication failure rate'
+          description: '{{ $value }} authentication failures per second'
 
       # Rate Limiting Triggered
       - alert: RateLimitingTriggered
@@ -230,8 +230,8 @@ groups:
           severity: warning
           component: security
         annotations:
-          summary: "Rate limiting frequently triggered"
-          description: "{{ $value }} rate limit violations per second"
+          summary: 'Rate limiting frequently triggered'
+          description: '{{ $value }} rate limit violations per second'
 
       # Suspicious Activity Detected
       - alert: SuspiciousActivityDetected
@@ -241,8 +241,8 @@ groups:
           severity: critical
           component: security
         annotations:
-          summary: "Suspicious activity detected"
-          description: "{{ $value }} suspicious activities detected in the last 10 minutes"
+          summary: 'Suspicious activity detected'
+          description: '{{ $value }} suspicious activities detected in the last 10 minutes'
 
   - name: acgs_blockchain
     rules:
@@ -254,8 +254,8 @@ groups:
           severity: warning
           component: blockchain
         annotations:
-          summary: "High Quantumagi transaction failure rate"
-          description: "{{ $value }} transaction failures per second"
+          summary: 'High Quantumagi transaction failure rate'
+          description: '{{ $value }} transaction failures per second'
 
       # Solana Network Issues
       - alert: SolanaNetworkIssues
@@ -265,8 +265,8 @@ groups:
           severity: warning
           component: blockchain
         annotations:
-          summary: "Solana network health degraded"
-          description: "Solana network health score: {{ $value }}"
+          summary: 'Solana network health degraded'
+          description: 'Solana network health score: {{ $value }}'
 
       # High Transaction Costs
       - alert: HighTransactionCosts
@@ -276,5 +276,5 @@ groups:
           severity: warning
           component: blockchain
         annotations:
-          summary: "High Solana transaction costs"
-          description: "Average transaction cost: {{ $value }} SOL"
+          summary: 'High Solana transaction costs'
+          description: 'Average transaction cost: {{ $value }} SOL'

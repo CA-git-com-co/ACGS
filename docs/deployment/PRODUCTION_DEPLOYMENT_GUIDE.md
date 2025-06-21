@@ -16,6 +16,7 @@ This guide provides step-by-step instructions for deploying ACGS-1 to production
 ## 📋 Prerequisites
 
 ### System Requirements
+
 - **OS:** Ubuntu 20.04 LTS or later
 - **CPU:** 8+ cores (16+ recommended)
 - **RAM:** 32GB minimum (64GB recommended)
@@ -23,6 +24,7 @@ This guide provides step-by-step instructions for deploying ACGS-1 to production
 - **Network:** 1Gbps connection
 
 ### Software Dependencies
+
 - **Docker:** 24.0+ with Docker Compose
 - **PostgreSQL:** 15+ (managed service recommended)
 - **Redis:** 7.0+ (managed service recommended)
@@ -32,6 +34,7 @@ This guide provides step-by-step instructions for deploying ACGS-1 to production
 ## 🔧 Infrastructure Setup
 
 ### 1. Database Configuration
+
 ```bash
 # PostgreSQL setup with high availability
 sudo apt update
@@ -45,6 +48,7 @@ sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE acgs_production TO ac
 ```
 
 ### 2. Redis Configuration
+
 ```bash
 # Redis setup with persistence
 sudo apt install redis-server
@@ -58,6 +62,7 @@ sudo nano /etc/redis/redis.conf
 ```
 
 ### 3. Load Balancer Setup
+
 ```bash
 # HAProxy configuration for 7 services
 sudo apt install haproxy
@@ -70,6 +75,7 @@ sudo nano /etc/haproxy/haproxy.cfg
 ## 🚀 Service Deployment
 
 ### 1. Core Services Deployment
+
 ```bash
 # Clone repository
 git clone https://github.com/CA-git-com-co/ACGS.git
@@ -85,6 +91,7 @@ docker-compose -f docker-compose.production.yml up -d
 ```
 
 ### 2. Blockchain Components
+
 ```bash
 # Deploy Solana programs
 cd blockchain
@@ -96,6 +103,7 @@ solana program show <program_id>
 ```
 
 ### 3. Service Health Validation
+
 ```bash
 # Validate all services
 for port in {8000..8006}; do
@@ -106,6 +114,7 @@ done
 ## 📊 Monitoring Setup
 
 ### 1. Prometheus Configuration
+
 ```yaml
 # prometheus.yml
 global:
@@ -114,10 +123,20 @@ global:
 scrape_configs:
   - job_name: 'acgs-services'
     static_configs:
-      - targets: ['localhost:8000', 'localhost:8001', 'localhost:8002', 'localhost:8003', 'localhost:8004', 'localhost:8005', 'localhost:8006']
+      - targets:
+          [
+            'localhost:8000',
+            'localhost:8001',
+            'localhost:8002',
+            'localhost:8003',
+            'localhost:8004',
+            'localhost:8005',
+            'localhost:8006',
+          ]
 ```
 
 ### 2. Grafana Dashboard
+
 ```bash
 # Import ACGS dashboard
 curl -X POST http://admin:admin@localhost:3000/api/dashboards/db \
@@ -128,6 +147,7 @@ curl -X POST http://admin:admin@localhost:3000/api/dashboards/db \
 ## 🔐 Security Configuration
 
 ### 1. SSL/TLS Setup
+
 ```bash
 # Install Certbot for Let's Encrypt
 sudo apt install certbot python3-certbot-nginx
@@ -137,6 +157,7 @@ sudo certbot --nginx -d acgs.yourdomain.com
 ```
 
 ### 2. Firewall Configuration
+
 ```bash
 # Configure UFW
 sudo ufw enable
@@ -149,18 +170,21 @@ sudo ufw allow 8000:8006/tcp
 ## ✅ Deployment Validation
 
 ### 1. Health Checks
+
 - [ ] All 7 services responding to /health
 - [ ] Database connections established
 - [ ] Redis cache operational
 - [ ] Load balancer routing correctly
 
 ### 2. Performance Tests
+
 - [ ] Response times <500ms
 - [ ] Concurrent user load >1000
 - [ ] Memory usage <80%
 - [ ] CPU usage <70%
 
 ### 3. Security Validation
+
 - [ ] SSL certificates valid
 - [ ] Security headers present
 - [ ] Authentication working
@@ -169,12 +193,14 @@ sudo ufw allow 8000:8006/tcp
 ## 🚨 Troubleshooting
 
 ### Common Issues
+
 1. **Service startup failures:** Check logs with `docker logs <container>`
 2. **Database connection errors:** Verify credentials and network connectivity
 3. **High memory usage:** Adjust container limits and Redis configuration
 4. **Slow response times:** Check database query performance and Redis hit rates
 
 ### Emergency Procedures
+
 ```bash
 # Quick service restart
 docker-compose -f docker-compose.production.yml restart

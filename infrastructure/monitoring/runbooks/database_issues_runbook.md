@@ -22,6 +22,7 @@ This runbook addresses PostgreSQL database connectivity and performance issues i
 ## Immediate Response (0-5 minutes)
 
 ### 1. Alert Acknowledgment
+
 ```bash
 # Acknowledge the alert
 curl -X POST http://localhost:8080/alerts/{alert_id}/acknowledge \
@@ -29,6 +30,7 @@ curl -X POST http://localhost:8080/alerts/{alert_id}/acknowledge \
 ```
 
 ### 2. Quick Database Status Check
+
 ```bash
 # Check PostgreSQL service status
 sudo systemctl status postgresql
@@ -41,6 +43,7 @@ psql -h localhost -U acgs_user -d acgs_db -c "SELECT 1;" 2>/dev/null && echo "DB
 ```
 
 ### 3. Check Database Processes
+
 ```bash
 # Check PostgreSQL processes
 ps aux | grep postgres
@@ -52,6 +55,7 @@ sudo -u postgres psql -c "SELECT count(*) as active_connections FROM pg_stat_act
 ## Investigation (5-15 minutes)
 
 ### 4. Database Service Analysis
+
 ```bash
 # Check PostgreSQL logs
 sudo tail -n 100 /var/log/postgresql/postgresql-*.log
@@ -64,58 +68,61 @@ df -h /var/lib/postgresql/
 ```
 
 ### 5. Connection Pool Analysis
+
 ```bash
 # Check active connections by database
 sudo -u postgres psql -c "
-SELECT datname, count(*) as connections 
-FROM pg_stat_activity 
-GROUP BY datname 
+SELECT datname, count(*) as connections
+FROM pg_stat_activity
+GROUP BY datname
 ORDER BY connections DESC;"
 
 # Check connection states
 sudo -u postgres psql -c "
-SELECT state, count(*) 
-FROM pg_stat_activity 
+SELECT state, count(*)
+FROM pg_stat_activity
 GROUP BY state;"
 
 # Check for long-running transactions
 sudo -u postgres psql -c "
-SELECT pid, now() - xact_start as duration, query 
-FROM pg_stat_activity 
-WHERE xact_start IS NOT NULL 
-ORDER BY duration DESC 
+SELECT pid, now() - xact_start as duration, query
+FROM pg_stat_activity
+WHERE xact_start IS NOT NULL
+ORDER BY duration DESC
 LIMIT 10;"
 ```
 
 ### 6. Database Performance Metrics
+
 ```bash
 # Check database size
 sudo -u postgres psql -c "
-SELECT pg_database.datname, 
-       pg_size_pretty(pg_database_size(pg_database.datname)) AS size 
-FROM pg_database 
+SELECT pg_database.datname,
+       pg_size_pretty(pg_database_size(pg_database.datname)) AS size
+FROM pg_database
 ORDER BY pg_database_size(pg_database.datname) DESC;"
 
 # Check table sizes
 sudo -u postgres psql acgs_db -c "
-SELECT schemaname, tablename, 
+SELECT schemaname, tablename,
        pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as size
-FROM pg_tables 
-WHERE schemaname = 'public' 
-ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC 
+FROM pg_tables
+WHERE schemaname = 'public'
+ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC
 LIMIT 10;"
 
 # Check index usage
 sudo -u postgres psql acgs_db -c "
-SELECT schemaname, tablename, indexname, idx_tup_read, idx_tup_fetch 
-FROM pg_stat_user_indexes 
-ORDER BY idx_tup_read DESC 
+SELECT schemaname, tablename, indexname, idx_tup_read, idx_tup_fetch
+FROM pg_stat_user_indexes
+ORDER BY idx_tup_read DESC
 LIMIT 10;"
 ```
 
 ## Automated Remediation
 
 ### 7. Intelligent Alerting Response
+
 The system will automatically attempt:
 
 1. **Database Connection Test**
@@ -128,12 +135,13 @@ The system will automatically attempt:
 ### 8. Connection Issues Resolution
 
 #### Connection Pool Exhaustion
+
 ```bash
 # Kill idle connections
 sudo -u postgres psql -c "
-SELECT pg_terminate_backend(pid) 
-FROM pg_stat_activity 
-WHERE state = 'idle' 
+SELECT pg_terminate_backend(pid)
+FROM pg_stat_activity
+WHERE state = 'idle'
 AND state_change < now() - interval '1 hour';"
 
 # Restart services to reset connection pools
@@ -141,6 +149,7 @@ python3 /home/dislove/ACGS-1/scripts/emergency_rollback_procedures.py restart
 ```
 
 #### Database Service Issues
+
 ```bash
 # Restart PostgreSQL service
 sudo systemctl restart postgresql
@@ -155,22 +164,24 @@ psql -h localhost -U acgs_user -d acgs_db -c "SELECT version();"
 ### 9. Database Corruption Issues
 
 #### Check Database Integrity
+
 ```bash
 # Check for database corruption
 sudo -u postgres psql acgs_db -c "
-SELECT datname, pg_database_size(datname) 
-FROM pg_database 
+SELECT datname, pg_database_size(datname)
+FROM pg_database
 WHERE datname = 'acgs_db';"
 
 # Run database consistency checks
 sudo -u postgres psql acgs_db -c "
-SELECT schemaname, tablename, 
+SELECT schemaname, tablename,
        pg_relation_size(schemaname||'.'||tablename) as size
-FROM pg_tables 
+FROM pg_tables
 WHERE schemaname = 'public';"
 ```
 
 #### Repair Procedures
+
 ```bash
 # Reindex database (if corruption suspected)
 sudo -u postgres psql acgs_db -c "REINDEX DATABASE acgs_db;"
@@ -185,6 +196,7 @@ sudo find /var/lib/postgresql/ -name "*.tmp" -o -name "*.old"
 ### 10. Performance Optimization
 
 #### Query Performance
+
 ```bash
 # Enable query logging temporarily
 sudo -u postgres psql -c "ALTER SYSTEM SET log_statement = 'all';"
@@ -192,9 +204,9 @@ sudo -u postgres psql -c "SELECT pg_reload_conf();"
 
 # Check slow queries
 sudo -u postgres psql -c "
-SELECT query, calls, total_time, mean_time 
-FROM pg_stat_statements 
-ORDER BY mean_time DESC 
+SELECT query, calls, total_time, mean_time
+FROM pg_stat_statements
+ORDER BY mean_time DESC
 LIMIT 10;"
 
 # Disable query logging
@@ -203,26 +215,28 @@ sudo -u postgres psql -c "SELECT pg_reload_conf();"
 ```
 
 #### Index Optimization
+
 ```bash
 # Find missing indexes
 sudo -u postgres psql acgs_db -c "
-SELECT schemaname, tablename, attname, n_distinct, correlation 
-FROM pg_stats 
-WHERE schemaname = 'public' 
-AND n_distinct > 100 
+SELECT schemaname, tablename, attname, n_distinct, correlation
+FROM pg_stats
+WHERE schemaname = 'public'
+AND n_distinct > 100
 ORDER BY n_distinct DESC;"
 
 # Check unused indexes
 sudo -u postgres psql acgs_db -c "
-SELECT schemaname, tablename, indexname, idx_scan 
-FROM pg_stat_user_indexes 
-WHERE idx_scan = 0 
+SELECT schemaname, tablename, indexname, idx_scan
+FROM pg_stat_user_indexes
+WHERE idx_scan = 0
 ORDER BY pg_relation_size(indexrelid) DESC;"
 ```
 
 ## Database Backup and Recovery
 
 ### 11. Emergency Backup
+
 ```bash
 # Create emergency backup
 sudo -u postgres pg_dump acgs_db > /tmp/acgs_emergency_backup_$(date +%Y%m%d_%H%M%S).sql
@@ -235,6 +249,7 @@ gzip /tmp/acgs_emergency_backup_*.sql
 ```
 
 ### 12. Point-in-Time Recovery
+
 ```bash
 # Check WAL files
 sudo ls -la /var/lib/postgresql/*/pg_wal/
@@ -249,6 +264,7 @@ python3 /home/dislove/ACGS-1/scripts/emergency_rollback_procedures.py stop
 ## Service-Specific Database Issues
 
 ### Auth Service Database Issues
+
 ```bash
 # Check user authentication tables
 sudo -u postgres psql acgs_db -c "
@@ -260,6 +276,7 @@ redis-cli DEL "auth:*"
 ```
 
 ### AC Service Database Issues
+
 ```bash
 # Check constitutional amendment tables
 sudo -u postgres psql acgs_db -c "
@@ -268,12 +285,13 @@ SELECT status, count(*) FROM constitutional_amendments GROUP BY status;"
 
 # Verify amendment integrity
 sudo -u postgres psql acgs_db -c "
-SELECT id, title, hash_value 
-FROM constitutional_amendments 
+SELECT id, title, hash_value
+FROM constitutional_amendments
 WHERE hash_value IS NULL OR hash_value = '';"
 ```
 
 ### PGC Service Database Issues
+
 ```bash
 # Check governance compliance tables
 sudo -u postgres psql acgs_db -c "
@@ -282,14 +300,15 @@ SELECT count(*) FROM compliance_validations WHERE created_at > now() - interval 
 
 # Verify constitutional hash consistency
 sudo -u postgres psql acgs_db -c "
-SELECT DISTINCT constitutional_hash 
-FROM governance_policies 
+SELECT DISTINCT constitutional_hash
+FROM governance_policies
 WHERE constitutional_hash != 'cdd01ef066bc6cf2';"
 ```
 
 ## Database Monitoring Setup
 
 ### 13. Enhanced Monitoring
+
 ```bash
 # Install pg_stat_statements extension
 sudo -u postgres psql acgs_db -c "CREATE EXTENSION IF NOT EXISTS pg_stat_statements;"
@@ -302,6 +321,7 @@ GRANT SELECT ON ALL TABLES IN SCHEMA pg_catalog TO acgs_monitor;"
 ```
 
 ### 14. Automated Health Checks
+
 ```bash
 # Create database health check script
 cat > /home/dislove/ACGS-1/scripts/db_health_check.sh << 'EOF'
@@ -317,16 +337,19 @@ chmod +x /home/dislove/ACGS-1/scripts/db_health_check.sh
 ## Escalation Procedures
 
 ### Level 1 Escalation (5 minutes)
+
 - **Trigger:** Database connection failures
 - **Action:** Contact Database Administrator
 - **Channels:** #acgs-database-alerts
 
 ### Level 2 Escalation (15 minutes)
+
 - **Trigger:** Database service down
 - **Action:** Engage Infrastructure Team
 - **Channels:** #acgs-critical-alerts, Emergency on-call
 
 ### Level 3 Escalation (30 minutes)
+
 - **Trigger:** Data corruption suspected
 - **Action:** Activate disaster recovery
 - **Channels:** Emergency response team, Management notification
@@ -334,10 +357,11 @@ chmod +x /home/dislove/ACGS-1/scripts/db_health_check.sh
 ## Post-Incident Actions
 
 ### 15. Database Analysis
+
 ```bash
 # Generate database performance report
 sudo -u postgres psql acgs_db -c "
-SELECT 
+SELECT
     schemaname,
     tablename,
     pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as size,
@@ -351,6 +375,7 @@ ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;"
 ```
 
 ### 16. Preventive Measures
+
 - Review database configuration
 - Update connection pool settings
 - Implement database monitoring
@@ -383,6 +408,7 @@ ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;"
 - [Performance Issues Runbook](performance_issues_runbook.md)
 
 ---
+
 **Last Updated:** 2024-01-01  
 **Version:** 1.0  
 **Owner:** ACGS Database Administration Team

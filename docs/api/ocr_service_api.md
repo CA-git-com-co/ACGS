@@ -28,6 +28,7 @@ Returns the current health status of the OCR Service.
 **Authentication**: Not required
 
 **Response (200 OK)**:
+
 ```json
 {
   "status": "healthy",
@@ -50,18 +51,21 @@ Extract text from image or document.
 **Authentication**: Required
 
 **Request Body**:
+
 ```json
-{"image_data": "base64_encoded_image", "format": "pdf"}
+{ "image_data": "base64_encoded_image", "format": "pdf" }
 ```
 
 **Response (200 OK)**:
+
 ```json
-{"extracted_text": "Document text content", "confidence": 0.95, "processing_time_ms": 1200}
+{ "extracted_text": "Document text content", "confidence": 0.95, "processing_time_ms": 1200 }
 ```
 
 ## Error Responses
 
 ### 400 Bad Request
+
 ```json
 {
   "status": "error",
@@ -75,6 +79,7 @@ Extract text from image or document.
 ```
 
 ### 401 Unauthorized
+
 ```json
 {
   "status": "error",
@@ -95,6 +100,7 @@ Extract text from image or document.
 ## Examples
 
 ### cURL Examples
+
 ```bash
 # Health check
 curl http://localhost:8020/health
@@ -107,6 +113,7 @@ curl -X POST http://localhost:8020/api/v1/example \
 ```
 
 ### Python Client Example
+
 ```python
 import httpx
 import asyncio
@@ -115,7 +122,7 @@ class OCRServiceClient:
     def __init__(self, base_url="http://localhost:8020", token=None):
         self.base_url = base_url
         self.headers = {"Authorization": f"Bearer {token}"} if token else {}
-    
+
     async def health_check(self):
         async with httpx.AsyncClient() as client:
             response = await client.get(f"{self.base_url}/health")

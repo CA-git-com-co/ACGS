@@ -7,42 +7,42 @@ all:
     ansible_user: ubuntu
     ansible_ssh_private_key_file: ~/.ssh/acgs-production.pem
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-    
+
     # Environment configuration
     environment: production
-    constitutional_hash: "cdd01ef066bc6cf2"
-    acgs_version: "1.0.0"
-    
+    constitutional_hash: 'cdd01ef066bc6cf2'
+    acgs_version: '1.0.0'
+
     # Network configuration
-    vpc_cidr: "10.0.0.0/16"
-    cluster_name: "acgs-production-cluster"
-    
+    vpc_cidr: '10.0.0.0/16'
+    cluster_name: 'acgs-production-cluster'
+
     # Database configuration
-    database_host: "acgs-production-db.cluster-xyz.us-west-2.rds.amazonaws.com"
-    database_name: "acgs_db"
-    database_user: "acgs_user"
+    database_host: 'acgs-production-db.cluster-xyz.us-west-2.rds.amazonaws.com'
+    database_name: 'acgs_db'
+    database_user: 'acgs_user'
     database_port: 5432
-    
+
     # Redis configuration
-    redis_host: "acgs-production-redis.xyz.cache.amazonaws.com"
+    redis_host: 'acgs-production-redis.xyz.cache.amazonaws.com'
     redis_port: 6379
-    
+
     # Performance targets
     performance_targets:
       response_time_ms: 500
       availability_percent: 99.9
       concurrent_users: 1000
       constitutional_compliance_rate: 95
-    
+
     # Security configuration
     enable_encryption: true
     enable_audit_logging: true
     enable_constitutional_validation: true
-    
+
     # Monitoring configuration
-    prometheus_retention: "30d"
-    grafana_admin_password: "{{ vault_grafana_admin_password }}"
-    alertmanager_slack_webhook: "{{ vault_slack_webhook_url }}"
+    prometheus_retention: '30d'
+    grafana_admin_password: '{{ vault_grafana_admin_password }}'
+    alertmanager_slack_webhook: '{{ vault_slack_webhook_url }}'
 
   children:
     # Kubernetes cluster nodes
@@ -68,7 +68,7 @@ all:
               node_labels:
                 role: master
                 constitutional-compliance: required
-        
+
         kubernetes_workers:
           children:
             system_nodes:
@@ -85,7 +85,7 @@ all:
                   node_labels:
                     role: system
                     workload: infrastructure
-            
+
             acgs_service_nodes:
               hosts:
                 k8s-worker-3:
@@ -106,7 +106,7 @@ all:
                   node_labels:
                     role: acgs-services
                     workload: constitutional-governance
-            
+
             governance_nodes:
               hosts:
                 k8s-worker-6:
@@ -118,7 +118,7 @@ all:
                     workload: policy-governance
                   node_taints:
                     - key: governance
-                      value: "true"
+                      value: 'true'
                       effect: NoSchedule
                 k8s-worker-7:
                   ansible_host: 10.0.2.16
@@ -129,40 +129,40 @@ all:
                     workload: policy-governance
                   node_taints:
                     - key: governance
-                      value: "true"
+                      value: 'true'
                       effect: NoSchedule
-    
+
     # Database servers (if not using managed RDS)
     database_servers:
       hosts:
         db-primary:
           ansible_host: 10.0.3.10
           postgresql_role: primary
-          postgresql_version: "15"
+          postgresql_version: '15'
           postgresql_max_connections: 200
-          postgresql_shared_buffers: "256MB"
-          postgresql_effective_cache_size: "1GB"
+          postgresql_shared_buffers: '256MB'
+          postgresql_effective_cache_size: '1GB'
         db-replica:
           ansible_host: 10.0.3.11
           postgresql_role: replica
-          postgresql_version: "15"
-          postgresql_primary_host: "10.0.3.10"
-    
+          postgresql_version: '15'
+          postgresql_primary_host: '10.0.3.10'
+
     # Monitoring infrastructure
     monitoring_servers:
       hosts:
         monitoring-1:
           ansible_host: 10.0.4.10
           monitoring_role: primary
-          prometheus_retention: "30d"
-          prometheus_storage_size: "100GB"
+          prometheus_retention: '30d'
+          prometheus_storage_size: '100GB'
           grafana_admin_user: admin
         monitoring-2:
           ansible_host: 10.0.4.11
           monitoring_role: secondary
-          prometheus_retention: "7d"
-          prometheus_storage_size: "50GB"
-    
+          prometheus_retention: '7d'
+          prometheus_storage_size: '50GB'
+
     # Load balancers
     load_balancers:
       hosts:
@@ -170,9 +170,9 @@ all:
           ansible_host: 10.0.5.10
           lb_role: primary
           lb_backend_servers:
-            - 10.0.2.12:8000  # Auth service
-            - 10.0.2.13:8001  # AC service
-            - 10.0.2.14:8005  # PGC service
+            - 10.0.2.12:8000 # Auth service
+            - 10.0.2.13:8001 # AC service
+            - 10.0.2.14:8005 # PGC service
         lb-2:
           ansible_host: 10.0.5.11
           lb_role: secondary
@@ -180,18 +180,18 @@ all:
             - 10.0.2.12:8000
             - 10.0.2.13:8001
             - 10.0.2.14:8005
-    
+
     # Bastion hosts for secure access
     bastion_hosts:
       hosts:
         bastion-1:
-          ansible_host: 54.123.45.67  # Public IP
+          ansible_host: 54.123.45.67 # Public IP
           bastion_role: primary
           allowed_ssh_users:
             - acgs-admin
             - acgs-operator
         bastion-2:
-          ansible_host: 54.123.45.68  # Public IP
+          ansible_host: 54.123.45.68 # Public IP
           bastion_role: secondary
           allowed_ssh_users:
             - acgs-admin
@@ -203,55 +203,55 @@ kubernetes_masters:
     kubernetes_role: master
     kubernetes_api_server_count: 3
     etcd_cluster_size: 3
-    
+
 kubernetes_workers:
   vars:
     kubernetes_role: worker
     kubelet_max_pods: 110
-    
+
 system_nodes:
   vars:
     node_type: system
     workload_type: infrastructure
     resource_allocation:
-      cpu_limit: "2000m"
-      memory_limit: "4Gi"
-    
+      cpu_limit: '2000m'
+      memory_limit: '4Gi'
+
 acgs_service_nodes:
   vars:
     node_type: acgs-services
     workload_type: constitutional-governance
     resource_allocation:
-      cpu_limit: "4000m"
-      memory_limit: "8Gi"
+      cpu_limit: '4000m'
+      memory_limit: '8Gi'
     service_configuration:
       auth_service:
         replicas: 3
         resources:
           requests:
-            cpu: "200m"
-            memory: "512Mi"
+            cpu: '200m'
+            memory: '512Mi'
           limits:
-            cpu: "500m"
-            memory: "1Gi"
+            cpu: '500m'
+            memory: '1Gi'
       ac_service:
         replicas: 3
         resources:
           requests:
-            cpu: "300m"
-            memory: "1Gi"
+            cpu: '300m'
+            memory: '1Gi'
           limits:
-            cpu: "1000m"
-            memory: "2Gi"
+            cpu: '1000m'
+            memory: '2Gi'
       pgc_service:
         replicas: 3
         resources:
           requests:
-            cpu: "500m"
-            memory: "1Gi"
+            cpu: '500m'
+            memory: '1Gi'
           limits:
-            cpu: "1500m"
-            memory: "3Gi"
+            cpu: '1500m'
+            memory: '3Gi'
 
 governance_nodes:
   vars:
@@ -259,37 +259,37 @@ governance_nodes:
     workload_type: policy-governance
     constitutional_compliance: required
     resource_allocation:
-      cpu_limit: "6000m"
-      memory_limit: "12Gi"
+      cpu_limit: '6000m'
+      memory_limit: '12Gi'
     governance_configuration:
-      constitutional_hash: "cdd01ef066bc6cf2"
+      constitutional_hash: 'cdd01ef066bc6cf2'
       compliance_threshold: 0.95
       validation_enabled: true
       audit_trail_enabled: true
 
 database_servers:
   vars:
-    postgresql_version: "15"
-    postgresql_listen_addresses: "*"
+    postgresql_version: '15'
+    postgresql_listen_addresses: '*'
     postgresql_max_connections: 200
-    postgresql_shared_buffers: "256MB"
-    postgresql_effective_cache_size: "1GB"
-    postgresql_work_mem: "4MB"
-    postgresql_maintenance_work_mem: "64MB"
+    postgresql_shared_buffers: '256MB'
+    postgresql_effective_cache_size: '1GB'
+    postgresql_work_mem: '4MB'
+    postgresql_maintenance_work_mem: '64MB'
     postgresql_checkpoint_completion_target: 0.9
-    postgresql_wal_buffers: "16MB"
+    postgresql_wal_buffers: '16MB'
     postgresql_default_statistics_target: 100
-    
+
 monitoring_servers:
   vars:
-    prometheus_version: "2.45.0"
-    grafana_version: "10.0.0"
-    alertmanager_version: "0.25.0"
-    node_exporter_version: "1.6.0"
-    
+    prometheus_version: '2.45.0'
+    grafana_version: '10.0.0'
+    alertmanager_version: '0.25.0'
+    node_exporter_version: '1.6.0'
+
 load_balancers:
   vars:
-    haproxy_version: "2.8"
-    nginx_version: "1.24"
-    ssl_certificate_path: "/etc/ssl/certs/acgs.crt"
-    ssl_private_key_path: "/etc/ssl/private/acgs.key"
+    haproxy_version: '2.8'
+    nginx_version: '1.24'
+    ssl_certificate_path: '/etc/ssl/certs/acgs.crt'
+    ssl_private_key_path: '/etc/ssl/private/acgs.key'

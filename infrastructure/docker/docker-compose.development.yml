@@ -19,16 +19,20 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-acgs_dev}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_password}
       POSTGRES_DB: ${POSTGRES_DB:-acgs_development}
-      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+      POSTGRES_INITDB_ARGS: '--encoding=UTF-8'
     volumes:
       - postgres_dev_data:/var/lib/postgresql/data
       - ./config/database/development_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
     ports:
-      - "5433:5432"
+      - '5433:5432'
     networks:
       - acgs-dev
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-acgs_dev} -d ${POSTGRES_DB:-acgs_development}"]
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${POSTGRES_USER:-acgs_dev} -d ${POSTGRES_DB:-acgs_development}',
+        ]
       interval: 5s
       timeout: 3s
       retries: 3
@@ -43,11 +47,11 @@ services:
     volumes:
       - redis_dev_data:/data
     ports:
-      - "6380:6379"
+      - '6380:6379'
     networks:
       - acgs-dev
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       timeout: 3s
       retries: 3
@@ -70,7 +74,7 @@ services:
       - RELOAD=true
       - DEBUG=true
     ports:
-      - "8000:8000"
+      - '8000:8000'
     networks:
       - acgs-dev
     depends_on:
@@ -82,7 +86,7 @@ services:
       - ../../services/platform/authentication:/app
       - /app/node_modules
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -106,7 +110,7 @@ services:
       - DEBUG=true
       - AUTH_SERVICE_URL=http://auth_service:8000
     ports:
-      - "8001:8001"
+      - '8001:8001'
     networks:
       - acgs-dev
     depends_on:
@@ -116,7 +120,7 @@ services:
       - ../../services/core/constitutional-ai:/app
       - /app/__pycache__
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8001/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -140,7 +144,7 @@ services:
       - DEBUG=true
       - AUTH_SERVICE_URL=http://auth_service:8000
     ports:
-      - "8002:8002"
+      - '8002:8002'
     networks:
       - acgs-dev
     depends_on:
@@ -150,7 +154,7 @@ services:
       - ../../services/platform/integrity:/app
       - /app/__pycache__
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8002/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -176,7 +180,7 @@ services:
       - AC_SERVICE_URL=http://ac_service:8001
       - INTEGRITY_SERVICE_URL=http://integrity_service:8002
     ports:
-      - "8003:8003"
+      - '8003:8003'
     networks:
       - acgs-dev
     depends_on:
@@ -188,7 +192,7 @@ services:
       - ../../services/core/formal-verification:/app
       - /app/__pycache__
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8003/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -218,7 +222,7 @@ services:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - GROQ_API_KEY=${GROQ_API_KEY}
     ports:
-      - "8004:8004"
+      - '8004:8004'
     networks:
       - acgs-dev
     depends_on:
@@ -230,7 +234,7 @@ services:
       - ../../services/core/governance-synthesis:/app
       - /app/__pycache__
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8004/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -256,7 +260,7 @@ services:
       - AC_SERVICE_URL=http://ac_service:8001
       - GS_SERVICE_URL=http://gs_service:8004
     ports:
-      - "8005:8005"
+      - '8005:8005'
     networks:
       - acgs-dev
     depends_on:
@@ -268,7 +272,7 @@ services:
       - ../../services/core/policy-governance:/app
       - /app/__pycache__
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8005/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8005/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -292,7 +296,7 @@ services:
       - DEBUG=true
       - AUTH_SERVICE_URL=http://auth_service:8000
     ports:
-      - "8006:8006"
+      - '8006:8006'
     networks:
       - acgs-dev
     depends_on:
@@ -302,7 +306,7 @@ services:
       - ../../services/core/evolutionary-computation:/app
       - /app/__pycache__
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8006/health']
       interval: 30s
       timeout: 10s
       retries: 3

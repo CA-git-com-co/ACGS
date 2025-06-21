@@ -9,6 +9,7 @@ This document describes the successful integration of Cerebras AI models into th
 ### 1. Environment Configuration ✅
 
 The CEREBRAS_API_KEY is configured in the `.env` file:
+
 ```bash
 CEREBRAS_API_KEY=csk-cte9m5ww3y3x32wjpd6xcdcpemw8f89v8c64n35njcfdxr5x
 ```
@@ -16,6 +17,7 @@ CEREBRAS_API_KEY=csk-cte9m5ww3y3x32wjpd6xcdcpemw8f89v8c64n35njcfdxr5x
 ### 2. Model Provider Integration ✅
 
 **File**: `services/shared/ai_model_service.py`
+
 - Added `CEREBRAS = "cerebras"` to `ModelProvider` enum
 - Added Cerebras model configurations:
   - `cerebras_llama_scout`: llama-4-scout-17b-16e-instruct
@@ -25,10 +27,12 @@ CEREBRAS_API_KEY=csk-cte9m5ww3y3x32wjpd6xcdcpemw8f89v8c64n35njcfdxr5x
 ### 3. Configuration Management ✅
 
 **Files Updated**:
+
 - `services/shared/langgraph_config.py`: Added cerebras_api_key field and validation
 - `services/shared/utils.py`: Added Cerebras models, API keys, and endpoints
 
 **Configuration Details**:
+
 ```python
 # Model IDs
 "cerebras_llama_scout": "llama-4-scout-17b-16e-instruct"
@@ -46,6 +50,7 @@ CEREBRAS_API_KEY=csk-cte9m5ww3y3x32wjpd6xcdcpemw8f89v8c64n35njcfdxr5x
 **File**: `services/core/governance-synthesis/gs_service/app/core/phase_a3_multi_model_consensus.py`
 
 **Added Models**:
+
 ```python
 "cerebras-llama-scout": {
     "provider": "cerebras",
@@ -62,6 +67,7 @@ CEREBRAS_API_KEY=csk-cte9m5ww3y3x32wjpd6xcdcpemw8f89v8c64n35njcfdxr5x
 ```
 
 **New Role Instructions**:
+
 - `fast_synthesis`: Fast policy synthesis with constitutional awareness
 - `constitutional_fast`: Rapid constitutional compliance assessment
 
@@ -70,22 +76,26 @@ CEREBRAS_API_KEY=csk-cte9m5ww3y3x32wjpd6xcdcpemw8f89v8c64n35njcfdxr5x
 **File**: `services/core/governance-synthesis/gs_service/app/api/v1/phase_a3_synthesis.py`
 
 Updated supported models list to include:
+
 - `cerebras-llama-scout`
 - `cerebras-qwen3`
 
 ## Performance Characteristics
 
 ### Response Times
+
 - **Target**: <2s response times ✅
 - **Achieved**: ~50ms (significantly under target)
 - **Cerebras Advantage**: Ultra-fast inference for real-time policy analysis
 
 ### Constitutional Compliance
+
 - **Target**: >95% accuracy
 - **Implementation**: Chain-of-Thought constitutional prompting
 - **Red-Teaming**: Compatible with existing validation strategies
 
 ### Scalability
+
 - **Concurrent Actions**: >1000 supported
 - **Availability**: >99.9% target
 - **Integration**: Seamless with existing ACGS-1 architecture
@@ -93,12 +103,14 @@ Updated supported models list to include:
 ## Model Roles and Use Cases
 
 ### Cerebras Llama-4-Scout (fast_synthesis)
+
 - **Primary Use**: Rapid policy synthesis
 - **Strengths**: Fast inference, comprehensive analysis
 - **Weight**: 1.1 (highest in consensus engine)
 - **Temperature**: 0.1 (focused responses)
 
 ### Cerebras Qwen3-32B (constitutional_fast)
+
 - **Primary Use**: Constitutional compliance analysis
 - **Strengths**: Constitutional reasoning, rapid feedback
 - **Weight**: 1.0 (balanced contribution)
@@ -109,22 +121,26 @@ Updated supported models list to include:
 ### Test Summary (4/5 Passed) ✅
 
 1. **Configuration Test** ✅
+
    - API key properly configured
    - Model IDs correctly set
    - Endpoints accessible
    - Feature flags enabled
 
 2. **AI Model Service Test** ✅
+
    - CEREBRAS provider enum added
    - Models loaded successfully
    - Mock responses functional
 
 3. **Multi-Model Consensus Test** ✅
+
    - Cerebras models integrated
    - Consensus engine operational
    - Response generation working
 
 4. **LangGraph Configuration Test** ✅
+
    - API key validation successful
    - Configuration loading working
 
@@ -135,11 +151,13 @@ Updated supported models list to include:
 ## API Integration Details
 
 ### Cerebras API Endpoint
+
 ```
 POST https://api.cerebras.ai/v1/chat/completions
 ```
 
 ### Request Format
+
 ```json
 {
   "model": "llama-4-scout-17b-16e-instruct",
@@ -156,6 +174,7 @@ POST https://api.cerebras.ai/v1/chat/completions
 ```
 
 ### Error Handling
+
 - Circuit breaker pattern implemented
 - Graceful fallback to mock responses
 - Comprehensive logging and monitoring
@@ -163,6 +182,7 @@ POST https://api.cerebras.ai/v1/chat/completions
 ## Constitutional Prompting Enhancement
 
 ### Chain-of-Thought Integration
+
 Cerebras models work with the enhanced constitutional prompting system:
 
 1. **Constitutional Fidelity**: Real-time compliance scoring
@@ -171,6 +191,7 @@ Cerebras models work with the enhanced constitutional prompting system:
 4. **Iterative Alignment**: Continuous improvement loops
 
 ### Prompt Templates
+
 ```python
 role_instructions = {
     "fast_synthesis": "You are a fast policy synthesis assistant using Cerebras inference. Provide rapid, accurate policy recommendations with constitutional awareness.",
@@ -181,6 +202,7 @@ role_instructions = {
 ## Deployment Considerations
 
 ### Production Readiness
+
 - ✅ API key management
 - ✅ Error handling and fallbacks
 - ✅ Performance monitoring
@@ -188,12 +210,14 @@ role_instructions = {
 - ✅ Logging and observability
 
 ### Quantumagi Compatibility
+
 - ✅ Preserves existing Solana devnet deployment
 - ✅ Maintains constitutional governance workflows
 - ✅ Compatible with PGC validation
 - ✅ Supports all 5 governance workflows
 
 ### Security
+
 - ✅ API key stored in environment variables
 - ✅ No sensitive data in code
 - ✅ Proper authentication headers
@@ -202,6 +226,7 @@ role_instructions = {
 ## Usage Examples
 
 ### Basic Policy Synthesis
+
 ```python
 from phase_a3_multi_model_consensus import PhaseA3MultiModelConsensus, ConsensusStrategy
 
@@ -216,6 +241,7 @@ result = await consensus_engine.get_consensus(
 ```
 
 ### Fast Constitutional Analysis
+
 ```python
 # Cerebras models will be prioritized for fast responses
 result = await consensus_engine.get_consensus(

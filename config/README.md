@@ -5,14 +5,18 @@ This directory contains all configuration files for the AI Compliance Governance
 ## Directory Structure
 
 ### `docker/`
+
 Docker and Docker Compose configurations:
+
 - `infrastructure/docker/docker-compose.yml` - Main development environment
 - `docker-compose.monitoring.yml` - Monitoring stack (Prometheus, Grafana)
 - `nginx.conf` - API gateway configuration
 - Service-specific Dockerfiles (if any)
 
 ### `infrastructure/kubernetes/`
+
 Kubernetes deployment manifests:
+
 - `deployment.yaml` - Main deployment configuration
 - `ac-service.yaml` - Audit & Compliance Service
 - `auth-service.yaml` - Authentication Service
@@ -25,13 +29,17 @@ Kubernetes deployment manifests:
 - `postgres-service.yaml` - Database service
 
 ### `env/`
+
 Environment variable templates:
+
 - `.env.example` - Main environment variables template
 - `.env.production` - Production environment template
 - Service-specific environment files
 
 ### `monitoring/`
+
 Monitoring and alerting configurations:
+
 - `prometheus.yml` - Prometheus configuration
 - `alertmanager.yml` - Alert manager rules
 - Grafana dashboards (if any)
@@ -39,11 +47,13 @@ Monitoring and alerting configurations:
 ## Configuration Management
 
 ### Development Environment
+
 1. Copy `.env.example` to `.env`
 2. Modify values for your local setup
 3. Use `infrastructure/docker/docker-compose.yml` for local development
 
 ### Production Environment
+
 1. Use `.env.production` as template
 2. Set secure values for all secrets
 3. Deploy using Kubernetes manifests
@@ -52,12 +62,14 @@ Monitoring and alerting configurations:
 ### Environment Variables
 
 #### Database Configuration
+
 - `DATABASE_URL` - PostgreSQL connection string
 - `POSTGRES_USER` - Database username
 - `POSTGRES_PASSWORD` - Database password
 - `POSTGRES_DB` - Database name
 
 #### Service URLs
+
 - `AC_SERVICE_URL` - Audit & Compliance Service endpoint
 - `AUTH_SERVICE_URL` - Authentication Service endpoint
 - `FV_SERVICE_URL` - Formal Verification Service endpoint
@@ -66,17 +78,20 @@ Monitoring and alerting configurations:
 - `PGC_SERVICE_URL` - Protective Governance Controls Service endpoint
 
 #### External Services
+
 - `LLM_API_ENDPOINT` - LLM service endpoint
 - `LLM_API_KEY` - LLM API key
 - `OPENAI_API_KEY` - OpenAI API key
 - `SMT_SOLVER_PATH` - Z3 solver binary path
 
 #### Security Configuration
+
 - `SECRET_KEY` - JWT signing key
 - `CSRF_SECRET_KEY` - CSRF protection key
 - `ACCESS_TOKEN_EXPIRE_MINUTES` - Token expiration time
 
 #### Constitutional Framework
+
 - `CONSTITUTIONAL_COUNCIL_ENABLED` - Enable Constitutional Council
 - `AC_AMENDMENT_THRESHOLD` - Amendment approval threshold
 - `AC_VOTING_PERIOD_HOURS` - Voting period duration
@@ -85,12 +100,14 @@ Monitoring and alerting configurations:
 ## Deployment Configurations
 
 ### Docker Compose
+
 - Development and testing environment
 - All services in containers
 - Shared volumes for development
 - Hot reloading enabled
 
 ### Kubernetes
+
 - Production-ready deployment
 - Horizontal pod autoscaling
 - Service discovery
@@ -98,6 +115,7 @@ Monitoring and alerting configurations:
 - Ingress configuration
 
 ### Monitoring
+
 - Prometheus metrics collection
 - Grafana dashboards
 - Alert manager notifications
@@ -114,6 +132,7 @@ Monitoring and alerting configurations:
 ## Configuration Validation
 
 Before deployment, validate configurations:
+
 1. Check all required environment variables are set
 2. Verify service connectivity
 3. Test database connections

@@ -7,11 +7,13 @@ This comprehensive checklist ensures successful deployment of the AI Compliance 
 The ACGS-PGP framework implements a formal Artificial Constitution (AC) layer with democratic legitimacy, governance synthesis engine, formal verification, and cryptographic integrity. This deployment checklist is organized to support the progressive implementation of these capabilities.
 
 **Current Implementation Status:**
+
 - ✅ **Phase 1**: Foundational Enhancements & Theoretical Alignment - **COMPLETED**
 - ✅ **Phase 2**: Evolutionary Computation Integration - **COMPLETED**
 - 🚧 **Phase 3**: Advanced Governance Mechanisms & System Hardening - **IN PROGRESS**
 
 **Service Status (Last Verified: 2025-05-30 01:39 EDT):**
+
 - ✅ **AC Service** (Port 8001): Operational - Constitutional Council, Meta-Rules, Conflict Resolution
 - ✅ **Integrity Service** (Port 8002): Operational - PGP Assurance, Cryptographic Operations
 - ⚠️ **FV Service** (Port 8003): Connection Timeout - Container Running, Health Check Failing
@@ -26,6 +28,7 @@ The ACGS-PGP framework implements a formal Artificial Constitution (AC) layer wi
 ## Prerequisites and System Requirements
 
 ### System Requirements
+
 - **Docker**: Version 20.10+ with Docker Compose v2.0+
 - **Kubernetes**: Version 1.20+ (for production deployment)
 - **Memory**: Minimum 8GB RAM (16GB+ recommended for production)
@@ -35,6 +38,7 @@ The ACGS-PGP framework implements a formal Artificial Constitution (AC) layer wi
 - **Node.js**: 16+ for frontend development
 
 ### Required Tools
+
 ```bash
 # Verify required tools are installed
 docker --version
@@ -47,6 +51,7 @@ curl --version
 ```
 
 ### Environment Setup
+
 ```bash
 # 1. Clone and navigate to project
 git clone <repository-url>
@@ -60,6 +65,7 @@ nano .env
 ```
 
 **Critical .env Variables to Configure:**
+
 - `DATABASE_URL`: PostgreSQL connection string
 - `AUTH_SERVICE_SECRET_KEY`: Strong JWT secret (32+ characters)
 - `AUTH_SERVICE_CSRF_SECRET_KEY`: Strong CSRF secret (32+ characters)
@@ -80,6 +86,7 @@ This phase implements the core theoretical framework including the formal Artifi
 ### 1.1 Artificial Constitution (AC) Layer Implementation
 
 #### 1.1.1 Validate AC Framework Prerequisites
+
 ```bash
 # Check if AC service is properly configured
 if ! grep -q "CONSTITUTIONAL_COUNCIL_ENABLED" .env; then
@@ -95,9 +102,11 @@ echo "✅ AC framework prerequisites validated"
 ```
 
 #### 1.1.2 ✅ Enhanced Principles (P) Component - COMPLETED
+
 **Status: IMPLEMENTED** - Enhanced principle management with constitutional features
 
 **Database Migration Required:**
+
 ```bash
 # Execute enhanced principle schema migration
 cd ACGS-master
@@ -110,6 +119,7 @@ docker exec -it acgs_postgres_db psql -U acgs_user -d acgs_pgp_db -c "
 ```
 
 **Test Enhanced Principle Management:**
+
 ```bash
 # Test enhanced principle creation with constitutional fields
 curl -X POST http://localhost:8000/api/v1/principles \
@@ -147,9 +157,11 @@ echo "✅ Enhanced Principles component implemented with constitutional features
 ```
 
 #### 1.1.3 ✅ Meta-Rules (R) Component - COMPLETED
+
 **Status: IMPLEMENTED** - Meta-governance rules, amendment procedures, and decision mechanisms
 
 **Test Meta-Rules Component:**
+
 ```bash
 # Test meta-rules listing (working)
 curl -X GET http://localhost:8000/api/v1/constitutional-council/meta-rules
@@ -180,9 +192,11 @@ echo "✅ Meta-rules component implemented with full CRUD operations"
 ```
 
 #### 1.1.4 ✅ Conflict Resolution Mapping (M) - COMPLETED
+
 **Status: IMPLEMENTED** - Principle conflict detection and resolution strategies
 
 **Test Conflict Resolution Functionality:**
+
 ```bash
 # Test conflict resolution creation
 curl -X POST http://localhost:8000/api/v1/constitutional-council/conflict-resolutions \
@@ -217,9 +231,11 @@ echo "✅ Conflict resolution mapping implemented with full CRUD operations"
 ### 1.2 Democratic Legitimacy Framework
 
 #### 1.2.1 ✅ Constitutional Council Setup - COMPLETED
+
 **Status: IMPLEMENTED** - Amendment proposal workflow, voting mechanisms, and democratic governance
 
 **Test Constitutional Council Functionality:**
+
 ```bash
 # Test amendment proposal workflow
 curl -X POST http://localhost:8000/api/v1/constitutional-council/amendments \
@@ -280,9 +296,11 @@ echo "✅ Constitutional Council framework implemented with full democratic gove
 ```
 
 #### 1.2.2 ✅ Public Consultation Mechanisms - COMPLETED
+
 **Status: IMPLEMENTED** - Public consultation through Constitutional Council comment system
 
 **Current Implementation Features:**
+
 - ✅ Public comment system for amendments (via Constitutional Council)
 - ✅ Stakeholder group categorization
 - ✅ Comment sentiment tracking
@@ -291,6 +309,7 @@ echo "✅ Constitutional Council framework implemented with full democratic gove
 - ✅ Anonymous and authenticated commenting
 
 **Test Public Consultation Features:**
+
 ```bash
 # Test public comment submission (currently working)
 curl -X POST http://localhost:8000/api/v1/constitutional-council/amendments/1/comments \
@@ -313,9 +332,11 @@ echo "✅ Public consultation mechanisms implemented through Constitutional Coun
 ### 1.3 ✅ Enhanced Governance Synthesis (GS) Engine - COMPLETED
 
 #### 1.3.1 ✅ Constitutional Prompting Implementation - COMPLETED
+
 **Status: IMPLEMENTED** - Constitutional prompting with AC principle integration
 
 **Test Constitutional Synthesis:**
+
 ```bash
 # Test constitutional synthesis with AC principle integration
 curl -X POST http://localhost:8000/api/v1/constitutional/synthesize \
@@ -345,9 +366,11 @@ echo "✅ Constitutional Prompting implemented with AC principle integration"
 ```
 
 #### 1.3.2 ✅ Contextual Analyzer Implementation - COMPLETED
+
 **Status: IMPLEMENTED** - Environmental factor processing and contextual analysis
 
 **Test Contextual Analysis:**
+
 ```bash
 # Test environmental factor addition
 curl -X POST http://localhost:8000/api/v1/constitutional/environmental-factors \
@@ -377,9 +400,11 @@ echo "✅ Contextual Analyzer implemented with environmental factor processing"
 ```
 
 #### 1.3.3 ✅ Enhanced LLM Integration - COMPLETED
+
 **Status: IMPLEMENTED** - Constitutional prompting with Mock and Real LLM clients
 
 **Test LLM Integration:**
+
 ```bash
 # Test constitutional synthesis with LLM integration
 curl -X POST http://localhost:8000/api/v1/constitutional/synthesize \
@@ -404,6 +429,7 @@ echo "✅ Enhanced LLM Integration with constitutional prompting implemented"
 ### 1.4 Automated Testing Validation
 
 **Run Phase 1 Implementation Tests:**
+
 ```bash
 # Run comprehensive Phase 1 implementation tests
 python test_phase1_implementation.py
@@ -423,6 +449,7 @@ echo "✅ All Phase 1 automated tests completed successfully"
 ### 1.5 Authentication Token Setup
 
 **Obtain Required Authentication Tokens:**
+
 ```bash
 # 1. First, ensure services are running
 docker-compose -f infrastructure/docker/docker-compose.yml up -d
@@ -493,6 +520,7 @@ echo "✅ Authentication tokens configured successfully"
 ```
 
 ### 1.6 Environment Configuration Validation
+
 ```bash
 # Validate enhanced .env file with AC-specific variables
 required_vars=(
@@ -515,6 +543,7 @@ echo "✅ Enhanced environment configuration validated"
 ```
 
 ### 1.5 Docker Environment Validation
+
 ```bash
 # Check Docker daemon is running
 if ! docker info >/dev/null 2>&1; then
@@ -537,6 +566,7 @@ echo "✅ Docker environment validated"
 ```
 
 ### 1.6 Port Availability Check
+
 ```bash
 # Check if required ports are available (expanded for new services)
 required_ports=(8000 8001 8002 8003 8004 8005 8006 5432 6379)
@@ -551,6 +581,7 @@ echo "✅ All required ports are available"
 ```
 
 ### 1.7 Constitutional Fidelity Mechanisms
+
 ```bash
 # Test principle traceability for generated rules
 curl -X POST http://localhost:8000/gs/rule-synthesis \
@@ -585,6 +616,7 @@ This phase introduces the "AlphaEvolve" governance layer for managing evolutiona
 ### 2.1 AlphaEvolve System Status Check
 
 #### 2.1.1 Verify AlphaEvolve Components
+
 ```bash
 # Check if AlphaEvolve directory exists
 if [ -d "alphaevolve_gs_engine" ]; then
@@ -611,6 +643,7 @@ fi
 ```
 
 #### 2.1.2 ✅ Constitutional Prompting for EC - COMPLETED
+
 **Status: IMPLEMENTED** - EC constitutional prompting with AlphaEvolve integration
 
 ```bash
@@ -664,6 +697,7 @@ echo "✅ EC constitutional prompting and governance evaluation implemented"
 ### 2.2 ✅ Enhanced PGC Service for EC - COMPLETED
 
 #### 2.2.1 ✅ Real-time Policy Enforcement - COMPLETED
+
 **Status: IMPLEMENTED** - Sub-50ms latency EC policy enforcement
 
 ```bash
@@ -717,6 +751,7 @@ echo "✅ Real-time EC policy enforcement implemented with sub-50ms latency"
 ```
 
 #### 2.2.2 ✅ Enhanced Caching and Performance - COMPLETED
+
 **Status: IMPLEMENTED** - High-performance caching for EC evaluations
 
 ```bash
@@ -766,6 +801,7 @@ echo "✅ Enhanced caching and performance optimization implemented"
 ### 2.3 ✅ Phase 2 Integration Testing - COMPLETED
 
 #### 2.3.1 ✅ Comprehensive Phase 2 Test Suite - COMPLETED
+
 **Status: IMPLEMENTED** - Automated test suite for AlphaEvolve integration
 
 ```bash
@@ -788,6 +824,7 @@ echo "✅ Phase 2 AlphaEvolve integration testing completed successfully"
 ```
 
 #### 2.3.2 ✅ Performance Validation - COMPLETED
+
 **Status: IMPLEMENTED** - Real-time performance requirements validated
 
 ```bash
@@ -822,11 +859,14 @@ echo "✅ Performance requirements validated: sub-50ms batch, sub-20ms single"
 ### 2.4 Service Verification and Network Connectivity
 
 #### 2.3.1 Check All Container Status
+
 ```bash
 # Verify all services are running (including new EC integration services)
 docker-compose ps
 ```
+
 **Expected Output**: All services should show "Up" status:
+
 - acgs_postgres_db (Up)
 - acgs_nginx_gateway (Up)
 - acgs_auth_service (Up)
@@ -838,6 +878,7 @@ docker-compose ps
 - acgs_frontend (Up)
 
 #### 2.3.2 Fix Any Failed Services
+
 ```bash
 # Check logs for specific service (replace SERVICE_NAME)
 docker logs acgs_SERVICE_NAME --tail 50
@@ -849,6 +890,7 @@ docker logs acgs_SERVICE_NAME --tail 50
 ```
 
 #### 2.3.3 Verify Network Connectivity
+
 ```bash
 # Test internal service communication
 docker exec acgs_auth_service ping postgres
@@ -856,9 +898,11 @@ docker exec acgs_auth_service ping redis
 docker exec acgs_gs_service ping pgc_service
 docker exec acgs_fv_service ping gs_service
 ```
+
 **Expected Output**: Successful ping responses
 
 ### 2.4 Database Connection and Schema Validation
+
 ```bash
 # Test database connectivity from auth_service
 docker exec acgs_auth_service python -c "
@@ -878,6 +922,7 @@ WHERE table_schema = 'public'
 AND (table_name LIKE 'ac_%' OR table_name LIKE '%principle%' OR table_name LIKE '%amendment%');
 "
 ```
+
 **Expected Output**: "Database connection successful" and list of AC-related tables
 
 ## Phase 3: Advanced Governance Mechanisms & System Hardening
@@ -891,6 +936,7 @@ This phase implements formal verification enhancements, algorithmic fairness int
 #### 3.0.1 ⚠️ Service Connection Issues - REQUIRES INVESTIGATION
 
 **Current Service Status (Last Verified: 2025-05-30):**
+
 ```bash
 # Test all service health endpoints
 echo "Testing service connectivity..."
@@ -910,6 +956,7 @@ echo "Service status check completed"
 #### 3.0.2 🔧 Troubleshooting Service Connection Issues
 
 **Step 1: Check Container Status**
+
 ```bash
 # Check if all containers are running
 docker-compose ps
@@ -919,6 +966,7 @@ docker-compose ps
 ```
 
 **Step 2: Investigate Service Logs**
+
 ```bash
 # Check logs for services with connection issues
 docker logs acgs_fv_service --tail 20
@@ -933,6 +981,7 @@ docker logs acgs_pgc_service --tail 20
 ```
 
 **Step 3: Restart Problematic Services**
+
 ```bash
 # Restart individual services if needed
 docker-compose restart fv_service
@@ -949,6 +998,7 @@ curl -s http://localhost:8005/health
 ```
 
 **Step 4: Network Connectivity Check**
+
 ```bash
 # Test internal network connectivity
 docker exec acgs_ac_service ping fv_service
@@ -964,6 +1014,7 @@ docker port acgs_pgc_service
 ### 3.1 Current FV Service Status
 
 #### 3.1.1 Test Basic FV Service
+
 ```bash
 # Test current FV service health
 curl -X GET http://localhost:8000/fv/health
@@ -982,6 +1033,7 @@ echo "📋 Basic FV service operational - Z3 integration planned for Phase 3"
 ```
 
 #### 3.1.2 Phase 3 FV Roadmap
+
 ```bash
 echo "📋 Phase 3 Formal Verification Enhancements - PLANNED:"
 echo "- Z3 SMT solver integration for formal verification"
@@ -995,6 +1047,7 @@ echo "Dependencies: Z3 solver, formal logic framework"
 ```
 
 #### 3.1.2 Tiered Validation Pipeline
+
 ```bash
 # Test automated baseline validation
 curl -X POST http://localhost:8000/fv/automated-validation \
@@ -1032,6 +1085,7 @@ echo "✅ Tiered validation pipeline implemented"
 ```
 
 #### 3.1.3 Safety and Conflict Checking
+
 ```bash
 # Test safety property validation
 curl -X POST http://localhost:8000/fv/safety-checking \
@@ -1063,6 +1117,7 @@ echo "✅ Safety and conflict checking implemented"
 ### 3.2 ✅ Current Integrity Service Status - OPERATIONAL
 
 #### 3.2.1 ✅ Test Basic Integrity Service - WORKING
+
 ```bash
 # Test current integrity service health (VERIFIED WORKING)
 curl -X GET http://localhost:8002/health
@@ -1080,9 +1135,11 @@ echo "✅ Integrity service fully operational with PGP Assurance capabilities"
 ```
 
 #### 3.2.1.1 ✅ Recent Integrity Service Fixes - COMPLETED
+
 **Status: RESOLVED** - All import and configuration issues have been fixed
 
 **Issues Resolved:**
+
 - ✅ Fixed `ModuleNotFoundError: No module named 'shared.auth'` in pgp_assurance.py
 - ✅ Fixed `ModuleNotFoundError: No module named 'app.db'` in main.py
 - ✅ Fixed security middleware configuration error
@@ -1090,6 +1147,7 @@ echo "✅ Integrity service fully operational with PGP Assurance capabilities"
 - ✅ Corrected database initialization to use shared database module
 
 **Verification Commands:**
+
 ```bash
 # Verify service is running without errors
 docker logs acgs_integrity_service --tail 10
@@ -1103,6 +1161,7 @@ echo "✅ All integrity service issues resolved and verified"
 ```
 
 #### 3.2.2 Phase 3 Algorithmic Fairness Roadmap
+
 ```bash
 echo "📋 Phase 3 Algorithmic Fairness Integration - PLANNED:"
 echo "- Fairness criteria as constitutional principles"
@@ -1116,7 +1175,8 @@ echo "Dependencies: Fairness metrics library, bias detection framework"
 ```
 
 #### 3.2.2 Bias Detection Algorithms
-```bash
+
+````bash
 # Test counterfactual analysis for bias detection
 curl -X POST http://localhost:8000/fv/bias-detection/counterfactual \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
@@ -1236,9 +1296,10 @@ curl -X POST http://localhost:8000/fv/fairness-validation \
   }'
 
 echo "✅ Algorithmic fairness integration implemented with comprehensive bias detection"
-```
+````
 
 **Run Algorithmic Fairness Test Suite:**
+
 ```bash
 # Run comprehensive algorithmic fairness tests
 python3 test_phase3_algorithmic_fairness.py
@@ -1254,9 +1315,11 @@ echo "✅ Phase 3 algorithmic fairness testing completed successfully"
 ```
 
 #### 3.2.4 ✅ Appeal and Dispute Resolution Workflow - COMPLETED
+
 **Status: IMPLEMENTED** - Democratic governance mechanisms for challenging algorithmic decisions
 
 **Test Appeal and Dispute Resolution Features:**
+
 ```bash
 # Test creating an appeal
 curl -X POST http://localhost:8002/api/v1/appeals \
@@ -1302,9 +1365,11 @@ echo "✅ Appeal and dispute resolution workflow implemented"
 ```
 
 #### 3.2.5 ✅ Explainability Engine - COMPLETED
+
 **Status: IMPLEMENTED** - Rule provenance and decision explanation system
 
 **Test Explainability Features:**
+
 ```bash
 # Test decision explanation
 curl -X POST http://localhost:8002/api/v1/explain \
@@ -1325,6 +1390,7 @@ echo "✅ Explainability engine implemented with rule provenance tracking"
 ```
 
 **Run Appeal and Dispute Resolution Test Suite:**
+
 ```bash
 # Run comprehensive appeal and dispute resolution tests
 python3 test_phase3_appeals_dispute_resolution.py
@@ -1341,7 +1407,8 @@ python3 test_phase3_appeals_dispute_resolution.py
 
 echo "✅ Phase 3 appeal and dispute resolution testing completed successfully"
 ```
-```
+
+````
 
 ### 3.3 Democratic AI Governance Mechanisms
 
@@ -1370,9 +1437,10 @@ curl -X POST http://localhost:8000/integrity/dispute-resolution \
   }'
 
 echo "✅ Appeal and dispute resolution workflow implemented"
-```
+````
 
 #### 3.3.2 Explainability Dashboard Interface
+
 ```bash
 # Test rule provenance tracking
 curl -X GET http://localhost:8000/integrity/rule-provenance/rule_123 \
@@ -1402,9 +1470,11 @@ echo "✅ Explainability dashboard interface implemented"
 ```
 
 ### 3.4 ✅ Cryptographic Integrity (PGP Assurance) - COMPLETED
+
 **Status: IMPLEMENTED** - Comprehensive cryptographic integrity framework with digital signatures, Merkle trees, key management, and RFC 3161 timestamping
 
 #### 3.4.1 ✅ Digital Signatures for AC Versions - COMPLETED
+
 **Status: IMPLEMENTED** - ECDSA P-256 and RSA-PSS digital signatures for AC version integrity
 
 ```bash
@@ -1445,6 +1515,7 @@ echo "✅ Digital signatures for AC versions implemented with ECDSA P-256 and co
 ```
 
 #### 3.4.2 ✅ Hash Functions and Merkle Trees - COMPLETED
+
 **Status: IMPLEMENTED** - SHA3-256 hash functions with Merkle tree structures for efficient partial verification
 
 ```bash
@@ -1478,6 +1549,7 @@ echo "✅ Hash functions and Merkle trees implemented with SHA3-256 and efficien
 ```
 
 #### 3.4.3 ✅ Key Management and HSM Integration - COMPLETED
+
 **Status: IMPLEMENTED** - Hierarchical deterministic key derivation with HSM integration points for critical keys
 
 ```bash
@@ -1516,6 +1588,7 @@ echo "✅ Key management and HSM integration implemented with hierarchical key d
 ```
 
 #### 3.4.4 ✅ RFC 3161 Timestamping - COMPLETED
+
 **Status: IMPLEMENTED** - RFC 3161 compliant timestamp tokens with trusted timestamp authority integration
 
 ```bash
@@ -1560,17 +1633,21 @@ echo "✅ RFC 3161 timestamping implemented with trusted authority integration a
 ### 3.5 API Endpoint Testing
 
 #### 3.5.1 Test Gateway Access
+
 ```bash
 # Test nginx gateway is accessible
 curl -I http://localhost:8000
 ```
+
 **Expected Output**: HTTP 200 or 404 (not connection refused)
 
 #### 3.5.2 Test Enhanced Service Endpoints
+
 ```bash
 # Test auth service root endpoint
 curl http://localhost:8000/auth/
 ```
+
 **Expected Output**: `{"message": "Authentication Service is running. Use /auth/docs for API documentation."}`
 
 ```bash
@@ -1581,9 +1658,11 @@ curl http://localhost:8000/fv/health
 curl http://localhost:8000/integrity/health
 curl http://localhost:8000/pgc/health
 ```
+
 **Expected Output**: Service-specific health status with Phase 3 feature indicators
 
 #### 3.5.3 ✅ Comprehensive Service Verification Script - UPDATED
+
 ```bash
 #!/bin/bash
 # ACGS-PGP Framework Service Verification Script (Last Updated: 2025-05-30)
@@ -1653,6 +1732,7 @@ echo "✅ Service verification completed"
 ```
 
 **Known Working Endpoints (Last Verified: 2025-05-30):**
+
 - ✅ `http://localhost:8001/health` - AC Service Health
 - ✅ `http://localhost:8001/api/v1/constitutional-council/meta-rules` - Meta-Rules API
 - ✅ `http://localhost:8002/health` - Integrity Service Health
@@ -1660,6 +1740,7 @@ echo "✅ Service verification completed"
 - ✅ `http://localhost:8002/` - Integrity Service Root
 
 **Requires Investigation:**
+
 - ⚠️ `http://localhost:8003/health` - FV Service (Connection Timeout)
 - ⚠️ `http://localhost:8004/health` - GS Service (Connection Timeout)
 - ⚠️ `http://localhost:8005/health` - PGC Service (Connection Timeout)
@@ -1667,6 +1748,7 @@ echo "✅ Service verification completed"
 ## Phase 4: Database Migration and Schema Management
 
 ### 4.1 Alembic Migration Verification
+
 ```bash
 # Check Alembic migration status
 docker-compose exec alembic-runner alembic current
@@ -1675,9 +1757,11 @@ docker-compose exec alembic-runner alembic history --verbose
 # Verify all migrations are applied
 docker-compose exec alembic-runner alembic check
 ```
+
 **Expected Output**: Current revision should match the latest migration
 
 ### 4.2 Manual Migration Management
+
 ```bash
 # Create new migration (after model changes)
 docker-compose exec alembic-runner alembic revision --autogenerate -m "Description of changes"
@@ -1693,30 +1777,36 @@ docker-compose exec alembic-runner alembic downgrade -1
 ```
 
 ### 4.3 Database Schema Validation
+
 ```bash
 # Connect to PostgreSQL and check tables
 docker exec -it acgs_postgres_db psql -U acgs_user -d acgs_pgp_db -c "\dt"
 ```
+
 **Expected Output**: List of tables including users, refresh_tokens, principles, ac_meta_rules, ac_amendments, ac_amendment_votes, ac_amendment_comments, ac_conflict_resolutions, etc.
 
 ### 4.2 Test Database Operations
+
 ```bash
 # Test basic database operations through auth service
 curl -X POST http://localhost:8000/auth/register \
   -H "Content-Type: application/json" \
   -d '{"username": "testuser", "email": "test@example.com", "password": "testpass123"}'
 ```
+
 **Expected Output**: User creation response or appropriate error message
 
 ## Phase 5: Service-Specific Configuration
 
 ### 5.1 Configure Environment Variables
+
 ```bash
 # Check if all required environment variables are set
 docker exec acgs_auth_service env | grep -E "(DATABASE_URL|JWT_SECRET|CSRF_SECRET)"
 ```
 
 **If missing, add to infrastructure/docker/docker-compose.yml**:
+
 ```yaml
 environment:
   - DATABASE_URL=postgresql+asyncpg://youruser:yourpassword@postgres:5432/yourdatabase_auth
@@ -1725,13 +1815,16 @@ environment:
 ```
 
 ### 5.2 Verify Redis Connection
+
 ```bash
 # Test Redis connectivity
 docker exec acgs_redis redis-cli ping
 ```
+
 **Expected Output**: "PONG"
 
 ### 5.3 Test Inter-Service Communication
+
 ```bash
 # Test that services can communicate with each other
 docker exec acgs_ac_service ping auth_service
@@ -1741,6 +1834,7 @@ docker exec acgs_gs_service ping auth_service
 ## Phase 6: Kubernetes Deployment (Production)
 
 ### 6.1 Kubernetes Prerequisites
+
 ```bash
 # Verify Kubernetes cluster access
 kubectl cluster-info
@@ -1752,6 +1846,7 @@ kubectl config set-context --current --namespace=acgs-pgp
 ```
 
 ### 6.2 Secrets and ConfigMaps Setup
+
 ```bash
 # Create database credentials secret
 kubectl create secret generic postgres-credentials \
@@ -1773,6 +1868,7 @@ kubectl get secrets
 ```
 
 ### 6.3 Deploy Services to Kubernetes
+
 ```bash
 # Deploy PostgreSQL first
 kubectl apply -f infrastructure/kubernetes/postgres-deployment.yaml
@@ -1801,6 +1897,7 @@ kubectl apply -f infrastructure/kubernetes/ingress.yaml
 ```
 
 ### 6.4 Verify Kubernetes Deployment
+
 ```bash
 # Check all pods are running
 kubectl get pods -o wide
@@ -1818,6 +1915,7 @@ kubectl logs -l app=auth-service --tail=50
 ## Phase 7: Frontend Integration and Build
 
 ### 7.1 Frontend Build Verification
+
 ```bash
 # If frontend exists, check build process
 if [ -d "frontend" ]; then
@@ -1829,6 +1927,7 @@ fi
 ```
 
 ### 7.2 Frontend Service Validation
+
 ```bash
 # Check frontend service (Docker Compose)
 docker-compose ps | grep frontend
@@ -1845,6 +1944,7 @@ curl -I http://localhost:3000
 ## Phase 8: Security Validation and Hardening
 
 ### 8.1 Authentication and Authorization Testing
+
 ```bash
 # Test JWT token validation
 # 1. Get a valid token
@@ -1869,6 +1969,7 @@ curl -X POST http://localhost:8000/auth/change-password \
 ```
 
 ### 8.2 Security Headers Validation
+
 ```bash
 # Check security headers from nginx
 curl -I http://localhost:8000/auth/ | grep -E "(X-Frame-Options|X-Content-Type-Options|Strict-Transport-Security|X-XSS-Protection)"
@@ -1880,6 +1981,7 @@ curl -I http://localhost:8000/auth/ | grep -E "(X-Frame-Options|X-Content-Type-O
 ```
 
 ### 8.3 Input Validation Testing
+
 ```bash
 # Test SQL injection protection
 curl -X POST http://localhost:8000/auth/login \
@@ -1898,6 +2000,7 @@ curl -X POST http://localhost:8000/auth/register \
 ```
 
 ### 8.4 Rate Limiting Verification
+
 ```bash
 # Test rate limiting (if implemented)
 echo "Testing rate limiting..."
@@ -1915,6 +2018,7 @@ done
 ## Phase 9: Database Backup and Recovery
 
 ### 9.1 Database Backup Procedures
+
 ```bash
 # Create database backup
 docker exec acgs_postgres pg_dump -U acgs_user -d acgs_pgp_db > backup_$(date +%Y%m%d_%H%M%S).sql
@@ -1928,6 +2032,7 @@ head -20 backup_*.sql
 ```
 
 ### 9.2 Backup Automation Script
+
 ```bash
 # Create automated backup script
 cat > backup_script.sh << 'EOF'
@@ -1954,6 +2059,7 @@ chmod +x backup_script.sh
 ```
 
 ### 9.3 Database Recovery Testing
+
 ```bash
 # Test database recovery (use with caution)
 # 1. Create test backup
@@ -1976,6 +2082,7 @@ rm test_backup.sql
 ## Phase 8: Integration Testing
 
 ### 8.1 End-to-End Authentication Flow
+
 ```bash
 # 1. Register a user
 curl -X POST http://localhost:8000/auth/register \
@@ -1993,6 +2100,7 @@ curl -H "Authorization: Bearer $TOKEN" http://localhost:8000/auth/profile
 ```
 
 ### 8.2 Test Policy Generation Workflow
+
 ```bash
 # Test the complete policy generation flow
 curl -X POST http://localhost:8000/gs/generate-policy \
@@ -2004,6 +2112,7 @@ curl -X POST http://localhost:8000/gs/generate-policy \
 ## Phase 10: Production Readiness and Performance
 
 ### 10.1 Performance Optimization
+
 ```bash
 # Test API response times
 time curl http://localhost:8000/auth/
@@ -2019,6 +2128,7 @@ docker stats --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.Mem
 ```
 
 ### 10.2 Service-Specific Configuration Validation
+
 ```bash
 # Verify LLM integration (GS Service)
 curl -X POST http://localhost:8000/gs/test-llm \
@@ -2040,6 +2150,7 @@ curl -X POST http://localhost:8000/gs/generate-policy \
 ```
 
 ### 10.3 Resource Limits and Scaling
+
 ```bash
 # For Docker Compose - check resource usage
 docker-compose exec auth_service cat /proc/meminfo | grep MemAvailable
@@ -2056,6 +2167,7 @@ kubectl get pods -l app=auth-service
 ## Phase 11: Monitoring and Logging
 
 ### 11.1 Comprehensive Log Aggregation
+
 ```bash
 # View logs from all services with timestamps
 docker-compose logs -f --tail=100 --timestamps
@@ -2070,6 +2182,7 @@ kubectl logs -l app=auth-service --tail=100
 ```
 
 ### 11.2 Health Monitoring Setup
+
 ```bash
 # Create monitoring script
 cat > monitor_services.sh << 'EOF'
@@ -2104,6 +2217,7 @@ chmod +x monitor_services.sh
 ```
 
 ### 11.3 Performance Monitoring
+
 ```bash
 # Monitor resource usage continuously
 docker stats --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}\t{{.BlockIO}}"
@@ -2131,6 +2245,7 @@ LIMIT 10;"
 ## Phase 12: Rollback and Recovery Procedures
 
 ### 12.1 Service Rollback Procedures
+
 ```bash
 # Docker Compose rollback
 # 1. Stop current services
@@ -2149,6 +2264,7 @@ docker-compose ps
 ```
 
 ### 12.2 Database Rollback
+
 ```bash
 # Rollback database migration
 docker-compose exec alembic-runner alembic downgrade -1
@@ -2162,6 +2278,7 @@ docker-compose exec alembic-runner alembic history
 ```
 
 ### 12.3 Kubernetes Rollback
+
 ```bash
 # Rollback deployment
 kubectl rollout undo deployment/auth-service-deployment
@@ -2178,6 +2295,7 @@ kubectl rollout undo deployment/auth-service-deployment --to-revision=2
 ```
 
 ### 12.4 Emergency Recovery Procedures
+
 ```bash
 # Complete system recovery script
 cat > emergency_recovery.sh << 'EOF'
@@ -2221,6 +2339,7 @@ chmod +x emergency_recovery.sh
 ## Phase 10: Final Validation
 
 ### 10.1 Complete System Health Check
+
 ```bash
 # Create a comprehensive health check script
 cat > health_check.sh << 'EOF'
@@ -2253,6 +2372,7 @@ chmod +x health_check.sh
 ```
 
 ### 10.2 Performance Baseline
+
 ```bash
 # Run basic performance tests
 ab -n 100 -c 10 http://localhost:8000/auth/
@@ -2263,18 +2383,22 @@ ab -n 100 -c 10 http://localhost:8000/auth/
 ### Common Issues and Solutions:
 
 1. **Port Conflicts**:
+
    - Check with `netstat -tlnp | grep :PORT`
    - Modify infrastructure/docker/docker-compose.yml ports
 
 2. **Database Connection Issues**:
+
    - Verify DATABASE_URL format: `postgresql+asyncpg://user:pass@host:port/db`
    - Check PostgreSQL is accepting connections
 
 3. **Import Errors**:
+
    - Fix Python import paths in service files
    - Ensure shared modules are properly mounted
 
 4. **Memory Issues**:
+
    - Increase Docker memory limits
    - Check with `docker stats`
 
@@ -2285,7 +2409,9 @@ ab -n 100 -c 10 http://localhost:8000/auth/
 ## Success Criteria
 
 ### Phase 1: Foundational Enhancements & Theoretical Alignment
+
 The Phase 1 deployment is complete when:
+
 - [ ] Artificial Constitution (AC) layer is fully implemented with P, R, M, V components
 - [ ] Democratic legitimacy framework is operational with Constitutional Council
 - [ ] Enhanced Governance Synthesis engine supports constitutional prompting
@@ -2296,7 +2422,9 @@ The Phase 1 deployment is complete when:
 - [ ] Constitutional compliance scoring is operational
 
 ### Phase 2: Evolutionary Computation Integration
+
 The Phase 2 deployment is complete when:
+
 - [ ] Constitutional prompting for EC systems is implemented
 - [ ] Constitution-aware EC operators are functional
 - [ ] PGC performance meets sub-50ms requirement for EC loops
@@ -2307,7 +2435,9 @@ The Phase 2 deployment is complete when:
 - [ ] EC-specific database tables are created and accessible
 
 ### Phase 3: Advanced Governance Mechanisms & System Hardening
+
 The Phase 3 deployment is complete when:
+
 - [x] **SMT solver (Z3) integration is functional for formal verification** ✅ **COMPLETED**
 - [x] **Tiered validation pipeline (Automated, HITL, Rigorous) is operational** ✅ **COMPLETED**
 - [x] **Safety and conflict checking algorithms are implemented** ✅ **COMPLETED**
@@ -2321,7 +2451,9 @@ The Phase 3 deployment is complete when:
 - [ ] RFC 3161 timestamping is functional
 
 ### Development Environment
+
 The complete development deployment is successful when:
+
 - [ ] All three phases are implemented and tested
 - [ ] All containers show "Up" status
 - [ ] All enhanced service endpoints return 200 status codes
@@ -2333,7 +2465,9 @@ The complete development deployment is successful when:
 - [ ] Advanced API functionality is verified across all phases
 
 ### Production Environment
+
 The production deployment is complete when:
+
 - [ ] All Kubernetes pods are in "Running" state for all phases
 - [ ] All services pass enhanced health checks
 - [ ] Database backup procedures include cryptographic integrity
@@ -2346,6 +2480,7 @@ The production deployment is complete when:
 - [ ] Resource limits accommodate LLM and SMT solver usage
 
 ### Enhanced Security Checklist
+
 - [ ] JWT secrets are properly configured with enhanced RBAC
 - [ ] CSRF protection is enabled across all new endpoints
 - [ ] Input validation includes constitutional principle validation
@@ -2361,6 +2496,7 @@ The production deployment is complete when:
 ## Quick Start Commands
 
 ### Phase 1: Basic Deployment
+
 Execute these commands to establish the foundational system:
 
 ```bash
@@ -2385,6 +2521,7 @@ curl -X POST http://localhost:8000/ac/principles \
 ```
 
 ### Phase 2: EC Integration
+
 Execute these commands to enable evolutionary computation governance:
 
 ```bash
@@ -2402,6 +2539,7 @@ curl -X POST http://localhost:8000/pgc/performance-test \
 ```
 
 ### Phase 3: Advanced Features
+
 Execute these commands to enable advanced governance mechanisms:
 
 ```bash
@@ -2562,6 +2700,7 @@ chmod +x deploy_acgs.sh
 ## Usage Examples
 
 ### Development Deployment
+
 ```bash
 # Quick development deployment
 ./deploy_acgs.sh development
@@ -2571,6 +2710,7 @@ chmod +x deploy_acgs.sh
 ```
 
 ### Production Deployment
+
 ```bash
 # Production deployment to Kubernetes
 ./deploy_acgs.sh production
@@ -2580,6 +2720,7 @@ chmod +x deploy_acgs.sh
 ```
 
 ### Manual Step-by-Step Deployment
+
 ```bash
 # 1. Environment validation
 ./deploy_acgs.sh development true
@@ -2601,6 +2742,7 @@ Execute these steps in order, and the ACGS-PGP framework should be fully operati
 ## Summary of Current Implementation Status
 
 ### ✅ **Phase 1: COMPLETED** - Foundational Enhancements & Theoretical Alignment
+
 - **Enhanced Principle Management**: Full implementation with priority weights, scope, normative statements, constraints, rationale, keywords, categories, and constitutional metadata
 - **Constitutional Council**: Complete democratic legitimacy framework with meta-rules, amendment proposals, voting mechanisms, and public consultation
 - **Conflict Resolution Mapping**: Implemented conflict detection and resolution strategies
@@ -2611,12 +2753,14 @@ Execute these steps in order, and the ACGS-PGP framework should be fully operati
 - **Testing Framework**: Comprehensive test scripts for validation
 
 ### ✅ **Phase 2: COMPLETED** - Evolutionary Computation Integration
+
 - **AlphaEvolve Framework**: Complete implementation with constitutional EC operators
 - **Constitutional EC Operators**: Fully integrated with fitness functions and governance penalties
 - **Real-time PGC Enforcement**: Performance optimized for sub-50ms EC loops
 - **Current Status**: All Phase 2 features operational and tested
 
 ### 🚧 **Phase 3: IN PROGRESS** - Advanced Governance Mechanisms & System Hardening
+
 - **Z3 SMT Solver Integration**: ✅ **COMPLETED** - Real Z3 integration with formal verification capabilities
 - **Tiered Validation Pipeline**: ✅ **COMPLETED** - Automated, HITL, and Rigorous validation tiers operational
 - **Safety and Conflict Checking**: ✅ **COMPLETED** - Real-time safety property verification and conflict detection
@@ -2627,6 +2771,7 @@ Execute these steps in order, and the ACGS-PGP framework should be fully operati
 - **Current Status**: Core formal verification infrastructure complete, advanced features in development
 
 ### 🎯 **Next Steps for Continued Development**
+
 1. **Complete Phase 3**: Implement remaining advanced features (Algorithmic Fairness, Cryptographic Integrity, Explainability Dashboard)
 2. **Algorithmic Fairness**: Implement bias detection algorithms and fairness criteria encoding
 3. **Cryptographic Integrity**: Develop PGP Assurance layer with digital signatures and Merkle trees
@@ -2641,6 +2786,7 @@ The ACGS-PGP framework has successfully achieved its Phase 1 and Phase 2 goals, 
 ## 📋 **FINAL DEPLOYMENT CHECKLIST SUMMARY**
 
 ### ✅ **OPERATIONAL SERVICES** (Last Verified: 2025-05-30 01:39 EDT)
+
 - **AC Service** (Port 8001): ✅ **FULLY OPERATIONAL**
   - Constitutional Council ✅
   - Meta-Rules Management ✅
@@ -2656,23 +2802,27 @@ The ACGS-PGP framework has successfully achieved its Phase 1 and Phase 2 goals, 
 - **Auth Service**: ✅ **RUNNING** (Internal to Gateway)
 
 ### ⚠️ **SERVICES REQUIRING INVESTIGATION**
+
 - **FV Service** (Port 8003): Container Running, Health Check Failing
 - **GS Service** (Port 8004): Container Running, Health Check Failing
 - **PGC Service** (Port 8005): Container Running, Health Check Failing
 
 ### 🛠️ **VERIFICATION TOOLS AVAILABLE**
+
 - **Quick Status Check**: `./verify_acgs_deployment.sh`
 - **Service Logs**: `docker logs acgs_<service_name> --tail 20`
 - **Container Status**: `docker-compose ps`
 - **Database Health**: `docker exec acgs_postgres_db pg_isready -U acgs_user`
 
 ### 📊 **CURRENT SYSTEM METRICS**
+
 - **Working Services**: 2/5 (40%)
 - **Database**: ✅ Operational
 - **Gateway**: ✅ Operational
 - **Overall System Health**: 🟡 **PARTIALLY OPERATIONAL**
 
 ### 🔧 **IMMEDIATE ACTION ITEMS** (Priority Order)
+
 1. **🚨 URGENT**: Investigate and fix service connection timeouts for FV, GS, and PGC services
 2. **🔴 HIGH**: Run comprehensive integration tests across all working services
 3. **🟡 MEDIUM**: Implement monitoring and alerting for production readiness
@@ -2680,6 +2830,7 @@ The ACGS-PGP framework has successfully achieved its Phase 1 and Phase 2 goals, 
 5. **🟢 LOW**: Finalize backup and recovery procedures
 
 ### 🎯 **NEXT STEPS FOR FULL OPERATIONAL STATUS**
+
 1. **Debug Service Issues**: Check logs and fix connection timeouts
 2. **Complete Integration Testing**: Verify cross-service communication
 3. **Performance Optimization**: Optimize database queries and API response times

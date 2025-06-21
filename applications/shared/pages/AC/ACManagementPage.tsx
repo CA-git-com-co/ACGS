@@ -44,7 +44,9 @@ const PrincipleEditModal: React.FC<PrincipleEditModalProps> = ({
     setFormData({ ...principle });
   }, [principle]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -60,7 +62,7 @@ const PrincipleEditModal: React.FC<PrincipleEditModalProps> = ({
         <h3 className="text-xl font-semibold text-gray-900 mb-4">
           {formData.id ? 'Edit Principle' : 'Create New Principle'}
         </h3>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -130,20 +132,10 @@ const PrincipleEditModal: React.FC<PrincipleEditModalProps> = ({
           )}
 
           <div className="flex justify-end space-x-3 pt-4">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={onClose}
-              disabled={isLoading}
-            >
+            <Button type="button" variant="secondary" onClick={onClose} disabled={isLoading}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={isLoading}
-              isLoading={isLoading}
-            >
+            <Button type="submit" variant="primary" disabled={isLoading} isLoading={isLoading}>
               {isLoading ? 'Saving...' : 'Save'}
             </Button>
           </div>
@@ -172,7 +164,7 @@ const ACManagementPage: React.FC = () => {
     timeout: 30000,
     retryAttempts: 3,
     onTimeout: () => console.warn('AC Service operation timed out'),
-    onError: (error) => console.error('AC Service error:', error)
+    onError: error => console.error('AC Service error:', error)
   });
 
   const fetchPrinciples = useCallback(async () => {
@@ -260,9 +252,12 @@ const ACManagementPage: React.FC = () => {
 
   const getStatusColor = (status: string): string => {
     switch (status) {
-      case 'approved': return 'text-green-600 bg-green-100';
-      case 'deprecated': return 'text-red-600 bg-red-100';
-      default: return 'text-yellow-600 bg-yellow-100';
+      case 'approved':
+        return 'text-green-600 bg-green-100';
+      case 'deprecated':
+        return 'text-red-600 bg-red-100';
+      default:
+        return 'text-yellow-600 bg-yellow-100';
     }
   };
 
@@ -284,125 +279,127 @@ const ACManagementPage: React.FC = () => {
       >
         <div className="min-h-screen bg-gray-50 py-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Artificial Constitution Management</h1>
-          <p className="mt-2 text-gray-600">
-            Manage constitutional principles that form the foundation of the governance system.
-          </p>
-        </div>
-
-        {/* Actions */}
-        <div className="mb-6 flex justify-between items-center">
-          <LoadingButton
-            onClick={handleCreateNew}
-            isLoading={loadingStates.save?.isLoading || false}
-            disabled={isAnyLoading}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
-            loadingText="Creating..."
-          >
-            Create New Principle
-          </LoadingButton>
-
-          {isAnyLoading && (
-            <div className="flex items-center text-gray-600">
-              <Spinner size="sm" className="mr-2" />
-              {loadingStates.fetch?.isLoading && 'Loading principles...'}
-              {loadingStates.save?.isLoading && 'Saving principle...'}
-              {loadingStates.delete?.isLoading && 'Deleting principle...'}
+            {/* Header */}
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-gray-900">
+                Artificial Constitution Management
+              </h1>
+              <p className="mt-2 text-gray-600">
+                Manage constitutional principles that form the foundation of the governance system.
+              </p>
             </div>
-          )}
-        </div>
 
-        {/* Error Display */}
-        {error && !isModalOpen && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
-            <p className="text-sm text-red-600">{error}</p>
-          </div>
-        )}
+            {/* Actions */}
+            <div className="mb-6 flex justify-between items-center">
+              <LoadingButton
+                onClick={handleCreateNew}
+                isLoading={loadingStates.save?.isLoading || false}
+                disabled={isAnyLoading}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
+                loadingText="Creating..."
+              >
+                Create New Principle
+              </LoadingButton>
 
-        {/* Principles List */}
-        {loadingStates.fetch?.isLoading ? (
-          <div className="grid gap-6">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <CardSkeleton key={index} />
-            ))}
-          </div>
-        ) : principles.length === 0 ? (
-          <Card className="p-8 text-center">
-            <p className="text-gray-500">No principles found. Create your first principle to get started.</p>
-          </Card>
-        ) : (
-          <LoadingOverlay isLoading={loadingStates.delete?.isLoading || false} blur={true}>
-            <div className="grid gap-6">
-              {principles.map((principle) => (
-              <Card key={principle.id} className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      {principle.title}
-                    </h3>
-                    <div className="flex items-center mt-2 space-x-4">
-                      <span className="text-sm text-gray-500">ID: {principle.id}</span>
-                      <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor('approved')}`}>
-                        Active
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex space-x-2">
-                    <LoadingButton
-                      onClick={() => handleEdit(principle)}
-                      isLoading={false}
-                      disabled={isAnyLoading}
-                      className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
-                    >
-                      Edit
-                    </LoadingButton>
-                    <LoadingButton
-                      onClick={() => handleDelete(principle.id)}
-                      isLoading={loadingStates.delete?.isLoading || false}
-                      disabled={isAnyLoading}
-                      className="px-3 py-1 text-sm bg-red-600 text-white rounded-md hover:bg-red-700"
-                      loadingText="Deleting..."
-                    >
-                      Delete
-                    </LoadingButton>
-                  </div>
+              {isAnyLoading && (
+                <div className="flex items-center text-gray-600">
+                  <Spinner size="sm" className="mr-2" />
+                  {loadingStates.fetch?.isLoading && 'Loading principles...'}
+                  {loadingStates.save?.isLoading && 'Saving principle...'}
+                  {loadingStates.delete?.isLoading && 'Deleting principle...'}
                 </div>
-                
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-sm font-medium text-gray-700">Category:</p>
-                    <p className="text-sm text-gray-600">{principle.category}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-700">Content:</p>
-                    <div className="bg-gray-50 rounded-md p-3 mt-1">
-                      <pre className="text-sm text-gray-800 whitespace-pre-wrap font-mono">
-                        {principle.content}
-                      </pre>
-                    </div>
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    Priority: {principle.priority}
-                  </div>
-                </div>
+              )}
+            </div>
+
+            {/* Error Display */}
+            {error && !isModalOpen && (
+              <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
+                <p className="text-sm text-red-600">{error}</p>
+              </div>
+            )}
+
+            {/* Principles List */}
+            {loadingStates.fetch?.isLoading ? (
+              <div className="grid gap-6">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <CardSkeleton key={index} />
+                ))}
+              </div>
+            ) : principles.length === 0 ? (
+              <Card className="p-8 text-center">
+                <p className="text-gray-500">
+                  No principles found. Create your first principle to get started.
+                </p>
               </Card>
-              ))}
-            </div>
-          </LoadingOverlay>
-        )}
+            ) : (
+              <LoadingOverlay isLoading={loadingStates.delete?.isLoading || false} blur={true}>
+                <div className="grid gap-6">
+                  {principles.map(principle => (
+                    <Card key={principle.id} className="p-6">
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900">{principle.title}</h3>
+                          <div className="flex items-center mt-2 space-x-4">
+                            <span className="text-sm text-gray-500">ID: {principle.id}</span>
+                            <span
+                              className={`px-2 py-1 text-xs rounded-full ${getStatusColor('approved')}`}
+                            >
+                              Active
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex space-x-2">
+                          <LoadingButton
+                            onClick={() => handleEdit(principle)}
+                            isLoading={false}
+                            disabled={isAnyLoading}
+                            className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+                          >
+                            Edit
+                          </LoadingButton>
+                          <LoadingButton
+                            onClick={() => handleDelete(principle.id)}
+                            isLoading={loadingStates.delete?.isLoading || false}
+                            disabled={isAnyLoading}
+                            className="px-3 py-1 text-sm bg-red-600 text-white rounded-md hover:bg-red-700"
+                            loadingText="Deleting..."
+                          >
+                            Delete
+                          </LoadingButton>
+                        </div>
+                      </div>
 
-        {/* Modal */}
-        {isModalOpen && editingPrinciple && (
-          <PrincipleEditModal
-            principle={editingPrinciple}
-            onSave={handleModalSave}
-            onClose={handleModalClose}
-            error={error}
-            isLoading={loadingStates.save?.isLoading || false}
-          />
-        )}
+                      <div className="space-y-3">
+                        <div>
+                          <p className="text-sm font-medium text-gray-700">Category:</p>
+                          <p className="text-sm text-gray-600">{principle.category}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-700">Content:</p>
+                          <div className="bg-gray-50 rounded-md p-3 mt-1">
+                            <pre className="text-sm text-gray-800 whitespace-pre-wrap font-mono">
+                              {principle.content}
+                            </pre>
+                          </div>
+                        </div>
+                        <div className="text-xs text-gray-500">Priority: {principle.priority}</div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </LoadingOverlay>
+            )}
+
+            {/* Modal */}
+            {isModalOpen && editingPrinciple && (
+              <PrincipleEditModal
+                principle={editingPrinciple}
+                onSave={handleModalSave}
+                onClose={handleModalClose}
+                error={error}
+                isLoading={loadingStates.save?.isLoading || false}
+              />
+            )}
           </div>
         </div>
       </ServiceErrorBoundary>

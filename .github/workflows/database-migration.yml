@@ -2,13 +2,13 @@ name: ACGS-1 Database Migration
 
 on:
   push:
-    branches: [ main, master, develop ]
-    paths: 
+    branches: [main, master, develop]
+    paths:
       - 'migrations/**'
       - 'alembic.ini'
       - 'scripts/database/**'
   pull_request:
-    branches: [ main, master, develop ]
+    branches: [main, master, develop]
     paths:
       - 'migrations/**'
       - 'alembic.ini'
@@ -21,19 +21,19 @@ on:
         default: 'development'
         type: choice
         options:
-        - development
-        - staging
-        - production
+          - development
+          - staging
+          - production
       action:
         description: 'Migration action'
         required: true
         default: 'migrate'
         type: choice
         options:
-        - migrate
-        - rollback
-        - status
-        - validate
+          - migrate
+          - rollback
+          - status
+          - validate
       target_version:
         description: 'Target migration version (for rollback)'
         required: false
@@ -69,7 +69,7 @@ jobs:
       - name: Validate migration files
         run: |
           echo "🔍 Validating migration files..."
-          
+
           # Check migration file naming convention
           for file in migrations/*.sql; do
             if [[ -f "$file" ]]; then
@@ -81,7 +81,7 @@ jobs:
               fi
             fi
           done
-          
+
           # Check for rollback scripts
           for file in migrations/*.sql; do
             if [[ -f "$file" ]]; then
@@ -92,13 +92,13 @@ jobs:
               fi
             fi
           done
-          
+
           echo "✅ Migration validation completed"
 
       - name: Check migration syntax
         run: |
           echo "🔍 Checking SQL syntax..."
-          
+
           # Basic SQL syntax validation
           for file in migrations/*.sql; do
             if [[ -f "$file" ]]; then
@@ -121,7 +121,7 @@ jobs:
               fi
             fi
           done
-          
+
           echo "✅ SQL syntax check completed"
 
   # Test Migration on Test Database
@@ -163,20 +163,20 @@ jobs:
           DATABASE_URL: postgresql://test_user:test_password@localhost:5432/acgs_test
         run: |
           echo "🗄️ Setting up test database..."
-          
+
           # Create test schema
           python -c "
           import asyncio
           import asyncpg
-          
+
           async def setup_db():
               conn = await asyncpg.connect('postgresql://test_user:test_password@localhost:5432/acgs_test')
               await conn.execute('CREATE SCHEMA IF NOT EXISTS acgs')
               await conn.close()
-          
+
           asyncio.run(setup_db())
           "
-          
+
           echo "✅ Test database ready"
 
       - name: Test migrations
@@ -184,19 +184,19 @@ jobs:
           DATABASE_URL: postgresql://test_user:test_password@localhost:5432/acgs_test
         run: |
           echo "🧪 Testing migrations..."
-          
+
           # Make migration script executable
           chmod +x scripts/database/migrate.py
-          
+
           # Test migration status
           python scripts/database/migrate.py status
-          
+
           # Test migration up
           python scripts/database/migrate.py migrate
-          
+
           # Test migration validation
           python scripts/database/migrate.py validate
-          
+
           echo "✅ Migration test completed"
 
       - name: Test rollback (if rollback scripts exist)
@@ -204,10 +204,10 @@ jobs:
           DATABASE_URL: postgresql://test_user:test_password@localhost:5432/acgs_test
         run: |
           echo "🔄 Testing rollback functionality..."
-          
+
           # Get latest migration version
           LATEST_VERSION=$(python scripts/database/migrate.py status | jq -r '.applied_migrations[-1].version' 2>/dev/null || echo "")
-          
+
           if [[ -n "$LATEST_VERSION" && "$LATEST_VERSION" != "null" ]]; then
             echo "Testing rollback of version: $LATEST_VERSION"
             
@@ -219,7 +219,7 @@ jobs:
           else
             echo "No migrations to test rollback"
           fi
-          
+
           echo "✅ Rollback test completed"
 
   # Environment-Specific Migration
@@ -228,7 +228,7 @@ jobs:
     name: Environment Migration
     needs: [migration_validation, test_migration]
     if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
-    environment: 
+    environment:
       name: ${{ github.event.inputs.environment || 'development' }}
     steps:
       - name: Check out repository
@@ -247,7 +247,7 @@ jobs:
       - name: Configure environment
         run: |
           echo "🔧 Configuring environment: ${{ github.event.inputs.environment || 'development' }}"
-          
+
           # Set environment-specific variables
           case "${{ github.event.inputs.environment || 'development' }}" in
             "production")
@@ -268,7 +268,7 @@ jobs:
         if: env.BACKUP_BEFORE_MIGRATION == 'true'
         run: |
           echo "💾 Creating database backup..."
-          
+
           # This would integrate with your backup system
           echo "Backup created: backup-$(date +%Y%m%d-%H%M%S).sql"
           echo "✅ Database backup completed"
@@ -278,13 +278,13 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           echo "🚀 Executing migration..."
-          
+
           ACTION="${{ github.event.inputs.action || 'migrate' }}"
           TARGET_VERSION="${{ github.event.inputs.target_version }}"
-          
+
           # Make migration script executable
           chmod +x scripts/database/migrate.py
-          
+
           case "$ACTION" in
             "migrate")
               if [[ -n "$TARGET_VERSION" ]]; then
@@ -307,7 +307,7 @@ jobs:
               python scripts/database/migrate.py validate
               ;;
           esac
-          
+
           echo "✅ Migration action completed: $ACTION"
 
       - name: Post-migration validation
@@ -315,19 +315,19 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           echo "🔍 Running post-migration validation..."
-          
+
           # Validate migration integrity
           python scripts/database/migrate.py validate
-          
+
           # Get final status
           python scripts/database/migrate.py status
-          
+
           echo "✅ Post-migration validation completed"
 
       - name: Update migration status
         run: |
           echo "📊 Updating migration status..."
-          
+
           # Create migration report
           cat > /tmp/migration-report.json << EOF
           {
@@ -340,7 +340,7 @@ jobs:
             "commit_sha": "${{ github.sha }}"
           }
           EOF
-          
+
           echo "✅ Migration status updated"
 
       - name: Upload migration artifacts
@@ -373,7 +373,7 @@ jobs:
           echo "- Test Migration: ${{ needs.test_migration.result }}"
           echo "- Environment Migration: ${{ needs.environment_migration.result }}"
           echo ""
-          
+
           if [[ "${{ needs.environment_migration.result }}" == "success" ]]; then
             echo "✅ Migration completed successfully"
           else

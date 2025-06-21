@@ -11,20 +11,21 @@ The ACGS-1 Constitutional Governance System provides a comprehensive REST API ac
 
 ### Service Endpoints Overview
 
-| Service | Port | Base Path | Purpose |
-|---------|------|-----------|---------|
-| Auth Service | 8000 | `/auth/` | Authentication & Authorization |
-| AC Service | 8001 | `/api/v1/constitutional/` | Constitutional AI Management |
-| Integrity Service | 8002 | `/api/v1/integrity/` | Cryptographic Integrity |
-| FV Service | 8003 | `/api/v1/verification/` | Formal Verification |
-| GS Service | 8004 | `/api/v1/synthesis/` | Governance Synthesis |
-| PGC Service | 8005 | `/api/v1/governance/` | Policy Enforcement |
-| EC Service | 8006 | `/api/v1/wina/` | Evolutionary Computation |
-| DGM Service | 8007 | `/api/v1/dgm/` | Darwin Gödel Machine Self-Improvement |
+| Service           | Port | Base Path                 | Purpose                               |
+| ----------------- | ---- | ------------------------- | ------------------------------------- |
+| Auth Service      | 8000 | `/auth/`                  | Authentication & Authorization        |
+| AC Service        | 8001 | `/api/v1/constitutional/` | Constitutional AI Management          |
+| Integrity Service | 8002 | `/api/v1/integrity/`      | Cryptographic Integrity               |
+| FV Service        | 8003 | `/api/v1/verification/`   | Formal Verification                   |
+| GS Service        | 8004 | `/api/v1/synthesis/`      | Governance Synthesis                  |
+| PGC Service       | 8005 | `/api/v1/governance/`     | Policy Enforcement                    |
+| EC Service        | 8006 | `/api/v1/wina/`           | Evolutionary Computation              |
+| DGM Service       | 8007 | `/api/v1/dgm/`            | Darwin Gödel Machine Self-Improvement |
 
 ## 🔐 Authentication
 
 ### JWT Authentication
+
 All API endpoints require JWT authentication except for public health checks and authentication endpoints.
 
 ```http
@@ -33,6 +34,7 @@ Content-Type: application/json
 ```
 
 ### Authentication Flow
+
 ```http
 POST /auth/token
 {
@@ -55,6 +57,7 @@ Note: Refresh tokens are stored in HttpOnly cookies for security.
 ### 1. Authentication Service (Port 8000)
 
 #### User Management
+
 ```http
 # Register new user
 POST /api/auth/register
@@ -88,6 +91,7 @@ Authorization: Bearer <token>
 ```
 
 #### Role-Based Access Control
+
 ```http
 # Get user permissions
 GET /api/auth/permissions
@@ -105,6 +109,7 @@ Authorization: Bearer <token>
 ### 2. Constitutional AI Service (Port 8001)
 
 #### Constitutional Principles Management
+
 ```http
 # Get all principles
 GET /api/constitutional-ai/principles
@@ -134,6 +139,7 @@ Authorization: Bearer <token>
 ```
 
 #### Constitutional Compliance
+
 ```http
 # Validate constitutional compliance
 POST /api/constitutional-ai/validate-compliance
@@ -160,6 +166,7 @@ Response:
 ### 3. Integrity Service (Port 8002)
 
 #### Data Integrity Verification
+
 ```http
 # Verify data integrity
 POST /api/integrity/verify
@@ -185,6 +192,7 @@ Authorization: Bearer <token>
 ```
 
 #### Audit Logging
+
 ```http
 # Get audit logs
 GET /api/integrity/audit-logs?start_date=2025-06-01&end_date=2025-06-16
@@ -208,6 +216,7 @@ Authorization: Bearer <token>
 ### 4. Formal Verification Service (Port 8003)
 
 #### Policy Verification
+
 ```http
 # Verify policy against principles
 POST /api/formal-verification/verify-policy
@@ -229,6 +238,7 @@ Response:
 ```
 
 #### Safety Property Checking
+
 ```http
 # Check safety properties
 POST /api/formal-verification/safety-check
@@ -246,6 +256,7 @@ Authorization: Bearer <token>
 ### 5. Governance Synthesis Service (Port 8004)
 
 #### Policy Synthesis
+
 ```http
 # Synthesize policy from principle
 POST /api/governance-synthesis/synthesize
@@ -280,6 +291,7 @@ Response:
 ```
 
 #### Multi-Model Validation
+
 ```http
 # Validate with multiple models
 POST /api/governance-synthesis/multi-model-validate
@@ -294,6 +306,7 @@ Authorization: Bearer <token>
 ### 6. Policy Governance Compiler Service (Port 8005)
 
 #### Real-time Policy Enforcement
+
 ```http
 # Evaluate action against policies
 POST /api/policy-governance/evaluate
@@ -322,6 +335,7 @@ Response:
 ```
 
 #### Constitutional Validation
+
 ```http
 # Validate constitutional compliance
 POST /api/policy-governance/constitutional-validate
@@ -339,6 +353,7 @@ Authorization: Bearer <token>
 ### 7. Evolutionary Computation Service (Port 8006)
 
 #### WINA Oversight
+
 ```http
 # Execute WINA oversight
 POST /api/evolutionary-computation/wina-oversight
@@ -357,6 +372,7 @@ Authorization: Bearer <token>
 ```
 
 #### Performance Monitoring
+
 ```http
 # Get performance metrics
 GET /api/evolutionary-computation/performance-metrics
@@ -379,6 +395,7 @@ Authorization: Bearer <token>
 ### 8. Darwin Gödel Machine Service (Port 8007)
 
 #### DGM Operations
+
 ```http
 # Get DGM system status
 GET /api/v1/dgm/status
@@ -411,6 +428,7 @@ Authorization: Bearer <token>
 ```
 
 #### Bandit Algorithm Operations
+
 ```http
 # Select arm using bandit algorithm
 POST /api/v1/dgm/bandit/select-arm
@@ -434,6 +452,7 @@ Authorization: Bearer <token>
 ```
 
 #### Performance Monitoring
+
 ```http
 # Query performance metrics
 POST /api/v1/dgm/metrics/query
@@ -451,6 +470,7 @@ Authorization: Bearer <token>
 ```
 
 #### Database & Cache Optimization
+
 ```http
 # Trigger database optimization
 POST /api/v1/dgm/optimize/database
@@ -468,6 +488,7 @@ Authorization: Bearer <token>
 ## 📊 Common Response Formats
 
 ### Success Response
+
 ```json
 {
   "status": "success",
@@ -483,6 +504,7 @@ Authorization: Bearer <token>
 ```
 
 ### Error Response
+
 ```json
 {
   "status": "error",
@@ -505,6 +527,7 @@ Authorization: Bearer <token>
 ## 🚀 Performance Specifications
 
 ### Response Time Targets
+
 - **Authentication**: <50ms
 - **Constitutional Validation**: <100ms
 - **Policy Enforcement**: <25ms
@@ -515,12 +538,14 @@ Authorization: Bearer <token>
 - **Database Optimization**: <30000ms
 
 ### Rate Limiting
+
 - **Standard Users**: 1000 requests/hour
 - **Premium Users**: 10000 requests/hour
 - **Admin Users**: Unlimited
 - **Burst Limit**: 100 requests/minute
 
 ### Pagination
+
 ```http
 GET /api/service/endpoint?page=1&limit=50&sort=created_at&order=desc
 
@@ -541,6 +566,7 @@ Response:
 ## 🔍 Health Checks & Monitoring
 
 ### Health Check Endpoints
+
 ```http
 # Service health check
 GET /health
@@ -564,6 +590,7 @@ Response: {
 ```
 
 ### Metrics Endpoints
+
 ```http
 # Prometheus metrics
 GET /metrics
@@ -577,6 +604,7 @@ Authorization: Bearer <token>
 ## 📚 SDK and Integration
 
 ### Python SDK Example
+
 ```python
 from acgs_client import ACGSClient
 
@@ -599,12 +627,13 @@ print(f"Compliance Score: {result.compliance_score}")
 ```
 
 ### JavaScript SDK Example
+
 ```javascript
 import { ACGSClient } from '@acgs/client';
 
 const client = new ACGSClient({
   baseURL: 'https://api.acgs-1.com',
-  apiKey: 'your_api_key'
+  apiKey: 'your_api_key',
 });
 
 // Authenticate
@@ -614,9 +643,9 @@ const token = await client.auth.login('user@example.com', 'password');
 const synthesis = await client.governanceSynthesis.synthesize({
   principle: {
     title: 'Democratic Participation',
-    description: 'Ensure democratic participation'
+    description: 'Ensure democratic participation',
   },
-  context: { domain: 'voting' }
+  context: { domain: 'voting' },
 });
 
 console.log('Generated Policy:', synthesis.policy_code);
@@ -625,6 +654,7 @@ console.log('Generated Policy:', synthesis.policy_code);
 ## 🎯 Best Practices
 
 ### API Usage Guidelines
+
 1. **Always use HTTPS** for all API communications
 2. **Implement proper error handling** for all API calls
 3. **Use appropriate HTTP methods** (GET, POST, PUT, DELETE)
@@ -633,6 +663,7 @@ console.log('Generated Policy:', synthesis.policy_code);
 6. **Cache responses** where appropriate to reduce API calls
 
 ### Security Best Practices
+
 1. **Store JWT tokens securely** (never in localStorage)
 2. **Implement token refresh logic** before expiration
 3. **Validate all inputs** before sending to API
@@ -645,6 +676,7 @@ console.log('Generated Policy:', synthesis.policy_code);
 The ACGS-1 API provides comprehensive access to constitutional AI governance capabilities with enterprise-grade security, performance, and reliability. The API design follows REST principles with comprehensive documentation, SDKs, and monitoring capabilities to ensure successful integration and operation.
 
 **Key API Features:**
+
 - Comprehensive REST API across 8 core services
 - JWT-based authentication with RBAC
 - Real-time policy enforcement and validation

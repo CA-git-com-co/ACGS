@@ -5,34 +5,41 @@ This directory contains all source code for the AI Compliance Governance System 
 ## Directory Structure
 
 ### `backend/`
+
 Contains all backend microservices and shared modules:
 
 - **`ac_service/`** - Audit & Compliance Service
+
   - Manages AI governance principles and guidelines
   - Handles Constitutional Council operations
   - Provides principle management APIs
 
 - **`auth_service/`** - Authentication Service
+
   - User registration, login, and session management
   - JWT token issuance and validation
   - RBAC (Role-Based Access Control) implementation
 
 - **`fv_service/`** - Formal Verification Service
+
   - Z3 SMT solver integration
   - Policy verification against principles
   - Safety property checking
 
 - **`gs_service/`** - Governance Synthesis Service
+
   - LLM-driven policy synthesis
   - Constitutional prompting
   - Policy generation from principles
 
 - **`integrity_service/`** - Integrity & Verifiability Service
+
   - Policy storage and versioning
   - Audit log management
   - Cryptographic integrity (PGP Assurance)
 
 - **`pgc_service/`** - Protective Governance Controls Service
+
   - Runtime policy enforcement
   - OPA (Open Policy Agent) integration
   - Real-time constraint checking
@@ -43,14 +50,18 @@ Contains all backend microservices and shared modules:
   - Security components
 
 ### `applications/governance-dashboard/`
+
 React-based web application providing:
+
 - User interface for policy management
 - Constitutional Council dashboard
 - Governance workflow visualization
 - Administrative tools
 
 ### `integrations/alphaevolve-engine/`
+
 AlphaEvolve integration engine for:
+
 - Evolutionary computation governance
 - Adaptive policy evolution
 - Constitutional constraint enforcement

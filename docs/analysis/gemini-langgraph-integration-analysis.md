@@ -9,12 +9,14 @@ This analysis examines the `gemini-fullstack-langgraph-quickstart` repository to
 ### 1. LangGraph State Management Architecture
 
 **Pattern**: Hierarchical state management with typed state classes
+
 - `OverallState`: Global state with message accumulation and research tracking
 - `ReflectionState`: Specialized state for knowledge gap analysis
 - `QueryGenerationState`: Focused state for search query management
 - `WebSearchState`: Minimal state for parallel web research tasks
 
 **ACGS-PGP Application**:
+
 - **Constitutional Council Workflows**: Implement similar state management for amendment proposal workflows, voting mechanisms, and democratic governance processes
 - **Policy Synthesis Pipeline**: Create specialized states for AC→GS→FV→PGC pipeline stages
 - **QEC-inspired Enhancement**: Use hierarchical states for constitutional fidelity monitoring and error correction workflows
@@ -22,14 +24,16 @@ This analysis examines the `gemini-fullstack-langgraph-quickstart` repository to
 ### 2. Multi-Model LLM Configuration Strategy
 
 **Pattern**: Model specialization with configurable fallbacks
+
 ```python
 # From configuration.py
 query_generator_model: str = "gemini-2.0-flash"
-reflection_model: str = "gemini-2.5-flash-preview-04-17"  
+reflection_model: str = "gemini-2.5-flash-preview-04-17"
 answer_model: str = "gemini-2.5-pro-preview-05-06"
 ```
 
 **ACGS-PGP Application**:
+
 - **GS Engine Enhancement**: Implement specialized models for different synthesis tasks
   - Constitutional prompting: High-accuracy model (Gemini 2.5 Pro)
   - Policy generation: Fast model (Gemini 2.0 Flash)
@@ -40,6 +44,7 @@ answer_model: str = "gemini-2.5-pro-preview-05-06"
 ### 3. Iterative Refinement with Reflection
 
 **Pattern**: Self-improving research loop with knowledge gap analysis
+
 ```python
 def reflection(state: OverallState, config: RunnableConfig) -> ReflectionState:
     # Analyzes current summary to identify areas for further research
@@ -48,6 +53,7 @@ def reflection(state: OverallState, config: RunnableConfig) -> ReflectionState:
 ```
 
 **ACGS-PGP Application**:
+
 - **Constitutional Council**: Implement iterative amendment refinement based on stakeholder feedback
 - **Policy Synthesis**: Add reflection loops for constitutional compliance checking
 - **QEC Enhancement**: Use reflection patterns for constitutional fidelity monitoring and error correction
@@ -57,6 +63,7 @@ def reflection(state: OverallState, config: RunnableConfig) -> ReflectionState:
 ### 1. Enhanced Constitutional Council Workflows
 
 **Implement LangGraph-based Amendment Processing**:
+
 ```python
 # Proposed structure for ACGS-PGP
 class AmendmentState(TypedDict):
@@ -68,7 +75,7 @@ class AmendmentState(TypedDict):
 
 class ConstitutionalCouncilGraph:
     def propose_amendment(state: AmendmentState) -> AmendmentState
-    def gather_feedback(state: AmendmentState) -> AmendmentState  
+    def gather_feedback(state: AmendmentState) -> AmendmentState
     def analyze_constitutionality(state: AmendmentState) -> AmendmentState
     def refine_proposal(state: AmendmentState) -> AmendmentState
     def conduct_voting(state: AmendmentState) -> AmendmentState
@@ -77,6 +84,7 @@ class ConstitutionalCouncilGraph:
 ### 2. Multi-Model GS Engine Architecture
 
 **Implement Specialized Model Configuration**:
+
 ```python
 # Enhanced GS Engine configuration
 class GSEngineConfiguration(BaseModel):
@@ -91,6 +99,7 @@ class GSEngineConfiguration(BaseModel):
 ### 3. Structured Output Validation
 
 **Pattern**: Pydantic models for LLM output validation
+
 ```python
 class Reflection(BaseModel):
     is_sufficient: bool = Field(description="Whether summaries are sufficient")
@@ -99,6 +108,7 @@ class Reflection(BaseModel):
 ```
 
 **ACGS-PGP Application**:
+
 - **Policy Validation**: Structured output for Rego policy generation
 - **Constitutional Analysis**: Validated output for principle compliance checking
 - **Conflict Resolution**: Structured conflict detection and resolution recommendations
@@ -108,19 +118,21 @@ class Reflection(BaseModel):
 ### 1. Real-time Activity Monitoring
 
 **Pattern**: Event-driven UI updates with activity timeline
+
 ```typescript
 // From App.tsx - real-time event processing
 onUpdateEvent: (event: any) => {
   if (event.generate_query) {
     processedEvent = {
-      title: "Generating Search Queries",
-      data: event.generate_query.query_list.join(", "),
+      title: 'Generating Search Queries',
+      data: event.generate_query.query_list.join(', '),
     };
   }
-}
+};
 ```
 
 **ACGS-PGP Application**:
+
 - **Constitutional Council Dashboard**: Real-time amendment proposal tracking
 - **Policy Pipeline Monitoring**: Live updates for AC→GS→FV→PGC pipeline
 - **QEC Monitoring**: Real-time constitutional fidelity alerts and error correction status
@@ -128,16 +140,27 @@ onUpdateEvent: (event: any) => {
 ### 2. Configurable Effort Levels
 
 **Pattern**: User-configurable processing intensity
+
 ```typescript
 // Effort level configuration
 switch (effort) {
-  case "low": initial_search_query_count = 1; max_research_loops = 1; break;
-  case "medium": initial_search_query_count = 3; max_research_loops = 3; break;
-  case "high": initial_search_query_count = 5; max_research_loops = 10; break;
+  case 'low':
+    initial_search_query_count = 1;
+    max_research_loops = 1;
+    break;
+  case 'medium':
+    initial_search_query_count = 3;
+    max_research_loops = 3;
+    break;
+  case 'high':
+    initial_search_query_count = 5;
+    max_research_loops = 10;
+    break;
 }
 ```
 
 **ACGS-PGP Application**:
+
 - **Policy Synthesis Intensity**: Configurable thoroughness for policy generation
 - **Constitutional Analysis Depth**: Variable analysis intensity based on criticality
 - **WINA Optimization Levels**: Configurable performance vs. accuracy trade-offs
@@ -147,6 +170,7 @@ switch (effort) {
 ### 1. Production-Ready Container Architecture
 
 **Pattern**: Multi-stage builds with health checks
+
 ```yaml
 # From infrastructure/docker/docker-compose.yml
 healthcheck:
@@ -157,6 +181,7 @@ healthcheck:
 ```
 
 **ACGS-PGP Application**:
+
 - **Enhanced Health Checks**: Implement comprehensive service health monitoring
 - **Dependency Management**: Proper service startup ordering with health conditions
 - **Production Scaling**: Redis/PostgreSQL patterns for ACGS-PGP scaling
@@ -164,6 +189,7 @@ healthcheck:
 ### 2. Environment Configuration
 
 **Pattern**: Centralized environment management
+
 ```yaml
 environment:
   GEMINI_API_KEY: ${GEMINI_API_KEY}
@@ -173,6 +199,7 @@ environment:
 ```
 
 **ACGS-PGP Application**:
+
 - **API Key Management**: Centralized configuration for multiple LLM providers
 - **Service Discovery**: Environment-based service URL configuration
 - **Monitoring Integration**: LangSmith-style monitoring for ACGS-PGP
@@ -182,6 +209,7 @@ environment:
 ### 1. Robust Error Handling
 
 **Pattern**: Retry mechanisms with exponential backoff
+
 ```python
 llm = ChatGoogleGenerativeAI(
     model=configurable.query_generator_model,
@@ -192,6 +220,7 @@ llm = ChatGoogleGenerativeAI(
 ```
 
 **ACGS-PGP Application**:
+
 - **LLM Reliability**: Implement retry patterns for >99.9% reliability target
 - **Constitutional Council**: Robust error handling for democratic processes
 - **Policy Pipeline**: Graceful degradation for service failures
@@ -199,12 +228,14 @@ llm = ChatGoogleGenerativeAI(
 ### 2. Structured Validation
 
 **Pattern**: Pydantic-based input/output validation
+
 ```python
 structured_llm = llm.with_structured_output(SearchQueryList)
 result = structured_llm.invoke(formatted_prompt)
 ```
 
 **ACGS-PGP Application**:
+
 - **Policy Validation**: Ensure Rego policy format compliance
 - **Constitutional Compliance**: Validate principle adherence
 - **Cross-service Communication**: Structured API validation
@@ -212,16 +243,19 @@ result = structured_llm.invoke(formatted_prompt)
 ## Immediate Implementation Priorities
 
 ### Phase 1: Constitutional Council Enhancement (TaskMaster Tasks 2-3)
+
 1. Implement LangGraph-based amendment workflow
 2. Add real-time activity monitoring to frontend
 3. Configure multi-model LLM support for democratic processes
 
 ### Phase 2: GS Engine Multi-Model Integration (TaskMaster Tasks 4-6)
+
 1. Implement specialized model configuration
 2. Add iterative refinement with reflection
 3. Enhance structured output validation
 
 ### Phase 3: QEC-inspired Enhancement Integration (TaskMaster Tasks 15-17)
+
 1. Apply LangGraph patterns to constitutional fidelity monitoring
 2. Implement error correction workflows
 3. Add real-time constitutional compliance alerts
@@ -474,6 +508,7 @@ export function ConstitutionalFidelityMonitor() {
 The Gemini-LangGraph quickstart provides excellent patterns for enhancing ACGS-PGP's constitutional governance workflows, multi-model LLM reliability, and real-time monitoring capabilities. The hierarchical state management, specialized model configuration, and iterative refinement patterns directly address current TaskMaster AI priorities while supporting the framework's production readiness goals.
 
 Key immediate actions:
+
 1. Implement LangGraph state management for Constitutional Council workflows
 2. Configure multi-model LLM support in GS Engine
 3. Add real-time activity monitoring to the React frontend

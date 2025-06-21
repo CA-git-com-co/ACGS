@@ -1,291 +1,291 @@
-  # Parallel Job 1: Rust Code Quality & Build
-  rust_quality_build:
-    runs-on: ubuntu-latest
-    name: Rust Quality & Build (Parallel)
-    needs: [preflight, toolchain_setup]
-    if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.rust_changed == 'true'
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+# Parallel Job 1: Rust Code Quality & Build
+rust_quality_build:
+  runs-on: ubuntu-latest
+  name: Rust Quality & Build (Parallel)
+  needs: [preflight, toolchain_setup]
+  if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.rust_changed == 'true'
+  steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
 
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: 1.81.0
-          components: rustfmt, clippy
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: 1.81.0
+        components: rustfmt, clippy
 
-      - name: Restore enterprise Rust cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            blockchain/target/
-            ~/.cargo/.crates.toml
-            ~/.cargo/.crates2.json
-          key: ${{ needs.toolchain_setup.outputs.rust_cache_key }}
-          restore-keys: |
-            ${{ runner.os }}-enterprise-rust-${{ env.SOLANA_CLI_VERSION }}-${{ env.ANCHOR_CLI_VERSION }}-
-            ${{ runner.os }}-enterprise-rust-${{ env.SOLANA_CLI_VERSION }}-
-            ${{ runner.os }}-enterprise-rust-
+    - name: Restore enterprise Rust cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          blockchain/target/
+          ~/.cargo/.crates.toml
+          ~/.cargo/.crates2.json
+        key: ${{ needs.toolchain_setup.outputs.rust_cache_key }}
+        restore-keys: |
+          ${{ runner.os }}-enterprise-rust-${{ env.SOLANA_CLI_VERSION }}-${{ env.ANCHOR_CLI_VERSION }}-
+          ${{ runner.os }}-enterprise-rust-${{ env.SOLANA_CLI_VERSION }}-
+          ${{ runner.os }}-enterprise-rust-
 
-      - name: Parallel Rust quality checks
-        working-directory: blockchain
-        run: |
-          echo "🔍 Running parallel Rust quality checks..."
-          
-          # Run format check in background
-          (cargo fmt --all -- --check && echo "✅ Format check passed") &
-          FORMAT_PID=$!
-          
-          # Run clippy in background  
-          (cargo clippy --all-targets --all-features -- -D warnings && echo "✅ Clippy check passed") &
-          CLIPPY_PID=$!
-          
-          # Wait for both to complete
-          wait $FORMAT_PID
-          FORMAT_RESULT=$?
-          
-          wait $CLIPPY_PID
-          CLIPPY_RESULT=$?
-          
-          if [ $FORMAT_RESULT -eq 0 ] && [ $CLIPPY_RESULT -eq 0 ]; then
-            echo "✅ All Rust quality checks passed"
-          else
-            echo "❌ Some Rust quality checks failed"
+    - name: Parallel Rust quality checks
+      working-directory: blockchain
+      run: |
+        echo "🔍 Running parallel Rust quality checks..."
+
+        # Run format check in background
+        (cargo fmt --all -- --check && echo "✅ Format check passed") &
+        FORMAT_PID=$!
+
+        # Run clippy in background  
+        (cargo clippy --all-targets --all-features -- -D warnings && echo "✅ Clippy check passed") &
+        CLIPPY_PID=$!
+
+        # Wait for both to complete
+        wait $FORMAT_PID
+        FORMAT_RESULT=$?
+
+        wait $CLIPPY_PID
+        CLIPPY_RESULT=$?
+
+        if [ $FORMAT_RESULT -eq 0 ] && [ $CLIPPY_RESULT -eq 0 ]; then
+          echo "✅ All Rust quality checks passed"
+        else
+          echo "❌ Some Rust quality checks failed"
+          exit 1
+        fi
+
+    - name: Enterprise Anchor build with optimization
+      working-directory: blockchain
+      run: |
+        echo "🏗️ Building Anchor programs with enterprise optimizations..."
+
+        # Configure Solana for local development
+        solana config set --url localhost
+
+        # Build with optimizations for faster subsequent builds
+        RUST_LOG=error anchor build --skip-lint
+
+        echo "✅ Anchor build completed successfully"
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: anchor-build-artifacts
+        path: |
+          blockchain/target/deploy/
+          blockchain/target/idl/
+        retention-days: 7
+
+# Parallel Job 2: Anchor Testing with Infrastructure Automation
+anchor_testing:
+  runs-on: ubuntu-latest
+  name: Anchor Testing (Parallel)
+  needs: [preflight, toolchain_setup, rust_quality_build]
+  if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.rust_changed == 'true'
+  steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: 1.81.0
+
+    - name: Restore enterprise Rust cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          blockchain/target/
+        key: ${{ needs.toolchain_setup.outputs.rust_cache_key }}
+
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: anchor-build-artifacts
+        path: blockchain/target/
+
+    - name: Enterprise Solana test environment setup
+      run: |
+        echo "🔧 Setting up enterprise Solana test environment..."
+
+        # Install Solana CLI (cached from toolchain_setup)
+        export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+
+        # Create test keypair with proper permissions
+        mkdir -p "$HOME/.config/solana"
+        if [ ! -f "$HOME/.config/solana/id.json" ]; then
+          solana-keygen new --no-bip39-passphrase --silent --outfile "$HOME/.config/solana/id.json"
+          echo "✅ Test keypair created"
+        else
+          echo "✅ Test keypair already exists"
+        fi
+
+        # Validate keypair
+        if solana-keygen verify "$HOME/.config/solana/id.json" > /dev/null 2>&1; then
+          echo "✅ Keypair validation successful"
+        else
+          echo "❌ Keypair validation failed"
+          exit 1
+        fi
+
+        # Configure Solana CLI
+        solana config set --url localhost --keypair "$HOME/.config/solana/id.json"
+
+        echo "✅ Enterprise test environment setup completed"
+
+    - name: Install Anchor CLI and Node.js dependencies
+      run: |
+        # Install Anchor CLI
+        npm install -g @coral-xyz/anchor-cli@${{ env.ANCHOR_CLI_VERSION }}
+
+        # Install Node.js dependencies
+        cd blockchain && npm ci
+
+    - name: Enterprise Anchor testing with reliability improvements
+      working-directory: blockchain
+      run: |
+        echo "🧪 Running enterprise Anchor tests with reliability improvements..."
+
+        # Start local validator with enhanced configuration
+        echo "🚀 Starting Solana test validator..."
+        solana-test-validator \
+          --reset \
+          --quiet \
+          --ledger /tmp/test-ledger \
+          --bind-address 127.0.0.1 \
+          --rpc-port 8899 \
+          --faucet-port 9900 &
+        VALIDATOR_PID=$!
+
+        # Enhanced validator readiness check
+        echo "⏳ Waiting for validator to be ready..."
+        for i in {1..30}; do
+          if solana cluster-version >/dev/null 2>&1; then
+            echo "✅ Validator is ready after ${i} seconds"
+            break
+          fi
+          if [ $i -eq 30 ]; then
+            echo "❌ Validator failed to start within 30 seconds"
+            kill $VALIDATOR_PID || true
             exit 1
           fi
+          sleep 1
+        done
 
-      - name: Enterprise Anchor build with optimization
-        working-directory: blockchain
-        run: |
-          echo "🏗️ Building Anchor programs with enterprise optimizations..."
-          
-          # Configure Solana for local development
-          solana config set --url localhost
-          
-          # Build with optimizations for faster subsequent builds
-          RUST_LOG=error anchor build --skip-lint
-          
-          echo "✅ Anchor build completed successfully"
+        # Airdrop SOL for testing
+        solana airdrop 10 --url localhost || echo "⚠️ Airdrop failed, continuing..."
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: anchor-build-artifacts
-          path: |
-            blockchain/target/deploy/
-            blockchain/target/idl/
-          retention-days: 7
+        # Run tests with proper error handling
+        echo "🧪 Executing Anchor tests..."
+        TEST_RESULT=0
+        anchor test --skip-local-validator || TEST_RESULT=$?
 
-  # Parallel Job 2: Anchor Testing with Infrastructure Automation
-  anchor_testing:
-    runs-on: ubuntu-latest
-    name: Anchor Testing (Parallel)
-    needs: [preflight, toolchain_setup, rust_quality_build]
-    if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.rust_changed == 'true'
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+        # Enhanced cleanup
+        echo "🧹 Cleaning up test environment..."
+        kill $VALIDATOR_PID || true
+        sleep 2
+        pkill -f "solana-test-validator" || true
+        rm -rf /tmp/test-ledger || true
 
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: 1.81.0
+        # Report results
+        if [ $TEST_RESULT -eq 0 ]; then
+          echo "✅ All Anchor tests passed successfully"
+        else
+          echo "❌ Some Anchor tests failed (exit code: $TEST_RESULT)"
+          exit $TEST_RESULT
+        fi
 
-      - name: Restore enterprise Rust cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            blockchain/target/
-          key: ${{ needs.toolchain_setup.outputs.rust_cache_key }}
+# Parallel Job 3: Enterprise Security Scanning
+enterprise_security_scan:
+  runs-on: ubuntu-latest
+  name: Enterprise Security Scanning (Parallel)
+  needs: [preflight, toolchain_setup]
+  if: needs.preflight.outputs.should_run_tests == 'true'
+  steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: anchor-build-artifacts
-          path: blockchain/target/
+    - name: Install Rust for security tools
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: 1.81.0
+        components: rustfmt, clippy
 
-      - name: Enterprise Solana test environment setup
-        run: |
-          echo "🔧 Setting up enterprise Solana test environment..."
-          
-          # Install Solana CLI (cached from toolchain_setup)
-          export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
-          
-          # Create test keypair with proper permissions
-          mkdir -p "$HOME/.config/solana"
-          if [ ! -f "$HOME/.config/solana/id.json" ]; then
-            solana-keygen new --no-bip39-passphrase --silent --outfile "$HOME/.config/solana/id.json"
-            echo "✅ Test keypair created"
-          else
-            echo "✅ Test keypair already exists"
-          fi
-          
-          # Validate keypair
-          if solana-keygen verify "$HOME/.config/solana/id.json" > /dev/null 2>&1; then
-            echo "✅ Keypair validation successful"
-          else
-            echo "❌ Keypair validation failed"
-            exit 1
-          fi
-          
-          # Configure Solana CLI
-          solana config set --url localhost --keypair "$HOME/.config/solana/id.json"
-          
-          echo "✅ Enterprise test environment setup completed"
+    - name: Restore enterprise Rust cache for security tools
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+        key: ${{ needs.toolchain_setup.outputs.rust_cache_key }}-security
+        restore-keys: |
+          ${{ runner.os }}-enterprise-rust-${{ env.SOLANA_CLI_VERSION }}-${{ env.ANCHOR_CLI_VERSION }}-
+          ${{ runner.os }}-enterprise-rust-
 
-      - name: Install Anchor CLI and Node.js dependencies
-        run: |
-          # Install Anchor CLI
-          npm install -g @coral-xyz/anchor-cli@${{ env.ANCHOR_CLI_VERSION }}
-          
-          # Install Node.js dependencies
-          cd blockchain && npm ci
+    - name: Install enterprise security tools with parallel execution
+      run: |
+        echo "🔧 Installing enterprise security tools with parallel execution..."
 
-      - name: Enterprise Anchor testing with reliability improvements
-        working-directory: blockchain
-        run: |
-          echo "🧪 Running enterprise Anchor tests with reliability improvements..."
-          
-          # Start local validator with enhanced configuration
-          echo "🚀 Starting Solana test validator..."
-          solana-test-validator \
-            --reset \
-            --quiet \
-            --ledger /tmp/test-ledger \
-            --bind-address 127.0.0.1 \
-            --rpc-port 8899 \
-            --faucet-port 9900 &
-          VALIDATOR_PID=$!
-          
-          # Enhanced validator readiness check
-          echo "⏳ Waiting for validator to be ready..."
-          for i in {1..30}; do
-            if solana cluster-version >/dev/null 2>&1; then
-              echo "✅ Validator is ready after ${i} seconds"
-              break
+        # Install cargo-audit in background
+        install_cargo_audit() {
+          echo "Installing cargo-audit v0.21.1..."
+          for attempt in 1 2 3; do
+            if cargo install cargo-audit --version 0.21.1 --locked; then
+              echo "✅ cargo-audit installed successfully"
+              return 0
             fi
-            if [ $i -eq 30 ]; then
-              echo "❌ Validator failed to start within 30 seconds"
-              kill $VALIDATOR_PID || true
-              exit 1
-            fi
-            sleep 1
+            [ $attempt -lt 3 ] && sleep 10
           done
-          
-          # Airdrop SOL for testing
-          solana airdrop 10 --url localhost || echo "⚠️ Airdrop failed, continuing..."
-          
-          # Run tests with proper error handling
-          echo "🧪 Executing Anchor tests..."
-          TEST_RESULT=0
-          anchor test --skip-local-validator || TEST_RESULT=$?
-          
-          # Enhanced cleanup
-          echo "🧹 Cleaning up test environment..."
-          kill $VALIDATOR_PID || true
-          sleep 2
-          pkill -f "solana-test-validator" || true
-          rm -rf /tmp/test-ledger || true
-          
-          # Report results
-          if [ $TEST_RESULT -eq 0 ]; then
-            echo "✅ All Anchor tests passed successfully"
-          else
-            echo "❌ Some Anchor tests failed (exit code: $TEST_RESULT)"
-            exit $TEST_RESULT
-          fi
+          echo "❌ cargo-audit installation failed"
+          return 1
+        }
 
-  # Parallel Job 3: Enterprise Security Scanning
-  enterprise_security_scan:
-    runs-on: ubuntu-latest
-    name: Enterprise Security Scanning (Parallel)
-    needs: [preflight, toolchain_setup]
-    if: needs.preflight.outputs.should_run_tests == 'true'
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+        # Install cargo-deny in background
+        install_cargo_deny() {
+          echo "Installing cargo-deny v0.17.0..."
+          for attempt in 1 2 3; do
+            if cargo install cargo-deny --version 0.17.0 --locked; then
+              echo "✅ cargo-deny installed successfully"
+              return 0
+            fi
+            [ $attempt -lt 3 ] && sleep 10
+          done
+          echo "❌ cargo-deny installation failed"
+          return 1
+        }
 
-      - name: Install Rust for security tools
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: 1.81.0
-          components: rustfmt, clippy
+        # Run installations in parallel
+        install_cargo_audit &
+        AUDIT_PID=$!
+        install_cargo_deny &
+        DENY_PID=$!
 
-      - name: Restore enterprise Rust cache for security tools
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-          key: ${{ needs.toolchain_setup.outputs.rust_cache_key }}-security
-          restore-keys: |
-            ${{ runner.os }}-enterprise-rust-${{ env.SOLANA_CLI_VERSION }}-${{ env.ANCHOR_CLI_VERSION }}-
-            ${{ runner.os }}-enterprise-rust-
+        # Wait for both installations
+        wait $AUDIT_PID
+        AUDIT_RESULT=$?
+        wait $DENY_PID
+        DENY_RESULT=$?
 
-      - name: Install enterprise security tools with parallel execution
-        run: |
-          echo "🔧 Installing enterprise security tools with parallel execution..."
+        # Verify installations
+        echo "✅ Verifying installed security tools:"
+        if command -v cargo-audit >/dev/null 2>&1; then
+          cargo audit --version
+        else
+          echo "⚠️ cargo-audit not available"
+        fi
 
-          # Install cargo-audit in background
-          install_cargo_audit() {
-            echo "Installing cargo-audit v0.21.1..."
-            for attempt in 1 2 3; do
-              if cargo install cargo-audit --version 0.21.1 --locked; then
-                echo "✅ cargo-audit installed successfully"
-                return 0
-              fi
-              [ $attempt -lt 3 ] && sleep 10
-            done
-            echo "❌ cargo-audit installation failed"
-            return 1
-          }
-
-          # Install cargo-deny in background
-          install_cargo_deny() {
-            echo "Installing cargo-deny v0.17.0..."
-            for attempt in 1 2 3; do
-              if cargo install cargo-deny --version 0.17.0 --locked; then
-                echo "✅ cargo-deny installed successfully"
-                return 0
-              fi
-              [ $attempt -lt 3 ] && sleep 10
-            done
-            echo "❌ cargo-deny installation failed"
-            return 1
-          }
-
-          # Run installations in parallel
-          install_cargo_audit &
-          AUDIT_PID=$!
-          install_cargo_deny &
-          DENY_PID=$!
-
-          # Wait for both installations
-          wait $AUDIT_PID
-          AUDIT_RESULT=$?
-          wait $DENY_PID
-          DENY_RESULT=$?
-
-          # Verify installations
-          echo "✅ Verifying installed security tools:"
-          if command -v cargo-audit >/dev/null 2>&1; then
-            cargo audit --version
-          else
-            echo "⚠️ cargo-audit not available"
-          fi
-
-          if command -v cargo-deny >/dev/null 2>&1; then
-            cargo deny --version
-          else
-            echo "⚠️ cargo-deny not available"
-          fi
+        if command -v cargo-deny >/dev/null 2>&1; then
+          cargo deny --version
+        else
+          echo "⚠️ cargo-deny not available"
+        fi

@@ -19,12 +19,14 @@ The ACGS-1 security scanning framework provides multi-layered security validatio
 **Workflow**: `.github/workflows/security-scanning.yml`
 
 **Triggers**:
+
 - Push to main/master/develop branches
 - Pull requests
 - Weekly scheduled scan (Monday 3 AM UTC)
 - Manual dispatch
 
 **Components**:
+
 - Dependency vulnerability scanning (Python, Node.js, Rust)
 - Static code analysis (Bandit, Semgrep, custom patterns)
 - Container security scanning (Trivy, Docker best practices)
@@ -35,10 +37,12 @@ The ACGS-1 security scanning framework provides multi-layered security validatio
 **Workflow**: `.github/workflows/dependency-monitoring.yml`
 
 **Triggers**:
+
 - Daily at 6 AM UTC
 - Manual dispatch with configurable alert levels
 
 **Features**:
+
 - Continuous monitoring of all dependency ecosystems
 - Automatic issue creation for new vulnerabilities
 - Trend analysis and reporting
@@ -49,16 +53,19 @@ The ACGS-1 security scanning framework provides multi-layered security validatio
 ### Dependency Scanning Tools
 
 #### Python Dependencies
+
 - **Safety**: Database of known security vulnerabilities
 - **pip-audit**: OSV database vulnerability scanner
 - **Configuration**: Zero-tolerance for high/critical vulnerabilities
 
 #### Node.js Dependencies
+
 - **npm audit**: Built-in vulnerability scanner
 - **audit-ci**: CI-friendly audit tool
 - **Configuration**: Configurable severity thresholds
 
 #### Rust Dependencies
+
 - **cargo-audit**: RustSec Advisory Database scanner
 - **cargo-deny**: License and security policy enforcement
 - **Configuration**: Solana ecosystem exceptions documented
@@ -66,6 +73,7 @@ The ACGS-1 security scanning framework provides multi-layered security validatio
 ### Static Code Analysis
 
 #### Multi-Language Analysis
+
 - **Semgrep**: Rule-based static analysis
   - Security audit rules
   - OWASP Top 10 patterns
@@ -73,12 +81,14 @@ The ACGS-1 security scanning framework provides multi-layered security validatio
   - Custom security patterns
 
 #### Python-Specific
+
 - **Bandit**: Security linter for Python
   - Hardcoded password detection
   - SQL injection patterns
   - Insecure random number generation
 
 #### Custom Security Patterns
+
 - Hardcoded secrets detection
 - SQL injection vulnerability patterns
 - XSS vulnerability patterns
@@ -87,6 +97,7 @@ The ACGS-1 security scanning framework provides multi-layered security validatio
 ### Container Security
 
 #### Image Scanning
+
 - **Trivy**: Comprehensive vulnerability scanner
   - OS package vulnerabilities
   - Language-specific vulnerabilities
@@ -94,6 +105,7 @@ The ACGS-1 security scanning framework provides multi-layered security validatio
   - Secret detection
 
 #### Docker Security Best Practices
+
 - USER instruction enforcement
 - Latest tag prohibition
 - Health check requirements
@@ -102,6 +114,7 @@ The ACGS-1 security scanning framework provides multi-layered security validatio
 ### Infrastructure Security
 
 #### Kubernetes Security
+
 - **Checkov**: Infrastructure as code scanner
 - **kube-score**: Kubernetes object analysis
 - Security context requirements
@@ -109,6 +122,7 @@ The ACGS-1 security scanning framework provides multi-layered security validatio
 - Pod security standards
 
 #### Terraform Security
+
 - **tfsec**: Terraform security scanner
 - Encryption requirements
 - Public access restrictions
@@ -154,18 +168,21 @@ Security settings are centralized in `config/security/security-config.yml`:
 ### Environment-Specific Security
 
 #### Development
+
 - Relaxed security for productivity
 - Debug endpoints enabled
 - Lower vulnerability thresholds
 - Basic monitoring
 
 #### Staging
+
 - Production-like security
 - Full monitoring stack
 - Medium vulnerability thresholds
 - Security testing integration
 
 #### Production
+
 - Maximum security configuration
 - Zero-tolerance for critical vulnerabilities
 - Comprehensive monitoring and alerting
@@ -210,12 +227,14 @@ The security scanning framework supports:
 ### Security Reporting
 
 #### Automated Reports
+
 - Daily vulnerability monitoring reports
 - Weekly comprehensive security scans
 - Monthly security posture assessments
 - Quarterly compliance reports
 
 #### Report Formats
+
 - JSON for automated processing
 - SARIF for GitHub Security integration
 - PDF for executive summaries
@@ -226,6 +245,7 @@ The security scanning framework supports:
 ### Pull Request Security Checks
 
 All pull requests trigger:
+
 - Dependency vulnerability scanning
 - Static code analysis
 - Container security validation
@@ -234,6 +254,7 @@ All pull requests trigger:
 ### Deployment Gates
 
 Security scanning results are integrated into deployment gates:
+
 - Development: Basic security checks
 - Staging: Comprehensive security validation
 - Production: Zero-tolerance security enforcement
@@ -241,6 +262,7 @@ Security scanning results are integrated into deployment gates:
 ### Security Artifacts
 
 Security scan results are preserved as artifacts:
+
 - SARIF files for GitHub Security tab
 - JSON reports for automated processing
 - Detailed logs for investigation

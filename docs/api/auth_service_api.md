@@ -17,11 +17,13 @@ Handles authentication, authorization, and user management with JWT tokens and R
 ## 📋 API Endpoints
 
 ### Health Check
+
 ```http
 GET /health
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": "healthy",
@@ -36,6 +38,7 @@ GET /health
 ```
 
 **Error Response (503 Service Unavailable):**
+
 ```json
 {
   "status": "unhealthy",
@@ -47,9 +50,11 @@ GET /health
 ### Authentication Endpoints
 
 #### POST /auth/register
+
 Register a new user account.
 
 **Request:**
+
 ```json
 {
   "username": "string",
@@ -61,6 +66,7 @@ Register a new user account.
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "id": 1,
@@ -74,9 +80,11 @@ Register a new user account.
 ```
 
 #### POST /auth/token (Login)
+
 Authenticate user and receive JWT tokens.
 
 **Request:**
+
 ```json
 {
   "username": "string",
@@ -85,6 +93,7 @@ Authenticate user and receive JWT tokens.
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
@@ -94,9 +103,11 @@ Authenticate user and receive JWT tokens.
 ```
 
 #### POST /auth/token/refresh
+
 Refresh JWT access token using refresh token cookie.
 
 **Response (200 OK):**
+
 ```json
 {
   "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
@@ -106,9 +117,11 @@ Refresh JWT access token using refresh token cookie.
 ```
 
 #### POST /auth/logout
+
 Logout user and revoke tokens.
 
 **Response (200 OK):**
+
 ```json
 {
   "message": "Logout successful"
@@ -116,9 +129,11 @@ Logout user and revoke tokens.
 ```
 
 #### GET /auth/me
+
 Get current user profile (requires authentication).
 
 **Response (200 OK):**
+
 ```json
 {
   "id": 1,
@@ -132,6 +147,7 @@ Get current user profile (requires authentication).
 ```
 
 #### Service-Specific Features
+
 - JWT token authentication with refresh tokens
 - HttpOnly cookie-based token storage
 - CSRF protection
@@ -140,10 +156,10 @@ Get current user profile (requires authentication).
 - OAuth 2.0 and OpenID Connect integration
 - API key management
 
-
 ## 🔧 Error Handling
 
 ### Standard Error Codes
+
 - **400 Bad Request:** Invalid input parameters
 - **401 Unauthorized:** Authentication required
 - **403 Forbidden:** Insufficient permissions
@@ -153,6 +169,7 @@ Get current user profile (requires authentication).
 - **503 Service Unavailable:** Service temporarily unavailable
 
 ### Error Response Format
+
 ```json
 {
   "error": {
@@ -178,11 +195,13 @@ Get current user profile (requires authentication).
 ## 🔐 Authentication
 
 ### JWT Token Authentication
+
 ```http
 Authorization: Bearer <jwt_token>
 ```
 
 ### API Key Authentication (Optional)
+
 ```http
 X-API-Key: <api_key>
 ```

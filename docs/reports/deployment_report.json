@@ -7,7 +7,5 @@
     "pip_available": true,
     "directories_created": true
   },
-  "issues": [
-    "Alembic not configured"
-  ]
+  "issues": ["Alembic not configured"]
 }

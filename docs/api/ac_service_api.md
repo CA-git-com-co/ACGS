@@ -17,11 +17,13 @@ Advanced constitutional compliance validation with formal verification and real-
 ## 📋 API Endpoints
 
 ### Health Check
+
 ```http
 GET /health
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": "healthy",
@@ -36,6 +38,7 @@ GET /health
 ```
 
 **Error Response (503 Service Unavailable):**
+
 ```json
 {
   "status": "unhealthy",
@@ -47,9 +50,11 @@ GET /health
 ### Core Endpoints
 
 #### GET /api/v1/status
+
 Get detailed service status and capabilities.
 
 **Response (200 OK):**
+
 ```json
 {
   "api_version": "v1",
@@ -77,9 +82,11 @@ Get detailed service status and capabilities.
 ### Constitutional Validation
 
 #### POST /api/v1/constitutional/validate
+
 Enhanced constitutional compliance validation.
 
 **Request:**
+
 ```json
 {
   "policy": {
@@ -93,6 +100,7 @@ Enhanced constitutional compliance validation.
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "validation_id": "VAL-1234567890",
@@ -116,9 +124,11 @@ Enhanced constitutional compliance validation.
 ```
 
 #### GET /api/v1/constitutional/rules
+
 Get constitutional rules for governance validation.
 
 **Response (200 OK):**
+
 ```json
 {
   "rules": [
@@ -140,9 +150,11 @@ Get constitutional rules for governance validation.
 ```
 
 #### POST /api/v1/constitutional/analyze
+
 Analyze constitutional impact of proposed policy changes.
 
 **Request:**
+
 ```json
 {
   "changes": [
@@ -157,6 +169,7 @@ Analyze constitutional impact of proposed policy changes.
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "analysis_id": "IMPACT-1234567890",
@@ -182,12 +195,15 @@ Analyze constitutional impact of proposed policy changes.
 ### Collective Constitutional AI
 
 #### POST /api/v1/ccai/conversations
+
 Create a new Polis conversation for democratic deliberation.
 
 #### POST /api/v1/ccai/bias-evaluation
+
 Evaluate bias in constitutional principles.
 
 #### Service-Specific Features
+
 - Advanced constitutional compliance algorithms
 - Formal verification integration with FV service
 - Real-time constitutional violation detection
@@ -197,10 +213,10 @@ Evaluate bias in constitutional principles.
 - Democratic principle sourcing via Polis integration
 - Multi-dimensional bias evaluation
 
-
 ## 🔧 Error Handling
 
 ### Standard Error Codes
+
 - **400 Bad Request:** Invalid input parameters
 - **401 Unauthorized:** Authentication required
 - **403 Forbidden:** Insufficient permissions
@@ -210,6 +226,7 @@ Evaluate bias in constitutional principles.
 - **503 Service Unavailable:** Service temporarily unavailable
 
 ### Error Response Format
+
 ```json
 {
   "error": {
@@ -235,11 +252,13 @@ Evaluate bias in constitutional principles.
 ## 🔐 Authentication
 
 ### JWT Token Authentication
+
 ```http
 Authorization: Bearer <jwt_token>
 ```
 
 ### API Key Authentication (Optional)
+
 ```http
 X-API-Key: <api_key>
 ```

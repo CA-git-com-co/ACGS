@@ -15,11 +15,11 @@ interface ProtectedComponentOptions {
 
 /**
  * Composite HOC that combines auth, loading, and error boundary functionality
- * 
+ *
  * @param WrappedComponent - Component to wrap
  * @param options - Configuration for each HOC layer
  * @returns Component with auth, loading, and error boundary protection
- * 
+ *
  * @example
  * ```typescript
  * const ProtectedAdminPanel = withProtectedComponent(AdminPanel, {
@@ -188,18 +188,13 @@ export const withECProtection = withServiceProtection(
 /**
  * Utility function to create domain-specific protection HOCs
  */
-export function createDomainProtection<P extends object>(
-  domain: {
-    serviceName: ServiceType;
-    serviceUrl?: string;
-    defaultRoles?: string | string[];
-    defaultPermissions?: string | string[];
-  }
-) {
-  return (
-    WrappedComponent: React.ComponentType<P>,
-    options: ProtectedComponentOptions = {}
-  ) => {
+export function createDomainProtection<P extends object>(domain: {
+  serviceName: ServiceType;
+  serviceUrl?: string;
+  defaultRoles?: string | string[];
+  defaultPermissions?: string | string[];
+}) {
+  return (WrappedComponent: React.ComponentType<P>, options: ProtectedComponentOptions = {}) => {
     const mergedOptions: ProtectedComponentOptions = {
       auth: {
         requiredRoles: domain.defaultRoles,
@@ -253,9 +248,7 @@ export const withAnalyticsProtection = createDomainProtection({
 /**
  * HOC for public components that still need error boundaries
  */
-export function withPublicProtection<P extends object>(
-  WrappedComponent: React.ComponentType<P>
-) {
+export function withPublicProtection<P extends object>(WrappedComponent: React.ComponentType<P>) {
   return withProtectedComponent(WrappedComponent, {
     auth: { showLoadingDuringCheck: false },
     loading: { minLoadingTime: 200 },

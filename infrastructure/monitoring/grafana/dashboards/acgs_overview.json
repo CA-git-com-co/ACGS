@@ -2,10 +2,7 @@
   "dashboard": {
     "id": null,
     "title": "ACGS-1 System Overview",
-    "tags": [
-      "acgs",
-      "overview"
-    ],
+    "tags": ["acgs", "overview"],
     "timezone": "browser",
     "panels": [
       {

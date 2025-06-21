@@ -2,8 +2,8 @@ authentication:
   enabled: true
   jwt_validation: true
   public_endpoints:
-  - /health
-  - /api/v1/policies/public
+    - /health
+    - /api/v1/policies/public
   service_auth: true
 authorization:
   permission_checking: true

@@ -1,17 +1,17 @@
 /**
  * Performance Dashboard Component
- * 
+ *
  * Real-time dashboard for monitoring application performance metrics,
  * baseline comparisons, and migration impact analysis.
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  performanceMetrics, 
-  PerformanceBaseline, 
-  PerformanceMetric, 
+import {
+  performanceMetrics,
+  PerformanceBaseline,
+  PerformanceMetric,
   PerformanceSummary,
-  PerformanceComparison 
+  PerformanceComparison
 } from '../../services/performanceMetrics';
 
 // Performance metric card component
@@ -47,11 +47,13 @@ const MetricCard: React.FC<{
         <div>
           <h3 className="text-sm font-medium text-gray-700">{title}</h3>
           <div className={`text-2xl font-bold ${statusColor}`}>
-            {value.toFixed(value < 10 ? 2 : 0)}{unit}
+            {value.toFixed(value < 10 ? 2 : 0)}
+            {unit}
           </div>
           {threshold && (
             <div className="text-xs text-gray-500 mt-1">
-              Threshold: {threshold}{unit}
+              Threshold: {threshold}
+              {unit}
             </div>
           )}
         </div>
@@ -59,14 +61,16 @@ const MetricCard: React.FC<{
           {getTrendIcon()}
           {!isGood && (
             <svg className="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
             </svg>
           )}
         </div>
       </div>
-      {description && (
-        <div className="text-xs text-gray-600 mt-2">{description}</div>
-      )}
+      {description && <div className="text-xs text-gray-600 mt-2">{description}</div>}
     </div>
   );
 };
@@ -124,33 +128,37 @@ const WebVitals: React.FC<{ summary: PerformanceSummary }> = ({ summary }) => {
 };
 
 // Performance comparison component
-const PerformanceComparison: React.FC<{ comparison: PerformanceComparison | null }> = ({ 
-  comparison 
+const PerformanceComparison: React.FC<{ comparison: PerformanceComparison | null }> = ({
+  comparison
 }) => {
   if (!comparison) {
     return (
       <div className="bg-white p-6 rounded-lg shadow-sm border">
         <h2 className="text-xl font-semibold mb-4">Performance Comparison</h2>
-        <div className="text-center text-gray-500 py-8">
-          No baseline available for comparison
-        </div>
+        <div className="text-center text-gray-500 py-8">No baseline available for comparison</div>
       </div>
     );
   }
 
   const getImprovementColor = (status: string) => {
     switch (status) {
-      case 'improved': return 'text-green-600';
-      case 'degraded': return 'text-red-600';
-      default: return 'text-gray-600';
+      case 'improved':
+        return 'text-green-600';
+      case 'degraded':
+        return 'text-red-600';
+      default:
+        return 'text-gray-600';
     }
   };
 
   const getImprovementIcon = (status: string) => {
     switch (status) {
-      case 'improved': return '↗';
-      case 'degraded': return '↘';
-      default: return '→';
+      case 'improved':
+        return '↗';
+      case 'degraded':
+        return '↘';
+      default:
+        return '→';
     }
   };
 
@@ -158,15 +166,16 @@ const PerformanceComparison: React.FC<{ comparison: PerformanceComparison | null
     <div className="bg-white p-6 rounded-lg shadow-sm border">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Performance Comparison</h2>
-        <div className="text-sm text-gray-600">
-          vs. {comparison.baseline.name}
-        </div>
+        <div className="text-sm text-gray-600">vs. {comparison.baseline.name}</div>
       </div>
-      
+
       <div className="mb-4 p-4 bg-gray-50 rounded-lg">
         <div className="text-center">
-          <div className={`text-3xl font-bold ${comparison.overallScore > 0 ? 'text-green-600' : 'text-red-600'}`}>
-            {comparison.overallScore > 0 ? '+' : ''}{comparison.overallScore.toFixed(1)}%
+          <div
+            className={`text-3xl font-bold ${comparison.overallScore > 0 ? 'text-green-600' : 'text-red-600'}`}
+          >
+            {comparison.overallScore > 0 ? '+' : ''}
+            {comparison.overallScore.toFixed(1)}%
           </div>
           <div className="text-sm text-gray-600">Overall Performance Change</div>
         </div>
@@ -174,7 +183,10 @@ const PerformanceComparison: React.FC<{ comparison: PerformanceComparison | null
 
       <div className="space-y-3">
         {Object.entries(comparison.improvements).map(([metric, data]) => (
-          <div key={metric} className="flex justify-between items-center py-2 border-b border-gray-100">
+          <div
+            key={metric}
+            className="flex justify-between items-center py-2 border-b border-gray-100"
+          >
             <div className="flex-1">
               <div className="font-medium text-gray-900">
                 {metric.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
@@ -187,9 +199,7 @@ const PerformanceComparison: React.FC<{ comparison: PerformanceComparison | null
               <div className="font-medium">
                 {getImprovementIcon(data.status)} {Math.abs(data.percentage).toFixed(1)}%
               </div>
-              <div className="text-xs">
-                {data.status}
-              </div>
+              <div className="text-xs">{data.status}</div>
             </div>
           </div>
         ))}
@@ -234,7 +244,7 @@ const BaselineManagement: React.FC<{
             <input
               type="text"
               value={newBaselineName}
-              onChange={(e) => setNewBaselineName(e.target.value)}
+              onChange={e => setNewBaselineName(e.target.value)}
               placeholder="Baseline name (e.g., 'Pre-migration', 'Post-optimization')"
               className="flex-1 px-3 py-2 border rounded-md"
             />
@@ -256,9 +266,7 @@ const BaselineManagement: React.FC<{
 
       <div className="space-y-2">
         {baselines.length === 0 ? (
-          <div className="text-center text-gray-500 py-4">
-            No baselines created yet
-          </div>
+          <div className="text-center text-gray-500 py-4">No baselines created yet</div>
         ) : (
           baselines.map(baseline => (
             <div
@@ -362,7 +370,7 @@ export const PerformanceDashboard: React.FC = () => {
     try {
       const baseline = await performanceMetrics.collectBaseline(name);
       setBaselines(prev => [baseline, ...prev]);
-      
+
       // Auto-select the new baseline
       setSelectedBaselineId(baseline.id);
     } catch (error) {

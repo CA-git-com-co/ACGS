@@ -5,7 +5,12 @@ import { AuthContext } from '../../contexts/AuthContext';
 import ACService from '../../services/ACService';
 import GSService from '../../services/GSService';
 import ComplianceChecker from '../../components/ComplianceChecker';
-import { createMockUser, createMockPrinciple, createMockPolicy, mockServiceResponses } from '../../setupTests';
+import {
+  createMockUser,
+  createMockPrinciple,
+  createMockPolicy,
+  mockServiceResponses
+} from '../../setupTests';
 
 // Mock the services
 jest.mock('../../services/ACService');
@@ -15,9 +20,9 @@ const MockedACService = ACService as jest.Mocked<typeof ACService>;
 const MockedGSService = GSService as jest.Mocked<typeof GSService>;
 
 // Mock AuthContext Provider
-const MockAuthProvider: React.FC<{ children: React.ReactNode; user?: any }> = ({ 
-  children, 
-  user = createMockUser() 
+const MockAuthProvider: React.FC<{ children: React.ReactNode; user?: any }> = ({
+  children,
+  user = createMockUser()
 }) => {
   const authValue = {
     currentUser: user,
@@ -28,26 +33,22 @@ const MockAuthProvider: React.FC<{ children: React.ReactNode; user?: any }> = ({
     refreshToken: jest.fn()
   };
 
-  return (
-    <AuthContext.Provider value={authValue}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={authValue}>{children}</AuthContext.Provider>;
 };
 
 describe('Service Integration Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Setup default mock responses
     MockedACService.getPrinciples.mockResolvedValue({
       principles: [createMockPrinciple()]
     });
-    
-    MockedACService.createPrinciple.mockImplementation((data) =>
+
+    MockedACService.createPrinciple.mockImplementation(data =>
       Promise.resolve(createMockPrinciple(data))
     );
-    
+
     MockedGSService.synthesizePolicies.mockResolvedValue({
       policies: [createMockPolicy()],
       validationScore: 90,
@@ -58,12 +59,10 @@ describe('Service Integration Tests', () => {
   describe('Authentication Service Integration', () => {
     it('should handle authenticated user state', () => {
       const mockUser = createMockUser({ role: 'admin' });
-      
+
       render(
         <MockAuthProvider user={mockUser}>
-          <div data-testid="auth-content">
-            Authenticated Content
-          </div>
+          <div data-testid="auth-content">Authenticated Content</div>
         </MockAuthProvider>
       );
 
@@ -73,9 +72,7 @@ describe('Service Integration Tests', () => {
     it('should handle unauthenticated state', () => {
       render(
         <MockAuthProvider user={null}>
-          <div data-testid="unauth-content">
-            Unauthenticated Content
-          </div>
+          <div data-testid="unauth-content">Unauthenticated Content</div>
         </MockAuthProvider>
       );
 
@@ -90,15 +87,13 @@ describe('Service Integration Tests', () => {
             <span data-testid="auth-status">
               {isAuthenticated ? 'Authenticated' : 'Not Authenticated'}
             </span>
-            <span data-testid="user-role">
-              {currentUser?.role || 'No Role'}
-            </span>
+            <span data-testid="user-role">{currentUser?.role || 'No Role'}</span>
           </div>
         );
       };
 
       const mockUser = createMockUser({ role: 'moderator' });
-      
+
       render(
         <MockAuthProvider user={mockUser}>
           <TestComponent />
@@ -199,11 +194,7 @@ describe('Service Integration Tests', () => {
             <button onClick={handleCreate} data-testid="create-button">
               Create Principle
             </button>
-            {result && (
-              <div data-testid="created-principle">
-                {result.title}
-              </div>
-            )}
+            {result && <div data-testid="created-principle">{result.title}</div>}
           </div>
         );
       };
@@ -241,13 +232,7 @@ describe('Service Integration Tests', () => {
           fetchPrinciples();
         }, []);
 
-        return (
-          <div>
-            {error && (
-              <div data-testid="error-message">{error}</div>
-            )}
-          </div>
-        );
+        return <div>{error && <div data-testid="error-message">{error}</div>}</div>;
       };
 
       render(
@@ -291,12 +276,8 @@ describe('Service Integration Tests', () => {
             </button>
             {result && (
               <div data-testid="synthesis-result">
-                <div data-testid="validation-score">
-                  Score: {result.validationScore}
-                </div>
-                <div data-testid="policy-count">
-                  Policies: {result.policies.length}
-                </div>
+                <div data-testid="validation-score">Score: {result.validationScore}</div>
+                <div data-testid="policy-count">Policies: {result.policies.length}</div>
               </div>
             )}
           </div>
@@ -368,13 +349,13 @@ describe('Service Integration Tests', () => {
         return (
           <div>
             <div data-testid="current-step">Step: {step}</div>
-            
+
             {step === 1 && (
               <button onClick={createPrinciple} data-testid="create-principle">
                 Create Principle
               </button>
             )}
-            
+
             {step === 2 && principle && (
               <div>
                 <div data-testid="created-principle">{principle.title}</div>
@@ -383,7 +364,7 @@ describe('Service Integration Tests', () => {
                 </button>
               </div>
             )}
-            
+
             {step === 3 && (
               <div data-testid="workflow-complete">
                 Workflow Complete: {policies.length} policies created
@@ -408,14 +389,16 @@ describe('Service Integration Tests', () => {
         expect(screen.getByTestId('current-step')).toHaveTextContent('Step: 2');
       });
       expect(screen.getByTestId('created-principle')).toHaveTextContent('Democratic Voting');
-      
+
       await user.click(screen.getByTestId('synthesize-policies'));
 
       // Step 3: Workflow complete
       await waitFor(() => {
         expect(screen.getByTestId('current-step')).toHaveTextContent('Step: 3');
       });
-      expect(screen.getByTestId('workflow-complete')).toHaveTextContent('Workflow Complete: 1 policies created');
+      expect(screen.getByTestId('workflow-complete')).toHaveTextContent(
+        'Workflow Complete: 1 policies created'
+      );
 
       // Verify service calls
       expect(MockedACService.createPrinciple).toHaveBeenCalledTimes(1);

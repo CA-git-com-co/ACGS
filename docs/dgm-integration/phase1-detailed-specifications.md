@@ -7,6 +7,7 @@
 **Objective**: Create secure, scalable Docker containers for DGM service with proper resource management and security constraints.
 
 **Deliverables**:
+
 - Production-ready Dockerfile with multi-stage builds
 - Docker Compose configuration for local development
 - Container security policies and resource limits
@@ -44,6 +45,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8007"]
 ```
 
 **Acceptance Criteria**:
+
 - [ ] Container builds successfully with security scanning passing
 - [ ] Resource limits enforced (CPU: 4 cores, Memory: 16GB)
 - [ ] Health checks respond within 10 seconds
@@ -59,6 +61,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8007"]
 **Objective**: Design production-ready Kubernetes manifests with auto-scaling, health checks, and service mesh integration.
 
 **Deliverables**:
+
 - Kubernetes Deployment manifests
 - Service and Ingress configurations
 - HorizontalPodAutoscaler setup
@@ -86,40 +89,41 @@ spec:
     spec:
       serviceAccountName: dgm-service
       containers:
-      - name: dgm-service
-        image: acgs/dgm-service:latest
-        ports:
-        - containerPort: 8007
-        resources:
-          requests:
-            memory: "8Gi"
-            cpu: "2000m"
-          limits:
-            memory: "16Gi"
-            cpu: "4000m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8007
-          initialDelaySeconds: 60
-          periodSeconds: 30
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 8007
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        env:
-        - name: SERVICE_NAME
-          value: "dgm-service"
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: acgs-secrets
-              key: database-url
+        - name: dgm-service
+          image: acgs/dgm-service:latest
+          ports:
+            - containerPort: 8007
+          resources:
+            requests:
+              memory: '8Gi'
+              cpu: '2000m'
+            limits:
+              memory: '16Gi'
+              cpu: '4000m'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8007
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8007
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          env:
+            - name: SERVICE_NAME
+              value: 'dgm-service'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-secrets
+                  key: database-url
 ```
 
 **Acceptance Criteria**:
+
 - [ ] Deployment scales automatically based on CPU/memory usage
 - [ ] Health checks prevent traffic to unhealthy pods
 - [ ] Service mesh integration functional
@@ -135,6 +139,7 @@ spec:
 **Objective**: Implement persistent storage solution for DGM archive, logs, and temporary workspaces with backup and recovery.
 
 **Deliverables**:
+
 - Persistent Volume Claims for different data types
 - Backup and recovery procedures
 - Storage monitoring and alerting
@@ -151,7 +156,7 @@ metadata:
   namespace: acgs
 spec:
   accessModes:
-  - ReadWriteMany
+    - ReadWriteMany
   resources:
     requests:
       storage: 2Ti
@@ -164,7 +169,7 @@ metadata:
   namespace: acgs
 spec:
   accessModes:
-  - ReadWriteOnce
+    - ReadWriteOnce
   resources:
     requests:
       storage: 500Gi
@@ -172,12 +177,14 @@ spec:
 ```
 
 **Storage Requirements**:
+
 - **Archive Storage**: 2TB with daily incremental backups
 - **Workspace Storage**: 500GB for temporary improvement workspaces
 - **Log Storage**: 100GB with 30-day retention
 - **Backup Storage**: 6TB for 3-month archive retention
 
 **Acceptance Criteria**:
+
 - [ ] All storage volumes provisioned and accessible
 - [ ] Backup procedures tested and documented
 - [ ] Storage monitoring alerts configured
@@ -193,6 +200,7 @@ spec:
 **Objective**: Configure secure internal networking for DGM service communication with ACGS core services.
 
 **Deliverables**:
+
 - Network policies for service-to-service communication
 - Load balancer configuration
 - SSL/TLS certificate management
@@ -212,35 +220,36 @@ spec:
     matchLabels:
       app: dgm-service
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
   ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: acgs
-    ports:
-    - protocol: TCP
-      port: 8007
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: acgs
+      ports:
+        - protocol: TCP
+          port: 8007
   egress:
-  - to:
-    - namespaceSelector:
-        matchLabels:
-          name: acgs
-    ports:
-    - protocol: TCP
-      port: 8000  # Auth Service
-    - protocol: TCP
-      port: 8001  # AC Service
-    - protocol: TCP
-      port: 8004  # GS Service
-  - to: []  # Allow external API calls (LLM services)
-    ports:
-    - protocol: TCP
-      port: 443
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: acgs
+      ports:
+        - protocol: TCP
+          port: 8000 # Auth Service
+        - protocol: TCP
+          port: 8001 # AC Service
+        - protocol: TCP
+          port: 8004 # GS Service
+    - to: [] # Allow external API calls (LLM services)
+      ports:
+        - protocol: TCP
+          port: 443
 ```
 
 **Acceptance Criteria**:
+
 - [ ] Network policies enforce security boundaries
 - [ ] Load balancer distributes traffic evenly
 - [ ] SSL/TLS certificates auto-renew
@@ -258,6 +267,7 @@ spec:
 **Objective**: Design comprehensive PostgreSQL schema optimized for DGM operations with proper indexing and relationships.
 
 **Deliverables**:
+
 - Complete database schema with all tables
 - Entity relationship diagrams
 - Index optimization strategy
@@ -283,14 +293,14 @@ CREATE TABLE dgm_archive (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     created_by UUID REFERENCES users(id),
-    
+
     -- Performance indexes
     INDEX idx_dgm_archive_service_generation (service_name, generation_number),
     INDEX idx_dgm_archive_score_desc (accuracy_score DESC),
     INDEX idx_dgm_archive_compliance (constitutional_compliance_score DESC),
     INDEX idx_dgm_archive_created_desc (created_at DESC),
     INDEX idx_dgm_archive_parent (parent_entry_id),
-    
+
     -- Constraints
     CONSTRAINT chk_accuracy_score CHECK (accuracy_score >= 0 AND accuracy_score <= 1),
     CONSTRAINT chk_compliance_score CHECK (constitutional_compliance_score >= 0 AND constitutional_compliance_score <= 1)
@@ -315,12 +325,12 @@ CREATE TABLE dgm_improvements (
     completed_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     created_by UUID REFERENCES users(id),
-    
+
     -- Indexes for operational queries
     INDEX idx_dgm_improvements_status_priority (status, priority),
     INDEX idx_dgm_improvements_service_created (service_name, created_at DESC),
     INDEX idx_dgm_improvements_active (status) WHERE status IN ('queued', 'running'),
-    
+
     -- Constraints
     CONSTRAINT chk_progress CHECK (progress >= 0 AND progress <= 100),
     CONSTRAINT chk_priority CHECK (priority IN ('low', 'medium', 'high', 'critical')),
@@ -329,6 +339,7 @@ CREATE TABLE dgm_improvements (
 ```
 
 **Acceptance Criteria**:
+
 - [ ] All tables created with proper constraints
 - [ ] Indexes optimize common query patterns
 - [ ] Foreign key relationships maintain data integrity
@@ -344,6 +355,7 @@ CREATE TABLE dgm_improvements (
 **Objective**: Create robust database migration system with rollback capabilities and data integrity validation.
 
 **Deliverables**:
+
 - Migration script framework
 - Version control for schema changes
 - Rollback procedures for each migration
@@ -359,7 +371,7 @@ from sqlalchemy.dialects import postgresql
 
 def upgrade():
     """Create initial DGM tables."""
-    
+
     # Create dgm_archive table
     op.create_table(
         'dgm_archive',
@@ -379,11 +391,11 @@ def upgrade():
         sa.Column('updated_at', sa.TIMESTAMP(timezone=True), server_default=sa.func.now()),
         sa.Column('created_by', postgresql.UUID(as_uuid=True), nullable=True),
     )
-    
+
     # Create indexes
     op.create_index('idx_dgm_archive_service_generation', 'dgm_archive', ['service_name', 'generation_number'])
     op.create_index('idx_dgm_archive_score_desc', 'dgm_archive', [sa.desc('accuracy_score')])
-    
+
     # Add constraints
     op.create_check_constraint(
         'chk_accuracy_score',
@@ -397,6 +409,7 @@ def downgrade():
 ```
 
 **Acceptance Criteria**:
+
 - [ ] Migration framework supports forward and backward migrations
 - [ ] All migrations include comprehensive rollback procedures
 - [ ] Data integrity checks validate migration success
@@ -412,6 +425,7 @@ def downgrade():
 **Objective**: Implement high-performance Redis caching strategy for real-time metrics, archive entries, and session data.
 
 **Deliverables**:
+
 - Redis configuration and deployment
 - Caching layer implementation
 - Cache invalidation strategies
@@ -495,12 +509,14 @@ class DGMRedisCache:
 ```
 
 **Cache Strategy**:
+
 - **Hot Data**: Performance metrics (5-minute TTL)
 - **Warm Data**: Archive entries (1-4 hour TTL based on quality)
 - **Cold Data**: Historical metrics (24-hour retention)
 - **Session Data**: User sessions and tokens (configurable TTL)
 
 **Acceptance Criteria**:
+
 - [ ] Cache hit rate >80% for frequently accessed data
 - [ ] Cache invalidation maintains data consistency
 - [ ] Performance metrics show <10ms cache response time
@@ -516,6 +532,7 @@ class DGMRedisCache:
 **Objective**: Optimize database performance for DGM workloads with advanced indexing, partitioning, and query optimization.
 
 **Deliverables**:
+
 - Performance-optimized indexes
 - Table partitioning strategy
 - Query optimization guidelines
@@ -570,12 +587,14 @@ $$ LANGUAGE plpgsql;
 ```
 
 **Performance Targets**:
+
 - **Query Response Time**: <100ms for 95% of queries
 - **Concurrent Connections**: Support 500+ concurrent connections
 - **Throughput**: 10,000+ transactions per second
 - **Index Efficiency**: >95% index usage for complex queries
 
 **Acceptance Criteria**:
+
 - [ ] All performance targets met under load testing
 - [ ] Automated partition management functional
 - [ ] Query execution plans optimized

@@ -9,9 +9,13 @@ This document provides comprehensive instructions for setting up and executing t
 Based on the repository analysis and existing task structure, we have identified **5 High-Value Workstreams** that will yield the greatest uplift:
 
 ### 1. 🧪 **Automated Tests & Coverage to ≥90%**
-### 2. 🏛️ **Governance Synthesis & Enforcement Hardening** 
+
+### 2. 🏛️ **Governance Synthesis & Enforcement Hardening**
+
 ### 3. ⚡ **Performance & Scalability Audit**
+
 ### 4. 🔒 **Security & Compliance Sweep**
+
 ### 5. 📚 **Documentation & Developer Onboarding**
 
 ---
@@ -51,11 +55,13 @@ find docs/ -name "*.md" -exec wc -l {} +
 ## 📊 Current State Assessment
 
 ### ✅ **Completed Components (95% Complete)**
+
 - Phase 1: Enhanced Principle Management, Constitutional Prompting, Meta-Rules
-- Phase 2: AlphaEvolve Integration, Evolutionary Computation Governance  
+- Phase 2: AlphaEvolve Integration, Evolutionary Computation Governance
 - Phase 3: Formal Verification (Z3), Algorithmic Fairness, Cryptographic Integrity
 
 ### 🚨 **Critical Gaps Requiring Immediate Attention**
+
 - Integration test success rate: 63.6% (7/11) → Target: 100%
 - Service communication validation needed
 - Performance optimization required
@@ -68,13 +74,15 @@ find docs/ -name "*.md" -exec wc -l {} +
 
 ### **Objective**: Achieve comprehensive test coverage and reliability
 
-### **Current Status**: 
+### **Current Status**:
+
 - Test Success Rate: 63.6% (7/11 tests passing)
 - Coverage: Needs analysis from `coverage.json`
 
 ### **Implementation Steps**:
 
 1. **Analyze Current Coverage**
+
    ```bash
    # Parse existing coverage reports
    python -c "
@@ -86,6 +94,7 @@ find docs/ -name "*.md" -exec wc -l {} +
    ```
 
 2. **Identify Low-Coverage Modules**
+
    ```bash
    # Review comprehensive test report
    python -c "
@@ -99,18 +108,20 @@ find docs/ -name "*.md" -exec wc -l {} +
    ```
 
 3. **Execute Test Fixes**
+
    ```bash
    # Run existing test suite
    python test_comprehensive_acgs_validation.py
-   
+
    # Fix integration tests (Task 1 from TaskMaster)
    tm get-task --id 1
-   
+
    # Update Constitutional Council fixtures (Task 1.2)
    tm get-task --id 1.2
    ```
 
 4. **Create Missing Tests**
+
    - Write unit tests for uncovered modules in `tests/unit/`
    - Add integration tests for cross-service communication
    - Implement mocking for external dependencies (LLM APIs, databases)
@@ -123,12 +134,14 @@ find docs/ -name "*.md" -exec wc -l {} +
    ```
 
 ### **Success Criteria**:
+
 - ✅ Test success rate ≥90% (13/15 tests)
 - ✅ Code coverage ≥90% across all modules
 - ✅ CI pipeline fails if coverage drops below 90%
 - ✅ All governance rule generators have acceptance tests
 
 ### **Deliverables**:
+
 - Updated test files in `tests/` directory
 - CI configuration in `.github/workflows/`
 - Coverage report showing improvement metrics
@@ -140,6 +153,7 @@ find docs/ -name "*.md" -exec wc -l {} +
 ### **Objective**: Ensure robust, verifiable policy synthesis and enforcement
 
 ### **Current Status**:
+
 - Constitutional prompting implemented
 - Z3 formal verification available
 - OPA integration needs validation
@@ -147,13 +161,14 @@ find docs/ -name "*.md" -exec wc -l {} +
 ### **Implementation Steps**:
 
 1. **Validate Policy Synthesis Pipeline**
+
    ```bash
    # Test constitutional prompting
    python -c "
    from backend.gs_service.app.core.constitutional_prompting import ConstitutionalPromptBuilder
    # Test principle → Rego conversion
    "
-   
+
    # Test Z3 formal verification
    python -c "
    from backend.fv_service.app.core.smt_solver_integration import Z3SMTSolver
@@ -162,6 +177,7 @@ find docs/ -name "*.md" -exec wc -l {} +
    ```
 
 2. **Implement Rego Validation Pipeline**
+
    ```bash
    # Create validation script
    cat > scripts/validate_rego.py << 'EOF'
@@ -169,7 +185,7 @@ find docs/ -name "*.md" -exec wc -l {} +
    """Validate all generated Rego policies for syntax and semantics"""
    import subprocess
    import sys
-   
+
    def validate_rego_syntax(rego_file):
        """Run opa fmt and opa eval on Rego file"""
        try:
@@ -178,18 +194,19 @@ find docs/ -name "*.md" -exec wc -l {} +
            return True
        except subprocess.CalledProcessError:
            return False
-   
+
    # Add SMT verification logic here
    EOF
-   
+
    chmod +x scripts/validate_rego.py
    ```
 
 3. **Integrate Runtime Enforcement**
+
    ```bash
    # Test OPA middleware integration
    python test_comprehensive_features.py
-   
+
    # Benchmark policy decision latency
    python performance_optimization.py
    ```
@@ -204,12 +221,14 @@ find docs/ -name "*.md" -exec wc -l {} +
    ```
 
 ### **Success Criteria**:
+
 - ✅ All generated Rego policies pass syntax validation
 - ✅ SMT solver verifies 100% of safety-critical rules
 - ✅ Policy decision latency <50ms (95th percentile)
 - ✅ Runtime enforcement blocks/allows requests correctly
 
 ### **Deliverables**:
+
 - `scripts/validate_rego.py` validation script
 - Performance benchmark report
 - Live demonstration of policy enforcement
@@ -222,6 +241,7 @@ find docs/ -name "*.md" -exec wc -l {} +
 ### **Objective**: Optimize system performance for production workloads
 
 ### **Current Status**:
+
 - Performance optimization script exists
 - Baseline metrics need establishment
 - Bottlenecks need identification
@@ -229,10 +249,11 @@ find docs/ -name "*.md" -exec wc -l {} +
 ### **Implementation Steps**:
 
 1. **Establish Performance Baseline**
+
    ```bash
    # Run comprehensive performance analysis
    python performance_optimization.py
-   
+
    # Generate performance report
    python -c "
    import json
@@ -243,52 +264,58 @@ find docs/ -name "*.md" -exec wc -l {} +
    ```
 
 2. **Identify and Optimize Hotspots**
+
    ```bash
    # Database query optimization
    psql -d acgs_db -f scripts/database_performance_optimization.sql
-   
+
    # Implement caching layers
    # Redis for LLM responses, OPA decisions, principle queries
    ```
 
 3. **Load Testing**
+
    ```bash
    # Simulate concurrent requests
    python -c "
    import asyncio
    import aiohttp
    import time
-   
+
    async def load_test():
        # Implement 100+ concurrent request simulation
        pass
-   
+
    asyncio.run(load_test())
    "
    ```
 
 4. **Horizontal Scalability Testing**
+
    ```bash
    # Test Kubernetes scaling
    kubectl scale deployment acgs-services --replicas=5
-   
+
    # Monitor performance under scale-out
    ```
 
 ### **Performance Targets**:
+
 - Database queries: <100ms average
 - LLM inference: <5 seconds
-- Z3 verification: <2 seconds  
+- Z3 verification: <2 seconds
 - Cryptographic operations: <200ms
 - Overall API response: <1 second (95th percentile)
 
 ### **Success Criteria**:
+
 - ✅ ≥30% latency reduction achieved
 - ✅ Effective caching implementation
 - ✅ Horizontal scaling validated
 - ✅ Performance monitoring dashboard deployed
 
 ### **Deliverables**:
+
 - Performance analysis report with before/after metrics
 - Optimized database queries and indexes
 - Caching implementation
@@ -301,6 +328,7 @@ find docs/ -name "*.md" -exec wc -l {} +
 ### **Objective**: Achieve zero critical vulnerabilities and security best practices
 
 ### **Current Status**:
+
 - Security audit results available in `acgs_security_audit_*.json`
 - Authentication system implemented
 - Security hardening script exists
@@ -308,31 +336,34 @@ find docs/ -name "*.md" -exec wc -l {} +
 ### **Implementation Steps**:
 
 1. **Dependency Security Scan**
+
    ```bash
    # Scan Python dependencies
    pip-audit --format=json --output=security_scan_python.json
-   
+
    # Scan for outdated packages
    pip list --outdated
-   
+
    # Update vulnerable packages
    pip install --upgrade package_name
    ```
 
 2. **Code Security Analysis**
+
    ```bash
    # Run bandit for Python security issues
    bandit -r src/ -f json -o security_bandit_report.json
-   
+
    # Check for hardcoded secrets
    grep -r "password\|secret\|key" src/ --exclude-dir=__pycache__
    ```
 
 3. **Security Hardening Implementation**
+
    ```bash
    # Execute security hardening
    python security_hardening.py
-   
+
    # Validate security configuration
    python scripts/security_infrastructure_audit.py
    ```
@@ -355,6 +386,7 @@ find docs/ -name "*.md" -exec wc -l {} +
    ```
 
 ### **Security Requirements**:
+
 - JWT tokens with 256-bit keys
 - SQL injection and XSS protection
 - Rate limiting: 100 requests/minute per IP
@@ -362,12 +394,14 @@ find docs/ -name "*.md" -exec wc -l {} +
 - Multi-factor authentication support
 
 ### **Success Criteria**:
+
 - ✅ Zero critical vulnerabilities
 - ✅ All dependencies updated to secure versions
 - ✅ Security CI pipeline implemented
 - ✅ Penetration testing passed
 
 ### **Deliverables**:
+
 - `security_bulletin.md` with findings and remediations
 - Updated `requirements.txt` with secure versions
 - Security CI pipeline configuration
@@ -380,6 +414,7 @@ find docs/ -name "*.md" -exec wc -l {} +
 ### **Objective**: Enable rapid developer onboarding and system understanding
 
 ### **Current Status**:
+
 - Extensive documentation exists in `docs/`
 - README needs refresh for newcomers
 - Quickstart guide missing
@@ -387,6 +422,7 @@ find docs/ -name "*.md" -exec wc -l {} +
 ### **Implementation Steps**:
 
 1. **Refresh Main README**
+
    ```bash
    # Update README.md with current status
    # Add badges for build, coverage, license
@@ -394,17 +430,18 @@ find docs/ -name "*.md" -exec wc -l {} +
    ```
 
 2. **Create Developer Quickstart**
+
    ```bash
    # Create comprehensive quickstart guide
    mkdir -p docs/quickstart
    cat > docs/quickstart/README.md << 'EOF'
    # ACGS Developer Quickstart
-   
+
    ## Prerequisites
    - Python 3.10+
    - Docker & Docker Compose
    - PostgreSQL
-   
+
    ## Quick Setup
    1. Clone repository
    2. Install dependencies
@@ -414,10 +451,11 @@ find docs/ -name "*.md" -exec wc -l {} +
    ```
 
 3. **Update Technical Documentation**
+
    ```bash
    # Review and update existing docs
    find docs/ -name "*.md" -exec grep -l "TODO\|FIXME\|XXX" {} \;
-   
+
    # Update API documentation
    # Generate OpenAPI/Swagger docs
    ```
@@ -430,12 +468,14 @@ find docs/ -name "*.md" -exec wc -l {} +
    ```
 
 ### **Success Criteria**:
+
 - ✅ Newcomer can set up system in <10 minutes
 - ✅ All documentation is current and accurate
 - ✅ API documentation is complete
 - ✅ Troubleshooting guides are comprehensive
 
 ### **Deliverables**:
+
 - Updated `README.md` with badges and quick start
 - `docs/quickstart/README.md` comprehensive guide
 - Updated API documentation
@@ -446,12 +486,14 @@ find docs/ -name "*.md" -exec wc -l {} +
 ## 🔧 Execution Framework
 
 ### **Task Execution Order**:
+
 1. **Week 1**: Tasks 1 & 4 (Tests & Security) - Foundation
-2. **Week 2**: Tasks 2 & 3 (Governance & Performance) - Core Systems  
+2. **Week 2**: Tasks 2 & 3 (Governance & Performance) - Core Systems
 3. **Week 3**: Task 5 (Documentation) - Knowledge Transfer
 4. **Week 4**: Integration & Validation - Final Polish
 
 ### **Progress Tracking**:
+
 ```bash
 # Create progress tracking
 cat > TASK_PROGRESS.md << 'EOF'
@@ -459,7 +501,7 @@ cat > TASK_PROGRESS.md << 'EOF'
 
 ## Task 1: Automated Tests & Coverage ≥90%
 - [ ] Coverage analysis completed
-- [ ] Missing tests identified  
+- [ ] Missing tests identified
 - [ ] Test fixes implemented
 - [ ] CI pipeline configured
 
@@ -469,7 +511,7 @@ cat > TASK_PROGRESS.md << 'EOF'
 - [ ] Runtime enforcement tested
 - [ ] Performance benchmarked
 
-## Task 3: Performance & Scalability Audit  
+## Task 3: Performance & Scalability Audit
 - [ ] Baseline established
 - [ ] Hotspots optimized
 - [ ] Load testing completed
@@ -490,12 +532,14 @@ EOF
 ```
 
 ### **Quality Gates**:
+
 - Each task must pass validation before proceeding
 - All changes must be committed to feature branches
 - Pull requests required for all major changes
 - Documentation must be updated with each change
 
 ### **Success Metrics**:
+
 - Test coverage: 63.6% → 90%+
 - Performance: Establish baseline → 30% improvement
 - Security: Current vulnerabilities → Zero critical

@@ -7,28 +7,29 @@ The AlphaEvolve Governance System Engine is a Python-based framework designed to
 As AI systems become more complex and autonomous, establishing robust governance mechanisms is crucial. AlphaEvolve aims to provide a dynamic and adaptive governance framework that can evolve alongside AI capabilities while ensuring safety, fairness, and alignment with human values.
 
 This engine is the core component, offering:
--   **Core Data Structures:** For representing foundational principles, specific operational rules, and proposed amendments.
--   **Policy Synthesis:** Leveraging Large Language Models (LLMs) to assist in drafting and refining policies.
--   **Multi-faceted Validation:** A suite of validators to check policies for syntactic correctness, semantic alignment, safety, potential biases, and internal conflicts.
--   **Cryptographic Services:** For ensuring the integrity and authenticity of governance components.
--   **Modularity:** Designed to be extensible, allowing for new validation techniques or synthesis methods to be integrated.
+
+- **Core Data Structures:** For representing foundational principles, specific operational rules, and proposed amendments.
+- **Policy Synthesis:** Leveraging Large Language Models (LLMs) to assist in drafting and refining policies.
+- **Multi-faceted Validation:** A suite of validators to check policies for syntactic correctness, semantic alignment, safety, potential biases, and internal conflicts.
+- **Cryptographic Services:** For ensuring the integrity and authenticity of governance components.
+- **Modularity:** Designed to be extensible, allowing for new validation techniques or synthesis methods to be integrated.
 
 ## Features
 
--   **Hierarchical Governance Model:** Distinguishes between high-level Constitutional Principles and fine-grained Operational Rules.
--   **Amendment Process:** Data structures to represent proposed changes to the governance framework.
--   **LLM-Powered Policy Generation:** `LLMPolicyGenerator` assists human experts in drafting policies based on natural language goals.
--   **Comprehensive Validation Suite:**
-    -   `SyntacticValidator`: Checks policy code (e.g., Rego) for syntax errors using tools like OPA.
-    -   `SemanticValidator`: Assesses if policies behave as intended using scenario-based testing.
-    -   `FormalVerifier`: (Interface with mock) For verifying policies against formal properties (future integration with SMT solvers/model checkers).
-    -   `SafetyValidator`: Identifies known unsafe patterns or simulates policies in safety-critical scenarios.
-    -   `BiasValidator`: Assesses policies for potential biases using statistical metrics or qualitative LLM reviews.
-    -   `ConflictValidator`: Detects contradictions or redundancies between different policies.
--   **Utility Services:**
-    -   `LLMService`: Pluggable interface for various LLM backends (OpenAI, Mock provided).
-    -   `CryptoService`: Hashing and digital signature capabilities.
-    -   `Logging`: Standardized logging setup.
+- **Hierarchical Governance Model:** Distinguishes between high-level Constitutional Principles and fine-grained Operational Rules.
+- **Amendment Process:** Data structures to represent proposed changes to the governance framework.
+- **LLM-Powered Policy Generation:** `LLMPolicyGenerator` assists human experts in drafting policies based on natural language goals.
+- **Comprehensive Validation Suite:**
+  - `SyntacticValidator`: Checks policy code (e.g., Rego) for syntax errors using tools like OPA.
+  - `SemanticValidator`: Assesses if policies behave as intended using scenario-based testing.
+  - `FormalVerifier`: (Interface with mock) For verifying policies against formal properties (future integration with SMT solvers/model checkers).
+  - `SafetyValidator`: Identifies known unsafe patterns or simulates policies in safety-critical scenarios.
+  - `BiasValidator`: Assesses policies for potential biases using statistical metrics or qualitative LLM reviews.
+  - `ConflictValidator`: Detects contradictions or redundancies between different policies.
+- **Utility Services:**
+  - `LLMService`: Pluggable interface for various LLM backends (OpenAI, Mock provided).
+  - `CryptoService`: Hashing and digital signature capabilities.
+  - `Logging`: Standardized logging setup.
 
 ## Project Structure
 
@@ -84,19 +85,21 @@ integrations/alphaevolve-engine/
 
 ### Prerequisites
 
--   Python 3.8+
--   [Open Policy Agent (OPA)](https://www.openpolicyagent.org/docs/latest/) executable installed and in your system's PATH (required for most validation features related to Rego policies).
--   (Optional) OpenAI API key if you intend to use `OpenAILLMService`.
+- Python 3.8+
+- [Open Policy Agent (OPA)](https://www.openpolicyagent.org/docs/latest/) executable installed and in your system's PATH (required for most validation features related to Rego policies).
+- (Optional) OpenAI API key if you intend to use `OpenAILLMService`.
 
 ### Installation
 
 1.  **Clone the repository (if applicable):**
+
     ```bash
     git clone <repository_url>
     cd alphaevolve_gs_engine
     ```
 
 2.  **Create and activate a virtual environment:**
+
     ```bash
     python -m venv venv
     # On Windows
@@ -106,6 +109,7 @@ integrations/alphaevolve-engine/
     ```
 
 3.  **Install dependencies:**
+
     ```bash
     pip install -r requirements.txt
     ```
@@ -125,6 +129,7 @@ Navigate to the `examples` directory and run the provided scripts:
 cd examples
 python run_synthesis_example.py
 ```
+
 This example demonstrates how to use the `LLMPolicyGenerator` to create a policy. It defaults to using a `MockLLMService`, so no API key is needed to run it initially.
 
 ### Running Tests
@@ -139,10 +144,12 @@ To run the unit tests, navigate to the project root directory (where `src` and `
 
 python -m unittest discover -s tests -v
 ```
+
 Or, if your test files are structured to be run as scripts and handle their own imports (as the provided test files attempt to do by modifying `sys.path`):
+
 ```bash
 # Example for a specific test file, assuming you are in the `tests` directory
-# python core/test_data_structures.py 
+# python core/test_data_structures.py
 # (This might require test files to be executable and handle paths correctly)
 
 # Using `unittest discover` from the project root is generally more robust if PYTHONPATH is set.
@@ -193,33 +200,37 @@ else:
 ## Key Components in Detail
 
 ### Core Data Structures
+
 Located in `alphaevolve_gs_engine.core`:
--   **`ConstitutionalPrinciple`**: Represents high-level, foundational rules. Attributes include ID, name, description, category, policy code (can be formal or natural language), version, and metadata.
--   **`OperationalRule`**: Represents specific, actionable rules derived from principles. Attributes include ID, name, description, policy code (typically Rego), derivation links, activation status, version, and priority.
--   **`Amendment`**: Represents proposed changes to principles or rules, including justification, status, and proposer details.
+
+- **`ConstitutionalPrinciple`**: Represents high-level, foundational rules. Attributes include ID, name, description, category, policy code (can be formal or natural language), version, and metadata.
+- **`OperationalRule`**: Represents specific, actionable rules derived from principles. Attributes include ID, name, description, policy code (typically Rego), derivation links, activation status, version, and priority.
+- **`Amendment`**: Represents proposed changes to principles or rules, including justification, status, and proposer details.
 
 ### Services
+
 Located in `alphaevolve_gs_engine.services`:
 
--   **`LLMService`**: Abstract base class for LLM interactions. `OpenAILLMService` and `MockLLMService` are provided implementations.
--   **`CryptoService`**: Provides utilities like `hash_data` and methods for digital signatures using the `cryptography` library.
--   **`PolicySynthesizer`**: Abstract base class for policy generation. `LLMPolicyGenerator` uses an LLM to draft policies based on `PolicySynthesisInput`.
--   **Validation Services** (in `alphaevolve_gs_engine.services.validation`):
-    -   `SyntacticValidator`: Checks Rego policy syntax using OPA.
-    -   `SemanticValidator`: (e.g., `ScenarioBasedSemanticValidator`) Evaluates if policies behave as expected given specific inputs and expected outcomes. Uses OPA for Rego evaluation.
-    -   `FormalVerifier`: (Mock provided) Interface for formal verification against properties (e.g., using SMT solvers).
-    -   `SafetyValidator`: (e.g., `PatternBasedSafetyValidator`, `SimulationBasedSafetyValidator`) Checks for unsafe patterns or simulates policy effects in safety-critical scenarios.
-    -   `BiasValidator`: (e.g., `FairnessMetricValidator`, `LLMBiasReviewer`) Assesses policies for fairness and potential biases using statistical methods or LLM review.
-    -   `ConflictValidator`: (e.g., `OPAConflictDetector`) Identifies logical conflicts between different policies within the system.
+- **`LLMService`**: Abstract base class for LLM interactions. `OpenAILLMService` and `MockLLMService` are provided implementations.
+- **`CryptoService`**: Provides utilities like `hash_data` and methods for digital signatures using the `cryptography` library.
+- **`PolicySynthesizer`**: Abstract base class for policy generation. `LLMPolicyGenerator` uses an LLM to draft policies based on `PolicySynthesisInput`.
+- **Validation Services** (in `alphaevolve_gs_engine.services.validation`):
+  - `SyntacticValidator`: Checks Rego policy syntax using OPA.
+  - `SemanticValidator`: (e.g., `ScenarioBasedSemanticValidator`) Evaluates if policies behave as expected given specific inputs and expected outcomes. Uses OPA for Rego evaluation.
+  - `FormalVerifier`: (Mock provided) Interface for formal verification against properties (e.g., using SMT solvers).
+  - `SafetyValidator`: (e.g., `PatternBasedSafetyValidator`, `SimulationBasedSafetyValidator`) Checks for unsafe patterns or simulates policy effects in safety-critical scenarios.
+  - `BiasValidator`: (e.g., `FairnessMetricValidator`, `LLMBiasReviewer`) Assesses policies for fairness and potential biases using statistical methods or LLM review.
+  - `ConflictValidator`: (e.g., `OPAConflictDetector`) Identifies logical conflicts between different policies within the system.
 
 ## Contributing
 
 Contributions to the AlphaEvolve Governance System Engine are welcome! This could include:
--   Implementing new validation techniques.
--   Developing more sophisticated policy synthesis methods.
--   Adding support for different policy languages.
--   Expanding the set of example use cases.
--   Improving documentation and tests.
+
+- Implementing new validation techniques.
+- Developing more sophisticated policy synthesis methods.
+- Adding support for different policy languages.
+- Expanding the set of example use cases.
+- Improving documentation and tests.
 
 Please follow standard fork-and-pull-request workflows. Ensure your contributions are well-tested and documented.
 

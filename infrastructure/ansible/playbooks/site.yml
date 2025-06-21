@@ -6,12 +6,12 @@
   hosts: all
   become: yes
   gather_facts: yes
-  
+
   vars:
-    constitutional_hash: "cdd01ef066bc6cf2"
-    acgs_version: "1.0.0"
+    constitutional_hash: 'cdd01ef066bc6cf2'
+    acgs_version: '1.0.0'
     environment: "{{ ansible_environment | default('development') }}"
-    
+
     # Service configuration
     services:
       - name: auth_service
@@ -35,77 +35,77 @@
       - name: ec_service
         port: 8006
         replicas: "{{ 2 if environment == 'production' else 1 }}"
-    
+
     # Performance targets
     performance_targets:
       response_time_ms: 500
       availability_percent: 99.9
       concurrent_users: 1000
       constitutional_compliance_rate: 95
-  
+
   pre_tasks:
     - name: Validate constitutional hash
       assert:
         that:
           - constitutional_hash == "cdd01ef066bc6cf2"
-        fail_msg: "Invalid constitutional hash. Expected: cdd01ef066bc6cf2"
-        success_msg: "Constitutional hash validated successfully"
+        fail_msg: 'Invalid constitutional hash. Expected: cdd01ef066bc6cf2'
+        success_msg: 'Constitutional hash validated successfully'
       tags: [validation, constitutional]
-    
+
     - name: Check system requirements
       assert:
         that:
           - ansible_memtotal_mb >= 4096
           - ansible_processor_vcpus >= 2
-        fail_msg: "System does not meet minimum requirements (4GB RAM, 2 vCPUs)"
-        success_msg: "System requirements validated"
+        fail_msg: 'System does not meet minimum requirements (4GB RAM, 2 vCPUs)'
+        success_msg: 'System requirements validated'
       tags: [validation, system]
-  
+
   roles:
     - role: common
       tags: [common, base]
-    
+
     - role: docker
       tags: [docker, containers]
       when: container_runtime == "docker"
-    
+
     - role: kubernetes
       tags: [kubernetes, k8s]
       when: deployment_type == "kubernetes"
-    
+
     - role: database
       tags: [database, postgresql]
-    
+
     - role: redis
       tags: [redis, cache]
-    
+
     - role: monitoring
       tags: [monitoring, observability]
-    
+
     - role: security
       tags: [security, hardening]
-    
+
     - role: acgs_services
       tags: [acgs, services, constitutional]
-    
+
     - role: backup
       tags: [backup, disaster-recovery]
-    
+
     - role: compliance
       tags: [compliance, constitutional, governance]
-  
+
   post_tasks:
     - name: Validate ACGS-1 deployment
       include_tasks: tasks/validate_deployment.yml
       tags: [validation, deployment]
-    
+
     - name: Generate deployment report
       template:
         src: deployment_report.j2
-        dest: "/tmp/acgs_deployment_report_{{ ansible_date_time.epoch }}.json"
+        dest: '/tmp/acgs_deployment_report_{{ ansible_date_time.epoch }}.json'
         mode: '0644'
       tags: [reporting]
-    
+
     - name: Display deployment summary
       debug:
         msg: |
@@ -115,7 +115,7 @@
           Constitutional Hash: {{ constitutional_hash }}
           Services Deployed: {{ services | length }}
           Performance Targets: {{ performance_targets }}
-          
+
           Next Steps:
           1. Verify constitutional compliance: curl http://localhost:8005/api/v1/governance/compliance/status
           2. Check service health: curl http://localhost:8000/health
@@ -127,30 +127,30 @@
   hosts: kubernetes_masters
   become: yes
   gather_facts: yes
-  
+
   vars:
-    kubernetes_version: "1.28"
-    pod_network_cidr: "10.244.0.0/16"
-    service_cidr: "10.96.0.0/12"
-  
+    kubernetes_version: '1.28'
+    pod_network_cidr: '10.244.0.0/16'
+    service_cidr: '10.96.0.0/12'
+
   tasks:
     - name: Apply ACGS-1 Kubernetes manifests
       kubernetes.core.k8s:
         state: present
-        definition: "{{ item }}"
+        definition: '{{ item }}'
         wait: true
         wait_condition:
           type: Ready
-          status: "True"
+          status: 'True'
         wait_timeout: 300
-      loop: "{{ acgs_k8s_manifests }}"
+      loop: '{{ acgs_k8s_manifests }}'
       tags: [kubernetes, manifests]
-    
+
     - name: Verify ACGS-1 pods are running
       kubernetes.core.k8s_info:
         api_version: v1
         kind: Pod
-        namespace: "{{ item }}"
+        namespace: '{{ item }}'
         label_selectors:
           - app=acgs
       register: pod_status
@@ -159,23 +159,23 @@
         - acgs-green
         - acgs-shared
       tags: [kubernetes, validation]
-    
+
     - name: Ensure constitutional compliance
       uri:
-        url: "http://{{ ansible_default_ipv4.address }}:8005/api/v1/governance/compliance/status"
+        url: 'http://{{ ansible_default_ipv4.address }}:8005/api/v1/governance/compliance/status'
         method: GET
         return_content: yes
       register: compliance_check
       retries: 5
       delay: 10
       tags: [constitutional, validation]
-    
+
     - name: Validate constitutional compliance rate
       assert:
         that:
           - compliance_check.json.compliance_rate >= 0.95
-        fail_msg: "Constitutional compliance rate below threshold: {{ compliance_check.json.compliance_rate }}"
-        success_msg: "Constitutional compliance validated: {{ compliance_check.json.compliance_rate }}"
+        fail_msg: 'Constitutional compliance rate below threshold: {{ compliance_check.json.compliance_rate }}'
+        success_msg: 'Constitutional compliance validated: {{ compliance_check.json.compliance_rate }}'
       tags: [constitutional, validation]
 
 # Database configuration playbook
@@ -183,45 +183,45 @@
   hosts: database_servers
   become: yes
   gather_facts: yes
-  
+
   vars:
-    postgresql_version: "15"
-    database_name: "acgs_db"
-    database_user: "acgs_user"
-  
+    postgresql_version: '15'
+    database_name: 'acgs_db'
+    database_user: 'acgs_user'
+
   tasks:
     - name: Configure PostgreSQL for ACGS-1
       include_role:
         name: postgresql
       vars:
         postgresql_databases:
-          - name: "{{ database_name }}"
-            owner: "{{ database_user }}"
+          - name: '{{ database_name }}'
+            owner: '{{ database_user }}'
         postgresql_users:
-          - name: "{{ database_user }}"
-            password: "{{ database_password }}"
-            priv: "ALL"
+          - name: '{{ database_user }}'
+            password: '{{ database_password }}'
+            priv: 'ALL'
         postgresql_hba_entries:
           - type: host
-            database: "{{ database_name }}"
-            user: "{{ database_user }}"
-            address: "0.0.0.0/0"
+            database: '{{ database_name }}'
+            user: '{{ database_user }}'
+            address: '0.0.0.0/0'
             method: scram-sha-256
       tags: [database, postgresql]
-    
+
     - name: Initialize ACGS-1 database schema
       postgresql_db:
-        name: "{{ database_name }}"
+        name: '{{ database_name }}'
         state: present
-        login_user: "{{ database_user }}"
-        login_password: "{{ database_password }}"
+        login_user: '{{ database_user }}'
+        login_password: '{{ database_password }}'
       tags: [database, schema]
-    
+
     - name: Create constitutional governance tables
       postgresql_query:
-        db: "{{ database_name }}"
-        login_user: "{{ database_user }}"
-        login_password: "{{ database_password }}"
+        db: '{{ database_name }}'
+        login_user: '{{ database_user }}'
+        login_password: '{{ database_password }}'
         query: |
           CREATE TABLE IF NOT EXISTS constitutional_amendments (
             id SERIAL PRIMARY KEY,
@@ -232,7 +232,7 @@
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
           );
-          
+
           CREATE TABLE IF NOT EXISTS governance_policies (
             id SERIAL PRIMARY KEY,
             policy_id VARCHAR(50) UNIQUE NOT NULL,
@@ -244,7 +244,7 @@
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
           );
-          
+
           CREATE TABLE IF NOT EXISTS compliance_validations (
             id SERIAL PRIMARY KEY,
             policy_id VARCHAR(50) NOT NULL,
@@ -254,7 +254,7 @@
             validation_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             details JSONB
           );
-          
+
           INSERT INTO governance_policies (policy_id, title, content, constitutional_hash) VALUES
           ('POL-001', 'Democratic Participation', 'All stakeholders have the right to participate in governance decisions', '{{ constitutional_hash }}'),
           ('POL-002', 'Transparency', 'All governance actions must be transparent and auditable', '{{ constitutional_hash }}'),
@@ -267,7 +267,7 @@
   hosts: monitoring_servers
   become: yes
   gather_facts: yes
-  
+
   tasks:
     - name: Deploy Prometheus configuration
       template:
@@ -276,10 +276,10 @@
         backup: yes
       notify: restart prometheus
       tags: [monitoring, prometheus]
-    
+
     - name: Deploy Grafana dashboards
       copy:
-        src: "{{ item }}"
+        src: '{{ item }}'
         dest: /var/lib/grafana/dashboards/
         owner: grafana
         group: grafana
@@ -291,7 +291,7 @@
         - performance_metrics.json
       notify: restart grafana
       tags: [monitoring, grafana]
-    
+
     - name: Configure Alertmanager for ACGS-1
       template:
         src: alertmanager.yml.j2
@@ -299,20 +299,20 @@
         backup: yes
       notify: restart alertmanager
       tags: [monitoring, alerting]
-  
+
   handlers:
     - name: restart prometheus
       systemd:
         name: prometheus
         state: restarted
         enabled: yes
-    
+
     - name: restart grafana
       systemd:
         name: grafana-server
         state: restarted
         enabled: yes
-    
+
     - name: restart alertmanager
       systemd:
         name: alertmanager

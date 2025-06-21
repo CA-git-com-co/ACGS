@@ -10,16 +10,9 @@ export {
 } from './useLoadingState';
 
 // Extended hooks
-export {
-  useAuthExtended,
-  useRoleAccess,
-  useProtectedAction
-} from './useAuthExtended';
+export { useAuthExtended, useRoleAccess, useProtectedAction } from './useAuthExtended';
 
-export {
-  useApiExtended,
-  useServiceApi
-} from './useApiExtended';
+export { useApiExtended, useServiceApi } from './useApiExtended';
 
 // Blockchain hooks
 export { useQuantumagiClient } from './useQuantumagiClient';

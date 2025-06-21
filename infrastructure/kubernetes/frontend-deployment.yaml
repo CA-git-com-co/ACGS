@@ -15,12 +15,12 @@ spec:
         app: frontend
     spec:
       containers:
-      - name: frontend
-        image: yourdockerhubusername/acgs-pgp-frontend:latest # Replace with your actual image path
-        ports:
-        - containerPort: 80 # Port Nginx is listening on inside the container (see frontend Dockerfile)
-        # You might need to pass environment variables to the frontend if it's built to consume them at runtime,
-        # but typically React apps build them in. If Nginx needs env vars, configure them here.
+        - name: frontend
+          image: yourdockerhubusername/acgs-pgp-frontend:latest # Replace with your actual image path
+          ports:
+            - containerPort: 80 # Port Nginx is listening on inside the container (see frontend Dockerfile)
+          # You might need to pass environment variables to the frontend if it's built to consume them at runtime,
+          # but typically React apps build them in. If Nginx needs env vars, configure them here.
 ---
 apiVersion: v1
 kind: Service

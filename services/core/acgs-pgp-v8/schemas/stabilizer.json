@@ -96,7 +96,12 @@
           },
           "error_type": {
             "type": "string",
-            "enum": ["syntax_error", "semantic_error", "constitutional_violation", "performance_issue"]
+            "enum": [
+              "syntax_error",
+              "semantic_error",
+              "constitutional_violation",
+              "performance_issue"
+            ]
           },
           "correction_strategy": {
             "type": "string",

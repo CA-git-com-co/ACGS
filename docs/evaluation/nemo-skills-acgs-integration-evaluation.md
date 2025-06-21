@@ -9,6 +9,7 @@ This document provides a comprehensive evaluation framework for integrating NeMo
 ### Existing NeMo-Skills Integration ✅
 
 **Infrastructure Already Available:**
+
 - NeMo-Skills toolkit fully integrated in `tools/NeMo-Skills/`
 - Multiple server backends supported: TensorRT-LLM, vLLM, sglang, OpenAI API
 - Code execution sandbox with Python and Lean4 support
@@ -16,24 +17,26 @@ This document provides a comprehensive evaluation framework for integrating NeMo
 - Tool-Integrated Reasoning (TIR) implementation operational
 
 **Current Configuration:**
+
 ```yaml
 # From integrations/data-flywheel/config/acgs_config.yaml
 nmp_config:
-  nemo_base_url: "http://nemo.acgs.local"
-  nim_base_url: "http://nim.acgs.local"
-  datastore_base_url: "http://data-store.acgs.local"
-  nmp_namespace: "acgs_governance"
+  nemo_base_url: 'http://nemo.acgs.local'
+  nim_base_url: 'http://nim.acgs.local'
+  datastore_base_url: 'http://data-store.acgs.local'
+  nmp_namespace: 'acgs_governance'
 
 llm_judge_config:
-  type: "local"
-  model_name: "meta/llama-3.3-70b-instruct"
+  type: 'local'
+  model_name: 'meta/llama-3.3-70b-instruct'
   context_length: 32768
   gpus: 4
   pvc_size: 25Gi
-  tag: "1.8.5"
+  tag: '1.8.5'
 ```
 
 **Performance Benchmarks Available:**
+
 - OpenMath-Nemotron-32B TIR: 78.4% GSM8K, 64.2% MATH, 59.7% competition math
 - Code execution sandbox with 10s timeout, 1000 char output limit
 - Multi-backend inference with automatic failover
@@ -43,6 +46,7 @@ llm_judge_config:
 ### 1.1 Mathematical Reasoning Benchmarks
 
 **Target Datasets:**
+
 - GSM8K: Grade school math word problems
 - MATH: Competition mathematics problems
 - AIME: American Invitational Mathematics Examination
@@ -50,6 +54,7 @@ llm_judge_config:
 - Olympiad: International mathematical olympiad problems
 
 **Performance Targets:**
+
 - GSM8K: >85% accuracy (current: 78.4%)
 - MATH: >70% accuracy (current: 64.2%)
 - Competition Math: >65% accuracy (current: 59.7%)
@@ -57,6 +62,7 @@ llm_judge_config:
 - Concurrent execution: >1000 problems simultaneously
 
 **Evaluation Command:**
+
 ```bash
 ns eval \
     --cluster=local \
@@ -71,12 +77,14 @@ ns eval \
 ### 1.2 Code Execution Sandbox Analysis
 
 **Security and Isolation Testing:**
+
 - Stress test with 1000+ concurrent executions
 - Memory and CPU resource management validation
 - Timeout handling and error recovery mechanisms
 - Integration with ACGS-1 security middleware
 
 **Performance Metrics:**
+
 - Execution timeout: 10s (configurable)
 - Memory limit: Configurable per execution
 - Output truncation: 1000 characters (configurable)
@@ -85,15 +93,17 @@ ns eval \
 ### 1.3 Server Backend Performance Comparison
 
 **TensorRT-LLM Configuration:**
+
 ```yaml
 trtllm_config:
   batch_size: [1, 4, 8, 16]
-  precision: ["fp16", "int8"]
+  precision: ['fp16', 'int8']
   max_tokens: 2048
   temperature: 0.1
 ```
 
 **vLLM Configuration:**
+
 ```yaml
 vllm_config:
   tensor_parallel_size: [1, 2, 4]
@@ -102,6 +112,7 @@ vllm_config:
 ```
 
 **sglang Configuration:**
+
 ```yaml
 sglang_config:
   mem_fraction_static: [0.8, 0.9]
@@ -114,16 +125,18 @@ sglang_config:
 ### 2.1 TIR Parameter Optimization
 
 **Configuration Matrix:**
+
 ```yaml
 tir_optimization:
   max_code_executions: [4, 8, 12, 16]
   token_limits: [8192, 16384, 32768]
-  generation_strategy: ["greedy", "sampling"]
+  generation_strategy: ['greedy', 'sampling']
   temperature_range: [0.1, 0.3, 0.7, 0.9]
   timeout_ms: [10000, 30000, 60000]
 ```
 
 **Constitutional Compliance Integration:**
+
 - Mathematical reasoning results validated against constitutional principles
 - Policy synthesis enhanced with quantitative analysis capabilities
 - Governance decision support with mathematical modeling
@@ -131,6 +144,7 @@ tir_optimization:
 ### 2.2 Model Conversion Workflow Validation
 
 **Conversion Pipelines:**
+
 - HuggingFace → TensorRT-LLM: Performance optimization
 - NeMo → vLLM: Compatibility and accuracy validation
 - Model size optimization: Memory efficiency analysis
@@ -141,6 +155,7 @@ tir_optimization:
 ### 3.1 Multi-Stage Solution Pipeline
 
 **Integration Architecture:**
+
 ```
 Mathematical Problem → TIR Processing → Constitutional Validation → Policy Integration
                     ↓                  ↓                        ↓
@@ -148,6 +163,7 @@ Mathematical Problem → TIR Processing → Constitutional Validation → Policy
 ```
 
 **Constitutional Relevance Classification:**
+
 - Mathematical models for policy impact analysis
 - Quantitative risk assessment for governance decisions
 - Statistical validation of constitutional compliance
@@ -156,12 +172,14 @@ Mathematical Problem → TIR Processing → Constitutional Validation → Policy
 ### 3.2 ACGS-PGP v8 Integration Points
 
 **Service Integration:**
+
 - PGC Service (port 8005): Mathematical policy validation
 - GS Service (port 8004): Quantitative policy synthesis
 - FV Service (port 8003): Numerical verification algorithms
 - AC Service (port 8001): Mathematical constitutional analysis
 
 **Performance Requirements:**
+
 - Response time: <500ms for 95% of mathematical reasoning requests
 - Throughput: >1000 concurrent mathematical operations
 - Availability: >99.9% uptime with graceful degradation
@@ -172,12 +190,14 @@ Mathematical Problem → TIR Processing → Constitutional Validation → Policy
 ### 4.1 Error Detection Patterns
 
 **Mathematical Reasoning Failure Modes:**
+
 - Computational errors in code execution
 - Logical inconsistencies in reasoning chains
 - Timeout failures in complex calculations
 - Memory overflow in large-scale computations
 
 **Recovery Strategies:**
+
 - Four-tier risk approach: standard/enhanced_validation/multi_model_consensus/human_review
 - Automatic retry with different parameters
 - Fallback to simpler mathematical approaches
@@ -186,11 +206,13 @@ Mathematical Problem → TIR Processing → Constitutional Validation → Policy
 ### 4.2 Integration with Existing Infrastructure
 
 **Redis Caching Integration:**
+
 - Mathematical computation result caching
 - Intermediate calculation state persistence
 - Performance optimization for repeated calculations
 
 **PostgreSQL Optimization:**
+
 - Mathematical reasoning result storage
 - Historical analysis and trend identification
 - Audit trail for governance mathematical decisions
@@ -198,18 +220,21 @@ Mathematical Problem → TIR Processing → Constitutional Validation → Policy
 ## Implementation Roadmap
 
 ### Week 1-2: Baseline Evaluation
+
 - [ ] Execute comprehensive benchmark evaluation
 - [ ] Performance profiling across all server backends
 - [ ] Security and isolation testing
 - [ ] Integration point identification
 
 ### Week 3: Advanced Configuration
+
 - [ ] TIR parameter optimization
 - [ ] Model conversion workflow validation
 - [ ] Constitutional compliance integration testing
 - [ ] Performance tuning and optimization
 
 ### Week 4: Integration Implementation
+
 - [ ] Multi-stage solution pipeline development
 - [ ] ACGS-PGP v8 service integration
 - [ ] Fault tolerance mechanism implementation
@@ -218,20 +243,23 @@ Mathematical Problem → TIR Processing → Constitutional Validation → Policy
 ## Success Criteria
 
 **Technical Metrics:**
-- [ ] >85% accuracy on GSM8K benchmark
-- [ ] >70% accuracy on MATH benchmark
+
+- [ ] > 85% accuracy on GSM8K benchmark
+- [ ] > 70% accuracy on MATH benchmark
 - [ ] <500ms response time for 95% of requests
-- [ ] >1000 concurrent operations support
-- [ ] >99.9% system availability
+- [ ] > 1000 concurrent operations support
+- [ ] > 99.9% system availability
 - [ ] Zero critical security vulnerabilities
 
 **Integration Metrics:**
+
 - [ ] Seamless integration with all 7 core ACGS services
 - [ ] Constitutional compliance validation >95% accuracy
 - [ ] Quantumagi Solana devnet compatibility maintained
-- [ ] >80% test coverage across all integration points
+- [ ] > 80% test coverage across all integration points
 
 **Operational Metrics:**
+
 - [ ] Automated deployment and configuration
 - [ ] Comprehensive monitoring and alerting
 - [ ] Documentation and training materials
@@ -240,11 +268,13 @@ Mathematical Problem → TIR Processing → Constitutional Validation → Policy
 ## Next Steps
 
 1. **Immediate Actions:**
+
    - Execute baseline benchmark evaluation
    - Configure monitoring and observability
    - Establish performance baselines
 
 2. **Short-term Goals:**
+
    - Optimize TIR parameters for ACGS use cases
    - Implement constitutional compliance integration
    - Develop fault tolerance mechanisms

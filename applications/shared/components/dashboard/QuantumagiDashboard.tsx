@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ConnectionProvider, WalletProvider, useConnection, useWallet } from '@solana/wallet-adapter-react';
+import {
+  ConnectionProvider,
+  WalletProvider,
+  useConnection,
+  useWallet
+} from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
@@ -76,16 +81,16 @@ const QuantumagiDashboard: React.FC = () => {
   const loadDashboardData = async (): Promise<void> => {
     try {
       setLoading(true);
-      
+
       // Load constitution data
       const constitutionData = await loadConstitutionData();
-      
+
       // Load policies
       const policiesData = await loadPoliciesData();
-      
+
       // Load recent compliance results
       const complianceData = await loadComplianceData();
-      
+
       setDashboardData({
         constitution: constitutionData,
         policies: policiesData,
@@ -166,7 +171,7 @@ const QuantumagiDashboard: React.FC = () => {
 
   const checkProgramStatuses = async (): Promise<void> => {
     const statuses: ProgramStatus[] = [];
-    
+
     for (const [name, programId] of Object.entries(PROGRAM_IDS)) {
       try {
         const programInfo = await connection.getAccountInfo(new PublicKey(programId));
@@ -183,7 +188,7 @@ const QuantumagiDashboard: React.FC = () => {
         });
       }
     }
-    
+
     setProgramStatuses(statuses);
   };
 
@@ -226,8 +231,12 @@ const QuantumagiDashboard: React.FC = () => {
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">🏛️ Quantumagi Governance Dashboard</h1>
-              <p className="text-gray-600 mt-2">Constitutional Governance System on Solana Devnet</p>
+              <h1 className="text-3xl font-bold text-gray-900">
+                🏛️ Quantumagi Governance Dashboard
+              </h1>
+              <p className="text-gray-600 mt-2">
+                Constitutional Governance System on Solana Devnet
+              </p>
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-right">
@@ -242,7 +251,9 @@ const QuantumagiDashboard: React.FC = () => {
         {!connected ? (
           <div className="bg-white rounded-lg shadow-sm p-8 text-center">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Connect Your Wallet</h2>
-            <p className="text-gray-600 mb-6">Please connect your Solana wallet to access the governance dashboard.</p>
+            <p className="text-gray-600 mb-6">
+              Please connect your Solana wallet to access the governance dashboard.
+            </p>
             <WalletMultiButton />
           </div>
         ) : (
@@ -258,21 +269,25 @@ const QuantumagiDashboard: React.FC = () => {
                   </span>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Constitution</h3>
                 <p className="text-sm text-gray-600">Hash: {dashboardData.constitution?.hash}</p>
-                <p className="text-sm text-gray-600">Version: {dashboardData.constitution?.version}</p>
+                <p className="text-sm text-gray-600">
+                  Version: {dashboardData.constitution?.version}
+                </p>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Active Policies</h3>
                 <p className="text-3xl font-bold text-blue-600">{dashboardData.policies.length}</p>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Compliance Checks</h3>
-                <p className="text-3xl font-bold text-green-600">{dashboardData.complianceResults.length}</p>
+                <p className="text-3xl font-bold text-green-600">
+                  {dashboardData.complianceResults.length}
+                </p>
               </div>
             </div>
 
@@ -280,15 +295,22 @@ const QuantumagiDashboard: React.FC = () => {
             <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">📋 Deployed Programs</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {programStatuses.map((program) => (
+                {programStatuses.map(program => (
                   <div key={program.programId} className="border border-gray-200 rounded-lg p-4">
                     <h3 className="font-medium text-gray-900">{program.name}</h3>
-                    <p className="text-xs text-gray-500 font-mono mt-1 break-all">{program.programId}</p>
+                    <p className="text-xs text-gray-500 font-mono mt-1 break-all">
+                      {program.programId}
+                    </p>
                     <div className="flex items-center mt-2">
-                      <div className={`w-2 h-2 rounded-full mr-2 ${
-                        program.status === 'Deployed' ? 'bg-green-500' : 
-                        program.status === 'Error' ? 'bg-red-500' : 'bg-yellow-500'
-                      }`}></div>
+                      <div
+                        className={`w-2 h-2 rounded-full mr-2 ${
+                          program.status === 'Deployed'
+                            ? 'bg-green-500'
+                            : program.status === 'Error'
+                              ? 'bg-red-500'
+                              : 'bg-yellow-500'
+                        }`}
+                      ></div>
                       <span className={`text-sm ${getStatusColor(program.status)}`}>
                         {program.status}
                       </span>
@@ -302,15 +324,21 @@ const QuantumagiDashboard: React.FC = () => {
             <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">📜 Active Policies</h2>
               <div className="space-y-3">
-                {dashboardData.policies.map((policy) => (
+                {dashboardData.policies.map(policy => (
                   <div key={policy.id} className="border border-gray-200 rounded-lg p-4">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h3 className="font-medium text-gray-900">{policy.id}: {policy.title}</h3>
+                        <h3 className="font-medium text-gray-900">
+                          {policy.id}: {policy.title}
+                        </h3>
                         <p className="text-sm text-gray-600">Category: {policy.category}</p>
-                        <p className="text-xs text-gray-500">Enacted: {formatTimestamp(policy.enactedAt)}</p>
+                        <p className="text-xs text-gray-500">
+                          Enacted: {formatTimestamp(policy.enactedAt)}
+                        </p>
                       </div>
-                      <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(policy.status)}`}>
+                      <span
+                        className={`px-2 py-1 text-xs rounded-full ${getStatusColor(policy.status)}`}
+                      >
                         {policy.status}
                       </span>
                     </div>
@@ -321,9 +349,11 @@ const QuantumagiDashboard: React.FC = () => {
 
             {/* Recent Compliance Checks */}
             <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">🔍 Recent Compliance Checks</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                🔍 Recent Compliance Checks
+              </h2>
               <div className="space-y-3">
-                {dashboardData.complianceResults.map((result) => (
+                {dashboardData.complianceResults.map(result => (
                   <div key={result.id} className="border border-gray-200 rounded-lg p-4">
                     <div className="flex justify-between items-center">
                       <div>
@@ -331,7 +361,9 @@ const QuantumagiDashboard: React.FC = () => {
                         <p className="text-sm text-gray-600">Confidence: {result.confidence}%</p>
                         <p className="text-xs text-gray-500">{formatTimestamp(result.timestamp)}</p>
                       </div>
-                      <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(result.result)}`}>
+                      <span
+                        className={`px-2 py-1 text-xs rounded-full ${getStatusColor(result.result)}`}
+                      >
                         {result.result}
                       </span>
                     </div>
@@ -350,14 +382,8 @@ const QuantumagiDashboard: React.FC = () => {
 const QuantumagiApp: React.FC = () => {
   const network = WalletAdapterNetwork.Devnet;
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-  
-  const wallets = useMemo(
-    () => [
-      new PhantomWalletAdapter(),
-      new SolflareWalletAdapter(),
-    ],
-    []
-  );
+
+  const wallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], []);
 
   return (
     <ConnectionProvider endpoint={endpoint}>

@@ -38,8 +38,7 @@ const Layout: React.FC<LayoutProps> = ({ children, className = '' }) => {
   const navigationItems = getNavigationItems(currentUser?.role, isAuthenticated);
 
   const isActivePath = (path: string): boolean => {
-    return location.pathname === path ||
-           (path !== '/' && location.pathname.startsWith(path));
+    return location.pathname === path || (path !== '/' && location.pathname.startsWith(path));
   };
 
   const renderNavItem = (item: any) => (
@@ -48,9 +47,10 @@ const Layout: React.FC<LayoutProps> = ({ children, className = '' }) => {
         to={item.path}
         className={`
           px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 flex items-center space-x-1
-          ${isActivePath(item.path)
-            ? 'bg-blue-700 text-white'
-            : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+          ${
+            isActivePath(item.path)
+              ? 'bg-blue-700 text-white'
+              : 'text-gray-300 hover:bg-gray-700 hover:text-white'
           }
         `}
       >
@@ -80,7 +80,7 @@ const Layout: React.FC<LayoutProps> = ({ children, className = '' }) => {
             <div className="hidden md:block">
               <ul className="flex items-center space-x-4">
                 {navigationItems.map(renderNavItem)}
-                
+
                 {/* Authentication Actions */}
                 {isAuthenticated ? (
                   <li className="ml-4">
@@ -127,7 +127,12 @@ const Layout: React.FC<LayoutProps> = ({ children, className = '' }) => {
                 aria-label="Open main menu"
               >
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 </svg>
               </button>
             </div>
@@ -137,9 +142,7 @@ const Layout: React.FC<LayoutProps> = ({ children, className = '' }) => {
 
       {/* Main Content */}
       <main className={`flex-1 ${className}`}>
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          {children}
-        </div>
+        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">{children}</div>
       </main>
 
       {/* Footer */}

@@ -4,7 +4,7 @@ import { Policy } from '../types/governance';
 
 /**
  * PolicyCard Component for ACGS-PGP Framework
- * 
+ *
  * This component displays governance policies with their validation scores,
  * complexity metrics, and action buttons. It integrates with the GS (Governance
  * Synthesis) service for policy management and lifecycle operations.
@@ -14,7 +14,8 @@ import { Policy } from '../types/governance';
 const mockPolicy: Policy = {
   id: 'POL-001',
   name: 'Treasury Protection Policy',
-  description: 'Comprehensive policy to protect treasury funds from unauthorized access and ensure proper governance approval for financial transactions exceeding predefined limits.',
+  description:
+    'Comprehensive policy to protect treasury funds from unauthorized access and ensure proper governance approval for financial transactions exceeding predefined limits.',
   rules: [
     {
       id: 'R1',
@@ -45,7 +46,8 @@ const draftPolicy: Policy = {
   ...mockPolicy,
   id: 'POL-002',
   name: 'Democratic Voting Requirements',
-  description: 'Policy ensuring all constitutional changes require democratic voting with proper quorum and transparency.',
+  description:
+    'Policy ensuring all constitutional changes require democratic voting with proper quorum and transparency.',
   status: 'draft',
   validationScore: 78,
   complianceComplexity: 60,
@@ -197,7 +199,8 @@ export const ComplexPolicy: Story = {
     policy: {
       ...mockPolicy,
       name: 'Comprehensive Governance Framework',
-      description: 'Multi-faceted policy covering various aspects of constitutional governance, democratic processes, and system integrity.',
+      description:
+        'Multi-faceted policy covering various aspects of constitutional governance, democratic processes, and system integrity.',
       rules: [
         { id: 'R1', condition: 'proposal.type === "constitutional"', action: 'REQUIRE_SUPERMAJORITY' },
         { id: 'R2', condition: 'vote.quorum < governance.minimumQuorum', action: 'DEFER_VOTE' },
@@ -222,18 +225,15 @@ export const PolicyGrid: Story = {
     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 max-w-7xl">
       <PolicyCard
         policy={mockPolicy}
-        onDeactivate={(id) => console.log('Deactivate:', id)}
-        onEdit={(policy) => console.log('Edit:', policy)}
+        onDeactivate={id => console.log('Deactivate:', id)}
+        onEdit={policy => console.log('Edit:', policy)}
       />
       <PolicyCard
         policy={draftPolicy}
-        onActivate={(id) => console.log('Activate:', id)}
-        onEdit={(policy) => console.log('Edit:', policy)}
+        onActivate={id => console.log('Activate:', id)}
+        onEdit={policy => console.log('Edit:', policy)}
       />
-      <PolicyCard
-        policy={archivedPolicy}
-        onEdit={(policy) => console.log('Edit:', policy)}
-      />
+      <PolicyCard policy={archivedPolicy} onEdit={policy => console.log('Edit:', policy)} />
       <PolicyCard
         policy={{
           ...mockPolicy,
@@ -270,34 +270,30 @@ export const InteractiveDemo: Story = {
     return (
       <div className="space-y-6 max-w-4xl">
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-lg font-semibold text-blue-800 mb-2">
-            📋 Policy Management Demo
-          </h3>
+          <h3 className="text-lg font-semibold text-blue-800 mb-2">📋 Policy Management Demo</h3>
           <p className="text-blue-700 text-sm">
-            This demo shows policy cards with different states and actions. Click the buttons
-            to see how policy lifecycle management works in the ACGS system.
+            This demo shows policy cards with different states and actions. Click the buttons to see how policy
+            lifecycle management works in the ACGS system.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <PolicyCard
-            policy={draftPolicy}
-            onActivate={handleActivate}
-            onEdit={handleEdit}
-          />
-          <PolicyCard
-            policy={mockPolicy}
-            onDeactivate={handleDeactivate}
-            onEdit={handleEdit}
-          />
+          <PolicyCard policy={draftPolicy} onActivate={handleActivate} onEdit={handleEdit} />
+          <PolicyCard policy={mockPolicy} onDeactivate={handleDeactivate} onEdit={handleEdit} />
         </div>
 
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
           <h4 className="font-semibold text-gray-800 mb-2">Policy Lifecycle:</h4>
           <ul className="text-sm text-gray-600 space-y-1">
-            <li>• <strong>Draft:</strong> Policy is being developed and can be activated</li>
-            <li>• <strong>Active:</strong> Policy is enforced and can be deactivated</li>
-            <li>• <strong>Archived:</strong> Policy is no longer active but kept for reference</li>
+            <li>
+              • <strong>Draft:</strong> Policy is being developed and can be activated
+            </li>
+            <li>
+              • <strong>Active:</strong> Policy is enforced and can be deactivated
+            </li>
+            <li>
+              • <strong>Archived:</strong> Policy is no longer active but kept for reference
+            </li>
           </ul>
         </div>
       </div>

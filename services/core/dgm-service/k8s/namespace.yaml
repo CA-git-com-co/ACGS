@@ -6,7 +6,7 @@ metadata:
     name: acgs-dgm
     app.kubernetes.io/name: dgm-service
     app.kubernetes.io/part-of: acgs-platform
-    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/version: '1.0.0'
     app.kubernetes.io/managed-by: kubectl
   annotations:
-    description: "Darwin Gödel Machine Service namespace for ACGS platform"
+    description: 'Darwin Gödel Machine Service namespace for ACGS platform'

@@ -195,28 +195,31 @@ Alert notifications include runbook URLs for troubleshooting:
 ### Common Issues
 
 1. **Services not starting**
+
    ```bash
    # Check Docker daemon
    docker info
-   
+
    # Check logs
    ./start-monitoring.sh logs
    ```
 
 2. **Metrics not appearing**
+
    ```bash
    # Verify DGM service is exposing metrics
    curl http://localhost:8007/metrics
-   
+
    # Check Prometheus targets
    curl http://localhost:9091/api/v1/targets
    ```
 
 3. **Alerts not firing**
+
    ```bash
    # Check alert rules
    curl http://localhost:9091/api/v1/rules
-   
+
    # Verify Alertmanager config
    curl http://localhost:9093/api/v1/status
    ```

@@ -27,7 +27,7 @@ services:
   # =============================================================================
   # Infrastructure Services
   # =============================================================================
-  
+
   # PostgreSQL Database with ACGS-specific configuration
   postgres:
     image: postgres:15-alpine
@@ -36,16 +36,16 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-acgs_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-acgs_password}
       POSTGRES_DB: ${POSTGRES_DB:-acgs_db}
-      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+      POSTGRES_INITDB_ARGS: '--encoding=UTF8 --locale=C'
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
     ports:
-      - "5432:5432"
+      - '5432:5432'
     networks:
       - acgs_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-acgs_user} -d ${POSTGRES_DB:-acgs_db}"]
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-acgs_user} -d ${POSTGRES_DB:-acgs_db}']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -65,11 +65,11 @@ services:
     volumes:
       - redis_data:/data
     ports:
-      - "6379:6379"
+      - '6379:6379'
     networks:
       - acgs_network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -89,9 +89,9 @@ services:
       - ./scripts/docker/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
       - ./ssl/certs/acgs.pem:/usr/local/etc/haproxy/ssl/acgs.pem:ro
     ports:
-      - "80:80"
-      - "443:443"  # HTTPS
-      - "8080:8080"  # Stats interface
+      - '80:80'
+      - '443:443' # HTTPS
+      - '8080:8080' # Stats interface
     networks:
       - acgs_network
     depends_on:
@@ -130,9 +130,9 @@ services:
       - ENVIRONMENT=${ENVIRONMENT:-development}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
     working_dir: /app/services/platform/authentication/auth_service
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8000']
     ports:
-      - "8000:8000"
+      - '8000:8000'
     volumes:
       - acgs_logs:/app/logs
       - acgs_data:/app/data
@@ -144,7 +144,7 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "/app/health_check.sh"]
+      test: ['CMD', '/app/health_check.sh']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -173,9 +173,9 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - CONSTITUTIONAL_FIDELITY_THRESHOLD=${CONSTITUTIONAL_FIDELITY_THRESHOLD:-0.85}
     working_dir: /app/services/core/constitutional-ai/ac_service
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
+    command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8001']
     ports:
-      - "8001:8001"
+      - '8001:8001'
     volumes:
       - acgs_logs:/app/logs
       - acgs_data:/app/data
@@ -185,7 +185,7 @@ services:
       auth_service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "/app/health_check.sh"]
+      test: ['CMD', '/app/health_check.sh']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -214,9 +214,9 @@ services:
       - ENVIRONMENT=${ENVIRONMENT:-development}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
     working_dir: /app/services/platform/integrity/integrity_service
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8002"]
+    command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8002']
     ports:
-      - "8002:8002"
+      - '8002:8002'
     volumes:
       - acgs_logs:/app/logs
       - acgs_data:/app/data
@@ -226,7 +226,7 @@ services:
       ac_service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "/app/health_check.sh"]
+      test: ['CMD', '/app/health_check.sh']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -256,9 +256,9 @@ services:
       - ENVIRONMENT=${ENVIRONMENT:-development}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
     working_dir: /app/services/core/formal-verification/fv_service
-    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8003"]
+    command: ['uvicorn', 'main:app', '--host', '0.0.0.0', '--port', '8003']
     ports:
-      - "8003:8003"
+      - '8003:8003'
     volumes:
       - acgs_logs:/app/logs
       - acgs_data:/app/data
@@ -268,7 +268,7 @@ services:
       integrity_service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "/app/health_check.sh"]
+      test: ['CMD', '/app/health_check.sh']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -301,9 +301,9 @@ services:
       - POLICY_QUALITY_THRESHOLD=${POLICY_QUALITY_THRESHOLD:-0.80}
       - MAX_SYNTHESIS_LOOPS=${MAX_SYNTHESIS_LOOPS:-3}
     working_dir: /app/services/core/governance-synthesis/gs_service
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8004"]
+    command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8004']
     ports:
-      - "8004:8004"
+      - '8004:8004'
     volumes:
       - acgs_logs:/app/logs
       - acgs_data:/app/data
@@ -313,7 +313,7 @@ services:
       fv_service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "/app/health_check.sh"]
+      test: ['CMD', '/app/health_check.sh']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -347,9 +347,9 @@ services:
       - PGC_LATENCY_TARGET=${PGC_LATENCY_TARGET:-25}
       - CONSTITUTIONAL_HASH=${CONSTITUTIONAL_HASH:-cdd01ef066bc6cf2}
     working_dir: /app/services/core/policy-governance/pgc_service
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8005"]
+    command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8005']
     ports:
-      - "8005:8005"
+      - '8005:8005'
     volumes:
       - acgs_logs:/app/logs
       - acgs_data:/app/data
@@ -359,7 +359,7 @@ services:
       gs_service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "/app/health_check.sh"]
+      test: ['CMD', '/app/health_check.sh']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -392,9 +392,9 @@ services:
       - WINA_ENABLED=${WINA_ENABLED:-true}
       - EVOLUTIONARY_COMPUTATION_ENABLED=${EVOLUTIONARY_COMPUTATION_ENABLED:-true}
     working_dir: /app/services/core/evolutionary-computation/ec_service
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8006"]
+    command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8006']
     ports:
-      - "8006:8006"
+      - '8006:8006'
     volumes:
       - acgs_logs:/app/logs
       - acgs_data:/app/data
@@ -404,7 +404,7 @@ services:
       pgc_service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "/app/health_check.sh"]
+      test: ['CMD', '/app/health_check.sh']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -432,7 +432,7 @@ services:
       - ANCHOR_PROVIDER_URL=${ANCHOR_PROVIDER_URL:-https://api.devnet.solana.com}
       - CONSTITUTIONAL_HASH=${CONSTITUTIONAL_HASH:-cdd01ef066bc6cf2}
     working_dir: /app/blockchain
-    command: ["tail", "-f", "/dev/null"]  # Keep container running
+    command: ['tail', '-f', '/dev/null'] # Keep container running
     volumes:
       - ./blockchain:/app/blockchain
       - solana_keypairs:/root/.config/solana
@@ -484,7 +484,7 @@ services:
     volumes:
       - ./scripts/docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     ports:
-      - "9090:9090"
+      - '9090:9090'
     networks:
       - acgs_network
     depends_on:
@@ -514,7 +514,7 @@ services:
       - ./scripts/docker/grafana/provisioning:/etc/grafana/provisioning:ro
       - ./scripts/docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
     ports:
-      - "3001:3000"
+      - '3001:3000'
     networks:
       - acgs_network
     depends_on:

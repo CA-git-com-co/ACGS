@@ -110,6 +110,6 @@ providers:
     type: file
     disableDeletion: false
     updateIntervalSeconds: 60
-    allowUiUpdates: false  # Read-only for executive dashboards
+    allowUiUpdates: false # Read-only for executive dashboards
     options:
       path: /etc/grafana/provisioning/dashboards/executive

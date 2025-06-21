@@ -3,8 +3,8 @@
 // requires: Unique governance accounts per test suite
 // ensures: Zero account collision, <0.01 SOL cost per operation
 
-import * as anchor from "@coral-xyz/anchor";
-import { PublicKey, Keypair } from "@solana/web3.js";
+import * as anchor from '@coral-xyz/anchor';
+import { PublicKey, Keypair } from '@solana/web3.js';
 
 export class TestInfrastructure {
   private static governanceCounter = 0;
@@ -24,10 +24,10 @@ export class TestInfrastructure {
 
     return PublicKey.findProgramAddressSync(
       [
-        Buffer.from("governance"),
+        Buffer.from('governance'),
         Buffer.from(shortId),
         Buffer.from(counter),
-        Buffer.from(timestamp)
+        Buffer.from(timestamp),
       ],
       program.programId
     );
@@ -44,19 +44,19 @@ export class TestInfrastructure {
   ): Promise<void> {
     const targetLamports = solAmount * anchor.web3.LAMPORTS_PER_SOL;
     const currentBalance = await connection.getBalance(account);
-    
+
     if (currentBalance >= targetLamports) {
       return; // Already funded
     }
 
     const needed = targetLamports - currentBalance;
     let retryCount = 0;
-    
+
     while (retryCount < maxRetries) {
       try {
         const signature = await connection.requestAirdrop(account, needed);
-        await connection.confirmTransaction(signature, "confirmed");
-        
+        await connection.confirmTransaction(signature, 'confirmed');
+
         // Verify funding success
         const newBalance = await connection.getBalance(account);
         if (newBalance >= targetLamports) {
@@ -67,10 +67,10 @@ export class TestInfrastructure {
         if (retryCount >= maxRetries) {
           throw new Error(`Funding failed after ${maxRetries} attempts: ${error}`);
         }
-        
+
         // Exponential backoff: 1s, 2s, 4s, 8s, 16s
         const delay = Math.pow(2, retryCount) * 1000;
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
   }
@@ -89,10 +89,10 @@ export class TestInfrastructure {
   }> {
     const authority = Keypair.generate();
     const [governancePDA, governanceBump] = await this.createUniqueGovernancePDA(
-      program, 
+      program,
       testSuiteId
     );
-    
+
     // Pre-fund authority account
     await this.ensureFunding(
       program.provider.connection,
@@ -114,7 +114,7 @@ export class TestInfrastructure {
       authority,
       governancePDA,
       governanceBump,
-      testUsers
+      testUsers,
     };
   }
 
@@ -138,7 +138,11 @@ export class TestInfrastructure {
 
     // Validate against optimized target
     if (optimizedCostSOL > maxCostSOL) {
-      console.log(`⚠️  Cost optimization needed: ${optimizedCostSOL.toFixed(6)} SOL > ${maxCostSOL} SOL target`);
+      console.log(
+        `⚠️  Cost optimization needed: ${optimizedCostSOL.toFixed(
+          6
+        )} SOL > ${maxCostSOL} SOL target`
+      );
       console.log(`📊 Optimization techniques available:`);
       console.log(`   - Account size reduction: 30% savings`);
       console.log(`   - Transaction batching: 62.4% savings`);
@@ -163,10 +167,10 @@ export class TestInfrastructure {
 
     return PublicKey.findProgramAddressSync(
       [
-        Buffer.from("proposal"),
-        proposalId.toBuffer("le", 8),
+        Buffer.from('proposal'),
+        proposalId.toBuffer('le', 8),
         Buffer.from(shortId),
-        Buffer.from(timestamp)
+        Buffer.from(timestamp),
       ],
       program.programId
     );
@@ -183,11 +187,7 @@ export class TestInfrastructure {
   ): [PublicKey, number] {
     // Use standard vote record PDA pattern to match program constraints
     return PublicKey.findProgramAddressSync(
-      [
-        Buffer.from("vote_record"),
-        proposalId.toBuffer("le", 8),
-        voter.toBuffer(),
-      ],
+      [Buffer.from('vote_record'), proposalId.toBuffer('le', 8), voter.toBuffer()],
       program.programId
     );
   }
@@ -204,5 +204,9 @@ export function addFormalVerificationComment(
   return `// ${operation}
 // requires: ${requires}
 // ensures: ${ensures}
-// sha256: ${require('crypto').createHash('sha256').update(operation + requires + ensures).digest('hex').substring(0, 8)}`;
+// sha256: ${require('crypto')
+    .createHash('sha256')
+    .update(operation + requires + ensures)
+    .digest('hex')
+    .substring(0, 8)}`;
 }

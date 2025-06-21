@@ -17,6 +17,7 @@ This 16-character hexadecimal hash represents the current constitutional framewo
 **Purpose**: Core validation engine for constitutional hash compliance
 
 **Key Features**:
+
 - Constitutional hash validation against reference (`cdd01ef066bc6cf2`)
 - HMAC-SHA256 integrity verification for all constitutional operations
 - Multi-level validation (Basic, Standard, Comprehensive, Critical)
@@ -25,6 +26,7 @@ This 16-character hexadecimal hash represents the current constitutional framewo
 - Comprehensive audit logging for constitutional compliance
 
 **Performance Targets**:
+
 - Validation latency: ≤5ms for 95% of operations
 - Compliance accuracy: ≥95%
 - Availability: >99.5%
@@ -34,6 +36,7 @@ This 16-character hexadecimal hash represents the current constitutional framewo
 **Purpose**: Enhanced policy compliance checking with constitutional hash validation
 
 **Improvements**:
+
 - Integration with Constitutional Hash Validator
 - Support for multiple validation levels
 - Backward compatibility with existing compliance checks
@@ -45,6 +48,7 @@ This 16-character hexadecimal hash represents the current constitutional framewo
 **Purpose**: Constitutional hash validation for all cached data
 
 **Features**:
+
 - Automatic constitutional hash validation on cache initialization
 - Constitutional compliance checking for all cached policy data
 - Automatic cache invalidation on constitutional hash changes
@@ -56,6 +60,7 @@ This 16-character hexadecimal hash represents the current constitutional framewo
 **Purpose**: Request-level constitutional validation for all API operations
 
 **Features**:
+
 - Automatic constitutional hash validation for all requests
 - Request-level constitutional compliance checking
 - Performance monitoring with <2ms middleware latency target
@@ -68,33 +73,40 @@ This 16-character hexadecimal hash represents the current constitutional framewo
 **New Endpoints**:
 
 #### `GET /api/v1/constitutional/validate`
+
 Validate constitutional hash with comprehensive compliance checking.
 
 #### `GET /api/v1/constitutional/state`
+
 Get current constitutional state and validation metrics.
 
 #### `POST /api/v1/constitutional/validate-policy`
+
 Validate policy constitutional compliance with enhanced checking.
 
 ## Validation Levels
 
 ### Basic
+
 - Simple hash format validation
 - Minimal performance impact
 - Suitable for non-critical operations
 
 ### Standard (Default)
+
 - Hash validation against reference
 - Basic policy structure checks
 - Balanced performance and compliance
 
 ### Comprehensive
+
 - Full constitutional compliance validation
 - Policy content analysis
 - Enhanced security checks
 - Recommended for policy operations
 
 ### Critical
+
 - Maximum validation rigor
 - Mandatory for constitutional amendments
 - Comprehensive audit logging
@@ -103,17 +115,20 @@ Validate policy constitutional compliance with enhanced checking.
 ## Performance Metrics
 
 ### Constitutional Hash Validator
+
 - **Target Latency**: ≤5ms for 95% of validations
 - **Cache Hit Rate**: >80%
 - **Compliance Accuracy**: ≥95%
 - **Circuit Breaker Threshold**: 5 failures
 
 ### Constitutional Validation Middleware
+
 - **Target Latency**: ≤2ms for 95% of requests
 - **Bypass Rate**: <5% of total requests
 - **Validation Success Rate**: >99%
 
 ### Redis Cache Manager
+
 - **Constitutional Validation Latency**: ≤2ms
 - **Cache Invalidation Time**: <100ms
 - **Constitutional State Sync**: <1s
@@ -121,16 +136,21 @@ Validate policy constitutional compliance with enhanced checking.
 ## Security Features
 
 ### HMAC-SHA256 Integrity Verification
+
 All constitutional operations include HMAC-SHA256 signatures for integrity verification.
 
 ### Circuit Breaker Protection
+
 Automatic circuit breaker protection prevents cascade failures:
+
 - **Failure Threshold**: 5 consecutive failures
 - **Reset Time**: 60 seconds
 - **Graceful Degradation**: Continues with reduced validation
 
 ### Constitutional State Monitoring
+
 Continuous monitoring of constitutional state:
+
 - Real-time hash validation
 - Automatic cache invalidation on changes
 - Performance metrics collection
@@ -139,21 +159,27 @@ Continuous monitoring of constitutional state:
 ## Integration Points
 
 ### 1. Policy Operations
+
 All policy operations automatically validate constitutional compliance:
+
 - Policy creation workflows
 - Policy enforcement actions
 - Policy compilation processes
 - Policy validation requests
 
 ### 2. Cache Operations
+
 All cache operations include constitutional validation:
+
 - Cache entry validation
 - Constitutional hash verification
 - Automatic invalidation on changes
 - Performance monitoring
 
 ### 3. API Requests
+
 All API requests include constitutional validation:
+
 - Request header validation
 - Path-based validation rules
 - Method validation
@@ -162,11 +188,13 @@ All API requests include constitutional validation:
 ## Testing
 
 ### Test Coverage
+
 - **Target Coverage**: ≥80%
 - **Test Types**: Unit, Integration, Performance, Security
 - **Test File**: `test_constitutional_hash_validation.py`
 
 ### Key Test Scenarios
+
 - Valid constitutional hash validation
 - Invalid constitutional hash handling
 - Missing hash scenarios by validation level
@@ -178,11 +206,13 @@ All API requests include constitutional validation:
 ## Monitoring and Observability
 
 ### Prometheus Metrics
+
 - `constitutional_validations_total`: Total validations by status/level/operation
 - `constitutional_validation_duration_seconds`: Validation latency histogram
 - `constitutional_compliance_score`: Current compliance score gauge
 
 ### Logging
+
 - Constitutional validation events
 - Performance warnings for slow validations
 - Circuit breaker state changes
@@ -190,6 +220,7 @@ All API requests include constitutional validation:
 - Cache invalidation events
 
 ### Health Checks
+
 - Constitutional validator health
 - Cache manager constitutional state
 - Middleware performance metrics
@@ -198,11 +229,13 @@ All API requests include constitutional validation:
 ## Configuration
 
 ### Environment Variables
+
 - `CONSTITUTIONAL_HASH`: Reference constitutional hash (default: "cdd01ef066bc6cf2")
 - `CONSTITUTIONAL_VALIDATION_STRICT`: Enable strict validation (default: true)
 - `CONSTITUTIONAL_PERFORMANCE_TARGET_MS`: Performance target in milliseconds
 
 ### Performance Configuration
+
 ```yaml
 constitutional_validation:
   enabled: true
@@ -216,6 +249,7 @@ constitutional_validation:
 ## Deployment Considerations
 
 ### Production Deployment
+
 - Enable strict constitutional validation
 - Configure appropriate performance targets
 - Set up monitoring and alerting
@@ -223,6 +257,7 @@ constitutional_validation:
 - Configure Redis for constitutional state persistence
 
 ### Development/Testing
+
 - Allow graceful degradation for testing
 - Reduce performance targets for test environments
 - Enable comprehensive logging
@@ -231,6 +266,7 @@ constitutional_validation:
 ## Future Enhancements
 
 ### Planned Features
+
 1. **Multi-Constitutional Support**: Support for multiple constitutional frameworks
 2. **Constitutional Versioning**: Version management for constitutional changes
 3. **Advanced Analytics**: ML-based constitutional compliance prediction
@@ -238,6 +274,7 @@ constitutional_validation:
 5. **Federated Validation**: Cross-service constitutional validation
 
 ### Performance Optimizations
+
 1. **Predictive Caching**: ML-based cache preloading
 2. **Parallel Validation**: Concurrent validation processing
 3. **Edge Validation**: Constitutional validation at edge nodes

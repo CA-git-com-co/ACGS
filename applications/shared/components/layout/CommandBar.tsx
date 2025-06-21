@@ -1,18 +1,18 @@
-'use client'
+'use client';
 
-import * as React from 'react'
-import { Command } from 'cmdk'
-import { Search, FileText, Vote, Settings, Plus } from 'lucide-react'
-import { useKeyboard } from '@/hooks/useKeyboard'
-import { SHORTCUTS } from '@/lib/keyboard'
-import { cn } from '@/lib/utils'
+import * as React from 'react';
+import { Command } from 'cmdk';
+import { Search, FileText, Vote, Settings, Plus } from 'lucide-react';
+import { useKeyboard } from '@/hooks/useKeyboard';
+import { SHORTCUTS } from '@/lib/keyboard';
+import { cn } from '@/lib/utils';
 
 interface CommandItem {
-  id: string
-  label: string
-  icon: React.ReactNode
-  keywords: string[]
-  onSelect: () => void
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  keywords: string[];
+  onSelect: () => void;
 }
 
 const commands: CommandItem[] = [
@@ -21,59 +21,51 @@ const commands: CommandItem[] = [
     label: 'Create New Policy',
     icon: <Plus className="h-4 w-4" />,
     keywords: ['create', 'new', 'policy', 'add'],
-    onSelect: () => console.log('Creating new policy...'),
+    onSelect: () => console.log('Creating new policy...')
   },
   {
     id: 'new-proposal',
     label: 'Create New Proposal',
     icon: <Vote className="h-4 w-4" />,
     keywords: ['create', 'new', 'proposal', 'vote'],
-    onSelect: () => console.log('Creating new proposal...'),
+    onSelect: () => console.log('Creating new proposal...')
   },
   {
     id: 'view-policies',
     label: 'View All Policies',
     icon: <FileText className="h-4 w-4" />,
     keywords: ['view', 'policies', 'list'],
-    onSelect: () => console.log('Viewing policies...'),
+    onSelect: () => console.log('Viewing policies...')
   },
   {
     id: 'settings',
     label: 'Open Settings',
     icon: <Settings className="h-4 w-4" />,
     keywords: ['settings', 'preferences', 'config'],
-    onSelect: () => console.log('Opening settings...'),
-  },
-]
+    onSelect: () => console.log('Opening settings...')
+  }
+];
 
 export function CommandBar() {
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = React.useState(false);
 
-  useKeyboard(
-    SHORTCUTS.COMMAND_PALETTE,
-    () => setOpen((open) => !open),
-    [setOpen]
-  )
+  useKeyboard(SHORTCUTS.COMMAND_PALETTE, () => setOpen(open => !open), [setOpen]);
 
-  useKeyboard(
-    SHORTCUTS.ESCAPE,
-    () => setOpen(false),
-    [setOpen]
-  )
+  useKeyboard(SHORTCUTS.ESCAPE, () => setOpen(false), [setOpen]);
 
   React.useEffect(() => {
     if (open) {
-      document.body.style.overflow = 'hidden'
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = 'unset'
+      document.body.style.overflow = 'unset';
     }
 
     return () => {
-      document.body.style.overflow = 'unset'
-    }
-  }, [open])
+      document.body.style.overflow = 'unset';
+    };
+  }, [open]);
 
-  if (!open) return null
+  if (!open) return null;
 
   return (
     <div
@@ -86,7 +78,7 @@ export function CommandBar() {
             'overflow-hidden rounded-lg border bg-base-white shadow-command animate-scale-in',
             'dark:bg-gray-800 dark:border-gray-700'
           )}
-          onClick={(e) => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
         >
           <div className="flex items-center border-b border-gray-200 dark:border-gray-700 px-3">
             <Search className="mr-2 h-4 w-4 shrink-0 text-gray-400" />
@@ -103,14 +95,14 @@ export function CommandBar() {
               No results found.
             </Command.Empty>
             <Command.Group heading="Actions" className="p-2">
-              {commands.map((command) => (
+              {commands.map(command => (
                 <Command.Item
                   key={command.id}
                   value={command.label}
                   keywords={command.keywords}
                   onSelect={() => {
-                    command.onSelect()
-                    setOpen(false)
+                    command.onSelect();
+                    setOpen(false);
                   }}
                   className={cn(
                     'relative flex cursor-default select-none items-center rounded-md px-2 py-2 text-body outline-none',
@@ -127,5 +119,5 @@ export function CommandBar() {
         </Command>
       </div>
     </div>
-  )
+  );
 }

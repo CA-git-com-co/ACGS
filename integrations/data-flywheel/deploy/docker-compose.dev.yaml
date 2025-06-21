@@ -2,7 +2,7 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:8.12.1
     ports:
-      - "5601:5601"
+      - '5601:5601'
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - ELASTICSEARCH_REQUEST_TIMEOUT=120000
@@ -30,14 +30,14 @@ services:
       dockerfile: ./deploy/Dockerfile
       target: dev
     ports:
-      - "5555:5555"
+      - '5555:5555'
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
       - REDIS_URL=redis://redis:6379/0
       - MONGODB_URL=mongodb://mongodb:27017
       - MONGODB_DB=flywheel
       - NGC_API_KEY=${NGC_API_KEY}
-    command: ["uv", "run", "celery", "-A", "src.tasks.tasks", "flower", "--port=5555"]
+    command: ['uv', 'run', 'celery', '-A', 'src.tasks.tasks', 'flower', '--port=5555']
     restart: always
 
 volumes:
