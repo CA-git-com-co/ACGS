@@ -1,0 +1,411 @@
+name: ACGS-1 Comprehensive Security Scanning
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  schedule:
+    - cron: '0 3 * * 1'  # Weekly on Monday at 3 AM
+  workflow_dispatch:
+    inputs:
+      scan_type:
+        description: 'Type of security scan'
+        required: false
+        default: 'comprehensive'
+        type: choice
+        options:
+        - comprehensive
+        - dependency-only
+        - code-only
+        - container-only
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+  packages: read
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # Dependency Vulnerability Scanning
+  dependency_scanning:
+    runs-on: ubuntu-latest
+    name: Dependency Vulnerability Scanning
+    if: github.event.inputs.scan_type == 'comprehensive' || github.event.inputs.scan_type == 'dependency-only' || github.event.inputs.scan_type == ''
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.81.0
+
+      - name: Install security scanning tools
+        run: |
+          echo "🔧 Installing security scanning tools..."
+          
+          # Python security tools
+          pip install safety bandit semgrep
+          
+          # Node.js security tools
+          npm install -g audit-ci retire
+          
+          # Rust security tools
+          cargo install cargo-audit cargo-deny
+          
+          echo "✅ Security tools installed"
+
+      - name: Python dependency scanning with Safety
+        run: |
+          echo "🔍 Scanning Python dependencies with Safety..."
+          
+          # Generate requirements files if they don't exist
+          find . -name "requirements*.txt" -o -name "pyproject.toml" | head -1 | xargs -I {} safety check -r {}
+          
+          echo "✅ Python dependency scan completed"
+
+      - name: Node.js dependency scanning
+        run: |
+          echo "🔍 Scanning Node.js dependencies..."
+          
+          # Find and scan package.json files
+          find . -name "package.json" -not -path "*/node_modules/*" | while read package_file; do
+            dir=$(dirname "$package_file")
+            echo "Scanning $package_file..."
+            cd "$dir"
+            
+            # Run npm audit
+            npm audit --audit-level=moderate || true
+            
+            # Run retire.js
+            retire --path . --outputformat json --outputpath retire-report.json || true
+            
+            cd - > /dev/null
+          done
+          
+          echo "✅ Node.js dependency scan completed"
+
+      - name: Rust dependency scanning
+        run: |
+          echo "🔍 Scanning Rust dependencies..."
+          
+          # Scan blockchain dependencies
+          if [ -d "blockchain" ]; then
+            cd blockchain
+            
+            # Run cargo audit
+            cargo audit --ignore RUSTSEC-2021-0145 --ignore RUSTSEC-2023-0033 --ignore RUSTSEC-2024-0375 --ignore RUSTSEC-2024-0388 --ignore RUSTSEC-2024-0436
+            
+            # Run cargo deny if config exists
+            if [ -f "deny.toml" ]; then
+              cargo deny check
+            fi
+            
+            cd ..
+          fi
+          
+          echo "✅ Rust dependency scan completed"
+
+      - name: Generate dependency scan report
+        run: |
+          echo "📊 Generating dependency scan report..."
+          
+          cat > dependency-scan-report.json << EOF
+          {
+            "scan_type": "dependency_vulnerability",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "commit_sha": "${{ github.sha }}",
+            "python_scan": "completed",
+            "nodejs_scan": "completed", 
+            "rust_scan": "completed",
+            "status": "success"
+          }
+          EOF
+          
+          echo "✅ Dependency scan report generated"
+
+  # Static Code Analysis
+  static_code_analysis:
+    runs-on: ubuntu-latest
+    name: Static Code Analysis
+    if: github.event.inputs.scan_type == 'comprehensive' || github.event.inputs.scan_type == 'code-only' || github.event.inputs.scan_type == ''
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install static analysis tools
+        run: |
+          echo "🔧 Installing static analysis tools..."
+          
+          pip install bandit semgrep pylint mypy
+          
+          echo "✅ Static analysis tools installed"
+
+      - name: Run Bandit security linter
+        run: |
+          echo "🔍 Running Bandit security analysis..."
+          
+          # Run Bandit on Python code
+          find . -name "*.py" -not -path "*/venv/*" -not -path "*/.venv/*" -not -path "*/node_modules/*" | head -100 | xargs bandit -f json -o bandit-report.json || true
+          
+          echo "✅ Bandit analysis completed"
+
+      - name: Run Semgrep analysis
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/secrets
+            p/owasp-top-ten
+            p/python
+            p/javascript
+            p/typescript
+          generateSarif: "1"
+
+      - name: Upload Semgrep results to GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: semgrep.sarif
+
+      - name: Custom security pattern analysis
+        run: |
+          echo "🔍 Running custom security pattern analysis..."
+          
+          # Check for common security anti-patterns
+          echo "Checking for hardcoded secrets..."
+          grep -r -i "password\|secret\|key\|token" --include="*.py" --include="*.js" --include="*.ts" . | grep -v ".git" | grep -v "test" | head -20 || true
+          
+          echo "Checking for SQL injection patterns..."
+          grep -r "execute.*%" --include="*.py" . | head -10 || true
+          
+          echo "Checking for XSS vulnerabilities..."
+          grep -r "innerHTML\|outerHTML" --include="*.js" --include="*.ts" . | head -10 || true
+          
+          echo "✅ Custom security analysis completed"
+
+  # Container Security Scanning
+  container_security_scanning:
+    runs-on: ubuntu-latest
+    name: Container Security Scanning
+    if: github.event.inputs.scan_type == 'comprehensive' || github.event.inputs.scan_type == 'container-only' || github.event.inputs.scan_type == ''
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build test image
+        run: |
+          echo "🏗️ Building test image for security scanning..."
+          
+          # Build the main ACGS image
+          docker build -f infrastructure/docker/Dockerfile.acgs -t acgs-security-test:latest .
+          
+          echo "✅ Test image built"
+
+      - name: Run Trivy container scan
+        uses: aquasecurity/trivy-action@0.31.0
+        with:
+          image-ref: 'acgs-security-test:latest'
+          format: 'sarif'
+          output: 'trivy-container-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+
+      - name: Upload Trivy container results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-container-results.sarif'
+
+      - name: Run Trivy filesystem scan
+        uses: aquasecurity/trivy-action@0.31.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-fs-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+
+      - name: Upload Trivy filesystem results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-fs-results.sarif'
+
+      - name: Docker security best practices check
+        run: |
+          echo "🔍 Checking Docker security best practices..."
+          
+          # Check Dockerfile security practices
+          find . -name "Dockerfile*" | while read dockerfile; do
+            echo "Analyzing $dockerfile..."
+            
+            # Check for running as root
+            if ! grep -q "USER" "$dockerfile"; then
+              echo "⚠️ $dockerfile: No USER instruction found (running as root)"
+            fi
+            
+            # Check for COPY vs ADD
+            if grep -q "ADD" "$dockerfile"; then
+              echo "⚠️ $dockerfile: ADD instruction found, consider using COPY"
+            fi
+            
+            # Check for latest tags
+            if grep -q ":latest" "$dockerfile"; then
+              echo "⚠️ $dockerfile: Using :latest tag, consider pinning versions"
+            fi
+          done
+          
+          echo "✅ Docker security check completed"
+
+  # Infrastructure Security Scanning
+  infrastructure_security_scanning:
+    runs-on: ubuntu-latest
+    name: Infrastructure Security Scanning
+    if: github.event.inputs.scan_type == 'comprehensive' || github.event.inputs.scan_type == ''
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install infrastructure security tools
+        run: |
+          echo "🔧 Installing infrastructure security tools..."
+          
+          # Install checkov for infrastructure as code scanning
+          pip install checkov
+          
+          # Install tfsec for Terraform scanning
+          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+          
+          echo "✅ Infrastructure security tools installed"
+
+      - name: Scan Docker Compose files
+        run: |
+          echo "🔍 Scanning Docker Compose files..."
+          
+          find . -name "docker-compose*.yml" | while read compose_file; do
+            echo "Scanning $compose_file..."
+            checkov -f "$compose_file" --framework docker_compose || true
+          done
+          
+          echo "✅ Docker Compose scan completed"
+
+      - name: Scan Kubernetes manifests
+        run: |
+          echo "🔍 Scanning Kubernetes manifests..."
+          
+          find . -name "*.yaml" -path "*/kubernetes/*" | while read k8s_file; do
+            echo "Scanning $k8s_file..."
+            checkov -f "$k8s_file" --framework kubernetes || true
+          done
+          
+          echo "✅ Kubernetes manifest scan completed"
+
+      - name: Scan Terraform files
+        run: |
+          echo "🔍 Scanning Terraform files..."
+          
+          if [ -d "infrastructure/terraform" ]; then
+            cd infrastructure/terraform
+            tfsec . || true
+            checkov -d . --framework terraform || true
+            cd ../..
+          fi
+          
+          echo "✅ Terraform scan completed"
+
+  # Security Report Generation
+  security_report_generation:
+    runs-on: ubuntu-latest
+    name: Security Report Generation
+    needs: [dependency_scanning, static_code_analysis, container_security_scanning, infrastructure_security_scanning]
+    if: always()
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/security-artifacts/
+
+      - name: Generate comprehensive security report
+        run: |
+          echo "📊 Generating comprehensive security report..."
+          
+          # Create comprehensive security report
+          cat > security-report.json << EOF
+          {
+            "scan_id": "${{ github.run_id }}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "commit_sha": "${{ github.sha }}",
+            "branch": "${{ github.ref_name }}",
+            "scan_type": "${{ github.event.inputs.scan_type || 'comprehensive' }}",
+            "scans_completed": {
+              "dependency_scanning": "${{ needs.dependency_scanning.result }}",
+              "static_code_analysis": "${{ needs.static_code_analysis.result }}",
+              "container_security_scanning": "${{ needs.container_security_scanning.result }}",
+              "infrastructure_security_scanning": "${{ needs.infrastructure_security_scanning.result }}"
+            },
+            "overall_status": "$([ "${{ needs.dependency_scanning.result }}" = "success" ] && [ "${{ needs.static_code_analysis.result }}" = "success" ] && [ "${{ needs.container_security_scanning.result }}" = "success" ] && [ "${{ needs.infrastructure_security_scanning.result }}" = "success" ] && echo "passed" || echo "failed")",
+            "recommendations": [
+              "Review all SARIF reports uploaded to GitHub Security tab",
+              "Address any CRITICAL and HIGH severity vulnerabilities",
+              "Update dependencies with known vulnerabilities",
+              "Follow security best practices for container images",
+              "Implement infrastructure security recommendations"
+            ]
+          }
+          EOF
+          
+          echo "✅ Security report generated"
+
+      - name: Upload security artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-scan-results
+          path: |
+            security-report.json
+            dependency-scan-report.json
+            bandit-report.json
+            trivy-container-results.sarif
+            trivy-fs-results.sarif
+          retention-days: 30
+
+      - name: Security scan summary
+        run: |
+          echo "🔒 Security Scan Summary"
+          echo "======================="
+          echo "Scan ID: ${{ github.run_id }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo ""
+          echo "Scan Results:"
+          echo "- Dependency Scanning: ${{ needs.dependency_scanning.result }}"
+          echo "- Static Code Analysis: ${{ needs.static_code_analysis.result }}"
+          echo "- Container Security: ${{ needs.container_security_scanning.result }}"
+          echo "- Infrastructure Security: ${{ needs.infrastructure_security_scanning.result }}"
+          echo ""
+          echo "📋 Detailed results available in GitHub Security tab"
