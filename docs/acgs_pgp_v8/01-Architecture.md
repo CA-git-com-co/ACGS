@@ -2,6 +2,9 @@
 
 This document provides a high-level overview of the **Artificial Constitutionalism: Self-Synthesizing Prompt Governance Pipeline (ACGS-PGP) v8**. This version introduces a paradigm shift in its core architecture, adopting a **Quantum-Inspired Semantic Fault Tolerance (QEC-SFT)** model to address the critical challenge of semantic translation errors and correlated faults in automated generation.
 
+> **NOTE**
+> Semantic translation errors occur when an automatically generated component is syntactically correct yet semantically deviates from its specification. Classical approaches such as N-Version Programming or Byzantine Fault Tolerance often miss these correlated faults. The QEC-SFT architecture highlights and mitigates this vulnerability by checking consistency across diverse representations.
+
 ## 1.1. C4 Model: System Context
 
 The system context remains consistent with v7, with ACGS-PGP acting as a central governance and reliability layer between human operators and the systems they manage.
