@@ -110,7 +110,7 @@ jobs:
           echo "CPU cores: $(nproc)"
           
           # Validate network connectivity using HTTP (more reliable than ping on CI)
-          if curl -I https://github.com 2>&1 | grep -q "HTTP"; then
+          if timeout 10 curl -I https://github.com 2>&1 | grep -q "HTTP"; then
             echo "✅ GitHub connectivity verified"
           else
             echo "❌ GitHub connectivity failed"
