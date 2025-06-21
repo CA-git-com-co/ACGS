@@ -56,12 +56,14 @@ jobs:
         ./scripts/robust-github-connectivity-check.sh
         
     # OPTION 4: Traditional ping (after installing)
-    - name: Traditional Ping Check (after installation)
+    # Ping check removed - ICMP traffic is often blocked on GitHub Actions runners
+    # Using HTTP-based connectivity checks instead for better reliability
+    - name: HTTP Connectivity Check
       run: |
-        echo "📡 Testing with traditional ping..."
-        if ping -c 1 github.com >/dev/null 2>&1; then
-          echo "✅ GitHub ping successful"
+        echo "📡 Testing HTTP connectivity to GitHub..."
+        if curl -I https://github.com 2>&1 | grep -q "HTTP"; then
+          echo "✅ GitHub HTTP connectivity verified"
         else
-          echo "❌ GitHub ping failed"
+          echo "❌ GitHub HTTP connectivity failed"
           exit 1
         fi

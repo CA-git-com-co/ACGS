@@ -109,15 +109,15 @@ jobs:
           echo "Available memory: $(free -h | grep '^Mem:' | awk '{print $7}')"
           echo "CPU cores: $(nproc)"
           
-          # Validate network connectivity
-          if ping -c 1 github.com > /dev/null 2>&1; then
+          # Validate network connectivity using HTTP (more reliable than ping on CI)
+          if curl -I https://github.com 2>&1 | grep -q "HTTP"; then
             echo "✅ GitHub connectivity verified"
           else
             echo "❌ GitHub connectivity failed"
             exit 1
           fi
           
-          if ping -c 1 crates.io > /dev/null 2>&1; then
+          if curl -I https://crates.io 2>&1 | grep -q "HTTP"; then
             echo "✅ Crates.io connectivity verified"
           else
             echo "❌ Crates.io connectivity failed"

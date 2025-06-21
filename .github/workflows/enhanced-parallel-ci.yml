@@ -95,7 +95,8 @@ jobs:
           esac
 
           echo "Generated matrix: $MATRIX"
-          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+          # Minify JSON by removing newlines and extra spaces (jq -c alternative)
+          echo "matrix=$(echo $MATRIX | tr -d '\n' | sed 's/[[:space:]]\+/ /g' | sed 's/{ /{/g' | sed 's/ }/}/g' | sed 's/, /,/g')" >> $GITHUB_OUTPUT
           echo "✅ Performance matrix generated successfully"
 
       - name: Determine cache strategy
@@ -134,15 +135,16 @@ jobs:
           CACHE_KEYS=$(cat << EOF
           {
             "rust_deps": "$RUST_DEPS_KEY",
-            "rust_target": "$RUST_TARGET_KEY", 
+            "rust_target": "$RUST_TARGET_KEY",
             "node_deps": "$NODE_DEPS_KEY",
             "python_deps": "$PYTHON_DEPS_KEY",
             "toolchain": "$TOOLCHAIN_KEY"
           }
           EOF
           )
-          
-          echo "cache_keys=$CACHE_KEYS" >> $GITHUB_OUTPUT
+
+          # Minify JSON by removing newlines and extra spaces (jq -c alternative)
+          echo "cache_keys=$(echo $CACHE_KEYS | tr -d '\n' | sed 's/[[:space:]]\+/ /g' | sed 's/{ /{/g' | sed 's/ }/}/g' | sed 's/, /,/g')" >> $GITHUB_OUTPUT
 
       - name: Setup distributed compilation cache
         uses: mozilla-actions/sccache-action@v0.0.9
