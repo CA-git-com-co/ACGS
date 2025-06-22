@@ -195,12 +195,32 @@ class SecurityMiddleware(BaseHTTPMiddleware):
     ) -> Optional[Response]:
         """Perform comprehensive security checks."""
 
+        # Define exempt paths that should bypass security checks
+        exempt_paths = {
+            "/health",
+            "/metrics",
+            "/docs",
+            "/openapi.json",
+            "/redoc",
+            "/favicon.ico"
+        }
+
+        # Check if this is an exempt path
+        request_path = request.url.path
+        if request_path in exempt_paths:
+            logger.debug(f"Exempting path from security checks: {request_path}")
+            return None
+
+        # Also exempt OPTIONS requests (CORS preflight)
+        if request.method == "OPTIONS":
+            return None
+
         # Check blocked IPs
         if client_ip in self.config.blocked_ips:
             logger.warning(f"Blocked IP attempted access: {client_ip}")
             return JSONResponse(status_code=403, content={"error": "Access denied"})
 
-        # HTTPS enforcement
+        # HTTPS enforcement (but not for health checks and localhost)
         if self.config.enable_https_only and request.url.scheme != "https":
             if not (
                 request.client and request.client.host in ["127.0.0.1", "localhost"]
@@ -209,7 +229,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                     status_code=400, content={"error": "HTTPS required"}
                 )
 
-        # Rate limiting
+        # Rate limiting (with more lenient limits for health checks)
         if self.config.enable_rate_limiting:
             if not self.rate_limiter.is_allowed(client_ip):
                 return JSONResponse(
@@ -221,7 +241,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         if content_length and int(content_length) > self.config.max_request_size:
             return JSONResponse(status_code=413, content={"error": "Request too large"})
 
-        # CSRF protection for state-changing methods
+        # CSRF protection for state-changing methods (but not for exempt paths)
         if self.config.enable_csrf_protection and request.method in [
             "POST",
             "PUT",
