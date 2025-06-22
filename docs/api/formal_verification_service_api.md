@@ -7,7 +7,7 @@ Provides formal verification and consistency checking for policies and governanc
 **Base URL**: `http://localhost:8003`
 **Interactive Docs**: `http://localhost:8003/docs`
 **Service Version**: 2.1.0
-**Last Updated**: 2025-06-20
+**Last Updated**: 2025-06-22
 
 ## Authentication
 
@@ -73,7 +73,7 @@ Formally verify policy consistency and completeness.
     "code": "VALIDATION_ERROR",
     "message": "Invalid input parameters"
   },
-  "timestamp": "2025-06-20T22:30:45.548271Z",
+  "timestamp": "2025-06-22T15:30:20.969584Z",
   "request_id": "req_error_123"
 }
 ```
@@ -87,7 +87,7 @@ Formally verify policy consistency and completeness.
     "code": "UNAUTHORIZED",
     "message": "Invalid or missing authentication token"
   },
-  "timestamp": "2025-06-20T22:30:45.548271Z",
+  "timestamp": "2025-06-22T15:30:20.969584Z",
   "request_id": "req_error_456"
 }
 ```

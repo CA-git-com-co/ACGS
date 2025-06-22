@@ -1,0 +1,186 @@
+{
+  "monitoring_summary": {
+    "start_time": "2025-06-22T16:40:02.429217+00:00",
+    "duration_seconds": 300.15,
+    "total_metrics_collected": 179,
+    "critical_alerts": 0,
+    "warning_alerts": 3,
+    "monitoring_status": "healthy"
+  },
+  "performance_metrics": {
+    "api_response_time_p95_v1.0.0": {
+      "avg": 48.50462443839269,
+      "min": 40.997580565565194,
+      "max": 54.91388634277809,
+      "unit": "ms"
+    },
+    "api_response_time_p95_v1.5.0": {
+      "avg": 46.128858481557984,
+      "min": 37.710673017811104,
+      "max": 51.86434462720745,
+      "unit": "ms"
+    },
+    "api_response_time_p95_v2.0.0": {
+      "avg": 39.830397014382235,
+      "min": 33.043261711675406,
+      "max": 47.84041819558624,
+      "unit": "ms"
+    },
+    "api_response_time_p95_v2.1.0": {
+      "avg": 42.14070479790698,
+      "min": 36.81054734194104,
+      "max": 49.73830228099051,
+      "unit": "ms"
+    },
+    "api_error_rate_v1.0.0": {
+      "avg": 0.15337801759900063,
+      "min": 0.12646169820821765,
+      "max": 0.17362218023147744,
+      "unit": "percent"
+    },
+    "api_error_rate_v1.5.0": {
+      "avg": 0.09520731591697408,
+      "min": 0.05767174960722162,
+      "max": 0.12270507117952459,
+      "unit": "percent"
+    },
+    "api_error_rate_v2.0.0": {
+      "avg": 0.06098669482296837,
+      "min": 0.035413008000062106,
+      "max": 0.08795467057378896,
+      "unit": "percent"
+    },
+    "api_error_rate_v2.1.0": {
+      "avg": 0.12394669589504727,
+      "min": 0.09314057497263317,
+      "max": 0.15687687790858612,
+      "unit": "percent"
+    },
+    "cpu_usage": {
+      "avg": 49.42665530754912,
+      "min": 37.58011869019104,
+      "max": 63.41803849558542,
+      "unit": "percent"
+    },
+    "memory_usage": {
+      "avg": 69.3516881330335,
+      "min": 52.415536621274995,
+      "max": 79.30338002907298,
+      "unit": "percent"
+    },
+    "disk_usage": {
+      "avg": 33.830762241795114,
+      "min": 28.796200606199104,
+      "max": 39.45048223040454,
+      "unit": "percent"
+    },
+    "version_usage_percentage_v1.0.0": {
+      "avg": 14.890363086051714,
+      "min": 12.111213245738288,
+      "max": 17.214221668689298,
+      "unit": "percent"
+    },
+    "version_usage_percentage_v1.5.0": {
+      "avg": 23.45154300430801,
+      "min": 21.38643613189449,
+      "max": 27.264207134128345,
+      "unit": "percent"
+    },
+    "version_usage_percentage_v2.0.0": {
+      "avg": 56.73539077688975,
+      "min": 53.87765677596696,
+      "max": 59.83442486581097,
+      "unit": "percent"
+    },
+    "version_usage_percentage_v2.1.0": {
+      "avg": 6.106239929368226,
+      "min": 4.234148111747031,
+      "max": 6.803617484404521,
+      "unit": "percent"
+    },
+    "rollback_health_check_failure_detection": {
+      "avg": 1.0,
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "boolean"
+    },
+    "rollback_automatic_traffic_rerouting": {
+      "avg": 1.0,
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "boolean"
+    },
+    "rollback_blue_environment_availability": {
+      "avg": 1.0,
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "boolean"
+    },
+    "rollback_rollback_trigger_latency_ms": {
+      "avg": 250.0,
+      "min": 250,
+      "max": 250,
+      "unit": "ms"
+    },
+    "rollback_data_consistency_maintained": {
+      "avg": 1.0,
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "boolean"
+    },
+    "deprecation_deprecated_endpoints_properly_marked": {
+      "avg": 100.0,
+      "min": 100,
+      "max": 100,
+      "unit": "percent"
+    },
+    "deprecation_sunset_headers_present": {
+      "avg": 98.0,
+      "min": 98,
+      "max": 98,
+      "unit": "percent"
+    },
+    "deprecation_migration_guidance_available": {
+      "avg": 95.0,
+      "min": 95,
+      "max": 95,
+      "unit": "percent"
+    },
+    "deprecation_client_notification_sent": {
+      "avg": 100.0,
+      "min": 100,
+      "max": 100,
+      "unit": "percent"
+    }
+  },
+  "alerts": [
+    {
+      "alert_name": "high_memory_usage",
+      "severity": "warning",
+      "message": "Memory Usage is 78.3%",
+      "timestamp": "2025-06-22T16:40:52.454888+00:00",
+      "resolved": false
+    },
+    {
+      "alert_name": "high_memory_usage",
+      "severity": "warning",
+      "message": "Memory Usage is 78.1%",
+      "timestamp": "2025-06-22T16:43:22.530057+00:00",
+      "resolved": false
+    },
+    {
+      "alert_name": "high_memory_usage",
+      "severity": "warning",
+      "message": "Memory Usage is 79.3%",
+      "timestamp": "2025-06-22T16:44:37.579767+00:00",
+      "resolved": false
+    }
+  ],
+  "success_criteria": {
+    "no_critical_alerts": true,
+    "response_times_within_targets": true,
+    "error_rates_acceptable": true,
+    "rollback_mechanisms_operational": true,
+    "system_resources_healthy": true
+  }
+}

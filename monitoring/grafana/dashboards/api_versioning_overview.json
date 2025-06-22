@@ -1,0 +1,100 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "ACGS API Versioning Overview",
+    "tags": ["acgs", "api", "versioning"],
+    "timezone": "UTC",
+    "panels": [
+      {
+        "id": 1,
+        "title": "API Version Distribution",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "sum by (version) (rate(api_version_requests_total[5m]))",
+            "legendFormat": "{{version}}"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Response Time by Version",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(api_version_response_duration_seconds_bucket[5m])) by (version, le))",
+            "legendFormat": "{{version}} p95"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "Deprecated Endpoint Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum by (endpoint, version) (rate(api_deprecated_endpoint_usage_total[5m]))",
+            "legendFormat": "{{version}}/{{endpoint}}"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "id": 4,
+        "title": "Version Compatibility Errors",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(rate(api_version_compatibility_errors_total[5m]))",
+            "legendFormat": "Errors/sec"
+          }
+        ],
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 0,
+          "y": 16
+        }
+      },
+      {
+        "id": 5,
+        "title": "Version Adoption Rate",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "api_version_adoption_percentage{version=\"v2.0.0\"}",
+            "legendFormat": "v2.0.0 Adoption"
+          }
+        ],
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 6,
+          "y": 16
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "30s"
+  }
+}

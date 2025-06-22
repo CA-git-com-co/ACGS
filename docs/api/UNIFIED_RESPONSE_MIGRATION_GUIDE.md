@@ -2,7 +2,7 @@
 
 **Version:** 1.0  
 **Date:** 2025-06-22  
-**Status:** Implementation Guide  
+**Status:** Implementation Guide
 
 ## Overview
 
@@ -47,6 +47,7 @@ This guide provides step-by-step instructions for migrating all ACGS-1 microserv
 ### 1. Authentication Service (Port 8000)
 
 **Current Format:**
+
 ```json
 {
   "access_token": "jwt_token",
@@ -56,6 +57,7 @@ This guide provides step-by-step instructions for migrating all ACGS-1 microserv
 ```
 
 **New Format:**
+
 ```json
 {
   "success": true,
@@ -75,6 +77,7 @@ This guide provides step-by-step instructions for migrating all ACGS-1 microserv
 ```
 
 **Migration Code:**
+
 ```python
 # Before
 from fastapi import APIRouter
@@ -92,7 +95,7 @@ async def login(credentials: LoginRequest):
 # After
 from fastapi import APIRouter, Depends
 from services.shared.response.unified_response import (
-    ResponseBuilder, 
+    ResponseBuilder,
     get_response_builder,
     UnifiedJSONResponse
 )
@@ -103,7 +106,7 @@ async def login(
     response_builder: ResponseBuilder = Depends(get_response_builder)
 ):
     token = await authenticate_user(credentials)
-    
+
     response = response_builder.success(
         data={
             "access_token": token,
@@ -112,13 +115,14 @@ async def login(
         },
         message="Authentication successful"
     )
-    
+
     return UnifiedJSONResponse(content=response)
 ```
 
 ### 2. Constitutional AI Service (Port 8001)
 
 **Migration Example:**
+
 ```python
 # Before
 @router.get("/principles")
@@ -132,7 +136,7 @@ async def get_principles(
     response_builder: ResponseBuilder = Depends(get_response_builder)
 ):
     principles = await get_constitutional_principles()
-    
+
     response = response_builder.success(
         data={
             "principles": principles,
@@ -140,13 +144,14 @@ async def get_principles(
         },
         message="Constitutional principles retrieved successfully"
     )
-    
+
     return UnifiedJSONResponse(content=response)
 ```
 
 ### 3. Governance Synthesis Service (Port 8004) - Paginated Response
 
 **Migration Example:**
+
 ```python
 # Before
 @router.get("/policies")
@@ -169,7 +174,7 @@ async def get_policies(
     response_builder: ResponseBuilder = Depends(get_response_builder)
 ):
     policies, total = await get_policies_paginated(page, limit)
-    
+
     response = response_builder.paginated_success(
         data=policies,
         page=page,
@@ -177,7 +182,7 @@ async def get_policies(
         total=total,
         message="Policies retrieved successfully"
     )
-    
+
     return UnifiedJSONResponse(content=response)
 ```
 
@@ -231,29 +236,29 @@ async def example_endpoint(
     try:
         # Your business logic here
         data = await get_example_data()
-        
+
         response = response_builder.success(
             data=data,
             message="Data retrieved successfully"
         )
-        
+
         return UnifiedJSONResponse(content=response)
-        
+
     except ValueError as e:
         response = response_builder.error(
             message="Invalid input provided",
             data={"validation_errors": str(e)},
             error_code="VALIDATION_ERROR"
         )
-        
+
         return UnifiedJSONResponse(content=response, status_code=400)
-        
+
     except Exception as e:
         response = response_builder.error(
             message="Internal server error",
             error_code="INTERNAL_ERROR"
         )
-        
+
         return UnifiedJSONResponse(content=response, status_code=500)
 ```
 
@@ -267,17 +272,17 @@ from services.shared.response.unified_response import ResponseBuilder
 
 async def unified_exception_handler(request: Request, exc: HTTPException):
     """Global exception handler using unified response format."""
-    
+
     # Extract service name from request
     service_name = request.headers.get("X-Service-Name", "unknown-service")
     builder = ResponseBuilder(service_name)
     builder.set_request_context(request)
-    
+
     response = builder.error(
         message=exc.detail,
         error_code=f"HTTP_{exc.status_code}"
     )
-    
+
     return JSONResponse(
         content=response.dict(),
         status_code=exc.status_code
@@ -301,20 +306,20 @@ from services.shared.response.unified_response import validate_response_format
 def test_endpoint_unified_response_format(client: TestClient):
     """Test that endpoint returns unified response format."""
     response = client.get("/api/v1/example")
-    
+
     assert response.status_code == 200
-    
+
     response_data = response.json()
-    
+
     # Validate unified format
     assert validate_response_format(response_data) is True
-    
+
     # Check required fields
     assert "success" in response_data
     assert "data" in response_data
     assert "message" in response_data
     assert "metadata" in response_data
-    
+
     # Check metadata structure
     metadata = response_data["metadata"]
     assert "timestamp" in metadata
@@ -333,18 +338,18 @@ import httpx
 @pytest.mark.asyncio
 async def test_all_endpoints_unified_format():
     """Test that all service endpoints return unified format."""
-    
+
     endpoints = [
         "http://localhost:8000/health",  # Auth Service
         "http://localhost:8001/health",  # AC Service
         "http://localhost:8002/health",  # Integrity Service
         # ... add all service endpoints
     ]
-    
+
     async with httpx.AsyncClient() as client:
         for endpoint in endpoints:
             response = await client.get(endpoint)
-            
+
             if response.status_code == 200:
                 response_data = response.json()
                 assert validate_response_format(response_data) is True
@@ -362,17 +367,17 @@ from services.shared.response.unified_response import migrate_legacy_response
 
 async def legacy_response_middleware(request: Request, call_next):
     """Middleware to support legacy response format during transition."""
-    
+
     # Check if client requests legacy format
     accept_legacy = request.headers.get("X-Accept-Legacy-Format", "false").lower() == "true"
-    
+
     response = await call_next(request)
-    
+
     if accept_legacy and hasattr(response, 'body'):
         # Convert unified response back to legacy format if requested
         # Implementation depends on specific legacy format requirements
         pass
-    
+
     return response
 ```
 
@@ -395,7 +400,7 @@ from services.shared.response.unified_response import validate_response_format
 
 async def validate_all_service_responses():
     """Validate that all services return unified response format."""
-    
+
     services = [
         {"name": "auth", "url": "http://localhost:8000"},
         {"name": "ac", "url": "http://localhost:8001"},
@@ -406,14 +411,14 @@ async def validate_all_service_responses():
         {"name": "ec", "url": "http://localhost:8006"},
         {"name": "dgm", "url": "http://localhost:8007"},
     ]
-    
+
     results = {}
-    
+
     async with httpx.AsyncClient() as client:
         for service in services:
             try:
                 response = await client.get(f"{service['url']}/health")
-                
+
                 if response.status_code == 200:
                     is_valid = validate_response_format(response.json())
                     results[service['name']] = {
@@ -425,18 +430,18 @@ async def validate_all_service_responses():
                         "status": "error",
                         "error": f"HTTP {response.status_code}"
                     }
-                    
+
             except Exception as e:
                 results[service['name']] = {
                     "status": "error",
                     "error": str(e)
                 }
-    
+
     return results
 
 if __name__ == "__main__":
     results = asyncio.run(validate_all_service_responses())
-    
+
     print("🔍 Response Format Validation Results:")
     for service, result in results.items():
         status = "✅" if result.get("unified_format") else "❌"
@@ -466,21 +471,25 @@ response_time_histogram = Histogram(
 ## 🚀 Rollout Plan
 
 ### Week 1: Foundation
+
 - ✅ Implement shared response utilities
 - ✅ Create comprehensive unit tests
 - ✅ Update 2 services (Auth + AC) as proof of concept
 
 ### Week 2: Core Services
+
 - 🔄 Migrate Integrity, FV, and GS services
 - 🔄 Implement backward compatibility middleware
 - 🔄 Update integration tests
 
 ### Week 3: Remaining Services
+
 - 🔄 Migrate PGC, EC, and DGM services
 - 🔄 Update all 86 identified endpoints
 - 🔄 Comprehensive validation testing
 
 ### Week 4: Validation & Documentation
+
 - 🔄 Complete end-to-end testing
 - 🔄 Update API documentation
 - 🔄 Performance validation
@@ -497,6 +506,7 @@ response_time_histogram = Histogram(
 ---
 
 **Next Steps:**
+
 1. ✅ Unified Response Format Implementation: **IN_PROGRESS**
 2. Error Handling Standardization
 3. OpenAPI Documentation Generation

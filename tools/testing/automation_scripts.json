@@ -1,0 +1,17 @@
+{
+  "run_version_tests.py": {
+    "description": "Run all version-related tests",
+    "command": "python3 tools/testing/run_version_tests.py --all-versions",
+    "schedule": "0 */6 * * *"
+  },
+  "compatibility_matrix_test.py": {
+    "description": "Test compatibility matrix",
+    "command": "python3 tools/testing/compatibility_matrix_test.py",
+    "schedule": "0 2 * * *"
+  },
+  "performance_regression_test.py": {
+    "description": "Check for performance regressions",
+    "command": "python3 tools/testing/performance_regression_test.py",
+    "schedule": "0 3 * * 0"
+  }
+}

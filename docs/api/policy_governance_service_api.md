@@ -7,7 +7,7 @@ Manages policy lifecycle, voting, and governance processes within the ACGS-1 sys
 **Base URL**: `http://localhost:8005`
 **Interactive Docs**: `http://localhost:8005/docs`
 **Service Version**: 2.1.0
-**Last Updated**: 2025-06-20
+**Last Updated**: 2025-06-22
 
 ## Authentication
 
@@ -93,7 +93,7 @@ Cast vote on a policy proposal.
     "code": "VALIDATION_ERROR",
     "message": "Invalid input parameters"
   },
-  "timestamp": "2025-06-20T22:30:45.548336Z",
+  "timestamp": "2025-06-22T15:30:20.969664Z",
   "request_id": "req_error_123"
 }
 ```
@@ -107,7 +107,7 @@ Cast vote on a policy proposal.
     "code": "UNAUTHORIZED",
     "message": "Invalid or missing authentication token"
   },
-  "timestamp": "2025-06-20T22:30:45.548337Z",
+  "timestamp": "2025-06-22T15:30:20.969664Z",
   "request_id": "req_error_456"
 }
 ```

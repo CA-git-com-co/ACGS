@@ -7,7 +7,7 @@ Provides optical character recognition for document processing and analysis.
 **Base URL**: `http://localhost:8020`
 **Interactive Docs**: `http://localhost:8020/docs`
 **Service Version**: 2.1.0
-**Last Updated**: 2025-06-20
+**Last Updated**: 2025-06-22
 
 ## Authentication
 
@@ -73,7 +73,7 @@ Extract text from image or document.
     "code": "VALIDATION_ERROR",
     "message": "Invalid input parameters"
   },
-  "timestamp": "2025-06-20T22:30:45.548424Z",
+  "timestamp": "2025-06-22T15:30:20.969761Z",
   "request_id": "req_error_123"
 }
 ```
@@ -87,7 +87,7 @@ Extract text from image or document.
     "code": "UNAUTHORIZED",
     "message": "Invalid or missing authentication token"
   },
-  "timestamp": "2025-06-20T22:30:45.548425Z",
+  "timestamp": "2025-06-22T15:30:20.969762Z",
   "request_id": "req_error_456"
 }
 ```

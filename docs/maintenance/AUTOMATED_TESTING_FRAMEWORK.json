@@ -1,0 +1,90 @@
+{
+  "test_categories": {
+    "version_detection_tests": {
+      "description": "Test version detection from headers, URLs, and query parameters",
+      "test_files": [
+        "tests/versioning/test_version_detection.py",
+        "tests/versioning/test_header_parsing.py",
+        "tests/versioning/test_url_routing.py"
+      ],
+      "automation_level": "full",
+      "run_frequency": "on_every_commit"
+    },
+    "response_transformation_tests": {
+      "description": "Test response transformation between all version pairs",
+      "test_files": [
+        "tests/versioning/test_transformations.py",
+        "tests/versioning/test_schema_compatibility.py",
+        "tests/versioning/test_data_integrity.py"
+      ],
+      "automation_level": "full",
+      "run_frequency": "on_every_commit"
+    },
+    "deprecation_compliance_tests": {
+      "description": "Test deprecation headers and sunset enforcement",
+      "test_files": [
+        "tests/versioning/test_deprecation_headers.py",
+        "tests/versioning/test_sunset_enforcement.py",
+        "tests/versioning/test_migration_guidance.py"
+      ],
+      "automation_level": "full",
+      "run_frequency": "daily"
+    },
+    "performance_regression_tests": {
+      "description": "Test performance impact of versioning system",
+      "test_files": [
+        "tests/performance/test_version_overhead.py",
+        "tests/performance/test_transformation_speed.py",
+        "tests/performance/test_memory_usage.py"
+      ],
+      "automation_level": "semi",
+      "run_frequency": "weekly"
+    },
+    "integration_tests": {
+      "description": "Test integration with external systems and clients",
+      "test_files": [
+        "tests/integration/test_client_compatibility.py",
+        "tests/integration/test_sdk_compatibility.py",
+        "tests/integration/test_external_api_integration.py"
+      ],
+      "automation_level": "semi",
+      "run_frequency": "before_release"
+    }
+  },
+  "ci_cd_integration": {
+    "github_actions": {
+      "version_compatibility_matrix": {
+        "trigger": "on_pull_request",
+        "test_matrix": ["v1.5.0", "v2.0.0", "v2.1.0"],
+        "timeout_minutes": 30
+      },
+      "performance_benchmarks": {
+        "trigger": "on_release_branch",
+        "baseline_comparison": true,
+        "fail_threshold_percent": 10
+      }
+    },
+    "quality_gates": {
+      "version_test_coverage": {
+        "minimum_coverage_percent": 95,
+        "enforce_on": "merge_to_main"
+      },
+      "compatibility_test_pass_rate": {
+        "minimum_pass_rate_percent": 100,
+        "enforce_on": "all_branches"
+      }
+    }
+  },
+  "test_data_management": {
+    "test_fixtures": {
+      "version_specific_data": "tests/fixtures/version_data/",
+      "transformation_examples": "tests/fixtures/transformations/",
+      "client_scenarios": "tests/fixtures/client_scenarios/"
+    },
+    "data_generation": {
+      "automated_fixture_generation": true,
+      "schema_based_data_generation": true,
+      "edge_case_data_generation": true
+    }
+  }
+}

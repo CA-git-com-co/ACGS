@@ -1,0 +1,59 @@
+{
+  "daily_tasks": [
+    {
+      "task": "Health Check All Versions",
+      "schedule": "0 9 * * *",
+      "command": "python3 tools/versioning/daily_health_check.py",
+      "duration_minutes": 15,
+      "owner": "API Team"
+    },
+    {
+      "task": "Monitor Deprecation Usage",
+      "schedule": "0 */6 * * *",
+      "command": "python3 tools/monitoring/check_deprecation_usage.py",
+      "duration_minutes": 5,
+      "owner": "API Team"
+    }
+  ],
+  "weekly_tasks": [
+    {
+      "task": "Performance Review",
+      "schedule": "0 10 * * 1",
+      "command": "python3 tools/maintenance/weekly_performance_review.py",
+      "duration_minutes": 60,
+      "owner": "API Team Lead"
+    },
+    {
+      "task": "Version Adoption Analysis",
+      "schedule": "0 14 * * 3",
+      "command": "python3 tools/analytics/version_adoption_report.py",
+      "duration_minutes": 30,
+      "owner": "Product Team"
+    }
+  ],
+  "monthly_tasks": [
+    {
+      "task": "Compatibility Audit",
+      "schedule": "0 9 1 * *",
+      "command": "python3 tools/maintenance/monthly_compatibility_audit.py",
+      "duration_minutes": 120,
+      "owner": "Architecture Team"
+    },
+    {
+      "task": "Security Review",
+      "schedule": "0 10 15 * *",
+      "command": "python3 tools/security/monthly_security_review.py",
+      "duration_minutes": 90,
+      "owner": "Security Team"
+    }
+  ],
+  "quarterly_tasks": [
+    {
+      "task": "Version Lifecycle Review",
+      "schedule": "0 9 1 */3 *",
+      "command": "python3 tools/lifecycle/quarterly_version_review.py",
+      "duration_minutes": 180,
+      "owner": "API Team Lead + Product Team"
+    }
+  ]
+}

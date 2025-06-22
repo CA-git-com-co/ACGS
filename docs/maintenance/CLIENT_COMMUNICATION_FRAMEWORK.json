@@ -1,0 +1,93 @@
+{
+  "communication_timeline": {
+    "new_version_announcement": {
+      "timing": "at_release",
+      "channels": ["email", "api_documentation", "status_page"],
+      "content": "New version availability and features",
+      "audience": "all_clients"
+    },
+    "deprecation_notice": {
+      "timing": "180_days_before_sunset",
+      "channels": ["email", "api_headers", "documentation"],
+      "content": "Deprecation announcement with migration timeline",
+      "audience": "affected_clients"
+    },
+    "migration_reminder_1": {
+      "timing": "90_days_before_sunset",
+      "channels": ["email", "api_headers", "dashboard_notification"],
+      "content": "Migration reminder with detailed guidance",
+      "audience": "clients_still_using_deprecated_version"
+    },
+    "migration_reminder_2": {
+      "timing": "30_days_before_sunset",
+      "channels": ["email", "phone_call", "api_headers"],
+      "content": "Urgent migration notice with support offer",
+      "audience": "clients_still_using_deprecated_version"
+    },
+    "final_warning": {
+      "timing": "7_days_before_sunset",
+      "channels": ["email", "phone_call", "api_headers", "status_page"],
+      "content": "Final warning with exact sunset date and time",
+      "audience": "clients_still_using_deprecated_version"
+    },
+    "sunset_notification": {
+      "timing": "at_sunset",
+      "channels": ["email", "status_page", "api_response"],
+      "content": "Version sunset confirmation and support information",
+      "audience": "all_clients"
+    }
+  },
+  "communication_templates": {
+    "deprecation_email": {
+      "subject": "ACGS API Version {version} Deprecation Notice",
+      "template_file": "templates/deprecation_notice.html",
+      "personalization": ["client_name", "version", "sunset_date", "migration_guide_url"]
+    },
+    "migration_reminder": {
+      "subject": "Action Required: ACGS API Version {version} Migration",
+      "template_file": "templates/migration_reminder.html",
+      "personalization": ["client_name", "version", "days_remaining", "support_contact"]
+    },
+    "api_headers": {
+      "deprecation_header": "Deprecation: version=\"{version}\", date=\"{sunset_date}\"",
+      "sunset_header": "Sunset: {sunset_date}",
+      "warning_header": "Warning: \"This API version is deprecated. Please migrate to {new_version}. See {migration_guide_url}\""
+    }
+  },
+  "client_segmentation": {
+    "high_volume_clients": {
+      "criteria": "requests_per_day > 10000",
+      "communication_method": "dedicated_account_manager",
+      "migration_support": "white_glove_migration_assistance"
+    },
+    "government_clients": {
+      "criteria": "client_type == government",
+      "communication_method": "formal_notice_plus_phone_call",
+      "migration_support": "extended_timeline_if_needed"
+    },
+    "standard_clients": {
+      "criteria": "default",
+      "communication_method": "email_plus_documentation",
+      "migration_support": "self_service_migration_tools"
+    }
+  },
+  "support_processes": {
+    "migration_assistance": {
+      "self_service_tools": [
+        "Migration guide documentation",
+        "API diff analyzer tool",
+        "Automated migration script generator"
+      ],
+      "assisted_support": [
+        "Email support for migration questions",
+        "Office hours for live migration assistance",
+        "Custom migration planning for enterprise clients"
+      ]
+    },
+    "feedback_collection": {
+      "migration_survey": "Post-migration feedback survey",
+      "deprecation_feedback": "Feedback on deprecation process",
+      "feature_requests": "Requests for new version features"
+    }
+  }
+}

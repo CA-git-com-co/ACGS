@@ -1,0 +1,49 @@
+{
+  "severity_levels": {
+    "P0_Critical": {
+      "description": "Complete API unavailability, data corruption, security breaches",
+      "response_time_minutes": 15,
+      "resolution_target_hours": 1,
+      "escalation_chain": [
+        "On-call API Engineer (0-15 min)",
+        "API Team Lead (15-30 min)",
+        "Engineering Manager (30-60 min)",
+        "CTO (60+ min)"
+      ]
+    },
+    "P1_High": {
+      "description": "Significant functionality impaired, performance degradation > 50%",
+      "response_time_minutes": 30,
+      "resolution_target_hours": 4,
+      "escalation_chain": [
+        "On-call API Engineer (0-30 min)",
+        "API Team Lead (30-60 min)",
+        "Engineering Manager (1-2 hours)"
+      ]
+    },
+    "P2_Medium": {
+      "description": "Minor functionality issues, performance degradation < 50%",
+      "response_time_hours": 2,
+      "resolution_target_hours": 24,
+      "escalation_chain": ["API Team Member (0-2 hours)", "API Team Lead (2-8 hours)"]
+    },
+    "P3_Low": {
+      "description": "Documentation issues, non-critical feature problems",
+      "response_time_hours": 24,
+      "resolution_target_days": 7,
+      "escalation_chain": ["API Team Member (next business day)"]
+    }
+  },
+  "communication_channels": {
+    "incident_response": "#incident-response",
+    "api_team": "#api-versioning-team",
+    "status_page": "https://status.acgs.gov",
+    "emergency_hotline": "+1-555-ACGS-911"
+  },
+  "notification_rules": {
+    "P0_notifications": ["SMS", "Phone Call", "Slack", "Email"],
+    "P1_notifications": ["Slack", "Email", "SMS"],
+    "P2_notifications": ["Slack", "Email"],
+    "P3_notifications": ["Email"]
+  }
+}

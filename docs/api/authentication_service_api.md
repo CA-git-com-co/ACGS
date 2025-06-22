@@ -7,7 +7,7 @@ Provides user authentication, authorization, and session management for the ACGS
 **Base URL**: `http://localhost:8000`
 **Interactive Docs**: `http://localhost:8000/docs`
 **Service Version**: 2.1.0
-**Last Updated**: 2025-06-20
+**Last Updated**: 2025-06-22
 
 ## Authentication
 
@@ -107,7 +107,7 @@ Get current user profile information.
     "code": "VALIDATION_ERROR",
     "message": "Invalid input parameters"
   },
-  "timestamp": "2025-06-20T22:30:45.548056Z",
+  "timestamp": "2025-06-22T15:30:20.969390Z",
   "request_id": "req_error_123"
 }
 ```
@@ -121,7 +121,7 @@ Get current user profile information.
     "code": "UNAUTHORIZED",
     "message": "Invalid or missing authentication token"
   },
-  "timestamp": "2025-06-20T22:30:45.548064Z",
+  "timestamp": "2025-06-22T15:30:20.969397Z",
   "request_id": "req_error_456"
 }
 ```

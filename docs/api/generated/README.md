@@ -5,7 +5,7 @@ This directory contains automatically generated OpenAPI documentation for ACGS s
 ## Files
 
 - `*_openapi.json` - OpenAPI 3.0 specifications in JSON format
-- `*_openapi.yaml` - OpenAPI 3.0 specifications in YAML format  
+- `*_openapi.yaml` - OpenAPI 3.0 specifications in YAML format
 - `*_docs.html` - Interactive Swagger UI documentation
 - `combined_*` - Combined documentation for all services
 - `index.html` - Documentation portal homepage

@@ -11,7 +11,7 @@ from datetime import timezone, datetime
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 
 
 class APIStatus(str, Enum):
@@ -47,8 +47,9 @@ class APIError(BaseModel):
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     correlation_id: str | None = None
 
-    class Config:
-        json_encoders = {datetime: lambda v: v.isoformat()}
+    model_config = ConfigDict(
+        json_encoders={datetime: lambda v: v.isoformat()}
+    )
 
 
 class APIMetadata(BaseModel):
@@ -62,8 +63,14 @@ class APIMetadata(BaseModel):
     api_version: str = "v1"
     request_id: str | None = None
 
-    class Config:
-        json_encoders = {datetime: lambda v: v.isoformat()}
+    # Version-aware metadata (added for API versioning support)
+    requested_version: str | None = None
+    supported_versions: list[str] | None = None
+    deprecation: dict[str, Any] | None = None
+
+    model_config = ConfigDict(
+        json_encoders={datetime: lambda v: v.isoformat()}
+    )
 
 
 class APIResponse(BaseModel):
@@ -79,23 +86,25 @@ class APIResponse(BaseModel):
     error: APIError | None = None
     metadata: APIMetadata
 
-    @validator("error")
-    def error_required_for_error_status(cls, v, values):
+    @field_validator("error")
+    @classmethod
+    def error_required_for_error_status(cls, v, info):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         """Ensure error is provided when status is error."""
-        if values.get("status") == APIStatus.ERROR and v is None:
+        if hasattr(info, 'data') and info.data.get("status") == APIStatus.ERROR and v is None:
             raise ValueError("Error details required when status is error")
         return v
 
-    @validator("data")
-    def data_required_for_success_status(cls, v, values):
+    @field_validator("data")
+    @classmethod
+    def data_required_for_success_status(cls, v, info):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         """Ensure data is provided when status is success."""
-        if values.get("status") == APIStatus.SUCCESS and v is None:
+        if hasattr(info, 'data') and info.data.get("status") == APIStatus.SUCCESS and v is None:
             # Allow empty data for success responses
             return {}
         return v
@@ -150,34 +159,43 @@ class PaginatedResponse(BaseModel):
     has_next: bool
     has_prev: bool
 
-    @validator("pages", pre=True, always=True)
-    def calculate_pages(cls, v, values):
+    @field_validator("pages")
+    @classmethod
+    def calculate_pages(cls, v, info):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         """Calculate total pages based on total items and page size."""
-        total = values.get("total", 0)
-        size = values.get("size", 20)
-        return max(1, (total + size - 1) // size)
+        if hasattr(info, 'data'):
+            total = info.data.get("total", 0)
+            size = info.data.get("size", 20)
+            return max(1, (total + size - 1) // size)
+        return v
 
-    @validator("has_next", pre=True, always=True)
-    def calculate_has_next(cls, v, values):
+    @field_validator("has_next")
+    @classmethod
+    def calculate_has_next(cls, v, info):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         """Calculate if there's a next page."""
-        page = values.get("page", 1)
-        pages = values.get("pages", 1)
-        return page < pages
+        if hasattr(info, 'data'):
+            page = info.data.get("page", 1)
+            pages = info.data.get("pages", 1)
+            return page < pages
+        return v
 
-    @validator("has_prev", pre=True, always=True)
-    def calculate_has_prev(cls, v, values):
+    @field_validator("has_prev")
+    @classmethod
+    def calculate_has_prev(cls, v, info):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         """Calculate if there's a previous page."""
-        page = values.get("page", 1)
-        return page > 1
+        if hasattr(info, 'data'):
+            page = info.data.get("page", 1)
+            return page > 1
+        return v
 
 
 class ConstitutionalComplianceInfo(BaseModel):
@@ -213,15 +231,17 @@ class TimestampRange(BaseModel):
     start: datetime | None = Field(None, description="Start timestamp")
     end: datetime | None = Field(None, description="End timestamp")
 
-    @validator("end")
-    def end_after_start(cls, v, values):
+    @field_validator("end")
+    @classmethod
+    def end_after_start(cls, v, info):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         """Ensure end timestamp is after start timestamp."""
-        start = values.get("start")
-        if start and v and v <= start:
-            raise ValueError("End timestamp must be after start timestamp")
+        if hasattr(info, 'data'):
+            start = info.data.get("start")
+            if start and v and v <= start:
+                raise ValueError("End timestamp must be after start timestamp")
         return v
 
 

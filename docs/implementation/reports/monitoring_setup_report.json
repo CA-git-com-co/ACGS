@@ -1,0 +1,66 @@
+{
+  "setup_summary": {
+    "start_time": "2025-06-22T16:50:05.955393+00:00",
+    "end_time": "2025-06-22T16:50:05.959204+00:00",
+    "duration_seconds": 0.0,
+    "total_components": 5,
+    "successful_components": 5,
+    "failed_components": 0,
+    "success_rate": 100.0
+  },
+  "component_results": [
+    {
+      "component": "prometheus_metrics",
+      "status": "success",
+      "details": {
+        "config_file": "monitoring/prometheus/prometheus.yml",
+        "metrics_defined": 5,
+        "scrape_jobs": 2
+      }
+    },
+    {
+      "component": "grafana_dashboards",
+      "status": "success",
+      "details": {
+        "dashboards_created": 2,
+        "overview_dashboard": "monitoring/grafana/dashboards/api_versioning_overview.json",
+        "sla_dashboard": "monitoring/grafana/dashboards/sla_monitoring.json"
+      }
+    },
+    {
+      "component": "alerting_rules",
+      "status": "success",
+      "details": {
+        "rules_file": "monitoring/prometheus/rules/api_versioning_rules.yml",
+        "alertmanager_config": "monitoring/alertmanager/alertmanager.yml",
+        "alert_rules_count": 4
+      }
+    },
+    {
+      "component": "sla_monitoring",
+      "status": "success",
+      "details": {
+        "sla_config": "monitoring/sla/sla_targets.json",
+        "availability_target": 99.9,
+        "response_time_target": 100
+      }
+    },
+    {
+      "component": "automated_reporting",
+      "status": "success",
+      "details": {
+        "config_file": "monitoring/reporting/config.json",
+        "reports_configured": 2,
+        "notification_channels": 2
+      }
+    }
+  ],
+  "success_criteria": {
+    "prometheus_configured": true,
+    "grafana_dashboards_created": true,
+    "alerting_rules_configured": true,
+    "sla_monitoring_enabled": true,
+    "automated_reporting_setup": true,
+    "all_components_successful": true
+  }
+}

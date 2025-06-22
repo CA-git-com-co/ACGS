@@ -7,7 +7,7 @@ Applies evolutionary algorithms to optimize policies and governance solutions.
 **Base URL**: `http://localhost:8006`
 **Interactive Docs**: `http://localhost:8006/docs`
 **Service Version**: 2.1.0
-**Last Updated**: 2025-06-20
+**Last Updated**: 2025-06-22
 
 ## Authentication
 
@@ -73,7 +73,7 @@ Start evolutionary optimization process.
     "code": "VALIDATION_ERROR",
     "message": "Invalid input parameters"
   },
-  "timestamp": "2025-06-20T22:30:45.548365Z",
+  "timestamp": "2025-06-22T15:30:20.969695Z",
   "request_id": "req_error_123"
 }
 ```
@@ -87,7 +87,7 @@ Start evolutionary optimization process.
     "code": "UNAUTHORIZED",
     "message": "Invalid or missing authentication token"
   },
-  "timestamp": "2025-06-20T22:30:45.548365Z",
+  "timestamp": "2025-06-22T15:30:20.969696Z",
   "request_id": "req_error_456"
 }
 ```

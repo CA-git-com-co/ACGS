@@ -7,7 +7,7 @@ Synthesizes policies and governance solutions from multiple inputs and stakehold
 **Base URL**: `http://localhost:8004`
 **Interactive Docs**: `http://localhost:8004/docs`
 **Service Version**: 2.1.0
-**Last Updated**: 2025-06-20
+**Last Updated**: 2025-06-22
 
 ## Authentication
 
@@ -73,7 +73,7 @@ Synthesize policy from multiple inputs and requirements.
     "code": "VALIDATION_ERROR",
     "message": "Invalid input parameters"
   },
-  "timestamp": "2025-06-20T22:30:45.548306Z",
+  "timestamp": "2025-06-22T15:30:20.969624Z",
   "request_id": "req_error_123"
 }
 ```
@@ -87,7 +87,7 @@ Synthesize policy from multiple inputs and requirements.
     "code": "UNAUTHORIZED",
     "message": "Invalid or missing authentication token"
   },
-  "timestamp": "2025-06-20T22:30:45.548307Z",
+  "timestamp": "2025-06-22T15:30:20.969625Z",
   "request_id": "req_error_456"
 }
 ```

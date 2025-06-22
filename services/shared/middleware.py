@@ -264,7 +264,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         return response
 
 
-def add_production_middleware(app, service_name: str):
+def add_production_middleware(app, service_name: str, enable_versioning: bool = True):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
@@ -274,7 +274,24 @@ def add_production_middleware(app, service_name: str):
     Args:
         app: FastAPI application instance
         service_name: Name of the service for logging and monitoring
+        enable_versioning: Whether to enable API versioning middleware
     """
+    # Import version middleware here to avoid circular imports
+    if enable_versioning:
+        try:
+            from .middleware.version_routing_middleware import create_version_routing_middleware
+
+            # Add version routing middleware (executed early in chain)
+            version_middleware = create_version_routing_middleware(
+                app=app,
+                service_name=service_name,
+                current_version="v1.0.0"  # Default, should be overridden per service
+            )
+            app.add_middleware(type(version_middleware), **version_middleware.__dict__)
+            logger.info(f"Version routing middleware added to {service_name}")
+        except ImportError:
+            logger.warning("Version routing middleware not available")
+
     # Add middleware in reverse order (last added is executed first)
     app.add_middleware(SecurityHeadersMiddleware)
     app.add_middleware(RequestLoggingMiddleware, service_name=service_name)

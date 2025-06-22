@@ -1,0 +1,76 @@
+{
+  "runbook_summary": {
+    "start_time": "2025-06-22T16:53:56.240699+00:00",
+    "end_time": "2025-06-22T16:53:56.241299+00:00",
+    "duration_seconds": 0.0,
+    "total_components": 5,
+    "successful_components": 5,
+    "warning_components": 0,
+    "failed_components": 0,
+    "success_rate": 100.0
+  },
+  "component_results": [
+    {
+      "component": "emergency_procedures",
+      "status": "success",
+      "details": {
+        "document_path": "docs/operations/EMERGENCY_PROCEDURES.md",
+        "missing_sections": [],
+        "emergency_contacts": 4,
+        "rollback_procedures": 3,
+        "document_size_kb": 9.4
+      }
+    },
+    {
+      "component": "troubleshooting_guides",
+      "status": "success",
+      "details": {
+        "document_path": "docs/operations/TROUBLESHOOTING_GUIDE.md",
+        "common_issues_covered": "5/5",
+        "diagnostic_sections": "4/4",
+        "document_size_kb": 10.41
+      }
+    },
+    {
+      "component": "escalation_procedures",
+      "status": "success",
+      "details": {
+        "procedures_file": "docs/operations/ESCALATION_PROCEDURES.json",
+        "severity_levels": 4,
+        "communication_channels": 4,
+        "notification_rules": 4
+      }
+    },
+    {
+      "component": "maintenance_schedules",
+      "status": "success",
+      "details": {
+        "schedules_file": "docs/operations/MAINTENANCE_SCHEDULES.json",
+        "total_tasks": 7,
+        "daily_tasks": 2,
+        "weekly_tasks": 2,
+        "monthly_tasks": 2,
+        "quarterly_tasks": 1
+      }
+    },
+    {
+      "component": "runbook_completeness",
+      "status": "success",
+      "details": {
+        "completeness_percentage": 100.0,
+        "existing_docs": 4,
+        "missing_docs": [],
+        "cross_references_valid": true,
+        "total_required_docs": 4
+      }
+    }
+  ],
+  "success_criteria": {
+    "emergency_procedures_documented": true,
+    "troubleshooting_guides_complete": true,
+    "escalation_procedures_defined": true,
+    "maintenance_schedules_created": true,
+    "runbooks_complete": true,
+    "all_criteria_met": true
+  }
+}

@@ -105,16 +105,16 @@ The core paradigm proposed is Artificial Constitutionalism (AC), where AI system
    - Role: Offers valuable third-party insights, highlights potential weaknesses, and reinforces key design goals (e.g., semantic conformity, verifiability).
 1. Codebase (acgspcp-main/):
    _ Content: A multi-directory project containing:
-   _ Backend microservices (auth*service, ac_service, fv_service, gs_service, integrity_service, pgc_service) implemented in Python/FastAPI.
-   * A frontend application (applications/governance-dashboard/) using React.
-   _ Shared utilities and database models (shared/).
-   _ Database migration scripts (db/migrations/).
-   _ Dockerization (Dockerfiles, infrastructure/docker/docker-compose.yml).
-   _ Kubernetes deployment manifests (infrastructure/kubernetes/).
-   _ Basic CI/CD setup (.github/workflows/).
-   _ Project documentation (docs/).
-   \_ Role: Represents the current state of implementation or a very detailed blueprint. It provides concrete API specifications (FastAPI auto-generates OpenAPI), database schemas, and deployment configurations.
-   3.2. Key Findings: Interdependencies, Assumptions, Constraints
+   _ Backend microservices (auth\*service, ac_service, fv_service, gs_service, integrity_service, pgc_service) implemented in Python/FastAPI.
+   - A frontend application (applications/governance-dashboard/) using React.
+     _ Shared utilities and database models (shared/).
+     _ Database migration scripts (db/migrations/).
+     _ Dockerization (Dockerfiles, infrastructure/docker/docker-compose.yml).
+     _ Kubernetes deployment manifests (infrastructure/kubernetes/).
+     _ Basic CI/CD setup (.github/workflows/).
+     _ Project documentation (docs/).
+     \_ Role: Represents the current state of implementation or a very detailed blueprint. It provides concrete API specifications (FastAPI auto-generates OpenAPI), database schemas, and deployment configurations.
+     3.2. Key Findings: Interdependencies, Assumptions, Constraints
 
 - Interdependencies:
   - Strong Service Coupling: The services are highly interdependent. For example:
@@ -176,17 +176,17 @@ The core paradigm proposed is Artificial Constitutionalism (AC), where AI system
   - Role-based views and actions.
 - Key User Transitions to Support:
   _ Login/Authentication: Secure input, token handling (cookies, local storage for CSRF token if needed), session state.
-  _ Model/Principle Registration & Lifecycle: Interface for ac*service to define and manage principles (CRUD operations).
-  * Deployment Orchestration (Policy Synthesis & Verification):
-  _ Selecting principles (from ac_service).
-  _ Initiating synthesis via gs*service.
-  * Viewing synthesized rules (from integrity*service via gs_service response).
-  * Triggering verification via fv*service (potentially automated post-synthesis by gs_service).
-  * Viewing verification status and feedback (from integrity*service or fv_service via gs_service response).
-  * Inference Request Handling (Policy Evaluation Context): This is more for programmatic clients of pgc*service. The UI might offer a test/simulation interface for policy evaluation.
-  * Dashboard Displays: Real-time and aggregated views of policy status, verification results, audit events, and compliance metrics.
-  4.3. Application Layer (Backend Microservices)
-  The existing microservice structure is a good foundation. Each service will have distinct responsibilities:
+  _ Model/Principle Registration & Lifecycle: Interface for ac\*service to define and manage principles (CRUD operations).
+  - Deployment Orchestration (Policy Synthesis & Verification):
+    _ Selecting principles (from ac_service).
+    _ Initiating synthesis via gs\*service.
+  - Viewing synthesized rules (from integrity\*service via gs_service response).
+  - Triggering verification via fv\*service (potentially automated post-synthesis by gs_service).
+  - Viewing verification status and feedback (from integrity\*service or fv_service via gs_service response).
+  - Inference Request Handling (Policy Evaluation Context): This is more for programmatic clients of pgc\*service. The UI might offer a test/simulation interface for policy evaluation.
+  - Dashboard Displays: Real-time and aggregated views of policy status, verification results, audit events, and compliance metrics.
+    4.3. Application Layer (Backend Microservices)
+    The existing microservice structure is a good foundation. Each service will have distinct responsibilities:
 - auth_service (Authentication Service):
   - Responsibilities: User registration, authentication (credential validation, token issuance/refresh via HTTPOnly cookies), CSRF protection, user profile management, basic role management.
   - Key Interfaces: /auth/register, /auth/token, /auth/token/refresh, /auth/logout, /auth/users/me.
@@ -203,10 +203,10 @@ The core paradigm proposed is Artificial Constitutionalism (AC), where AI system
 - integrity_service (Integrity & Verifiability Service):
   - Responsibilities: Secure storage and management of synthesized policy rules (Datalog) and their verification status. Comprehensive audit logging for all system and governance events. Provides APIs for querying rules and logs.
   - Key Interfaces: /api/v1/policies (CRUD for rules), /api/v1/audit (CRUD for logs).
-- pgc*service (Protective Governance Controls / Policy Enforcement Service):
-  * Responsibilities: Runtime evaluation of Datalog policies against specific contexts (queries). Manages active/deployed policies (fetches from integrity*service via PolicyManager). Integrates Datalog engine (datalog_engine.py). Potential integration point for PETs and TEEs.
-  * Key Interfaces: /api/v1/enforcement/evaluate.
-  4.4. Data Persistence Layer (Database)
+- pgc\*service (Protective Governance Controls / Policy Enforcement Service):
+  - Responsibilities: Runtime evaluation of Datalog policies against specific contexts (queries). Manages active/deployed policies (fetches from integrity\*service via PolicyManager). Integrates Datalog engine (datalog_engine.py). Potential integration point for PETs and TEEs.
+  - Key Interfaces: /api/v1/enforcement/evaluate.
+    4.4. Data Persistence Layer (Database)
 - Technology: PostgreSQL (as per infrastructure/docker/docker-compose.yml and database.py).
 - Schema Design:
   - The existing shared/models.py and db/migrations/ define schemas for Users, Principles, PolicyRules, AuditLogs, and RefreshTokens.
@@ -218,11 +218,11 @@ The core paradigm proposed is Artificial Constitutionalism (AC), where AI system
   - Data Integrity: Foreign key constraints, NOT NULL constraints, and unique constraints are used appropriately in the models.
 - Entities:
   _ User Profiles: User table (username, hashed_password, email, role, active status, timestamps).
-  _ Model Metadata (Principles/Policies): Principle table (name, description, content, version, status, creator). PolicyRule table (rule*content (Datalog), source_principle_ids, version, verification_status, timestamps).
-  * Deployment States: Not explicitly a separate table, but PolicyRule.verification*status (e.g., "pending", "verified", "failed") and potentially a future "deployed_status" can track this.
-  * System Logs: AuditLog table (timestamp, service_name, event_type, entity_type/id, description, actor_id, metadata, crypto hashes).
-  4.5. Visual Architecture Diagrams (Descriptive)
-  (As I cannot generate images, I will describe them. These would be included in documentation.)
+  _ Model Metadata (Principles/Policies): Principle table (name, description, content, version, status, creator). PolicyRule table (rule\*content (Datalog), source_principle_ids, version, verification_status, timestamps).
+  - Deployment States: Not explicitly a separate table, but PolicyRule.verification\*status (e.g., "pending", "verified", "failed") and potentially a future "deployed_status" can track this.
+  - System Logs: AuditLog table (timestamp, service_name, event_type, entity_type/id, description, actor_id, metadata, crypto hashes).
+    4.5. Visual Architecture Diagrams (Descriptive)
+    (As I cannot generate images, I will describe them. These would be included in documentation.)
 
 1.  High-Level System Architecture Diagram:
     - Type: Component Diagram.
@@ -336,14 +336,14 @@ Abstract: This section details a robust RBAC mechanism grounded in principles of
   - RoleChecker dependency in various services for basic role checks (e.g., require_admin_role).
 - Proposed Enhancements & Roadmap: 1. Centralized Role and Permission Definition:
   _ Store roles and their associated permissions in the database, managed by auth_service.
-  _ Entities: Roles (e.g., SystemAdmin, PolicyAuditor, PrincipleAuthor, RuleSynthesizerService, VerificationService), Permissions (e.g., create:principle, read:audit*log, trigger:synthesis, evaluate:policy).
-  * Mapping: A RolePermissions join table. 2. Permission-Based Authorization:
-  _ Modify RoleChecker (or create a new PermissionChecker) to check for specific permissions rather than just roles. A user's role(s) would grant them a set of permissions.
-  _ JWTs issued by auth*service should include the user's permissions (or roles from which permissions can be derived by the resource server). Caching permissions at the service level (with TTL) can improve performance. 3. Service Accounts/Internal Tokens:
-  * For inter-service communication, use dedicated service accounts with specific, limited permissions. These could be authenticated using client credentials flow (OAuth2) or short-lived internal JWTs. Replace placeholder tokens like AC*SERVICE_MOCK_TOKEN. 4. Resource-Based Permissions (Optional Advanced):
-  * For very fine-grained control, consider attribute-based access control (ABAC) or permissions tied to specific resources (e.g., user can only edit principles they created). This adds complexity. 5. Admin Interface for RBAC Management:
-  \_ Frontend UI for SystemAdmins to manage users, roles, and permissions. 6. Audit RBAC Changes: All changes to roles, permissions, and user assignments must be thoroughly audited by integrity_service.
-  Example Roles and Key Permissions (Illustrative):
+  _ Entities: Roles (e.g., SystemAdmin, PolicyAuditor, PrincipleAuthor, RuleSynthesizerService, VerificationService), Permissions (e.g., create:principle, read:audit\*log, trigger:synthesis, evaluate:policy).
+  - Mapping: A RolePermissions join table. 2. Permission-Based Authorization:
+    _ Modify RoleChecker (or create a new PermissionChecker) to check for specific permissions rather than just roles. A user's role(s) would grant them a set of permissions.
+    _ JWTs issued by auth\*service should include the user's permissions (or roles from which permissions can be derived by the resource server). Caching permissions at the service level (with TTL) can improve performance. 3. Service Accounts/Internal Tokens:
+  - For inter-service communication, use dedicated service accounts with specific, limited permissions. These could be authenticated using client credentials flow (OAuth2) or short-lived internal JWTs. Replace placeholder tokens like AC\*SERVICE_MOCK_TOKEN. 4. Resource-Based Permissions (Optional Advanced):
+  - For very fine-grained control, consider attribute-based access control (ABAC) or permissions tied to specific resources (e.g., user can only edit principles they created). This adds complexity. 5. Admin Interface for RBAC Management:
+    \_ Frontend UI for SystemAdmins to manage users, roles, and permissions. 6. Audit RBAC Changes: All changes to roles, permissions, and user assignments must be thoroughly audited by integrity_service.
+    Example Roles and Key Permissions (Illustrative):
 - SystemAdmin: Manage users, roles, system configurations.
 - PrincipleAuthor: CRUD operations on Principles (ac_service).
 - PolicyAuditor: Read access to principles, rules, verification results, all audit logs.
@@ -528,37 +528,37 @@ Abstract: This section proposes a phased approach for the development and implem
 - Goal: Solidify the core infrastructure, refine existing services based on analysis, and ensure robust foundational capabilities.
 - Key Activities:
   _ Architecture Review & Refinement: Finalize detailed designs for all components and interfaces.
-  _ RBAC Implementation: Implement the enhanced RBAC model (Section 6) in auth*service and integrate across all services. Replace placeholder auth.
-  * Service Client Robustness: Implement retry, timeout, and basic circuit breaker patterns in inter-service clients.
-  _ Database Schema Finalization: Review and finalize database schemas, ensure all migrations are clean and reversible.
-  _ CI/CD Pipeline Enhancement: Implement comprehensive CI stages (linting, SAST, unit/integration tests, container builds & push) for all services.
-  _ Telemetry Foundation: Implement structured logging and basic metrics collection for all services.
-  _ auth*service: Full implementation of cookie-based auth, CSRF, token revocation (persistent store).
-  * ac*service: Full CRUD APIs for principles and guidelines, versioning.
-  * integrity*service: Robust APIs for policy rule storage (Datalog) and audit logging. Implement cryptographic hashing for audit log chaining.
-  * Frontend: Solidify UI for login, principle browsing, and basic policy/audit viewing. \* Documentation: Core developer and operator documentation for foundational elements.
-  10.2. Phase 2: Advanced Governance Features & Integration Maturity
+  _ RBAC Implementation: Implement the enhanced RBAC model (Section 6) in auth\*service and integrate across all services. Replace placeholder auth.
+  - Service Client Robustness: Implement retry, timeout, and basic circuit breaker patterns in inter-service clients.
+    _ Database Schema Finalization: Review and finalize database schemas, ensure all migrations are clean and reversible.
+    _ CI/CD Pipeline Enhancement: Implement comprehensive CI stages (linting, SAST, unit/integration tests, container builds & push) for all services.
+    _ Telemetry Foundation: Implement structured logging and basic metrics collection for all services.
+    _ auth\*service: Full implementation of cookie-based auth, CSRF, token revocation (persistent store).
+  - ac\*service: Full CRUD APIs for principles and guidelines, versioning.
+  - integrity\*service: Robust APIs for policy rule storage (Datalog) and audit logging. Implement cryptographic hashing for audit log chaining.
+  - Frontend: Solidify UI for login, principle browsing, and basic policy/audit viewing. \* Documentation: Core developer and operator documentation for foundational elements.
+    10.2. Phase 2: Advanced Governance Features & Integration Maturity
 - Goal: Implement the core AI governance lifecycle features and mature service integrations.
 - Key Activities:
   _ gs_service (Synthesis Engine):
   _ Replace mock LLM integration with actual LLM client.
   _ Develop and refine Datalog templates and LLM prompting strategies.
-  _ Full workflow: AC principles -> LLM -> Datalog rules -> integrity*service.
-  * Integration with fv*service for automated verification requests post-synthesis.
-  * fv*service (Formal Verification):
-  * Replace mock SMT solver with actual FV tool integration (e.g., Z3).
-  _ Develop logic for translating AC principles into proof obligations.
-  _ Develop logic for translating Datalog rules into FV tool input format.
-  _ Full workflow: Receive request -> Fetch rules/principles -> Verify -> Update integrity_service.
-  _ pgc*service (Policy Enforcement):
-  * Mature PolicyManager for dynamic loading of verified rules from integrity*service.
-  * Optimize Datalog engine (pyDatalog) or evaluate alternatives if performance concerns arise.
-  _ Implement API for policy evaluation based on context.
-  _ Frontend: UI for triggering synthesis, viewing synthesized rules, verification status, and detailed audit trails.
-  _ Testing: Comprehensive integration tests for the full policy lifecycle. E2E tests for key user flows.
-  _ Telemetry: Expand metrics and implement distributed tracing.
-  \_ Security: Initial penetration testing.
-  10.3. Phase 3: Production Readiness, Scalability, and Ecosystem Expansion
+  _ Full workflow: AC principles -> LLM -> Datalog rules -> integrity\*service.
+  - Integration with fv\*service for automated verification requests post-synthesis.
+  - fv\*service (Formal Verification):
+  - Replace mock SMT solver with actual FV tool integration (e.g., Z3).
+    _ Develop logic for translating AC principles into proof obligations.
+    _ Develop logic for translating Datalog rules into FV tool input format.
+    _ Full workflow: Receive request -> Fetch rules/principles -> Verify -> Update integrity_service.
+    _ pgc\*service (Policy Enforcement):
+  - Mature PolicyManager for dynamic loading of verified rules from integrity\*service.
+  - Optimize Datalog engine (pyDatalog) or evaluate alternatives if performance concerns arise.
+    _ Implement API for policy evaluation based on context.
+    _ Frontend: UI for triggering synthesis, viewing synthesized rules, verification status, and detailed audit trails.
+    _ Testing: Comprehensive integration tests for the full policy lifecycle. E2E tests for key user flows.
+    _ Telemetry: Expand metrics and implement distributed tracing.
+    \_ Security: Initial penetration testing.
+    10.3. Phase 3: Production Readiness, Scalability, and Ecosystem Expansion
 - Goal: Prepare the system for production deployment, ensure scalability and reliability, and explore initial ecosystem integrations.
 - Key Activities:
   _ Performance & Load Testing: Thoroughly test the system under load, optimize bottlenecks.

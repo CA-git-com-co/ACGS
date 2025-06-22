@@ -10,19 +10,23 @@ pipeline.workers: 4
 pipeline.batch.size: 1000
 pipeline.batch.delay: 50
 
-# Queue settings
+# Queue settings (consolidated)
 queue.type: persisted
 queue.max_bytes: 1gb
+queue.page_capacity: 64mb
+queue.max_events: 0
+queue.checkpoint.acks: 1024
 queue.checkpoint.writes: 1024
+queue.checkpoint.interval: 1000
 
 # Monitoring
 xpack.monitoring.enabled: true
-xpack.monitoring.elasticsearch.hosts: ["http://elasticsearch-security:9200"]
+xpack.monitoring.elasticsearch.hosts: ['http://elasticsearch-security:9200']
 xpack.monitoring.elasticsearch.username: elastic
 xpack.monitoring.elasticsearch.password: acgs_security_2024
 
 # HTTP API settings
-http.host: "0.0.0.0"
+http.host: '0.0.0.0'
 http.port: 9600
 
 # Log settings
@@ -57,17 +61,6 @@ jvm.options: |
 
 # Pipeline configuration
 pipeline.id: acgs-security-pipeline
-pipeline.batch.size: 1000
-pipeline.workers: 4
-
-# Persistent queue settings
-queue.type: persisted
-queue.page_capacity: 64mb
-queue.max_events: 0
-queue.max_bytes: 1gb
-queue.checkpoint.acks: 1024
-queue.checkpoint.writes: 1024
-queue.checkpoint.interval: 1000
 
 # Slow log settings
 slowlog.threshold.warn: 2s

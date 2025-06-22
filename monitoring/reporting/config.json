@@ -1,0 +1,30 @@
+{
+  "reports": [
+    {
+      "name": "weekly_version_adoption",
+      "schedule": "0 9 * * 1",
+      "recipients": ["api-team@acgs.gov", "product-team@acgs.gov"],
+      "metrics": ["version_adoption_percentage", "deprecated_endpoint_usage", "migration_progress"]
+    },
+    {
+      "name": "monthly_sla_report",
+      "schedule": "0 9 1 * *",
+      "recipients": ["leadership@acgs.gov", "api-team@acgs.gov"],
+      "metrics": [
+        "availability_sla_compliance",
+        "response_time_sla_compliance",
+        "error_budget_consumption"
+      ]
+    }
+  ],
+  "notification_channels": {
+    "email": {
+      "smtp_server": "localhost:587",
+      "from_address": "reports@acgs.gov"
+    },
+    "slack": {
+      "webhook_url": "https://hooks.slack.com/services/...",
+      "channel": "#api-monitoring"
+    }
+  }
+}

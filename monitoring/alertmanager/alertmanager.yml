@@ -1,10 +1,15 @@
 global:
-  smtp_from: alerts@acgs.local
+  smtp_from: alerts@acgs.gov
   smtp_smarthost: localhost:587
 receivers:
-  - name: web.hook
+  - email_configs:
+      - body: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+        subject: 'ACGS API Alert: {{ .GroupLabels.alertname }}'
+        to: api-team@acgs.gov
+    name: web.hook
     webhook_configs:
-      - url: http://localhost:5001/alerts
+      - send_resolved: true
+        url: http://localhost:5001/webhook
 route:
   group_by:
     - alertname
