@@ -1,0 +1,416 @@
+# ACGS-1 Lite Grafana Configuration
+# Constitutional compliance dashboards and monitoring
+
+---
+# Grafana ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-config
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: monitoring
+    acgs-lite.io/service-type: grafana-config
+data:
+  grafana.ini: |
+    [analytics]
+    check_for_updates = true
+
+    [grafana_net]
+    url = https://grafana.net
+
+    [log]
+    mode = console
+
+    [paths]
+    data = /var/lib/grafana/data
+    logs = /var/log/grafana
+    plugins = /var/lib/grafana/plugins
+    provisioning = /etc/grafana/provisioning
+
+    [server]
+    root_url = http://localhost:3000/
+
+    [security]
+    admin_user = admin
+    admin_password = acgs-lite-admin
+
+    [users]
+    allow_sign_up = false
+
+    [auth.anonymous]
+    enabled = false
+
+    [dashboards]
+    default_home_dashboard_path = /var/lib/grafana/dashboards/acgs-lite-overview.json
+
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      access: proxy
+      url: http://prometheus:9090
+      isDefault: true
+      editable: true
+
+  dashboards.yaml: |
+    apiVersion: 1
+    providers:
+    - name: 'acgs-lite-dashboards'
+      orgId: 1
+      folder: 'ACGS-Lite'
+      type: file
+      disableDeletion: false
+      updateIntervalSeconds: 10
+      allowUiUpdates: true
+      options:
+        path: /var/lib/grafana/dashboards
+
+---
+# Grafana Dashboard ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: monitoring
+    acgs-lite.io/service-type: grafana-dashboards
+data:
+  acgs-lite-overview.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "ACGS-1 Lite: Constitutional Health Overview",
+        "tags": ["acgs-lite", "constitutional", "governance"],
+        "style": "dark",
+        "timezone": "browser",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Constitutional Compliance Rate (5m)",
+            "type": "stat",
+            "targets": [{
+              "expr": "sum(rate(policy_evaluations_total{result='allow'}[5m])) / sum(rate(policy_evaluations_total[5m])) * 100",
+              "legendFormat": "Compliance Rate"
+            }],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "percent",
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {"color": "red", "value": 0},
+                    {"color": "yellow", "value": 98},
+                    {"color": "green", "value": 99.9}
+                  ]
+                }
+              }
+            },
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+          },
+          {
+            "id": 2,
+            "title": "Sandbox Escape Attempts",
+            "type": "timeseries",
+            "targets": [{
+              "expr": "sum(increase(sandbox_escape_attempts_total[1m])) by (pattern)",
+              "legendFormat": "{{pattern}}"
+            }],
+            "alert": {
+              "conditions": [{
+                "evaluator": {"params": [0], "type": "gt"},
+                "operator": {"type": "and"},
+                "query": {"params": ["A", "5m", "now"]},
+                "reducer": {"params": [], "type": "last"},
+                "type": "query"
+              }],
+              "executionErrorState": "alerting",
+              "for": "0m",
+              "frequency": "10s",
+              "handler": 1,
+              "name": "Sandbox Escape Alert",
+              "noDataState": "no_data",
+              "notifications": []
+            },
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+          },
+          {
+            "id": 3,
+            "title": "Policy Evaluation Latency",
+            "type": "timeseries",
+            "targets": [{
+              "expr": "histogram_quantile(0.99, rate(policy_evaluation_duration_seconds_bucket[5m]))",
+              "legendFormat": "P99"
+            }, {
+              "expr": "histogram_quantile(0.95, rate(policy_evaluation_duration_seconds_bucket[5m]))",
+              "legendFormat": "P95"
+            }, {
+              "expr": "histogram_quantile(0.50, rate(policy_evaluation_duration_seconds_bucket[5m]))",
+              "legendFormat": "P50"
+            }],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "s",
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {"color": "green", "value": 0},
+                    {"color": "yellow", "value": 0.002},
+                    {"color": "red", "value": 0.005}
+                  ]
+                }
+              }
+            },
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+          },
+          {
+            "id": 4,
+            "title": "Human Review Queue",
+            "type": "stat",
+            "targets": [{
+              "expr": "human_review_requests_pending",
+              "legendFormat": "Pending Reviews"
+            }],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "short",
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {"color": "green", "value": 0},
+                    {"color": "yellow", "value": 5},
+                    {"color": "red", "value": 10}
+                  ]
+                }
+              }
+            },
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+          },
+          {
+            "id": 5,
+            "title": "System Resource Usage",
+            "type": "timeseries",
+            "targets": [{
+              "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=~'governance|workload|shared'}[5m])) by (namespace)",
+              "legendFormat": "CPU - {{namespace}}"
+            }, {
+              "expr": "sum(container_memory_usage_bytes{namespace=~'governance|workload|shared'}) by (namespace) / 1024 / 1024 / 1024",
+              "legendFormat": "Memory - {{namespace}}"
+            }],
+            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16}
+          }
+        ],
+        "time": {"from": "now-1h", "to": "now"},
+        "timepicker": {},
+        "templating": {"list": []},
+        "annotations": {"list": []},
+        "refresh": "5s",
+        "schemaVersion": 30,
+        "version": 1,
+        "links": []
+      }
+    }
+
+  constitutional-violations.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "ACGS-1 Lite: Constitutional Violations",
+        "tags": ["acgs-lite", "violations", "security"],
+        "style": "dark",
+        "timezone": "browser",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Violation Types (24h)",
+            "type": "piechart",
+            "targets": [{
+              "expr": "sum(increase(constitutional_violations_total[24h])) by (violation_type)",
+              "legendFormat": "{{violation_type}}"
+            }],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+          },
+          {
+            "id": 2,
+            "title": "Violation Severity Distribution",
+            "type": "bargauge",
+            "targets": [{
+              "expr": "sum(increase(constitutional_violations_total[1h])) by (severity)",
+              "legendFormat": "{{severity}}"
+            }],
+            "fieldConfig": {
+              "defaults": {
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {"color": "green", "value": 0},
+                    {"color": "yellow", "value": 1},
+                    {"color": "red", "value": 5}
+                  ]
+                }
+              }
+            },
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+          },
+          {
+            "id": 3,
+            "title": "Violation Timeline",
+            "type": "timeseries",
+            "targets": [{
+              "expr": "sum(rate(constitutional_violations_total[5m])) by (violation_type)",
+              "legendFormat": "{{violation_type}}"
+            }],
+            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
+          }
+        ],
+        "time": {"from": "now-24h", "to": "now"},
+        "refresh": "30s",
+        "schemaVersion": 30,
+        "version": 1
+      }
+    }
+
+---
+# Grafana Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: monitoring
+    acgs-lite.io/service-type: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+        app.kubernetes.io/name: acgs-lite
+        app.kubernetes.io/component: monitoring
+        acgs-lite.io/service-type: grafana
+      annotations:
+        acgs-lite.io/constitutional-compliance: 'required'
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 472
+        fsGroup: 472
+      containers:
+        - name: grafana
+          image: grafana/grafana:10.0.0
+          ports:
+            - containerPort: 3000
+              name: http
+          env:
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-admin
+                  key: password
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 1
+              memory: 2Gi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/grafana
+            - name: dashboards
+              mountPath: /var/lib/grafana/dashboards
+            - name: storage
+              mountPath: /var/lib/grafana
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 30
+            timeoutSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
+      volumes:
+        - name: config
+          configMap:
+            name: grafana-config
+        - name: dashboards
+          configMap:
+            name: grafana-dashboards
+        - name: storage
+          persistentVolumeClaim:
+            claimName: grafana-storage
+      nodeSelector:
+        acgs-lite.io/node-pool: monitoring
+      tolerations:
+        - key: monitoring
+          operator: Equal
+          value: 'true'
+          effect: NoSchedule
+
+---
+# Grafana Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: monitoring
+    acgs-lite.io/service-type: grafana
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+      protocol: TCP
+  selector:
+    app: grafana
+
+---
+# Grafana Admin Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: grafana-admin
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: monitoring
+    acgs-lite.io/service-type: grafana-secret
+type: Opaque
+data:
+  password: YWNncy1saXRlLWFkbWlu # acgs-lite-admin (base64 encoded)
+
+---
+# Grafana PersistentVolumeClaim
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-storage
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: monitoring
+    acgs-lite.io/service-type: grafana-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: fast-ssd
+  resources:
+    requests:
+      storage: 10Gi

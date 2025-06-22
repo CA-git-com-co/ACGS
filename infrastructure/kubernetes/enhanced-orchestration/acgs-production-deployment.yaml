@@ -1,0 +1,453 @@
+---
+# ACGS-1 Enhanced Production Kubernetes Deployment
+# Comprehensive container orchestration with auto-scaling, security, and monitoring
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: acgs-production
+  labels:
+    name: acgs-production
+    environment: production
+    security.istio.io/tlsMode: istio
+
+---
+# Service Account for ACGS services
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: acgs-service-account
+  namespace: acgs-production
+  labels:
+    app: acgs
+automountServiceAccountToken: true
+
+---
+# RBAC for ACGS services
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: acgs-production
+  name: acgs-role
+rules:
+  - apiGroups: ['']
+    resources: ['pods', 'services', 'configmaps', 'secrets']
+    verbs: ['get', 'list', 'watch']
+  - apiGroups: ['apps']
+    resources: ['deployments', 'replicasets']
+    verbs: ['get', 'list', 'watch']
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: acgs-role-binding
+  namespace: acgs-production
+subjects:
+  - kind: ServiceAccount
+    name: acgs-service-account
+    namespace: acgs-production
+roleRef:
+  kind: Role
+  name: acgs-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Network Policy for micro-segmentation
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: acgs-network-policy
+  namespace: acgs-production
+spec:
+  podSelector:
+    matchLabels:
+      app: acgs
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: acgs-production
+        - namespaceSelector:
+            matchLabels:
+              name: istio-system
+      ports:
+        - protocol: TCP
+          port: 8000
+        - protocol: TCP
+          port: 8001
+        - protocol: TCP
+          port: 8002
+        - protocol: TCP
+          port: 8003
+        - protocol: TCP
+          port: 8004
+        - protocol: TCP
+          port: 8005
+        - protocol: TCP
+          port: 8006
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: acgs-production
+        - namespaceSelector:
+            matchLabels:
+              name: istio-system
+      ports:
+        - protocol: TCP
+          port: 5432 # PostgreSQL
+        - protocol: TCP
+          port: 6379 # Redis
+        - protocol: TCP
+          port: 443 # HTTPS
+        - protocol: TCP
+          port: 53 # DNS
+        - protocol: UDP
+          port: 53 # DNS
+
+---
+# Pod Security Policy
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: acgs-psp
+  namespace: acgs-production
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities:
+    - ALL
+  volumes:
+    - 'configMap'
+    - 'emptyDir'
+    - 'projected'
+    - 'secret'
+    - 'downwardAPI'
+    - 'persistentVolumeClaim'
+  runAsUser:
+    rule: 'MustRunAsNonRoot'
+  seLinux:
+    rule: 'RunAsAny'
+  fsGroup:
+    rule: 'RunAsAny'
+
+---
+# ConfigMap for ACGS configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-config
+  namespace: acgs-production
+data:
+  environment: 'production'
+  log_level: 'INFO'
+  constitutional_hash: 'cdd01ef066bc6cf2'
+  performance_mode: 'high'
+  security_level: 'strict'
+  monitoring_enabled: 'true'
+  tracing_enabled: 'true'
+  metrics_enabled: 'true'
+
+  # Service URLs
+  auth_service_url: 'http://auth-service:8000'
+  ac_service_url: 'http://ac-service:8001'
+  integrity_service_url: 'http://integrity-service:8002'
+  fv_service_url: 'http://fv-service:8003'
+  gs_service_url: 'http://gs-service:8004'
+  pgc_service_url: 'http://pgc-service:8005'
+  ec_service_url: 'http://ec-service:8006'
+
+  # Database configuration
+  database_host: 'postgres-service'
+  database_port: '5432'
+  database_name: 'acgs_production'
+  redis_host: 'redis-service'
+  redis_port: '6379'
+
+  # Performance tuning
+  max_workers: '4'
+  connection_pool_size: '100'
+  request_timeout: '30'
+  keep_alive_timeout: '5'
+  max_request_size: '10485760'
+
+  # Security settings
+  jwt_expiry: '3600'
+  session_timeout: '1800'
+  rate_limit_per_minute: '1000'
+  enable_cors: 'false'
+  allowed_origins: 'https://acgs.gov'
+
+---
+# Secret for sensitive configuration
+apiVersion: v1
+kind: Secret
+metadata:
+  name: acgs-secrets
+  namespace: acgs-production
+type: Opaque
+data:
+  # Base64 encoded values (replace with actual secrets)
+  database_password: YWNnc19wcm9kdWN0aW9uX3Bhc3N3b3Jk # acgs_production_password
+  jwt_secret: c3VwZXJfc2VjcmV0X2p3dF9rZXlfZm9yX3Byb2R1Y3Rpb24= # super_secret_jwt_key_for_production
+  redis_password: cmVkaXNfcHJvZHVjdGlvbl9wYXNzd29yZA== # redis_production_password
+  encryption_key: ZW5jcnlwdGlvbl9rZXlfZm9yX3Byb2R1Y3Rpb25fZGF0YQ== # encryption_key_for_production_data
+
+---
+# Horizontal Pod Autoscaler for Auth Service
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: auth-service-hpa
+  namespace: acgs-production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: auth-service
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 10
+          periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Percent
+          value: 50
+          periodSeconds: 60
+
+---
+# Auth Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: acgs-production
+  labels:
+    app: acgs
+    service: auth
+    version: v1
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: acgs
+      service: auth
+  template:
+    metadata:
+      labels:
+        app: acgs
+        service: auth
+        version: v1
+      annotations:
+        sidecar.istio.io/inject: 'true'
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9090'
+        prometheus.io/path: '/metrics'
+    spec:
+      serviceAccountName: acgs-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
+      containers:
+        - name: auth-service
+          image: acgs/auth-service:v1.0.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+              name: http
+              protocol: TCP
+            - containerPort: 9090
+              name: metrics
+              protocol: TCP
+          env:
+            - name: SERVICE_NAME
+              value: 'auth_service'
+            - name: SERVICE_PORT
+              value: '8000'
+            - name: ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: acgs-config
+                  key: environment
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: acgs-config
+                  key: log_level
+            - name: DATABASE_URL
+              value: 'postgresql+asyncpg://acgs_user:$(DATABASE_PASSWORD)@$(DATABASE_HOST):$(DATABASE_PORT)/$(DATABASE_NAME)'
+            - name: DATABASE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: acgs-config
+                  key: database_host
+            - name: DATABASE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: acgs-config
+                  key: database_port
+            - name: DATABASE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: acgs-config
+                  key: database_name
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-secrets
+                  key: database_password
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-secrets
+                  key: jwt_secret
+            - name: REDIS_URL
+              value: 'redis://:$(REDIS_PASSWORD)@$(REDIS_HOST):$(REDIS_PORT)/0'
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: acgs-config
+                  key: redis_host
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: acgs-config
+                  key: redis_port
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-secrets
+                  key: redis_password
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '200m'
+            limits:
+              memory: '512Mi'
+              cpu: '500m'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: logs
+              mountPath: /app/logs
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: logs
+          emptyDir: {}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: service
+                      operator: In
+                      values:
+                        - auth
+                topologyKey: kubernetes.io/hostname
+      tolerations:
+        - key: 'node.kubernetes.io/not-ready'
+          operator: 'Exists'
+          effect: 'NoExecute'
+          tolerationSeconds: 300
+        - key: 'node.kubernetes.io/unreachable'
+          operator: 'Exists'
+          effect: 'NoExecute'
+          tolerationSeconds: 300
+
+---
+# Auth Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: acgs-production
+  labels:
+    app: acgs
+    service: auth
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '9090'
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: 8000
+      protocol: TCP
+      name: http
+    - port: 9090
+      targetPort: 9090
+      protocol: TCP
+      name: metrics
+  selector:
+    app: acgs
+    service: auth
+
+---
+# Pod Disruption Budget for Auth Service
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: auth-service-pdb
+  namespace: acgs-production
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: acgs
+      service: auth

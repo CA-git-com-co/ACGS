@@ -1,0 +1,377 @@
+# ACGS-1 Lite Security Policies
+# Implements comprehensive security controls for constitutional governance
+
+---
+# Pod Security Policy for Governance Services
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: acgs-lite-governance-psp
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: security-policy
+    acgs-lite.io/policy-type: governance
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities:
+    - ALL
+  volumes:
+    - 'configMap'
+    - 'emptyDir'
+    - 'projected'
+    - 'secret'
+    - 'downwardAPI'
+    - 'persistentVolumeClaim'
+  hostNetwork: false
+  hostIPC: false
+  hostPID: false
+  runAsUser:
+    rule: 'MustRunAsNonRoot'
+  supplementalGroups:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1
+        max: 65535
+  fsGroup:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1
+        max: 65535
+  readOnlyRootFilesystem: true
+  seLinux:
+    rule: 'RunAsAny'
+
+---
+# Pod Security Policy for Sandbox Workloads (Most Restrictive)
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: acgs-lite-sandbox-psp
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: security-policy
+    acgs-lite.io/policy-type: sandbox
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities:
+    - ALL
+  allowedCapabilities: []
+  volumes:
+    - 'emptyDir'
+    - 'configMap'
+    - 'secret'
+  hostNetwork: false
+  hostIPC: false
+  hostPID: false
+  hostPorts: []
+  runAsUser:
+    rule: 'MustRunAsNonRoot'
+    ranges:
+      - min: 1000
+        max: 65535
+  supplementalGroups:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1000
+        max: 65535
+  fsGroup:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1000
+        max: 65535
+  readOnlyRootFilesystem: true
+  seLinux:
+    rule: 'RunAsAny'
+  seccompProfile:
+    type: RuntimeDefault
+  allowedProcMountTypes:
+    - Default
+
+---
+# ClusterRole for Governance PSP
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: acgs-lite-governance-psp-user
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: security-policy
+    acgs-lite.io/policy-type: governance-psp
+rules:
+  - apiGroups: ['policy']
+    resources: ['podsecuritypolicies']
+    verbs: ['use']
+    resourceNames:
+      - acgs-lite-governance-psp
+
+---
+# ClusterRole for Sandbox PSP
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: acgs-lite-sandbox-psp-user
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: security-policy
+    acgs-lite.io/policy-type: sandbox-psp
+rules:
+  - apiGroups: ['policy']
+    resources: ['podsecuritypolicies']
+    verbs: ['use']
+    resourceNames:
+      - acgs-lite-sandbox-psp
+
+---
+# RoleBinding for Governance PSP
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: acgs-lite-governance-psp-binding
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: security-policy
+    acgs-lite.io/policy-type: governance-psp-binding
+subjects:
+  - kind: ServiceAccount
+    name: acgs-lite-service
+    namespace: governance
+roleRef:
+  kind: ClusterRole
+  name: acgs-lite-governance-psp-user
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# RoleBinding for Sandbox PSP
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: acgs-lite-sandbox-psp-binding
+  namespace: workload
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: security-policy
+    acgs-lite.io/policy-type: sandbox-psp-binding
+subjects:
+  - kind: ServiceAccount
+    name: acgs-lite-sandbox-controller
+    namespace: workload
+roleRef:
+  kind: ClusterRole
+  name: acgs-lite-sandbox-psp-user
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Network Policy for DNS Resolution
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: network-policy
+    acgs-lite.io/policy-type: dns-access
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+---
+# Network Policy for DNS Resolution in Workload
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns
+  namespace: workload
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: network-policy
+    acgs-lite.io/policy-type: dns-access
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+---
+# Network Policy for DNS Resolution in Shared
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns
+  namespace: shared
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: network-policy
+    acgs-lite.io/policy-type: dns-access
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+---
+# Security Context Constraints for OpenShift (if applicable)
+apiVersion: security.openshift.io/v1
+kind: SecurityContextConstraints
+metadata:
+  name: acgs-lite-restricted
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: security-policy
+    acgs-lite.io/policy-type: scc
+allowHostDirVolumePlugin: false
+allowHostIPC: false
+allowHostNetwork: false
+allowHostPID: false
+allowHostPorts: false
+allowPrivilegedContainer: false
+allowedCapabilities: []
+defaultAddCapabilities: []
+requiredDropCapabilities:
+  - ALL
+allowedFlexVolumes: []
+fsGroup:
+  type: MustRunAs
+  ranges:
+    - min: 1000
+      max: 65535
+readOnlyRootFilesystem: true
+runAsUser:
+  type: MustRunAsNonRoot
+seLinuxContext:
+  type: MustRunAs
+supplementalGroups:
+  type: MustRunAs
+  ranges:
+    - min: 1000
+      max: 65535
+volumes:
+  - configMap
+  - downwardAPI
+  - emptyDir
+  - persistentVolumeClaim
+  - projected
+  - secret
+
+---
+# Admission Controller Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-lite-admission-config
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: security-policy
+    acgs-lite.io/policy-type: admission-config
+data:
+  admission-config.yaml: |
+    apiVersion: apiserver.config.k8s.io/v1
+    kind: AdmissionConfiguration
+    plugins:
+    - name: PodSecurityPolicy
+      configuration:
+        apiVersion: podsecuritypolicy.admission.k8s.io/v1beta1
+        kind: PodSecurityPolicyConfiguration
+    - name: SecurityContextDeny
+      configuration:
+        apiVersion: securitycontextdeny.admission.k8s.io/v1
+        kind: SecurityContextDenyConfiguration
+        securityContextDeny:
+          allowedUnsafeSysctls: []
+          allowedProcMountTypes: ["Default"]
+
+---
+# OPA Gatekeeper Constraint Template for ACGS-Lite
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: acgsliteconstitutionalcompliance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: security-policy
+    acgs-lite.io/policy-type: gatekeeper-template
+spec:
+  crd:
+    spec:
+      names:
+        kind: AcgsLiteConstitutionalCompliance
+      validation:
+        type: object
+        properties:
+          requiredLabels:
+            type: array
+            items:
+              type: string
+          requiredAnnotations:
+            type: array
+            items:
+              type: string
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package acgsliteconstitutionalcompliance
+
+        violation[{"msg": msg}] {
+          required_labels := input.parameters.requiredLabels
+          provided_labels := input.review.object.metadata.labels
+          missing := required_labels[_]
+          not provided_labels[missing]
+          msg := sprintf("Missing required label: %v", [missing])
+        }
+
+        violation[{"msg": msg}] {
+          required_annotations := input.parameters.requiredAnnotations
+          provided_annotations := input.review.object.metadata.annotations
+          missing := required_annotations[_]
+          not provided_annotations[missing]
+          msg := sprintf("Missing required annotation: %v", [missing])
+        }
+
+---
+# OPA Gatekeeper Constraint for Constitutional Compliance
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: AcgsLiteConstitutionalCompliance
+metadata:
+  name: acgs-lite-constitutional-compliance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: security-policy
+    acgs-lite.io/policy-type: gatekeeper-constraint
+spec:
+  match:
+    kinds:
+      - apiGroups: ['apps']
+        kinds: ['Deployment']
+      - apiGroups: ['']
+        kinds: ['Pod']
+    namespaces: ['governance', 'workload']
+  parameters:
+    requiredLabels:
+      - 'app.kubernetes.io/name'
+      - 'acgs-lite.io/service-type'
+    requiredAnnotations:
+      - 'acgs-lite.io/constitutional-compliance'

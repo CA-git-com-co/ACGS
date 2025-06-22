@@ -1,0 +1,471 @@
+# ACGS-1 Lite Policy Engine Deployment
+# Constitutional policy evaluation service with OPA integration
+
+---
+# ConfigMap for OPA Policies
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opa-policies
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: policy-engine
+    acgs-lite.io/service-type: opa-policies
+data:
+  constitutional.rego: |
+    package acgs.constitutional
+
+    import future.keywords.if
+    import future.keywords.in
+
+    # Default deny
+    default evaluate = {
+        "allow": false,
+        "violations": ["default_deny"],
+        "reason": "No matching policy found",
+        "confidence_score": 1.0,
+        "policy_version": "1.0.0"
+    }
+
+    # Agent evolution evaluation
+    evaluate = result if {
+        input.action == "evolve_agent"
+        result := agent_evolution_policy
+    }
+
+    # Sandbox execution evaluation
+    evaluate = result if {
+        input.action == "execute_in_sandbox"
+        result := sandbox_execution_policy
+    }
+
+    # Human review requirement evaluation
+    evaluate = result if {
+        input.action == "require_human_review"
+        result := human_review_policy
+    }
+
+    # Agent Evolution Policy
+    agent_evolution_policy = result if {
+        fitness_improvement := input.data.fitness_improvement
+        safety_score := input.data.safety_score
+        constitutional_compliance := input.data.constitutional_compliance
+        
+        violations := []
+        
+        # Check fitness improvement threshold
+        fitness_violation := "fitness_improvement_below_threshold" if fitness_improvement < 0.05
+        
+        # Check safety score
+        safety_violation := "safety_score_below_threshold" if safety_score < 0.95
+        
+        # Check constitutional compliance
+        compliance_violation := "constitutional_compliance_below_threshold" if constitutional_compliance < 0.99
+        
+        all_violations := array.concat(
+            array.concat(
+                [fitness_violation | fitness_violation],
+                [safety_violation | safety_violation]
+            ),
+            [compliance_violation | compliance_violation]
+        )
+        
+        allow := count(all_violations) == 0
+        
+        result := {
+            "allow": allow,
+            "violations": all_violations,
+            "reason": sprintf("Fitness: %.3f, Safety: %.3f, Compliance: %.3f", [fitness_improvement, safety_score, constitutional_compliance]),
+            "confidence_score": 0.95,
+            "policy_version": "1.0.0"
+        }
+    }
+
+    # Sandbox Execution Policy
+    sandbox_execution_policy = result if {
+        memory_mb := input.data.memory_mb
+        cpu_cores := input.data.cpu_cores
+        execution_time_seconds := input.data.execution_time_seconds
+        network_access := input.data.network_access
+        
+        violations := []
+        
+        # Check resource limits
+        memory_violation := "memory_limit_exceeded" if memory_mb > 2048
+        cpu_violation := "cpu_limit_exceeded" if cpu_cores > 0.5
+        time_violation := "execution_time_exceeded" if execution_time_seconds > 300
+        network_violation := "network_access_not_allowed" if network_access == true
+        
+        all_violations := array.concat(
+            array.concat(
+                [memory_violation | memory_violation],
+                [cpu_violation | cpu_violation]
+            ),
+            array.concat(
+                [time_violation | time_violation],
+                [network_violation | network_violation]
+            )
+        )
+        
+        allow := count(all_violations) == 0
+        
+        result := {
+            "allow": allow,
+            "violations": all_violations,
+            "reason": sprintf("Memory: %dMB, CPU: %.1f cores, Time: %ds, Network: %v", [memory_mb, cpu_cores, execution_time_seconds, network_access]),
+            "confidence_score": 1.0,
+            "policy_version": "1.0.0"
+        }
+    }
+
+    # Human Review Policy
+    human_review_policy = result if {
+        risk_score := input.data.risk_score
+        policy_violations := input.data.policy_violations
+        novel_behavior := input.data.novel_behavior
+        
+        require_review := false
+        reasons := []
+        
+        # High risk score requires review
+        high_risk := risk_score >= 0.8
+        if high_risk {
+            require_review := true
+            reasons := array.concat(reasons, ["high_risk_score"])
+        }
+        
+        # Policy violations require review
+        has_violations := policy_violations > 0
+        if has_violations {
+            require_review := true
+            reasons := array.concat(reasons, ["policy_violations_detected"])
+        }
+        
+        # Novel behavior requires review
+        if novel_behavior == true {
+            require_review := true
+            reasons := array.concat(reasons, ["novel_behavior_detected"])
+        }
+        
+        result := {
+            "allow": not require_review,
+            "violations": reasons,
+            "reason": sprintf("Risk: %.2f, Violations: %d, Novel: %v", [risk_score, policy_violations, novel_behavior]),
+            "confidence_score": 0.9,
+            "policy_version": "1.0.0"
+        }
+    }
+
+---
+# OPA Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opa
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: policy-engine
+    acgs-lite.io/service-type: opa
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: opa
+  template:
+    metadata:
+      labels:
+        app: opa
+        app.kubernetes.io/name: acgs-lite
+        app.kubernetes.io/component: policy-engine
+        acgs-lite.io/service-type: opa
+      annotations:
+        acgs-lite.io/constitutional-compliance: 'required'
+    spec:
+      serviceAccountName: acgs-lite-service
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+        - name: opa
+          image: openpolicyagent/opa:0.55.0-envoy
+          args:
+            - 'run'
+            - '--server'
+            - '--addr=0.0.0.0:8181'
+            - '--diagnostic-addr=0.0.0.0:8282'
+            - '--set=plugins.envoy_ext_authz_grpc.addr=:9191'
+            - '--set=plugins.envoy_ext_authz_grpc.query=data.envoy.authz.allow'
+            - '--set=decision_logs.console=true'
+            - '/policies'
+          ports:
+            - containerPort: 8181
+              name: http
+            - containerPort: 8282
+              name: diagnostic
+            - containerPort: 9191
+              name: grpc
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 1
+              memory: 1Gi
+          volumeMounts:
+            - name: policies
+              mountPath: /policies
+            - name: tmp
+              mountPath: /tmp
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8282
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health?bundle=true
+              port: 8282
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: policies
+          configMap:
+            name: opa-policies
+        - name: tmp
+          emptyDir: {}
+      nodeSelector:
+        acgs-lite.io/node-pool: governance
+      tolerations:
+        - key: governance
+          operator: Equal
+          value: 'true'
+          effect: NoSchedule
+
+---
+# OPA Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: opa
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: policy-engine
+    acgs-lite.io/service-type: opa
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '8282'
+    prometheus.io/path: '/metrics'
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8181
+      targetPort: 8181
+      protocol: TCP
+    - name: diagnostic
+      port: 8282
+      targetPort: 8282
+      protocol: TCP
+    - name: grpc
+      port: 9191
+      targetPort: 9191
+      protocol: TCP
+  selector:
+    app: opa
+
+---
+# Policy Engine Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: policy-engine
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: policy-engine
+    acgs-lite.io/service-type: policy-engine
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: policy-engine
+  template:
+    metadata:
+      labels:
+        app: policy-engine
+        app.kubernetes.io/name: acgs-lite
+        app.kubernetes.io/component: policy-engine
+        acgs-lite.io/service-type: policy-engine
+      annotations:
+        acgs-lite.io/constitutional-compliance: 'required'
+    spec:
+      serviceAccountName: acgs-lite-service
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+        - name: policy-engine
+          image: acgs-lite/policy-engine:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8001
+              name: http
+          env:
+            - name: OPA_URL
+              value: 'http://opa:8181'
+            - name: REDIS_URL
+              value: 'redis://redis:6379/0'
+            - name: LOG_LEVEL
+              value: 'INFO'
+            - name: CACHE_TTL
+              value: '300'
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 1
+              memory: 1Gi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8001
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+      nodeSelector:
+        acgs-lite.io/node-pool: governance
+      tolerations:
+        - key: governance
+          operator: Equal
+          value: 'true'
+          effect: NoSchedule
+
+---
+# Policy Engine Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: policy-engine
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: policy-engine
+    acgs-lite.io/service-type: policy-engine
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '8001'
+    prometheus.io/path: '/metrics'
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8001
+      targetPort: 8001
+      protocol: TCP
+  selector:
+    app: policy-engine
+
+---
+# HorizontalPodAutoscaler for Policy Engine
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: policy-engine-hpa
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: policy-engine
+    acgs-lite.io/service-type: policy-engine-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: policy-engine
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 10
+          periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Percent
+          value: 50
+          periodSeconds: 60
+
+---
+# ServiceMonitor for Policy Engine
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: policy-engine-monitor
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: policy-engine
+    acgs-lite.io/service-type: policy-engine-monitoring
+spec:
+  selector:
+    matchLabels:
+      app: policy-engine
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
+
+---
+# ServiceMonitor for OPA
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: opa-monitor
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: policy-engine
+    acgs-lite.io/service-type: opa-monitoring
+spec:
+  selector:
+    matchLabels:
+      app: opa
+  endpoints:
+    - port: diagnostic
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s

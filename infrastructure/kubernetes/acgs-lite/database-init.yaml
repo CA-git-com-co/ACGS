@@ -1,0 +1,428 @@
+# ACGS-1 Lite Database Initialization
+# Creates the database schema and initial data for constitutional governance
+
+---
+# ConfigMap for Database Schema
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-lite-db-schema
+  namespace: shared
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: database
+    acgs-lite.io/service-type: database-schema
+data:
+  01-schema.sql: |
+    -- ACGS-1 Lite Database Schema
+    -- Constitutional Governance System Database
+
+    -- Enable required extensions
+    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+    CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+    CREATE EXTENSION IF NOT EXISTS "pg_stat_statements";
+
+    -- Constitutional Policies Table
+    CREATE TABLE IF NOT EXISTS constitutional_policies (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        name VARCHAR(255) NOT NULL UNIQUE,
+        description TEXT,
+        policy_text TEXT NOT NULL,
+        version INTEGER NOT NULL DEFAULT 1,
+        active BOOLEAN NOT NULL DEFAULT true,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        created_by VARCHAR(255),
+        hash_sha256 VARCHAR(64) NOT NULL,
+        CONSTRAINT valid_version CHECK (version > 0)
+    );
+
+    -- Policy Evaluations Table
+    CREATE TABLE IF NOT EXISTS policy_evaluations (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        policy_id UUID NOT NULL REFERENCES constitutional_policies(id),
+        agent_id VARCHAR(255) NOT NULL,
+        action VARCHAR(255) NOT NULL,
+        input_data JSONB,
+        result VARCHAR(50) NOT NULL CHECK (result IN ('allow', 'deny', 'review')),
+        reason TEXT,
+        confidence_score DECIMAL(3,2) CHECK (confidence_score >= 0 AND confidence_score <= 1),
+        evaluation_time_ms INTEGER,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        cache_hit BOOLEAN DEFAULT false
+    );
+
+    -- Audit Events Table
+    CREATE TABLE IF NOT EXISTS audit_events (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        event_id VARCHAR(255) NOT NULL UNIQUE,
+        event_type VARCHAR(100) NOT NULL,
+        source_service VARCHAR(100) NOT NULL,
+        actor_type VARCHAR(50),
+        actor_id VARCHAR(255),
+        action VARCHAR(255),
+        resource_type VARCHAR(100),
+        resource_id VARCHAR(255),
+        decision JSONB,
+        context JSONB,
+        timestamp_utc TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        hash_chain VARCHAR(64),
+        previous_hash VARCHAR(64)
+    );
+
+    -- Sandbox Violations Table
+    CREATE TABLE IF NOT EXISTS sandbox_violations (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        sandbox_id VARCHAR(255) NOT NULL,
+        agent_id VARCHAR(255) NOT NULL,
+        violation_type VARCHAR(100) NOT NULL,
+        severity VARCHAR(20) NOT NULL CHECK (severity IN ('low', 'medium', 'high', 'critical')),
+        description TEXT,
+        detection_layer VARCHAR(50) NOT NULL,
+        indicators JSONB,
+        containment_actions JSONB,
+        forensic_data JSONB,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        resolved_at TIMESTAMP WITH TIME ZONE,
+        resolved_by VARCHAR(255)
+    );
+
+    -- Human Review Requests Table
+    CREATE TABLE IF NOT EXISTS human_review_requests (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        request_id VARCHAR(255) NOT NULL UNIQUE,
+        agent_id VARCHAR(255) NOT NULL,
+        action VARCHAR(255) NOT NULL,
+        risk_score DECIMAL(3,2) CHECK (risk_score >= 0 AND risk_score <= 1),
+        priority VARCHAR(20) NOT NULL CHECK (priority IN ('low', 'medium', 'high', 'critical')),
+        context JSONB,
+        policy_violations JSONB,
+        requested_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        reviewed_at TIMESTAMP WITH TIME ZONE,
+        reviewed_by VARCHAR(255),
+        decision VARCHAR(20) CHECK (decision IN ('approve', 'reject', 'escalate')),
+        review_notes TEXT,
+        auto_timeout_at TIMESTAMP WITH TIME ZONE
+    );
+
+    -- System Metrics Table
+    CREATE TABLE IF NOT EXISTS system_metrics (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        metric_name VARCHAR(100) NOT NULL,
+        metric_value DECIMAL,
+        metric_labels JSONB,
+        timestamp_utc TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    );
+
+    -- Create indexes for performance
+    CREATE INDEX IF NOT EXISTS idx_policy_evaluations_agent_id ON policy_evaluations(agent_id);
+    CREATE INDEX IF NOT EXISTS idx_policy_evaluations_created_at ON policy_evaluations(created_at);
+    CREATE INDEX IF NOT EXISTS idx_policy_evaluations_result ON policy_evaluations(result);
+    CREATE INDEX IF NOT EXISTS idx_audit_events_event_type ON audit_events(event_type);
+    CREATE INDEX IF NOT EXISTS idx_audit_events_timestamp ON audit_events(timestamp_utc);
+    CREATE INDEX IF NOT EXISTS idx_audit_events_source_service ON audit_events(source_service);
+    CREATE INDEX IF NOT EXISTS idx_sandbox_violations_agent_id ON sandbox_violations(agent_id);
+    CREATE INDEX IF NOT EXISTS idx_sandbox_violations_violation_type ON sandbox_violations(violation_type);
+    CREATE INDEX IF NOT EXISTS idx_sandbox_violations_severity ON sandbox_violations(severity);
+    CREATE INDEX IF NOT EXISTS idx_human_review_requests_priority ON human_review_requests(priority);
+    CREATE INDEX IF NOT EXISTS idx_human_review_requests_requested_at ON human_review_requests(requested_at);
+    CREATE INDEX IF NOT EXISTS idx_system_metrics_name_timestamp ON system_metrics(metric_name, timestamp_utc);
+
+    -- Create partial indexes for active records
+    CREATE INDEX IF NOT EXISTS idx_constitutional_policies_active ON constitutional_policies(id) WHERE active = true;
+    CREATE INDEX IF NOT EXISTS idx_human_review_requests_pending ON human_review_requests(id) WHERE reviewed_at IS NULL;
+    CREATE INDEX IF NOT EXISTS idx_sandbox_violations_unresolved ON sandbox_violations(id) WHERE resolved_at IS NULL;
+
+  02-initial-data.sql: |
+    -- ACGS-1 Lite Initial Data
+    -- Insert default constitutional policies and configuration
+
+    -- Default Constitutional Policies
+    INSERT INTO constitutional_policies (name, description, policy_text, hash_sha256, created_by) VALUES
+    ('agent_evolution_threshold', 
+     'Minimum fitness improvement threshold for agent evolution',
+     'package agent_evolution
+     
+     default allow = false
+     
+     allow {
+         input.fitness_improvement >= 0.05
+         input.safety_score >= 0.95
+         input.constitutional_compliance >= 0.99
+     }',
+     encode(digest('agent_evolution_threshold_v1', 'sha256'), 'hex'),
+     'system'),
+
+    ('sandbox_resource_limits',
+     'Resource limits for AI agent sandboxes',
+     'package sandbox_limits
+     
+     default allow = false
+     
+     allow {
+         input.memory_mb <= 2048
+         input.cpu_cores <= 0.5
+         input.execution_time_seconds <= 300
+         input.network_access == false
+     }',
+     encode(digest('sandbox_resource_limits_v1', 'sha256'), 'hex'),
+     'system'),
+
+    ('human_review_criteria',
+     'Criteria for requiring human review',
+     'package human_review
+     
+     default require_review = false
+     
+     require_review {
+         input.risk_score >= 0.8
+     }
+     
+     require_review {
+         input.policy_violations > 0
+     }
+     
+     require_review {
+         input.novel_behavior == true
+     }',
+     encode(digest('human_review_criteria_v1', 'sha256'), 'hex'),
+     'system'),
+
+    ('escape_detection_rules',
+     'Rules for detecting sandbox escape attempts',
+     'package escape_detection
+     
+     default violation = false
+     
+     violation {
+         input.syscalls[_] == "ptrace"
+     }
+     
+     violation {
+         input.file_access[_] == "/etc/passwd"
+     }
+     
+     violation {
+         input.network_attempts > 0
+     }
+     
+     violation {
+         input.privilege_escalation == true
+     }',
+     encode(digest('escape_detection_rules_v1', 'sha256'), 'hex'),
+     'system');
+
+    -- Insert initial system metrics
+    INSERT INTO system_metrics (metric_name, metric_value, metric_labels) VALUES
+    ('constitutional_compliance_target', 0.999, '{"type": "target", "component": "system"}'),
+    ('policy_evaluation_latency_target_ms', 5, '{"type": "target", "component": "policy_engine"}'),
+    ('sandbox_isolation_level', 1.0, '{"type": "config", "component": "sandbox_controller"}'),
+    ('human_review_timeout_hours', 24, '{"type": "config", "component": "human_review"}');
+
+  03-functions.sql: |
+    -- ACGS-1 Lite Database Functions
+    -- Utility functions for constitutional governance
+
+    -- Function to update the updated_at timestamp
+    CREATE OR REPLACE FUNCTION update_updated_at_column()
+    RETURNS TRIGGER AS $$
+    BEGIN
+        NEW.updated_at = NOW();
+        RETURN NEW;
+    END;
+    $$ language 'plpgsql';
+
+    -- Trigger for constitutional_policies
+    DROP TRIGGER IF EXISTS update_constitutional_policies_updated_at ON constitutional_policies;
+    CREATE TRIGGER update_constitutional_policies_updated_at
+        BEFORE UPDATE ON constitutional_policies
+        FOR EACH ROW
+        EXECUTE FUNCTION update_updated_at_column();
+
+    -- Function to calculate audit event hash chain
+    CREATE OR REPLACE FUNCTION calculate_audit_hash_chain()
+    RETURNS TRIGGER AS $$
+    DECLARE
+        previous_hash VARCHAR(64);
+        current_data TEXT;
+        current_hash VARCHAR(64);
+    BEGIN
+        -- Get the previous hash
+        SELECT hash_chain INTO previous_hash
+        FROM audit_events
+        ORDER BY timestamp_utc DESC
+        LIMIT 1;
+        
+        -- If no previous hash, use a default
+        IF previous_hash IS NULL THEN
+            previous_hash := 'genesis';
+        END IF;
+        
+        -- Create data string for hashing
+        current_data := NEW.event_id || NEW.event_type || NEW.source_service || 
+                       COALESCE(NEW.actor_id, '') || COALESCE(NEW.action, '') || 
+                       NEW.timestamp_utc::text || previous_hash;
+        
+        -- Calculate current hash
+        current_hash := encode(digest(current_data, 'sha256'), 'hex');
+        
+        -- Set the hash values
+        NEW.hash_chain := current_hash;
+        NEW.previous_hash := previous_hash;
+        
+        RETURN NEW;
+    END;
+    $$ language 'plpgsql';
+
+    -- Trigger for audit_events hash chain
+    DROP TRIGGER IF EXISTS audit_events_hash_chain ON audit_events;
+    CREATE TRIGGER audit_events_hash_chain
+        BEFORE INSERT ON audit_events
+        FOR EACH ROW
+        EXECUTE FUNCTION calculate_audit_hash_chain();
+
+    -- Function to get constitutional compliance metrics
+    CREATE OR REPLACE FUNCTION get_constitutional_compliance_metrics(
+        time_window INTERVAL DEFAULT '1 hour'
+    )
+    RETURNS TABLE (
+        total_evaluations BIGINT,
+        allowed_evaluations BIGINT,
+        denied_evaluations BIGINT,
+        review_required BIGINT,
+        compliance_rate DECIMAL(5,4),
+        avg_evaluation_time_ms DECIMAL(10,2)
+    ) AS $$
+    BEGIN
+        RETURN QUERY
+        SELECT 
+            COUNT(*) as total_evaluations,
+            COUNT(*) FILTER (WHERE result = 'allow') as allowed_evaluations,
+            COUNT(*) FILTER (WHERE result = 'deny') as denied_evaluations,
+            COUNT(*) FILTER (WHERE result = 'review') as review_required,
+            ROUND(
+                COUNT(*) FILTER (WHERE result = 'allow')::DECIMAL / 
+                NULLIF(COUNT(*), 0), 4
+            ) as compliance_rate,
+            ROUND(AVG(evaluation_time_ms), 2) as avg_evaluation_time_ms
+        FROM policy_evaluations
+        WHERE created_at >= NOW() - time_window;
+    END;
+    $$ language 'plpgsql';
+
+    -- Function to get sandbox violation summary
+    CREATE OR REPLACE FUNCTION get_sandbox_violation_summary(
+        time_window INTERVAL DEFAULT '1 hour'
+    )
+    RETURNS TABLE (
+        total_violations BIGINT,
+        critical_violations BIGINT,
+        high_violations BIGINT,
+        medium_violations BIGINT,
+        low_violations BIGINT,
+        unresolved_violations BIGINT
+    ) AS $$
+    BEGIN
+        RETURN QUERY
+        SELECT 
+            COUNT(*) as total_violations,
+            COUNT(*) FILTER (WHERE severity = 'critical') as critical_violations,
+            COUNT(*) FILTER (WHERE severity = 'high') as high_violations,
+            COUNT(*) FILTER (WHERE severity = 'medium') as medium_violations,
+            COUNT(*) FILTER (WHERE severity = 'low') as low_violations,
+            COUNT(*) FILTER (WHERE resolved_at IS NULL) as unresolved_violations
+        FROM sandbox_violations
+        WHERE created_at >= NOW() - time_window;
+    END;
+    $$ language 'plpgsql';
+
+---
+# Job to Initialize Database
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: acgs-lite-db-init
+  namespace: shared
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: database
+    acgs-lite.io/service-type: database-init
+spec:
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: acgs-lite
+        app.kubernetes.io/component: database
+        acgs-lite.io/service-type: database-init
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: db-init
+          image: postgres:15
+          command: ['/bin/bash']
+          args: ['/scripts/init-db.sh']
+          env:
+            - name: PGHOST
+              value: 'constitutional-postgres-rw'
+            - name: PGPORT
+              value: '5432'
+            - name: PGDATABASE
+              value: 'acgs_lite'
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: constitutional-postgres-app
+                  key: username
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: constitutional-postgres-app
+                  key: password
+          volumeMounts:
+            - name: schema-scripts
+              mountPath: /schema
+            - name: init-script
+              mountPath: /scripts
+      volumes:
+        - name: schema-scripts
+          configMap:
+            name: acgs-lite-db-schema
+        - name: init-script
+          configMap:
+            name: acgs-lite-db-init-script
+            defaultMode: 0755
+
+---
+# ConfigMap for Database Initialization Script
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-lite-db-init-script
+  namespace: shared
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: database
+    acgs-lite.io/service-type: database-init-script
+data:
+  init-db.sh: |
+    #!/bin/bash
+    set -e
+
+    echo "Waiting for PostgreSQL to be ready..."
+    until pg_isready -h $PGHOST -p $PGPORT -U $PGUSER; do
+      echo "Waiting for PostgreSQL..."
+      sleep 5
+    done
+
+    echo "PostgreSQL is ready. Initializing ACGS-Lite database..."
+
+    # Create database if it doesn't exist
+    psql -h $PGHOST -p $PGPORT -U $PGUSER -d postgres -c "CREATE DATABASE acgs_lite;" || true
+
+    # Run schema scripts in order
+    for script in /schema/*.sql; do
+      echo "Running script: $script"
+      psql -h $PGHOST -p $PGPORT -U $PGUSER -d acgs_lite -f "$script"
+    done
+
+    echo "Database initialization completed successfully!"

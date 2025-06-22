@@ -1,0 +1,334 @@
+# ACGS-1 Lite AlertManager Configuration
+# Alert routing and notification for constitutional governance
+
+---
+# AlertManager ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-config
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: monitoring
+    acgs-lite.io/service-type: alertmanager-config
+data:
+  alertmanager.yml: |
+    global:
+      resolve_timeout: 5m
+      slack_api_url: 'https://hooks.slack.com/services/YOUR_SLACK_WEBHOOK_URL'
+      pagerduty_url: 'https://events.pagerduty.com/v2/enqueue'
+
+    templates:
+    - '/etc/alertmanager/templates/*.tmpl'
+
+    route:
+      group_by: ['alertname', 'cluster', 'service']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 12h
+      receiver: 'default-receiver'
+      routes:
+      # Critical constitutional violations - immediate PagerDuty
+      - match:
+          severity: critical
+          component: policy-engine
+        receiver: 'pagerduty-critical'
+        group_wait: 0s
+        repeat_interval: 5m
+      
+      # Sandbox escape attempts - immediate PagerDuty and Slack
+      - match:
+          alertname: SandboxEscapeAttempt
+        receiver: 'emergency-response'
+        group_wait: 0s
+        repeat_interval: 1m
+      
+      # Audit trail integrity violations - immediate escalation
+      - match:
+          alertname: AuditTrailIntegrityViolation
+        receiver: 'security-team'
+        group_wait: 0s
+        repeat_interval: 5m
+      
+      # High severity alerts - PagerDuty
+      - match:
+          severity: warning
+        receiver: 'pagerduty-warning'
+        group_wait: 2m
+        repeat_interval: 30m
+      
+      # General alerts - Slack only
+      - match_re:
+          severity: info|warning
+        receiver: 'slack-notifications'
+        group_wait: 5m
+        repeat_interval: 2h
+
+    inhibit_rules:
+    - source_match:
+        severity: 'critical'
+      target_match:
+        severity: 'warning'
+      equal: ['alertname', 'cluster', 'service']
+
+    receivers:
+    - name: 'default-receiver'
+      slack_configs:
+      - channel: '#acgs-lite-alerts'
+        title: 'ACGS-Lite Alert'
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+        send_resolved: true
+
+    - name: 'pagerduty-critical'
+      pagerduty_configs:
+      - service_key: 'YOUR_PAGERDUTY_SERVICE_KEY_CRITICAL'
+        description: 'CRITICAL: {{ .GroupLabels.alertname }} - {{ .CommonAnnotations.summary }}'
+        severity: 'critical'
+        details:
+          firing: '{{ .Alerts.Firing | len }}'
+          resolved: '{{ .Alerts.Resolved | len }}'
+          alertname: '{{ .GroupLabels.alertname }}'
+          cluster: '{{ .GroupLabels.cluster }}'
+      slack_configs:
+      - channel: '#acgs-lite-critical'
+        title: ':rotating_light: CRITICAL ALERT :rotating_light:'
+        text: |
+          *Alert:* {{ .GroupLabels.alertname }}
+          *Summary:* {{ .CommonAnnotations.summary }}
+          *Description:* {{ .CommonAnnotations.description }}
+          *Severity:* {{ .CommonLabels.severity }}
+          *Component:* {{ .CommonLabels.component }}
+        color: 'danger'
+        send_resolved: true
+
+    - name: 'emergency-response'
+      pagerduty_configs:
+      - service_key: 'YOUR_PAGERDUTY_SERVICE_KEY_EMERGENCY'
+        description: 'EMERGENCY: Sandbox Escape Attempt Detected'
+        severity: 'critical'
+        details:
+          incident_type: 'sandbox_escape'
+          immediate_action_required: 'true'
+      slack_configs:
+      - channel: '#acgs-lite-emergency'
+        title: ':warning: EMERGENCY: SANDBOX ESCAPE ATTEMPT :warning:'
+        text: |
+          *IMMEDIATE ACTION REQUIRED*
+          
+          A sandbox escape attempt has been detected in the ACGS-Lite system.
+          
+          *Alert:* {{ .GroupLabels.alertname }}
+          *Time:* {{ .CommonAnnotations.timestamp }}
+          *Details:* {{ .CommonAnnotations.description }}
+          
+          Emergency runbook: https://docs.acgs-lite.io/emergency/sandbox-escape
+        color: 'danger'
+        send_resolved: true
+
+    - name: 'security-team'
+      pagerduty_configs:
+      - service_key: 'YOUR_PAGERDUTY_SERVICE_KEY_SECURITY'
+        description: 'SECURITY INCIDENT: {{ .CommonAnnotations.summary }}'
+        severity: 'critical'
+        details:
+          incident_type: 'security_violation'
+          forensics_required: 'true'
+      slack_configs:
+      - channel: '#acgs-lite-security'
+        title: ':shield: SECURITY INCIDENT :shield:'
+        text: |
+          *SECURITY INCIDENT DETECTED*
+          
+          *Alert:* {{ .GroupLabels.alertname }}
+          *Summary:* {{ .CommonAnnotations.summary }}
+          *Description:* {{ .CommonAnnotations.description }}
+          
+          Immediate investigation required.
+        color: 'danger'
+        send_resolved: true
+
+    - name: 'pagerduty-warning'
+      pagerduty_configs:
+      - service_key: 'YOUR_PAGERDUTY_SERVICE_KEY_WARNING'
+        description: 'WARNING: {{ .GroupLabels.alertname }} - {{ .CommonAnnotations.summary }}'
+        severity: 'warning'
+
+    - name: 'slack-notifications'
+      slack_configs:
+      - channel: '#acgs-lite-alerts'
+        title: 'ACGS-Lite Alert: {{ .GroupLabels.alertname }}'
+        text: |
+          *Summary:* {{ .CommonAnnotations.summary }}
+          *Description:* {{ .CommonAnnotations.description }}
+          *Severity:* {{ .CommonLabels.severity }}
+          *Component:* {{ .CommonLabels.component }}
+        color: '{{ if eq .Status "firing" }}warning{{ else }}good{{ end }}'
+        send_resolved: true
+
+  notification-templates.tmpl: |
+    {{ define "slack.acgs.title" }}
+    [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .GroupLabels.alertname }}
+    {{ end }}
+
+    {{ define "slack.acgs.text" }}
+    {{ range .Alerts }}
+    *Alert:* {{ .Annotations.summary }}
+    *Description:* {{ .Annotations.description }}
+    *Severity:* {{ .Labels.severity }}
+    *Component:* {{ .Labels.component }}
+    *Time:* {{ .StartsAt.Format "2006-01-02 15:04:05 UTC" }}
+    {{ if .GeneratorURL }}*Source:* {{ .GeneratorURL }}{{ end }}
+    {{ end }}
+    {{ end }}
+
+    {{ define "pagerduty.acgs.description" }}
+    {{ .GroupLabels.alertname }}: {{ .CommonAnnotations.summary }}
+    {{ end }}
+
+---
+# AlertManager Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alertmanager
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: monitoring
+    acgs-lite.io/service-type: alertmanager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alertmanager
+  template:
+    metadata:
+      labels:
+        app: alertmanager
+        app.kubernetes.io/name: acgs-lite
+        app.kubernetes.io/component: monitoring
+        acgs-lite.io/service-type: alertmanager
+      annotations:
+        acgs-lite.io/constitutional-compliance: 'required'
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        fsGroup: 65534
+      containers:
+        - name: alertmanager
+          image: prom/alertmanager:v0.25.0
+          args:
+            - '--config.file=/etc/alertmanager/alertmanager.yml'
+            - '--storage.path=/alertmanager'
+            - '--web.external-url=http://localhost:9093'
+            - '--cluster.listen-address=0.0.0.0:9094'
+          ports:
+            - containerPort: 9093
+              name: web
+            - containerPort: 9094
+              name: cluster
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/alertmanager
+            - name: storage
+              mountPath: /alertmanager
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: 9093
+            initialDelaySeconds: 30
+            timeoutSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: 9093
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
+      volumes:
+        - name: config
+          configMap:
+            name: alertmanager-config
+        - name: storage
+          persistentVolumeClaim:
+            claimName: alertmanager-storage
+      nodeSelector:
+        acgs-lite.io/node-pool: monitoring
+      tolerations:
+        - key: monitoring
+          operator: Equal
+          value: 'true'
+          effect: NoSchedule
+
+---
+# AlertManager Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertmanager
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: monitoring
+    acgs-lite.io/service-type: alertmanager
+spec:
+  type: ClusterIP
+  ports:
+    - name: web
+      port: 9093
+      targetPort: 9093
+      protocol: TCP
+    - name: cluster
+      port: 9094
+      targetPort: 9094
+      protocol: TCP
+  selector:
+    app: alertmanager
+
+---
+# AlertManager PersistentVolumeClaim
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: alertmanager-storage
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: monitoring
+    acgs-lite.io/service-type: alertmanager-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: fast-ssd
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+# ServiceMonitor for AlertManager
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: alertmanager-monitor
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: monitoring
+    acgs-lite.io/service-type: alertmanager-monitoring
+spec:
+  selector:
+    matchLabels:
+      app: alertmanager
+  endpoints:
+    - port: web
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s

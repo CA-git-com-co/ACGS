@@ -2,9 +2,9 @@
 ACGS-1 Unified Response Format Implementation
 
 This module provides standardized response formatting for all ACGS microservices,
-ensuring consistent API responses across Constitutional AI, Authentication, Integrity,
-Formal Verification, Governance Synthesis, Policy Governance, Evolutionary Computation,
-and Darwin Gödel Machine services.
+ensuring consistent API responses across Constitutional AI, Authentication,
+Integrity, Formal Verification, Governance Synthesis, Policy Governance,
+Evolutionary Computation, and Darwin Gödel Machine services.
 
 Unified Response Format:
 {
@@ -29,12 +29,12 @@ Unified Response Format:
 
 import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Union
-from dataclasses import dataclass, asdict
+from typing import Any, Dict, List, Optional
+from dataclasses import dataclass
 from enum import Enum
 
 import orjson
-from fastapi import Request, Response
+from fastapi import Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
@@ -98,13 +98,66 @@ class UnifiedResponse(BaseModel):
     message: str = Field("", description="Human-readable response message")
     metadata: ResponseMetadata = Field(..., description="Response metadata")
     pagination: Optional[PaginationMetadata] = Field(None, description="Pagination information for paginated responses")
-    
+    error: Optional[Dict[str, Any]] = Field(None, description="Error details when success=false")
+
     class Config:
         """Pydantic configuration."""
         json_encoders = {
             datetime: lambda v: v.isoformat(),
         }
         use_enum_values = True
+
+    @classmethod
+    def success_response(
+        cls,
+        data: Any = None,
+        message: str = "Operation completed successfully",
+        service: str = "acgs-service",
+        version: str = "1.0.0",
+        pagination: Optional[PaginationMetadata] = None
+    ) -> "UnifiedResponse":
+        """Create a successful response."""
+        return cls(
+            success=True,
+            data=data,
+            message=message,
+            metadata=ResponseMetadata(
+                timestamp=datetime.now(timezone.utc).isoformat(),
+                request_id=str(uuid.uuid4()),
+                service=service,
+                version=version
+            ),
+            pagination=pagination
+        )
+
+    @classmethod
+    def error_response(
+        cls,
+        error_code: str,
+        error_message: str,
+        error_details: Optional[Dict[str, Any]] = None,
+        service: str = "acgs-service",
+        version: str = "1.0.0",
+        data: Any = None
+    ) -> "UnifiedResponse":
+        """Create an error response."""
+        return cls(
+            success=False,
+            data=data,
+            message=error_message,
+            metadata=ResponseMetadata(
+                timestamp=datetime.now(timezone.utc).isoformat(),
+                request_id=str(uuid.uuid4()),
+                service=service,
+                version=version
+            ),
+            error={
+                "code": error_code,
+                "message": error_message,
+                "details": error_details or {},
+                "timestamp": datetime.now(timezone.utc).isoformat()
+            }
+        )
 
 
 class ResponseBuilder:

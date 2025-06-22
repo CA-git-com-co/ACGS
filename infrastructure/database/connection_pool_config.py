@@ -2,8 +2,8 @@
 ACGS-1 Database Connection Pool Configuration
 Phase 2 - Enterprise Scalability & Performance
 
-Centralized configuration for database connection pooling across all 7 core services.
-Optimized for >1000 concurrent users, >99.9% availability, <500ms response times.
+Centralized configuration for database connection pooling across all services.
+Optimized for >1000 concurrent users, >99.9% availability, <500ms response.
 """
 
 import os
@@ -61,28 +61,36 @@ class ServiceConnectionPools:
     # Service-specific pool configurations optimized for workload patterns
     SERVICE_CONFIGS = {
         "auth_service": ConnectionPoolConfig(
-            database="acgs_db",
-            min_connections=15,  # High auth traffic
-            max_connections=60,
-            max_overflow=25,
+            database="auth_db",  # Dedicated database
+            min_connections=20,  # High auth traffic
+            max_connections=80,
+            max_overflow=30,
+            pool_timeout=15.0,   # Faster timeout for auth
+            pool_recycle=1200,   # 20 minutes for high turnover
         ),
         "ac_service": ConnectionPoolConfig(
-            database="acgs_db", 
-            min_connections=12,  # Constitutional AI operations
-            max_connections=50,
-            max_overflow=20,
+            database="constitutional_db",
+            min_connections=15,  # Constitutional AI operations
+            max_connections=60,
+            max_overflow=25,
+            pool_timeout=20.0,
+            pool_recycle=1800,
         ),
         "integrity_service": ConnectionPoolConfig(
-            database="acgs_db",
-            min_connections=10,  # Cryptographic operations
-            max_connections=40,
-            max_overflow=15,
+            database="integrity_db",
+            min_connections=12,  # Cryptographic operations
+            max_connections=50,
+            max_overflow=20,
+            pool_timeout=25.0,   # Longer for crypto ops
+            pool_recycle=2400,   # 40 minutes
         ),
         "fv_service": ConnectionPoolConfig(
-            database="acgs_db",
-            min_connections=8,   # Formal verification
-            max_connections=35,
+            database="verification_db",
+            min_connections=10,  # Formal verification
+            max_connections=40,
             max_overflow=15,
+            pool_timeout=30.0,   # Longer for complex verification
+            pool_recycle=3600,   # 1 hour
         ),
         "gs_service": ConnectionPoolConfig(
             database="acgs_db",

@@ -1,0 +1,243 @@
+# ACGS-1 Lite Network Policies
+# Implements zero-trust networking with default deny-all policies
+# and specific allow rules for constitutional governance
+
+---
+# Default Deny-All Policy for Governance Namespace
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: network-policy
+    acgs-lite.io/policy-type: default-deny
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+
+---
+# Default Deny-All Policy for Workload Namespace
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: workload
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: network-policy
+    acgs-lite.io/policy-type: default-deny
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+
+---
+# Allow Governance Services to communicate with each other
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: governance-internal-communication
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: network-policy
+    acgs-lite.io/policy-type: governance-internal
+spec:
+  podSelector:
+    matchLabels:
+      acgs-lite.io/service-type: governance
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: governance
+          podSelector:
+            matchLabels:
+              acgs-lite.io/service-type: governance
+      ports:
+        - protocol: TCP
+          port: 8001 # Policy Engine
+        - protocol: TCP
+          port: 8002 # Evolution Oversight
+        - protocol: TCP
+          port: 8003 # Audit Engine
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: governance
+          podSelector:
+            matchLabels:
+              acgs-lite.io/service-type: governance
+      ports:
+        - protocol: TCP
+          port: 8001
+        - protocol: TCP
+          port: 8002
+        - protocol: TCP
+          port: 8003
+
+---
+# Allow Governance Services to access Database
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: governance-database-access
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: network-policy
+    acgs-lite.io/policy-type: database-access
+spec:
+  podSelector:
+    matchLabels:
+      acgs-lite.io/service-type: governance
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: shared
+          podSelector:
+            matchLabels:
+              app: postgresql
+      ports:
+        - protocol: TCP
+          port: 5432
+
+---
+# Allow Governance Services to access RedPanda
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: governance-redpanda-access
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: network-policy
+    acgs-lite.io/policy-type: redpanda-access
+spec:
+  podSelector:
+    matchLabels:
+      acgs-lite.io/service-type: governance
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: shared
+          podSelector:
+            matchLabels:
+              app: redpanda
+      ports:
+        - protocol: TCP
+          port: 9092 # Kafka API
+        - protocol: TCP
+          port: 9644 # Admin API
+
+---
+# Allow Monitoring to scrape metrics from all namespaces
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: monitoring-metrics-access
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: network-policy
+    acgs-lite.io/policy-type: monitoring-access
+spec:
+  podSelector:
+    matchLabels:
+      app: prometheus
+  policyTypes:
+    - Egress
+  egress:
+    - to: [] # Allow egress to all pods
+      ports:
+        - protocol: TCP
+          port: 8080 # Metrics port
+        - protocol: TCP
+          port: 9090 # Prometheus metrics
+        - protocol: TCP
+          port: 9100 # Node exporter
+
+---
+# Restrict Sandbox Containers (Workload Namespace)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: sandbox-isolation
+  namespace: workload
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: network-policy
+    acgs-lite.io/policy-type: sandbox-isolation
+spec:
+  podSelector:
+    matchLabels:
+      acgs-lite.io/service-type: sandbox
+  policyTypes:
+    - Ingress
+    - Egress
+  egress:
+    # Only allow communication with Policy Engine for evaluation
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: governance
+          podSelector:
+            matchLabels:
+              app: policy-engine
+      ports:
+        - protocol: TCP
+          port: 8001
+
+---
+# Allow Human Review Dashboard access
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: human-review-dashboard-access
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: network-policy
+    acgs-lite.io/policy-type: dashboard-access
+spec:
+  podSelector:
+    matchLabels:
+      app: human-review-dashboard
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from: [] # Allow ingress from anywhere (will be restricted by ingress controller)
+      ports:
+        - protocol: TCP
+          port: 3000
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: governance
+          podSelector:
+            matchLabels:
+              acgs-lite.io/service-type: governance
+      ports:
+        - protocol: TCP
+          port: 8001
+        - protocol: TCP
+          port: 8002
+        - protocol: TCP
+          port: 8003

@@ -1,0 +1,264 @@
+# ACGS-1 Lite Namespace Definitions
+# Creates the core namespaces for the 3-service architecture
+
+---
+# Governance Namespace - Policy Engine, Evolution Oversight, Audit Engine
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: namespace
+    acgs-lite.io/namespace-type: governance
+    acgs-lite.io/security-level: high
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
+  annotations:
+    description: 'ACGS-1 Lite Governance Services - Policy Engine, Evolution Oversight, Audit Engine'
+    acgs-lite.io/constitutional-compliance: 'required'
+    acgs-lite.io/network-policy: 'default-deny'
+
+---
+# Workload Namespace - AI Agent Sandboxes
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: workload
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: namespace
+    acgs-lite.io/namespace-type: workload
+    acgs-lite.io/security-level: maximum
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
+  annotations:
+    description: 'ACGS-1 Lite Workload Services - AI Agent Sandboxes'
+    acgs-lite.io/sandbox-isolation: 'required'
+    acgs-lite.io/network-policy: 'strict-isolation'
+    acgs-lite.io/escape-detection: 'enabled'
+
+---
+# Monitoring Namespace - Prometheus, Grafana, AlertManager
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: namespace
+    acgs-lite.io/namespace-type: monitoring
+    acgs-lite.io/security-level: medium
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/audit: baseline
+    pod-security.kubernetes.io/warn: baseline
+  annotations:
+    description: 'ACGS-1 Lite Monitoring Services - Prometheus, Grafana, AlertManager'
+    acgs-lite.io/metrics-collection: 'enabled'
+    acgs-lite.io/network-policy: 'metrics-access'
+
+---
+# Shared Namespace - PostgreSQL, RedPanda, Redis
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: shared
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: namespace
+    acgs-lite.io/namespace-type: shared
+    acgs-lite.io/security-level: high
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
+  annotations:
+    description: 'ACGS-1 Lite Shared Services - PostgreSQL, RedPanda, Redis'
+    acgs-lite.io/data-persistence: 'required'
+    acgs-lite.io/network-policy: 'data-services'
+
+---
+# ResourceQuota for Governance Namespace
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: governance-quota
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: resource-quota
+    acgs-lite.io/namespace-type: governance
+spec:
+  hard:
+    requests.cpu: '8'
+    requests.memory: 32Gi
+    limits.cpu: '16'
+    limits.memory: 64Gi
+    pods: '20'
+    services: '10'
+    secrets: '20'
+    configmaps: '20'
+    persistentvolumeclaims: '10'
+
+---
+# ResourceQuota for Workload Namespace
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: workload-quota
+  namespace: workload
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: resource-quota
+    acgs-lite.io/namespace-type: workload
+spec:
+  hard:
+    requests.cpu: '32'
+    requests.memory: 128Gi
+    limits.cpu: '64'
+    limits.memory: 256Gi
+    pods: '100'
+    services: '5'
+    secrets: '10'
+    configmaps: '10'
+    persistentvolumeclaims: '5'
+
+---
+# ResourceQuota for Monitoring Namespace
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: monitoring-quota
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: resource-quota
+    acgs-lite.io/namespace-type: monitoring
+spec:
+  hard:
+    requests.cpu: '8'
+    requests.memory: 32Gi
+    limits.cpu: '16'
+    limits.memory: 64Gi
+    pods: '20'
+    services: '10'
+    secrets: '10'
+    configmaps: '20'
+    persistentvolumeclaims: '10'
+
+---
+# ResourceQuota for Shared Namespace
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: shared-quota
+  namespace: shared
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: resource-quota
+    acgs-lite.io/namespace-type: shared
+spec:
+  hard:
+    requests.cpu: '16'
+    requests.memory: 64Gi
+    limits.cpu: '32'
+    limits.memory: 128Gi
+    pods: '30'
+    services: '15'
+    secrets: '20'
+    configmaps: '20'
+    persistentvolumeclaims: '20'
+
+---
+# LimitRange for Governance Namespace
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: governance-limits
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: limit-range
+    acgs-lite.io/namespace-type: governance
+spec:
+  limits:
+    - type: Container
+      default:
+        cpu: 500m
+        memory: 1Gi
+      defaultRequest:
+        cpu: 100m
+        memory: 256Mi
+      max:
+        cpu: 4
+        memory: 8Gi
+      min:
+        cpu: 50m
+        memory: 128Mi
+    - type: Pod
+      max:
+        cpu: 8
+        memory: 16Gi
+
+---
+# LimitRange for Workload Namespace (Sandbox Containers)
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: workload-limits
+  namespace: workload
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: limit-range
+    acgs-lite.io/namespace-type: workload
+spec:
+  limits:
+    - type: Container
+      default:
+        cpu: 500m
+        memory: 2Gi
+      defaultRequest:
+        cpu: 100m
+        memory: 512Mi
+      max:
+        cpu: 2
+        memory: 4Gi
+      min:
+        cpu: 50m
+        memory: 256Mi
+    - type: Pod
+      max:
+        cpu: 4
+        memory: 8Gi
+
+---
+# LimitRange for Monitoring Namespace
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: monitoring-limits
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: limit-range
+    acgs-lite.io/namespace-type: monitoring
+spec:
+  limits:
+    - type: Container
+      default:
+        cpu: 1
+        memory: 2Gi
+      defaultRequest:
+        cpu: 200m
+        memory: 512Mi
+      max:
+        cpu: 4
+        memory: 8Gi
+      min:
+        cpu: 100m
+        memory: 256Mi
+    - type: Pod
+      max:
+        cpu: 8
+        memory: 16Gi

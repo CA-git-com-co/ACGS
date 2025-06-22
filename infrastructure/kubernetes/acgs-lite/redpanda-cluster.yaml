@@ -1,0 +1,309 @@
+# ACGS-1 Lite RedPanda Streaming Cluster
+# Provides event streaming for constitutional events and audit trails
+
+---
+# RedPanda Cluster
+apiVersion: cluster.redpanda.com/v1alpha1
+kind: Redpanda
+metadata:
+  name: constitutional-events
+  namespace: shared
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: streaming
+    acgs-lite.io/service-type: redpanda
+spec:
+  image:
+    tag: 'v23.2.1'
+
+  replicas: 3
+
+  # Resource Configuration
+  resources:
+    requests:
+      cpu: 2
+      memory: 8Gi
+    limits:
+      cpu: 4
+      memory: 16Gi
+
+  # Storage Configuration
+  storage:
+    capacity: 200Gi
+    storageClassName: fast-ssd
+
+  # RedPanda Configuration
+  configuration:
+    rpc_server:
+      port: 33145
+    kafka_api:
+      - port: 9092
+        name: kafka
+    admin_api:
+      - port: 9644
+        name: admin
+    pandaproxy_api:
+      - port: 8082
+        name: proxy
+    schema_registry_api:
+      - port: 8081
+        name: schema-registry
+
+    # Performance and Reliability Settings
+    redpanda:
+      # Memory and CPU settings
+      memory_mb: 8192
+      smp: 4
+
+      # Kafka compatibility
+      kafka_api_version: '2.8'
+
+      # Retention and cleanup
+      log_cleanup_policy: 'compact,delete'
+      log_retention_ms: 604800000 # 7 days default
+      log_segment_ms: 86400000 # 1 day
+
+      # Replication and durability
+      default_replication_factor: 3
+      min_insync_replicas: 2
+
+      # Performance tuning
+      group_initial_rebalance_delay_ms: 3000
+      group_new_member_join_timeout_ms: 300000
+
+      # Security
+      enable_sasl: false # Will be enabled in production
+      enable_tls: false # Will be enabled in production
+
+  # Node Affinity - Prefer different nodes for HA
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: redpanda
+            topologyKey: kubernetes.io/hostname
+
+---
+# Service for RedPanda Kafka API
+apiVersion: v1
+kind: Service
+metadata:
+  name: constitutional-events-kafka
+  namespace: shared
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: streaming
+    acgs-lite.io/service-type: redpanda-kafka
+spec:
+  type: ClusterIP
+  ports:
+    - name: kafka
+      port: 9092
+      targetPort: 9092
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: redpanda
+    app.kubernetes.io/instance: constitutional-events
+
+---
+# Service for RedPanda Admin API
+apiVersion: v1
+kind: Service
+metadata:
+  name: constitutional-events-admin
+  namespace: shared
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: streaming
+    acgs-lite.io/service-type: redpanda-admin
+spec:
+  type: ClusterIP
+  ports:
+    - name: admin
+      port: 9644
+      targetPort: 9644
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: redpanda
+    app.kubernetes.io/instance: constitutional-events
+
+---
+# Service for RedPanda Schema Registry
+apiVersion: v1
+kind: Service
+metadata:
+  name: constitutional-events-schema-registry
+  namespace: shared
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: streaming
+    acgs-lite.io/service-type: redpanda-schema-registry
+spec:
+  type: ClusterIP
+  ports:
+    - name: schema-registry
+      port: 8081
+      targetPort: 8081
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: redpanda
+    app.kubernetes.io/instance: constitutional-events
+
+---
+# ConfigMap for Topic Creation Script
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redpanda-topic-setup
+  namespace: shared
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: streaming
+    acgs-lite.io/service-type: redpanda-config
+data:
+  create_topics.sh: |
+    #!/bin/bash
+    set -e
+
+    # Wait for RedPanda to be ready
+    echo "Waiting for RedPanda to be ready..."
+    until rpk cluster info --brokers constitutional-events-kafka:9092; do
+      echo "Waiting for RedPanda cluster..."
+      sleep 5
+    done
+
+    echo "Creating ACGS-1 Lite topics..."
+
+    # Constitutional Events (7-day retention)
+    rpk topic create constitutional.events \
+      --brokers constitutional-events-kafka:9092 \
+      --partitions 6 \
+      --replicas 3 \
+      --config retention.ms=604800000 \
+      --config min.insync.replicas=2 \
+      --config cleanup.policy=delete
+
+    # Constitutional Violations (90-day retention)
+    rpk topic create constitutional.violations \
+      --brokers constitutional-events-kafka:9092 \
+      --partitions 3 \
+      --replicas 3 \
+      --config retention.ms=7776000000 \
+      --config min.insync.replicas=2 \
+      --config cleanup.policy=delete
+
+    # Audit Trail (Permanent Retention)
+    rpk topic create audit.trail \
+      --brokers constitutional-events-kafka:9092 \
+      --partitions 6 \
+      --replicas 3 \
+      --config retention.ms=-1 \
+      --config min.insync.replicas=2 \
+      --config cleanup.policy=compact
+
+    # Policy Evaluations (30-day retention)
+    rpk topic create policy.evaluations \
+      --brokers constitutional-events-kafka:9092 \
+      --partitions 12 \
+      --replicas 3 \
+      --config retention.ms=2592000000 \
+      --config min.insync.replicas=2 \
+      --config cleanup.policy=delete
+
+    # Sandbox Events (7-day retention)
+    rpk topic create sandbox.events \
+      --brokers constitutional-events-kafka:9092 \
+      --partitions 6 \
+      --replicas 3 \
+      --config retention.ms=604800000 \
+      --config min.insync.replicas=2 \
+      --config cleanup.policy=delete
+
+    # Human Review Requests (30-day retention)
+    rpk topic create human.review.requests \
+      --brokers constitutional-events-kafka:9092 \
+      --partitions 3 \
+      --replicas 3 \
+      --config retention.ms=2592000000 \
+      --config min.insync.replicas=2 \
+      --config cleanup.policy=delete
+
+    echo "All topics created successfully!"
+
+    # List topics to verify
+    echo "Current topics:"
+    rpk topic list --brokers constitutional-events-kafka:9092
+
+---
+# Job to Create Topics
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: redpanda-topic-setup
+  namespace: shared
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: streaming
+    acgs-lite.io/service-type: redpanda-setup
+spec:
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: acgs-lite
+        app.kubernetes.io/component: streaming
+        acgs-lite.io/service-type: redpanda-setup
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: topic-setup
+          image: vectorized/redpanda:v23.2.1
+          command: ['/bin/bash']
+          args: ['/scripts/create_topics.sh']
+          volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+          env:
+            - name: REDPANDA_BROKERS
+              value: 'constitutional-events-kafka:9092'
+      volumes:
+        - name: scripts
+          configMap:
+            name: redpanda-topic-setup
+            defaultMode: 0755
+      # Wait for RedPanda to be ready
+      initContainers:
+        - name: wait-for-redpanda
+          image: busybox:1.35
+          command: ['sh', '-c']
+          args:
+            - |
+              until nc -z constitutional-events-kafka 9092; do
+                echo "Waiting for RedPanda..."
+                sleep 5
+              done
+              echo "RedPanda is ready!"
+
+---
+# ServiceMonitor for Prometheus Monitoring
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: constitutional-events-monitor
+  namespace: shared
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: streaming
+    acgs-lite.io/service-type: redpanda-monitoring
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: redpanda
+      app.kubernetes.io/instance: constitutional-events
+  endpoints:
+    - port: admin
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s

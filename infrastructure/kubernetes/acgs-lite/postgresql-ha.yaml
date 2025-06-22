@@ -1,0 +1,272 @@
+# ACGS-1 Lite PostgreSQL HA Deployment
+# Uses CloudNativePG operator for production-grade PostgreSQL cluster
+
+---
+# PostgreSQL HA Cluster
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: constitutional-postgres
+  namespace: shared
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: database
+    acgs-lite.io/service-type: postgresql
+spec:
+  instances: 3
+  primaryUpdateStrategy: unsupervised
+
+  # PostgreSQL Configuration
+  postgresql:
+    parameters:
+      max_connections: '1000'
+      shared_buffers: '8GB'
+      effective_cache_size: '24GB'
+      maintenance_work_mem: '2GB'
+      checkpoint_completion_target: '0.9'
+      wal_buffers: '16MB'
+      default_statistics_target: '100'
+      random_page_cost: '1.1'
+      effective_io_concurrency: '200'
+      work_mem: '4MB'
+      min_wal_size: '1GB'
+      max_wal_size: '4GB'
+      max_worker_processes: '8'
+      max_parallel_workers_per_gather: '4'
+      max_parallel_workers: '8'
+      max_parallel_maintenance_workers: '4'
+
+      # Logging Configuration
+      log_statement: 'ddl'
+      log_min_duration_statement: '1000'
+      log_checkpoints: 'on'
+      log_connections: 'on'
+      log_disconnections: 'on'
+      log_lock_waits: 'on'
+      log_temp_files: '0'
+
+      # Security Configuration
+      ssl: 'on'
+      ssl_ciphers: 'HIGH:MEDIUM:+3DES:!aNULL'
+      ssl_prefer_server_ciphers: 'on'
+
+  # High Availability and Replication
+  minSyncReplicas: 1
+  maxSyncReplicas: 2
+
+  # Storage Configuration
+  storage:
+    size: 500Gi
+    storageClass: fast-ssd
+    resizeInUseVolumes: true
+
+  # Connection Pooling with PgBouncer
+  pgBouncer:
+    poolMode: transaction
+    maxClientConn: 1000
+    replicas: 2
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+  # Monitoring Configuration
+  monitoring:
+    enabled: true
+    podMonitorEnabled: true
+    customQueriesConfigMap:
+      - name: constitutional-queries
+        key: queries.yaml
+
+  # Backup and Point-in-Time Recovery (PITR)
+  backup:
+    retentionPolicy: '30d'
+    barmanObjectStore:
+      destinationPath: 's3://acgs-lite-postgres-backups/'
+      s3Credentials:
+        accessKeyId:
+          name: postgres-backup-credentials
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: postgres-backup-credentials
+          key: SECRET_ACCESS_KEY
+      wal:
+        compression: gzip
+        encryption: AES256
+      data:
+        compression: gzip
+        encryption: AES256
+        jobs: 2
+
+  # Resource Configuration
+  resources:
+    requests:
+      memory: '16Gi'
+      cpu: '4'
+    limits:
+      memory: '32Gi'
+      cpu: '8'
+
+  # Node Affinity - Prefer different nodes for HA
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                postgresql: constitutional-postgres
+            topologyKey: kubernetes.io/hostname
+
+---
+# Secret for PostgreSQL Backup Credentials
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-backup-credentials
+  namespace: shared
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: database
+    acgs-lite.io/service-type: postgresql-backup
+type: Opaque
+data:
+  ACCESS_KEY_ID: # Base64 encoded AWS access key
+  SECRET_ACCESS_KEY: # Base64 encoded AWS secret key
+
+---
+# ConfigMap for Custom Monitoring Queries
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: constitutional-queries
+  namespace: shared
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: database
+    acgs-lite.io/service-type: postgresql-monitoring
+data:
+  queries.yaml: |
+    constitutional_compliance:
+      query: "SELECT COUNT(*) as total_policies FROM constitutional_policies WHERE active = true"
+      master: true
+      metrics:
+        - total_policies:
+            usage: "GAUGE"
+            description: "Total number of active constitutional policies"
+
+    policy_evaluations:
+      query: "SELECT result, COUNT(*) as count FROM policy_evaluations WHERE created_at > NOW() - INTERVAL '1 hour' GROUP BY result"
+      master: true
+      metrics:
+        - count:
+            usage: "GAUGE"
+            description: "Policy evaluation results in the last hour"
+            labels:
+              - result
+
+    audit_events:
+      query: "SELECT event_type, COUNT(*) as count FROM audit_events WHERE created_at > NOW() - INTERVAL '1 hour' GROUP BY event_type"
+      master: true
+      metrics:
+        - count:
+            usage: "GAUGE"
+            description: "Audit events in the last hour"
+            labels:
+              - event_type
+
+    sandbox_violations:
+      query: "SELECT violation_type, COUNT(*) as count FROM sandbox_violations WHERE created_at > NOW() - INTERVAL '1 hour' GROUP BY violation_type"
+      master: true
+      metrics:
+        - count:
+            usage: "GAUGE"
+            description: "Sandbox violations in the last hour"
+            labels:
+              - violation_type
+
+---
+# Service for PostgreSQL Primary
+apiVersion: v1
+kind: Service
+metadata:
+  name: constitutional-postgres-rw
+  namespace: shared
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: database
+    acgs-lite.io/service-type: postgresql-primary
+spec:
+  type: ClusterIP
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+      protocol: TCP
+  selector:
+    postgresql: constitutional-postgres
+    role: primary
+
+---
+# Service for PostgreSQL Read Replicas
+apiVersion: v1
+kind: Service
+metadata:
+  name: constitutional-postgres-ro
+  namespace: shared
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: database
+    acgs-lite.io/service-type: postgresql-replica
+spec:
+  type: ClusterIP
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+      protocol: TCP
+  selector:
+    postgresql: constitutional-postgres
+    role: replica
+
+---
+# Service for PgBouncer Connection Pooling
+apiVersion: v1
+kind: Service
+metadata:
+  name: constitutional-postgres-pooler
+  namespace: shared
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: database
+    acgs-lite.io/service-type: postgresql-pooler
+spec:
+  type: ClusterIP
+  ports:
+    - name: pgbouncer
+      port: 5432
+      targetPort: 5432
+      protocol: TCP
+  selector:
+    postgresql: constitutional-postgres
+    pgbouncer: constitutional-postgres
+
+---
+# Scheduled Backup Job
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: constitutional-postgres-backup
+  namespace: shared
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: database
+    acgs-lite.io/service-type: postgresql-backup
+spec:
+  schedule: '0 2 * * *' # Daily at 2 AM
+  backupOwnerReference: self
+  cluster:
+    name: constitutional-postgres

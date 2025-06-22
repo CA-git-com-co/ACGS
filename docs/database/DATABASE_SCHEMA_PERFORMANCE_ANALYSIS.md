@@ -1,29 +1,83 @@
 # ACGS-1 Database Schema & Performance Analysis
 
-**Version:** 1.0  
-**Date:** 2025-06-22  
-**Status:** Analysis Complete
+**Version:** 2.0
+**Date:** 2025-06-22
+**Status:** Comprehensive Analysis Complete
 
 ## Executive Summary
 
-This document provides a comprehensive analysis of the ACGS-1 database architecture, including PostgreSQL schema design, performance characteristics, optimization opportunities, and recommendations for scaling to support >1000 concurrent users.
+This document provides a comprehensive analysis of the ACGS-1 database architecture, including PostgreSQL schema design, performance characteristics, optimization opportunities, and recommendations for scaling to support >1000 concurrent users. The analysis reveals a well-structured multi-service database architecture with opportunities for significant performance improvements through indexing, connection pooling optimization, and query optimization.
 
 ## 🗄️ Database Architecture Overview
 
 ### Primary Database: PostgreSQL 15
 
-- **Host:** localhost:5432
-- **Database:** acgs_db
-- **User:** acgs_user
-- **Connection Pooling:** PgBouncer + Application-level pooling
-- **Backup Strategy:** Daily full, hourly incremental
+- **Host:** localhost:5432 (Production), PgBouncer on 6432
+- **Database:** acgs_db (shared across services)
+- **User:** acgs_user with service-specific roles
+- **Connection Pooling:** Multi-tier (PgBouncer + SQLAlchemy + Application-level)
+- **Backup Strategy:** Daily full, hourly incremental, point-in-time recovery
+- **High Availability:** Master-slave replication with read replicas
+- **Performance Extensions:** pg_stat_statements, pg_stat_activity enabled
 
 ### Secondary Storage: Redis 7
 
 - **Host:** localhost:6379
-- **Purpose:** Caching, sessions, message queues
-- **Max Connections:** 100 (production)
-- **Memory Policy:** allkeys-lru
+- **Purpose:** Multi-level caching, sessions, message queues, real-time data
+- **Max Connections:** 100 (development), 500 (production)
+- **Memory Policy:** allkeys-lru with intelligent eviction
+- **Persistence:** RDB snapshots + AOF for durability
+- **Clustering:** Redis Cluster for horizontal scaling
+
+### Connection Pool Architecture
+
+**Service-Specific Pool Configurations:**
+
+```yaml
+auth_service:
+  min_connections: 15
+  max_connections: 60
+  max_overflow: 25
+  pool_timeout: 20.0s
+
+ac_service:
+  min_connections: 12
+  max_connections: 50
+  max_overflow: 20
+  pool_timeout: 20.0s
+
+integrity_service:
+  min_connections: 10
+  max_connections: 40
+  max_overflow: 15
+  pool_timeout: 20.0s
+
+fv_service:
+  min_connections: 8
+  max_connections: 35
+  max_overflow: 15
+  pool_timeout: 20.0s
+
+gs_service:
+  min_connections: 12
+  max_connections: 45
+  max_overflow: 20
+  pool_timeout: 20.0s
+
+pgc_service:
+  min_connections: 15
+  max_connections: 55
+  max_overflow: 25
+  pool_timeout: 20.0s
+
+dgm_service:
+  min_connections: 10
+  max_connections: 40
+  max_overflow: 15
+  pool_timeout: 20.0s
+```
+
+**Total Pool Capacity:** 82-330 connections across all services
 
 ## 📊 Schema Analysis by Service
 
@@ -31,20 +85,32 @@ This document provides a comprehensive analysis of the ACGS-1 database architect
 
 **Tables:**
 
-- `users` - User accounts and profiles
-- `roles` - Role definitions
-- `permissions` - Permission definitions
-- `user_roles` - User-role assignments
-- `sessions` - Active user sessions
-- `oauth_tokens` - OAuth integration tokens
+- `users` - User accounts and profiles (Primary: id, username, email, password_hash)
+- `roles` - Role definitions (Primary: id, name, permissions)
+- `permissions` - Permission definitions (Primary: id, name, resource, action)
+- `user_roles` - User-role assignments (Composite: user_id, role_id)
+- `sessions` - Active user sessions (Primary: id, token_hash, user_id, expires_at)
+- `oauth_tokens` - OAuth integration tokens (Primary: id, provider, user_id, token)
+- `mfa_tokens` - Multi-factor authentication tokens (Primary: id, user_id, secret)
+- `audit_logs` - Authentication audit trail (Primary: id, user_id, action, timestamp)
 
-**Key Indexes:**
+**Optimized Indexes:**
 
 ```sql
-CREATE INDEX idx_users_username ON users(username);
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_sessions_token ON sessions(token_hash);
-CREATE INDEX idx_sessions_expires ON sessions(expires_at);
+-- Primary lookup indexes
+CREATE INDEX CONCURRENTLY idx_users_username_active ON users(username) WHERE is_active = true;
+CREATE INDEX CONCURRENTLY idx_users_email_verified ON users(email) WHERE email_verified = true;
+CREATE INDEX CONCURRENTLY idx_sessions_token_hash ON sessions USING HASH(token_hash);
+CREATE INDEX CONCURRENTLY idx_sessions_expires_active ON sessions(expires_at) WHERE is_active = true;
+
+-- Composite indexes for complex queries
+CREATE INDEX CONCURRENTLY idx_user_roles_composite ON user_roles(user_id, role_id);
+CREATE INDEX CONCURRENTLY idx_audit_logs_user_timestamp ON audit_logs(user_id, timestamp DESC);
+CREATE INDEX CONCURRENTLY idx_oauth_tokens_provider_user ON oauth_tokens(provider, user_id);
+
+-- Performance indexes
+CREATE INDEX CONCURRENTLY idx_users_last_login ON users(last_login_at DESC) WHERE is_active = true;
+CREATE INDEX CONCURRENTLY idx_sessions_cleanup ON sessions(expires_at) WHERE is_active = false;
 ```
 
 **Performance Characteristics:**

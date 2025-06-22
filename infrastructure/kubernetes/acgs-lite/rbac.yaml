@@ -1,0 +1,241 @@
+# ACGS-1 Lite RBAC Configuration
+# Implements least-privilege access control for constitutional governance
+
+---
+# Read-Only ClusterRole for Auditors
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: acgs-lite-read-only
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: rbac
+    acgs-lite.io/role-type: read-only
+rules:
+  - apiGroups: ['', 'apps', 'batch', 'extensions', 'networking.k8s.io']
+    resources:
+      - pods
+      - deployments
+      - services
+      - ingresses
+      - jobs
+      - cronjobs
+      - nodes
+      - namespaces
+      - networkpolicies
+      - configmaps
+      - secrets
+    verbs: ['get', 'list', 'watch']
+  - apiGroups: ['metrics.k8s.io']
+    resources: ['*']
+    verbs: ['get', 'list']
+  - apiGroups: ['postgresql.cnpg.io']
+    resources: ['clusters', 'backups']
+    verbs: ['get', 'list', 'watch']
+  - apiGroups: ['cluster.redpanda.com']
+    resources: ['redpandas']
+    verbs: ['get', 'list', 'watch']
+
+---
+# ClusterRoleBinding for Auditors
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: acgs-lite-auditor-binding
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: rbac
+    acgs-lite.io/role-type: auditor-binding
+subjects:
+  - kind: User
+    name: 'auditor@acgs-lite.io'
+    apiGroup: rbac.authorization.k8s.io
+  - kind: ServiceAccount
+    name: acgs-lite-auditor
+    namespace: governance
+roleRef:
+  kind: ClusterRole
+  name: acgs-lite-read-only
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# ServiceAccount for ACGS-Lite Services
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: acgs-lite-service
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: service-account
+    acgs-lite.io/service-type: governance
+automountServiceAccountToken: true
+
+---
+# ServiceAccount for Auditor
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: acgs-lite-auditor
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: service-account
+    acgs-lite.io/service-type: auditor
+automountServiceAccountToken: true
+
+---
+# ServiceAccount for Sandbox Controller
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: acgs-lite-sandbox-controller
+  namespace: workload
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: service-account
+    acgs-lite.io/service-type: sandbox-controller
+automountServiceAccountToken: true
+
+---
+# Role for ACGS-Lite Services in Governance Namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: governance
+  name: acgs-lite-governance-role
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: rbac
+    acgs-lite.io/role-type: governance
+rules:
+  - apiGroups: ['']
+    resources: ['pods', 'services', 'configmaps', 'secrets']
+    verbs: ['get', 'list', 'watch', 'create', 'update', 'patch']
+  - apiGroups: ['apps']
+    resources: ['deployments', 'replicasets']
+    verbs: ['get', 'list', 'watch', 'create', 'update', 'patch']
+  - apiGroups: ['postgresql.cnpg.io']
+    resources: ['clusters', 'backups']
+    verbs: ['get', 'list', 'watch']
+  - apiGroups: ['cluster.redpanda.com']
+    resources: ['redpandas']
+    verbs: ['get', 'list', 'watch']
+
+---
+# RoleBinding for ACGS-Lite Services in Governance Namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: acgs-lite-governance-binding
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: rbac
+    acgs-lite.io/role-type: governance-binding
+subjects:
+  - kind: ServiceAccount
+    name: acgs-lite-service
+    namespace: governance
+roleRef:
+  kind: Role
+  name: acgs-lite-governance-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# ClusterRole for Sandbox Controller
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: acgs-lite-sandbox-controller
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: rbac
+    acgs-lite.io/role-type: sandbox-controller
+rules:
+  - apiGroups: ['']
+    resources: ['pods', 'pods/log', 'pods/exec']
+    verbs: ['get', 'list', 'watch', 'create', 'update', 'patch', 'delete']
+  - apiGroups: ['']
+    resources: ['nodes']
+    verbs: ['get', 'list', 'watch']
+  - apiGroups: ['apps']
+    resources: ['deployments', 'replicasets']
+    verbs: ['get', 'list', 'watch', 'create', 'update', 'patch', 'delete']
+  - apiGroups: ['batch']
+    resources: ['jobs']
+    verbs: ['get', 'list', 'watch', 'create', 'update', 'patch', 'delete']
+  - apiGroups: ['metrics.k8s.io']
+    resources: ['pods', 'nodes']
+    verbs: ['get', 'list']
+
+---
+# ClusterRoleBinding for Sandbox Controller
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: acgs-lite-sandbox-controller-binding
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: rbac
+    acgs-lite.io/role-type: sandbox-controller-binding
+subjects:
+  - kind: ServiceAccount
+    name: acgs-lite-sandbox-controller
+    namespace: workload
+roleRef:
+  kind: ClusterRole
+  name: acgs-lite-sandbox-controller
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Role for Human Review Dashboard
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: governance
+  name: acgs-lite-dashboard-role
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: rbac
+    acgs-lite.io/role-type: dashboard
+rules:
+  - apiGroups: ['']
+    resources: ['pods', 'services', 'configmaps']
+    verbs: ['get', 'list', 'watch']
+  - apiGroups: ['apps']
+    resources: ['deployments']
+    verbs: ['get', 'list', 'watch']
+
+---
+# ServiceAccount for Human Review Dashboard
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: acgs-lite-dashboard
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: service-account
+    acgs-lite.io/service-type: dashboard
+automountServiceAccountToken: true
+
+---
+# RoleBinding for Human Review Dashboard
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: acgs-lite-dashboard-binding
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: rbac
+    acgs-lite.io/role-type: dashboard-binding
+subjects:
+  - kind: ServiceAccount
+    name: acgs-lite-dashboard
+    namespace: governance
+roleRef:
+  kind: Role
+  name: acgs-lite-dashboard-role
+  apiGroup: rbac.authorization.k8s.io

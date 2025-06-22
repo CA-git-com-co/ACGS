@@ -1,10 +1,10 @@
-# ACGS-1 Infrastructure as Code - Main Configuration
-# Terraform configuration for ACGS-1 Constitutional Governance System
-# Supports multi-environment deployment with constitutional compliance
+# ACGS-1 Lite Infrastructure as Code - Main Configuration
+# Terraform configuration for ACGS-1 Lite Constitutional Governance System
+# Implements the 3-service architecture with DGM sandbox safety patterns
 
 terraform {
   required_version = ">= 1.0"
-  
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -29,28 +29,29 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "acgs-terraform-state"
-    key            = "acgs-1/terraform.tfstate"
-    region         = "us-west-2"
+    bucket         = "acgs-lite-terraform-state"
+    key            = "acgs-lite/terraform.tfstate"
+    region         = "us-east-1"
     encrypt        = true
-    dynamodb_table = "acgs-terraform-locks"
+    dynamodb_table = "acgs-lite-terraform-locks"
   }
 }
 
 # Configure AWS Provider
 provider "aws" {
   region = var.aws_region
-  
+
   default_tags {
     tags = {
-      Project             = "ACGS-1"
-      System              = "Constitutional-Governance"
+      Project             = "ACGS-1-Lite"
+      System              = "Constitutional-Governance-Lite"
       Environment         = var.environment
       ConstitutionalHash  = var.constitutional_hash
       ManagedBy          = "Terraform"
-      Owner              = "ACGS-Operations"
-      CostCenter         = "Constitutional-Governance"
+      Owner              = "ACGS-Lite-Operations"
+      CostCenter         = "Constitutional-Governance-Lite"
       Compliance         = "Required"
+      Architecture       = "3-Service-DGM-Pattern"
     }
   }
 }
@@ -83,52 +84,48 @@ provider "helm" {
 
 # Local values for common configurations
 locals {
-  name_prefix = "acgs-${var.environment}"
-  
+  name_prefix = "acgs-lite-${var.environment}"
+
   common_tags = {
-    Project             = "ACGS-1"
-    System              = "Constitutional-Governance"
+    Project             = "ACGS-1-Lite"
+    System              = "Constitutional-Governance-Lite"
     Environment         = var.environment
     ConstitutionalHash  = var.constitutional_hash
     ManagedBy          = "Terraform"
+    Architecture       = "3-Service-DGM-Pattern"
   }
-  
-  # Service configuration
+
+  # ACGS-1 Lite Core Services (3-service architecture)
   services = {
-    auth = {
-      name = "auth-service"
-      port = 8000
-      replicas = var.environment == "production" ? 3 : 2
-    }
-    ac = {
-      name = "ac-service"
+    policy_engine = {
+      name = "policy-engine"
       port = 8001
       replicas = var.environment == "production" ? 3 : 2
+      node_pool = "governance"
     }
-    integrity = {
-      name = "integrity-service"
+    evolution_oversight = {
+      name = "evolution-oversight"
       port = 8002
       replicas = var.environment == "production" ? 2 : 1
+      node_pool = "governance"
     }
-    fv = {
-      name = "fv-service"
+    audit_engine = {
+      name = "audit-engine"
       port = 8003
       replicas = var.environment == "production" ? 2 : 1
+      node_pool = "governance"
     }
-    gs = {
-      name = "gs-service"
+    sandbox_controller = {
+      name = "sandbox-controller"
       port = 8004
       replicas = var.environment == "production" ? 3 : 2
+      node_pool = "workload"
     }
-    pgc = {
-      name = "pgc-service"
-      port = 8005
-      replicas = var.environment == "production" ? 3 : 2
-    }
-    ec = {
-      name = "ec-service"
-      port = 8006
+    human_review_dashboard = {
+      name = "human-review-dashboard"
+      port = 3000
       replicas = var.environment == "production" ? 2 : 1
+      node_pool = "governance"
     }
   }
 }
@@ -167,46 +164,65 @@ module "eks" {
   cluster_version = var.kubernetes_version
   
   node_groups = {
-    system = {
-      instance_types = ["t3.medium"]
-      min_size      = 1
+    # Governance Pool - Policy Engine, Evolution Oversight, Audit Engine
+    governance = {
+      instance_types = ["m5.2xlarge"] # 8 CPU, 32 GB RAM
+      min_size      = 2
       max_size      = 3
       desired_size  = 2
-      
+
       labels = {
-        role = "system"
+        "node-pool" = "governance"
+        "constitutional-compliance" = "required"
+        "acgs-lite-role" = "governance"
       }
-      
-      taints = []
-    }
-    
-    acgs_services = {
-      instance_types = ["t3.large"]
-      min_size      = var.environment == "production" ? 3 : 2
-      max_size      = var.environment == "production" ? 10 : 5
-      desired_size  = var.environment == "production" ? 5 : 3
-      
-      labels = {
-        role = "acgs-services"
-      }
-      
-      taints = []
-    }
-    
-    governance = {
-      instance_types = ["t3.xlarge"]
-      min_size      = var.environment == "production" ? 2 : 1
-      max_size      = var.environment == "production" ? 5 : 3
-      desired_size  = var.environment == "production" ? 3 : 2
-      
-      labels = {
-        role = "governance"
-        constitutional-compliance = "required"
-      }
-      
+
       taints = [
         {
           key    = "governance"
+          value  = "true"
+          effect = "NO_SCHEDULE"
+        }
+      ]
+    }
+
+    # Monitoring Pool - Prometheus, Grafana, AlertManager
+    monitoring = {
+      instance_types = ["m5.xlarge"] # 4 CPU, 16 GB RAM
+      min_size      = 2
+      max_size      = 3
+      desired_size  = 2
+
+      labels = {
+        "node-pool" = "monitoring"
+        "acgs-lite-role" = "monitoring"
+      }
+
+      taints = [
+        {
+          key    = "monitoring"
+          value  = "true"
+          effect = "NO_SCHEDULE"
+        }
+      ]
+    }
+
+    # Workload Pool - AI Agent Sandboxes
+    workload = {
+      instance_types = ["m5.4xlarge"] # 16 CPU, 64 GB RAM
+      min_size      = 3
+      max_size      = 5
+      desired_size  = 3
+
+      labels = {
+        "node-pool" = "workload"
+        "acgs-lite-role" = "workload"
+        "sandbox-isolation" = "required"
+      }
+
+      taints = [
+        {
+          key    = "workload"
           value  = "true"
           effect = "NO_SCHEDULE"
         }
@@ -324,42 +340,52 @@ module "monitoring" {
   tags = local.common_tags
 }
 
-# Kubernetes Namespaces
-resource "kubernetes_namespace" "acgs_namespaces" {
-  for_each = toset(["acgs-blue", "acgs-green", "acgs-shared", "acgs-monitoring"])
-  
+# Kubernetes Namespaces for ACGS-1 Lite
+resource "kubernetes_namespace" "acgs_lite_namespaces" {
+  for_each = toset([
+    "governance",    # Policy Engine, Evolution Oversight, Audit Engine
+    "workload",      # AI Agent Sandboxes
+    "monitoring",    # Prometheus, Grafana, AlertManager
+    "shared"         # Shared resources and utilities
+  ])
+
   metadata {
     name = each.value
-    
+
     labels = {
       environment            = var.environment
-      system                = "acgs-constitutional-governance"
+      system                = "acgs-lite-constitutional-governance"
       constitutional-hash   = var.constitutional_hash
       managed-by           = "terraform"
+      architecture         = "3-service-dgm-pattern"
     }
-    
+
     annotations = {
-      "description" = "ACGS-1 Constitutional Governance System - ${each.value}"
+      "description" = "ACGS-1 Lite Constitutional Governance System - ${each.value}"
+      "acgs-lite.io/namespace-type" = each.value
     }
   }
 }
 
-# Kubernetes Secrets
-resource "kubernetes_secret" "acgs_secrets" {
-  for_each = toset(["acgs-blue", "acgs-green"])
-  
+# Kubernetes Secrets for ACGS-1 Lite
+resource "kubernetes_secret" "acgs_lite_secrets" {
+  for_each = toset(["governance", "workload", "shared"])
+
   metadata {
-    name      = "acgs-secrets"
+    name      = "acgs-lite-secrets"
     namespace = each.value
   }
-  
+
   data = {
     database_url = "postgresql://${module.rds.username}:${module.rds.password}@${module.rds.endpoint}:5432/${module.rds.database_name}"
     redis_url    = "redis://${module.redis.endpoint}:6379/0"
     jwt_secret   = random_password.jwt_secret.result
     constitutional_hash = var.constitutional_hash
+    redpanda_brokers = "constitutional-events-0.constitutional-events.governance.svc.cluster.local:9092,constitutional-events-1.constitutional-events.governance.svc.cluster.local:9092,constitutional-events-2.constitutional-events.governance.svc.cluster.local:9092"
+    s3_audit_bucket = "acgs-lite-${var.environment}-audit-logs"
+    opa_endpoint = "http://opa.governance.svc.cluster.local:8181"
   }
-  
+
   type = "Opaque"
 }
 
