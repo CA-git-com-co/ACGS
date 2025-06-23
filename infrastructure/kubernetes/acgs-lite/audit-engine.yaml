@@ -1,0 +1,274 @@
+# ACGS-1 Lite Audit Engine Deployment
+# Immutable audit trail and compliance logging service
+
+---
+# Audit Engine ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: audit-engine-config
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: audit-engine
+    acgs-lite.io/service-type: audit-config
+data:
+  config.yaml: |
+    # Audit Engine Configuration
+    server:
+      host: "0.0.0.0"
+      port: 8003
+      
+    database:
+      url: "postgresql://audit_user:audit_password@postgresql:5432/audit_db"
+      max_connections: 20
+      connection_timeout: 30
+      
+    audit:
+      retention_days: 2555  # 7 years
+      batch_size: 1000
+      flush_interval: 30
+      
+    security:
+      enable_encryption: true
+      hash_algorithm: "sha256"
+      
+    logging:
+      level: "INFO"
+      format: "json"
+
+---
+# Audit Engine PersistentVolumeClaim
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: audit-engine-data-pvc
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: audit-engine
+    acgs-lite.io/service-type: storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: standard
+
+---
+# Audit Engine Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: audit-engine
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: audit-engine
+    acgs-lite.io/service-type: audit
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: audit-engine
+  template:
+    metadata:
+      labels:
+        app: audit-engine
+        app.kubernetes.io/name: acgs-lite
+        app.kubernetes.io/component: audit-engine
+        acgs-lite.io/service-type: audit
+      annotations:
+        acgs-lite.io/constitutional-compliance: 'required'
+    spec:
+      serviceAccountName: acgs-lite-service
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: audit-engine
+          image: acgs-lite/audit-engine:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8003
+              name: http
+              protocol: TCP
+          env:
+            - name: CONFIG_PATH
+              value: '/etc/audit-engine/config.yaml'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: audit-engine-secrets
+                  key: database_url
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: audit-engine-secrets
+                  key: encryption_key
+            - name: LOG_LEVEL
+              value: 'INFO'
+          resources:
+            requests:
+              cpu: '150m'
+              memory: '384Mi'
+            limits:
+              cpu: '300m'
+              memory: '768Mi'
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: audit-config
+              mountPath: /etc/audit-engine
+              readOnly: true
+            - name: audit-data
+              mountPath: /data
+            - name: tmp
+              mountPath: /tmp
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8003
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8003
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+      volumes:
+        - name: audit-config
+          configMap:
+            name: audit-engine-config
+        - name: audit-data
+          persistentVolumeClaim:
+            claimName: audit-engine-data-pvc
+        - name: tmp
+          emptyDir: {}
+      nodeSelector:
+        acgs-lite.io/node-pool: governance
+      tolerations:
+        - key: governance
+          operator: Equal
+          value: 'true'
+          effect: NoSchedule
+
+---
+# Audit Engine Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: audit-engine
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: audit-engine
+    acgs-lite.io/service-type: audit
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '8003'
+    prometheus.io/path: '/metrics'
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8003
+      targetPort: 8003
+      protocol: TCP
+  selector:
+    app: audit-engine
+
+---
+# Audit Engine Secrets
+apiVersion: v1
+kind: Secret
+metadata:
+  name: audit-engine-secrets
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: audit-engine
+    acgs-lite.io/service-type: audit-secrets
+type: Opaque
+data:
+  # Base64 encoded values - replace with actual secrets in production
+  database_url: cG9zdGdyZXNxbDovL2F1ZGl0X3VzZXI6YXVkaXRfcGFzc3dvcmRAcG9zdGdyZXNxbDo1NDMyL2F1ZGl0X2Ri
+  encryption_key: YWVzLTI1Ni1nY20ta2V5LWZvci1hdWRpdC1lbmNyeXB0aW9uLXJlcGxhY2UtaW4tcHJvZHVjdGlvbg==
+
+---
+# HorizontalPodAutoscaler for Audit Engine
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: audit-engine-hpa
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: audit-engine
+    acgs-lite.io/service-type: audit-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: audit-engine
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 10
+          periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Percent
+          value: 50
+          periodSeconds: 60
+
+---
+# ServiceMonitor for Audit Engine
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: audit-engine-monitor
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: audit-engine
+    acgs-lite.io/service-type: audit-monitoring
+spec:
+  selector:
+    matchLabels:
+      app: audit-engine
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s

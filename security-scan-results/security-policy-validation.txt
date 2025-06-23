@@ -1,0 +1,25 @@
+# Security Policy Validation
+Generated: Mon Jun 23 05:22:19 UTC 2025
+
+## PodSecurityContext Validation
+✅ runAsNonRoot: true found in manifests
+✅ readOnlyRootFilesystem: true found in manifests
+
+## NetworkPolicy Validation
+✅ NetworkPolicy manifests found
+
+## Resource Limits Validation
+✅ CPU limits found in manifests (15 instances)
+✅ Memory limits found in manifests (15 instances)
+✅ Resource requests found in manifests (47 instances)
+
+### Service-Specific Resource Validation
+✅ Constitutional Trainer has appropriate CPU requests (500m)
+✅ Constitutional Trainer has appropriate memory requests (2Gi)
+✅ Constitutional Trainer has GPU allocation (1 GPU)
+⚠️ Policy Engine CPU requests may need adjustment
+✅ Redis has appropriate CPU requests (100m)
+✅ Audit Engine has appropriate CPU requests (150m)
+
+## Security Annotations
+✅ Seccomp annotations found

@@ -1,0 +1,459 @@
+# Constitutional Trainer Service - Kubernetes Deployment
+# ACGS-1 Lite Constitutional AI Training Service with NVIDIA Data Flywheel Integration
+# Constitutional Hash: cdd01ef066bc6cf2
+
+---
+# Namespace (if not already created)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: governance
+    acgs-lite.io/constitutional-hash: cdd01ef066bc6cf2
+
+---
+# ConfigMap for Constitutional Trainer Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: constitutional-trainer-config
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: constitutional-trainer
+    acgs-lite.io/service-type: config
+data:
+  constitutional_hash: 'cdd01ef066bc6cf2'
+  compliance_threshold: '0.95'
+  max_critique_iterations: '3'
+  max_concurrent_sessions: '5'
+  enable_differential_privacy: 'true'
+  privacy_epsilon: '8.0'
+  privacy_delta: '1e-5'
+  policy_engine_url: 'http://policy-engine:8001'
+  audit_engine_url: 'http://audit-engine:8003'
+  redis_url: 'redis://redis:6379/0'
+
+---
+# Secret for Constitutional Trainer
+apiVersion: v1
+kind: Secret
+metadata:
+  name: constitutional-trainer-secret
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: constitutional-trainer
+    acgs-lite.io/service-type: secret
+type: Opaque
+data:
+  # Base64 encoded values - replace with actual secrets
+  jwt_secret: Y29uc3RpdHV0aW9uYWwtdHJhaW5lci1qd3Qtc2VjcmV0LWtleQ==
+  api_key: Y29uc3RpdHV0aW9uYWwtdHJhaW5lci1hcGkta2V5
+
+---
+# PersistentVolumeClaim for Model Storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: constitutional-trainer-models-pvc
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: constitutional-trainer
+    acgs-lite.io/service-type: storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: fast-ssd
+
+---
+# PersistentVolumeClaim for Training Data
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: constitutional-trainer-data-pvc
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: constitutional-trainer
+    acgs-lite.io/service-type: storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: fast-ssd
+
+---
+# ServiceAccount for Constitutional Trainer
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: constitutional-trainer
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: constitutional-trainer
+    acgs-lite.io/service-type: serviceaccount
+automountServiceAccountToken: true
+
+---
+# Role for Constitutional Trainer
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: constitutional-trainer
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: constitutional-trainer
+    acgs-lite.io/service-type: rbac
+rules:
+  - apiGroups: ['']
+    resources: ['configmaps', 'secrets']
+    verbs: ['get', 'list', 'watch']
+  - apiGroups: ['']
+    resources: ['pods']
+    verbs: ['get', 'list', 'watch']
+  - apiGroups: ['apps']
+    resources: ['deployments']
+    verbs: ['get', 'list', 'watch']
+
+---
+# RoleBinding for Constitutional Trainer
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: constitutional-trainer
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: constitutional-trainer
+    acgs-lite.io/service-type: rbac
+subjects:
+  - kind: ServiceAccount
+    name: constitutional-trainer
+    namespace: governance
+roleRef:
+  kind: Role
+  name: constitutional-trainer
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Deployment for Constitutional Trainer
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: constitutional-trainer
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: constitutional-trainer
+    app.kubernetes.io/version: '1.0.0'
+    acgs-lite.io/service-type: constitutional-trainer
+    acgs-lite.io/constitutional-hash: cdd01ef066bc6cf2
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: constitutional-trainer
+      app.kubernetes.io/name: acgs-lite
+      app.kubernetes.io/component: constitutional-trainer
+  template:
+    metadata:
+      labels:
+        app: constitutional-trainer
+        app.kubernetes.io/name: acgs-lite
+        app.kubernetes.io/component: constitutional-trainer
+        app.kubernetes.io/version: '1.0.0'
+        acgs-lite.io/service-type: constitutional-trainer
+        acgs-lite.io/constitutional-hash: cdd01ef066bc6cf2
+      annotations:
+        acgs-lite.io/constitutional-compliance: 'required'
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '8010'
+        prometheus.io/path: '/metrics'
+    spec:
+      serviceAccountName: constitutional-trainer
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: constitutional-trainer
+          image: acgs/constitutional-trainer:v1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8010
+              name: http
+              protocol: TCP
+          env:
+            # Constitutional configuration
+            - name: CONSTITUTIONAL_HASH
+              valueFrom:
+                configMapKeyRef:
+                  name: constitutional-trainer-config
+                  key: constitutional_hash
+            - name: COMPLIANCE_THRESHOLD
+              valueFrom:
+                configMapKeyRef:
+                  name: constitutional-trainer-config
+                  key: compliance_threshold
+            - name: MAX_CRITIQUE_ITERATIONS
+              valueFrom:
+                configMapKeyRef:
+                  name: constitutional-trainer-config
+                  key: max_critique_iterations
+            - name: MAX_CONCURRENT_SESSIONS
+              valueFrom:
+                configMapKeyRef:
+                  name: constitutional-trainer-config
+                  key: max_concurrent_sessions
+
+            # Privacy configuration
+            - name: ENABLE_DIFFERENTIAL_PRIVACY
+              valueFrom:
+                configMapKeyRef:
+                  name: constitutional-trainer-config
+                  key: enable_differential_privacy
+            - name: PRIVACY_EPSILON
+              valueFrom:
+                configMapKeyRef:
+                  name: constitutional-trainer-config
+                  key: privacy_epsilon
+            - name: PRIVACY_DELTA
+              valueFrom:
+                configMapKeyRef:
+                  name: constitutional-trainer-config
+                  key: privacy_delta
+
+            # Service URLs
+            - name: POLICY_ENGINE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: constitutional-trainer-config
+                  key: policy_engine_url
+            - name: AUDIT_ENGINE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: constitutional-trainer-config
+                  key: audit_engine_url
+            - name: REDIS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: constitutional-trainer-config
+                  key: redis_url
+
+            # Secrets
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: constitutional-trainer-secret
+                  key: jwt_secret
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: constitutional-trainer-secret
+                  key: api_key
+
+            # System configuration
+            - name: ENVIRONMENT
+              value: 'production'
+            - name: LOG_LEVEL
+              value: 'INFO'
+            - name: PYTHONPATH
+              value: '/app'
+
+          resources:
+            requests:
+              cpu: '500m'
+              memory: '2Gi'
+              nvidia.com/gpu: 1
+            limits:
+              cpu: '2000m'
+              memory: '8Gi'
+              nvidia.com/gpu: 1
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false # Models need write access
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            capabilities:
+              drop:
+                - ALL
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
+
+          volumeMounts:
+            - name: models-storage
+              mountPath: /app/models
+            - name: data-storage
+              mountPath: /app/data
+            - name: tmp-storage
+              mountPath: /tmp
+
+      volumes:
+        - name: models-storage
+          persistentVolumeClaim:
+            claimName: constitutional-trainer-models-pvc
+        - name: data-storage
+          persistentVolumeClaim:
+            claimName: constitutional-trainer-data-pvc
+        - name: tmp-storage
+          emptyDir:
+            sizeLimit: 10Gi
+
+      nodeSelector:
+        acgs-lite.io/node-type: governance
+        nvidia.com/gpu.present: 'true'
+
+      tolerations:
+        - key: 'nvidia.com/gpu'
+          operator: 'Exists'
+          effect: 'NoSchedule'
+
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - constitutional-trainer
+                topologyKey: kubernetes.io/hostname
+
+---
+# Service for Constitutional Trainer
+apiVersion: v1
+kind: Service
+metadata:
+  name: constitutional-trainer
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: constitutional-trainer
+    acgs-lite.io/service-type: constitutional-trainer
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '8010'
+    prometheus.io/path: '/metrics'
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8010
+      targetPort: 8010
+      protocol: TCP
+      name: http
+  selector:
+    app: constitutional-trainer
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: constitutional-trainer
+
+---
+# HorizontalPodAutoscaler for Constitutional Trainer
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: constitutional-trainer-hpa
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: constitutional-trainer
+    acgs-lite.io/service-type: autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: constitutional-trainer
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 10
+          periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Percent
+          value: 50
+          periodSeconds: 60
+
+---
+# PodDisruptionBudget for Constitutional Trainer
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: constitutional-trainer-pdb
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: constitutional-trainer
+    acgs-lite.io/service-type: disruption-budget
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: constitutional-trainer
+      app.kubernetes.io/name: acgs-lite
+      app.kubernetes.io/component: constitutional-trainer

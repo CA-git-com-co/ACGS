@@ -1,0 +1,85 @@
+# Constitutional Trainer Service Dependencies
+# ACGS-1 Lite Constitutional AI Training with NVIDIA Data Flywheel Integration
+
+# Core FastAPI and web framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+python-multipart==0.0.6
+
+# Machine Learning and AI
+torch==2.1.1
+transformers==4.36.0
+datasets==2.15.0
+accelerate==0.25.0
+peft==0.7.1
+bitsandbytes==0.41.3
+
+# Differential Privacy
+opacus==1.4.0
+
+# HTTP and async
+aiohttp==3.9.1
+httpx==0.25.2
+aiofiles==23.2.0
+
+# Redis for caching
+redis==5.0.1
+aioredis==2.0.1
+
+# Monitoring and metrics
+prometheus-client==0.19.0
+
+# Security and authentication
+cryptography==41.0.8
+PyJWT==2.8.0
+passlib[bcrypt]==1.7.4
+
+# Data processing
+numpy==1.24.4
+pandas==2.1.4
+scikit-learn==1.3.2
+
+# Configuration and environment
+python-dotenv==1.0.0
+pyyaml==6.0.1
+
+# Logging and utilities
+structlog==23.2.0
+click==8.1.7
+
+# Testing (for development)
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-mock==3.12.0
+httpx==0.25.2  # For testing HTTP clients
+
+# Development tools
+black==23.11.0
+isort==5.12.0
+flake8==6.1.0
+mypy==1.7.1
+
+# Production WSGI server
+gunicorn==21.2.0
+
+# Memory optimization
+psutil==5.9.6
+
+# JSON and data serialization
+orjson==3.9.10
+
+# Timezone handling
+pytz==2023.3
+
+# Additional ML utilities
+tokenizers==0.15.0
+safetensors==0.4.1
+
+# GPU monitoring (optional)
+nvidia-ml-py==12.535.133
+
+# Constitutional AI specific
+# Note: These would be custom packages in a real implementation
+# constitutional-ai-core==1.0.0
+# acgs-policy-client==1.0.0

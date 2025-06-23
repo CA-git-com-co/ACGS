@@ -1,0 +1,403 @@
+# Network Policies for Constitutional Trainer Service
+# Zero-trust networking for ACGS-1 Lite Constitutional AI Training
+# Constitutional Hash: cdd01ef066bc6cf2
+
+---
+# Network Policy for Constitutional Trainer - Ingress Rules
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: constitutional-trainer-ingress
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: constitutional-trainer
+    acgs-lite.io/policy-type: network-ingress
+    acgs-lite.io/constitutional-hash: cdd01ef066bc6cf2
+spec:
+  podSelector:
+    matchLabels:
+      app: constitutional-trainer
+      app.kubernetes.io/name: acgs-lite
+      app.kubernetes.io/component: constitutional-trainer
+
+  policyTypes:
+    - Ingress
+
+  ingress:
+    # Allow traffic from human review dashboard
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: governance
+        - podSelector:
+            matchLabels:
+              app: human-review-dashboard
+      ports:
+        - protocol: TCP
+          port: 8010
+
+    # Allow traffic from load balancer/ingress
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-system
+      ports:
+        - protocol: TCP
+          port: 8010
+
+    # Allow traffic from monitoring namespace (Prometheus)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: monitoring
+        - podSelector:
+            matchLabels:
+              app: prometheus
+      ports:
+        - protocol: TCP
+          port: 8010
+
+    # Allow traffic from other constitutional trainer instances (clustering)
+    - from:
+        - podSelector:
+            matchLabels:
+              app: constitutional-trainer
+              app.kubernetes.io/name: acgs-lite
+      ports:
+        - protocol: TCP
+          port: 8010
+
+    # Allow health checks from kubelet
+    - from: []
+      ports:
+        - protocol: TCP
+          port: 8010
+
+---
+# Network Policy for Constitutional Trainer - Egress Rules
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: constitutional-trainer-egress
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: constitutional-trainer
+    acgs-lite.io/policy-type: network-egress
+    acgs-lite.io/constitutional-hash: cdd01ef066bc6cf2
+spec:
+  podSelector:
+    matchLabels:
+      app: constitutional-trainer
+      app.kubernetes.io/name: acgs-lite
+      app.kubernetes.io/component: constitutional-trainer
+
+  policyTypes:
+    - Egress
+
+  egress:
+    # Allow DNS resolution
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+    # Allow communication with Policy Engine
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: governance
+        - podSelector:
+            matchLabels:
+              app: policy-engine
+              app.kubernetes.io/name: acgs-lite
+      ports:
+        - protocol: TCP
+          port: 8001
+
+    # Allow communication with Audit Engine
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: governance
+        - podSelector:
+            matchLabels:
+              app: audit-engine
+              app.kubernetes.io/name: acgs-lite
+      ports:
+        - protocol: TCP
+          port: 8003
+
+    # Allow communication with Redis (shared namespace)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: shared
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+
+    # Allow communication with PostgreSQL (shared namespace)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: shared
+        - podSelector:
+            matchLabels:
+              app: postgresql
+      ports:
+        - protocol: TCP
+          port: 5432
+
+    # Allow HTTPS traffic for model downloads and external APIs
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
+
+    # Allow HTTP traffic for internal services
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 80
+
+    # Allow communication with Kubernetes API server
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 6443
+
+---
+# Network Policy for Constitutional Trainer - Deny All Default
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: constitutional-trainer-deny-all
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: constitutional-trainer
+    acgs-lite.io/policy-type: network-deny-all
+    acgs-lite.io/constitutional-hash: cdd01ef066bc6cf2
+spec:
+  podSelector:
+    matchLabels:
+      app: constitutional-trainer
+      app.kubernetes.io/name: acgs-lite
+      app.kubernetes.io/component: constitutional-trainer
+
+  policyTypes:
+    - Ingress
+    - Egress
+
+---
+# Network Policy for Constitutional Trainer - Inter-Pod Communication
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: constitutional-trainer-inter-pod
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: constitutional-trainer
+    acgs-lite.io/policy-type: network-inter-pod
+    acgs-lite.io/constitutional-hash: cdd01ef066bc6cf2
+spec:
+  podSelector:
+    matchLabels:
+      app: constitutional-trainer
+      app.kubernetes.io/name: acgs-lite
+      app.kubernetes.io/component: constitutional-trainer
+
+  policyTypes:
+    - Ingress
+    - Egress
+
+  ingress:
+    # Allow communication between constitutional trainer instances
+    - from:
+        - podSelector:
+            matchLabels:
+              app: constitutional-trainer
+              app.kubernetes.io/name: acgs-lite
+              app.kubernetes.io/component: constitutional-trainer
+      ports:
+        - protocol: TCP
+          port: 8010
+
+  egress:
+    # Allow communication to other constitutional trainer instances
+    - to:
+        - podSelector:
+            matchLabels:
+              app: constitutional-trainer
+              app.kubernetes.io/name: acgs-lite
+              app.kubernetes.io/component: constitutional-trainer
+      ports:
+        - protocol: TCP
+          port: 8010
+
+---
+# Network Policy for Constitutional Trainer - Emergency Access
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: constitutional-trainer-emergency
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: constitutional-trainer
+    acgs-lite.io/policy-type: network-emergency
+    acgs-lite.io/constitutional-hash: cdd01ef066bc6cf2
+  annotations:
+    acgs-lite.io/emergency-access: 'true'
+    acgs-lite.io/activation-required: 'manual'
+spec:
+  podSelector:
+    matchLabels:
+      app: constitutional-trainer
+      app.kubernetes.io/name: acgs-lite
+      app.kubernetes.io/component: constitutional-trainer
+      acgs-lite.io/emergency-access: 'enabled'
+
+  policyTypes:
+    - Ingress
+    - Egress
+
+  ingress:
+    # Emergency access from admin pods
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: admin
+        - podSelector:
+            matchLabels:
+              acgs-lite.io/role: emergency-admin
+      ports:
+        - protocol: TCP
+          port: 8010
+
+  egress:
+    # Emergency egress for debugging and recovery
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 22 # SSH for emergency access
+        - protocol: TCP
+          port: 443 # HTTPS for emergency communications
+
+---
+# Network Policy for Constitutional Trainer - Monitoring Access
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: constitutional-trainer-monitoring
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: constitutional-trainer
+    acgs-lite.io/policy-type: network-monitoring
+    acgs-lite.io/constitutional-hash: cdd01ef066bc6cf2
+spec:
+  podSelector:
+    matchLabels:
+      app: constitutional-trainer
+      app.kubernetes.io/name: acgs-lite
+      app.kubernetes.io/component: constitutional-trainer
+
+  policyTypes:
+    - Ingress
+
+  ingress:
+    # Allow Prometheus scraping
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: monitoring
+        - podSelector:
+            matchLabels:
+              app: prometheus
+      ports:
+        - protocol: TCP
+          port: 8010
+
+    # Allow Grafana access for dashboards
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: monitoring
+        - podSelector:
+            matchLabels:
+              app: grafana
+      ports:
+        - protocol: TCP
+          port: 8010
+
+    # Allow AlertManager for health checks
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: monitoring
+        - podSelector:
+            matchLabels:
+              app: alertmanager
+      ports:
+        - protocol: TCP
+          port: 8010
+
+---
+# Network Policy for Constitutional Trainer - Development Access (Optional)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: constitutional-trainer-development
+  namespace: governance
+  labels:
+    app.kubernetes.io/name: acgs-lite
+    app.kubernetes.io/component: constitutional-trainer
+    acgs-lite.io/policy-type: network-development
+    acgs-lite.io/constitutional-hash: cdd01ef066bc6cf2
+    acgs-lite.io/environment: development
+  annotations:
+    acgs-lite.io/development-only: 'true'
+    acgs-lite.io/production-disable: 'true'
+spec:
+  podSelector:
+    matchLabels:
+      app: constitutional-trainer
+      app.kubernetes.io/name: acgs-lite
+      app.kubernetes.io/component: constitutional-trainer
+      acgs-lite.io/environment: development
+
+  policyTypes:
+    - Ingress
+    - Egress
+
+  ingress:
+    # Allow development access from developer workstations
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: development
+      ports:
+        - protocol: TCP
+          port: 8010
+
+  egress:
+    # Allow broader egress for development and testing
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 9090

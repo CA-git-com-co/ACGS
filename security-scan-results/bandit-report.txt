@@ -1,0 +1,31 @@
+Run started:2025-06-23 05:22:19.076551
+
+Test results:
+>> Issue: [B104:hardcoded_bind_all_interfaces] Possible binding to all interfaces.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-605 (https://cwe.mitre.org/data/definitions/605.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.5/plugins/b104_hardcoded_bind_all_interfaces.html
+   Location: /home/ubuntu/ACGS/services/core/constitutional-trainer/main.py:470:13
+469	        "main:app",
+470	        host="0.0.0.0",
+471	        port=8010,
+
+--------------------------------------------------
+
+Code scanned:
+	Total lines of code: 2569
+	Total lines skipped (#nosec): 0
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 0
+		Medium: 1
+		High: 0
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 0
+		Medium: 1
+		High: 0
+Files skipped (0):
