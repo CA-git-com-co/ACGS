@@ -1,5 +1,12 @@
 packages:
-  - 'applications/*'
-  - 'blockchain'
-  - 'services/*'
-  - 'packages/*'
+  - applications/*
+  - blockchain
+  - services/*
+  - packages/*
+
+overrides:
+  postcss@<8.4.31: '>=8.4.31'
+  nth-check@<2.0.1: '>=2.0.1'
+  micromatch@<4.0.8: '>=4.0.8'
+  esbuild@<=0.24.2: '>=0.25.0'
+  webpack-dev-server@<=5.2.0: '>=5.2.1'
