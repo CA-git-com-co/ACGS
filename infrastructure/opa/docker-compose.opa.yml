@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # OPA Server - Open Policy Agent for ACGS-PGP Constitutional Compliance
+  opa:
+    image: openpolicyagent/opa:latest-envoy
+    container_name: acgs-opa-standalone
+    command: [
+      'run', 
+      '--server', 
+      '--addr', '0.0.0.0:8181',
+      '--log-level', 'info',
+      '--config-file', '/config/opa-config.yaml',
+      '/policies'
+    ]
+    ports:
+      - '8181:8181'  # OPA API port
+      - '8282:8282'  # OPA diagnostic port
+    volumes:
+      # Policy files
+      - ../../config/opa/policies:/policies:ro
+      # Configuration
+      - ../../infrastructure/docker/opa-config.yaml:/config/opa-config.yaml:ro
+      # Constitutional policies from services
+      - ../../services/core/governance-synthesis/gs_service/policies:/policies/gs:ro
+      # Logs
+      - opa_logs:/var/log/opa
+    environment:
+      # Constitutional governance
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - CONSTITUTIONAL_COMPLIANCE_THRESHOLD=0.8
+      - GOVERNANCE_VALIDATION_ENABLED=true
+      
+      # Performance settings
+      - OPA_LOG_LEVEL=info
+      - OPA_LOG_FORMAT=json
+      - OPA_DECISION_LOGS_CONSOLE=true
+      - OPA_STATUS_CONSOLE=true
+      
+      # Security settings
+      - OPA_AUTHENTICATION_ENABLED=false  # Internal service
+      - OPA_AUTHORIZATION_ENABLED=true
+      
+      # Integration settings
+      - PGC_SERVICE_URL=http://pgc_service:8005
+      - GS_SERVICE_URL=http://gs_service:8004
+      - AC_SERVICE_URL=http://ac_service:8001
+    networks:
+      - acgs-opa
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8181/health']
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.2'
+    labels:
+      - "acgs.service=opa"
+      - "acgs.component=policy-enforcement"
+      - "acgs.constitutional-hash=cdd01ef066bc6cf2"
+
+volumes:
+  opa_logs:
+    driver: local
+
+networks:
+  acgs-opa:
+    driver: bridge
+    name: acgs-opa-network

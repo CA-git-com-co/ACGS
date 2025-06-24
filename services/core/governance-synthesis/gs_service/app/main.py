@@ -33,7 +33,7 @@ try:
     import sys
 
     sys.path.append("/home/dislove/ACGS-1/services/shared")
-    from security_middleware import (
+    from services.shared.security_middleware import (
         apply_production_security_middleware,
         create_security_config,
     )
@@ -356,7 +356,7 @@ try:
     import sys
 
     sys.path.append("/home/dislove/ACGS-1/services/shared")
-    from prometheus_middleware import (
+    from services.shared.prometheus_middleware import (
         add_prometheus_middleware,
         create_enhanced_metrics_endpoint,
     )
@@ -384,7 +384,9 @@ except ImportError as e:
         # ensures: Correct function execution
         # sha256: func_hash
         """Fallback metrics endpoint."""
-        return {"status": "metrics_not_available", "service": SERVICE_NAME}
+        from fastapi.responses import PlainTextResponse
+        from prometheus_client import CONTENT_TYPE_LATEST, REGISTRY, generate_latest
+        return PlainTextResponse(generate_latest(REGISTRY), media_type=CONTENT_TYPE_LATEST)
 
 
 @app.middleware("http")

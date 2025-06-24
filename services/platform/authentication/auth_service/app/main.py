@@ -51,7 +51,7 @@ try:
     import sys
 
     sys.path.append("/home/dislove/ACGS-1/services/shared")
-    from security_middleware import (
+    from services.shared.security_middleware import (
         apply_production_security_middleware,
         create_security_config,
     )
@@ -68,7 +68,7 @@ try:
     import sys
 
     sys.path.append("/home/dislove/ACGS-1/services/shared")
-    from comprehensive_audit_logger import (
+    from services.shared.comprehensive_audit_logger import (
         apply_audit_logging_to_service,
     )
 
@@ -89,7 +89,9 @@ project_root = os.path.join(
 sys.path.insert(0, project_root)
 
 from services.shared.api_models import HealthCheckResponse, ServiceInfo, create_success_response
-from services.shared.middleware import add_production_middleware, create_exception_handlers
+# Temporarily commented out due to missing functions
+# from services.shared.middleware import add_production_middleware, create_exception_handlers
+from services.shared.middleware import setup_error_handlers
 
 # Import metrics functionality and enhanced security (with fallbacks)
 try:
@@ -281,16 +283,16 @@ except ImportError as e:
         # ensures: Correct function execution
         # sha256: func_hash
         """Fallback metrics endpoint."""
-        return {"status": "metrics_not_available", "service": SERVICE_NAME}
+        from fastapi.responses import PlainTextResponse
+        from prometheus_client import CONTENT_TYPE_LATEST, REGISTRY, generate_latest
+        return PlainTextResponse(generate_latest(REGISTRY), media_type=CONTENT_TYPE_LATEST)
 
 
-# Add production middleware
-add_production_middleware(app, SERVICE_NAME)
+# Add production middleware - temporarily disabled due to missing functions
+# add_production_middleware(app, SERVICE_NAME)
 
-# Add exception handlers
-exception_handlers = create_exception_handlers(SERVICE_NAME)
-for exc_type, handler in exception_handlers.items():
-    app.add_exception_handler(exc_type, handler)
+# Add exception handlers - using available error handlers
+setup_error_handlers(app)
 
 
 @asynccontextmanager

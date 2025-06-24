@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...core.oauth import initialize_oauth_providers, oauth_service
+from ...core.security import get_current_active_user
 from ...core.security_audit import security_audit
 from ...db.session import get_async_db
 

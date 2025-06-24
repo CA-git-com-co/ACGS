@@ -1,0 +1,245 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "ACGS-PGP Constitutional Governance System",
+    "tags": ["acgs-pgp", "constitutional", "governance"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Constitutional Hash Validation",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs_constitutional_hash_valid",
+            "legendFormat": "Hash Valid: {{ instance }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "min": 0,
+            "max": 1,
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Constitutional Compliance Score",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "acgs_constitutional_compliance_score",
+            "legendFormat": "Compliance: {{ instance }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1,
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 0.8},
+                {"color": "green", "value": 0.95}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Service Availability",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=~\"acgs-.*\"}",
+            "legendFormat": "{{ job }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "min": 0,
+            "max": 1,
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0}
+      },
+      {
+        "id": 4,
+        "title": "OPA Policy Engine Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=\"opa-policy-engine\"}",
+            "legendFormat": "OPA Status"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "min": 0,
+            "max": 1,
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0}
+      },
+      {
+        "id": 5,
+        "title": "Response Time (95th Percentile)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(acgs_http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "95th percentile: {{ instance }}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Seconds",
+            "min": 0,
+            "max": 5
+          }
+        ],
+        "alert": {
+          "conditions": [
+            {
+              "query": {"params": ["A", "5m", "now"]},
+              "reducer": {"params": [], "type": "avg"},
+              "evaluator": {"params": [2.0], "type": "gt"}
+            }
+          ],
+          "executionErrorState": "alerting",
+          "for": "1m",
+          "frequency": "10s",
+          "handler": 1,
+          "name": "High Response Time Alert",
+          "noDataState": "no_data"
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 6,
+        "title": "AI Model Performance",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "acgs_ai_model_response_time_seconds",
+            "legendFormat": "{{ model }}: {{ instance }}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Seconds",
+            "min": 0,
+            "max": 60
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 7,
+        "title": "Constitutional Compliance Trend",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "acgs:constitutional_compliance_rate",
+            "legendFormat": "Compliance Rate: {{ instance }}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Compliance Rate",
+            "min": 0,
+            "max": 1
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16}
+      },
+      {
+        "id": 8,
+        "title": "Resource Utilization",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "acgs_cpu_usage_percent",
+            "legendFormat": "CPU: {{ instance }}"
+          },
+          {
+            "expr": "acgs_memory_usage_percent",
+            "legendFormat": "Memory: {{ instance }}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Percentage",
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+      },
+      {
+        "id": 9,
+        "title": "Emergency Response Status",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "acgs_emergency_response_triggered",
+            "legendFormat": "{{ emergency_type }}: {{ instance }}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "instance",
+          "type": "query",
+          "query": "label_values(up{job=~\"acgs-.*\"}, instance)",
+          "refresh": 1,
+          "includeAll": true,
+          "multi": true
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "name": "Constitutional Violations",
+          "datasource": "Prometheus",
+          "expr": "ALERTS{alertname=~\"Constitutional.*\"}",
+          "iconColor": "red"
+        }
+      ]
+    }
+  }
+}

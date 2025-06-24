@@ -562,13 +562,15 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                     status.HTTP_403_FORBIDDEN,
                 )
 
-            # 3. Rate limiting (if available)
-            if self.rate_limiter:
+            # 3. Rate limiting (if available) - skip for public endpoints
+            if self.rate_limiter and not self._is_public_endpoint(request.url.path):
                 rate_limit_allowed, rate_limit_info = await self.rate_limiter.check_rate_limit(
                     request
                 )
                 if not rate_limit_allowed:
-                    await self._log_security_event(request, "rate_limit_exceeded", rate_limit_info)
+                    # Serialize datetime objects before logging
+                    serializable_rate_limit_info = self._serialize_datetime_objects(rate_limit_info)
+                    await self._log_security_event(request, "rate_limit_exceeded", serializable_rate_limit_info)
                     return self._create_rate_limit_error_response(rate_limit_info, correlation_id)
             else:
                 rate_limit_info = {}
@@ -589,29 +591,31 @@ class SecurityMiddleware(BaseHTTPMiddleware):
             if not self._is_https_request(request) and not self._is_development_mode():
                 return self._create_https_redirect_response(request, correlation_id)
 
-            # 7. SQL injection detection
-            sql_injection_check = self._detect_sql_injection(request)
-            if sql_injection_check:
-                await self._log_security_event(
-                    request, "sql_injection_attempt", {"patterns": sql_injection_check}
-                )
-                return self._create_security_error_response(
-                    "Request blocked due to security policy",
-                    correlation_id,
-                    status.HTTP_403_FORBIDDEN,
-                )
+            # 7. SQL injection detection (skip for health endpoints)
+            if not self._is_public_endpoint(request.url.path):
+                sql_injection_check = self._detect_sql_injection(request)
+                if sql_injection_check:
+                    await self._log_security_event(
+                        request, "sql_injection_attempt", {"patterns": sql_injection_check}
+                    )
+                    return self._create_security_error_response(
+                        "Request blocked due to security policy",
+                        correlation_id,
+                        status.HTTP_403_FORBIDDEN,
+                    )
 
-            # 8. Path traversal detection
-            path_traversal_check = self._detect_path_traversal(request)
-            if path_traversal_check:
-                await self._log_security_event(
-                    request, "path_traversal_attempt", {"path": request.url.path}
-                )
-                return self._create_security_error_response(
-                    "Request blocked due to security policy",
-                    correlation_id,
-                    status.HTTP_403_FORBIDDEN,
-                )
+            # 8. Path traversal detection (skip for health endpoints)
+            if not self._is_public_endpoint(request.url.path):
+                path_traversal_check = self._detect_path_traversal(request)
+                if path_traversal_check:
+                    await self._log_security_event(
+                        request, "path_traversal_attempt", {"path": request.url.path}
+                    )
+                    return self._create_security_error_response(
+                        "Request blocked due to security policy",
+                        correlation_id,
+                        status.HTTP_403_FORBIDDEN,
+                    )
 
             # 9. Process request
             response = await call_next(request)
@@ -766,6 +770,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 correlation_id=correlation_id,
             )
             content = error_response.dict()
+
+            # Ensure all datetime objects in content are serializable
+            content = self._serialize_datetime_objects(content)
         else:
             # Fallback response format
             content = {
@@ -781,18 +788,37 @@ class SecurityMiddleware(BaseHTTPMiddleware):
             headers={"X-Correlation-ID": correlation_id},
         )
 
+    def _serialize_datetime_objects(self, obj):
+        """Recursively convert datetime objects to ISO format strings."""
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        elif isinstance(obj, dict):
+            return {key: self._serialize_datetime_objects(value) for key, value in obj.items()}
+        elif isinstance(obj, list):
+            return [self._serialize_datetime_objects(item) for item in obj]
+        else:
+            return obj
+
     def _create_rate_limit_error_response(
         self, rate_limit_info: dict[str, Any], correlation_id: str
     ) -> JSONResponse:
         """Create rate limit error response."""
         retry_after = rate_limit_info.get("reset_time", time.time() + 60) - time.time()
 
+        # Ensure all datetime objects in rate_limit_info are serializable
+        serializable_rate_limit_info = {}
+        for key, value in rate_limit_info.items():
+            if isinstance(value, datetime):
+                serializable_rate_limit_info[key] = value.isoformat()
+            else:
+                serializable_rate_limit_info[key] = value
+
         if SHARED_COMPONENTS_AVAILABLE:
             error_response = create_error_response(
                 error_code=ErrorCode.RATE_LIMIT_EXCEEDED,
                 message="Rate limit exceeded",
                 service_name=self.service_name,
-                details=rate_limit_info,
+                details=serializable_rate_limit_info,
                 correlation_id=correlation_id,
             )
             content = error_response.dict()
@@ -802,7 +828,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 "error": "Rate limit exceeded",
                 "service": self.service_name,
                 "correlation_id": correlation_id,
-                "details": rate_limit_info,
+                "details": serializable_rate_limit_info,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
@@ -827,6 +853,10 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         # ensures: Correct function execution
         # sha256: func_hash
         """Log security events for audit and monitoring."""
+
+        # Ensure all datetime objects in details are serializable
+        serializable_details = self._serialize_datetime_objects(details)
+
         event = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "service": self.service_name,
@@ -836,11 +866,12 @@ class SecurityMiddleware(BaseHTTPMiddleware):
             "method": request.method,
             "path": request.url.path,
             "correlation_id": getattr(request.state, "correlation_id", "unknown"),
-            "details": details,
+            "details": serializable_details,
         }
 
-        # Log to structured logger
-        logger.warning(f"Security event: {event_type}", extra=event)
+        # Log to structured logger - ensure entire event is serializable
+        serializable_event = self._serialize_datetime_objects(event)
+        logger.warning(f"Security event: {event_type}", extra=serializable_event)
 
     async def _validate_authentication(self, request: Request) -> Response | None:
         """Validate authentication for protected endpoints."""

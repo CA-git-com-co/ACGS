@@ -24,7 +24,7 @@ except ImportError:
 
 # Import production security middleware
 try:
-    from security_middleware import (
+    from services.shared.security_middleware import (
         apply_production_security_middleware,
         create_security_config,
     )
@@ -38,7 +38,7 @@ except ImportError as e:
 
 # Import comprehensive audit logging
 try:
-    from comprehensive_audit_logger import (
+    from services.shared.comprehensive_audit_logger import (
         apply_audit_logging_to_service,
     )
 
@@ -1429,7 +1429,7 @@ metrics = get_metrics("pgc_service")
 
 # Add enhanced Prometheus metrics middleware
 try:
-    from prometheus_middleware import (
+    from services.shared.prometheus_middleware import (
         add_prometheus_middleware,
         create_enhanced_metrics_endpoint,
     )

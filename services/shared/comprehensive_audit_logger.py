@@ -177,7 +177,7 @@ class ComprehensiveAuditLogger:
         self,
         service_name: str,
         redis_url: str = "redis://localhost:6379",
-        log_directory: str = "/home/dislove/ACGS-1/logs/audit",
+        log_directory: str = "/home/ubuntu/ACGS/logs/audit",
         encryption_key: Optional[str] = None,
         integrity_key: Optional[str] = None,
     ):
@@ -385,7 +385,10 @@ class ComprehensiveAuditLogger:
         """Store audit log in Redis for real-time access."""
 
         key = f"audit:{self.service_name}:{audit_entry.id}"
-        value = json.dumps(audit_entry.dict(), default=str)
+        # Ensure datetime objects are properly serialized
+        audit_dict = audit_entry.dict()
+        audit_dict['timestamp'] = audit_dict['timestamp'].isoformat() if isinstance(audit_dict['timestamp'], datetime) else audit_dict['timestamp']
+        value = json.dumps(audit_dict, default=str)
 
         # Encrypt if encryption is enabled
         if self.cipher:
@@ -406,7 +409,10 @@ class ComprehensiveAuditLogger:
         date_str = audit_entry.timestamp.strftime("%Y-%m-%d")
         log_file = f"{self.log_directory}/{self.service_name}-audit-{date_str}.jsonl"
 
-        log_line = json.dumps(audit_entry.dict(), default=str) + "\n"
+        # Ensure datetime objects are properly serialized
+        audit_dict = audit_entry.dict()
+        audit_dict['timestamp'] = audit_dict['timestamp'].isoformat() if isinstance(audit_dict['timestamp'], datetime) else audit_dict['timestamp']
+        log_line = json.dumps(audit_dict, default=str) + "\n"
 
         # Encrypt if encryption is enabled
         if self.cipher:

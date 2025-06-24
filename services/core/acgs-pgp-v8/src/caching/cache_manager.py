@@ -13,6 +13,8 @@ from typing import Any
 
 import redis.asyncio as redis
 
+from .enhanced_cache import EnhancedCacheManager, CacheStrategy
+
 logger = logging.getLogger(__name__)
 
 
@@ -39,6 +41,9 @@ class CacheManager:
 
         # Redis connection pool
         self.redis_client: redis.Redis | None = None
+
+        # Enhanced cache manager
+        self.enhanced_cache: EnhancedCacheManager | None = None
 
         # Performance metrics
         self._cache_hits = 0

@@ -226,9 +226,9 @@ start_service() {
     # Change to service directory
     cd "$working_dir"
     
-    # Start the service in background
+    # Start the service in background with virtual environment and correct PYTHONPATH
     print_status "Executing: uvicorn $main_module --host 0.0.0.0 --port $port"
-    nohup python3 -m uvicorn "$main_module" --host 0.0.0.0 --port "$port" > "$log_file" 2>&1 &
+    nohup env PYTHONPATH="$PROJECT_ROOT" "$PROJECT_ROOT/.venv/bin/python" -m uvicorn "$main_module" --host 0.0.0.0 --port "$port" > "$log_file" 2>&1 &
     local service_pid=$!
     
     # Save PID

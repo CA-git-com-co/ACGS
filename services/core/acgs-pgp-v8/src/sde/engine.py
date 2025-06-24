@@ -23,6 +23,15 @@ except ImportError:
     IsolationForest = None
     TfidfVectorizer = None
 
+# Import ML models
+from .ml_models import (
+    ErrorClassificationModel,
+    AnomalyDetectionModel,
+    RecoveryRecommendationModel,
+    MLModelTrainer,
+    TrainingDataGenerator
+)
+
 from ..generation_engine.models import LogicalSemanticUnit
 from ..see.models import StabilizerResult
 from .models import (
@@ -78,8 +87,23 @@ class SyndromeDiagnosticEngine:
         """Initialize ML models and diagnostic capabilities."""
         try:
             if self.enable_ml_models and SKLEARN_AVAILABLE:
-                # Initialize anomaly detection model
-                self.anomaly_detector = IsolationForest(contamination=0.1, random_state=42)
+                # Initialize trained ML models
+                self.error_classifier = None
+                self.anomaly_detector = None
+                self.recovery_recommender = None
+
+                # Try to load pre-trained models
+                self._load_trained_models()
+
+                # If no pre-trained models, initialize basic models
+                if not self.error_classifier:
+                    self.error_classifier = ErrorClassificationModel('random_forest')
+
+                if not self.anomaly_detector:
+                    self.anomaly_detector = AnomalyDetectionModel(contamination=0.1)
+
+                if not self.recovery_recommender:
+                    self.recovery_recommender = RecoveryRecommendationModel()
 
                 # Initialize text vectorizer for error message analysis
                 self.text_vectorizer = TfidfVectorizer(
@@ -98,6 +122,40 @@ class SyndromeDiagnosticEngine:
         except Exception as e:
             logger.error(f"Failed to initialize Syndrome Diagnostic Engine: {e}")
             raise
+
+    def _load_trained_models(self):
+        """Load pre-trained ML models if available."""
+        try:
+            from pathlib import Path
+            import joblib
+
+            models_dir = Path("models")
+            if not models_dir.exists():
+                logger.info("No models directory found, will use untrained models")
+                return
+
+            # Load error classification model
+            error_model_path = models_dir / "error_classification_random_forest.joblib"
+            if error_model_path.exists():
+                self.error_classifier = ErrorClassificationModel('random_forest')
+                self.error_classifier.load_model(error_model_path)
+                logger.info("Loaded pre-trained error classification model")
+
+            # Load anomaly detection model
+            anomaly_model_path = models_dir / "anomaly_detection.joblib"
+            if anomaly_model_path.exists():
+                self.anomaly_detector = joblib.load(anomaly_model_path)
+                logger.info("Loaded pre-trained anomaly detection model")
+
+            # Load recovery recommendation model
+            recovery_model_path = models_dir / "recovery_recommendation.joblib"
+            if recovery_model_path.exists():
+                self.recovery_recommender = joblib.load(recovery_model_path)
+                logger.info("Loaded pre-trained recovery recommendation model")
+
+        except Exception as e:
+            logger.warning(f"Failed to load pre-trained models: {e}")
+            # Continue with untrained models
 
     async def diagnose_system(
         self,

@@ -9,7 +9,7 @@ try:
     import sys
 
     sys.path.append("/home/dislove/ACGS-1/services/shared")
-    from security_middleware import (
+    from services.shared.security_middleware import (
         apply_production_security_middleware,
         create_security_config,
     )
@@ -26,7 +26,7 @@ try:
     import sys
 
     sys.path.append("/home/dislove/ACGS-1/services/shared")
-    from comprehensive_audit_logger import (
+    from services.shared.comprehensive_audit_logger import (
         apply_audit_logging_to_service,
     )
 
@@ -177,7 +177,7 @@ try:
     import sys
 
     sys.path.append("/home/dislove/ACGS-1/services/shared")
-    from prometheus_middleware import (
+    from services.shared.prometheus_middleware import (
         add_prometheus_middleware,
         create_enhanced_metrics_endpoint,
     )
@@ -198,14 +198,17 @@ try:
 except ImportError as e:
     logger.warning(f"⚠️ Prometheus metrics not available: {e}")
 
-    # Fallback metrics endpoint
+    # Fallback metrics endpoint - return proper Prometheus format
     @app.get("/metrics")
     async def fallback_metrics():
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        """Fallback metrics endpoint."""
-        return {"status": "metrics_not_available", "service": "fv_service"}
+        """Fallback metrics endpoint with Prometheus format."""
+        from fastapi.responses import PlainTextResponse
+        from prometheus_client import CONTENT_TYPE_LATEST, REGISTRY, generate_latest
+
+        return PlainTextResponse(generate_latest(REGISTRY), media_type=CONTENT_TYPE_LATEST)
 
 
 # Note: API routers temporarily disabled due to import issues

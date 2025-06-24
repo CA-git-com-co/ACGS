@@ -14,6 +14,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import QueuePool
 
+from .optimization import DatabaseOptimizer
+
 logger = logging.getLogger(__name__)
 
 
@@ -48,26 +50,36 @@ class DatabaseManager:
         self._sync_session_factory = None
         self._async_session_factory = None
 
+        # Database optimizer
+        self.optimizer = DatabaseOptimizer(database_url, slow_query_threshold=1.0)
+
         # Constitutional compliance
         self.constitutional_hash = "cdd01ef066bc6cf2"
 
-        logger.info("Database manager initialized")
+        logger.info("Database manager initialized with performance optimization")
 
     def initialize_sync_engine(self):
         """Initialize synchronous database engine."""
         if self._sync_engine is None:
+            # Use optimized settings from optimizer
+            optimized_settings = self.optimizer.optimized_settings
+
             self._sync_engine = create_engine(
                 self.database_url,
                 poolclass=QueuePool,
-                pool_size=self.pool_size,
-                max_overflow=self.max_overflow,
-                pool_timeout=self.pool_timeout,
-                pool_recycle=self.pool_recycle,
+                pool_size=optimized_settings['pool_size'],
+                max_overflow=optimized_settings['max_overflow'],
+                pool_timeout=optimized_settings['pool_timeout'],
+                pool_recycle=optimized_settings['pool_recycle'],
                 echo=self.echo,
                 # Connection pool settings
-                pool_pre_ping=True,  # Validate connections before use
-                pool_reset_on_return="commit",  # Reset connections on return
+                pool_pre_ping=optimized_settings['pool_pre_ping'],
+                pool_reset_on_return=optimized_settings['pool_reset_on_return'],
+                connect_args=optimized_settings['connect_args']
             )
+
+            # Setup performance monitoring
+            self.optimizer.setup_connection_monitoring(self._sync_engine)
 
             # Add connection event listeners
             @event.listens_for(self._sync_engine, "connect")
@@ -89,23 +101,30 @@ class DatabaseManager:
 
             logger.info("Synchronous database engine initialized")
 
-    def initialize_async_engine(self):
+    async def initialize_async_engine(self):
         """Initialize asynchronous database engine."""
         if self._async_engine is None:
             # Convert sync URL to async URL
             async_url = self.database_url.replace("postgresql://", "postgresql+asyncpg://")
 
+            # Use optimized settings from optimizer
+            optimized_settings = self.optimizer.optimized_settings
+
             self._async_engine = create_async_engine(
                 async_url,
-                pool_size=self.pool_size,
-                max_overflow=self.max_overflow,
-                pool_timeout=self.pool_timeout,
-                pool_recycle=self.pool_recycle,
+                pool_size=optimized_settings['pool_size'],
+                max_overflow=optimized_settings['max_overflow'],
+                pool_timeout=optimized_settings['pool_timeout'],
+                pool_recycle=optimized_settings['pool_recycle'],
                 echo=self.echo,
                 # Connection pool settings
-                pool_pre_ping=True,
-                pool_reset_on_return="commit",
+                pool_pre_ping=optimized_settings['pool_pre_ping'],
+                pool_reset_on_return=optimized_settings['pool_reset_on_return'],
+                connect_args=optimized_settings['connect_args']
             )
+
+            # Setup async query monitoring
+            await self.optimizer.setup_query_monitoring(self._async_engine)
 
             self._async_session_factory = async_sessionmaker(
                 bind=self._async_engine,
@@ -123,16 +142,16 @@ class DatabaseManager:
             self.initialize_sync_engine()
         return self._sync_session_factory()
 
-    def get_async_session(self) -> AsyncSession:
+    async def get_async_session(self) -> AsyncSession:
         """Get asynchronous database session."""
         if self._async_session_factory is None:
-            self.initialize_async_engine()
+            await self.initialize_async_engine()
         return self._async_session_factory()
 
     @asynccontextmanager
     async def async_session_scope(self) -> AsyncGenerator[AsyncSession, None]:
         """Async context manager for database sessions with automatic cleanup."""
-        session = self.get_async_session()
+        session = await self.get_async_session()
         try:
             yield session
             await session.commit()

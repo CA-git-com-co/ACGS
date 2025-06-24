@@ -5,3 +5,4 @@ pnpm run lint && pnpm run format:check
 pnpm run lint && pnpm run format:check
 pnpm run lint && pnpm run format:check
 pnpm run lint && pnpm run format:check
+pnpm run lint && pnpm run format:check

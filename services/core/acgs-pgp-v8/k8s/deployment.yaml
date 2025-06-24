@@ -30,7 +30,7 @@ spec:
         prometheus.io/port: '8010'
         prometheus.io/path: '/metrics'
     spec:
-      serviceAccountName: acgs-pgp-v8
+      serviceAccountName: acgs-pgp-v8-vault-auth
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -44,21 +44,78 @@ spec:
               name: http
               protocol: TCP
           env:
+            # Database Configuration - Secure External Secret
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: acgs-pgp-v8-secrets
+                  name: acgs-pgp-v8-database-credentials
                   key: database-url
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-pgp-v8-database-credentials
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-pgp-v8-database-credentials
+                  key: password
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-pgp-v8-database-credentials
+                  key: host
+
+            # Redis Configuration - Secure External Secret
             - name: REDIS_URL
               valueFrom:
                 secretKeyRef:
-                  name: acgs-pgp-v8-secrets
+                  name: acgs-pgp-v8-redis-credentials
                   key: redis-url
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-pgp-v8-redis-credentials
+                  key: password
+
+            # Authentication Configuration - Secure External Secret
             - name: JWT_SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: acgs-pgp-v8-secrets
+                  name: acgs-pgp-v8-auth-credentials
                   key: jwt-secret-key
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-pgp-v8-auth-credentials
+                  key: api-key
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-pgp-v8-auth-credentials
+                  key: encryption-key
+
+            # AI/ML Model API Keys - Secure External Secret
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-pgp-v8-ai-credentials
+                  key: openai-api-key
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-pgp-v8-ai-credentials
+                  key: anthropic-api-key
+            - name: GROQ_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-pgp-v8-ai-credentials
+                  key: groq-api-key
+            - name: GOOGLE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-pgp-v8-ai-credentials
+                  key: google-api-key
             - name: CONSTITUTIONAL_HASH
               value: 'cdd01ef066bc6cf2'
             - name: GS_SERVICE_URL
@@ -72,7 +129,7 @@ spec:
           resources:
             requests:
               memory: '512Mi'
-              cpu: '250m'
+              cpu: '200m'
             limits:
               memory: '2Gi'
               cpu: '1000m'
@@ -209,19 +266,8 @@ data:
       rate_limiting_enabled: true
       rate_limit_requests_per_minute: 100
 
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: acgs-pgp-v8-secrets
-  namespace: acgs-system
-  labels:
-    app: acgs-pgp-v8
-type: Opaque
-stringData:
-  database-url: 'postgresql://acgs_user:acgs_password@postgresql:5432/acgs_db'
-  redis-url: 'redis://redis:6379/0'
-  jwt-secret-key: 'acgs-pgp-v8-secret-key-2024'
+# NOTE: Secrets are now managed externally via External Secrets Operator
+# See secrets-management.yaml for secure secret configuration
 
 ---
 apiVersion: networking.k8s.io/v1

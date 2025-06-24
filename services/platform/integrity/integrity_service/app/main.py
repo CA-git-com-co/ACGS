@@ -20,7 +20,7 @@ from contextlib import asynccontextmanager
 
 # Import production security middleware
 try:
-    from security_middleware import (
+    from services.shared.security_middleware import (
         apply_production_security_middleware,
         create_security_config,
     )
@@ -47,7 +47,7 @@ try:
     shared_path = os.path.join(current_dir, "..", "..", "..", "..", "services", "shared")
     sys.path.insert(0, os.path.abspath(shared_path))
 
-    from comprehensive_audit_logger import (
+    from services.shared.comprehensive_audit_logger import (
         apply_audit_logging_to_service,
     )
 
@@ -256,7 +256,7 @@ app.add_middleware(
 
 # Add enhanced Prometheus metrics middleware
 try:
-    from prometheus_middleware import (
+    from services.shared.prometheus_middleware import (
         add_prometheus_middleware,
         create_enhanced_metrics_endpoint,
     )
@@ -281,7 +281,9 @@ async def metrics():
             logger.warning(f"Metrics endpoint error: {e}")
             return {"status": "metrics_error", "service": SERVICE_NAME}
     else:
-        return {"status": "metrics_not_available", "service": SERVICE_NAME}
+        from fastapi.responses import PlainTextResponse
+        from prometheus_client import CONTENT_TYPE_LATEST, REGISTRY, generate_latest
+        return PlainTextResponse(generate_latest(REGISTRY), media_type=CONTENT_TYPE_LATEST)
 
 
 # Add production middleware

@@ -30,7 +30,7 @@ try:
     import sys
 
     sys.path.append("/home/dislove/ACGS-1/services/shared")
-    from security_middleware import (
+    from services.shared.security_middleware import (
         apply_production_security_middleware,
         create_security_config,
     )
@@ -47,7 +47,7 @@ try:
     import sys
 
     sys.path.append("/home/dislove/ACGS-1/services/shared")
-    from comprehensive_audit_logger import (
+    from services.shared.comprehensive_audit_logger import (
         AuditEventType,
         AuditSeverity,
         ComplianceFramework,
@@ -314,7 +314,7 @@ try:
     import sys
 
     sys.path.append("/home/dislove/ACGS-1/services/shared")
-    from prometheus_middleware import (
+    from services.shared.prometheus_middleware import (
         add_prometheus_middleware,
         create_enhanced_metrics_endpoint,
     )

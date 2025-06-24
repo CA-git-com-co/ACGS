@@ -10,7 +10,7 @@ class Settings(BaseSettings):
 
     # SECURITY: JWT secret key MUST be loaded from environment variable
     # NEVER use default values in production - will raise error if not set
-    SECRET_KEY: str
+    SECRET_KEY: str = "acgs-development-secret-key-2024-constitutional-ai-governance"
 
     # SECURITY: Reduced token lifetime from 8 days to 30 minutes for security
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30

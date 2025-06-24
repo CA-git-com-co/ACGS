@@ -131,7 +131,9 @@ class MonitoringIntegrator:
             if self.metrics_enabled:
                 return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
             else:
-                return {"metrics": self.fallback_metrics}
+                # Return Prometheus format even for fallback metrics
+                from prometheus_client import CONTENT_TYPE_LATEST, REGISTRY, generate_latest
+                return Response(content=generate_latest(REGISTRY), media_type=CONTENT_TYPE_LATEST)
 
         # Add enhanced health endpoint
         @app.get("/health")

@@ -862,7 +862,7 @@ class ContentValidationRequest(BaseModel):
     )
     severity_threshold: str | None = Field(
         default="medium",
-        regex="^(low|medium|high|critical)$",
+        pattern="^(low|medium|high|critical)$",
         description="Minimum severity threshold for reporting violations"
     )
     
@@ -923,7 +923,7 @@ class ContentValidationResponse(BaseModel):
     )
     severity: str = Field(
         ...,
-        regex="^(low|medium|high|critical|unknown)$", 
+        pattern="^(low|medium|high|critical|unknown)$",
         description="Overall severity of any violations found"
     )
     recommendations: list[str] = Field(
@@ -972,7 +972,7 @@ class ConstitutionalComplianceRequest(BaseModel):
     )
     validation_mode: str = Field(
         default="comprehensive",
-        regex="^(basic|comprehensive|detailed)$",
+        pattern="^(basic|comprehensive|detailed)$",
         description="Level of validation to perform"
     )
     include_reasoning: bool = Field(

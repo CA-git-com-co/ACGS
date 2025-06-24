@@ -42,7 +42,7 @@ class LSU:
     content: str
     representation_type: RepresentationType
     semantic_hash: str = field(init=False)
-    quantum_state: dict[str, float] = field(default_factory=dict)
+    quantum_state: dict[str, Any] = field(default_factory=dict)
     error_correction_bits: list[int] = field(default_factory=list)
     constitutional_compliance_score: float = 0.0
     created_at: datetime = field(default_factory=datetime.now)

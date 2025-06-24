@@ -22,7 +22,7 @@ from functools import wraps
 from typing import Any, Callable, Dict, List, Optional, Set
 
 from fastapi import Request, Response
-from fastapi.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import RequestResponseEndpoint
 from starlette.types import ASGIApp
