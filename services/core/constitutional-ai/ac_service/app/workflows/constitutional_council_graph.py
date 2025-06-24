@@ -16,7 +16,7 @@ authentication, and Constitutional Council configuration.
 import asyncio
 import logging
 import uuid
-from datetime import timezone, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Literal
 
 try:
@@ -34,13 +34,6 @@ except ImportError:
     Send = None
     MemorySaver = None
 
-from .services.stakeholder_engagement import (
-    NotificationChannel,
-    StakeholderEngagementInput,
-    StakeholderNotificationService,
-    StakeholderRole,
-)
-
 # Import stakeholder engagement system
 from pydantic import BaseModel, Field, ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -57,6 +50,12 @@ from services.shared.langgraph_states import (
 
 # Import AC service CRUD operations
 from .. import crud, schemas
+from .services.stakeholder_engagement import (
+    NotificationChannel,
+    StakeholderEngagementInput,
+    StakeholderNotificationService,
+    StakeholderRole,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -585,7 +584,8 @@ class ConstitutionalCouncilGraph:
             voting_deadline = state.get("phase_deadlines", {}).get("voting_deadline")
             if not voting_deadline:
                 voting_deadline = (
-                    datetime.now(timezone.utc) + timedelta(hours=self.council_config.voting_period_hours)
+                    datetime.now(timezone.utc)
+                    + timedelta(hours=self.council_config.voting_period_hours)
                 ).isoformat()
 
             # Check if voting period has ended

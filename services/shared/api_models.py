@@ -7,11 +7,11 @@ and production-grade API implementation.
 """
 
 import uuid
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, Field, field_validator, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class APIStatus(str, Enum):
@@ -47,9 +47,7 @@ class APIError(BaseModel):
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     correlation_id: str | None = None
 
-    model_config = ConfigDict(
-        json_encoders={datetime: lambda v: v.isoformat()}
-    )
+    model_config = ConfigDict(json_encoders={datetime: lambda v: v.isoformat()})
 
 
 class APIMetadata(BaseModel):
@@ -68,9 +66,7 @@ class APIMetadata(BaseModel):
     supported_versions: list[str] | None = None
     deprecation: dict[str, Any] | None = None
 
-    model_config = ConfigDict(
-        json_encoders={datetime: lambda v: v.isoformat()}
-    )
+    model_config = ConfigDict(json_encoders={datetime: lambda v: v.isoformat()})
 
 
 class APIResponse(BaseModel):
@@ -93,7 +89,7 @@ class APIResponse(BaseModel):
         # ensures: Correct function execution
         # sha256: func_hash
         """Ensure error is provided when status is error."""
-        if hasattr(info, 'data') and info.data.get("status") == APIStatus.ERROR and v is None:
+        if hasattr(info, "data") and info.data.get("status") == APIStatus.ERROR and v is None:
             raise ValueError("Error details required when status is error")
         return v
 
@@ -104,7 +100,7 @@ class APIResponse(BaseModel):
         # ensures: Correct function execution
         # sha256: func_hash
         """Ensure data is provided when status is success."""
-        if hasattr(info, 'data') and info.data.get("status") == APIStatus.SUCCESS and v is None:
+        if hasattr(info, "data") and info.data.get("status") == APIStatus.SUCCESS and v is None:
             # Allow empty data for success responses
             return {}
         return v
@@ -166,7 +162,7 @@ class PaginatedResponse(BaseModel):
         # ensures: Correct function execution
         # sha256: func_hash
         """Calculate total pages based on total items and page size."""
-        if hasattr(info, 'data'):
+        if hasattr(info, "data"):
             total = info.data.get("total", 0)
             size = info.data.get("size", 20)
             return max(1, (total + size - 1) // size)
@@ -179,7 +175,7 @@ class PaginatedResponse(BaseModel):
         # ensures: Correct function execution
         # sha256: func_hash
         """Calculate if there's a next page."""
-        if hasattr(info, 'data'):
+        if hasattr(info, "data"):
             page = info.data.get("page", 1)
             pages = info.data.get("pages", 1)
             return page < pages
@@ -192,7 +188,7 @@ class PaginatedResponse(BaseModel):
         # ensures: Correct function execution
         # sha256: func_hash
         """Calculate if there's a previous page."""
-        if hasattr(info, 'data'):
+        if hasattr(info, "data"):
             page = info.data.get("page", 1)
             return page > 1
         return v
@@ -238,7 +234,7 @@ class TimestampRange(BaseModel):
         # ensures: Correct function execution
         # sha256: func_hash
         """Ensure end timestamp is after start timestamp."""
-        if hasattr(info, 'data'):
+        if hasattr(info, "data"):
             start = info.data.get("start")
             if start and v and v <= start:
                 raise ValueError("End timestamp must be after start timestamp")

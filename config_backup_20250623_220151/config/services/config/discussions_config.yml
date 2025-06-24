@@ -1,0 +1,7 @@
+categories:
+  - description: Discuss technical roadmap items and priorities
+    name: Technical Roadmap
+  - description: Propose and discuss new features
+    name: Feature Proposals
+  - description: Discuss architectural decisions and trade-offs
+    name: Architecture Decisions

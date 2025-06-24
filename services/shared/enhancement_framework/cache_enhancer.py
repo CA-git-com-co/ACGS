@@ -243,9 +243,7 @@ class CacheEnhancer:
                 del self.memory_cache[key]
                 deleted_count += 1
 
-            logger.info(
-                f"Invalidated {deleted_count} cache entries in namespace {namespace}"
-            )
+            logger.info(f"Invalidated {deleted_count} cache entries in namespace {namespace}")
             return deleted_count
 
         except Exception as e:
@@ -255,9 +253,7 @@ class CacheEnhancer:
     def get_cache_stats(self) -> Dict[str, Any]:
         """Get cache performance statistics."""
         total_requests = self.cache_stats["hits"] + self.cache_stats["misses"]
-        hit_rate = (
-            self.cache_stats["hits"] / total_requests if total_requests > 0 else 0.0
-        )
+        hit_rate = self.cache_stats["hits"] / total_requests if total_requests > 0 else 0.0
 
         return {
             "service": self.service_name,

@@ -335,9 +335,7 @@ class WorkflowMonitor:
         """Start monitoring a workflow"""
 
         if workflow_id not in self.monitoring_tasks:
-            task = asyncio.create_task(
-                self.monitor_workflow(workflow_id, workflow_engine)
-            )
+            task = asyncio.create_task(self.monitor_workflow(workflow_id, workflow_engine))
             self.monitoring_tasks[workflow_id] = task
 
     def stop_workflow_monitoring(self, workflow_id: str):
@@ -350,9 +348,7 @@ class WorkflowMonitor:
             self.monitoring_tasks[workflow_id].cancel()
             del self.monitoring_tasks[workflow_id]
 
-    def get_metrics(
-        self, metric_name: str, time_range: timedelta = None
-    ) -> list[dict[str, Any]]:
+    def get_metrics(self, metric_name: str, time_range: timedelta = None) -> list[dict[str, Any]]:
         """Get metrics for a specific name and time range"""
 
         if metric_name not in self.metrics:
@@ -379,9 +375,7 @@ class WorkflowMonitor:
         if resolved is not None:
             alerts = [a for a in alerts if a.resolved == resolved]
 
-        return [
-            asdict(a) for a in sorted(alerts, key=lambda x: x.timestamp, reverse=True)
-        ]
+        return [asdict(a) for a in sorted(alerts, key=lambda x: x.timestamp, reverse=True)]
 
     def resolve_alert(self, alert_id: str) -> bool:
         """Mark an alert as resolved"""
@@ -419,17 +413,11 @@ class WorkflowMonitor:
             "timestamp": now.isoformat(),
             "alerts": {
                 "active": len(active_alerts),
-                "critical": len(
-                    [a for a in active_alerts if a.severity == AlertSeverity.CRITICAL]
-                ),
-                "high": len(
-                    [a for a in active_alerts if a.severity == AlertSeverity.HIGH]
-                ),
+                "critical": len([a for a in active_alerts if a.severity == AlertSeverity.CRITICAL]),
+                "high": len([a for a in active_alerts if a.severity == AlertSeverity.HIGH]),
                 "recent": [
                     asdict(a)
-                    for a in sorted(
-                        active_alerts, key=lambda x: x.timestamp, reverse=True
-                    )[:10]
+                    for a in sorted(active_alerts, key=lambda x: x.timestamp, reverse=True)[:10]
                 ],
             },
             "metrics": recent_metrics,

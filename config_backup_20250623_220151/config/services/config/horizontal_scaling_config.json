@@ -1,0 +1,59 @@
+{
+  "load_balancer": {
+    "type": "HAProxy",
+    "algorithm": "round_robin",
+    "health_checks": {
+      "interval": "5s",
+      "timeout": "3s",
+      "retries": 3
+    },
+    "sticky_sessions": false
+  },
+  "service_scaling": {
+    "auth_service": {
+      "min_instances": 2,
+      "max_instances": 8,
+      "target_cpu_percent": 70,
+      "target_memory_percent": 80
+    },
+    "ac_service": {
+      "min_instances": 3,
+      "max_instances": 12,
+      "target_cpu_percent": 75,
+      "target_memory_percent": 85
+    },
+    "gs_service": {
+      "min_instances": 2,
+      "max_instances": 6,
+      "target_cpu_percent": 80,
+      "target_memory_percent": 90
+    },
+    "pgc_service": {
+      "min_instances": 4,
+      "max_instances": 16,
+      "target_cpu_percent": 65,
+      "target_memory_percent": 75
+    }
+  },
+  "auto_scaling_policies": {
+    "scale_up_threshold": {
+      "cpu_percent": 75,
+      "memory_percent": 85,
+      "response_time_ms": 400,
+      "concurrent_requests": 800
+    },
+    "scale_down_threshold": {
+      "cpu_percent": 30,
+      "memory_percent": 40,
+      "response_time_ms": 100,
+      "concurrent_requests": 200
+    },
+    "cooldown_period_seconds": 300
+  },
+  "resource_limits": {
+    "cpu_cores_per_instance": 2,
+    "memory_gb_per_instance": 4,
+    "max_total_instances": 50,
+    "reserved_capacity_percent": 20
+  }
+}

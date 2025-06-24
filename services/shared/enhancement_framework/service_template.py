@@ -45,9 +45,7 @@ class ACGSServiceTemplate:
         self.service_name = service_name
         self.port = port
         self.version = version
-        self.description = (
-            description or f"ACGS-1 Production {service_name.title()} Service"
-        )
+        self.description = description or f"ACGS-1 Production {service_name.title()} Service"
 
         # Enhancement components
         self.performance_enhancer = PerformanceEnhancer(service_name)
@@ -205,9 +203,7 @@ class ACGSServiceTemplate:
 
             # Add performance metrics if available
             if self.enable_performance_optimization:
-                status_data["performance"] = (
-                    self.performance_enhancer.get_performance_metrics()
-                )
+                status_data["performance"] = self.performance_enhancer.get_performance_metrics()
 
             # Add cache statistics if available
             if self.enable_caching:

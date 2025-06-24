@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, Optional, TextIO
 
-from .ocr_client import OCRClient, OCRServiceException, OCRRequestException
+from .ocr_client import OCRClient, OCRRequestException, OCRServiceException
 
 # Configure logging
 logger = logging.getLogger("acgs.ocr_service.cli")

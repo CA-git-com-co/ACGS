@@ -65,9 +65,7 @@ async def update_aggregation_config(
         # Update configuration
         secure_aggregator.config.method = config_request.method
         secure_aggregator.config.privacy_budget = config_request.privacy_budget
-        secure_aggregator.config.byzantine_tolerance = (
-            config_request.byzantine_tolerance
-        )
+        secure_aggregator.config.byzantine_tolerance = config_request.byzantine_tolerance
         secure_aggregator.config.min_participants = config_request.min_participants
         secure_aggregator.config.max_participants = config_request.max_participants
 
@@ -132,9 +130,7 @@ async def create_secure_shares(
             )
 
         # Create secure shares
-        shares = await secure_aggregator.create_secure_shares(
-            request.data, request.num_shares
-        )
+        shares = await secure_aggregator.create_secure_shares(request.data, request.num_shares)
 
         # Format response
         share_data = []
@@ -159,9 +155,7 @@ async def create_secure_shares(
             f"Created {len(shares)} secure shares for {len(request.participants)} participants"
         )
 
-        return SecureShareResponse(
-            shares=share_data, verification_hashes=verification_hashes
-        )
+        return SecureShareResponse(shares=share_data, verification_hashes=verification_hashes)
 
     except HTTPException:
         raise
@@ -180,9 +174,7 @@ async def verify_aggregation_integrity(
 ):
     """Verify the integrity of aggregated results."""
     try:
-        is_valid = await secure_aggregator.verify_aggregation_integrity(
-            aggregated_result
-        )
+        is_valid = await secure_aggregator.verify_aggregation_integrity(aggregated_result)
 
         return {
             "is_valid": is_valid,
@@ -254,8 +246,7 @@ async def get_aggregation_status(current_user: dict = Depends(get_current_active
             "active_aggregations": len(secure_aggregator.active_aggregations),
             "total_aggregations": metrics["total_aggregations"],
             "success_rate": (
-                metrics["successful_aggregations"]
-                / max(1, metrics["total_aggregations"])
+                metrics["successful_aggregations"] / max(1, metrics["total_aggregations"])
             ),
             "average_aggregation_time": metrics["average_aggregation_time"],
             "byzantine_attacks_detected": metrics["byzantine_attacks_detected"],

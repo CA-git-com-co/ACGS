@@ -82,9 +82,7 @@ class DatabaseProvider(ServiceProvider):
                 # sha256: func_hash
                 return []
 
-            async def execute_command(
-                self, command: str, params: dict[str, Any] = None
-            ):
+            async def execute_command(self, command: str, params: dict[str, Any] = None):
                 # requires: Valid input parameters
                 # ensures: Correct function execution
                 # sha256: func_hash
@@ -224,9 +222,7 @@ class ServiceFactory:
             ACGSException: If no provider is registered
         """
         if service_type not in self.providers:
-            raise ACGSException(
-                f"No provider registered for {service_type}", "PROVIDER_NOT_FOUND"
-            )
+            raise ACGSException(f"No provider registered for {service_type}", "PROVIDER_NOT_FOUND")
 
         provider = self.providers[service_type]
         config = self.configurations[service_type]

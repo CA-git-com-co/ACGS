@@ -13,8 +13,8 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..config import settings
 from .connection import get_database_manager
@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class PerformanceMetrics:
     """Database performance metrics."""
+
     query_count: int = 0
     slow_query_count: int = 0
     avg_query_time: float = 0.0
@@ -40,18 +41,19 @@ class PerformanceMetrics:
 @dataclass
 class OptimizationConfig:
     """Configuration for database optimization."""
+
     slow_query_threshold_ms: float = 200.0
     index_usage_threshold: float = 0.8
     cache_hit_ratio_threshold: float = 0.9
     connection_pool_threshold: float = 0.8
     auto_vacuum_enabled: bool = True
     auto_analyze_enabled: bool = True
-    
+
     # Partitioning configuration
     partition_by_time: bool = True
     partition_interval_days: int = 30
     partition_retention_days: int = 365
-    
+
     # Index optimization
     auto_index_creation: bool = True
     unused_index_cleanup: bool = True
@@ -61,7 +63,7 @@ class OptimizationConfig:
 class DGMPerformanceOptimizer:
     """
     Database performance optimizer for DGM service.
-    
+
     Features:
     - Intelligent indexing strategy
     - Table partitioning for time-series data
@@ -69,40 +71,40 @@ class DGMPerformanceOptimizer:
     - Automatic performance tuning
     - Constitutional compliance validation
     """
-    
+
     def __init__(self, config: Optional[OptimizationConfig] = None):
         """Initialize performance optimizer."""
         self.config = config or OptimizationConfig()
         self.db_manager = None
         self.metrics = PerformanceMetrics()
         self.optimization_history: List[Dict[str, Any]] = []
-        
+
     async def initialize(self):
         """Initialize database connection and performance monitoring."""
         try:
             self.db_manager = get_database_manager()
             if not self.db_manager:
                 raise RuntimeError("Database manager not available")
-            
+
             # Enable query statistics
             await self._enable_query_statistics()
-            
+
             # Create performance monitoring views
             await self._create_monitoring_views()
-            
+
             # Initialize baseline metrics
             await self._collect_baseline_metrics()
-            
+
             logger.info("✅ DGM performance optimizer initialized")
-            
+
         except Exception as e:
             logger.error(f"❌ Failed to initialize performance optimizer: {e}")
             raise
-    
+
     async def optimize_database(self) -> Dict[str, Any]:
         """
         Run comprehensive database optimization.
-        
+
         Returns:
             Optimization results and recommendations
         """
@@ -112,69 +114,71 @@ class DGMPerformanceOptimizer:
             "optimizations_applied": [],
             "recommendations": [],
             "performance_improvement": {},
-            "errors": []
+            "errors": [],
         }
-        
+
         try:
             # Collect current metrics
             before_metrics = await self._collect_performance_metrics()
-            
+
             # Apply optimizations
             await self._optimize_indexes()
             await self._optimize_partitioning()
             await self._optimize_queries()
             await self._optimize_vacuum_settings()
             await self._optimize_connection_pool()
-            
+
             # Collect after metrics
             after_metrics = await self._collect_performance_metrics()
-            
+
             # Calculate improvements
             results["performance_improvement"] = self._calculate_improvement(
                 before_metrics, after_metrics
             )
-            
+
             # Generate recommendations
             results["recommendations"] = await self._generate_recommendations()
-            
+
             optimization_duration = time.time() - optimization_start
             results["duration_seconds"] = optimization_duration
             results["status"] = "completed"
-            
+
             logger.info(f"✅ Database optimization completed in {optimization_duration:.2f}s")
-            
+
         except Exception as e:
             results["status"] = "failed"
             results["errors"].append(str(e))
             logger.error(f"❌ Database optimization failed: {e}")
-        
+
         # Store optimization history
         self.optimization_history.append(results)
-        
+
         return results
-    
+
     async def _enable_query_statistics(self):
         """Enable PostgreSQL query statistics collection."""
         try:
             async with self.db_manager.get_session() as session:
                 # Enable pg_stat_statements extension
                 await session.execute(text("CREATE EXTENSION IF NOT EXISTS pg_stat_statements"))
-                
+
                 # Reset statistics
                 await session.execute(text("SELECT pg_stat_statements_reset()"))
-                
+
                 await session.commit()
                 logger.info("✅ Query statistics enabled")
-                
+
         except Exception as e:
             logger.warning(f"⚠️ Could not enable query statistics: {e}")
-    
+
     async def _create_monitoring_views(self):
         """Create database monitoring views for DGM tables."""
         try:
             async with self.db_manager.get_session() as session:
                 # Create view for table statistics
-                await session.execute(text("""
+                await session.execute(
+                    text(
+                        """
                     CREATE OR REPLACE VIEW dgm.table_stats AS
                     SELECT 
                         schemaname,
@@ -190,10 +194,14 @@ class DGMPerformanceOptimizer:
                         last_autoanalyze
                     FROM pg_stat_user_tables 
                     WHERE schemaname = 'dgm'
-                """))
-                
+                """
+                    )
+                )
+
                 # Create view for index usage
-                await session.execute(text("""
+                await session.execute(
+                    text(
+                        """
                     CREATE OR REPLACE VIEW dgm.index_usage AS
                     SELECT 
                         schemaname,
@@ -209,10 +217,14 @@ class DGMPerformanceOptimizer:
                     FROM pg_stat_user_indexes 
                     WHERE schemaname = 'dgm'
                     ORDER BY idx_scan DESC
-                """))
-                
+                """
+                    )
+                )
+
                 # Create view for slow queries
-                await session.execute(text(f"""
+                await session.execute(
+                    text(
+                        f"""
                     CREATE OR REPLACE VIEW dgm.slow_queries AS
                     SELECT 
                         query,
@@ -226,14 +238,16 @@ class DGMPerformanceOptimizer:
                     WHERE mean_time > {self.config.slow_query_threshold_ms}
                     AND query LIKE '%dgm.%'
                     ORDER BY mean_time DESC
-                """))
-                
+                """
+                    )
+                )
+
                 await session.commit()
                 logger.info("✅ Monitoring views created")
-                
+
         except Exception as e:
             logger.warning(f"⚠️ Could not create monitoring views: {e}")
-    
+
     async def _optimize_indexes(self):
         """Optimize database indexes for DGM workloads."""
         try:
@@ -246,36 +260,30 @@ class DGMPerformanceOptimizer:
                     ON dgm.dgm_archive (status, constitutional_compliance_score DESC, created_at DESC)
                     WHERE status IN ('completed', 'failed')
                     """,
-                    
                     """
                     CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_dgm_archive_improvement_lookup
                     ON dgm.dgm_archive (improvement_id, timestamp DESC)
                     """,
-                    
                     # Performance metrics indexes
                     """
                     CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_performance_metrics_time_series
                     ON dgm.performance_metrics (metric_name, timestamp DESC)
                     WHERE timestamp > NOW() - INTERVAL '30 days'
                     """,
-                    
                     """
                     CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_performance_metrics_service_type
                     ON dgm.performance_metrics (service_name, metric_type, timestamp DESC)
                     """,
-                    
                     # Bandit states indexes
                     """
                     CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_bandit_states_context_performance
                     ON dgm.bandit_states (context_key, average_reward DESC, last_updated DESC)
                     """,
-                    
                     """
                     CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_bandit_states_algorithm_active
                     ON dgm.bandit_states (algorithm_type, last_updated DESC)
                     WHERE last_updated > NOW() - INTERVAL '1 hour'
                     """,
-                    
                     # Constitutional compliance indexes
                     """
                     CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_compliance_logs_recent_violations
@@ -283,68 +291,67 @@ class DGMPerformanceOptimizer:
                     WHERE compliance_level IN ('violation', 'critical')
                     AND assessment_timestamp > NOW() - INTERVAL '7 days'
                     """,
-                    
                     # Workspace indexes
                     """
                     CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_workspaces_active_priority
                     ON dgm.improvement_workspaces (status, priority, created_at DESC)
                     WHERE status IN ('active', 'pending')
                     """,
-                    
                     # System configurations indexes
                     """
                     CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_system_configs_category_key
                     ON dgm.system_configurations (category, key)
                     WHERE is_readonly = false
                     """,
-                    
                     # GIN indexes for JSONB columns
                     """
                     CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_archive_metadata_gin
                     ON dgm.dgm_archive USING GIN (metadata)
                     """,
-                    
                     """
                     CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_metrics_tags_gin
                     ON dgm.performance_metrics USING GIN (tags)
                     """,
-                    
                     """
                     CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_compliance_violations_gin
                     ON dgm.constitutional_compliance_logs USING GIN (violations)
-                    """
+                    """,
                 ]
-                
+
                 for index_sql in indexes:
                     try:
                         await session.execute(text(index_sql))
                         logger.info(f"✅ Created index: {index_sql.split('idx_')[1].split()[0]}")
                     except Exception as e:
                         logger.warning(f"⚠️ Index creation warning: {e}")
-                
+
                 await session.commit()
-                
+
         except Exception as e:
             logger.error(f"❌ Index optimization failed: {e}")
-    
+
     async def _optimize_partitioning(self):
         """Implement table partitioning for time-series data."""
         try:
             if not self.config.partition_by_time:
                 return
-            
+
             async with self.db_manager.get_session() as session:
                 # Check if partitioning is already enabled
-                result = await session.execute(text("""
+                result = await session.execute(
+                    text(
+                        """
                     SELECT COUNT(*) FROM information_schema.tables 
                     WHERE table_schema = 'dgm' 
                     AND table_name LIKE '%_y%m%'
-                """))
-                
+                """
+                    )
+                )
+
                 if result.scalar() > 0:
                     logger.info("✅ Table partitioning already enabled")
                     return
-                
+
                 # Create partitioned tables for time-series data
                 partitioning_sql = [
                     # Partition performance metrics by month
@@ -353,7 +360,6 @@ class DGMPerformanceOptimizer:
                         LIKE dgm.performance_metrics INCLUDING ALL
                     ) PARTITION BY RANGE (timestamp)
                     """,
-                    
                     # Create monthly partitions for the next 12 months
                     """
                     DO $$
@@ -374,29 +380,31 @@ class DGMPerformanceOptimizer:
                                           partition_name, start_date, end_date);
                         END LOOP;
                     END $$
-                    """
+                    """,
                 ]
-                
+
                 for sql in partitioning_sql:
                     try:
                         await session.execute(text(sql))
                         logger.info("✅ Created table partition")
                     except Exception as e:
                         logger.warning(f"⚠️ Partitioning warning: {e}")
-                
+
                 await session.commit()
-                
+
         except Exception as e:
             logger.error(f"❌ Partitioning optimization failed: {e}")
-    
+
     async def _collect_performance_metrics(self) -> PerformanceMetrics:
         """Collect current database performance metrics."""
         metrics = PerformanceMetrics()
-        
+
         try:
             async with self.db_manager.get_session() as session:
                 # Query execution statistics
-                result = await session.execute(text("""
+                result = await session.execute(
+                    text(
+                        """
                     SELECT 
                         COUNT(*) as query_count,
                         COUNT(*) FILTER (WHERE mean_time > %s) as slow_query_count,
@@ -404,17 +412,22 @@ class DGMPerformanceOptimizer:
                         MAX(mean_time) as max_query_time
                     FROM pg_stat_statements 
                     WHERE query LIKE '%%dgm.%%'
-                """), (self.config.slow_query_threshold_ms,))
-                
+                """
+                    ),
+                    (self.config.slow_query_threshold_ms,),
+                )
+
                 row = result.fetchone()
                 if row:
                     metrics.query_count = row[0] or 0
                     metrics.slow_query_count = row[1] or 0
                     metrics.avg_query_time = float(row[2] or 0)
                     metrics.max_query_time = float(row[3] or 0)
-                
+
                 # Cache hit ratio
-                result = await session.execute(text("""
+                result = await session.execute(
+                    text(
+                        """
                     SELECT 
                         CASE 
                             WHEN (heap_blks_hit + heap_blks_read) = 0 THEN 0
@@ -422,25 +435,31 @@ class DGMPerformanceOptimizer:
                         END as cache_hit_ratio
                     FROM pg_statio_user_tables 
                     WHERE schemaname = 'dgm'
-                """))
-                
+                """
+                    )
+                )
+
                 cache_ratios = [row[0] for row in result.fetchall() if row[0] is not None]
                 if cache_ratios:
                     metrics.cache_hit_ratio = sum(cache_ratios) / len(cache_ratios)
-                
+
                 # Connection statistics
-                result = await session.execute(text("""
+                result = await session.execute(
+                    text(
+                        """
                     SELECT 
                         COUNT(*) as total_connections,
                         COUNT(*) FILTER (WHERE state = 'active') as active_connections
                     FROM pg_stat_activity
-                """))
-                
+                """
+                    )
+                )
+
                 row = result.fetchone()
                 if row:
                     metrics.connection_count = row[0] or 0
                     metrics.active_connections = row[1] or 0
-                
+
         except Exception as e:
             logger.warning(f"⚠️ Could not collect performance metrics: {e}")
 
@@ -458,7 +477,7 @@ class DGMPerformanceOptimizer:
                     "bandit_states",
                     "improvement_workspaces",
                     "system_configurations",
-                    "metric_aggregations"
+                    "metric_aggregations",
                 ]
 
                 for table in dgm_tables:
@@ -474,7 +493,7 @@ class DGMPerformanceOptimizer:
                     "SET effective_io_concurrency = 200",
                     "SET default_statistics_target = 150",
                     "SET work_mem = '8MB'",
-                    "SET maintenance_work_mem = '256MB'"
+                    "SET maintenance_work_mem = '256MB'",
                 ]
 
                 for setting in optimization_settings:
@@ -502,7 +521,6 @@ class DGMPerformanceOptimizer:
                         autovacuum_vacuum_cost_delay = 10
                     )
                     """,
-
                     # Archive table (moderate write rate)
                     """
                     ALTER TABLE dgm.dgm_archive SET (
@@ -510,14 +528,13 @@ class DGMPerformanceOptimizer:
                         autovacuum_analyze_scale_factor = 0.1
                     )
                     """,
-
                     # Bandit states (frequent updates)
                     """
                     ALTER TABLE dgm.bandit_states SET (
                         autovacuum_vacuum_scale_factor = 0.1,
                         autovacuum_analyze_scale_factor = 0.05
                     )
-                    """
+                    """,
                 ]
 
                 for config in vacuum_configs:
@@ -537,8 +554,8 @@ class DGMPerformanceOptimizer:
         try:
             # This would typically involve adjusting application-level settings
             # For now, we'll log recommendations
-            current_pool_size = getattr(settings, 'DATABASE_POOL_SIZE', 20)
-            current_max_overflow = getattr(settings, 'DATABASE_MAX_OVERFLOW', 30)
+            current_pool_size = getattr(settings, "DATABASE_POOL_SIZE", 20)
+            current_max_overflow = getattr(settings, "DATABASE_MAX_OVERFLOW", 30)
 
             recommendations = []
 
@@ -558,15 +575,15 @@ class DGMPerformanceOptimizer:
         """Collect baseline performance metrics."""
         try:
             self.metrics = await self._collect_performance_metrics()
-            logger.info(f"📊 Baseline metrics collected: {self.metrics.query_count} queries, "
-                       f"{self.metrics.avg_query_time:.2f}ms avg time")
+            logger.info(
+                f"📊 Baseline metrics collected: {self.metrics.query_count} queries, "
+                f"{self.metrics.avg_query_time:.2f}ms avg time"
+            )
         except Exception as e:
             logger.warning(f"⚠️ Could not collect baseline metrics: {e}")
 
     def _calculate_improvement(
-        self,
-        before: PerformanceMetrics,
-        after: PerformanceMetrics
+        self, before: PerformanceMetrics, after: PerformanceMetrics
     ) -> Dict[str, float]:
         """Calculate performance improvement between metrics."""
         improvements = {}
@@ -625,12 +642,16 @@ class DGMPerformanceOptimizer:
             # Table-specific recommendations
             async with self.db_manager.get_session() as session:
                 # Check for tables needing vacuum
-                result = await session.execute(text("""
+                result = await session.execute(
+                    text(
+                        """
                     SELECT tablename, n_dead_tup, n_live_tup
                     FROM pg_stat_user_tables
                     WHERE schemaname = 'dgm'
                     AND n_dead_tup > n_live_tup * 0.1
-                """))
+                """
+                    )
+                )
 
                 for row in result.fetchall():
                     recommendations.append(
@@ -638,12 +659,16 @@ class DGMPerformanceOptimizer:
                     )
 
                 # Check for unused indexes
-                result = await session.execute(text("""
+                result = await session.execute(
+                    text(
+                        """
                     SELECT indexname, idx_scan
                     FROM pg_stat_user_indexes
                     WHERE schemaname = 'dgm'
                     AND idx_scan < 10
-                """))
+                """
+                    )
+                )
 
                 for row in result.fetchall():
                     recommendations.append(
@@ -680,17 +705,14 @@ class DGMPerformanceOptimizer:
                     "max_query_time_ms": current_metrics.max_query_time,
                     "cache_hit_ratio": current_metrics.cache_hit_ratio,
                     "connection_count": current_metrics.connection_count,
-                    "active_connections": current_metrics.active_connections
+                    "active_connections": current_metrics.active_connections,
                 },
                 "table_statistics": table_stats,
                 "index_usage": index_usage,
                 "slow_queries": slow_queries,
                 "recommendations": recommendations,
                 "optimization_history": self.optimization_history[-5:],  # Last 5 optimizations
-                "constitutional_compliance": {
-                    "hash": "cdd01ef066bc6cf2",
-                    "validated": True
-                }
+                "constitutional_compliance": {"hash": "cdd01ef066bc6cf2", "validated": True},
             }
 
             return report
@@ -703,9 +725,13 @@ class DGMPerformanceOptimizer:
         """Get table statistics for DGM tables."""
         try:
             async with self.db_manager.get_session() as session:
-                result = await session.execute(text("""
+                result = await session.execute(
+                    text(
+                        """
                     SELECT * FROM dgm.table_stats ORDER BY live_tuples DESC
-                """))
+                """
+                    )
+                )
 
                 return [dict(row._mapping) for row in result.fetchall()]
 
@@ -717,9 +743,13 @@ class DGMPerformanceOptimizer:
         """Get index usage statistics."""
         try:
             async with self.db_manager.get_session() as session:
-                result = await session.execute(text("""
+                result = await session.execute(
+                    text(
+                        """
                     SELECT * FROM dgm.index_usage ORDER BY idx_scan DESC LIMIT 20
-                """))
+                """
+                    )
+                )
 
                 return [dict(row._mapping) for row in result.fetchall()]
 
@@ -731,9 +761,13 @@ class DGMPerformanceOptimizer:
         """Get slow query statistics."""
         try:
             async with self.db_manager.get_session() as session:
-                result = await session.execute(text("""
+                result = await session.execute(
+                    text(
+                        """
                     SELECT * FROM dgm.slow_queries LIMIT 10
-                """))
+                """
+                    )
+                )
 
                 return [dict(row._mapping) for row in result.fetchall()]
 
@@ -752,7 +786,7 @@ def get_performance_optimizer() -> Optional[DGMPerformanceOptimizer]:
 
 
 async def initialize_performance_optimizer(
-    config: Optional[OptimizationConfig] = None
+    config: Optional[OptimizationConfig] = None,
 ) -> DGMPerformanceOptimizer:
     """Initialize global performance optimizer."""
     global _performance_optimizer

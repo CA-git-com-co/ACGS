@@ -1,0 +1,15 @@
+# ACGS-PGP Standard Resource Limits
+# All services should use these standardized resource constraints
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-resource-limits
+  namespace: acgs-system
+data:
+  cpu_request: "200m"
+  cpu_limit: "500m" 
+  memory_request: "512Mi"
+  memory_limit: "1Gi"
+  # Service-specific overrides
+  pgc_service_cpu_limit: "1000m"  # Higher for policy processing
+  ac_service_memory_limit: "2Gi"  # Higher for constitutional AI

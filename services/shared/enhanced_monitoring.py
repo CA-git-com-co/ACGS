@@ -19,7 +19,7 @@ import logging
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
@@ -137,9 +137,7 @@ class GovernanceWorkflowMonitor:
         if success:
             metrics["successful_executions"] += 1
 
-        metrics["success_rate"] = (
-            metrics["successful_executions"] / metrics["total_executions"]
-        )
+        metrics["success_rate"] = metrics["successful_executions"] / metrics["total_executions"]
 
     def check_compliance(self) -> dict[str, dict[str, Any]]:
         """Check governance workflow compliance against targets."""
@@ -150,19 +148,16 @@ class GovernanceWorkflowMonitor:
             compliance = {"compliant": True, "issues": [], "metrics": metrics}
 
             # Check time compliance
-            if (
-                "max_time_ms" in targets
-                and metrics.get("avg_time", 0) > targets["max_time_ms"]
-            ):
+            if "max_time_ms" in targets and metrics.get("avg_time", 0) > targets["max_time_ms"]:
                 compliance["compliant"] = False
                 compliance["issues"].append(
                     f"Average time {metrics['avg_time']:.2f}ms exceeds target {targets['max_time_ms']}ms"
                 )
 
             # Check success rate compliance
-            if "success_rate" in targets and metrics.get(
+            if "success_rate" in targets and metrics.get("success_rate", 0) < targets.get(
                 "success_rate", 0
-            ) < targets.get("success_rate", 0):
+            ):
                 compliance["compliant"] = False
                 compliance["issues"].append(
                     f"Success rate {metrics['success_rate']:.2%} below target {targets.get('success_rate', 0):.2%}"
@@ -277,28 +272,18 @@ class EnhancedMonitoringService:
 
                     if (
                         health_check.status != ServiceStatus.HEALTHY
-                        and health_check.consecutive_successes
-                        >= health_check.success_threshold
+                        and health_check.consecutive_successes >= health_check.success_threshold
                     ):
-                        await self._update_service_status(
-                            service_name, ServiceStatus.HEALTHY
-                        )
+                        await self._update_service_status(service_name, ServiceStatus.HEALTHY)
                 else:
                     health_check.consecutive_failures += 1
                     health_check.consecutive_successes = 0
 
-                    if (
-                        health_check.consecutive_failures
-                        >= health_check.failure_threshold
-                    ):
-                        await self._update_service_status(
-                            service_name, ServiceStatus.UNHEALTHY
-                        )
+                    if health_check.consecutive_failures >= health_check.failure_threshold:
+                        await self._update_service_status(service_name, ServiceStatus.UNHEALTHY)
 
                 # Record metrics
-                await self._record_service_metrics(
-                    service_name, response_time, is_healthy
-                )
+                await self._record_service_metrics(service_name, response_time, is_healthy)
 
                 health_check.last_check = datetime.now(timezone.utc)
 
@@ -309,9 +294,7 @@ class EnhancedMonitoringService:
 
             await asyncio.sleep(health_check.interval)
 
-    async def _update_service_status(
-        self, service_name: str, new_status: ServiceStatus
-    ):
+    async def _update_service_status(self, service_name: str, new_status: ServiceStatus):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -404,40 +387,31 @@ class EnhancedMonitoringService:
             # Calculate uptime
             total_checks = len(metrics_list)
             healthy_checks = sum(1 for m in metrics_list if m.error_rate == 0.0)
-            uptime_percentage = (
-                (healthy_checks / total_checks) * 100 if total_checks > 0 else 0
-            )
+            uptime_percentage = (healthy_checks / total_checks) * 100 if total_checks > 0 else 0
 
             # Calculate average response time
-            avg_response_time = sum(m.response_time_ms for m in metrics_list) / len(
-                metrics_list
-            )
+            avg_response_time = sum(m.response_time_ms for m in metrics_list) / len(metrics_list)
 
             # Calculate error rate
-            error_rate = (
-                sum(m.error_rate for m in metrics_list) / len(metrics_list) * 100
-            )
+            error_rate = sum(m.error_rate for m in metrics_list) / len(metrics_list) * 100
 
             compliance_report[service_name] = {
                 "uptime": {
                     "value": uptime_percentage,
                     "target": self.sla_targets["uptime_percentage"],
-                    "compliant": uptime_percentage
-                    >= self.sla_targets["uptime_percentage"],
+                    "compliant": uptime_percentage >= self.sla_targets["uptime_percentage"],
                     "message": f"Uptime {uptime_percentage:.2f}% (target: {self.sla_targets['uptime_percentage']}%)",
                 },
                 "response_time": {
                     "value": avg_response_time,
                     "target": self.sla_targets["response_time_ms"],
-                    "compliant": avg_response_time
-                    <= self.sla_targets["response_time_ms"],
+                    "compliant": avg_response_time <= self.sla_targets["response_time_ms"],
                     "message": f"Avg response time {avg_response_time:.2f}ms (target: <{self.sla_targets['response_time_ms']}ms)",
                 },
                 "error_rate": {
                     "value": error_rate,
                     "target": self.sla_targets["error_rate_percentage"],
-                    "compliant": error_rate
-                    <= self.sla_targets["error_rate_percentage"],
+                    "compliant": error_rate <= self.sla_targets["error_rate_percentage"],
                     "message": f"Error rate {error_rate:.2f}% (target: <{self.sla_targets['error_rate_percentage']}%)",
                 },
             }
@@ -491,9 +465,7 @@ class EnhancedMonitoringService:
                 name: {
                     "status": health_check.status.value,
                     "last_check": (
-                        health_check.last_check.isoformat()
-                        if health_check.last_check
-                        else None
+                        health_check.last_check.isoformat() if health_check.last_check else None
                     ),
                     "consecutive_failures": health_check.consecutive_failures,
                     "consecutive_successes": health_check.consecutive_successes,
@@ -520,9 +492,7 @@ class EnhancedMonitoringService:
             "system_health": {
                 "total_services": len(self.health_checks),
                 "healthy_services": sum(
-                    1
-                    for hc in self.health_checks.values()
-                    if hc.status == ServiceStatus.HEALTHY
+                    1 for hc in self.health_checks.values() if hc.status == ServiceStatus.HEALTHY
                 ),
                 "monitoring_active": self.monitoring_active,
             },

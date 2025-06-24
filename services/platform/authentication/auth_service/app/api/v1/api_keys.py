@@ -151,9 +151,7 @@ async def get_api_key(
         api_key = await api_key_manager.get_api_key(db, key_id, current_user.id)
 
         if not api_key:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="API key not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="API key not found")
 
         return ApiKeyResponse(**api_key)
 
@@ -190,9 +188,7 @@ async def update_api_key(
         )
 
         if not success:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="API key not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="API key not found")
 
         # Log API key update
         await security_audit.log_event(
@@ -243,9 +239,7 @@ async def revoke_api_key(
         success = await api_key_manager.revoke_api_key(db, key_id, current_user.id)
 
         if not success:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="API key not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="API key not found")
 
         # Log API key revocation
         await security_audit.log_event(
@@ -293,9 +287,7 @@ async def delete_api_key(
         success = await api_key_manager.delete_api_key(db, key_id, current_user.id)
 
         if not success:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="API key not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="API key not found")
 
         # Log API key deletion
         await security_audit.log_event(

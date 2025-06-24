@@ -9,14 +9,8 @@ Task 19.4: Performance Dashboard Integration - API Endpoints
 """
 
 import logging
-from datetime import timezone, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
-from .services.constitutional_reporting_service import (
-    ComplianceReport,
-    ConstitutionalReportingService,
-    ReportFormat,
-    ReportType,
-)
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -25,6 +19,13 @@ from services.shared.auth import get_current_active_user, require_admin
 from services.shared.database import get_async_db
 from services.shared.metrics import get_metrics
 from services.shared.models import User
+
+from .services.constitutional_reporting_service import (
+    ComplianceReport,
+    ConstitutionalReportingService,
+    ReportFormat,
+    ReportType,
+)
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/constitutional-reports", tags=["constitutional-reports"])

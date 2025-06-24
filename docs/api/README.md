@@ -4,29 +4,39 @@ This directory contains comprehensive API documentation for all ACGS-1 services 
 
 ## Core Service APIs
 
+## 📋 Quick Reference
+
+**For complete API documentation, see:** [API_REFERENCE_CONSOLIDATED.md](../API_REFERENCE_CONSOLIDATED.md)
+
 ### Constitutional AI Service (`constitutional-ai`)
 
 - **Base URL:** `http://localhost:8001/api/constitutional-ai/`
-- **Documentation:** [ac_service_api.md](ac_service_api.md)
+- **Service Directory:** `services/core/constitutional-ai/ac_service/`
+- **Documentation:** [constitutional_ai_service_api.md](constitutional_ai_service_api.md)
 - **Interactive Docs:** `http://localhost:8001/docs`
 - **Features:** Constitutional principles, meta-rules, Constitutional Council, conflict resolution
 
 ### Governance Synthesis Service (`governance-synthesis`)
 
 - **Base URL:** `http://localhost:8004/api/governance-synthesis/`
-- **Documentation:** [gs_service_api.md](gs_service_api.md)
+- **Service Directory:** `services/core/governance-synthesis/gs_service/`
+- **Documentation:** [governance_synthesis_service_api.md](governance_synthesis_service_api.md)
 - **Interactive Docs:** `http://localhost:8004/docs`
 - **Features:** LLM-powered policy synthesis, multi-model validation, QEC error correction
 
 ### Policy Governance Service (`policy-governance`)
 
 - **Base URL:** `http://localhost:8005/api/policy-governance/`
+- **Service Directory:** `services/core/policy-governance/pgc_service/`
+- **Documentation:** [policy_governance_service_api.md](policy_governance_service_api.md)
 - **Interactive Docs:** `http://localhost:8005/docs`
 - **Features:** Real-time policy enforcement, OPA integration, constitutional amendment integration
 
 ### Formal Verification Service (`formal-verification`)
 
 - **Base URL:** `http://localhost:8003/api/formal-verification/`
+- **Service Directory:** `services/core/formal-verification/fv_service/`
+- **Documentation:** [formal_verification_service_api.md](formal_verification_service_api.md)
 - **Interactive Docs:** `http://localhost:8003/docs`
 - **Features:** Z3 SMT solver integration, safety property checking, formal policy validation
 

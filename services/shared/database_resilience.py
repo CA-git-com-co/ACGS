@@ -114,9 +114,7 @@ class CircuitBreaker:
                 if self._should_attempt_reset():
                     self._transition_to_half_open()
                 else:
-                    raise CircuitBreakerOpenError(
-                        f"Circuit breaker '{self.name}' is OPEN"
-                    )
+                    raise CircuitBreakerOpenError(f"Circuit breaker '{self.name}' is OPEN")
 
             # Execute the function
             start_time = time.time()
@@ -236,8 +234,7 @@ class RetryMechanism:
                 if attempt == self.config.max_attempts - 1:
                     # Last attempt failed
                     logger.error(
-                        f"All {self.config.max_attempts} retry attempts failed. "
-                        f"Last error: {e}"
+                        f"All {self.config.max_attempts} retry attempts failed. " f"Last error: {e}"
                     )
                     raise e
 
@@ -245,8 +242,7 @@ class RetryMechanism:
                 delay = self._calculate_delay(attempt)
 
                 logger.warning(
-                    f"Attempt {attempt + 1} failed: {e}. "
-                    f"Retrying in {delay:.2f} seconds..."
+                    f"Attempt {attempt + 1} failed: {e}. " f"Retrying in {delay:.2f} seconds..."
                 )
 
                 await asyncio.sleep(delay)
@@ -298,9 +294,7 @@ class DatabaseResilienceManager:
             return await connection_factory()
 
         # Use circuit breaker and retry mechanism
-        connection = await self.circuit_breaker.call(
-            self.retry_mechanism.execute, get_connection
-        )
+        connection = await self.circuit_breaker.call(self.retry_mechanism.execute, get_connection)
 
         try:
             yield connection
@@ -312,13 +306,9 @@ class DatabaseResilienceManager:
             except Exception as e:
                 logger.warning(f"Error closing connection: {e}")
 
-    async def execute_with_resilience(
-        self, func: Callable[..., T], *args, **kwargs
-    ) -> T:
+    async def execute_with_resilience(self, func: Callable[..., T], *args, **kwargs) -> T:
         """Execute database operation with full resilience."""
-        return await self.circuit_breaker.call(
-            self.retry_mechanism.execute, func, *args, **kwargs
-        )
+        return await self.circuit_breaker.call(self.retry_mechanism.execute, func, *args, **kwargs)
 
     def get_health_status(self) -> Dict[str, Any]:
         """Get health status of resilience components."""
@@ -340,7 +330,6 @@ class DatabaseResilienceManager:
 
 class CircuitBreakerOpenError(Exception):
     """Exception raised when circuit breaker is open."""
-
 
 
 # Global resilience managers for each service

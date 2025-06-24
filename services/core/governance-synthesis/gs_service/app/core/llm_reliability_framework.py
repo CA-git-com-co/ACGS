@@ -15,7 +15,7 @@ import statistics
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from math import sqrt
 from typing import Any

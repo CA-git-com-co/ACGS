@@ -78,10 +78,28 @@ trainer:
           model_type: llama # Can be gptj, gptnext, llama, gemma, falcon
           unload_engine_train: False
 
+        # Legacy vLLM configuration (deprecated)
         vllm:
-          enable: True
+          enable: False
           port: 4321
           ip: localhost
+
+        # Nano-vLLM configuration (new lightweight alternative)
+        nano_vllm:
+          enable: True
+          port: 8000
+          ip: localhost
+          models:
+            nvidia_acerreason:
+              model_path: "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF"
+              tensor_parallel_size: 1
+              gpu_memory_utilization: 0.9
+              max_model_len: 32768
+            microsoft_phi4:
+              model_path: "microsoft/Phi-4"
+              tensor_parallel_size: 1
+              gpu_memory_utilization: 0.6
+              max_model_len: 16384
 
     batch_iterator:
       # When use_flask is True, we will spawn a flask server on rank 0 to balance the work of policy rollouts.

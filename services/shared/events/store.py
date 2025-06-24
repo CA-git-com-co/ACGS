@@ -134,9 +134,7 @@ class InMemoryEventStore(EventStore):
 
             # Filter by timestamp
             if since:
-                events = [
-                    event for event in events if event.metadata.created_at >= since
-                ]
+                events = [event for event in events if event.metadata.created_at >= since]
 
             # Sort by creation time (newest first)
             events.sort(key=lambda e: e.metadata.created_at, reverse=True)
@@ -151,9 +149,7 @@ class InMemoryEventStore(EventStore):
             events = [self.events[event_id] for event_id in pending_ids]
 
             # Sort by priority and creation time
-            events.sort(
-                key=lambda e: (e.metadata.priority.value, e.metadata.created_at)
-            )
+            events.sort(key=lambda e: (e.metadata.priority.value, e.metadata.created_at))
 
             return events[:limit]
 
@@ -238,8 +234,7 @@ class InMemoryEventStore(EventStore):
                 for event_type, event_ids in self.events_by_type.items()
             },
             "events_by_status": {
-                status.value: len(event_ids)
-                for status, event_ids in self.events_by_status.items()
+                status.value: len(event_ids) for status, event_ids in self.events_by_status.items()
             },
         }
 

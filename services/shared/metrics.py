@@ -65,9 +65,7 @@ class ACGSMetrics:
         )
 
         # Service health metrics
-        self.service_info = Info(
-            "acgs_service_info", "Service information", ["service", "version"]
-        )
+        self.service_info = Info("acgs_service_info", "Service information", ["service", "version"])
 
         self.active_connections = Gauge(
             "acgs_active_connections", "Number of active connections", ["service"]
@@ -456,9 +454,7 @@ class ACGSMetrics:
         #     'version': '3.0.0'
         # })
 
-    def record_request(
-        self, method: str, endpoint: str, status_code: int, duration: float
-    ):
+    def record_request(self, method: str, endpoint: str, status_code: int, duration: float):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -488,9 +484,9 @@ class ACGSMetrics:
         # ensures: Correct function execution
         # sha256: func_hash
         """Record database query metrics."""
-        self.db_query_duration.labels(
-            service=self.service_name, operation=operation
-        ).observe(duration)
+        self.db_query_duration.labels(service=self.service_name, operation=operation).observe(
+            duration
+        )
 
     def record_service_call(
         self, target_service: str, endpoint: str, status_code: int, duration: float
@@ -565,18 +561,18 @@ class ACGSMetrics:
         # ensures: Correct function execution
         # sha256: func_hash
         """Update parallel task queue size."""
-        self.parallel_task_queue_size.labels(
-            service=self.service_name, queue_type=queue_type
-        ).set(size)
+        self.parallel_task_queue_size.labels(service=self.service_name, queue_type=queue_type).set(
+            size
+        )
 
     def update_parallel_workers(self, worker_type: str, count: int):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         """Update active parallel workers count."""
-        self.parallel_workers_active.labels(
-            service=self.service_name, worker_type=worker_type
-        ).set(count)
+        self.parallel_workers_active.labels(service=self.service_name, worker_type=worker_type).set(
+            count
+        )
 
     def update_websocket_connections(self, connection_type: str, count: int):
         # requires: Valid input parameters
@@ -608,9 +604,7 @@ class ACGSMetrics:
         # ensures: Correct function execution
         # sha256: func_hash
         """Update database connections gauge."""
-        self.db_connections.labels(
-            service=self.service_name, pool_status=pool_status
-        ).set(count)
+        self.db_connections.labels(service=self.service_name, pool_status=pool_status).set(count)
 
     # Constitutional monitoring metric methods (Task 19.4)
     def update_constitutional_fidelity_score(self, component: str, score: float):
@@ -645,9 +639,9 @@ class ACGSMetrics:
             success=str(success).lower(),
         ).inc()
 
-        self.qec_response_time.labels(
-            service=self.service_name, error_type=error_type
-        ).observe(response_time)
+        self.qec_response_time.labels(service=self.service_name, error_type=error_type).observe(
+            response_time
+        )
 
     def record_violation_escalation(self, escalation_level: str, auto_resolved: bool):
         # requires: Valid input parameters
@@ -669,9 +663,7 @@ class ACGSMetrics:
             service=self.service_name, activity_type=activity_type, status=status
         ).inc()
 
-    def update_llm_reliability_score(
-        self, model: str, operation_type: str, score: float
-    ):
+    def update_llm_reliability_score(self, model: str, operation_type: str, score: float):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -685,13 +677,11 @@ class ACGSMetrics:
         # ensures: Correct function execution
         # sha256: func_hash
         """Update monitoring system health status."""
-        self.monitoring_health_status.labels(
-            service=self.service_name, component=component
-        ).set(1.0 if healthy else 0.0)
+        self.monitoring_health_status.labels(service=self.service_name, component=component).set(
+            1.0 if healthy else 0.0
+        )
 
-    def record_llm_response_time(
-        self, model_name: str, request_type: str, duration: float
-    ):
+    def record_llm_response_time(self, model_name: str, request_type: str, duration: float):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -709,9 +699,7 @@ class ACGSMetrics:
             service=self.service_name, model_name=model_name, error_type=error_type
         ).inc()
 
-    def set_llm_output_quality_score(
-        self, model_name: str, quality_metric: str, score: float
-    ):
+    def set_llm_output_quality_score(self, model_name: str, quality_metric: str, score: float):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -777,9 +765,7 @@ class ACGSMetrics:
             service=self.service_name, validation_type=validation_type, result=result
         ).inc()
 
-    def record_governance_workflow_operation(
-        self, workflow_type: str, stage: str, result: str
-    ):
+    def record_governance_workflow_operation(self, workflow_type: str, stage: str, result: str):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -791,9 +777,7 @@ class ACGSMetrics:
             result=result,
         ).inc()
 
-    def record_governance_workflow_duration(
-        self, workflow_type: str, stage: str, duration: float
-    ):
+    def record_governance_workflow_duration(self, workflow_type: str, stage: str, duration: float):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -860,9 +844,7 @@ class ACGSMetrics:
             service=self.service_name, ai_operation=ai_operation, complexity=complexity
         ).observe(duration)
 
-    def record_compliance_validation_latency(
-        self, validation_type: str, duration: float
-    ):
+    def record_compliance_validation_latency(self, validation_type: str, duration: float):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -906,9 +888,7 @@ class ACGSMetrics:
             operation_type=operation_type,
         ).inc(tokens)
 
-    def record_policy_synthesis_operation(
-        self, synthesis_type: str, risk_level: str, result: str
-    ):
+    def record_policy_synthesis_operation(self, synthesis_type: str, risk_level: str, result: str):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -944,9 +924,7 @@ class ACGSMetrics:
             service=self.service_name, validation_type=validation_type
         ).observe(duration)
 
-    def record_policy_enforcement_action(
-        self, action_type: str, policy_type: str, result: str
-    ):
+    def record_policy_enforcement_action(self, action_type: str, policy_type: str, result: str):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -982,9 +960,7 @@ class ACGSMetrics:
         ).inc()
 
     # Integrity Service Methods
-    def record_cryptographic_operation(
-        self, operation_type: str, algorithm: str, result: str
-    ):
+    def record_cryptographic_operation(self, operation_type: str, algorithm: str, result: str):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -1017,9 +993,7 @@ class ACGSMetrics:
             service=self.service_name, pool_status=pool_status
         ).set(usage)
 
-    def record_postgresql_query_performance(
-        self, query_type: str, table: str, duration: float
-    ):
+    def record_postgresql_query_performance(self, query_type: str, table: str, duration: float):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -1052,9 +1026,9 @@ class ACGSMetrics:
         # ensures: Correct function execution
         # sha256: func_hash
         """Set blockchain synchronization status."""
-        self.blockchain_sync_status.labels(
-            service=self.service_name, network=network
-        ).set(1.0 if synced else 0.0)
+        self.blockchain_sync_status.labels(service=self.service_name, network=network).set(
+            1.0 if synced else 0.0
+        )
 
 
 def get_metrics(service_name: str) -> ACGSMetrics:
@@ -1151,9 +1125,7 @@ def create_metrics_endpoint():
         # sha256: func_hash
         """Prometheus metrics endpoint."""
         # Use the default registry which should have all metrics
-        return PlainTextResponse(
-            generate_latest(REGISTRY), media_type=CONTENT_TYPE_LATEST
-        )
+        return PlainTextResponse(generate_latest(REGISTRY), media_type=CONTENT_TYPE_LATEST)
 
     return metrics_endpoint
 

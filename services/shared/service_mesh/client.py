@@ -39,9 +39,7 @@ class ACGSServiceClient:
     retry logic, authentication, and standardized error handling.
     """
 
-    def __init__(
-        self, service_type: ServiceType, registry: ServiceRegistry | None = None
-    ):
+    def __init__(self, service_type: ServiceType, registry: ServiceRegistry | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -99,9 +97,7 @@ class ACGSServiceClient:
         """Clear authentication token."""
         self._auth_token = None
 
-    @retry(
-        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10)
-    )
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
     async def request(
         self,
         method: str,
@@ -421,9 +417,7 @@ class ServiceMesh:
         for service_type, client in self.clients.items():
             metrics[service_type.value] = client.get_metrics()
 
-        return format_response(
-            data=metrics, metadata={"active_clients": len(self.clients)}
-        )
+        return format_response(data=metrics, metadata={"active_clients": len(self.clients)})
 
     async def close_all(self):
         # requires: Valid input parameters

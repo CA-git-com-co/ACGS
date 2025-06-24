@@ -24,10 +24,11 @@ from . import deps  # Assuming deps.get_db is correctly defined for AsyncSession
 try:
     from services.shared.response.unified_response import (
         ResponseBuilder,
-        get_response_builder,
         UnifiedJSONResponse,
-        create_auth_response_builder
+        create_auth_response_builder,
+        get_response_builder,
     )
+
     UNIFIED_RESPONSE_AVAILABLE = True
 except ImportError:
     # Fallback for when shared module is not available
@@ -71,28 +72,23 @@ SECURE_COOKIE = getattr(settings, "ENVIRONMENT", "production") != "development"
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register_user(
-    user: UserCreate, 
-    db: AsyncSession = Depends(deps.get_db),
-    request: Request = None
+    user: UserCreate, db: AsyncSession = Depends(deps.get_db), request: Request = None
 ):
     """Register a new user with unified response format."""
-    
+
     # Create response builder
     if UNIFIED_RESPONSE_AVAILABLE:
         response_builder = create_auth_response_builder()
         if request:
             response_builder.set_request_context(request)
-    
+
     try:
         # Check if username already exists
-        db_user_by_username = await crud_user.get_user_by_username(
-            db, username=user.username
-        )
+        db_user_by_username = await crud_user.get_user_by_username(db, username=user.username)
         if db_user_by_username:
             if UNIFIED_RESPONSE_AVAILABLE:
                 error_response = response_builder.error(
-                    message="Username already registered",
-                    error_code="USERNAME_EXISTS"
+                    message="Username already registered", error_code="USERNAME_EXISTS"
                 )
                 return UnifiedJSONResponse(content=error_response, status_code=400)
             else:
@@ -100,14 +96,13 @@ async def register_user(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Username already registered",
                 )
-        
+
         # Check if email already exists
         db_user_by_email = await crud_user.get_user_by_email(db, email=user.email)
         if db_user_by_email:
             if UNIFIED_RESPONSE_AVAILABLE:
                 error_response = response_builder.error(
-                    message="Email already registered",
-                    error_code="EMAIL_EXISTS"
+                    message="Email already registered", error_code="EMAIL_EXISTS"
                 )
                 return UnifiedJSONResponse(content=error_response, status_code=400)
             else:
@@ -118,7 +113,7 @@ async def register_user(
 
         # Create user
         created_user = await crud_user.create_user(db=db, obj_in=user)
-        
+
         # Convert to response format
         user_data = {
             "id": created_user.id,
@@ -127,30 +122,28 @@ async def register_user(
             "first_name": created_user.first_name,
             "last_name": created_user.last_name,
             "is_active": created_user.is_active,
-            "is_superuser": created_user.is_superuser
+            "is_superuser": created_user.is_superuser,
         }
-        
+
         if UNIFIED_RESPONSE_AVAILABLE:
             success_response = response_builder.success(
-                data=user_data,
-                message="User registered successfully"
+                data=user_data, message="User registered successfully"
             )
             return UnifiedJSONResponse(content=success_response, status_code=201)
         else:
             return user_data
-            
+
     except Exception as e:
         if UNIFIED_RESPONSE_AVAILABLE:
             error_response = response_builder.error(
                 message="Failed to register user",
                 data={"error_details": str(e)},
-                error_code="REGISTRATION_FAILED"
+                error_code="REGISTRATION_FAILED",
             )
             return UnifiedJSONResponse(content=error_response, status_code=500)
         else:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to register user"
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to register user"
             )
 
 
@@ -161,16 +154,16 @@ async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: AsyncSession = Depends(deps.get_db),
     csrf_protect: CsrfProtect = Depends(),
-    request: Request = None
+    request: Request = None,
 ):
     """Authenticate user and return access token with unified response format."""
-    
+
     # Create response builder
     if UNIFIED_RESPONSE_AVAILABLE:
         response_builder = create_auth_response_builder()
         if request:
             response_builder.set_request_context(request)
-    
+
     try:
         # Authenticate user
         user_obj = await crud_user.get_user_by_username(db, username=form_data.username)
@@ -179,8 +172,7 @@ async def login_for_access_token(
         ):
             if UNIFIED_RESPONSE_AVAILABLE:
                 error_response = response_builder.error(
-                    message="Incorrect username or password",
-                    error_code="INVALID_CREDENTIALS"
+                    message="Incorrect username or password", error_code="INVALID_CREDENTIALS"
                 )
                 return UnifiedJSONResponse(content=error_response, status_code=401)
             else:
@@ -189,18 +181,15 @@ async def login_for_access_token(
                     detail="Incorrect username or password",
                     headers={"WWW-Authenticate": "Bearer"},
                 )
-        
+
         if not user_obj.is_active:
             if UNIFIED_RESPONSE_AVAILABLE:
                 error_response = response_builder.error(
-                    message="User account is inactive",
-                    error_code="INACTIVE_USER"
+                    message="User account is inactive", error_code="INACTIVE_USER"
                 )
                 return UnifiedJSONResponse(content=error_response, status_code=400)
             else:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user"
-                )
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
 
         # Create access token
         access_token_str, access_jti = security.create_access_token(
@@ -247,7 +236,7 @@ async def login_for_access_token(
             secure=SECURE_COOKIE,
             samesite="lax",  # Or "strict"
         )
-        
+
         # Prepare token data
         token_data = {
             "access_token": access_token_str,
@@ -257,31 +246,29 @@ async def login_for_access_token(
                 "id": user_obj.id,
                 "username": user_obj.username,
                 "email": user_obj.email,
-                "role": user_obj.role
-            }
+                "role": user_obj.role,
+            },
         }
-        
+
         if UNIFIED_RESPONSE_AVAILABLE:
             success_response = response_builder.success(
-                data=token_data,
-                message="Authentication successful"
+                data=token_data, message="Authentication successful"
             )
             return UnifiedJSONResponse(content=success_response)
         else:
             return Token(access_token=access_token_str, token_type="bearer", refresh_token=None)
-            
+
     except Exception as e:
         if UNIFIED_RESPONSE_AVAILABLE:
             error_response = response_builder.error(
                 message="Authentication failed",
                 data={"error_details": str(e)},
-                error_code="AUTH_FAILED"
+                error_code="AUTH_FAILED",
             )
             return UnifiedJSONResponse(content=error_response, status_code=500)
         else:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Authentication failed"
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Authentication failed"
             )
 
 
@@ -293,12 +280,12 @@ async def logout(
     csrf_protect: CsrfProtect = Depends(),
 ):
     """Logout user and revoke tokens with unified response format."""
-    
+
     # Create response builder
     if UNIFIED_RESPONSE_AVAILABLE:
         response_builder = create_auth_response_builder()
         response_builder.set_request_context(request)
-    
+
     try:
         await csrf_protect.validate_csrf(request)
 
@@ -351,47 +338,40 @@ async def logout(
             httponly=True,
             samesite="lax",
         )
-        csrf_protect.unset_csrf_cookie(
-            response
-        )  # Deletes CSRF cookie to prevent token reuse
+        csrf_protect.unset_csrf_cookie(response)  # Deletes CSRF cookie to prevent token reuse
 
         if UNIFIED_RESPONSE_AVAILABLE:
             success_response = response_builder.success(
-                data={"logout": True},
-                message="Logout successful"
+                data={"logout": True}, message="Logout successful"
             )
             return UnifiedJSONResponse(content=success_response)
         else:
             return {"message": "Logout successful"}
-            
+
     except Exception as e:
         if UNIFIED_RESPONSE_AVAILABLE:
             error_response = response_builder.error(
-                message="Logout failed",
-                data={"error_details": str(e)},
-                error_code="LOGOUT_FAILED"
+                message="Logout failed", data={"error_details": str(e)}, error_code="LOGOUT_FAILED"
             )
             return UnifiedJSONResponse(content=error_response, status_code=500)
         else:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Logout failed"
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Logout failed"
             )
 
 
 @router.get("/me")
 async def read_users_me(
-    current_user: User = Depends(security.get_current_active_user),
-    request: Request = None
+    current_user: User = Depends(security.get_current_active_user), request: Request = None
 ):
     """Get current user information with unified response format."""
-    
+
     # Create response builder
     if UNIFIED_RESPONSE_AVAILABLE:
         response_builder = create_auth_response_builder()
         if request:
             response_builder.set_request_context(request)
-    
+
     try:
         # Convert user to response format
         user_data = {
@@ -402,30 +382,29 @@ async def read_users_me(
             "last_name": current_user.last_name,
             "is_active": current_user.is_active,
             "is_superuser": current_user.is_superuser,
-            "role": current_user.role
+            "role": current_user.role,
         }
-        
+
         if UNIFIED_RESPONSE_AVAILABLE:
             success_response = response_builder.success(
-                data=user_data,
-                message="User information retrieved successfully"
+                data=user_data, message="User information retrieved successfully"
             )
             return UnifiedJSONResponse(content=success_response)
         else:
             return user_data
-            
+
     except Exception as e:
         if UNIFIED_RESPONSE_AVAILABLE:
             error_response = response_builder.error(
                 message="Failed to retrieve user information",
                 data={"error_details": str(e)},
-                error_code="USER_INFO_FAILED"
+                error_code="USER_INFO_FAILED",
             )
             return UnifiedJSONResponse(content=error_response, status_code=500)
         else:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to retrieve user information"
+                detail="Failed to retrieve user information",
             )
 
 
@@ -433,24 +412,23 @@ async def read_users_me(
 @router.get("/health")
 async def health_check(request: Request = None):
     """Health check endpoint with unified response format."""
-    
+
     # Create response builder
     if UNIFIED_RESPONSE_AVAILABLE:
         response_builder = create_auth_response_builder()
         if request:
             response_builder.set_request_context(request)
-    
+
     health_data = {
         "status": "healthy",
         "service": "authentication-service",
         "version": "2.1.0",
-        "timestamp": "2025-06-22T10:30:00Z"
+        "timestamp": "2025-06-22T10:30:00Z",
     }
-    
+
     if UNIFIED_RESPONSE_AVAILABLE:
         success_response = response_builder.success(
-            data=health_data,
-            message="Authentication service is healthy"
+            data=health_data, message="Authentication service is healthy"
         )
         return UnifiedJSONResponse(content=success_response)
     else:

@@ -9,7 +9,7 @@ import os
 import secrets
 import time
 from dataclasses import dataclass, field
-from datetime import timezone, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Any
 
@@ -187,11 +187,7 @@ class User:
             role=UserRole(data["role"]),
             is_active=data["is_active"],
             created_at=datetime.fromisoformat(data["created_at"]),
-            last_login=(
-                datetime.fromisoformat(data["last_login"])
-                if data["last_login"]
-                else None
-            ),
+            last_login=(datetime.fromisoformat(data["last_login"]) if data["last_login"] else None),
             mfa_enabled=data.get("mfa_enabled", False),
             password_changed_at=datetime.fromisoformat(data["password_changed_at"]),
             failed_login_attempts=data.get("failed_login_attempts", 0),
@@ -241,10 +237,8 @@ class AuthenticationError(Exception):
     """Authentication related errors."""
 
 
-
 class AuthorizationError(Exception):
     """Authorization related errors."""
-
 
 
 class EnhancedAuthService:
@@ -428,9 +422,7 @@ class EnhancedAuthService:
 
                 if user_data:
                     # Cache for future use
-                    await self._cache_user(
-                        username, user_data["user"], user_data["password_hash"]
-                    )
+                    await self._cache_user(username, user_data["user"], user_data["password_hash"])
 
             if not user_data:
                 self._update_auth_metrics(time.time() - start_time, False)
@@ -450,9 +442,7 @@ class EnhancedAuthService:
                 # Lock account if too many failures
                 if user.failed_login_attempts >= self.max_login_attempts:
                     user.locked_until = datetime.now(timezone.utc) + self.lockout_duration
-                    logger.warning(
-                        f"Account {username} locked due to too many failed attempts"
-                    )
+                    logger.warning(f"Account {username} locked due to too many failed attempts")
 
                 await self._cache_user(username, user, user_data["password_hash"])
                 self._update_auth_metrics(time.time() - start_time, False)
@@ -502,9 +492,7 @@ class EnhancedAuthService:
 
         return None
 
-    async def _create_session(
-        self, user: User, ip_address: str, user_agent: str
-    ) -> UserSession:
+    async def _create_session(self, user: User, ip_address: str, user_agent: str) -> UserSession:
         """Create a new user session."""
         session_id = secrets.token_urlsafe(32)
 
@@ -663,12 +651,8 @@ class EnhancedAuthService:
             else 1.0
         )
 
-        cache_total = (
-            self.auth_metrics["cache_hits"] + self.auth_metrics["cache_misses"]
-        )
-        cache_hit_rate = (
-            self.auth_metrics["cache_hits"] / cache_total if cache_total > 0 else 0.0
-        )
+        cache_total = self.auth_metrics["cache_hits"] + self.auth_metrics["cache_misses"]
+        cache_hit_rate = self.auth_metrics["cache_hits"] / cache_total if cache_total > 0 else 0.0
 
         return {
             "total_authentications": total_auths,

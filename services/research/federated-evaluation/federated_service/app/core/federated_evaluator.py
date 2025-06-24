@@ -13,7 +13,7 @@ import hashlib
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
@@ -148,9 +148,7 @@ class FederatedEvaluator:
             # Setup Byzantine fault detection
             await self._initialize_byzantine_detection()
 
-            logger.info(
-                "Federated Evaluator initialized successfully with multi-node support"
-            )
+            logger.info("Federated Evaluator initialized successfully with multi-node support")
 
         except Exception as e:
             logger.error(f"Failed to initialize Federated Evaluator: {e}")
@@ -226,9 +224,7 @@ class FederatedEvaluator:
                 for node_id, node in self.nodes.items():
                     # Check heartbeat timeout
                     if node.last_heartbeat:
-                        time_since_heartbeat = (
-                            current_time - node.last_heartbeat
-                        ).total_seconds()
+                        time_since_heartbeat = (current_time - node.last_heartbeat).total_seconds()
 
                         if time_since_heartbeat > self.node_timeout_threshold:
                             await self._handle_node_timeout(node_id)
@@ -281,9 +277,7 @@ class FederatedEvaluator:
 
             # Calculate health score based on multiple factors
             success_rate = node.successful_evaluations / max(node.total_evaluations, 1)
-            response_time_factor = min(
-                1.0, 1000.0 / max(node.average_response_time_ms, 100.0)
-            )
+            response_time_factor = min(1.0, 1000.0 / max(node.average_response_time_ms, 100.0))
 
             # Combine factors with weights
             health_score = (
@@ -331,9 +325,7 @@ class FederatedEvaluator:
                 await self._handle_performance_anomaly(node_id, anomalies)
 
         except Exception as e:
-            logger.error(
-                f"Error checking performance anomalies for node {node_id}: {e}"
-            )
+            logger.error(f"Error checking performance anomalies for node {node_id}: {e}")
 
     async def _handle_performance_anomaly(self, node_id: str, anomalies: list[str]):
         # requires: Valid input parameters
@@ -341,9 +333,7 @@ class FederatedEvaluator:
         # sha256: func_hash
         """Handle detected performance anomalies."""
         try:
-            logger.warning(
-                f"Performance anomalies detected for node {node_id}: {anomalies}"
-            )
+            logger.warning(f"Performance anomalies detected for node {node_id}: {anomalies}")
 
             # Increase monitoring frequency for this node
             # Reduce evaluation assignments temporarily
@@ -386,9 +376,7 @@ class FederatedEvaluator:
             import httpx
 
             # Create HTTP client for GS service communication
-            self.mab_client = httpx.AsyncClient(
-                base_url="http://gs_service:8004", timeout=30.0
-            )
+            self.mab_client = httpx.AsyncClient(base_url="http://gs_service:8004", timeout=30.0)
 
             # Test connection
             response = await self.mab_client.get("/health")
@@ -421,9 +409,7 @@ class FederatedEvaluator:
             # Store in database
             await self._store_node_config(node)
 
-            logger.info(
-                f"Registered federated node: {node_id} ({node_config.platform_type.value})"
-            )
+            logger.info(f"Registered federated node: {node_id} ({node_config.platform_type.value})")
             return node_id
 
         except Exception as e:
@@ -463,9 +449,7 @@ class FederatedEvaluator:
             await self._store_evaluation_in_db(task, selected_nodes)
 
             # Start evaluation asynchronously with selected nodes
-            asyncio.create_task(
-                self._execute_federated_evaluation(task, selected_nodes)
-            )
+            asyncio.create_task(self._execute_federated_evaluation(task, selected_nodes))
 
             logger.info(
                 f"Submitted federated evaluation: {task_id} with {len(selected_nodes)} nodes"
@@ -492,9 +476,7 @@ class FederatedEvaluator:
                     available_nodes.append((node_id, node))
 
             if len(available_nodes) < 2:
-                raise ValueError(
-                    f"Insufficient nodes available for platforms: {target_platforms}"
-                )
+                raise ValueError(f"Insufficient nodes available for platforms: {target_platforms}")
 
             # Sort nodes by health score and current load
             def node_score(node_data):
@@ -524,27 +506,21 @@ class FederatedEvaluator:
                 target_node_count = min(max_nodes, 3)
 
             selected_node_count = max(min_nodes, target_node_count)
-            selected_nodes = [
-                node_id for node_id, _ in available_nodes[:selected_node_count]
-            ]
+            selected_nodes = [node_id for node_id, _ in available_nodes[:selected_node_count]]
 
             # Update current loads
             for node_id in selected_nodes:
                 current_load = self.node_load_balancer["current_loads"].get(node_id, 0)
                 self.node_load_balancer["current_loads"][node_id] = current_load + 1
 
-            logger.info(
-                f"Selected {len(selected_nodes)} nodes for evaluation: {selected_nodes}"
-            )
+            logger.info(f"Selected {len(selected_nodes)} nodes for evaluation: {selected_nodes}")
             return selected_nodes
 
         except Exception as e:
             logger.error(f"Failed to select optimal nodes: {e}")
             raise
 
-    async def _store_evaluation_in_db(
-        self, task: EvaluationTask, selected_nodes: list[str]
-    ):
+    async def _store_evaluation_in_db(self, task: EvaluationTask, selected_nodes: list[str]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -629,26 +605,18 @@ class FederatedEvaluator:
 
                 if new_nodes:
                     # Restart evaluation with new nodes
-                    asyncio.create_task(
-                        self._execute_federated_evaluation(task, new_nodes)
-                    )
-                    logger.info(
-                        f"Redistributed evaluation {task_id} to new nodes: {new_nodes}"
-                    )
+                    asyncio.create_task(self._execute_federated_evaluation(task, new_nodes))
+                    logger.info(f"Redistributed evaluation {task_id} to new nodes: {new_nodes}")
                 else:
                     # Mark evaluation as failed if no nodes available
                     task.status = EvaluationStatus.FAILED
-                    task.results["error"] = (
-                        f"No available nodes after {failed_node_id} failure"
-                    )
+                    task.results["error"] = f"No available nodes after {failed_node_id} failure"
                     logger.warning(
                         f"Failed to redistribute evaluation {task_id} - no available nodes"
                     )
 
         except Exception as e:
-            logger.error(
-                f"Failed to redistribute evaluations from node {failed_node_id}: {e}"
-            )
+            logger.error(f"Failed to redistribute evaluations from node {failed_node_id}: {e}")
 
     async def _update_load_balancing_weights(self):
         # requires: Valid input parameters
@@ -687,9 +655,7 @@ class FederatedEvaluator:
                 if response.status_code == 200:
                     template_data = response.json()
                     mab_context["selected_template"] = template_data
-                    logger.debug(
-                        f"MAB template selected: {template_data.get('template_id')}"
-                    )
+                    logger.debug(f"MAB template selected: {template_data.get('template_id')}")
 
             except Exception as e:
                 logger.warning(f"Failed to get MAB context: {e}")
@@ -752,9 +718,7 @@ class FederatedEvaluator:
             execution_time = time.time() - start_time
             await self._update_evaluation_metrics(task, execution_time, True)
 
-            logger.info(
-                f"Federated evaluation completed: {task.task_id} in {execution_time:.2f}s"
-            )
+            logger.info(f"Federated evaluation completed: {task.task_id} in {execution_time:.2f}s")
 
         except Exception as e:
             task.status = EvaluationStatus.FAILED
@@ -791,9 +755,7 @@ class FederatedEvaluator:
 
         return selected_nodes
 
-    async def _evaluate_on_node(
-        self, node: FederatedNode, task: EvaluationTask
-    ) -> dict[str, Any]:
+    async def _evaluate_on_node(self, node: FederatedNode, task: EvaluationTask) -> dict[str, Any]:
         """Execute evaluation on a specific federated node."""
         try:
             # Prepare evaluation payload
@@ -913,11 +875,7 @@ class FederatedEvaluator:
                 response = await client.post(
                     f"{node.endpoint_url}/federated-evaluate",
                     json=payload,
-                    headers=(
-                        {"Authorization": f"Bearer {node.api_key}"}
-                        if node.api_key
-                        else {}
-                    ),
+                    headers=({"Authorization": f"Bearer {node.api_key}"} if node.api_key else {}),
                 )
 
                 if response.status_code == 200:
@@ -936,9 +894,7 @@ class FederatedEvaluator:
         except Exception as e:
             return {"error": str(e), "success": False, "node_id": node.node_id}
 
-    async def _update_mab_performance(
-        self, task: EvaluationTask, results: dict[str, Any]
-    ):
+    async def _update_mab_performance(self, task: EvaluationTask, results: dict[str, Any]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -964,18 +920,12 @@ class FederatedEvaluator:
             }
 
             # Send update to MAB system
-            response = await self.mab_client.post(
-                "/api/v1/mab/update-performance", json=mab_update
-            )
+            response = await self.mab_client.post("/api/v1/mab/update-performance", json=mab_update)
 
             if response.status_code == 200:
-                logger.debug(
-                    f"MAB performance updated for template: {mab_update['template_id']}"
-                )
+                logger.debug(f"MAB performance updated for template: {mab_update['template_id']}")
             else:
-                logger.warning(
-                    f"Failed to update MAB performance: {response.status_code}"
-                )
+                logger.warning(f"Failed to update MAB performance: {response.status_code}")
 
         except Exception as e:
             logger.error(f"Failed to update MAB performance: {e}")
@@ -1036,11 +986,11 @@ class FederatedEvaluator:
 
                 # Update consistency and privacy scores from results
                 if task.results:
-                    self.evaluation_metrics["cross_platform_consistency"] = (
-                        task.results.get("consistency_score", 0.0)
+                    self.evaluation_metrics["cross_platform_consistency"] = task.results.get(
+                        "consistency_score", 0.0
                     )
-                    self.evaluation_metrics["privacy_preservation_score"] = (
-                        task.results.get("privacy_score", 0.0)
+                    self.evaluation_metrics["privacy_preservation_score"] = task.results.get(
+                        "privacy_score", 0.0
                     )
             else:
                 self.evaluation_metrics["failed_evaluations"] += 1
@@ -1076,9 +1026,7 @@ class FederatedEvaluator:
 
                 # Update response time
                 if "execution_time_ms" in result:
-                    current_avg = node.performance_metrics.get(
-                        "average_response_time", 0.0
-                    )
+                    current_avg = node.performance_metrics.get("average_response_time", 0.0)
                     total_evals = node.performance_metrics["total_evaluations"]
                     node.performance_metrics["average_response_time"] = (
                         current_avg * (total_evals - 1) + result["execution_time_ms"]
@@ -1111,13 +1059,9 @@ class FederatedEvaluator:
                 "status": task.status.value,
                 "created_at": task.created_at.isoformat(),
                 "target_platforms": [p.value for p in task.target_platforms],
-                "results": (
-                    task.results if task.status == EvaluationStatus.COMPLETED else None
-                ),
+                "results": (task.results if task.status == EvaluationStatus.COMPLETED else None),
                 "error": (
-                    task.results.get("error")
-                    if task.status == EvaluationStatus.FAILED
-                    else None
+                    task.results.get("error") if task.status == EvaluationStatus.FAILED else None
                 ),
             }
 

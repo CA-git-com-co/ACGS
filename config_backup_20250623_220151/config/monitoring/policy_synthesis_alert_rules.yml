@@ -1,0 +1,162 @@
+groups:
+  - name: policy_synthesis_enhancement
+    rules:
+      - alert: PolicySynthesisHighResponseTime
+        expr: policy_synthesis_response_time_seconds > 2.0
+        for: 2m
+        labels:
+          severity: warning
+          component: policy_synthesis
+          team: acgs
+        annotations:
+          summary: 'Policy synthesis response time exceeds 2s target'
+          description: 'Policy synthesis response time is {{ $value }}s, which exceeds the 2s target. This may impact user experience and system performance.'
+          runbook_url: 'https://docs.acgs.ai/runbooks/policy-synthesis-performance'
+
+      - alert: PolicySynthesisLowAccuracy
+        expr: policy_synthesis_error_prediction_accuracy < 0.95
+        for: 5m
+        labels:
+          severity: critical
+          component: policy_synthesis
+          team: acgs
+        annotations:
+          summary: 'Policy synthesis error prediction accuracy below 95%'
+          description: 'Error prediction accuracy is {{ $value | humanizePercentage }}, which is below the 95% target. This may lead to increased synthesis errors.'
+          runbook_url: 'https://docs.acgs.ai/runbooks/error-prediction-accuracy'
+
+      - alert: MultiModelConsensusFailure
+        expr: multi_model_consensus_success_rate < 0.95
+        for: 3m
+        labels:
+          severity: warning
+          component: multi_model_consensus
+          team: acgs
+        annotations:
+          summary: 'Multi-model consensus success rate below 95%'
+          description: 'Multi-model consensus success rate is {{ $value | humanizePercentage }}, indicating potential issues with model coordination.'
+          runbook_url: 'https://docs.acgs.ai/runbooks/multi-model-consensus'
+
+      - alert: PolicySynthesisHighErrorRate
+        expr: rate(policy_synthesis_errors_total[5m]) > 0.01
+        for: 2m
+        labels:
+          severity: warning
+          component: policy_synthesis
+          team: acgs
+        annotations:
+          summary: 'High error rate in policy synthesis'
+          description: 'Policy synthesis error rate is {{ $value | humanize }} errors/sec, which exceeds the 1% threshold.'
+          runbook_url: 'https://docs.acgs.ai/runbooks/synthesis-errors'
+
+      - alert: PolicySynthesisServiceDown
+        expr: up{job="policy-synthesis-enhancement"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: policy_synthesis
+          team: acgs
+        annotations:
+          summary: 'Policy Synthesis Enhancement service is down'
+          description: 'The Policy Synthesis Enhancement service has been down for more than 1 minute.'
+          runbook_url: 'https://docs.acgs.ai/runbooks/service-down'
+
+      - alert: PolicySynthesisHighCPUUsage
+        expr: policy_synthesis_cpu_usage > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          component: policy_synthesis
+          team: acgs
+        annotations:
+          summary: 'High CPU usage in Policy Synthesis service'
+          description: 'CPU usage is {{ $value | humanizePercentage }}, which may impact performance.'
+          runbook_url: 'https://docs.acgs.ai/runbooks/high-cpu-usage'
+
+      - alert: PolicySynthesisHighMemoryUsage
+        expr: policy_synthesis_memory_usage > 0.85
+        for: 5m
+        labels:
+          severity: warning
+          component: policy_synthesis
+          team: acgs
+        annotations:
+          summary: 'High memory usage in Policy Synthesis service'
+          description: 'Memory usage is {{ $value | humanizePercentage }}, approaching critical levels.'
+          runbook_url: 'https://docs.acgs.ai/runbooks/high-memory-usage'
+
+      - alert: ThresholdOptimizationStale
+        expr: time() - policy_synthesis_last_threshold_optimization > 604800 # 1 week
+        for: 1h
+        labels:
+          severity: info
+          component: threshold_optimization
+          team: acgs
+        annotations:
+          summary: "Threshold optimization hasn't run in over a week"
+          description: 'Threshold optimization last ran {{ $value | humanizeDuration }} ago. Consider running optimization to maintain performance.'
+          runbook_url: 'https://docs.acgs.ai/runbooks/threshold-optimization'
+
+      - alert: ABTestPerformanceDegradation
+        expr: |
+          (
+            policy_synthesis_ab_test_enhanced_performance - 
+            policy_synthesis_ab_test_standard_performance
+          ) < 0.05
+        for: 10m
+        labels:
+          severity: info
+          component: ab_testing
+          team: acgs
+        annotations:
+          summary: 'A/B test shows minimal performance improvement'
+          description: 'Enhanced strategy performance improvement is only {{ $value | humanizePercentage }}, which is below expected levels.'
+          runbook_url: 'https://docs.acgs.ai/runbooks/ab-test-analysis'
+
+      - alert: PolicySynthesisQualityDrop
+        expr: policy_synthesis_quality_score < 0.8
+        for: 5m
+        labels:
+          severity: warning
+          component: policy_synthesis
+          team: acgs
+        annotations:
+          summary: 'Policy synthesis quality score has dropped'
+          description: 'Quality score is {{ $value }}, which is below the 0.8 threshold. This may indicate issues with synthesis algorithms.'
+          runbook_url: 'https://docs.acgs.ai/runbooks/quality-degradation'
+
+  - name: policy_synthesis_sla
+    rules:
+      - alert: PolicySynthesisSLABreach
+        expr: |
+          (
+            sum(rate(policy_synthesis_request_duration_seconds_bucket{le="2.0"}[5m])) /
+            sum(rate(policy_synthesis_request_duration_seconds_count[5m]))
+          ) < 0.95
+        for: 5m
+        labels:
+          severity: critical
+          component: policy_synthesis
+          team: acgs
+          sla: response_time
+        annotations:
+          summary: 'Policy Synthesis SLA breach - 95% of requests not completing within 2s'
+          description: 'Only {{ $value | humanizePercentage }} of requests are completing within the 2s SLA target.'
+          runbook_url: 'https://docs.acgs.ai/runbooks/sla-breach'
+
+      - alert: PolicySynthesisUptimeSLABreach
+        expr: |
+          (
+            sum(up{job="policy-synthesis-enhancement"}) /
+            count(up{job="policy-synthesis-enhancement"})
+          ) < 0.99
+        for: 1m
+        labels:
+          severity: critical
+          component: policy_synthesis
+          team: acgs
+          sla: uptime
+        annotations:
+          summary: 'Policy Synthesis uptime SLA breach - below 99%'
+          description: 'Service uptime is {{ $value | humanizePercentage }}, which is below the 99% SLA target.'
+          runbook_url: 'https://docs.acgs.ai/runbooks/uptime-sla-breach'

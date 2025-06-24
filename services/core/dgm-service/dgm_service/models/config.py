@@ -2,9 +2,9 @@
 System configuration model for DGM service.
 """
 
-from typing import Dict, Any
+from typing import Any, Dict
 
-from sqlalchemy import Column, String, Text, DateTime, Boolean
+from sqlalchemy import Boolean, Column, DateTime, String, Text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
@@ -18,8 +18,7 @@ class SystemConfiguration(Base):
     __tablename__ = "system_configurations"
     __table_args__ = {"schema": "dgm"}
 
-    id = Column(PG_UUID(as_uuid=True), primary_key=True,
-                server_default=func.uuid_generate_v4())
+    id = Column(PG_UUID(as_uuid=True), primary_key=True, server_default=func.uuid_generate_v4())
 
     # Configuration key-value
     key = Column(String(255), nullable=False, unique=True, index=True)
@@ -33,14 +32,13 @@ class SystemConfiguration(Base):
     is_readonly = Column(Boolean, default=False)
 
     # Constitutional compliance
-    constitutional_hash = Column(String(64), nullable=False,
-                                default="cdd01ef066bc6cf2")
+    constitutional_hash = Column(String(64), nullable=False, default="cdd01ef066bc6cf2")
 
     # Timestamps
-    created_at = Column(DateTime(timezone=True), nullable=False,
-                       server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), nullable=False,
-                       server_default=func.now(), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    updated_at = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
+    )
 
     def __repr__(self):
         return f"<SystemConfiguration(key={self.key}, category={self.category})>"
@@ -58,5 +56,5 @@ class SystemConfiguration(Base):
             "is_readonly": self.is_readonly,
             "constitutional_hash": self.constitutional_hash,
             "created_at": self.created_at.isoformat() if self.created_at else None,
-            "updated_at": self.updated_at.isoformat() if self.updated_at else None
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }

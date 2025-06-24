@@ -13,12 +13,20 @@ from datetime import datetime
 from pathlib import Path
 
 
-def run_command(command: str, capture_output: bool = True) -> tuple[int, str, str]:
-    """Run shell command and return exit code, stdout, stderr."""
+def run_command(command: list[str], capture_output: bool = True) -> tuple[int, str, str]:
+    """Run command safely without shell injection and return exit code, stdout, stderr.
+
+    Args:
+        command: List of command arguments (e.g., ['python', '-m', 'pytest', 'tests/'])
+        capture_output: Whether to capture stdout/stderr
+
+    Returns:
+        Tuple of (exit_code, stdout, stderr)
+    """
     try:
         result = subprocess.run(
             command,
-            shell=True,
+            shell=False,  # SECURITY: Disabled shell to prevent injection attacks
             capture_output=capture_output,
             text=True,
             cwd=Path(__file__).parent,
@@ -32,10 +40,9 @@ def run_unit_tests(verbose: bool = False) -> dict:
     """Run unit tests and return results."""
     print("🧪 Running unit tests...")
 
-    cmd = "python -m pytest tests/test_generation_engine.py -m unit"
+    cmd = ["python", "-m", "pytest", "tests/test_generation_engine.py", "-m", "unit", "--tb=short"]
     if verbose:
-        cmd += " -v"
-    cmd += " --tb=short"
+        cmd.append("-v")
 
     exit_code, stdout, stderr = run_command(cmd)
 
@@ -52,10 +59,9 @@ def run_integration_tests(verbose: bool = False) -> dict:
     """Run integration tests and return results."""
     print("🔗 Running integration tests...")
 
-    cmd = "python -m pytest tests/test_integration.py -m integration"
+    cmd = ["python", "-m", "pytest", "tests/test_integration.py", "-m", "integration", "--tb=short"]
     if verbose:
-        cmd += " -v"
-    cmd += " --tb=short"
+        cmd.append("-v")
 
     exit_code, stdout, stderr = run_command(cmd)
 
@@ -72,10 +78,9 @@ def run_performance_tests(verbose: bool = False) -> dict:
     """Run performance tests and return results."""
     print("⚡ Running performance tests...")
 
-    cmd = "python -m pytest tests/test_performance.py -m performance"
+    cmd = ["python", "-m", "pytest", "tests/test_performance.py", "-m", "performance", "--tb=short"]
     if verbose:
-        cmd += " -v"
-    cmd += " --tb=short"
+        cmd.append("-v")
 
     exit_code, stdout, stderr = run_command(cmd)
 
@@ -92,7 +97,8 @@ def run_coverage_tests() -> dict:
     """Run tests with coverage reporting."""
     print("📊 Running tests with coverage...")
 
-    cmd = "python -m pytest tests/ --cov=src --cov-report=term-missing --cov-report=html:htmlcov"
+    cmd = ["python", "-m", "pytest", "tests/", "--cov=src",
+           "--cov-report=term-missing", "--cov-report=html:htmlcov"]
 
     exit_code, stdout, stderr = run_command(cmd)
 

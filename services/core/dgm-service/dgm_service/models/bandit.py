@@ -3,9 +3,9 @@ Bandit algorithm state model for DGM service.
 """
 
 import enum
-from typing import Dict, Any
+from typing import Any, Dict
 
-from sqlalchemy import Column, String, DateTime, Enum, Numeric, JSON, Integer
+from sqlalchemy import JSON, Column, DateTime, Enum, Integer, Numeric, String
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
@@ -15,6 +15,7 @@ Base = declarative_base()
 
 class BanditAlgorithmType(enum.Enum):
     """Type of bandit algorithm."""
+
     EPSILON_GREEDY = "epsilon_greedy"
     UCB1 = "ucb1"
     THOMPSON_SAMPLING = "thompson_sampling"
@@ -28,8 +29,7 @@ class BanditState(Base):
     __tablename__ = "bandit_states"
     __table_args__ = {"schema": "dgm"}
 
-    id = Column(PG_UUID(as_uuid=True), primary_key=True,
-                server_default=func.uuid_generate_v4())
+    id = Column(PG_UUID(as_uuid=True), primary_key=True, server_default=func.uuid_generate_v4())
 
     # Bandit configuration
     algorithm_type = Column(Enum(BanditAlgorithmType), nullable=False, index=True)
@@ -56,18 +56,19 @@ class BanditState(Base):
     exploration_data = Column(JSON, default=dict)  # Exploration history
 
     # Constitutional compliance
-    constitutional_hash = Column(String(64), nullable=False,
-                                default="cdd01ef066bc6cf2")
+    constitutional_hash = Column(String(64), nullable=False, default="cdd01ef066bc6cf2")
 
     # Timestamps
-    last_updated = Column(DateTime(timezone=True), nullable=False,
-                         server_default=func.now(), onupdate=func.now())
-    created_at = Column(DateTime(timezone=True), nullable=False,
-                       server_default=func.now())
+    last_updated = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
+    )
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
 
     def __repr__(self):
-        return (f"<BanditState(algorithm={self.algorithm_type}, "
-                f"context={self.context_key}, arm={self.arm_id})>")
+        return (
+            f"<BanditState(algorithm={self.algorithm_type}, "
+            f"context={self.context_key}, arm={self.arm_id})>"
+        )
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary representation."""
@@ -89,5 +90,5 @@ class BanditState(Base):
             "exploration_data": self.exploration_data,
             "constitutional_hash": self.constitutional_hash,
             "last_updated": self.last_updated.isoformat() if self.last_updated else None,
-            "created_at": self.created_at.isoformat() if self.created_at else None
+            "created_at": self.created_at.isoformat() if self.created_at else None,
         }

@@ -51,9 +51,7 @@ class Settings(BaseSettings):
             return []
         # Split by comma and strip whitespace
         origins = [
-            origin.strip()
-            for origin in self.BACKEND_CORS_ORIGINS.split(",")
-            if origin.strip()
+            origin.strip() for origin in self.BACKEND_CORS_ORIGINS.split(",") if origin.strip()
         ]
         # Basic URL validation - ensure they start with http:// or https://
         validated_origins = []
@@ -62,9 +60,7 @@ class Settings(BaseSettings):
                 validated_origins.append(origin)
             else:
                 # Log warning but don't fail - allow for development flexibility
-                print(
-                    f"Warning: CORS origin '{origin}' does not start with http:// or https://"
-                )
+                print(f"Warning: CORS origin '{origin}' does not start with http:// or https://")
                 validated_origins.append(origin)
         return validated_origins
 

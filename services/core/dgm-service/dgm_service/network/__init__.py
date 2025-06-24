@@ -9,14 +9,9 @@ This module handles:
 - Network security and authentication
 """
 
-from .service_client import ACGSServiceClient
-from .service_registry import ServiceRegistry
 from .circuit_breaker import CircuitBreaker
 from .load_balancer import LoadBalancer
+from .service_client import ACGSServiceClient
+from .service_registry import ServiceRegistry
 
-__all__ = [
-    "ACGSServiceClient",
-    "ServiceRegistry", 
-    "CircuitBreaker",
-    "LoadBalancer"
-]
+__all__ = ["ACGSServiceClient", "ServiceRegistry", "CircuitBreaker", "LoadBalancer"]

@@ -12,6 +12,7 @@ import time
 from unittest.mock import AsyncMock, patch
 
 import pytest
+
 from services.core.governance_synthesis.app.core.opa_integration import (
     OPAIntegrationError,
     PolicyDecisionResponse,

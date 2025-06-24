@@ -27,9 +27,7 @@ class MockLimiter:
 
 
 def mock_get_remote_address(request: Request) -> str:
-    return (
-        getattr(request.client, "host", "127.0.0.1") if request.client else "127.0.0.1"
-    )
+    return getattr(request.client, "host", "127.0.0.1") if request.client else "127.0.0.1"
 
 
 # Try to import slowapi, fall back to mock if not available

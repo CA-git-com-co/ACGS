@@ -7,7 +7,7 @@ duplicate formatting logic across services.
 
 import json
 import logging
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
 from typing import Any

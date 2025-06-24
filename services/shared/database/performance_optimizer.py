@@ -152,9 +152,7 @@ class DatabasePerformanceOptimizer:
         # ensures: Correct function execution
         # sha256: func_hash
         """Initialize optimized database connection."""
-        database_url = (
-            "postgresql+asyncpg://acgs_user:acgs_password@localhost:5432/acgs_pgp_db"
-        )
+        database_url = "postgresql+asyncpg://acgs_user:acgs_password@localhost:5432/acgs_pgp_db"
 
         self.db_engine = create_async_engine(
             database_url,
@@ -338,9 +336,7 @@ class DatabasePerformanceOptimizer:
 
         total_cache_operations = self.metrics.cache_hits + self.metrics.cache_misses
         if total_cache_operations > 0:
-            self.metrics.cache_hit_rate = (
-                self.metrics.cache_hits / total_cache_operations
-            ) * 100
+            self.metrics.cache_hit_rate = (self.metrics.cache_hits / total_cache_operations) * 100
 
         self.metrics.last_updated = datetime.utcnow()
 
@@ -607,9 +603,7 @@ class DatabasePerformanceOptimizer:
             keys = await self.redis_client.keys(pattern)
             if keys:
                 await self.redis_client.delete(*keys)
-                logger.info(
-                    f"Invalidated {len(keys)} cache keys matching pattern: {pattern}"
-                )
+                logger.info(f"Invalidated {len(keys)} cache keys matching pattern: {pattern}")
         except Exception as e:
             logger.warning(f"Cache invalidation error for pattern {pattern}: {e}")
 
@@ -795,9 +789,7 @@ class IntelligentCacheManager:
     ) -> int:
         """Calculate adaptive TTL based on access patterns and data type."""
         # Start with base TTL from policy
-        base_ttl = self.config.ttl_policies.get(
-            data_type, self.config.default_ttl_seconds
-        )
+        base_ttl = self.config.ttl_policies.get(data_type, self.config.default_ttl_seconds)
 
         # Get access pattern for this key
         pattern = self.access_patterns.get(key, {})
@@ -822,9 +814,7 @@ class IntelligentCacheManager:
         # Ensure TTL is within bounds
         return max(self.min_ttl, min(adjusted_ttl, self.max_ttl))
 
-    async def _update_access_pattern(
-        self, key: str, operation: str, ttl: int | None = None
-    ):
+    async def _update_access_pattern(self, key: str, operation: str, ttl: int | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash

@@ -123,9 +123,7 @@ class ServiceCommunicationOptimizer:
         if self.is_running:
             self._start_health_checking(config.name)
 
-        logger.info(
-            f"Registered service: {config.name} with {len(config.endpoints)} endpoints"
-        )
+        logger.info(f"Registered service: {config.name} with {len(config.endpoints)} endpoints")
 
     def add_acgs_services(self):
         """Add standard ACGS-1 services configuration."""
@@ -213,9 +211,7 @@ class ServiceCommunicationOptimizer:
         # Select endpoint using load balancing
         endpoint = await self._select_endpoint(service_config)
         if not endpoint:
-            raise RuntimeError(
-                f"No healthy endpoints available for service: {service_name}"
-            )
+            raise RuntimeError(f"No healthy endpoints available for service: {service_name}")
 
         # Make request through circuit breaker
         return await circuit_breaker.call(
@@ -283,9 +279,7 @@ class ServiceCommunicationOptimizer:
         finally:
             endpoint.current_connections -= 1
 
-    async def _select_endpoint(
-        self, service_config: ServiceConfig
-    ) -> ServiceEndpoint | None:
+    async def _select_endpoint(self, service_config: ServiceConfig) -> ServiceEndpoint | None:
         """Select endpoint based on load balancing strategy."""
         healthy_endpoints = [ep for ep in service_config.endpoints if ep.is_healthy]
 
@@ -315,9 +309,7 @@ class ServiceCommunicationOptimizer:
         self.round_robin_counters[service_name] = (counter + 1) % len(endpoints)
         return selected
 
-    def _weighted_round_robin_select(
-        self, endpoints: list[ServiceEndpoint]
-    ) -> ServiceEndpoint:
+    def _weighted_round_robin_select(self, endpoints: list[ServiceEndpoint]) -> ServiceEndpoint:
         """Weighted round robin endpoint selection."""
         total_weight = sum(ep.weight for ep in endpoints)
         random_weight = random.randint(1, total_weight)
@@ -396,17 +388,13 @@ class ServiceCommunicationOptimizer:
         health_status = {}
 
         for service_name, service_config in self.services.items():
-            healthy_endpoints = sum(
-                1 for ep in service_config.endpoints if ep.is_healthy
-            )
+            healthy_endpoints = sum(1 for ep in service_config.endpoints if ep.is_healthy)
             total_endpoints = len(service_config.endpoints)
 
             health_status[service_name] = {
                 "healthy_endpoints": healthy_endpoints,
                 "total_endpoints": total_endpoints,
-                "availability": (
-                    healthy_endpoints / total_endpoints if total_endpoints > 0 else 0
-                ),
+                "availability": (healthy_endpoints / total_endpoints if total_endpoints > 0 else 0),
                 "strategy": service_config.strategy.value,
                 "endpoints": [
                     {
@@ -432,9 +420,7 @@ class ServiceCommunicationOptimizer:
 
         # Wait for tasks to complete
         if self.health_check_tasks:
-            await asyncio.gather(
-                *self.health_check_tasks.values(), return_exceptions=True
-            )
+            await asyncio.gather(*self.health_check_tasks.values(), return_exceptions=True)
 
         # Close HTTP session
         if self.session:

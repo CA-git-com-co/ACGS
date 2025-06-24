@@ -10,7 +10,7 @@ import time
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
@@ -192,9 +192,7 @@ class DependencyGraphAnalyzer:
 
                 if not ready_tasks:
                     # This shouldn't happen with a valid DAG
-                    raise ValueError(
-                        "Unable to find ready tasks - possible graph corruption"
-                    )
+                    raise ValueError("Unable to find ready tasks - possible graph corruption")
 
                 levels.append(ready_tasks)
                 remaining_tasks -= set(ready_tasks)
@@ -244,9 +242,7 @@ class DependencyGraphAnalyzer:
             "total_tasks": len(self.task_registry),
             "total_edges": self.graph.number_of_edges(),
             "is_dag": nx.is_directed_acyclic_graph(self.graph),
-            "max_depth": (
-                len(nx.dag_longest_path(self.graph)) if self.graph.nodes() else 0
-            ),
+            "max_depth": (len(nx.dag_longest_path(self.graph)) if self.graph.nodes() else 0),
             "parallelization_factor": (
                 len(self.task_registry) / max(len(nx.dag_longest_path(self.graph)), 1)
                 if self.graph.nodes()
@@ -343,9 +339,7 @@ class ParallelExecutor:
             try:
                 # Execute task with timeout
                 result = await asyncio.wait_for(
-                    asyncio.get_event_loop().run_in_executor(
-                        self.thread_pool, executor_func, task
-                    ),
+                    asyncio.get_event_loop().run_in_executor(self.thread_pool, executor_func, task),
                     timeout=task.timeout_seconds,
                 )
 

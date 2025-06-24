@@ -3,20 +3,19 @@
 CLI interface for DGM database migrations.
 """
 
-import asyncio
 import argparse
+import asyncio
 import json
 import logging
 import os
 import sys
-from typing import Dict, Any
+from typing import Any, Dict
 
 from .migrations import run_dgm_migrations
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -24,8 +23,7 @@ logger = logging.getLogger(__name__)
 def get_database_url() -> str:
     """Get database URL from environment or config."""
     return os.getenv(
-        "DATABASE_URL",
-        "postgresql+asyncpg://acgs_user:acgs_password@localhost:5432/acgs_db"
+        "DATABASE_URL", "postgresql+asyncpg://acgs_user:acgs_password@localhost:5432/acgs_db"
     )
 
 
@@ -120,32 +118,22 @@ Examples:
   %(prog)s backup:my_backup          # Create backup with specific name
   %(prog)s restore:my_backup         # Restore from specific backup
   %(prog)s --database-url postgresql://... create
-        """
+        """,
     )
 
     parser.add_argument(
         "operation",
         choices=["create", "verify", "rollback", "backup", "restore"],
-        help="Migration operation to perform"
+        help="Migration operation to perform",
     )
 
     parser.add_argument(
-        "--database-url",
-        default=None,
-        help="Database URL (default: from DATABASE_URL env var)"
+        "--database-url", default=None, help="Database URL (default: from DATABASE_URL env var)"
     )
 
-    parser.add_argument(
-        "--json",
-        action="store_true",
-        help="Output results in JSON format"
-    )
+    parser.add_argument("--json", action="store_true", help="Output results in JSON format")
 
-    parser.add_argument(
-        "--verbose", "-v",
-        action="store_true",
-        help="Enable verbose logging"
-    )
+    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose logging")
 
     args = parser.parse_args()
 

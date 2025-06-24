@@ -6,6 +6,7 @@ Minimal Constitutional AI service for testing purposes without problematic secur
 
 import logging
 import time
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -54,7 +55,7 @@ async def root():
             "Transparency Requirements",
             "Accountability Framework",
         ],
-        "description": "Minimal AC service for Phase 3 validation testing"
+        "description": "Minimal AC service for Phase 3 validation testing",
     }
 
 
@@ -62,7 +63,7 @@ async def root():
 async def health_check():
     """Health check endpoint."""
     uptime_seconds = time.time() - service_start_time
-    
+
     return {
         "status": "healthy",
         "service": "simple_ac_service",
@@ -151,30 +152,36 @@ async def get_constitutional_rules():
 async def validate_constitutional_compliance(policy_data: dict):
     """Validate constitutional compliance of a policy."""
     start_time = time.time()
-    
+
     # Simple constitutional validation logic
     compliance_checks = {
-        "democratic_participation": "name" in policy_data and "stakeholder_input" in policy_data.get("process", {}),
-        "transparency": "description" in policy_data and "audit_trail" in policy_data.get("metadata", {}),
+        "democratic_participation": "name" in policy_data
+        and "stakeholder_input" in policy_data.get("process", {}),
+        "transparency": "description" in policy_data
+        and "audit_trail" in policy_data.get("metadata", {}),
         "constitutional_alignment": "constitutional_review" in policy_data.get("validation", {}),
     }
-    
+
     overall_compliance = all(compliance_checks.values())
     compliance_score = sum(compliance_checks.values()) / len(compliance_checks)
-    
+
     processing_time = (time.time() - start_time) * 1000
-    
+
     return {
         "validation_result": "compliant" if overall_compliance else "non_compliant",
         "compliance_score": compliance_score,
         "processing_time_ms": processing_time,
         "detailed_checks": compliance_checks,
         "constitutional_hash": "cdd01ef066bc6cf2",
-        "recommendations": [
-            "Ensure stakeholder input mechanisms are in place",
-            "Maintain comprehensive audit trails",
-            "Complete constitutional review process",
-        ] if not overall_compliance else [],
+        "recommendations": (
+            [
+                "Ensure stakeholder input mechanisms are in place",
+                "Maintain comprehensive audit trails",
+                "Complete constitutional review process",
+            ]
+            if not overall_compliance
+            else []
+        ),
     }
 
 
@@ -201,13 +208,13 @@ async def get_compliance_status():
 async def analyze_constitutional_impact(analysis_request: dict):
     """Analyze constitutional impact of a proposed change."""
     start_time = time.time()
-    
+
     # Simple impact analysis
     impact_score = 0.85  # Mock score
     risk_level = "low" if impact_score > 0.8 else "medium" if impact_score > 0.6 else "high"
-    
+
     processing_time = (time.time() - start_time) * 1000
-    
+
     return {
         "impact_analysis": {
             "overall_impact_score": impact_score,
@@ -229,6 +236,6 @@ async def analyze_constitutional_impact(analysis_request: dict):
 
 if __name__ == "__main__":
     import uvicorn
-    
+
     logger.info("🚀 Starting Simple AC Service on port 8001")
     uvicorn.run(app, host="0.0.0.0", port=8001)

@@ -1,0 +1,20 @@
+{
+  "cost_targets": {
+    "max_cost_per_action_sol": 0.01,
+    "target_cost_per_action_sol": 0.008,
+    "batch_cost_reduction_percent": 60
+  },
+  "optimization_settings": {
+    "enable_transaction_batching": true,
+    "max_batch_size": 5,
+    "batch_timeout_seconds": 3,
+    "enable_account_optimization": true,
+    "enable_compute_optimization": true,
+    "enable_pda_optimization": true
+  },
+  "monitoring": {
+    "track_cost_per_transaction": true,
+    "alert_threshold_sol": 0.012,
+    "cost_reporting_interval_hours": 1
+  }
+}

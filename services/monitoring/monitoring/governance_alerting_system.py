@@ -22,19 +22,19 @@ import json
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 import numpy as np
-from prometheus_client import CollectorRegistry, Gauge, Counter, Histogram
+from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram
 
 logger = logging.getLogger(__name__)
 
 
 class AlertSeverity(Enum):
     """Alert severity levels."""
-    
+
     INFO = "info"
     WARNING = "warning"
     CRITICAL = "critical"
@@ -43,7 +43,7 @@ class AlertSeverity(Enum):
 
 class AlertStatus(Enum):
     """Alert status."""
-    
+
     ACTIVE = "active"
     RESOLVED = "resolved"
     SUPPRESSED = "suppressed"
@@ -52,7 +52,7 @@ class AlertStatus(Enum):
 
 class AlertCategory(Enum):
     """Alert categories for governance."""
-    
+
     CONSTITUTIONAL_COMPLIANCE = "constitutional_compliance"
     SAFETY_VIOLATION = "safety_violation"
     PERFORMANCE_DEGRADATION = "performance_degradation"
@@ -64,31 +64,31 @@ class AlertCategory(Enum):
 @dataclass
 class Alert:
     """Individual alert with metadata."""
-    
+
     alert_id: str
     name: str
     description: str
     severity: AlertSeverity
     category: AlertCategory
     status: AlertStatus = AlertStatus.ACTIVE
-    
+
     # Metrics and context
     metric_name: str = ""
     metric_value: float = 0.0
     threshold: float = 0.0
     labels: Dict[str, str] = field(default_factory=dict)
     annotations: Dict[str, str] = field(default_factory=dict)
-    
+
     # Timing
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     resolved_at: Optional[datetime] = None
-    
+
     # Correlation
     correlation_id: Optional[str] = None
     parent_alert_id: Optional[str] = None
     related_alerts: Set[str] = field(default_factory=set)
-    
+
     # Escalation
     escalation_level: int = 0
     escalated_at: Optional[datetime] = None
@@ -99,31 +99,31 @@ class Alert:
 @dataclass
 class AlertRule:
     """Alert rule configuration."""
-    
+
     rule_id: str
     name: str
     description: str
     category: AlertCategory
     severity: AlertSeverity
-    
+
     # Condition
     metric_query: str
     threshold: float
     comparison: str  # >, <, >=, <=, ==, !=
     duration: int  # seconds
-    
+
     # Composite conditions
     composite_conditions: List[Dict[str, Any]] = field(default_factory=list)
     correlation_window: int = 300  # seconds
-    
+
     # Routing
     notification_channels: List[str] = field(default_factory=list)
     escalation_rules: List[Dict[str, Any]] = field(default_factory=list)
-    
+
     # Suppression
     suppression_rules: List[Dict[str, Any]] = field(default_factory=list)
     cooldown_period: int = 300  # seconds
-    
+
     # Metadata
     enabled: bool = True
     tags: Set[str] = field(default_factory=set)
@@ -132,26 +132,26 @@ class AlertRule:
 @dataclass
 class GovernanceAlertingConfig:
     """Configuration for governance alerting system."""
-    
+
     # Thresholds
     constitutional_compliance_threshold: float = 0.7
     safety_violation_threshold: float = 0.1
     performance_degradation_threshold: float = 0.2
-    
+
     # Timing
     evaluation_interval: int = 30  # seconds
     correlation_window: int = 300  # seconds
     escalation_timeout: int = 900  # 15 minutes
-    
+
     # Composite alerting
     enable_composite_alerts: bool = True
     pattern_detection_enabled: bool = True
     alert_correlation_enabled: bool = True
-    
+
     # Performance
     max_active_alerts: int = 1000
     alert_retention_days: int = 30
-    
+
     # Notification
     default_notification_channels: List[str] = field(default_factory=lambda: ["slack", "email"])
     emergency_notification_channels: List[str] = field(default_factory=lambda: ["pagerduty", "sms"])
@@ -160,53 +160,64 @@ class GovernanceAlertingConfig:
 class GovernanceAlertingSystem:
     """
     Composite Alerting System for AI Governance.
-    
+
     Provides sophisticated alerting capabilities with pattern detection,
     correlation, and governance-specific monitoring for ACGS.
     """
-    
+
     def __init__(self, config: GovernanceAlertingConfig):
         """Initialize governance alerting system."""
         self.config = config
-        
+
         # Alert storage
         self.active_alerts: Dict[str, Alert] = {}
         self.alert_history: List[Alert] = []
         self.alert_rules: Dict[str, AlertRule] = {}
-        
+
         # Correlation tracking
         self.correlation_groups: Dict[str, Set[str]] = {}
         self.pattern_cache: Dict[str, Any] = {}
-        
+
         # Performance metrics
         self.registry = CollectorRegistry()
         self.metrics = {
-            'alerts_total': Counter('governance_alerts_total', 
-                                  'Total number of alerts generated',
-                                  ['severity', 'category'], registry=self.registry),
-            'alerts_active': Gauge('governance_alerts_active',
-                                 'Number of active alerts',
-                                 ['severity', 'category'], registry=self.registry),
-            'alert_evaluation_duration': Histogram('governance_alert_evaluation_duration_seconds',
-                                                  'Time spent evaluating alert rules',
-                                                  registry=self.registry),
-            'composite_alerts_detected': Counter('governance_composite_alerts_detected_total',
-                                                'Number of composite alerts detected',
-                                                ['pattern'], registry=self.registry)
+            "alerts_total": Counter(
+                "governance_alerts_total",
+                "Total number of alerts generated",
+                ["severity", "category"],
+                registry=self.registry,
+            ),
+            "alerts_active": Gauge(
+                "governance_alerts_active",
+                "Number of active alerts",
+                ["severity", "category"],
+                registry=self.registry,
+            ),
+            "alert_evaluation_duration": Histogram(
+                "governance_alert_evaluation_duration_seconds",
+                "Time spent evaluating alert rules",
+                registry=self.registry,
+            ),
+            "composite_alerts_detected": Counter(
+                "governance_composite_alerts_detected_total",
+                "Number of composite alerts detected",
+                ["pattern"],
+                registry=self.registry,
+            ),
         }
-        
+
         # State tracking
         self.last_evaluation = datetime.now(timezone.utc)
         self.evaluation_count = 0
-        
+
         # Initialize default rules
         self._initialize_default_rules()
-        
+
         logger.info("Initialized Governance Alerting System")
-    
+
     def _initialize_default_rules(self):
         """Initialize default alert rules for AI governance."""
-        
+
         # Constitutional compliance rule
         constitutional_rule = AlertRule(
             rule_id="constitutional_compliance_low",
@@ -221,11 +232,11 @@ class GovernanceAlertingSystem:
             notification_channels=["slack", "email"],
             escalation_rules=[
                 {"timeout": 300, "channels": ["pagerduty"]},
-                {"timeout": 900, "channels": ["sms", "phone"]}
-            ]
+                {"timeout": 900, "channels": ["sms", "phone"]},
+            ],
         )
         self.alert_rules[constitutional_rule.rule_id] = constitutional_rule
-        
+
         # Safety violation rule
         safety_rule = AlertRule(
             rule_id="safety_violations_high",
@@ -238,12 +249,10 @@ class GovernanceAlertingSystem:
             comparison=">",
             duration=60,
             notification_channels=["pagerduty", "sms"],
-            escalation_rules=[
-                {"timeout": 180, "channels": ["phone", "emergency_contact"]}
-            ]
+            escalation_rules=[{"timeout": 180, "channels": ["phone", "emergency_contact"]}],
         )
         self.alert_rules[safety_rule.rule_id] = safety_rule
-        
+
         # MAB performance rule
         mab_performance_rule = AlertRule(
             rule_id="mab_performance_degradation",
@@ -257,11 +266,11 @@ class GovernanceAlertingSystem:
             duration=300,
             composite_conditions=[
                 {"metric": "mab_exploration_rate", "threshold": 0.8, "comparison": ">"},
-                {"metric": "mab_reward_variance", "threshold": 0.5, "comparison": ">"}
-            ]
+                {"metric": "mab_reward_variance", "threshold": 0.5, "comparison": ">"},
+            ],
         )
         self.alert_rules[mab_performance_rule.rule_id] = mab_performance_rule
-        
+
         # System health composite rule
         system_health_rule = AlertRule(
             rule_id="system_health_degraded",
@@ -276,57 +285,57 @@ class GovernanceAlertingSystem:
             composite_conditions=[
                 {"metric": "cpu_usage_percent", "threshold": 80, "comparison": ">"},
                 {"metric": "memory_usage_percent", "threshold": 85, "comparison": ">"},
-                {"metric": "response_time_p95", "threshold": 2.0, "comparison": ">"}
-            ]
+                {"metric": "response_time_p95", "threshold": 2.0, "comparison": ">"},
+            ],
         )
         self.alert_rules[system_health_rule.rule_id] = system_health_rule
-    
+
     async def start(self):
         """Start the alerting system."""
         # Start evaluation loop
         asyncio.create_task(self._evaluation_loop())
-        
+
         # Start correlation engine
         if self.config.alert_correlation_enabled:
             asyncio.create_task(self._correlation_loop())
-        
+
         # Start cleanup task
         asyncio.create_task(self._cleanup_loop())
-        
+
         logger.info("Started Governance Alerting System")
-    
+
     async def _evaluation_loop(self):
         """Main alert evaluation loop."""
         while True:
             try:
                 start_time = time.time()
-                
+
                 await self._evaluate_alert_rules()
-                
+
                 # Update metrics
                 evaluation_time = time.time() - start_time
-                self.metrics['alert_evaluation_duration'].observe(evaluation_time)
-                
+                self.metrics["alert_evaluation_duration"].observe(evaluation_time)
+
                 self.evaluation_count += 1
                 self.last_evaluation = datetime.now(timezone.utc)
-                
+
                 await asyncio.sleep(self.config.evaluation_interval)
-                
+
             except Exception as e:
                 logger.error(f"Error in alert evaluation loop: {e}")
                 await asyncio.sleep(10)
-    
+
     async def _evaluate_alert_rules(self):
         """Evaluate all alert rules."""
         for rule in self.alert_rules.values():
             if not rule.enabled:
                 continue
-            
+
             try:
                 await self._evaluate_single_rule(rule)
             except Exception as e:
                 logger.error(f"Error evaluating rule {rule.rule_id}: {e}")
-    
+
     async def _evaluate_single_rule(self, rule: AlertRule):
         """Evaluate a single alert rule."""
         # Check if rule has composite conditions
@@ -334,51 +343,51 @@ class GovernanceAlertingSystem:
             await self._evaluate_composite_rule(rule)
         else:
             await self._evaluate_simple_rule(rule)
-    
+
     async def _evaluate_simple_rule(self, rule: AlertRule):
         """Evaluate a simple (single metric) alert rule."""
         # This would integrate with Prometheus or other metrics source
         # For now, simulate metric evaluation
         metric_value = await self._get_metric_value(rule.metric_query)
-        
+
         if metric_value is None:
             return
-        
+
         # Check threshold
         condition_met = self._check_threshold(metric_value, rule.threshold, rule.comparison)
-        
+
         if condition_met:
             await self._trigger_alert(rule, metric_value)
         else:
             await self._resolve_alert_if_exists(rule.rule_id)
-    
+
     async def _evaluate_composite_rule(self, rule: AlertRule):
         """Evaluate a composite alert rule with multiple conditions."""
         conditions_met = []
-        
+
         for condition in rule.composite_conditions:
-            metric_value = await self._get_metric_value(condition['metric'])
+            metric_value = await self._get_metric_value(condition["metric"])
             if metric_value is not None:
                 condition_met = self._check_threshold(
-                    metric_value, condition['threshold'], condition['comparison']
+                    metric_value, condition["threshold"], condition["comparison"]
                 )
                 conditions_met.append(condition_met)
-        
+
         # Check if all conditions are met
         if all(conditions_met) and len(conditions_met) == len(rule.composite_conditions):
             await self._trigger_composite_alert(rule, conditions_met)
-            
+
             # Update composite alert metrics
             pattern_name = f"composite_{rule.category.value}"
-            self.metrics['composite_alerts_detected'].labels(pattern=pattern_name).inc()
+            self.metrics["composite_alerts_detected"].labels(pattern=pattern_name).inc()
         else:
             await self._resolve_alert_if_exists(rule.rule_id)
-    
+
     async def _get_metric_value(self, metric_query: str) -> Optional[float]:
         """Get metric value from monitoring system."""
         # This would integrate with Prometheus API
         # For demonstration, return simulated values
-        
+
         if "constitutional_compliance_score" in metric_query:
             return np.random.uniform(0.6, 0.95)
         elif "safety_violations" in metric_query:
@@ -391,9 +400,9 @@ class GovernanceAlertingSystem:
             return np.random.uniform(70, 90)
         elif "response_time" in metric_query:
             return np.random.uniform(0.5, 3.0)
-        
+
         return None
-    
+
     def _check_threshold(self, value: float, threshold: float, comparison: str) -> bool:
         """Check if value meets threshold condition."""
         if comparison == ">":
@@ -408,7 +417,7 @@ class GovernanceAlertingSystem:
             return abs(value - threshold) < 1e-6
         elif comparison == "!=":
             return abs(value - threshold) >= 1e-6
-        
+
         return False
 
     async def _trigger_alert(self, rule: AlertRule, metric_value: float):
@@ -438,22 +447,20 @@ class GovernanceAlertingSystem:
             annotations={
                 "metric_query": rule.metric_query,
                 "threshold": str(rule.threshold),
-                "comparison": rule.comparison
-            }
+                "comparison": rule.comparison,
+            },
         )
 
         # Add to active alerts
         self.active_alerts[alert_id] = alert
 
         # Update metrics
-        self.metrics['alerts_total'].labels(
-            severity=alert.severity.value,
-            category=alert.category.value
+        self.metrics["alerts_total"].labels(
+            severity=alert.severity.value, category=alert.category.value
         ).inc()
 
-        self.metrics['alerts_active'].labels(
-            severity=alert.severity.value,
-            category=alert.category.value
+        self.metrics["alerts_active"].labels(
+            severity=alert.severity.value, category=alert.category.value
         ).inc()
 
         # Send notifications
@@ -482,16 +489,15 @@ class GovernanceAlertingSystem:
             labels={"rule_id": rule.rule_id, "type": "composite"},
             annotations={
                 "conditions_met": str(len([c for c in conditions_met if c])),
-                "total_conditions": str(len(conditions_met))
-            }
+                "total_conditions": str(len(conditions_met)),
+            },
         )
 
         self.active_alerts[alert_id] = alert
 
         # Update metrics
-        self.metrics['alerts_total'].labels(
-            severity=alert.severity.value,
-            category=alert.category.value
+        self.metrics["alerts_total"].labels(
+            severity=alert.severity.value, category=alert.category.value
         ).inc()
 
         await self._send_alert_notifications(alert, rule)
@@ -529,9 +535,8 @@ class GovernanceAlertingSystem:
         del self.active_alerts[alert_id]
 
         # Update metrics
-        self.metrics['alerts_active'].labels(
-            severity=alert.severity.value,
-            category=alert.category.value
+        self.metrics["alerts_active"].labels(
+            severity=alert.severity.value, category=alert.category.value
         ).dec()
 
         logger.info(f"Alert resolved: {alert.name} (ID: {alert_id})")
@@ -579,7 +584,8 @@ class GovernanceAlertingSystem:
 
         # Find alerts within correlation window
         recent_alerts = [
-            alert for alert in self.active_alerts.values()
+            alert
+            for alert in self.active_alerts.values()
             if (current_time - alert.created_at) <= correlation_window
         ]
 
@@ -631,7 +637,8 @@ class GovernanceAlertingSystem:
 
         # Remove old alerts from history
         self.alert_history = [
-            alert for alert in self.alert_history
+            alert
+            for alert in self.alert_history
             if alert.resolved_at and alert.resolved_at > cutoff_time
         ]
 
@@ -639,9 +646,7 @@ class GovernanceAlertingSystem:
         old_correlations = []
         for corr_id, alert_ids in self.correlation_groups.items():
             # Check if any alerts in the group are still active
-            active_alerts_in_group = any(
-                alert_id in self.active_alerts for alert_id in alert_ids
-            )
+            active_alerts_in_group = any(alert_id in self.active_alerts for alert_id in alert_ids)
 
             if not active_alerts_in_group:
                 old_correlations.append(corr_id)
@@ -666,15 +671,15 @@ class GovernanceAlertingSystem:
             active_by_category[category] = active_by_category.get(category, 0) + 1
 
         return {
-            'active_alerts': len(self.active_alerts),
-            'total_rules': len(self.alert_rules),
-            'enabled_rules': sum(1 for rule in self.alert_rules.values() if rule.enabled),
-            'correlation_groups': len(self.correlation_groups),
-            'evaluation_count': self.evaluation_count,
-            'last_evaluation': self.last_evaluation.isoformat(),
-            'active_by_severity': active_by_severity,
-            'active_by_category': active_by_category,
-            'alert_history_size': len(self.alert_history)
+            "active_alerts": len(self.active_alerts),
+            "total_rules": len(self.alert_rules),
+            "enabled_rules": sum(1 for rule in self.alert_rules.values() if rule.enabled),
+            "correlation_groups": len(self.correlation_groups),
+            "evaluation_count": self.evaluation_count,
+            "last_evaluation": self.last_evaluation.isoformat(),
+            "active_by_severity": active_by_severity,
+            "active_by_category": active_by_category,
+            "alert_history_size": len(self.alert_history),
         }
 
     async def acknowledge_alert(self, alert_id: str, acknowledged_by: str) -> bool:

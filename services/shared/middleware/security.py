@@ -57,9 +57,7 @@ class SecurityMiddleware:
 
         # Clean old requests
         self.rate_limits[identifier] = [
-            req_time
-            for req_time in self.rate_limits[identifier]
-            if current_time - req_time < 60
+            req_time for req_time in self.rate_limits[identifier] if current_time - req_time < 60
         ]
 
         # Check limit

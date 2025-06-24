@@ -10,9 +10,6 @@ import logging
 from datetime import datetime
 from typing import Any
 
-from .services.constitutional_council_dashboard import (
-    get_constitutional_council_dashboard,
-)
 from fastapi import (
     APIRouter,
     Depends,
@@ -25,6 +22,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.auth import User
 from services.shared.database import get_async_db
+
+from .services.constitutional_council_dashboard import (
+    get_constitutional_council_dashboard,
+)
 
 
 # Placeholder function for WebSocket authentication

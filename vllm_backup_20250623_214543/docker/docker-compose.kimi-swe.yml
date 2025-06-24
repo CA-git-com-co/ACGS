@@ -1,0 +1,226 @@
+version: '3.8'
+
+# ACGS Kimi-Dev-72B SWE-bench Specialized Deployment
+# Optimized for software engineering tasks with repository processing capabilities
+
+services:
+  # =============================================================================
+  # Kimi-Dev-72B SWE-bench Service (Port 8007)
+  # =============================================================================
+  kimi_swe_service:
+    image: acgs-nano-vllm:latest
+    container_name: acgs_kimi_swe_service
+    runtime: nvidia
+    deploy:
+      resources:
+        limits:
+          memory: 64G
+          cpus: '16.0'
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      - NANO_VLLM_MODE=enabled
+      - FALLBACK_TO_VLLM=true
+      # Model Configuration (Official SWE-bench settings)
+      - MODEL_NAME=moonshotai/Kimi-Dev-72B
+      - HUGGING_FACE_HUB_TOKEN=${HUGGINGFACE_API_KEY}
+      - VLLM_WORKER_MULTIPROC_METHOD=spawn
+      - VLLM_LOGGING_LEVEL=INFO
+      
+      # SWE-bench Optimized Performance
+      - CUDA_VISIBLE_DEVICES=all
+      - VLLM_USE_MODELSCOPE=false
+      - VLLM_ATTENTION_BACKEND=FLASHINFER
+      - VLLM_CPU_KVCACHE_SPACE=40
+      - VLLM_GPU_MEMORY_UTILIZATION=0.95
+      - TENSOR_PARALLEL_SIZE=${TENSOR_PARALLEL_SIZE:-1}
+      
+      # Extended Context for Code Analysis
+      - MAX_SEQ_LEN_TO_CAPTURE=131072
+      - MAX_MODEL_LEN=131072
+      - SERVED_MODEL_NAME=kimi-dev
+      
+      # Service Configuration
+      - SERVICE_NAME=kimi_swe_service
+      - SERVICE_PORT=8007
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      
+      # ACGS Integration
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL:-http://auth_service:8000}
+      - CONSTITUTIONAL_COMPLIANCE_THRESHOLD=${CONSTITUTIONAL_COMPLIANCE_THRESHOLD:-0.95}
+      - GOVERNANCE_WORKFLOW_VALIDATION=${GOVERNANCE_WORKFLOW_VALIDATION:-true}
+      
+      # SWE-bench Repository Processing
+      - PROJECT_FILE_LOC=/app/swe_repos
+      - ENABLE_REPO_PROCESSING=true
+      - ENABLE_FILE_LOCALIZATION=true
+      - ENABLE_CODE_EDITING=true
+      
+      # Monitoring
+      - PROMETHEUS_MULTIPROC_DIR=/tmp/prometheus_multiproc_dir
+      - METRICS_ENABLED=${METRICS_ENABLED:-true}
+      - TRACING_ENABLED=${TRACING_ENABLED:-false}
+    
+    ports:
+      - '8000:8000'  # Main API port
+      - '9007:9090'  # Prometheus metrics port
+    
+    volumes:
+      # HuggingFace model cache
+      - ${HOME:-~}/.cache/huggingface:/root/.cache/huggingface
+      # SWE-bench repository data
+      - ./data/swe_repos:/app/swe_repos
+      # Kimi-Dev source code
+      - ./integrations/kimi-dev:/app/kimi-dev
+      # Prometheus metrics
+      - /tmp/prometheus_multiproc_dir:/tmp/prometheus_multiproc_dir
+      # Logs
+      - ./logs:/app/logs
+      # Configuration
+      - ./config/kimi:/app/config:ro
+    
+    command: [
+      "vllm", "serve", "moonshotai/Kimi-Dev-72B",
+      "--served-model-name", "kimi-dev",
+      "--host", "0.0.0.0",
+      "--port", "8000",
+      "--gpu-memory-utilization", "0.95",
+      "--max-seq-len-to-capture", "131072",
+      "--tensor-parallel-size", "1",
+      "--trust-remote-code",
+      "--disable-log-stats"
+    ]
+    
+    networks:
+      - acgs_network
+    
+    restart: unless-stopped
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 600s  # Extended startup time for large model
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "10"
+        labels: "service=kimi-swe,environment=${ENVIRONMENT:-development}"
+    
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.kimi-swe.rule=Host(`kimi-swe.acgs.local`)"
+      - "traefik.http.services.kimi-swe.loadbalancer.server.port=8000"
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9090"
+      - "prometheus.io/path=/metrics"
+
+  # =============================================================================
+  # Kimi-Dev Repository Processor (SWE-bench Support)
+  # =============================================================================
+  kimi_repo_processor:
+    build:
+      context: ./integrations/kimi-dev
+      dockerfile: Dockerfile.processor
+    container_name: acgs_kimi_repo_processor
+    environment:
+      - NANO_VLLM_MODE=enabled
+      - FALLBACK_TO_VLLM=true
+      - KIMI_SERVICE_URL=http://kimi_swe_service:8000
+      - PROJECT_FILE_LOC=/app/swe_repos
+      - PYTHONPATH=/app/kimi-dev
+    volumes:
+      - ./data/swe_repos:/app/swe_repos
+      - ./integrations/kimi-dev:/app/kimi-dev
+      - ./logs:/app/logs
+    networks:
+      - acgs_network
+    depends_on:
+      - kimi_swe_service
+    restart: unless-stopped
+    command: ["python", "-m", "kimidev.processor.main"]
+
+  # =============================================================================
+  # SWE-bench Data Manager
+  # =============================================================================
+  swe_data_manager:
+    image: python:3.12-slim
+    container_name: acgs_swe_data_manager
+    environment:
+      - NANO_VLLM_MODE=enabled
+      - FALLBACK_TO_VLLM=true
+      - PROJECT_FILE_LOC=/app/swe_repos
+    volumes:
+      - ./data/swe_repos:/app/swe_repos
+      - ./scripts/swe_bench:/app/scripts
+    networks:
+      - acgs_network
+    working_dir: /app
+    command: ["python", "scripts/manage_swe_data.py"]
+    restart: "no"
+
+  # =============================================================================
+  # Enhanced Monitoring for SWE-bench
+  # =============================================================================
+  kimi_swe_monitor:
+    image: prom/node-exporter:latest
+    container_name: acgs_kimi_swe_monitor
+    environment:
+      - NANO_VLLM_MODE=enabled
+      - FALLBACK_TO_VLLM=true
+      - SERVICE_NAME=kimi_swe_monitor
+      - KIMI_SERVICE_URL=http://kimi_swe_service:8000
+    ports:
+      - '9008:9100'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+      - ./data/swe_repos:/app/swe_repos:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+      - '--collector.textfile.directory=/app/swe_repos/metrics'
+    networks:
+      - acgs_network
+    restart: unless-stopped
+    depends_on:
+      - kimi_swe_service
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  acgs_network:
+    external: true
+    name: acgs_network
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  kimi_swe_cache:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${HOME:-~}/.cache/huggingface
+  
+  swe_repos_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/swe_repos
+  
+  kimi_swe_logs:
+    driver: local

@@ -1,89 +1,29 @@
-# ACGS-1 Data Flywheel Prometheus Configuration
-
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
 global:
-  scrape_interval: 15s
   evaluation_interval: 15s
-
+  scrape_interval: 15s
 rule_files:
-  # - "first_rules.yml"
-  # - "second_rules.yml"
-
+  - acgs_pgp_rules.yml
 scrape_configs:
-  # Prometheus itself
-  - job_name: 'prometheus'
+  - job_name: acgs-pgp-services
+    metrics_path: /metrics
+    scrape_interval: 10s
     static_configs:
-      - targets: ['localhost:9090']
-
-  # ACGS-1 Core Services
-  - job_name: 'acgs-auth-service'
+      - targets:
+          - ac_service:8001
+          - integrity_service:8002
+          - fv_service:8003
+          - gs_service:8004
+          - pgc_service:8005
+  - job_name: postgres
     static_configs:
-      - targets: ['host.docker.internal:8000']
-    metrics_path: '/metrics'
-    scrape_interval: 30s
-
-  - job_name: 'acgs-ac-service'
+      - targets:
+          - postgres_exporter:9187
+  - job_name: node-exporter
     static_configs:
-      - targets: ['host.docker.internal:8001']
-    metrics_path: '/metrics'
-    scrape_interval: 30s
-
-  - job_name: 'acgs-integrity-service'
-    static_configs:
-      - targets: ['host.docker.internal:8002']
-    metrics_path: '/metrics'
-    scrape_interval: 30s
-
-  - job_name: 'acgs-fv-service'
-    static_configs:
-      - targets: ['host.docker.internal:8003']
-    metrics_path: '/metrics'
-    scrape_interval: 30s
-
-  - job_name: 'acgs-gs-service'
-    static_configs:
-      - targets: ['host.docker.internal:8004']
-    metrics_path: '/metrics'
-    scrape_interval: 30s
-
-  - job_name: 'acgs-pgc-service'
-    static_configs:
-      - targets: ['host.docker.internal:8005']
-    metrics_path: '/metrics'
-    scrape_interval: 30s
-
-  - job_name: 'acgs-ec-service'
-    static_configs:
-      - targets: ['host.docker.internal:8006']
-    metrics_path: '/metrics'
-    scrape_interval: 30s
-
-  # ACGS-PGP v8 Service
-  - job_name: 'acgs-pgp-v8-service'
-    static_configs:
-      - targets: ['host.docker.internal:8010']
-    metrics_path: '/metrics'
-    scrape_interval: 15s
-
-  # Data Flywheel API (when available)
-  - job_name: 'acgs-flywheel-api'
-    static_configs:
-      - targets: ['host.docker.internal:8011']
-    metrics_path: '/metrics'
-    scrape_interval: 15s
-
-  # Infrastructure Services
-  - job_name: 'redis'
-    static_configs:
-      - targets: ['redis:6379']
-    scrape_interval: 30s
-
-  - job_name: 'mongodb'
-    static_configs:
-      - targets: ['mongodb:27017']
-    scrape_interval: 30s
-
-  - job_name: 'elasticsearch'
-    static_configs:
-      - targets: ['elasticsearch:9200']
-    metrics_path: '/_prometheus/metrics'
-    scrape_interval: 30s
+      - targets:
+          - node_exporter:9100

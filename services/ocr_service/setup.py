@@ -3,8 +3,9 @@
 Setup script for the OCR service client package.
 """
 
-from setuptools import setup, find_packages
 import os
+
+from setuptools import find_packages, setup
 
 # Read the package version from __init__.py
 about = {}

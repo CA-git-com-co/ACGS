@@ -19,6 +19,10 @@ import uuid
 from datetime import datetime
 from typing import Any
 
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi.websockets import WebSocketState
+from pydantic import BaseModel
+
 from .services.qec_error_correction_service import (
     QECErrorCorrectionService,
 )
@@ -31,9 +35,6 @@ from .workflows.multi_model_manager import get_multi_model_manager
 from .workflows.structured_output_models import (
     ConstitutionalFidelityScore,
 )
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-from fastapi.websockets import WebSocketState
-from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

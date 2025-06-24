@@ -12,9 +12,10 @@ Tests the complete API functionality including:
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
-from .main import app
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from .main import app
 
 
 class TestHITLSamplingAPI:

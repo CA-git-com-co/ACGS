@@ -1,0 +1,20 @@
+{
+  "targets": {
+    "constitution_deployment": {
+      "max_time_ms": 5000
+    },
+    "policy_proposal": {
+      "max_time_ms": 3000
+    },
+    "policy_voting": {
+      "max_time_ms": 2000
+    },
+    "compliance_check": {
+      "max_time_ms": 1000
+    }
+  },
+  "load_testing": {
+    "concurrent_users": [1, 5, 10, 25],
+    "test_duration_seconds": 60
+  }
+}

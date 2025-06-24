@@ -332,9 +332,7 @@ class WorkflowEngine:
             if workflow.id in self.running_workflows:
                 del self.running_workflows[workflow.id]
 
-    async def _execute_step(
-        self, workflow: Workflow, step: WorkflowStep
-    ) -> dict[str, Any]:
+    async def _execute_step(self, workflow: Workflow, step: WorkflowStep) -> dict[str, Any]:
         """Execute a single workflow step"""
 
         step.status = WorkflowStatus.RUNNING
@@ -358,9 +356,7 @@ class WorkflowEngine:
 
                 except TimeoutError:
                     if attempt == step.retry_count - 1:
-                        raise Exception(
-                            f"Step timed out after {step.timeout_seconds} seconds"
-                        )
+                        raise Exception(f"Step timed out after {step.timeout_seconds} seconds")
                     await asyncio.sleep(2**attempt)  # Exponential backoff
 
                 except Exception as e:
@@ -388,9 +384,7 @@ class WorkflowEngine:
 
         workflow = self.workflows[workflow_id]
 
-        completed_steps = len(
-            [s for s in workflow.steps if s.status == WorkflowStatus.COMPLETED]
-        )
+        completed_steps = len([s for s in workflow.steps if s.status == WorkflowStatus.COMPLETED])
         total_steps = len(workflow.steps)
 
         return {
@@ -400,12 +394,8 @@ class WorkflowEngine:
             "status": workflow.status.value,
             "progress": f"{completed_steps}/{total_steps}",
             "created_at": workflow.created_at.isoformat(),
-            "started_at": (
-                workflow.started_at.isoformat() if workflow.started_at else None
-            ),
-            "completed_at": (
-                workflow.completed_at.isoformat() if workflow.completed_at else None
-            ),
+            "started_at": (workflow.started_at.isoformat() if workflow.started_at else None),
+            "completed_at": (workflow.completed_at.isoformat() if workflow.completed_at else None),
             "steps": [
                 {
                     "id": step.id,
@@ -452,9 +442,7 @@ class WorkflowEngine:
         logger.info(f"Resumed workflow {workflow_id}")
         return True
 
-    def list_workflows(
-        self, status: WorkflowStatus | None = None
-    ) -> list[dict[str, Any]]:
+    def list_workflows(self, status: WorkflowStatus | None = None) -> list[dict[str, Any]]:
         """List all workflows with optional status filter"""
 
         workflows = list(self.workflows.values())

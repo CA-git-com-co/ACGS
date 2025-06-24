@@ -76,9 +76,7 @@ class ACGSTracingManager:
         self.jaeger_endpoint = jaeger_endpoint or os.getenv(
             "JAEGER_ENDPOINT", "http://localhost:14268/api/traces"
         )
-        self.otlp_endpoint = otlp_endpoint or os.getenv(
-            "OTLP_ENDPOINT", "http://localhost:4317"
-        )
+        self.otlp_endpoint = otlp_endpoint or os.getenv("OTLP_ENDPOINT", "http://localhost:4317")
 
         # Tracing components
         self.tracer_provider: Optional[TracerProvider] = None
@@ -184,9 +182,7 @@ class ACGSTracingManager:
         # Console exporter for debugging
         if self.enable_console_export or exporters_added == 0:
             console_exporter = ConsoleSpanExporter()
-            self.tracer_provider.add_span_processor(
-                BatchSpanProcessor(console_exporter)
-            )
+            self.tracer_provider.add_span_processor(BatchSpanProcessor(console_exporter))
             logger.info("✅ Console exporter configured")
 
     def _setup_propagators(self):
@@ -332,9 +328,7 @@ class ACGSTracingManager:
                                     result["compliance_score"],
                                 )
                             if "validation_status" in result:
-                                span.set_attribute(
-                                    "result.status", result["validation_status"]
-                                )
+                                span.set_attribute("result.status", result["validation_status"])
 
                         return result
                     finally:
@@ -373,9 +367,7 @@ class ACGSTracingManager:
                                     result["compliance_score"],
                                 )
                             if "validation_status" in result:
-                                span.set_attribute(
-                                    "result.status", result["validation_status"]
-                                )
+                                span.set_attribute("result.status", result["validation_status"])
 
                         return result
                     finally:

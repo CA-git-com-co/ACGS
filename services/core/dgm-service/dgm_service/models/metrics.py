@@ -3,9 +3,9 @@ Performance metrics model for DGM service.
 """
 
 import enum
-from typing import Dict, Any
+from typing import Any, Dict
 
-from sqlalchemy import Column, String, DateTime, Enum, Numeric, JSON, Integer
+from sqlalchemy import JSON, Column, DateTime, Enum, Integer, Numeric, String
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
@@ -15,6 +15,7 @@ Base = declarative_base()
 
 class MetricType(enum.Enum):
     """Type of performance metric."""
+
     LATENCY = "latency"
     THROUGHPUT = "throughput"
     ERROR_RATE = "error_rate"
@@ -27,6 +28,7 @@ class MetricType(enum.Enum):
 
 class MetricScope(enum.Enum):
     """Scope of the metric measurement."""
+
     SERVICE = "service"
     SYSTEM = "system"
     IMPROVEMENT = "improvement"
@@ -63,7 +65,9 @@ class PerformanceMetric(Base):
     constitutional_compliance_score = Column(Numeric(3, 2), nullable=True)
 
     # Timestamps
-    timestamp = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), index=True)
+    timestamp = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now(), index=True
+    )
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
 
     def __repr__(self):
@@ -85,9 +89,13 @@ class PerformanceMetric(Base):
             "dimensions": self.dimensions,
             "metadata": self.metadata,
             "constitutional_hash": self.constitutional_hash,
-            "constitutional_compliance_score": float(self.constitutional_compliance_score) if self.constitutional_compliance_score else None,
+            "constitutional_compliance_score": (
+                float(self.constitutional_compliance_score)
+                if self.constitutional_compliance_score
+                else None
+            ),
             "timestamp": self.timestamp.isoformat() if self.timestamp else None,
-            "created_at": self.created_at.isoformat() if self.created_at else None
+            "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 
 
@@ -97,8 +105,7 @@ class MetricAggregation(Base):
     __tablename__ = "metric_aggregations"
     __table_args__ = {"schema": "dgm"}
 
-    id = Column(PG_UUID(as_uuid=True), primary_key=True,
-                server_default=func.uuid_generate_v4())
+    id = Column(PG_UUID(as_uuid=True), primary_key=True, server_default=func.uuid_generate_v4())
     metric_name = Column(String(255), nullable=False, index=True)
     metric_type = Column(Enum(MetricType), nullable=False, index=True)
 
@@ -119,9 +126,10 @@ class MetricAggregation(Base):
     # Time range
     window_start = Column(DateTime(timezone=True), nullable=False, index=True)
     window_end = Column(DateTime(timezone=True), nullable=False, index=True)
-    created_at = Column(DateTime(timezone=True), nullable=False,
-                       server_default=func.now())
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
 
     def __repr__(self):
-        return (f"<MetricAggregation(name={self.metric_name}, "
-                f"window={self.time_window}, value={self.value})>")
+        return (
+            f"<MetricAggregation(name={self.metric_name}, "
+            f"window={self.time_window}, value={self.value})>"
+        )

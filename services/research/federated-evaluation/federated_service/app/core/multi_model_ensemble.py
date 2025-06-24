@@ -19,7 +19,7 @@ import logging
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
@@ -196,9 +196,7 @@ class MultiModelEnsembleCoordinator:
 
         try:
             # 1. Distribute query to all models in parallel
-            model_responses = await self._distribute_query_to_models(
-                constitutional_query
-            )
+            model_responses = await self._distribute_query_to_models(constitutional_query)
 
             # 2. Validate individual model responses
             validated_responses = await self._validate_model_responses(
@@ -211,9 +209,7 @@ class MultiModelEnsembleCoordinator:
             )
 
             # 4. Validate constitutional compliance
-            await self._validate_constitutional_compliance(
-                ensemble_decision, constitutional_query
-            )
+            await self._validate_constitutional_compliance(ensemble_decision, constitutional_query)
 
             # 5. Apply bias mitigation if needed
             if (
@@ -232,14 +228,10 @@ class MultiModelEnsembleCoordinator:
             )
 
             # 7. Update performance metrics
-            await self._update_performance_metrics(
-                ensemble_decision, constitutional_query
-            )
+            await self._update_performance_metrics(ensemble_decision, constitutional_query)
 
             # 8. Log decision details
-            logger.info(
-                f"Ensemble decision completed: {decision_id} in {total_latency:.2f}ms"
-            )
+            logger.info(f"Ensemble decision completed: {decision_id} in {total_latency:.2f}ms")
 
             return ensemble_decision
 
@@ -248,9 +240,7 @@ class MultiModelEnsembleCoordinator:
             # Return fallback decision
             return await self._generate_fallback_decision(constitutional_query, str(e))
 
-    async def _distribute_query_to_models(
-        self, query: ConstitutionalQuery
-    ) -> list[ModelResponse]:
+    async def _distribute_query_to_models(self, query: ConstitutionalQuery) -> list[ModelResponse]:
         """Distribute query to all models in parallel."""
         model_tasks = []
 
@@ -267,9 +257,7 @@ class MultiModelEnsembleCoordinator:
 
             # Filter out exceptions and failed responses
             valid_responses = [
-                response
-                for response in model_responses
-                if isinstance(response, ModelResponse)
+                response for response in model_responses if isinstance(response, ModelResponse)
             ]
 
             return valid_responses
@@ -303,9 +291,7 @@ class MultiModelEnsembleCoordinator:
             latency_ms = (time.time() - start_time) * 1000
 
             # Analyze response for constitutional alignment and bias
-            constitutional_alignment = await self._analyze_constitutional_alignment(
-                response, query
-            )
+            constitutional_alignment = await self._analyze_constitutional_alignment(response, query)
             bias_indicators = await self._detect_bias_indicators(response)
             confidence_score = await self._calculate_confidence_score(
                 response, constitutional_alignment, bias_indicators
@@ -358,9 +344,7 @@ class MultiModelEnsembleCoordinator:
         if strategy == EnsembleStrategy.WEIGHTED_AVERAGE:
             aggregated_response = await self._weighted_average_aggregation(responses)
         elif strategy == EnsembleStrategy.CONSTITUTIONAL_PRIORITY:
-            aggregated_response = await self._constitutional_priority_aggregation(
-                responses
-            )
+            aggregated_response = await self._constitutional_priority_aggregation(responses)
         elif strategy == EnsembleStrategy.CONFIDENCE_WEIGHTED:
             aggregated_response = await self._confidence_weighted_aggregation(responses)
         elif strategy == EnsembleStrategy.ADAPTIVE:
@@ -398,9 +382,7 @@ class MultiModelEnsembleCoordinator:
 
         return ensemble_decision
 
-    async def _weighted_average_aggregation(
-        self, responses: list[ModelResponse]
-    ) -> dict[str, Any]:
+    async def _weighted_average_aggregation(self, responses: list[ModelResponse]) -> dict[str, Any]:
         """Aggregate responses using weighted average."""
         total_weight = 0.0
         weighted_confidence = 0.0
@@ -427,9 +409,7 @@ class MultiModelEnsembleCoordinator:
 
         return {
             "content": aggregated_content,
-            "confidence": (
-                weighted_confidence / total_weight if total_weight > 0 else 0.0
-            ),
+            "confidence": (weighted_confidence / total_weight if total_weight > 0 else 0.0),
             "constitutional_compliance": (
                 weighted_constitutional / total_weight if total_weight > 0 else 0.0
             ),
@@ -441,9 +421,7 @@ class MultiModelEnsembleCoordinator:
     ) -> dict[str, Any]:
         """Aggregate responses prioritizing constitutional alignment."""
         # Sort responses by constitutional alignment
-        sorted_responses = sorted(
-            responses, key=lambda r: r.constitutional_alignment, reverse=True
-        )
+        sorted_responses = sorted(responses, key=lambda r: r.constitutional_alignment, reverse=True)
 
         # Use top constitutional response as base
         primary_response = sorted_responses[0]
@@ -509,9 +487,7 @@ class MultiModelEnsembleCoordinator:
             "equality",
         ]
         alignment_score = sum(
-            1
-            for keyword in constitutional_keywords
-            if keyword.lower() in response.lower()
+            1 for keyword in constitutional_keywords if keyword.lower() in response.lower()
         )
         return min(alignment_score / len(constitutional_keywords), 1.0)
 
@@ -552,9 +528,7 @@ class MultiModelEnsembleCoordinator:
     ) -> EnsembleDecision:
         """Apply constitutional correction to improve compliance."""
         # Enhanced constitutional analysis and correction
-        decision.constitutional_compliance = min(
-            decision.constitutional_compliance + 0.1, 1.0
-        )
+        decision.constitutional_compliance = min(decision.constitutional_compliance + 0.1, 1.0)
         decision.bias_mitigation_applied.append("constitutional_correction")
         return decision
 
@@ -594,8 +568,7 @@ class MultiModelEnsembleCoordinator:
         ) / total_decisions
 
         self.performance_metrics["constitutional_compliance_rate"] = (
-            self.performance_metrics["constitutional_compliance_rate"]
-            * (total_decisions - 1)
+            self.performance_metrics["constitutional_compliance_rate"] * (total_decisions - 1)
             + decision.constitutional_compliance
         ) / total_decisions
 

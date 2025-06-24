@@ -9,7 +9,7 @@ import statistics
 import time
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
@@ -52,11 +52,7 @@ class ValidationResult:
     @property
     def is_valid(self) -> bool:
         """Check if result is valid."""
-        return (
-            self.confidence_score > 0.0
-            and self.result is not None
-            and "status" in self.result
-        )
+        return self.confidence_score > 0.0 and self.result is not None and "status" in self.result
 
 
 @dataclass
@@ -138,14 +134,10 @@ class ByzantineFaultTolerantAggregator:
         aggregated.aggregation_time_ms = (time.time() - start_time) * 1000
         return aggregated
 
-    def _majority_vote_aggregation(
-        self, results: list[ValidationResult]
-    ) -> AggregatedResult:
+    def _majority_vote_aggregation(self, results: list[ValidationResult]) -> AggregatedResult:
         """Aggregate using majority vote."""
         if not results:
-            return self._create_empty_result(
-                "no_results", AggregationStrategy.MAJORITY_VOTE
-            )
+            return self._create_empty_result("no_results", AggregationStrategy.MAJORITY_VOTE)
 
         # Count votes for each status
         status_votes = Counter()
@@ -183,22 +175,16 @@ class ByzantineFaultTolerantAggregator:
             consensus_level=consensus_level,
         )
 
-    def _weighted_average_aggregation(
-        self, results: list[ValidationResult]
-    ) -> AggregatedResult:
+    def _weighted_average_aggregation(self, results: list[ValidationResult]) -> AggregatedResult:
         """Aggregate using confidence-weighted average."""
         if not results:
-            return self._create_empty_result(
-                "no_results", AggregationStrategy.WEIGHTED_AVERAGE
-            )
+            return self._create_empty_result("no_results", AggregationStrategy.WEIGHTED_AVERAGE)
 
         # Calculate weighted averages for numeric fields
         total_weight = sum(r.confidence_score for r in results)
 
         if total_weight == 0:
-            return self._create_empty_result(
-                "zero_weight", AggregationStrategy.WEIGHTED_AVERAGE
-            )
+            return self._create_empty_result("zero_weight", AggregationStrategy.WEIGHTED_AVERAGE)
 
         # Aggregate numeric scores
         weighted_scores = {}
@@ -212,9 +198,7 @@ class ByzantineFaultTolerantAggregator:
 
         # Calculate consensus level based on confidence variance
         confidences = [r.confidence_score for r in results]
-        confidence_variance = (
-            statistics.variance(confidences) if len(confidences) > 1 else 0.0
-        )
+        confidence_variance = statistics.variance(confidences) if len(confidences) > 1 else 0.0
         consensus_level = max(0.0, 1.0 - confidence_variance)
 
         final_result = {
@@ -292,9 +276,7 @@ class ByzantineFaultTolerantAggregator:
         majority_result = self._majority_vote_aggregation(results)
 
         if majority_result.consensus_level >= threshold:
-            majority_result.aggregation_strategy = (
-                AggregationStrategy.CONSENSUS_THRESHOLD
-            )
+            majority_result.aggregation_strategy = AggregationStrategy.CONSENSUS_THRESHOLD
             return majority_result
         else:
             # Consensus not reached
@@ -315,14 +297,10 @@ class ByzantineFaultTolerantAggregator:
                 conflicts_detected=["consensus_threshold_not_met"],
             )
 
-    def _first_valid_aggregation(
-        self, results: list[ValidationResult]
-    ) -> AggregatedResult:
+    def _first_valid_aggregation(self, results: list[ValidationResult]) -> AggregatedResult:
         """Return first valid result (for fast response)."""
         if not results:
-            return self._create_empty_result(
-                "no_results", AggregationStrategy.FIRST_VALID
-            )
+            return self._create_empty_result("no_results", AggregationStrategy.FIRST_VALID)
 
         # Sort by timestamp to get truly first result
         sorted_results = sorted(results, key=lambda r: r.timestamp)
@@ -337,9 +315,7 @@ class ByzantineFaultTolerantAggregator:
             consensus_level=1.0 / len(results),  # Only one result used
         )
 
-    def _create_empty_result(
-        self, reason: str, strategy: AggregationStrategy
-    ) -> AggregatedResult:
+    def _create_empty_result(self, reason: str, strategy: AggregationStrategy) -> AggregatedResult:
         """Create empty result for error cases."""
         return AggregatedResult(
             task_id="unknown",
@@ -472,8 +448,7 @@ class WebSocketStreamer:
     async def get_connection_stats(self) -> dict[str, Any]:
         """Get WebSocket connection statistics."""
         total_messages = sum(
-            metadata.get("message_count", 0)
-            for metadata in self.connection_metadata.values()
+            metadata.get("message_count", 0) for metadata in self.connection_metadata.values()
         )
 
         return {

@@ -10,11 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from ...core.constitutional_validator import ConstitutionalValidator
 from ...network.service_client import ACGSServiceClient
-from .models import (
-    ConstitutionalValidationRequest,
-    ConstitutionalValidationResponse,
-    ErrorResponse
-)
+from .models import ConstitutionalValidationRequest, ConstitutionalValidationResponse, ErrorResponse
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -34,11 +30,11 @@ async def get_service_client() -> ACGSServiceClient:
 async def validate_constitutional_compliance(
     request: ConstitutionalValidationRequest,
     validator: ConstitutionalValidator = Depends(get_constitutional_validator),
-    service_client: ACGSServiceClient = Depends(get_service_client)
+    service_client: ACGSServiceClient = Depends(get_service_client),
 ):
     """
     Validate constitutional compliance of an improvement.
-    
+
     This endpoint checks whether a proposed improvement adheres to
     the constitutional principles and governance rules.
     """
@@ -47,44 +43,40 @@ async def validate_constitutional_compliance(
         validation_result = await validator.validate_improvement(
             improvement_data=request.improvement_data,
             principles=request.principles,
-            strict_mode=request.strict_mode
+            strict_mode=request.strict_mode,
         )
-        
+
         # Also validate with the AC Service for additional checks
         try:
             ac_result = await service_client.validate_constitutional_compliance(
                 request.improvement_data
             )
-            
+
             # Combine results (take the more restrictive result)
             combined_score = min(
-                validation_result.get("compliance_score", 0),
-                ac_result.get("compliance_score", 0)
+                validation_result.get("compliance_score", 0), ac_result.get("compliance_score", 0)
             )
-            
-            combined_violations = list(set(
-                validation_result.get("violations", []) +
-                ac_result.get("violations", [])
-            ))
-            
-            combined_warnings = list(set(
-                validation_result.get("warnings", []) +
-                ac_result.get("warnings", [])
-            ))
-            
+
+            combined_violations = list(
+                set(validation_result.get("violations", []) + ac_result.get("violations", []))
+            )
+
+            combined_warnings = list(
+                set(validation_result.get("warnings", []) + ac_result.get("warnings", []))
+            )
+
         except Exception as e:
             logger.warning(f"AC Service validation failed: {e}")
             # Use only local validation if AC Service is unavailable
             combined_score = validation_result.get("compliance_score", 0)
             combined_violations = validation_result.get("violations", [])
             combined_warnings = validation_result.get("warnings", [])
-        
+
         # Determine compliance based on score and violations
         is_compliant = (
-            combined_score >= 0.8 and  # Configurable threshold
-            len(combined_violations) == 0
+            combined_score >= 0.8 and len(combined_violations) == 0  # Configurable threshold
         )
-        
+
         return ConstitutionalValidationResponse(
             is_compliant=is_compliant,
             compliance_score=combined_score,
@@ -93,44 +85,44 @@ async def validate_constitutional_compliance(
             recommendations=validation_result.get("recommendations", []),
             details={
                 "local_validation": validation_result,
-                "ac_service_validation": ac_result if 'ac_result' in locals() else None,
+                "ac_service_validation": ac_result if "ac_result" in locals() else None,
                 "validation_timestamp": validation_result.get("timestamp"),
-                "validator_version": "1.0.0"
-            }
+                "validator_version": "1.0.0",
+            },
         )
-        
+
     except Exception as e:
         logger.error(f"Constitutional validation failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Constitutional validation failed: {str(e)}"
+            detail=f"Constitutional validation failed: {str(e)}",
         )
 
 
 @router.get("/principles")
 async def get_constitutional_principles(
-    service_client: ACGSServiceClient = Depends(get_service_client)
+    service_client: ACGSServiceClient = Depends(get_service_client),
 ):
     """
     Get the current constitutional principles.
-    
+
     Returns the list of constitutional principles that are used
     for compliance validation.
     """
     try:
         principles = await service_client.get_constitutional_principles()
-        
+
         return {
             "principles": principles,
             "total_count": len(principles),
-            "last_updated": None  # TODO: Get from AC Service
+            "last_updated": None,  # TODO: Get from AC Service
         }
-        
+
     except Exception as e:
         logger.error(f"Failed to get constitutional principles: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get constitutional principles: {str(e)}"
+            detail=f"Failed to get constitutional principles: {str(e)}",
         )
 
 
@@ -138,17 +130,17 @@ async def get_constitutional_principles(
 async def get_compliance_history(
     improvement_id: Optional[UUID] = Query(None, description="Filter by improvement ID"),
     days: int = Query(30, ge=1, le=365, description="Number of days to include"),
-    min_score: Optional[float] = Query(None, ge=0, le=1, description="Minimum compliance score")
+    min_score: Optional[float] = Query(None, ge=0, le=1, description="Minimum compliance score"),
 ):
     """
     Get compliance history and trends.
-    
+
     Returns historical compliance data for analysis and monitoring.
     """
     try:
         # TODO: Implement actual compliance history retrieval
         # This would query the constitutional_compliance_log table
-        
+
         # Mock response for now
         history = {
             "period_days": days,
@@ -157,16 +149,16 @@ async def get_compliance_history(
             "compliance_rate": 0.0,
             "trend": "stable",
             "violations_by_principle": {},
-            "daily_scores": []
+            "daily_scores": [],
         }
-        
+
         return history
-        
+
     except Exception as e:
         logger.error(f"Failed to get compliance history: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get compliance history: {str(e)}"
+            detail=f"Failed to get compliance history: {str(e)}",
         )
 
 
@@ -174,41 +166,43 @@ async def get_compliance_history(
 async def report_compliance_violation(
     improvement_id: UUID,
     violation_details: dict,
-    service_client: ACGSServiceClient = Depends(get_service_client)
+    service_client: ACGSServiceClient = Depends(get_service_client),
 ):
     """
     Report a constitutional compliance violation.
-    
+
     This endpoint allows reporting of compliance violations discovered
     during or after improvement implementation.
     """
     try:
         # Log the violation with the PGC Service
-        await service_client.log_compliance_event({
-            "event_type": "violation",
-            "improvement_id": str(improvement_id),
-            "details": violation_details,
-            "source": "dgm-service",
-            "severity": violation_details.get("severity", "medium")
-        })
-        
+        await service_client.log_compliance_event(
+            {
+                "event_type": "violation",
+                "improvement_id": str(improvement_id),
+                "details": violation_details,
+                "source": "dgm-service",
+                "severity": violation_details.get("severity", "medium"),
+            }
+        )
+
         # Also log locally
         logger.warning(
             f"Compliance violation reported for improvement {improvement_id}: "
             f"{violation_details}"
         )
-        
+
         return {
             "message": "Compliance violation reported successfully",
             "improvement_id": str(improvement_id),
-            "report_id": None  # TODO: Generate report ID
+            "report_id": None,  # TODO: Generate report ID
         }
-        
+
     except Exception as e:
         logger.error(f"Failed to report compliance violation: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to report compliance violation: {str(e)}"
+            detail=f"Failed to report compliance violation: {str(e)}",
         )
 
 
@@ -216,13 +210,13 @@ async def report_compliance_violation(
 async def get_compliance_summary():
     """
     Get a summary of constitutional compliance status.
-    
+
     Returns high-level compliance metrics and status.
     """
     try:
         # TODO: Implement actual compliance summary
         # This would aggregate data from the compliance log
-        
+
         summary = {
             "overall_status": "compliant",
             "current_score": 0.85,
@@ -231,16 +225,16 @@ async def get_compliance_summary():
             "violations_last_30_days": 0,
             "most_common_violations": [],
             "compliance_trend": "improving",
-            "last_violation": None
+            "last_violation": None,
         }
-        
+
         return summary
 
     except Exception as e:
         logger.error(f"Failed to get compliance summary: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get compliance summary: {str(e)}"
+            detail=f"Failed to get compliance summary: {str(e)}",
         )
 
 
@@ -261,7 +255,7 @@ async def get_governance_oversight_status():
             "oversight_score": 0.95,
             "constitutional_hash": "cdd01ef066bc6cf2",
             "last_oversight_action": None,
-            "governance_health": "excellent"
+            "governance_health": "excellent",
         }
 
         return oversight_status
@@ -270,7 +264,7 @@ async def get_governance_oversight_status():
         logger.error(f"Failed to get governance oversight status: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get governance oversight status: {str(e)}"
+            detail=f"Failed to get governance oversight status: {str(e)}",
         )
 
 
@@ -278,7 +272,7 @@ async def get_governance_oversight_status():
 async def submit_governance_review(
     improvement_id: UUID,
     review_data: dict,
-    service_client: ACGSServiceClient = Depends(get_service_client)
+    service_client: ACGSServiceClient = Depends(get_service_client),
 ):
     """
     Submit a governance review for an improvement.
@@ -288,26 +282,28 @@ async def submit_governance_review(
     """
     try:
         # Submit review to governance system
-        review_result = await service_client.submit_governance_review({
-            "improvement_id": str(improvement_id),
-            "review_data": review_data,
-            "reviewer": "dgm-service",
-            "timestamp": "2025-01-20T12:00:00Z"
-        })
+        review_result = await service_client.submit_governance_review(
+            {
+                "improvement_id": str(improvement_id),
+                "review_data": review_data,
+                "reviewer": "dgm-service",
+                "timestamp": "2025-01-20T12:00:00Z",
+            }
+        )
 
         return {
             "message": "Governance review submitted successfully",
             "improvement_id": str(improvement_id),
             "review_id": review_result.get("review_id"),
             "status": review_result.get("status", "submitted"),
-            "constitutional_compliance": True
+            "constitutional_compliance": True,
         }
 
     except Exception as e:
         logger.error(f"Failed to submit governance review: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to submit governance review: {str(e)}"
+            detail=f"Failed to submit governance review: {str(e)}",
         )
 
 
@@ -326,12 +322,12 @@ async def get_constitutional_hash():
             "last_updated": "2025-01-20T00:00:00Z",
             "version": "1.0",
             "status": "active",
-            "validation_count": 0
+            "validation_count": 0,
         }
 
     except Exception as e:
         logger.error(f"Failed to get constitutional hash: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get constitutional hash: {str(e)}"
+            detail=f"Failed to get constitutional hash: {str(e)}",
         )

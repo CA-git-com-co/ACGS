@@ -7,9 +7,22 @@ and threshold configuration management.
 """
 
 import logging
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from typing import Any
 from uuid import UUID
+
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from sqlalchemy import and_, desc, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
+
+from services.shared.auth import get_current_active_user
+from services.shared.database import get_async_db
+from services.shared.models import (
+    ConstitutionalViolation,
+    User,
+    ViolationEscalation,
+)
 
 # Import WebSocket broadcasting
 from .api.v1.fidelity_monitoring_websocket import ViolationAlert as WSViolationAlert
@@ -32,18 +45,6 @@ from .services.violation_detection_service import (
 from .services.violation_escalation_service import (
     EscalationLevel,
     ViolationEscalationService,
-)
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
-from sqlalchemy import and_, desc, func, select
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
-
-from services.shared.auth import get_current_active_user
-from services.shared.database import get_async_db
-from services.shared.models import (
-    ConstitutionalViolation,
-    User,
-    ViolationEscalation,
 )
 
 logger = logging.getLogger(__name__)

@@ -15,7 +15,7 @@ import time
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
@@ -260,9 +260,7 @@ class Phase2ServiceOrchestrator:
 
             # Check service health
             if not self.service_health.get(service_type, False):
-                logger.warning(
-                    f"Service {service_type.value} is unhealthy, attempting call anyway"
-                )
+                logger.warning(f"Service {service_type.value} is unhealthy, attempting call anyway")
 
             # Prepare request
             url = f"{service_config.base_url}{service_config.api_prefix}{endpoint}"
@@ -311,13 +309,10 @@ class Phase2ServiceOrchestrator:
 
                 # Update average time
                 total_time = (
-                    service_metrics["average_time_ms"]
-                    * (service_metrics["total_calls"] - 1)
+                    service_metrics["average_time_ms"] * (service_metrics["total_calls"] - 1)
                     + call_time
                 )
-                service_metrics["average_time_ms"] = (
-                    total_time / service_metrics["total_calls"]
-                )
+                service_metrics["average_time_ms"] = total_time / service_metrics["total_calls"]
 
                 logger.info(
                     f"Service call successful: {service_type.value} {method} {endpoint} "
@@ -388,9 +383,7 @@ class Phase2ServiceOrchestrator:
 
         await self.publish_event(event)
 
-        logger.info(
-            f"Workflow started: {workflow_type} with correlation {correlation_id}"
-        )
+        logger.info(f"Workflow started: {workflow_type} with correlation {correlation_id}")
 
         return correlation_id
 
@@ -565,9 +558,7 @@ class Phase2ServiceOrchestrator:
             # ensures: Correct function execution
             # sha256: func_hash
             """Handle verification completed event."""
-            logger.info(
-                f"Verification completed: {event.payload.get('verification_id')}"
-            )
+            logger.info(f"Verification completed: {event.payload.get('verification_id')}")
 
             # Update workflow if this is part of a workflow
             correlation_id = event.correlation_id
@@ -577,15 +568,9 @@ class Phase2ServiceOrchestrator:
                 )
 
         # Register handlers
-        self.register_event_handler(
-            EventType.PRINCIPLE_CREATED, handle_principle_created
-        )
-        self.register_event_handler(
-            EventType.POLICY_SYNTHESIZED, handle_policy_synthesized
-        )
-        self.register_event_handler(
-            EventType.VERIFICATION_COMPLETED, handle_verification_completed
-        )
+        self.register_event_handler(EventType.PRINCIPLE_CREATED, handle_principle_created)
+        self.register_event_handler(EventType.POLICY_SYNTHESIZED, handle_policy_synthesized)
+        self.register_event_handler(EventType.VERIFICATION_COMPLETED, handle_verification_completed)
 
     async def _event_processing_loop(self):
         # requires: Valid input parameters
@@ -649,18 +634,14 @@ class Phase2ServiceOrchestrator:
                 try:
                     await handler(event)
                 except Exception as e:
-                    logger.error(
-                        f"Event handler failed for {event.event_type.value}: {e}"
-                    )
+                    logger.error(f"Event handler failed for {event.event_type.value}: {e}")
 
                     # Retry logic
                     if event.retry_count < event.max_retries:
                         event.retry_count += 1
                         await asyncio.sleep(2**event.retry_count)  # Exponential backoff
                         await self.event_queue.put(event)
-                        logger.info(
-                            f"Event {event.event_id} queued for retry {event.retry_count}"
-                        )
+                        logger.info(f"Event {event.event_id} queued for retry {event.retry_count}")
                         return
                     else:
                         logger.error(
@@ -680,9 +661,7 @@ class Phase2ServiceOrchestrator:
                 for service_type, service_config in self.services.items():
                     try:
                         # Check service health
-                        health_url = (
-                            f"{service_config.base_url}{service_config.health_endpoint}"
-                        )
+                        health_url = f"{service_config.base_url}{service_config.health_endpoint}"
 
                         async with self.http_client.get(
                             health_url, timeout=aiohttp.ClientTimeout(total=5.0)
@@ -690,9 +669,7 @@ class Phase2ServiceOrchestrator:
                             is_healthy = response.status == 200
 
                             # Update health status
-                            previous_health = self.service_health.get(
-                                service_type, True
-                            )
+                            previous_health = self.service_health.get(service_type, True)
                             self.service_health[service_type] = is_healthy
 
                             # Publish health change event if status changed
@@ -723,9 +700,7 @@ class Phase2ServiceOrchestrator:
                         self.service_health[service_type] = False
 
                         if previous_health:
-                            logger.warning(
-                                f"Service {service_type.value} health check failed: {e}"
-                            )
+                            logger.warning(f"Service {service_type.value} health check failed: {e}")
 
                 # Wait before next health check
                 await asyncio.sleep(30)  # Check every 30 seconds
@@ -742,12 +717,9 @@ class Phase2ServiceOrchestrator:
                 "successful_events": self.metrics["successful_events"],
                 "failed_events": self.metrics["failed_events"],
                 "success_rate": (
-                    self.metrics["successful_events"]
-                    / max(self.metrics["total_events"], 1)
+                    self.metrics["successful_events"] / max(self.metrics["total_events"], 1)
                 ),
-                "average_processing_time_ms": self.metrics[
-                    "average_processing_time_ms"
-                ],
+                "average_processing_time_ms": self.metrics["average_processing_time_ms"],
             },
             "service_metrics": self.metrics["service_calls"],
             "workflow_metrics": {
@@ -755,8 +727,7 @@ class Phase2ServiceOrchestrator:
                 "completed_workflows": self.metrics["workflow_completions"],
             },
             "health_status": {
-                service.value: healthy
-                for service, healthy in self.service_health.items()
+                service.value: healthy for service, healthy in self.service_health.items()
             },
             "system_status": {
                 "running": self.running,

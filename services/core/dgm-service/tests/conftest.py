@@ -6,12 +6,13 @@ Basic test fixtures that don't require external dependencies.
 
 import asyncio
 import os
-import pytest
 import tempfile
 from datetime import datetime, timedelta
-from typing import Dict, Any
+from typing import Any, Dict
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
+
+import pytest
 
 
 @pytest.fixture(scope="session")
@@ -34,7 +35,7 @@ def temp_workspace():
 # Test data factories
 class TestDataFactory:
     """Factory for creating test data objects."""
-    
+
     @staticmethod
     def create_dgm_archive(**kwargs) -> Dict[str, Any]:
         """Create DGM archive test data."""
@@ -48,11 +49,11 @@ class TestDataFactory:
             "performance_after": {"response_time": 125.0},
             "constitutional_compliance_score": 0.95,
             "created_at": datetime.utcnow(),
-            "completed_at": datetime.utcnow() + timedelta(minutes=5)
+            "completed_at": datetime.utcnow() + timedelta(minutes=5),
         }
         defaults.update(kwargs)
         return defaults
-    
+
     @staticmethod
     def create_performance_metric(**kwargs) -> Dict[str, Any]:
         """Create performance metric test data."""
@@ -62,7 +63,7 @@ class TestDataFactory:
             "value": 125.5,
             "timestamp": datetime.utcnow(),
             "service_name": "dgm-service",
-            "constitutional_hash": "cdd01ef066bc6cf2"
+            "constitutional_hash": "cdd01ef066bc6cf2",
         }
         defaults.update(kwargs)
         return defaults
@@ -77,18 +78,10 @@ def test_data_factory():
 # Pytest configuration
 def pytest_configure(config):
     """Configure pytest with custom markers and settings."""
-    config.addinivalue_line(
-        "markers", "unit: mark test as a unit test"
-    )
-    config.addinivalue_line(
-        "markers", "integration: mark test as an integration test"
-    )
-    config.addinivalue_line(
-        "markers", "e2e: mark test as an end-to-end test"
-    )
-    config.addinivalue_line(
-        "markers", "slow: mark test as slow running"
-    )
+    config.addinivalue_line("markers", "unit: mark test as a unit test")
+    config.addinivalue_line("markers", "integration: mark test as an integration test")
+    config.addinivalue_line("markers", "e2e: mark test as an end-to-end test")
+    config.addinivalue_line("markers", "slow: mark test as slow running")
     config.addinivalue_line(
         "markers", "constitutional: mark test as constitutional compliance test"
     )
@@ -104,7 +97,7 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(pytest.mark.integration)
         elif "e2e" in str(item.fspath):
             item.add_marker(pytest.mark.e2e)
-        
+
         # Add slow marker for tests that might be slow
         if any(keyword in item.name.lower() for keyword in ["performance", "load", "stress"]):
             item.add_marker(pytest.mark.slow)

@@ -16,7 +16,7 @@
 ### GS Service Analysis Framework
 
 ```python
-# analysis/gs_service_analyzer.py
+# docs/reports/gs_service_analyzer.py
 import asyncio
 import httpx
 from typing import Dict, List, Any

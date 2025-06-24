@@ -1,0 +1,33 @@
+development:
+  database: acgs_dev
+  host: localhost
+  max_overflow: 20
+  password: acgs
+  pool_recycle: 3600
+  pool_size: 10
+  pool_timeout: 30
+  port: 5432
+  username: acgs
+production:
+  database: acgs_prod
+  host: localhost
+  max_overflow: 40
+  password: ${DATABASE_PASSWORD}
+  pool_recycle: 3600
+  pool_size: 20
+  pool_timeout: 30
+  port: 5432
+  ssl_mode: require
+  username: acgs
+redis:
+  development:
+    db: 0
+    host: localhost
+    max_connections: 50
+    port: 6379
+  production:
+    db: 0
+    host: localhost
+    max_connections: 100
+    password: ${REDIS_PASSWORD}
+    port: 6379

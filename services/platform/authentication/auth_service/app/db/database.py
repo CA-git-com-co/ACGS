@@ -44,9 +44,7 @@ async def create_db_tables():
 
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-        print(
-            "Tables created (if they didn't exist already, including refresh_tokens)."
-        )
+        print("Tables created (if they didn't exist already, including refresh_tokens).")
     except Exception as e:
         print(f"Error creating tables: {e}")
         # For now, just continue without creating tables

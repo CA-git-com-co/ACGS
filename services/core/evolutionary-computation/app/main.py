@@ -471,6 +471,7 @@ def get_wina_performance_collector():
 
 if __name__ == "__main__":
     import os
+
     import uvicorn
 
     uvicorn.run(

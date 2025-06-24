@@ -1,0 +1,91 @@
+# ACGS-1 Nano-vLLM Reasoning Service Dockerfile
+# Lightweight vLLM alternative with constitutional AI capabilities
+
+FROM python:3.11-slim
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONPATH=/app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    git \
+    wget \
+    procps \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create app user for security
+RUN useradd --create-home --shell /bin/bash app
+
+# Create app directory
+WORKDIR /app
+
+# Copy requirements first for better caching
+COPY requirements-nano-vllm.txt /app/
+RUN pip install --no-cache-dir -r requirements-nano-vllm.txt
+
+# Install base ML dependencies
+RUN pip install --no-cache-dir \
+    torch \
+    transformers \
+    tokenizers \
+    safetensors
+
+# Try to install Nano-vLLM, fall back to mock if needed
+RUN git clone https://github.com/GeeeekExplorer/nano-vllm.git /tmp/nano-vllm && \
+    cd /tmp/nano-vllm && \
+    sed -i 's/"flash-attn",//g' setup.py 2>/dev/null || true && \
+    sed -i 's/"flash_attn",//g' setup.py 2>/dev/null || true && \
+    pip install . --no-deps || echo "Nano-vLLM installation failed, will use mock"
+
+# Copy application code
+COPY nano_vllm_adapter.py /app/
+COPY nano-vllm-integration.py /app/
+COPY nano-vllm-service.py /app/
+COPY nanovllm_mock/ /app/nanovllm_mock/
+
+# Create necessary directories
+RUN mkdir -p /app/logs /app/config /app/models /app/constitutional
+
+# Set permissions
+RUN chown -R app:app /app
+RUN chmod +x /app/*.py
+
+# Create a startup script
+RUN echo '#!/bin/bash' > /app/start.sh && \
+    echo 'set -e' >> /app/start.sh && \
+    echo '' >> /app/start.sh && \
+    echo 'echo "Starting Nano-vLLM Reasoning Service..."' >> /app/start.sh && \
+    echo 'echo "Environment: ${ENVIRONMENT:-development}"' >> /app/start.sh && \
+    echo 'echo "Log Level: ${LOG_LEVEL:-INFO}"' >> /app/start.sh && \
+    echo '' >> /app/start.sh && \
+    echo '# Check if Nano-vLLM is available' >> /app/start.sh && \
+    echo 'python3 -c "' >> /app/start.sh && \
+    echo 'try:' >> /app/start.sh && \
+    echo '    import nanovllm' >> /app/start.sh && \
+    echo '    print(\"✅ Nano-vLLM available\")' >> /app/start.sh && \
+    echo 'except ImportError:' >> /app/start.sh && \
+    echo '    print(\"⚠️  Using mock Nano-vLLM implementation\")' >> /app/start.sh && \
+    echo '"' >> /app/start.sh && \
+    echo '' >> /app/start.sh && \
+    echo '# Start the service' >> /app/start.sh && \
+    echo 'exec python3 nano-vllm-service.py' >> /app/start.sh
+
+RUN chmod +x /app/start.sh
+
+# Switch to app user
+USER app
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Expose ports
+EXPOSE 8000 8001 8002
+
+# Run the application
+CMD ["/app/start.sh"]

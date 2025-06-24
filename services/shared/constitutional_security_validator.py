@@ -19,7 +19,7 @@ import hmac
 import json
 import logging
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
@@ -143,9 +143,7 @@ class ConstitutionalSecurityValidator:
 
             # Step 5: Cryptographic integrity verification
             if self.enable_cryptographic_verification:
-                crypto_validation = await self._verify_cryptographic_integrity(
-                    operation_data
-                )
+                crypto_validation = await self._verify_cryptographic_integrity(operation_data)
                 if not crypto_validation["valid"]:
                     return False, {
                         "error": "Cryptographic integrity verification failed",
@@ -178,9 +176,7 @@ class ConstitutionalSecurityValidator:
                 "validation_time_ms": (time.time() - validation_start) * 1000,
             }
 
-    async def _validate_constitution_hash(
-        self, operation_data: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def _validate_constitution_hash(self, operation_data: dict[str, Any]) -> dict[str, Any]:
         """Validate Constitution Hash integrity."""
         try:
             # Check if operation includes constitutional hash
@@ -222,11 +218,7 @@ class ConstitutionalSecurityValidator:
         try:
             # Create canonical representation of operation data
             canonical_data = json.dumps(
-                {
-                    k: v
-                    for k, v in operation_data.items()
-                    if k != "constitutional_signature"
-                },
+                {k: v for k, v in operation_data.items() if k != "constitutional_signature"},
                 sort_keys=True,
                 separators=(",", ":"),
             ).encode("utf-8")
@@ -243,9 +235,7 @@ class ConstitutionalSecurityValidator:
             logger.error(f"Signature verification error: {e}")
             return False
 
-    def _determine_security_level(
-        self, operation_type: ConstitutionalChangeType
-    ) -> SecurityLevel:
+    def _determine_security_level(self, operation_type: ConstitutionalChangeType) -> SecurityLevel:
         """Determine required security level for operation type."""
         if operation_type == ConstitutionalChangeType.EMERGENCY_PROTOCOL_ACTIVATION:
             return SecurityLevel.EMERGENCY
@@ -271,9 +261,7 @@ class ConstitutionalSecurityValidator:
         """Validate authorization for constitutional operation."""
         try:
             # Check if requester is authorized for this operation type
-            if not await self._is_authorized_for_operation(
-                requester_id, operation_type
-            ):
+            if not await self._is_authorized_for_operation(requester_id, operation_type):
                 return {
                     "valid": False,
                     "reason": f"User {requester_id} not authorized for {operation_type.value}",
@@ -340,9 +328,7 @@ class ConstitutionalSecurityValidator:
             # Validate each signature
             valid_signatures = 0
             for signature_data in provided_signatures:
-                if await self._validate_individual_signature(
-                    signature_data, operation_data
-                ):
+                if await self._validate_individual_signature(signature_data, operation_data):
                     valid_signatures += 1
 
             if valid_signatures < required_sigs:
@@ -450,9 +436,7 @@ class ConstitutionalSecurityValidator:
         self.audit_trail.append(audit_entry)
 
         # Log to structured logger
-        logger.info(
-            f"Constitutional operation: {operation_type.value}", extra=audit_entry
-        )
+        logger.info(f"Constitutional operation: {operation_type.value}", extra=audit_entry)
 
     def add_authorized_signer(self, signer_id: str):
         """Add an authorized signer to the Constitutional Council."""

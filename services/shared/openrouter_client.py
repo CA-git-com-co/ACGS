@@ -121,9 +121,7 @@ class OpenRouterClient:
             self.session = None
             logger.info("OpenRouter client closed")
 
-    def _get_default_headers(
-        self, extra_headers: dict[str, str] | None = None
-    ) -> dict[str, str]:
+    def _get_default_headers(self, extra_headers: dict[str, str] | None = None) -> dict[str, str]:
         """Get default headers for OpenRouter API requests."""
         headers = {
             "Authorization": f"Bearer {self.api_key}",

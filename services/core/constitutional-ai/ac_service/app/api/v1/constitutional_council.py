@@ -1,6 +1,11 @@
 from typing import Any
 
 from app import schemas
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from services.shared.database import get_async_db
+
 from .core.auth import (
     User,
     get_current_active_user_placeholder,
@@ -29,20 +34,16 @@ from .crud import (
     update_ac_conflict_resolution,
     update_ac_meta_rule,
 )
+from .monitoring.scalability_metrics import get_metrics_collector
 from .workflows.constitutional_council_graph import ConstitutionalCouncilGraph
 from .workflows.democratic_governance import (
     DemocraticGovernanceEngine,
     DemocraticProcess,
+    StakeholderGroup,
     VotingConfiguration,
     VotingMechanism,
-    StakeholderGroup,
     create_democratic_governance_engine,
 )
-from .monitoring.scalability_metrics import get_metrics_collector
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from services.shared.database import get_async_db
 
 router = APIRouter()
 

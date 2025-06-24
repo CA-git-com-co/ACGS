@@ -74,9 +74,7 @@ class EnhancedServiceClient:
         # HTTP client with connection pooling
         self.http_client = httpx.AsyncClient(
             timeout=httpx.Timeout(timeout, connect=connect_timeout),
-            limits=httpx.Limits(
-                max_connections=connection_pool_size, max_keepalive_connections=20
-            ),
+            limits=httpx.Limits(max_connections=connection_pool_size, max_keepalive_connections=20),
             http2=True,
             follow_redirects=True,
         )
@@ -218,9 +216,7 @@ class EnhancedServiceClient:
         # Override timeout if specified
         if timeout_override:
             original_timeout = self.http_client.timeout
-            self.http_client.timeout = httpx.Timeout(
-                timeout_override, connect=self.connect_timeout
-            )
+            self.http_client.timeout = httpx.Timeout(timeout_override, connect=self.connect_timeout)
 
         try:
             # Make the request with retry logic
@@ -375,9 +371,7 @@ class EnhancedServiceClient:
         """Get client performance metrics."""
         total_calls = self.call_metrics["total_calls"]
         success_rate = (
-            self.call_metrics["successful_calls"] / total_calls
-            if total_calls > 0
-            else 1.0
+            self.call_metrics["successful_calls"] / total_calls if total_calls > 0 else 1.0
         )
 
         return {

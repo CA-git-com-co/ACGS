@@ -1,0 +1,318 @@
+# ACGS Development Environment Docker Compose Configuration
+# Optimized for local development with hot reloading and debugging
+
+version: '3.8'
+
+networks:
+  acgs-dev:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
+
+services:
+  # PostgreSQL Database - Development Configuration
+  postgres:
+    image: postgres:15-alpine
+    container_name: acgs-postgres-dev
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-acgs_dev}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-acgs_development}
+      POSTGRES_INITDB_ARGS: '--encoding=UTF-8'
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./config/database/development_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    ports:
+      - '5433:5432'
+    networks:
+      - acgs-dev
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${POSTGRES_USER:-acgs_dev} -d ${POSTGRES_DB:-acgs_development}',
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  # Redis Cache - Development Configuration
+  redis:
+    image: redis:7.0-alpine
+    container_name: acgs-redis-dev
+    command: redis-server --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_dev_data:/data
+    ports:
+      - '6380:6379'
+    networks:
+      - acgs-dev
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  # Auth Service - Development
+  auth_service:
+    build:
+      context: ../../services/platform/authentication
+      dockerfile: Dockerfile
+      target: development
+    container_name: acgs-auth-service-dev
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_dev}:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/${POSTGRES_DB:-acgs_development}
+      - REDIS_URL=redis://redis:6379/0
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev_jwt_secret_key_change_in_production}
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+      - RELOAD=true
+      - DEBUG=true
+    ports:
+      - '8000:8000'
+    networks:
+      - acgs-dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ../../services/platform/authentication:/app
+      - /app/node_modules
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+  # AC Service - Constitutional AI Development
+  ac_service:
+    build:
+      context: ../../services/core/constitutional-ai
+      dockerfile: Dockerfile
+      target: development
+    container_name: acgs-ac-service-dev
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_dev}:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/${POSTGRES_DB:-acgs_development}
+      - REDIS_URL=redis://redis:6379/1
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev_jwt_secret_key_change_in_production}
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+      - RELOAD=true
+      - DEBUG=true
+      - AUTH_SERVICE_URL=http://auth_service:8000
+    ports:
+      - '8001:8001'
+    networks:
+      - acgs-dev
+    depends_on:
+      auth_service:
+        condition: service_healthy
+    volumes:
+      - ../../services/core/constitutional-ai:/app
+      - /app/__pycache__
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8001/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+  # Integrity Service - Development
+  integrity_service:
+    build:
+      context: ../../services/platform/integrity
+      dockerfile: Dockerfile
+      target: development
+    container_name: acgs-integrity-service-dev
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_dev}:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/${POSTGRES_DB:-acgs_development}
+      - REDIS_URL=redis://redis:6379/2
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev_jwt_secret_key_change_in_production}
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+      - RELOAD=true
+      - DEBUG=true
+      - AUTH_SERVICE_URL=http://auth_service:8000
+    ports:
+      - '8002:8002'
+    networks:
+      - acgs-dev
+    depends_on:
+      auth_service:
+        condition: service_healthy
+    volumes:
+      - ../../services/platform/integrity:/app
+      - /app/__pycache__
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8002/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+  # FV Service - Formal Verification Development
+  fv_service:
+    build:
+      context: ../../services/core/formal-verification
+      dockerfile: Dockerfile
+      target: development
+    container_name: acgs-fv-service-dev
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_dev}:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/${POSTGRES_DB:-acgs_development}
+      - REDIS_URL=redis://redis:6379/3
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev_jwt_secret_key_change_in_production}
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+      - RELOAD=true
+      - DEBUG=true
+      - AUTH_SERVICE_URL=http://auth_service:8000
+      - AC_SERVICE_URL=http://ac_service:8001
+      - INTEGRITY_SERVICE_URL=http://integrity_service:8002
+    ports:
+      - '8003:8003'
+    networks:
+      - acgs-dev
+    depends_on:
+      ac_service:
+        condition: service_healthy
+      integrity_service:
+        condition: service_healthy
+    volumes:
+      - ../../services/core/formal-verification:/app
+      - /app/__pycache__
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8003/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+  # GS Service - Governance Synthesis Development
+  gs_service:
+    build:
+      context: ../../services/core/governance-synthesis
+      dockerfile: Dockerfile
+      target: development
+    container_name: acgs-gs-service-dev
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_dev}:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/${POSTGRES_DB:-acgs_development}
+      - REDIS_URL=redis://redis:6379/4
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev_jwt_secret_key_change_in_production}
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+      - RELOAD=true
+      - DEBUG=true
+      - AUTH_SERVICE_URL=http://auth_service:8000
+      - AC_SERVICE_URL=http://ac_service:8001
+      - INTEGRITY_SERVICE_URL=http://integrity_service:8002
+      - FV_SERVICE_URL=http://fv_service:8003
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+    ports:
+      - '8004:8004'
+    networks:
+      - acgs-dev
+    depends_on:
+      ac_service:
+        condition: service_healthy
+      fv_service:
+        condition: service_healthy
+    volumes:
+      - ../../services/core/governance-synthesis:/app
+      - /app/__pycache__
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8004/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+  # PGC Service - Policy Governance Compiler Development
+  pgc_service:
+    build:
+      context: ../../services/core/policy-governance
+      dockerfile: Dockerfile
+      target: development
+    container_name: acgs-pgc-service-dev
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_dev}:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/${POSTGRES_DB:-acgs_development}
+      - REDIS_URL=redis://redis:6379/5
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev_jwt_secret_key_change_in_production}
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+      - RELOAD=true
+      - DEBUG=true
+      - AUTH_SERVICE_URL=http://auth_service:8000
+      - AC_SERVICE_URL=http://ac_service:8001
+      - GS_SERVICE_URL=http://gs_service:8004
+    ports:
+      - '8005:8005'
+    networks:
+      - acgs-dev
+    depends_on:
+      ac_service:
+        condition: service_healthy
+      gs_service:
+        condition: service_healthy
+    volumes:
+      - ../../services/core/policy-governance:/app
+      - /app/__pycache__
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8005/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+  # EC Service - Evolutionary Computation Development
+  ec_service:
+    build:
+      context: ../../services/core/evolutionary-computation
+      dockerfile: Dockerfile
+      target: development
+    container_name: acgs-ec-service-dev
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_dev}:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/${POSTGRES_DB:-acgs_development}
+      - REDIS_URL=redis://redis:6379/6
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev_jwt_secret_key_change_in_production}
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+      - RELOAD=true
+      - DEBUG=true
+      - AUTH_SERVICE_URL=http://auth_service:8000
+    ports:
+      - '8006:8006'
+    networks:
+      - acgs-dev
+    depends_on:
+      auth_service:
+        condition: service_healthy
+    volumes:
+      - ../../services/core/evolutionary-computation:/app
+      - /app/__pycache__
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8006/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+volumes:
+  postgres_dev_data:
+  redis_dev_data:

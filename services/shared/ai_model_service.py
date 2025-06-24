@@ -298,9 +298,7 @@ class AIModelService:
         # Fallback to primary model
         return self.models["primary"]
 
-    async def _generate_google(
-        self, prompt: str, config: ModelConfig, **kwargs
-    ) -> ModelResponse:
+    async def _generate_google(self, prompt: str, config: ModelConfig, **kwargs) -> ModelResponse:
         """Generate text using Google Gemini API."""
         if not config.api_key:
             raise ValueError("Google API key not configured")
@@ -391,9 +389,7 @@ class AIModelService:
                         model_id=config.model_id,
                         provider=config.provider.value,
                         tokens_used=tokens_used,
-                        finish_reason=result["choices"][0].get(
-                            "finish_reason", "completed"
-                        ),
+                        finish_reason=result["choices"][0].get("finish_reason", "completed"),
                         metadata={
                             "provider": "openrouter",
                             "model_type": (
@@ -406,9 +402,7 @@ class AIModelService:
                     )
                 else:
                     error_text = await response.text()
-                    raise Exception(
-                        f"OpenRouter API error: {response.status_code} - {error_text}"
-                    )
+                    raise Exception(f"OpenRouter API error: {response.status_code} - {error_text}")
 
         except Exception as e:
             logger.warning(f"OpenRouter API call failed for {config.model_id}: {e}")
@@ -424,9 +418,7 @@ class AIModelService:
                 metadata={"provider": "openrouter", "fallback": True, "error": str(e)},
             )
 
-    async def _generate_cerebras(
-        self, prompt: str, config: ModelConfig, **kwargs
-    ) -> ModelResponse:
+    async def _generate_cerebras(self, prompt: str, config: ModelConfig, **kwargs) -> ModelResponse:
         """Generate text using Cerebras API."""
         if not config.api_key:
             raise ValueError("Cerebras API key not configured")
@@ -465,9 +457,7 @@ class AIModelService:
                         model_id=config.model_id,
                         provider=config.provider.value,
                         tokens_used=tokens_used,
-                        finish_reason=result["choices"][0].get(
-                            "finish_reason", "completed"
-                        ),
+                        finish_reason=result["choices"][0].get("finish_reason", "completed"),
                         metadata={
                             "provider": "cerebras",
                             "model_type": "cerebras_inference",
@@ -475,14 +465,10 @@ class AIModelService:
                         },
                     )
                 else:
-                    raise Exception(
-                        f"Cerebras API error: {response.status_code} - {response.text}"
-                    )
+                    raise Exception(f"Cerebras API error: {response.status_code} - {response.text}")
 
         except Exception as e:
-            logger.warning(
-                f"Cerebras API call failed: {e}, falling back to mock response"
-            )
+            logger.warning(f"Cerebras API call failed: {e}, falling back to mock response")
             # Fallback to mock response for development
             await asyncio.sleep(0.05)  # Simulate fast Cerebras inference
 

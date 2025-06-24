@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.10-slim
+FROM python:3.11-slim
 
 # Set the working directory in the container
 WORKDIR /app
@@ -13,17 +13,17 @@ RUN pip install --no-cache-dir -r requirements.txt \
 # Copy the current directory contents into the container at /app
 COPY . /app
 
+# Create non-root user for security
+RUN groupadd -r acgs && useradd -r -g acgs acgs \
+    && chown -R acgs:acgs /app
+USER acgs
+
 # Make port 8001 available to the world outside this container
 EXPOSE 8001
 
-# Add non-root user for security
-RUN useradd -m appuser
-USER appuser
-
-# Health check to monitor the service
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:8001/health || exit 1
 
 # Run main.py when the container launches
-# The command should point to app.main:app since main.py is in the app/ directory
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001", "--reload"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]

@@ -77,9 +77,7 @@ class RateLimiter:
         if len(self.requests[client_ip]) >= self.config.rate_limit_requests:
             # Block IP for 5 minutes
             self.blocked_until[client_ip] = current_time + 300
-            logger.warning(
-                f"Rate limit exceeded for IP {client_ip}, blocking for 5 minutes"
-            )
+            logger.warning(f"Rate limit exceeded for IP {client_ip}, blocking for 5 minutes")
             return False
 
         # Record this request
@@ -98,9 +96,7 @@ class CSRFProtection:
         """Generate CSRF token for session."""
         timestamp = str(int(time.time()))
         message = f"{session_id}:{timestamp}"
-        signature = hmac.new(
-            self.secret_key, message.encode(), hashlib.sha256
-        ).hexdigest()
+        signature = hmac.new(self.secret_key, message.encode(), hashlib.sha256).hexdigest()
         return f"{timestamp}:{signature}"
 
     def validate_token(self, token: str, session_id: str) -> bool:
@@ -160,9 +156,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         # Fallback to direct connection
         return request.client.host if request.client else "unknown"
 
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         """Main middleware dispatch method."""
         start_time = time.time()
         client_ip = self.get_client_ip(request)
@@ -186,24 +180,13 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
         except Exception as e:
             logger.error(f"Security middleware error: {e}", exc_info=True)
-            return JSONResponse(
-                status_code=500, content={"error": "Internal security error"}
-            )
+            return JSONResponse(status_code=500, content={"error": "Internal security error"})
 
-    async def perform_security_checks(
-        self, request: Request, client_ip: str
-    ) -> Optional[Response]:
+    async def perform_security_checks(self, request: Request, client_ip: str) -> Optional[Response]:
         """Perform comprehensive security checks."""
 
         # Define exempt paths that should bypass security checks
-        exempt_paths = {
-            "/health",
-            "/metrics",
-            "/docs",
-            "/openapi.json",
-            "/redoc",
-            "/favicon.ico"
-        }
+        exempt_paths = {"/health", "/metrics", "/docs", "/openapi.json", "/redoc", "/favicon.ico"}
 
         # Check if this is an exempt path
         request_path = request.url.path
@@ -222,19 +205,13 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
         # HTTPS enforcement (but not for health checks and localhost)
         if self.config.enable_https_only and request.url.scheme != "https":
-            if not (
-                request.client and request.client.host in ["127.0.0.1", "localhost"]
-            ):
-                return JSONResponse(
-                    status_code=400, content={"error": "HTTPS required"}
-                )
+            if not (request.client and request.client.host in ["127.0.0.1", "localhost"]):
+                return JSONResponse(status_code=400, content={"error": "HTTPS required"})
 
         # Rate limiting (with more lenient limits for health checks)
         if self.config.enable_rate_limiting:
             if not self.rate_limiter.is_allowed(client_ip):
-                return JSONResponse(
-                    status_code=429, content={"error": "Rate limit exceeded"}
-                )
+                return JSONResponse(status_code=429, content={"error": "Rate limit exceeded"})
 
         # Request size check
         content_length = request.headers.get("content-length")
@@ -251,12 +228,8 @@ class SecurityMiddleware(BaseHTTPMiddleware):
             csrf_token = request.headers.get("X-CSRF-Token")
             session_id = request.headers.get("X-Session-ID", "default")
 
-            if not csrf_token or not self.csrf_protection.validate_token(
-                csrf_token, session_id
-            ):
-                return JSONResponse(
-                    status_code=403, content={"error": "Invalid CSRF token"}
-                )
+            if not csrf_token or not self.csrf_protection.validate_token(csrf_token, session_id):
+                return JSONResponse(status_code=403, content={"error": "Invalid CSRF token"})
 
         return None
 
@@ -265,9 +238,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         for header, value in self.security_headers.items():
             response.headers[header] = value
 
-    def log_request(
-        self, request: Request, response: Response, client_ip: str, duration: float
-    ):
+    def log_request(self, request: Request, response: Response, client_ip: str, duration: float):
         """Log security-relevant request information."""
         log_data = {
             "timestamp": datetime.utcnow().isoformat(),

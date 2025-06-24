@@ -1,9 +1,10 @@
 from datetime import datetime
 
 from app import crud, schemas  # Fixed import
-from .database import get_async_db  # Local database import
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession  # Changed
+
+from .database import get_async_db  # Local database import
 
 # from .core.auth import require_internal_service, require_auditor, User # Fixed import
 
@@ -33,9 +34,7 @@ router = APIRouter()
 @router.post("/", response_model=schemas.AuditLog, status_code=status.HTTP_201_CREATED)
 async def create_audit_log_endpoint(  # Changed to async def
     log_entry: schemas.AuditLogCreate,
-    db: AsyncSession = Depends(
-        get_async_db
-    ),  # Changed to AsyncSession and get_async_db
+    db: AsyncSession = Depends(get_async_db),  # Changed to AsyncSession and get_async_db
     current_user: User = Depends(require_internal_service),
 ):
     created_log = await crud.create_audit_log(db=db, log_entry=log_entry)  # Added await
@@ -55,9 +54,7 @@ async def list_audit_logs_endpoint(  # Changed to async def
     end_time: datetime | None = Query(
         None, description="Filter logs before this timestamp (ISO format)"
     ),
-    db: AsyncSession = Depends(
-        get_async_db
-    ),  # Changed to AsyncSession and get_async_db
+    db: AsyncSession = Depends(get_async_db),  # Changed to AsyncSession and get_async_db
     current_user: User = Depends(require_auditor),
 ):
     logs = await crud.get_audit_logs(  # Added await
@@ -84,9 +81,7 @@ async def list_audit_logs_endpoint(  # Changed to async def
 @router.get("/{log_id}", response_model=schemas.AuditLog)
 async def get_audit_log_endpoint(  # Changed to async def
     log_id: int,
-    db: AsyncSession = Depends(
-        get_async_db
-    ),  # Changed to AsyncSession and get_async_db
+    db: AsyncSession = Depends(get_async_db),  # Changed to AsyncSession and get_async_db
     current_user: User = Depends(require_auditor),
 ):
     db_log = await crud.get_audit_log(db, log_id=log_id)  # Added await

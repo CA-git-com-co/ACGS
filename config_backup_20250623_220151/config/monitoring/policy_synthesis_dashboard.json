@@ -1,0 +1,202 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Policy Synthesis Enhancement Monitoring",
+    "tags": ["acgs", "policy-synthesis", "enhancement"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Synthesis Response Times",
+        "type": "graph",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+        "targets": [
+          {
+            "expr": "policy_synthesis_response_time_seconds",
+            "legendFormat": "Response Time (s)",
+            "refId": "A"
+          },
+          {
+            "expr": "2.0",
+            "legendFormat": "Target (2s)",
+            "refId": "B"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Seconds",
+            "max": 3.0,
+            "min": 0
+          }
+        ],
+        "thresholds": [
+          {
+            "value": 2.0,
+            "colorMode": "critical",
+            "op": "gt"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Error Prediction Accuracy",
+        "type": "stat",
+        "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+        "targets": [
+          {
+            "expr": "policy_synthesis_error_prediction_accuracy",
+            "legendFormat": "Accuracy"
+          }
+        ],
+        "thresholds": [
+          { "color": "red", "value": 0.9 },
+          { "color": "yellow", "value": 0.95 },
+          { "color": "green", "value": 0.98 }
+        ],
+        "unit": "percentunit",
+        "min": 0.8,
+        "max": 1.0
+      },
+      {
+        "id": 3,
+        "title": "Multi-Model Consensus Success Rate",
+        "type": "stat",
+        "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+        "targets": [
+          {
+            "expr": "multi_model_consensus_success_rate",
+            "legendFormat": "Success Rate"
+          }
+        ],
+        "thresholds": [
+          { "color": "red", "value": 0.9 },
+          { "color": "yellow", "value": 0.95 },
+          { "color": "green", "value": 0.98 }
+        ],
+        "unit": "percentunit"
+      },
+      {
+        "id": 4,
+        "title": "Strategy Selection Distribution",
+        "type": "piechart",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+        "targets": [
+          {
+            "expr": "policy_synthesis_strategy_selection_count",
+            "legendFormat": "{{strategy}}"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Synthesis Quality Score",
+        "type": "graph",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+        "targets": [
+          {
+            "expr": "policy_synthesis_quality_score",
+            "legendFormat": "Quality Score"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Score",
+            "max": 1.0,
+            "min": 0.0
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "System Performance Metrics",
+        "type": "table",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+        "targets": [
+          {
+            "expr": "policy_synthesis_cpu_usage",
+            "legendFormat": "CPU Usage",
+            "format": "table"
+          },
+          {
+            "expr": "policy_synthesis_memory_usage",
+            "legendFormat": "Memory Usage",
+            "format": "table"
+          },
+          {
+            "expr": "policy_synthesis_request_rate",
+            "legendFormat": "Request Rate",
+            "format": "table"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Error Rate Trends",
+        "type": "graph",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+        "targets": [
+          {
+            "expr": "rate(policy_synthesis_errors_total[5m])",
+            "legendFormat": "Error Rate"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Errors/sec",
+            "min": 0
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Threshold Optimization Status",
+        "type": "stat",
+        "gridPos": { "h": 4, "w": 6, "x": 12, "y": 20 },
+        "targets": [
+          {
+            "expr": "policy_synthesis_threshold_optimization_status",
+            "legendFormat": "Optimization Status"
+          }
+        ],
+        "mappings": [
+          { "value": 0, "text": "Not Optimized" },
+          { "value": 1, "text": "Optimized" },
+          { "value": 2, "text": "Optimizing" }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "A/B Test Performance",
+        "type": "graph",
+        "gridPos": { "h": 8, "w": 12, "x": 18, "y": 16 },
+        "targets": [
+          {
+            "expr": "policy_synthesis_ab_test_enhanced_performance",
+            "legendFormat": "Enhanced Strategy"
+          },
+          {
+            "expr": "policy_synthesis_ab_test_standard_performance",
+            "legendFormat": "Standard Strategy"
+          }
+        ]
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "10s",
+    "annotations": {
+      "list": [
+        {
+          "name": "Deployments",
+          "datasource": "prometheus",
+          "enable": true,
+          "expr": "policy_synthesis_deployment_events",
+          "iconColor": "green",
+          "titleFormat": "Deployment: {{event}}"
+        }
+      ]
+    }
+  }
+}

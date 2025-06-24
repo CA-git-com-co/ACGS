@@ -53,8 +53,7 @@ async def reset_privacy_budget(
 
         return {
             "message": "Privacy budget reset successfully",
-            "new_epsilon": new_epsilon
-            or differential_privacy_manager.privacy_budget.epsilon,
+            "new_epsilon": new_epsilon or differential_privacy_manager.privacy_budget.epsilon,
             "new_delta": new_delta or differential_privacy_manager.privacy_budget.delta,
         }
 
@@ -130,9 +129,7 @@ async def validate_privacy_requirements(
 ):
     """Validate privacy requirements against current budget."""
     try:
-        is_valid = await differential_privacy_manager.validate_privacy_requirements(
-            requirements
-        )
+        is_valid = await differential_privacy_manager.validate_privacy_requirements(requirements)
 
         return {
             "is_valid": is_valid,
@@ -201,9 +198,7 @@ async def list_privacy_mechanisms():
 
 @router.get("/history")
 async def get_privacy_history(
-    limit: int = Query(
-        10, ge=1, le=100, description="Number of recent entries to return"
-    ),
+    limit: int = Query(10, ge=1, le=100, description="Number of recent entries to return"),
     current_user: dict = Depends(get_current_active_user),
 ):
     """Get privacy application history."""
@@ -252,9 +247,7 @@ async def get_privacy_status(current_user: dict = Depends(get_current_active_use
                     else 0
                 ),
                 "delta_utilization": (
-                    budget["delta_used"] / budget["delta_total"]
-                    if budget["delta_total"] > 0
-                    else 0
+                    budget["delta_used"] / budget["delta_total"] if budget["delta_total"] > 0 else 0
                 ),
                 "budget_exhausted": budget["epsilon_remaining"] <= 0,
                 "budget_critical": budget["epsilon_remaining"] < 0.1,

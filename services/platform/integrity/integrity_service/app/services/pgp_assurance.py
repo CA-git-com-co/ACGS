@@ -8,7 +8,7 @@ import json
 import logging
 import time
 from dataclasses import dataclass
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Optional
 
@@ -86,9 +86,7 @@ class PGPAssuranceService:
         # ensures: Correct function execution
         # sha256: func_hash
         if not CRYPTOGRAPHY_AVAILABLE:
-            logger.warning(
-                "Cryptography library not available. Some features will be disabled."
-            )
+            logger.warning("Cryptography library not available. Some features will be disabled.")
 
         self.private_keys: dict[str, Any] = {}
         self.public_keys: dict[str, Any] = {}
@@ -109,9 +107,7 @@ class PGPAssuranceService:
             if algorithm == SignatureAlgorithm.ECDSA_P256:
                 private_key = ec.generate_private_key(ec.SECP256R1())
             elif algorithm == SignatureAlgorithm.RSA_PSS:
-                private_key = rsa.generate_private_key(
-                    public_exponent=65537, key_size=2048
-                )
+                private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
             else:
                 raise ValueError(f"Unsupported algorithm: {algorithm}")
 
@@ -179,9 +175,7 @@ class PGPAssuranceService:
                 public_key_pem=public_pem,
                 timestamp=datetime.now(timezone.utc),
                 metadata={
-                    "data_hash": self.compute_hash(
-                        ac_version_data, HashAlgorithm.SHA256
-                    ),
+                    "data_hash": self.compute_hash(ac_version_data, HashAlgorithm.SHA256),
                     "data_length": len(ac_version_data),
                 },
             )
@@ -206,9 +200,7 @@ class PGPAssuranceService:
             data_bytes = data.encode("utf-8")
 
             if signature.algorithm == SignatureAlgorithm.ECDSA_P256:
-                public_key.verify(
-                    signature.signature, data_bytes, ec.ECDSA(hashes.SHA256())
-                )
+                public_key.verify(signature.signature, data_bytes, ec.ECDSA(hashes.SHA256()))
             elif signature.algorithm == SignatureAlgorithm.RSA_PSS:
                 public_key.verify(
                     signature.signature,
@@ -234,9 +226,7 @@ class PGPAssuranceService:
 
     # Hash Functions Implementation
 
-    def compute_hash(
-        self, data: str, algorithm: HashAlgorithm = HashAlgorithm.SHA3_256
-    ) -> str:
+    def compute_hash(self, data: str, algorithm: HashAlgorithm = HashAlgorithm.SHA3_256) -> str:
         """Compute cryptographic hash of data"""
         try:
             data_bytes = data.encode("utf-8")
@@ -292,15 +282,11 @@ class PGPAssuranceService:
                 # Process pairs of nodes
                 for i in range(0, len(nodes), 2):
                     left = nodes[i]
-                    right = (
-                        nodes[i + 1] if i + 1 < len(nodes) else nodes[i]
-                    )  # Duplicate if odd
+                    right = nodes[i + 1] if i + 1 < len(nodes) else nodes[i]  # Duplicate if odd
 
                     # Combine hashes
                     combined_data = left.hash_value + right.hash_value
-                    combined_hash = self.compute_hash(
-                        combined_data, HashAlgorithm.SHA3_256
-                    )
+                    combined_hash = self.compute_hash(combined_data, HashAlgorithm.SHA3_256)
 
                     parent = MerkleNode(
                         hash_value=combined_hash,
@@ -358,9 +344,7 @@ class PGPAssuranceService:
 
     # Key Management Implementation
 
-    def store_key_pair(
-        self, key_id: str, private_key_pem: bytes, public_key_pem: bytes
-    ):
+    def store_key_pair(self, key_id: str, private_key_pem: bytes, public_key_pem: bytes):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -547,9 +531,7 @@ class PGPAssuranceService:
                     "metadata": signature.metadata,
                 },
                 "timestamp": (
-                    self.get_timestamp_info(timestamp_token)
-                    if timestamp_token
-                    else None
+                    self.get_timestamp_info(timestamp_token) if timestamp_token else None
                 ),
                 "created_at": datetime.now(timezone.utc).isoformat(),
                 "key_id": key_id,

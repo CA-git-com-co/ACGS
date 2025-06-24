@@ -9,7 +9,7 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -308,7 +308,8 @@ class PerformanceMonitor:
                 "workflow_id": workflow_id,
                 "monitoring_session_id": monitoring_session["session_id"],
                 "monitoring_duration_minutes": (
-                    (datetime.now(timezone.utc) - monitoring_session["started_at"]).total_seconds() / 60
+                    (datetime.now(timezone.utc) - monitoring_session["started_at"]).total_seconds()
+                    / 60
                 ),
                 "performance_summary": await self._calculate_performance_summary(
                     monitoring_session

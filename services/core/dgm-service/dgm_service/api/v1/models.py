@@ -3,7 +3,7 @@ Pydantic models for DGM Service API.
 """
 
 from datetime import datetime
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
 from uuid import UUID
 
 from pydantic import BaseModel, Field, validator
@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field, validator
 
 class HealthResponse(BaseModel):
     """Health check response model."""
+
     status: str = Field(..., description="Service health status")
     timestamp: datetime = Field(..., description="Health check timestamp")
     version: str = Field(..., description="Service version")
@@ -20,11 +21,12 @@ class HealthResponse(BaseModel):
 
 class ImprovementRequest(BaseModel):
     """Request model for triggering improvements."""
+
     description: str = Field(..., description="Description of the improvement")
     target_services: List[str] = Field(default=[], description="Target services for improvement")
     priority: str = Field(default="normal", description="Improvement priority")
     metadata: Dict[str, Any] = Field(default={}, description="Additional metadata")
-    
+
     @validator("priority")
     def validate_priority(cls, v):
         if v not in ["low", "normal", "high", "critical"]:
@@ -34,6 +36,7 @@ class ImprovementRequest(BaseModel):
 
 class ImprovementResponse(BaseModel):
     """Response model for improvement operations."""
+
     improvement_id: UUID = Field(..., description="Unique improvement identifier")
     status: str = Field(..., description="Improvement status")
     description: str = Field(..., description="Improvement description")
@@ -43,6 +46,7 @@ class ImprovementResponse(BaseModel):
 
 class ArchiveEntry(BaseModel):
     """Archive entry model."""
+
     id: UUID = Field(..., description="Archive entry ID")
     improvement_id: UUID = Field(..., description="Improvement ID")
     timestamp: datetime = Field(..., description="Archive timestamp")
@@ -56,6 +60,7 @@ class ArchiveEntry(BaseModel):
 
 class ArchiveListResponse(BaseModel):
     """Response model for archive listing."""
+
     entries: List[ArchiveEntry] = Field(..., description="Archive entries")
     total: int = Field(..., description="Total number of entries")
     page: int = Field(..., description="Current page number")
@@ -65,6 +70,7 @@ class ArchiveListResponse(BaseModel):
 
 class PerformanceMetric(BaseModel):
     """Performance metric model."""
+
     timestamp: datetime = Field(..., description="Metric timestamp")
     service_name: str = Field(..., description="Service name")
     metric_name: str = Field(..., description="Metric name")
@@ -75,6 +81,7 @@ class PerformanceMetric(BaseModel):
 
 class PerformanceReport(BaseModel):
     """Performance report model."""
+
     period_start: datetime = Field(..., description="Report period start")
     period_end: datetime = Field(..., description="Report period end")
     metrics: List[PerformanceMetric] = Field(..., description="Performance metrics")
@@ -84,6 +91,7 @@ class PerformanceReport(BaseModel):
 
 class ConstitutionalValidationRequest(BaseModel):
     """Request model for constitutional validation."""
+
     improvement_data: Dict[str, Any] = Field(..., description="Improvement data to validate")
     principles: List[str] = Field(default=[], description="Specific principles to check")
     strict_mode: bool = Field(default=False, description="Enable strict validation mode")
@@ -91,6 +99,7 @@ class ConstitutionalValidationRequest(BaseModel):
 
 class ConstitutionalValidationResponse(BaseModel):
     """Response model for constitutional validation."""
+
     is_compliant: bool = Field(..., description="Whether the improvement is compliant")
     compliance_score: float = Field(..., description="Compliance score (0-1)")
     violations: List[str] = Field(default=[], description="List of violations")
@@ -101,6 +110,7 @@ class ConstitutionalValidationResponse(BaseModel):
 
 class RollbackRequest(BaseModel):
     """Request model for rollback operations."""
+
     improvement_id: UUID = Field(..., description="Improvement ID to rollback")
     reason: str = Field(..., description="Reason for rollback")
     force: bool = Field(default=False, description="Force rollback even if risky")
@@ -108,6 +118,7 @@ class RollbackRequest(BaseModel):
 
 class RollbackResponse(BaseModel):
     """Response model for rollback operations."""
+
     success: bool = Field(..., description="Whether rollback was successful")
     rollback_id: UUID = Field(..., description="Rollback operation ID")
     message: str = Field(..., description="Rollback result message")
@@ -116,6 +127,7 @@ class RollbackResponse(BaseModel):
 
 class BanditArmStats(BaseModel):
     """Bandit algorithm arm statistics."""
+
     arm_id: str = Field(..., description="Arm identifier")
     description: str = Field(..., description="Arm description")
     total_pulls: int = Field(..., description="Total number of pulls")
@@ -127,6 +139,7 @@ class BanditArmStats(BaseModel):
 
 class BanditReport(BaseModel):
     """Bandit algorithm performance report."""
+
     algorithm_type: str = Field(..., description="Bandit algorithm type")
     total_pulls: int = Field(..., description="Total pulls across all arms")
     best_arm: str = Field(..., description="Currently best performing arm")
@@ -137,6 +150,7 @@ class BanditReport(BaseModel):
 
 class SystemStatus(BaseModel):
     """System status model."""
+
     service_name: str = Field(..., description="Service name")
     version: str = Field(..., description="Service version")
     status: str = Field(..., description="Overall system status")
@@ -150,6 +164,7 @@ class SystemStatus(BaseModel):
 
 class ErrorResponse(BaseModel):
     """Error response model."""
+
     error: str = Field(..., description="Error type")
     message: str = Field(..., description="Error message")
     details: Optional[Dict[str, Any]] = Field(None, description="Error details")

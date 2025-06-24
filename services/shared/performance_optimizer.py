@@ -123,8 +123,7 @@ class PerformanceMetrics:
         """Check if current metrics meet service-level performance targets."""
         return (
             self.p95_response_time_ms < 50.0
-            and self.success_rate_percent
-            >= 99.5  # <50ms for 95% of requests  # 99.5% uptime
+            and self.success_rate_percent >= 99.5  # <50ms for 95% of requests  # 99.5% uptime
         )
 
     def meets_consensus_targets(self) -> bool:
@@ -132,8 +131,7 @@ class PerformanceMetrics:
         return (
             self.p95_response_time_ms < 2000
             and self.avg_response_time_ms < 1500  # <2s for 95% of requests
-            and self.cache_hit_rate_percent
-            > 70.0  # <1.5s average  # >70% cache hit rate
+            and self.cache_hit_rate_percent > 70.0  # <1.5s average  # >70% cache hit rate
         )
 
 
@@ -249,8 +247,7 @@ class AsyncBatchProcessor:
             # Process batch if size threshold reached or timeout exceeded
             if len(self.pending_operations) >= self.batch_size or (
                 self.pending_operations
-                and time.time() - self.pending_operations[0]["timestamp"]
-                > self.max_wait_time
+                and time.time() - self.pending_operations[0]["timestamp"] > self.max_wait_time
             ):
                 await self._process_batch()
 
@@ -283,9 +280,7 @@ class AsyncBatchProcessor:
             except Exception as e:
                 future.set_exception(e)
 
-    async def _execute_operation(
-        self, operation: Callable, args: tuple, kwargs: dict
-    ) -> Any:
+    async def _execute_operation(self, operation: Callable, args: tuple, kwargs: dict) -> Any:
         """Execute individual operation."""
         if asyncio.iscoroutinefunction(operation):
             return await operation(*args, **kwargs)
@@ -311,16 +306,12 @@ class IntelligentCache:
         self.local_cache: dict[str, dict[str, Any]] = {}
         self.cache_stats = {"hits": 0, "misses": 0, "invalidations": 0}
 
-    def _generate_cache_key(
-        self, service: str, operation: str, params: dict[str, Any]
-    ) -> str:
+    def _generate_cache_key(self, service: str, operation: str, params: dict[str, Any]) -> str:
         """Generate consistent cache key."""
         key_data = f"{service}:{operation}:{json.dumps(params, sort_keys=True)}"
         return hashlib.sha256(key_data.encode()).hexdigest()[:16]
 
-    async def get(
-        self, service: str, operation: str, params: dict[str, Any]
-    ) -> Any | None:
+    async def get(self, service: str, operation: str, params: dict[str, Any]) -> Any | None:
         """Get cached result."""
         cache_key = self._generate_cache_key(service, operation, params)
 

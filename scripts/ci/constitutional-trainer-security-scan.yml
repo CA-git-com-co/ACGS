@@ -336,13 +336,13 @@ jobs:
           fi
 
           # Process static analysis results
-          if [[ -f security-scan-results-static-analysis/bandit-results.json ]]; then
+          if [[ -f security-scan-results-static-docs/reports/bandit-results.json ]]; then
             echo "## Static Analysis Issues" >> security-summary.md
             echo "" >> security-summary.md
             
-            HIGH_ISSUES=$(jq '[.results[] | select(.issue_severity == "HIGH")] | length' security-scan-results-static-analysis/bandit-results.json 2>/dev/null || echo "0")
-            MEDIUM_ISSUES=$(jq '[.results[] | select(.issue_severity == "MEDIUM")] | length' security-scan-results-static-analysis/bandit-results.json 2>/dev/null || echo "0")
-            LOW_ISSUES=$(jq '[.results[] | select(.issue_severity == "LOW")] | length' security-scan-results-static-analysis/bandit-results.json 2>/dev/null || echo "0")
+            HIGH_ISSUES=$(jq '[.results[] | select(.issue_severity == "HIGH")] | length' security-scan-results-static-docs/reports/bandit-results.json 2>/dev/null || echo "0")
+            MEDIUM_ISSUES=$(jq '[.results[] | select(.issue_severity == "MEDIUM")] | length' security-scan-results-static-docs/reports/bandit-results.json 2>/dev/null || echo "0")
+            LOW_ISSUES=$(jq '[.results[] | select(.issue_severity == "LOW")] | length' security-scan-results-static-docs/reports/bandit-results.json 2>/dev/null || echo "0")
             
             echo "| Severity | Count |" >> security-summary.md
             echo "|----------|-------|" >> security-summary.md

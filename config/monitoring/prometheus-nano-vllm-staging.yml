@@ -1,0 +1,132 @@
+# ACGS Nano-vLLM Staging Prometheus Configuration
+# Constitutional AI Monitoring and Metrics Collection
+
+global:
+  scrape_interval: 10s
+  evaluation_interval: 10s
+  external_labels:
+    cluster: 'acgs-nano-vllm-staging'
+    environment: 'staging'
+    system: 'constitutional-ai'
+
+# Alert rules for constitutional AI compliance
+rule_files:
+  - 'alert-rules.yml'
+
+# Scrape configuration for Nano-vLLM staging services
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    metrics_path: /metrics
+    scrape_interval: 15s
+
+  # Nano-vLLM Constitutional AI Service
+  - job_name: 'nano-vllm-constitutional-ai'
+    static_configs:
+      - targets: ['nano-vllm-reasoning-staging:9090']
+    metrics_path: /metrics
+    scrape_interval: 5s  # High frequency for AI governance
+    scrape_timeout: 4s
+    honor_labels: true
+    params:
+      format: ['prometheus']
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'constitutional_.*'
+        target_label: 'governance_type'
+        replacement: 'constitutional'
+      - source_labels: [__name__]
+        regex: 'nano_vllm_.*'
+        target_label: 'service_type'
+        replacement: 'reasoning'
+
+  # Chat Completions Endpoint Monitoring
+  - job_name: 'nano-vllm-chat-completions'
+    static_configs:
+      - targets: ['nano-vllm-reasoning-staging:8000']
+    metrics_path: /metrics/chat
+    scrape_interval: 5s
+    scrape_timeout: 4s
+    params:
+      endpoint: ['chat_completions']
+
+  # Constitutional Reasoning Endpoint Monitoring
+  - job_name: 'nano-vllm-constitutional-reasoning'
+    static_configs:
+      - targets: ['nano-vllm-reasoning-staging:8000']
+    metrics_path: /metrics/constitutional
+    scrape_interval: 5s
+    scrape_timeout: 4s
+    params:
+      endpoint: ['constitutional_reasoning']
+
+  # Health and Performance Monitoring
+  - job_name: 'nano-vllm-health'
+    static_configs:
+      - targets: ['nano-vllm-reasoning-staging:8000']
+    metrics_path: /health/metrics
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Model Performance Metrics
+  - job_name: 'nano-vllm-model-performance'
+    static_configs:
+      - targets: ['nano-vllm-reasoning-staging:8000']
+    metrics_path: /metrics/models
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    params:
+      include_model_stats: ['true']
+
+  # GPU Utilization (if available)
+  - job_name: 'nano-vllm-gpu-metrics'
+    static_configs:
+      - targets: ['nano-vllm-reasoning-staging:8000']
+    metrics_path: /metrics/gpu
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Constitutional Compliance Scoring
+  - job_name: 'constitutional-compliance-metrics'
+    static_configs:
+      - targets: ['nano-vllm-reasoning-staging:8000']
+    metrics_path: /metrics/compliance
+    scrape_interval: 5s
+    scrape_timeout: 4s
+    params:
+      component: ['constitutional-compliance']
+
+  # Reasoning Chain Quality Metrics
+  - job_name: 'reasoning-chain-metrics'
+    static_configs:
+      - targets: ['nano-vllm-reasoning-staging:8000']
+    metrics_path: /metrics/reasoning
+    scrape_interval: 10s
+    scrape_timeout: 5s
+    params:
+      component: ['reasoning-chain']
+
+  # Load Testing Metrics (when active)
+  - job_name: 'load-testing-metrics'
+    static_configs:
+      - targets: ['load-tester:8080']
+    metrics_path: /metrics
+    scrape_interval: 5s
+    scrape_timeout: 4s
+    honor_labels: true
+
+  # System Resource Monitoring
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['nano-vllm-reasoning-staging:9100']
+    scrape_interval: 15s
+
+# Remote write configuration for long-term storage (optional)
+# remote_write:
+#   - url: "http://prometheus-remote-storage:9090/api/v1/write"
+#     queue_config:
+#       max_samples_per_send: 1000
+#       max_shards: 200
+#       capacity: 2500

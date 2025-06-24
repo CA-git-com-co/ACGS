@@ -20,11 +20,11 @@ from contextlib import asynccontextmanager
 # Add shared services to path
 sys.path.append("/home/dislove/ACGS-1/services/shared")
 
-# Import existing PGC service components
-from .config.service_config import get_service_config
-
 # Import the enhancement framework
 from enhancement_framework import ACGSServiceEnhancer
+
+# Import existing PGC service components
+from .config.service_config import get_service_config
 
 # Import API routers with error handling
 try:
@@ -36,9 +36,7 @@ except ImportError as e:
     enforcement_router = APIRouter()
 
 try:
-    from .api.v1.alphaevolve_enforcement import (
-        router as alphaevolve_enforcement_router,
-    )
+    from .api.v1.alphaevolve_enforcement import router as alphaevolve_enforcement_router
 except ImportError as e:
     print(f"Warning: AlphaEvolve enforcement router not available: {e}")
     from fastapi import APIRouter
@@ -46,9 +44,7 @@ except ImportError as e:
     alphaevolve_enforcement_router = APIRouter()
 
 try:
-    from .api.v1.incremental_compilation import (
-        router as incremental_compilation_router,
-    )
+    from .api.v1.incremental_compilation import router as incremental_compilation_router
 except ImportError as e:
     print(f"Warning: Incremental compilation router not available: {e}")
     from fastapi import APIRouter

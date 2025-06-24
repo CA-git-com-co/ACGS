@@ -23,7 +23,7 @@ import json
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
@@ -205,30 +205,26 @@ class SecurityManager:
             )
 
             # Layer 2: Policy engine assessment
-            layer_assessments["policy_engine"] = (
-                await self._assess_policy_engine_security(evolution_request)
-            )
-
-            # Layer 3: Authentication assessment
-            layer_assessments["authentication"] = (
-                await self._assess_authentication_security(evolution_request)
-            )
-
-            # Layer 4: Audit assessment
-            layer_assessments["audit"] = await self._assess_audit_security(
+            layer_assessments["policy_engine"] = await self._assess_policy_engine_security(
                 evolution_request
             )
 
+            # Layer 3: Authentication assessment
+            layer_assessments["authentication"] = await self._assess_authentication_security(
+                evolution_request
+            )
+
+            # Layer 4: Audit assessment
+            layer_assessments["audit"] = await self._assess_audit_security(evolution_request)
+
             # Aggregate assessment
             all_approved = all(
-                assessment.get("approved", False)
-                for assessment in layer_assessments.values()
+                assessment.get("approved", False) for assessment in layer_assessments.values()
             )
 
             # Calculate overall risk score
             risk_scores = [
-                assessment.get("risk_score", 0)
-                for assessment in layer_assessments.values()
+                assessment.get("risk_score", 0) for assessment in layer_assessments.values()
             ]
             overall_risk_score = max(risk_scores) if risk_scores else 0
 
@@ -248,11 +244,8 @@ class SecurityManager:
                 "threat_level": threat_level.value,
                 "overall_risk_score": overall_risk_score,
                 "layer_assessments": layer_assessments,
-                "mitigation_required": threat_level
-                in [ThreatLevel.HIGH, ThreatLevel.CRITICAL],
-                "recommended_mitigations": self._get_recommended_mitigations(
-                    threat_level
-                ),
+                "mitigation_required": threat_level in [ThreatLevel.HIGH, ThreatLevel.CRITICAL],
+                "recommended_mitigations": self._get_recommended_mitigations(threat_level),
                 "assessed_at": datetime.now(timezone.utc).isoformat(),
             }
 
@@ -291,14 +284,10 @@ class SecurityManager:
 
             # Input validation
             if not evolution_request.requester_id:
-                validation_result["security_issues"].append(
-                    "Missing requester identification"
-                )
+                validation_result["security_issues"].append("Missing requester identification")
 
             if not evolution_request.justification:
-                validation_result["security_issues"].append(
-                    "Missing security justification"
-                )
+                validation_result["security_issues"].append("Missing security justification")
 
             # Check for suspicious patterns
             suspicious_patterns = [
@@ -344,9 +333,7 @@ class SecurityManager:
                 "security_issues": [f"Validation error: {str(e)}"],
             }
 
-    async def detect_threat(
-        self, event_data: dict[str, Any]
-    ) -> ThreatAssessment | None:
+    async def detect_threat(self, event_data: dict[str, Any]) -> ThreatAssessment | None:
         """
         Detect potential security threats from event data.
 
@@ -421,9 +408,7 @@ class SecurityManager:
                 mitigation_results.append(result)
 
             # Check if all mitigations succeeded
-            all_successful = all(
-                result.get("success", False) for result in mitigation_results
-            )
+            all_successful = all(result.get("success", False) for result in mitigation_results)
 
             if all_successful:
                 # Remove from active threats
@@ -471,15 +456,11 @@ class SecurityManager:
                     },
                     "policy_engine": {
                         "enabled": True,
-                        "status": self.security_metrics["layer_status"][
-                            "policy_engine"
-                        ],
+                        "status": self.security_metrics["layer_status"]["policy_engine"],
                     },
                     "authentication": {
                         "enabled": True,
-                        "status": self.security_metrics["layer_status"][
-                            "authentication"
-                        ],
+                        "status": self.security_metrics["layer_status"]["authentication"],
                     },
                     "audit": {
                         "enabled": self.audit_logging_enabled,
@@ -490,9 +471,7 @@ class SecurityManager:
                     "enabled": self.threat_detection_enabled,
                     "active_threats": len(self.active_threats),
                     "total_threats_detected": self.security_metrics["threats_detected"],
-                    "total_threats_mitigated": self.security_metrics[
-                        "threats_mitigated"
-                    ],
+                    "total_threats_mitigated": self.security_metrics["threats_mitigated"],
                 },
                 "security_events": {
                     "total_events": len(self.security_events),
@@ -500,8 +479,7 @@ class SecurityManager:
                         [
                             event
                             for event in self.security_events
-                            if (datetime.now(timezone.utc) - event.timestamp).total_seconds()
-                            < 3600
+                            if (datetime.now(timezone.utc) - event.timestamp).total_seconds() < 3600
                         ]
                     ),
                 },
@@ -524,9 +502,7 @@ class SecurityManager:
 
             # Check security layers
             for layer in SecurityLayer:
-                layer_status = self.security_metrics["layer_status"].get(
-                    layer.value, "unknown"
-                )
+                layer_status = self.security_metrics["layer_status"].get(layer.value, "unknown")
                 health_status["checks"][f"{layer.value}_layer"] = {
                     "healthy": layer_status == "active",
                     "status": layer_status,
@@ -634,9 +610,7 @@ class SecurityManager:
                 return {
                     "approved": False,
                     "risk_score": 0.8,
-                    "issues": [
-                        "Sandboxing disabled - high risk for evolution execution"
-                    ],
+                    "issues": ["Sandboxing disabled - high risk for evolution execution"],
                 }
 
             # Assess resource requirements
@@ -681,9 +655,7 @@ class SecurityManager:
             logger.error(f"Policy engine security assessment failed: {e}")
             return {"approved": False, "risk_score": 1.0, "error": str(e)}
 
-    async def _assess_authentication_security(
-        self, evolution_request
-    ) -> dict[str, Any]:
+    async def _assess_authentication_security(self, evolution_request) -> dict[str, Any]:
         """Assess authentication layer security for evolution request."""
         try:
             auth_risk = 0.0
@@ -751,9 +723,7 @@ class SecurityManager:
         else:
             return ["standard_monitoring"]
 
-    async def _validate_proposed_changes(
-        self, proposed_changes: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def _validate_proposed_changes(self, proposed_changes: dict[str, Any]) -> dict[str, Any]:
         """Validate proposed changes for security issues."""
         try:
             validation_result = {"secure": True, "security_issues": []}
@@ -780,9 +750,7 @@ class SecurityManager:
 
             # Check for excessive scope
             if len(proposed_changes) > 50:  # Arbitrary threshold
-                validation_result["security_issues"].append(
-                    "Proposed changes have excessive scope"
-                )
+                validation_result["security_issues"].append("Proposed changes have excessive scope")
 
             validation_result["secure"] = len(validation_result["security_issues"]) == 0
             return validation_result
@@ -794,9 +762,7 @@ class SecurityManager:
                 "security_issues": [f"Validation error: {str(e)}"],
             }
 
-    async def _analyze_threat_indicators(
-        self, event_data: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def _analyze_threat_indicators(self, event_data: dict[str, Any]) -> dict[str, Any]:
         """Analyze event data for threat indicators."""
         try:
             threat_indicators = {
@@ -861,9 +827,7 @@ class SecurityManager:
     ) -> dict[str, Any]:
         """Execute a specific mitigation action."""
         try:
-            logger.info(
-                f"Executing mitigation action: {action} for threat {threat.threat_id}"
-            )
+            logger.info(f"Executing mitigation action: {action} for threat {threat.threat_id}")
 
             # Simplified mitigation action execution
             if action == "rate_limiting":

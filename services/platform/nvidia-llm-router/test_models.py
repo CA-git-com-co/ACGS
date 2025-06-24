@@ -43,9 +43,7 @@ async def test_nvidia_api_connectivity(api_key: str, base_url: str) -> bool:
         return False
 
 
-async def test_model_availability(
-    api_key: str, base_url: str, model_name: str
-) -> dict[str, Any]:
+async def test_model_availability(api_key: str, base_url: str, model_name: str) -> dict[str, Any]:
     """
     Test availability of a specific model
 

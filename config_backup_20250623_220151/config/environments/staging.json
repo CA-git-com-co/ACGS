@@ -1,0 +1,118 @@
+{
+  "environment": "staging",
+  "version": "1.0.0",
+  "database": {
+    "host": "staging-db.acgs.internal",
+    "port": 5432,
+    "name": "acgs_staging",
+    "user": "acgs_user",
+    "ssl_mode": "require",
+    "pool_size": 10,
+    "max_overflow": 20,
+    "echo": false
+  },
+  "redis": {
+    "host": "staging-redis.acgs.internal",
+    "port": 6379,
+    "db": 0,
+    "password": "${STAGING_REDIS_PASSWORD}",
+    "ssl": true
+  },
+  "services": {
+    "auth": {
+      "name": "Authentication Service",
+      "port": 8000,
+      "host": "0.0.0.0",
+      "health_path": "/health",
+      "debug": false
+    },
+    "ac": {
+      "name": "Constitutional AI Service",
+      "port": 8001,
+      "host": "0.0.0.0",
+      "health_path": "/health",
+      "debug": false
+    },
+    "integrity": {
+      "name": "Integrity Service",
+      "port": 8002,
+      "host": "0.0.0.0",
+      "health_path": "/health",
+      "debug": false
+    },
+    "fv": {
+      "name": "Formal Verification Service",
+      "port": 8003,
+      "host": "0.0.0.0",
+      "health_path": "/health",
+      "debug": false
+    },
+    "gs": {
+      "name": "Governance Synthesis Service",
+      "port": 8004,
+      "host": "0.0.0.0",
+      "health_path": "/health",
+      "debug": false
+    },
+    "pgc": {
+      "name": "Policy Governance Service",
+      "port": 8005,
+      "host": "0.0.0.0",
+      "health_path": "/health",
+      "debug": false
+    },
+    "ec": {
+      "name": "Evolutionary Computation Service",
+      "port": 8006,
+      "host": "0.0.0.0",
+      "health_path": "/health",
+      "debug": false
+    }
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "json",
+    "output": "file",
+    "file_rotation": true,
+    "structured": true,
+    "max_file_size": "100MB",
+    "backup_count": 5
+  },
+  "security": {
+    "jwt_secret": "${STAGING_JWT_SECRET}",
+    "encryption_key": "${STAGING_ENCRYPTION_KEY}",
+    "ssl_enabled": true,
+    "cors_origins": ["https://staging.acgs.com"],
+    "rate_limiting": {
+      "enabled": true,
+      "requests_per_minute": 500
+    }
+  },
+  "quantumagi": {
+    "constitution_hash": "cdd01ef066bc6cf2",
+    "solana_network": "devnet",
+    "rpc_url": "https://api.devnet.solana.com",
+    "commitment": "finalized",
+    "max_retries": 5,
+    "timeout_seconds": 60
+  },
+  "monitoring": {
+    "metrics_enabled": true,
+    "tracing_enabled": true,
+    "health_check_interval": 15,
+    "prometheus_port": 9090,
+    "alerting_enabled": true
+  },
+  "features": {
+    "hot_reload": false,
+    "debug_mode": false,
+    "test_mode": false,
+    "mock_external_services": false
+  },
+  "performance": {
+    "cache_ttl": 300,
+    "connection_timeout": 30,
+    "request_timeout": 60,
+    "max_concurrent_requests": 100
+  }
+}

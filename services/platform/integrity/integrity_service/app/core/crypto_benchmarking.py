@@ -230,9 +230,7 @@ class CryptoBenchmarker:
             "results_by_key_size": results,
             "system_overhead_analysis": self._overhead_to_dict(overhead_analysis),
             "total_benchmark_time_seconds": total_time,
-            "recommendations": self._generate_recommendations(
-                results, overhead_analysis
-            ),
+            "recommendations": self._generate_recommendations(results, overhead_analysis),
         }
 
         logger.info(f"Cryptographic benchmarking completed in {total_time:.2f} seconds")
@@ -247,9 +245,7 @@ class CryptoBenchmarker:
         payload_size: int,
     ) -> CryptoBenchmarkResult:
         """Benchmark a single cryptographic operation."""
-        logger.debug(
-            f"Benchmarking {operation_name} with {key_size}-bit key, {payload_size} bytes"
-        )
+        logger.debug(f"Benchmarking {operation_name} with {key_size}-bit key, {payload_size} bytes")
 
         # Warmup
         for _ in range(self.config.warmup_iterations):
@@ -261,9 +257,7 @@ class CryptoBenchmarker:
             start_time = time.perf_counter()
             operation_func(test_data)
             end_time = time.perf_counter()
-            measurements.append(
-                (end_time - start_time) * 1000
-            )  # Convert to milliseconds
+            measurements.append((end_time - start_time) * 1000)  # Convert to milliseconds
 
         # Calculate statistics
         mean_time = statistics.mean(measurements)
@@ -298,9 +292,7 @@ class CryptoBenchmarker:
             raw_measurements=measurements,
         )
 
-    async def _analyze_system_overhead(
-        self, results: dict[str, Any]
-    ) -> SystemOverheadAnalysis:
+    async def _analyze_system_overhead(self, results: dict[str, Any]) -> SystemOverheadAnalysis:
         """Analyze system-wide overhead from cryptographic operations."""
         # Use 2048-bit key, 4KB payload as baseline
         baseline_key = "2048_bit_key"
@@ -325,9 +317,7 @@ class CryptoBenchmarker:
         # Calculate throughput impact
         baseline_throughput = 1000.0 / baseline_latency  # ops/sec
         crypto_throughput = 1000.0 / crypto_enabled_latency
-        throughput_impact = (
-            (baseline_throughput - crypto_throughput) / baseline_throughput
-        ) * 100
+        throughput_impact = ((baseline_throughput - crypto_throughput) / baseline_throughput) * 100
 
         # Calculate latency impact
         latency_impact = (total_crypto_time / baseline_latency) * 100
@@ -404,9 +394,7 @@ class CryptoBenchmarker:
     def _overhead_to_dict(self, analysis: SystemOverheadAnalysis) -> dict[str, Any]:
         """Convert overhead analysis to dictionary."""
         return {
-            "baseline_throughput_ops_per_sec": round(
-                analysis.baseline_throughput_ops_per_sec, 2
-            ),
+            "baseline_throughput_ops_per_sec": round(analysis.baseline_throughput_ops_per_sec, 2),
             "crypto_enabled_throughput_ops_per_sec": round(
                 analysis.crypto_enabled_throughput_ops_per_sec, 2
             ),
@@ -441,14 +429,10 @@ async def run_crypto_benchmarking_example():
     # Check for performance issues
     overhead = results["system_overhead_analysis"]
     if overhead["throughput_impact_percent"] > 10:
-        print(
-            f"⚠️  WARNING: High throughput impact: {overhead['throughput_impact_percent']:.1f}%"
-        )
+        print(f"⚠️  WARNING: High throughput impact: {overhead['throughput_impact_percent']:.1f}%")
 
     if overhead["latency_overhead_ms"] > 20:
-        print(
-            f"⚠️  WARNING: High latency overhead: {overhead['latency_overhead_ms']:.1f}ms"
-        )
+        print(f"⚠️  WARNING: High latency overhead: {overhead['latency_overhead_ms']:.1f}ms")
 
 
 if __name__ == "__main__":

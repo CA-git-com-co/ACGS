@@ -39,7 +39,6 @@ class CircuitBreakerError(Exception):
     """Raised when circuit breaker is open."""
 
 
-
 class CircuitBreaker:
     """
     Circuit breaker for service resilience.
@@ -102,9 +101,7 @@ class CircuitBreaker:
         try:
             # Execute function with timeout
             if asyncio.iscoroutinefunction(func):
-                result = await asyncio.wait_for(
-                    func(*args, **kwargs), timeout=self.config.timeout
-                )
+                result = await asyncio.wait_for(func(*args, **kwargs), timeout=self.config.timeout)
             else:
                 result = func(*args, **kwargs)
 
@@ -201,9 +198,7 @@ class CircuitBreaker:
             "total_successes": self.total_successes,
             "total_timeouts": self.total_timeouts,
             "failure_rate": (
-                self.total_failures / self.total_requests
-                if self.total_requests > 0
-                else 0.0
+                self.total_failures / self.total_requests if self.total_requests > 0 else 0.0
             ),
             "last_failure_time": self.last_failure_time,
             "last_success_time": self.last_success_time,
@@ -297,16 +292,12 @@ class CircuitBreakerManager:
             1 for cb in self.circuit_breakers.values() if cb.state == CircuitState.OPEN
         )
         half_open_breakers = sum(
-            1
-            for cb in self.circuit_breakers.values()
-            if cb.state == CircuitState.HALF_OPEN
+            1 for cb in self.circuit_breakers.values() if cb.state == CircuitState.HALF_OPEN
         )
 
         overall_health = "healthy"
         if open_breakers > 0:
-            overall_health = (
-                "degraded" if open_breakers < total_breakers else "critical"
-            )
+            overall_health = "degraded" if open_breakers < total_breakers else "critical"
         elif half_open_breakers > 0:
             overall_health = "recovering"
 
@@ -324,9 +315,7 @@ class CircuitBreakerManager:
 _circuit_breaker_manager = CircuitBreakerManager()
 
 
-def get_circuit_breaker(
-    name: str, config: CircuitBreakerConfig | None = None
-) -> CircuitBreaker:
+def get_circuit_breaker(name: str, config: CircuitBreakerConfig | None = None) -> CircuitBreaker:
     """
     Get circuit breaker from global manager.
 

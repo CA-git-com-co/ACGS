@@ -192,13 +192,9 @@ class AdvancedRedisClient:
                 with self._lock:
                     self.metrics.errors += 1
 
-                logger.warning(
-                    "Redis health check failed", service=self.service_name, error=str(e)
-                )
+                logger.warning("Redis health check failed", service=self.service_name, error=str(e))
 
-    def _generate_key(
-        self, key: str | dict[str, Any], prefix: str | None = None
-    ) -> str:
+    def _generate_key(self, key: str | dict[str, Any], prefix: str | None = None) -> str:
         """Generate cache key with service prefix."""
         if isinstance(key, str):
             cache_key = key
@@ -295,9 +291,7 @@ class AdvancedRedisClient:
             else:
                 await self.redis_client.set(cache_key, data)
 
-            logger.debug(
-                "Cache set", service=self.service_name, key=cache_key[:50], ttl=ttl
-            )
+            logger.debug("Cache set", service=self.service_name, key=cache_key[:50], ttl=ttl)
             return True
 
         except (RedisError, ConnectionError, TimeoutError) as e:
@@ -312,9 +306,7 @@ class AdvancedRedisClient:
             )
             return False
 
-    async def delete(
-        self, key: str | dict[str, Any], prefix: str | None = None
-    ) -> bool:
+    async def delete(self, key: str | dict[str, Any], prefix: str | None = None) -> bool:
         """Delete key from cache."""
         cache_key = self._generate_key(key, prefix)
 
@@ -375,9 +367,7 @@ class AdvancedRedisClient:
         # sha256: func_hash
         """Update cache hit rate."""
         if self.metrics.total_requests > 0:
-            self.metrics.hit_rate = (
-                self.metrics.cache_hits / self.metrics.total_requests
-            ) * 100
+            self.metrics.hit_rate = (self.metrics.cache_hits / self.metrics.total_requests) * 100
 
     async def get_metrics(self) -> CacheMetrics:
         """Get current cache metrics."""

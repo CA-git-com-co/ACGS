@@ -5,13 +5,14 @@
 # These can be replaced with proper imports once the circular dependency is resolved
 
 from dataclasses import dataclass
-from typing import Optional, List, Dict, Any
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
 class ACAmendment:
     """Mock ACAmendment model for testing."""
+
     id: Optional[int] = None
     title: str = ""
     description: str = ""
@@ -22,6 +23,7 @@ class ACAmendment:
 @dataclass
 class ACAmendmentComment:
     """Mock ACAmendmentComment model for testing."""
+
     id: Optional[int] = None
     amendment_id: Optional[int] = None
     content: str = ""
@@ -31,6 +33,7 @@ class ACAmendmentComment:
 @dataclass
 class ACAmendmentVote:
     """Mock ACAmendmentVote model for testing."""
+
     id: Optional[int] = None
     amendment_id: Optional[int] = None
     vote: str = "abstain"
@@ -40,6 +43,7 @@ class ACAmendmentVote:
 @dataclass
 class ACConflictResolution:
     """Mock ACConflictResolution model for testing."""
+
     id: Optional[int] = None
     conflict_type: str = ""
     resolution: str = ""
@@ -49,6 +53,7 @@ class ACConflictResolution:
 @dataclass
 class ACMetaRule:
     """Mock ACMetaRule model for testing."""
+
     id: Optional[int] = None
     rule_type: str = ""
     content: str = ""
@@ -58,6 +63,7 @@ class ACMetaRule:
 @dataclass
 class Principle:
     """Mock Principle model for testing."""
+
     id: Optional[int] = None
     title: str = ""
     content: str = ""
@@ -67,6 +73,7 @@ class Principle:
 @dataclass
 class User:
     """Mock User model for testing."""
+
     id: Optional[int] = None
     username: str = ""
     email: str = ""
@@ -76,6 +83,7 @@ class User:
 @dataclass
 class RefreshToken:
     """Mock RefreshToken model for testing."""
+
     id: Optional[int] = None
     user_id: Optional[int] = None
     token: str = ""
@@ -83,6 +91,7 @@ class RefreshToken:
     expires_at: Optional[datetime] = None
     created_at: Optional[datetime] = None
     is_revoked: bool = False
+
 
 __all__ = [
     "ACAmendment",

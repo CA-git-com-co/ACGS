@@ -5,7 +5,7 @@ Provides JWT token validation and user authentication across all services
 
 import os
 import uuid  # Added uuid
-from datetime import timezone, datetime, timedelta  # Added timedelta
+from datetime import datetime, timedelta, timezone  # Added timedelta
 
 import httpx
 import jwt

@@ -15,26 +15,26 @@ Features:
 - Integration with monitoring and logging
 """
 
-import uuid
 import traceback
+import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Union
 from enum import Enum
+from typing import Any, Dict, List, Optional, Union
 
+import structlog
 from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
-import structlog
 
-from .error_catalog import ErrorCatalog, ServiceCode, ErrorCategory, ErrorSeverity
-from ..response.unified_response import UnifiedResponse, ResponseMetadata
+from ..response.unified_response import ResponseMetadata, UnifiedResponse
+from .error_catalog import ErrorCatalog, ErrorCategory, ErrorSeverity, ServiceCode
 
 logger = structlog.get_logger(__name__)
 
 
 class HTTPStatusCode(int, Enum):
     """Standard HTTP status codes for error responses."""
-    
+
     # Client Errors (4xx)
     BAD_REQUEST = 400
     UNAUTHORIZED = 401
@@ -44,7 +44,7 @@ class HTTPStatusCode(int, Enum):
     CONFLICT = 409
     UNPROCESSABLE_ENTITY = 422
     TOO_MANY_REQUESTS = 429
-    
+
     # Server Errors (5xx)
     INTERNAL_SERVER_ERROR = 500
     NOT_IMPLEMENTED = 501
@@ -55,7 +55,7 @@ class HTTPStatusCode(int, Enum):
 
 class ErrorDetail(BaseModel):
     """Detailed error information."""
-    
+
     code: str = Field(..., description="Standardized error code")
     message: str = Field(..., description="Human-readable error message")
     user_message: str = Field(..., description="User-friendly error message")
@@ -72,7 +72,7 @@ class ErrorDetail(BaseModel):
 
 class StandardizedErrorResponse(BaseModel):
     """Standardized error response model."""
-    
+
     success: bool = Field(False, description="Always false for error responses")
     error: ErrorDetail = Field(..., description="Error details")
     data: Optional[Any] = Field(None, description="Additional error data")
@@ -81,17 +81,17 @@ class StandardizedErrorResponse(BaseModel):
 
 class ErrorHandler:
     """Centralized error handler for ACGS-1 services."""
-    
+
     def __init__(self, service_name: str, service_code: ServiceCode, version: str = "1.0.0"):
         """Initialize error handler for specific service."""
         self.service_name = service_name
         self.service_code = service_code
         self.version = version
         self.error_catalog = ErrorCatalog()
-        
+
         # Register common errors for this service
         self._register_common_errors()
-    
+
     def _register_common_errors(self):
         """Register common errors for all services."""
         common_errors = [
@@ -103,7 +103,7 @@ class ErrorHandler:
                 "severity": ErrorSeverity.LOW,
                 "resolution_guidance": "Check request format and required fields",
                 "user_message": "Please check your request and try again",
-                "retryable": False
+                "retryable": False,
             },
             {
                 "category": ErrorCategory.AUTHENTICATION,
@@ -113,7 +113,7 @@ class ErrorHandler:
                 "severity": ErrorSeverity.MEDIUM,
                 "resolution_guidance": "Provide valid authentication token",
                 "user_message": "Please log in to access this resource",
-                "retryable": False
+                "retryable": False,
             },
             {
                 "category": ErrorCategory.AUTHORIZATION,
@@ -123,7 +123,7 @@ class ErrorHandler:
                 "severity": ErrorSeverity.MEDIUM,
                 "resolution_guidance": "Contact administrator for access",
                 "user_message": "You don't have permission to perform this action",
-                "retryable": False
+                "retryable": False,
             },
             {
                 "category": ErrorCategory.RATE_LIMIT,
@@ -133,7 +133,7 @@ class ErrorHandler:
                 "severity": ErrorSeverity.LOW,
                 "resolution_guidance": "Wait before retrying request",
                 "user_message": "Too many requests. Please wait and try again",
-                "retryable": True
+                "retryable": True,
             },
             {
                 "category": ErrorCategory.INTERNAL,
@@ -143,29 +143,26 @@ class ErrorHandler:
                 "severity": ErrorSeverity.HIGH,
                 "resolution_guidance": "Contact support if error persists",
                 "user_message": "An unexpected error occurred. Please try again",
-                "retryable": True
-            }
+                "retryable": True,
+            },
         ]
-        
+
         for error_config in common_errors:
             try:
-                self.error_catalog.register_error(
-                    service=self.service_code,
-                    **error_config
-                )
+                self.error_catalog.register_error(service=self.service_code, **error_config)
             except ValueError:
                 # Error already registered
                 pass
-    
+
     def create_error_response(
         self,
         error_code: str,
         context: Optional[Dict[str, Any]] = None,
         request_id: Optional[str] = None,
-        include_stack_trace: bool = False
+        include_stack_trace: bool = False,
     ) -> StandardizedErrorResponse:
         """Create standardized error response."""
-        
+
         # Get error definition from catalog
         error_def = self.error_catalog.get_error_definition(error_code)
         if not error_def:
@@ -173,7 +170,7 @@ class ErrorHandler:
             error_def = self.error_catalog.get_error_definition(
                 f"{self.service_code.value}_INTERNAL_001"
             )
-        
+
         # Create error detail
         error_detail = ErrorDetail(
             code=error_code,
@@ -187,52 +184,48 @@ class ErrorHandler:
             timestamp=datetime.now(timezone.utc).isoformat(),
             request_id=request_id or str(uuid.uuid4()),
             service=self.service_name,
-            stack_trace=traceback.format_exc() if include_stack_trace else None
+            stack_trace=traceback.format_exc() if include_stack_trace else None,
         )
-        
+
         # Create response metadata
         metadata = ResponseMetadata(
             timestamp=datetime.now(timezone.utc).isoformat(),
             request_id=error_detail.request_id,
             version=self.version,
-            service=self.service_name
+            service=self.service_name,
         )
-        
-        return StandardizedErrorResponse(
-            error=error_detail,
-            metadata=metadata
-        )
-    
+
+        return StandardizedErrorResponse(error=error_detail, metadata=metadata)
+
     def handle_exception(
         self,
         exception: Exception,
         request: Optional[Request] = None,
-        context: Optional[Dict[str, Any]] = None
+        context: Optional[Dict[str, Any]] = None,
     ) -> JSONResponse:
         """Handle exception and return standardized error response."""
-        
+
         request_id = None
         if request:
             request_id = getattr(request.state, "request_id", None) or str(uuid.uuid4())
-        
+
         # Determine error code based on exception type
         error_code = self._map_exception_to_error_code(exception)
-        
+
         # Add exception details to context
         error_context = context or {}
-        error_context.update({
-            "exception_type": type(exception).__name__,
-            "exception_message": str(exception)
-        })
-        
+        error_context.update(
+            {"exception_type": type(exception).__name__, "exception_message": str(exception)}
+        )
+
         # Create error response
         error_response = self.create_error_response(
             error_code=error_code,
             context=error_context,
             request_id=request_id,
-            include_stack_trace=True  # Include in development/debug mode
+            include_stack_trace=True,  # Include in development/debug mode
         )
-        
+
         # Log error
         logger.error(
             "Error handled",
@@ -241,20 +234,17 @@ class ErrorHandler:
             exception_message=str(exception),
             request_id=request_id,
             service=self.service_name,
-            context=error_context
+            context=error_context,
         )
-        
+
         # Get HTTP status code
         http_status = self._get_http_status_for_error(error_code)
-        
-        return JSONResponse(
-            status_code=http_status,
-            content=error_response.model_dump()
-        )
-    
+
+        return JSONResponse(status_code=http_status, content=error_response.model_dump())
+
     def _map_exception_to_error_code(self, exception: Exception) -> str:
         """Map exception type to standardized error code."""
-        
+
         exception_mapping = {
             ValueError: f"{self.service_code.value}_VALIDATION_001",
             KeyError: f"{self.service_code.value}_VALIDATION_002",
@@ -264,17 +254,17 @@ class ErrorHandler:
             TimeoutError: f"{self.service_code.value}_EXTERNAL_002",
             HTTPException: f"{self.service_code.value}_HTTP_{exception.status_code:03d}",
         }
-        
+
         exception_type = type(exception)
         return exception_mapping.get(exception_type, f"{self.service_code.value}_INTERNAL_001")
-    
+
     def _get_http_status_for_error(self, error_code: str) -> int:
         """Get HTTP status code for error code."""
-        
+
         error_def = self.error_catalog.get_error_definition(error_code)
         if error_def:
             return error_def["http_status"]
-        
+
         return HTTPStatusCode.INTERNAL_SERVER_ERROR
 
 
@@ -332,5 +322,5 @@ __all__ = [
     "create_gs_error_handler",
     "create_pgc_error_handler",
     "create_ec_error_handler",
-    "create_dgm_error_handler"
+    "create_dgm_error_handler",
 ]

@@ -32,17 +32,13 @@ class EvolutionInitiationRequest(BaseModel):
     target_policies: list[str] = Field(
         default_factory=list, description="List of target policy IDs"
     )
-    proposed_changes: dict[str, Any] = Field(
-        default_factory=dict, description="Proposed changes"
-    )
+    proposed_changes: dict[str, Any] = Field(default_factory=dict, description="Proposed changes")
     justification: str = Field(..., description="Justification for the evolution")
     requester_id: str = Field(..., description="ID of the requesting user")
     priority: str = Field(
         default="medium", description="Priority level (low, medium, high, critical)"
     )
-    estimated_duration_minutes: int = Field(
-        default=10, description="Estimated duration in minutes"
-    )
+    estimated_duration_minutes: int = Field(default=10, description="Estimated duration in minutes")
     requires_constitutional_validation: bool = Field(
         default=True, description="Whether constitutional validation is required"
     )
@@ -273,9 +269,7 @@ async def get_active_evolutions(
         active_evolutions = []
 
         for evolution_id in evolution_engine.active_evolutions.keys():
-            found, status_info = await evolution_engine.get_evolution_status(
-                evolution_id
-            )
+            found, status_info = await evolution_engine.get_evolution_status(evolution_id)
             if found:
                 active_evolutions.append({"evolution_id": evolution_id, **status_info})
 

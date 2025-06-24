@@ -53,9 +53,7 @@ class ConstitutionalComplianceValidator:
 
         logger.info(f"Constitutional validator initialized for {service_name}")
 
-    async def validate_request(
-        self, request: Request
-    ) -> tuple[bool, Optional[Dict[str, Any]]]:
+    async def validate_request(self, request: Request) -> tuple[bool, Optional[Dict[str, Any]]]:
         """
         Fast constitutional compliance validation for incoming requests.
 

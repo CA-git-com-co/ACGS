@@ -26,7 +26,7 @@ import asyncio
 import logging
 import time
 from dataclasses import asdict, dataclass
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 

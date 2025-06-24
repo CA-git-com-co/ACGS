@@ -18,11 +18,12 @@ import time
 from typing import Any
 
 import grpc
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, Field
+
 from .core.config import settings
 from .core.opa_client import get_opa_client
 from .services.qpe_client import QPEClient
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 

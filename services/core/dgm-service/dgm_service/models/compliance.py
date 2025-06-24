@@ -3,9 +3,9 @@ Constitutional compliance model for DGM service.
 """
 
 import enum
-from typing import Dict, Any
+from typing import Any, Dict
 
-from sqlalchemy import Column, String, Text, DateTime, Enum, Numeric, JSON, Boolean
+from sqlalchemy import JSON, Boolean, Column, DateTime, Enum, Numeric, String, Text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
@@ -15,6 +15,7 @@ Base = declarative_base()
 
 class ComplianceLevel(enum.Enum):
     """Level of constitutional compliance."""
+
     CRITICAL_VIOLATION = "critical_violation"
     MAJOR_VIOLATION = "major_violation"
     MINOR_VIOLATION = "minor_violation"
@@ -25,6 +26,7 @@ class ComplianceLevel(enum.Enum):
 
 class ComplianceStatus(enum.Enum):
     """Status of compliance check."""
+
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
@@ -38,8 +40,7 @@ class ConstitutionalComplianceLog(Base):
     __tablename__ = "constitutional_compliance_logs"
     __table_args__ = {"schema": "dgm"}
 
-    id = Column(PG_UUID(as_uuid=True), primary_key=True,
-                server_default=func.uuid_generate_v4())
+    id = Column(PG_UUID(as_uuid=True), primary_key=True, server_default=func.uuid_generate_v4())
 
     # Reference information
     improvement_id = Column(PG_UUID(as_uuid=True), nullable=True, index=True)
@@ -49,12 +50,10 @@ class ConstitutionalComplianceLog(Base):
     # Compliance assessment
     compliance_level = Column(Enum(ComplianceLevel), nullable=False, index=True)
     compliance_score = Column(Numeric(3, 2), nullable=False)
-    status = Column(Enum(ComplianceStatus), nullable=False,
-                   default=ComplianceStatus.PENDING)
+    status = Column(Enum(ComplianceStatus), nullable=False, default=ComplianceStatus.PENDING)
 
     # Constitutional reference
-    constitutional_hash = Column(String(64), nullable=False,
-                                default="cdd01ef066bc6cf2")
+    constitutional_hash = Column(String(64), nullable=False, default="cdd01ef066bc6cf2")
     constitutional_version = Column(String(50), nullable=False, default="1.0")
 
     # Compliance details
@@ -68,17 +67,18 @@ class ConstitutionalComplianceLog(Base):
     review_required = Column(Boolean, default=False)
 
     # Timestamps
-    assessed_at = Column(DateTime(timezone=True), nullable=False,
-                        server_default=func.now())
+    assessed_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
     reviewed_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), nullable=False,
-                       server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), nullable=False,
-                       server_default=func.now(), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    updated_at = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
+    )
 
     def __repr__(self):
-        return (f"<ConstitutionalComplianceLog(service={self.service_name}, "
-                f"level={self.compliance_level}, score={self.compliance_score})>")
+        return (
+            f"<ConstitutionalComplianceLog(service={self.service_name}, "
+            f"level={self.compliance_level}, score={self.compliance_score})>"
+        )
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary representation."""
@@ -101,5 +101,5 @@ class ConstitutionalComplianceLog(Base):
             "assessed_at": self.assessed_at.isoformat() if self.assessed_at else None,
             "reviewed_at": self.reviewed_at.isoformat() if self.reviewed_at else None,
             "created_at": self.created_at.isoformat() if self.created_at else None,
-            "updated_at": self.updated_at.isoformat() if self.updated_at else None
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }

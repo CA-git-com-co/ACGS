@@ -35,10 +35,10 @@ from services.core.generation_engine.engine import (
     PolicyGenerationResponse,
 )
 from services.core.generation_engine.models import (
-    LogicalSemanticUnit,
-    LSUDomain,
-    LSUConstraint,
     ConstraintType,
+    LogicalSemanticUnit,
+    LSUConstraint,
+    LSUDomain,
 )
 from services.core.monitoring.alerts import AlertManager
 from services.core.monitoring.health import HealthMonitor

@@ -113,9 +113,7 @@ class LifecycleManager:
 
         # Cleanup instances
         for instance in list(self._instances):
-            if hasattr(instance, "close") and asyncio.iscoroutinefunction(
-                instance.close
-            ):
+            if hasattr(instance, "close") and asyncio.iscoroutinefunction(instance.close):
                 try:
                     await instance.close()
                 except Exception as e:
@@ -180,9 +178,7 @@ class DIContainer:
         )
 
         self._services[interface] = registration
-        logger.debug(
-            f"Registered {interface} -> {implementation or factory} ({scope.value})"
-        )
+        logger.debug(f"Registered {interface} -> {implementation or factory} ({scope.value})")
 
         return self
 
@@ -198,9 +194,7 @@ class DIContainer:
         """Register a transient service."""
         return self.register(interface, implementation, Scope.TRANSIENT)
 
-    def register_scoped(
-        self, interface: type[T], implementation: type[T] = None
-    ) -> "DIContainer":
+    def register_scoped(self, interface: type[T], implementation: type[T] = None) -> "DIContainer":
         """Register a scoped service."""
         return self.register(interface, implementation, Scope.SCOPED)
 
@@ -332,9 +326,7 @@ class DIContainer:
             instance = registration.implementation(*dependencies)
 
             # Call initialization if available
-            if hasattr(instance, "initialize") and asyncio.iscoroutinefunction(
-                instance.initialize
-            ):
+            if hasattr(instance, "initialize") and asyncio.iscoroutinefunction(instance.initialize):
                 # Schedule async initialization
                 asyncio.create_task(instance.initialize())
             elif hasattr(instance, "initialize"):
@@ -388,9 +380,7 @@ class DIContainer:
             if scope_name in self._scoped_instances:
                 scoped_instances = self._scoped_instances[scope_name]
                 for instance in scoped_instances.values():
-                    if hasattr(instance, "close") and asyncio.iscoroutinefunction(
-                        instance.close
-                    ):
+                    if hasattr(instance, "close") and asyncio.iscoroutinefunction(instance.close):
                         try:
                             await instance.close()
                         except Exception as e:
@@ -433,9 +423,7 @@ class DIContainer:
         for interface, registration in self._services.items():
             for dep_type in registration.dependencies:
                 if not self.is_registered(dep_type):
-                    errors.append(
-                        f"Service {interface} depends on unregistered {dep_type}"
-                    )
+                    errors.append(f"Service {interface} depends on unregistered {dep_type}")
 
         return errors
 

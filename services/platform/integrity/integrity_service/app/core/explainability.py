@@ -54,14 +54,10 @@ class ExplainabilityEngine:
         # Generate counterfactual examples if requested
         counterfactual_examples = None
         if request.include_counterfactuals:
-            counterfactual_examples = await self._generate_counterfactuals(
-                request.decision_id, db
-            )
+            counterfactual_examples = await self._generate_counterfactuals(request.decision_id, db)
 
         # Calculate confidence score
-        confidence_score = await self._calculate_confidence_score(
-            request.decision_id, db
-        )
+        confidence_score = await self._calculate_confidence_score(request.decision_id, db)
 
         response = ExplainabilityResponse(
             decision_id=request.decision_id,
@@ -223,9 +219,7 @@ class ExplainabilityEngine:
 
         return counterfactuals
 
-    async def _calculate_confidence_score(
-        self, decision_id: str, db: AsyncSession
-    ) -> float:
+    async def _calculate_confidence_score(self, decision_id: str, db: AsyncSession) -> float:
         """
         Calculate confidence score for the decision.
         """
@@ -240,10 +234,7 @@ class ExplainabilityEngine:
         verification_factor = 0.0  # All rules verified
 
         confidence = (
-            base_confidence
-            + rule_coverage_factor
-            + bias_detection_factor
-            + verification_factor
+            base_confidence + rule_coverage_factor + bias_detection_factor + verification_factor
         )
         return min(confidence, 1.0)
 
@@ -251,9 +242,7 @@ class ExplainabilityEngine:
         """Get mock rule count for technical explanations."""
         return 15  # Mock number of rules evaluated
 
-    async def get_rule_provenance(
-        self, rule_id: str, db: AsyncSession
-    ) -> RuleProvenanceResponse:
+    async def get_rule_provenance(self, rule_id: str, db: AsyncSession) -> RuleProvenanceResponse:
         """
         Get detailed provenance information for a specific rule.
         """

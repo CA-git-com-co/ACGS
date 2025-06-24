@@ -158,9 +158,7 @@ class EnhancedPrometheusMiddleware(BaseHTTPMiddleware):
                 workflow_type=workflow_type, stage="start", result="initiated"
             )
 
-    def _record_post_request_metrics(
-        self, request: Request, response: Response, duration: float
-    ):
+    def _record_post_request_metrics(self, request: Request, response: Response, duration: float):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -177,9 +175,7 @@ class EnhancedPrometheusMiddleware(BaseHTTPMiddleware):
         # Critical endpoint monitoring
         if endpoint in self.critical_endpoints:
             if duration > 0.5:  # 500ms threshold
-                self.metrics.record_error(
-                    error_type="slow_critical_endpoint", severity="warning"
-                )
+                self.metrics.record_error(error_type="slow_critical_endpoint", severity="warning")
 
         # Constitutional compliance scoring for AC service
         if self.service_name == "ac_service" and "/constitutional/" in endpoint:
@@ -216,9 +212,7 @@ class EnhancedPrometheusMiddleware(BaseHTTPMiddleware):
         elif self.service_name == "integrity_service":
             self._record_integrity_service_metrics(request, response, duration)
 
-    def _record_auth_service_metrics(
-        self, request: Request, response: Response, duration: float
-    ):
+    def _record_auth_service_metrics(self, request: Request, response: Response, duration: float):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -238,9 +232,7 @@ class EnhancedPrometheusMiddleware(BaseHTTPMiddleware):
             result = "success" if response.status_code < 400 else "failure"
             self.metrics.record_api_key_operation(operation, result)
 
-    def _record_ac_service_metrics(
-        self, request: Request, response: Response, duration: float
-    ):
+    def _record_ac_service_metrics(self, request: Request, response: Response, duration: float):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -255,14 +247,10 @@ class EnhancedPrometheusMiddleware(BaseHTTPMiddleware):
                 ai_operation="validation", complexity=complexity, duration=duration
             )
 
-            self.metrics.record_compliance_validation_latency(
-                "constitutional", duration
-            )
+            self.metrics.record_compliance_validation_latency("constitutional", duration)
             self.metrics.record_constitutional_compliance_check("validation", result)
 
-    def _record_fv_service_metrics(
-        self, request: Request, response: Response, duration: float
-    ):
+    def _record_fv_service_metrics(self, request: Request, response: Response, duration: float):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -280,9 +268,7 @@ class EnhancedPrometheusMiddleware(BaseHTTPMiddleware):
                 verification_type="policy", complexity=complexity, duration=duration
             )
 
-    def _record_gs_service_metrics(
-        self, request: Request, response: Response, duration: float
-    ):
+    def _record_gs_service_metrics(self, request: Request, response: Response, duration: float):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -303,9 +289,7 @@ class EnhancedPrometheusMiddleware(BaseHTTPMiddleware):
                 consensus_type="policy_synthesis", model_count="multiple", result=result
             )
 
-    def _record_pgc_service_metrics(
-        self, request: Request, response: Response, duration: float
-    ):
+    def _record_pgc_service_metrics(self, request: Request, response: Response, duration: float):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -321,9 +305,7 @@ class EnhancedPrometheusMiddleware(BaseHTTPMiddleware):
                 action_type="enforcement", policy_type="general", result=result
             )
 
-    def _record_ec_service_metrics(
-        self, request: Request, response: Response, duration: float
-    ):
+    def _record_ec_service_metrics(self, request: Request, response: Response, duration: float):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -333,15 +315,11 @@ class EnhancedPrometheusMiddleware(BaseHTTPMiddleware):
         if "/oversight" in endpoint:
             # WINA oversight metrics
             if response.status_code == 200:
-                self.metrics.set_wina_optimization_score(
-                    "oversight", 0.85
-                )  # Example score
+                self.metrics.set_wina_optimization_score("oversight", 0.85)  # Example score
 
         elif "/alphaevolve" in endpoint:
             result = "success" if response.status_code == 200 else "failure"
-            self.metrics.record_evolutionary_computation_iteration(
-                "alphaevolve", result
-            )
+            self.metrics.record_evolutionary_computation_iteration("alphaevolve", result)
 
     def _record_integrity_service_metrics(
         self, request: Request, response: Response, duration: float
@@ -354,9 +332,7 @@ class EnhancedPrometheusMiddleware(BaseHTTPMiddleware):
 
         if "/integrity/verify" in endpoint:
             result = "success" if response.status_code == 200 else "failure"
-            self.metrics.record_cryptographic_operation(
-                "verification", "sha256", result
-            )
+            self.metrics.record_cryptographic_operation("verification", "sha256", result)
 
         elif "/integrity/audit" in endpoint:
             result = "success" if response.status_code == 200 else "failure"
@@ -383,9 +359,7 @@ class EnhancedPrometheusMiddleware(BaseHTTPMiddleware):
                 workflow_type=workflow_type, stage="execution", duration=duration
             )
 
-    def _record_error_metrics(
-        self, request: Request, error: Exception, duration: float
-    ):
+    def _record_error_metrics(self, request: Request, error: Exception, duration: float):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -408,39 +382,25 @@ class EnhancedPrometheusMiddleware(BaseHTTPMiddleware):
                 workflow_type=workflow_type, stage="error", result="failure"
             )
 
-    def _validate_performance_targets(
-        self, endpoint: str, duration: float, status_code: int
-    ):
+    def _validate_performance_targets(self, endpoint: str, duration: float, status_code: int):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         """Validate performance targets and record violations."""
         # Response time validation (target: <500ms for 95% of requests)
         if duration > 0.5:  # 500ms
-            self.metrics.record_error(
-                error_type="response_time_violation", severity="warning"
-            )
+            self.metrics.record_error(error_type="response_time_violation", severity="warning")
 
         # Critical response time (>2s)
         if duration > 2.0:
-            self.metrics.record_error(
-                error_type="critical_response_time", severity="critical"
-            )
+            self.metrics.record_error(error_type="critical_response_time", severity="critical")
 
         # PGC service specific validation (target: <50ms)
-        if (
-            self.service_name == "pgc_service"
-            and "/compliance" in endpoint
-            and duration > 0.05
-        ):
-            self.metrics.record_error(
-                error_type="pgc_latency_violation", severity="warning"
-            )
+        if self.service_name == "pgc_service" and "/compliance" in endpoint and duration > 0.05:
+            self.metrics.record_error(error_type="pgc_latency_violation", severity="warning")
 
 
-def add_prometheus_middleware(
-    app, service_name: str, service_config: dict[str, Any] | None = None
-):
+def add_prometheus_middleware(app, service_name: str, service_config: dict[str, Any] | None = None):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash

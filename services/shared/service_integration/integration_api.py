@@ -11,7 +11,7 @@ sha256: b8a7c6d5e4f3b2a1c8d7e6f5c4b3a2d1e8f7c6d5e4f3b2a1c8d7e6f5c4b3a2d1
 
 import logging
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
@@ -56,9 +56,7 @@ class WorkflowStartRequest(BaseModel):
 
     workflow_type: str = Field(..., description="Type of workflow")
     services: list[str] = Field(..., description="Services involved in workflow")
-    workflow_data: dict[str, Any] = Field(
-        default_factory=dict, description="Workflow data"
-    )
+    workflow_data: dict[str, Any] = Field(default_factory=dict, description="Workflow data")
 
 
 class ServiceIntegrationStatus(BaseModel):
@@ -181,9 +179,7 @@ async def publish_event_endpoint(
         try:
             event_type = EventType(request.event_type)
         except ValueError:
-            raise HTTPException(
-                status_code=400, detail=f"Invalid event type: {request.event_type}"
-            )
+            raise HTTPException(status_code=400, detail=f"Invalid event type: {request.event_type}")
 
         # Validate source service
         try:
@@ -238,9 +234,7 @@ async def publish_event_endpoint(
     except Exception as e:
         logger.error(f"Event publishing failed: {e}")
 
-        raise HTTPException(
-            status_code=500, detail=f"Event publishing failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Event publishing failed: {str(e)}")
 
 
 @router.post("/start-workflow", status_code=200)
@@ -273,9 +267,7 @@ async def start_workflow_endpoint(
             try:
                 services.append(ServiceType(service_str))
             except ValueError:
-                raise HTTPException(
-                    status_code=400, detail=f"Invalid service: {service_str}"
-                )
+                raise HTTPException(status_code=400, detail=f"Invalid service: {service_str}")
 
         # Generate workflow ID
         workflow_id = f"workflow-{int(time.time() * 1000)}"
@@ -300,9 +292,7 @@ async def start_workflow_endpoint(
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-        logger.info(
-            f"Workflow started: {workflow_id} with correlation {correlation_id}"
-        )
+        logger.info(f"Workflow started: {workflow_id} with correlation {correlation_id}")
 
         return result
 
@@ -351,9 +341,7 @@ async def get_integration_status(
             healthy_services=healthy_services,
             active_workflows=metrics["workflow_metrics"]["active_workflows"],
             total_events_processed=metrics["event_metrics"]["total_events"],
-            average_event_processing_time_ms=metrics["event_metrics"][
-                "average_processing_time_ms"
-            ],
+            average_event_processing_time_ms=metrics["event_metrics"]["average_processing_time_ms"],
             service_health=health_status,
             timestamp=datetime.now(timezone.utc),
         )
@@ -363,9 +351,7 @@ async def get_integration_status(
     except Exception as e:
         logger.error(f"Status retrieval failed: {e}")
 
-        raise HTTPException(
-            status_code=500, detail=f"Status retrieval failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Status retrieval failed: {str(e)}")
 
 
 @router.get("/metrics", status_code=200)
@@ -402,9 +388,7 @@ async def get_integration_metrics(
                     / max(len(metrics["health_status"]), 1)
                     * 100
                 ),
-                "event_success_rate_percentage": (
-                    metrics["event_metrics"]["success_rate"] * 100
-                ),
+                "event_success_rate_percentage": (metrics["event_metrics"]["success_rate"] * 100),
                 "average_service_call_time_ms": (
                     sum(
                         service_metrics["average_time_ms"]
@@ -430,9 +414,7 @@ async def get_integration_metrics(
     except Exception as e:
         logger.error(f"Metrics retrieval failed: {e}")
 
-        raise HTTPException(
-            status_code=500, detail=f"Metrics retrieval failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Metrics retrieval failed: {str(e)}")
 
 
 @router.post("/health-check", status_code=200)
@@ -504,18 +486,16 @@ async def trigger_health_check(
     except Exception as e:
         logger.error(f"Health check trigger failed: {e}")
 
-        raise HTTPException(
-            status_code=500, detail=f"Health check trigger failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Health check trigger failed: {str(e)}")
 
 
 def _calculate_integration_grade(metrics: dict[str, Any]) -> str:
     """Calculate overall integration grade based on metrics."""
 
     # Calculate component scores
-    health_score = sum(
-        1 for healthy in metrics["health_status"].values() if healthy
-    ) / max(len(metrics["health_status"]), 1)
+    health_score = sum(1 for healthy in metrics["health_status"].values() if healthy) / max(
+        len(metrics["health_status"]), 1
+    )
 
     event_score = metrics["event_metrics"]["success_rate"]
 
@@ -526,9 +506,7 @@ def _calculate_integration_grade(metrics: dict[str, Any]) -> str:
         service_score = max(0, 1 - (avg_time / 2000))  # 2s target
         service_scores.append(service_score)
 
-    avg_service_score = (
-        sum(service_scores) / max(len(service_scores), 1) if service_scores else 0.8
-    )
+    avg_service_score = sum(service_scores) / max(len(service_scores), 1) if service_scores else 0.8
 
     # Calculate overall score
     overall_score = health_score * 0.4 + event_score * 0.3 + avg_service_score * 0.3

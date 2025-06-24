@@ -26,9 +26,7 @@ class DatasetCreateRequest(BaseModel):
     data_type: str = Field(..., pattern="^(experimental|observational|synthetic)$")
     schema_definition: dict[str, Any] = Field(default_factory=dict)
     data_format: str = Field(default="json")
-    access_level: str = Field(
-        default="private", pattern="^(public|private|restricted)$"
-    )
+    access_level: str = Field(default="private", pattern="^(public|private|restricted)$")
     tags: list[str] = Field(default_factory=list)
     metadata: dict[str, Any] = Field(default_factory=dict)
 
@@ -55,9 +53,7 @@ class DatasetResponse(BaseModel):
 
 
 @router.post("/datasets", response_model=DatasetResponse)
-async def create_dataset(
-    request: DatasetCreateRequest, db: AsyncSession = Depends(get_db_session)
-):
+async def create_dataset(request: DatasetCreateRequest, db: AsyncSession = Depends(get_db_session)):
     """Create a new research dataset."""
     try:
         # Placeholder implementation
@@ -126,9 +122,7 @@ async def add_data_points(
     """Add data points to a dataset."""
     try:
         # Placeholder implementation
-        return {
-            "message": f"Added {len(data_points)} data points to dataset {dataset_id}"
-        }
+        return {"message": f"Added {len(data_points)} data points to dataset {dataset_id}"}
 
     except Exception as e:
         logger.error(f"Error adding data points: {e}")
@@ -212,9 +206,7 @@ async def collect_llm_reliability_data(
 @router.post("/collect/performance-metrics")
 async def collect_performance_metrics(
     db: AsyncSession = Depends(get_db_session),
-    services: list[str] = Query(
-        ["ac_service", "gs_service", "fv_service", "pgc_service"]
-    ),
+    services: list[str] = Query(["ac_service", "gs_service", "fv_service", "pgc_service"]),
 ):
     """Collect performance metrics from specified services."""
     try:

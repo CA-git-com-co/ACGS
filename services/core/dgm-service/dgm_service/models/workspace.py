@@ -3,9 +3,9 @@ Improvement workspace model for DGM service.
 """
 
 import enum
-from typing import Dict, Any
+from typing import Any, Dict
 
-from sqlalchemy import Column, String, Text, DateTime, Enum, JSON, Boolean
+from sqlalchemy import JSON, Boolean, Column, DateTime, Enum, String, Text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
@@ -15,6 +15,7 @@ Base = declarative_base()
 
 class WorkspaceStatus(enum.Enum):
     """Status of improvement workspace."""
+
     CREATED = "created"
     ACTIVE = "active"
     TESTING = "testing"
@@ -30,15 +31,13 @@ class ImprovementWorkspace(Base):
     __tablename__ = "improvement_workspaces"
     __table_args__ = {"schema": "dgm"}
 
-    id = Column(PG_UUID(as_uuid=True), primary_key=True,
-                server_default=func.uuid_generate_v4())
+    id = Column(PG_UUID(as_uuid=True), primary_key=True, server_default=func.uuid_generate_v4())
     improvement_id = Column(PG_UUID(as_uuid=True), nullable=False, unique=True)
 
     # Workspace metadata
     name = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
-    status = Column(Enum(WorkspaceStatus), nullable=False,
-                   default=WorkspaceStatus.CREATED)
+    status = Column(Enum(WorkspaceStatus), nullable=False, default=WorkspaceStatus.CREATED)
 
     # Workspace content
     source_code = Column(JSON, default=dict)  # Code changes
@@ -56,8 +55,7 @@ class ImprovementWorkspace(Base):
     risk_assessment = Column(JSON, default=dict)  # Risk analysis
 
     # Constitutional compliance
-    constitutional_hash = Column(String(64), nullable=False,
-                                default="cdd01ef066bc6cf2")
+    constitutional_hash = Column(String(64), nullable=False, default="cdd01ef066bc6cf2")
     compliance_validated = Column(Boolean, default=False)
 
     # Ownership and tracking
@@ -65,15 +63,17 @@ class ImprovementWorkspace(Base):
     assigned_to = Column(String(255), nullable=True)
 
     # Timestamps
-    created_at = Column(DateTime(timezone=True), nullable=False,
-                       server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), nullable=False,
-                       server_default=func.now(), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    updated_at = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
+    )
     completed_at = Column(DateTime(timezone=True), nullable=True)
 
     def __repr__(self):
-        return (f"<ImprovementWorkspace(id={self.improvement_id}, "
-                f"name={self.name}, status={self.status})>")
+        return (
+            f"<ImprovementWorkspace(id={self.improvement_id}, "
+            f"name={self.name}, status={self.status})>"
+        )
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary representation."""
@@ -98,5 +98,5 @@ class ImprovementWorkspace(Base):
             "assigned_to": self.assigned_to,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
-            "completed_at": self.completed_at.isoformat() if self.completed_at else None
+            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
         }

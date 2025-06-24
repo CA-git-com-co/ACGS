@@ -21,19 +21,10 @@ import logging
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
-# Import existing services
-from .services.violation_detection_service import (
-    ViolationSeverity,
-)
-from .services.violation_escalation_service import (
-    EscalationLevel,
-    ViolationEscalationService,
-)
-from .workflows.multi_model_manager import MultiModelManager
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_distance_calculator import (
@@ -56,6 +47,16 @@ from services.shared.models import (
     Policy,
     Principle,
 )
+
+# Import existing services
+from .services.violation_detection_service import (
+    ViolationSeverity,
+)
+from .services.violation_escalation_service import (
+    EscalationLevel,
+    ViolationEscalationService,
+)
+from .workflows.multi_model_manager import MultiModelManager
 
 logger = logging.getLogger(__name__)
 

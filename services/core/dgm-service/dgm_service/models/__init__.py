@@ -3,11 +3,11 @@ Database models for the Darwin Gödel Machine Service.
 """
 
 from .archive import DGMArchive, ImprovementStatus
-from .metrics import PerformanceMetric
-from .compliance import ConstitutionalComplianceLog, ComplianceLevel
-from .bandit import BanditState, BanditAlgorithmType
-from .workspace import ImprovementWorkspace
+from .bandit import BanditAlgorithmType, BanditState
+from .compliance import ComplianceLevel, ConstitutionalComplianceLog
 from .config import SystemConfiguration
+from .metrics import PerformanceMetric
+from .workspace import ImprovementWorkspace
 
 __all__ = [
     "DGMArchive",
@@ -18,5 +18,5 @@ __all__ = [
     "BanditState",
     "BanditAlgorithmType",
     "ImprovementWorkspace",
-    "SystemConfiguration"
+    "SystemConfiguration",
 ]

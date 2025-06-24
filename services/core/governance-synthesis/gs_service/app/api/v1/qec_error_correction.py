@@ -10,13 +10,6 @@ import logging
 from datetime import datetime
 from typing import Any
 
-# Import QEC error correction services
-from .services.qec_error_correction_service import (
-    ConflictDetectionResult,
-    ConflictType,
-    QECErrorCorrectionService,
-    ResolutionStrategy,
-)
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from fastapi.responses import JSONResponse
 
@@ -28,6 +21,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from services.shared.auth import get_current_active_user
 from services.shared.database import get_async_db
 from services.shared.models import ConstitutionalPrinciple, Policy, User
+
+# Import QEC error correction services
+from .services.qec_error_correction_service import (
+    ConflictDetectionResult,
+    ConflictType,
+    QECErrorCorrectionService,
+    ResolutionStrategy,
+)
 
 logger = logging.getLogger(__name__)
 

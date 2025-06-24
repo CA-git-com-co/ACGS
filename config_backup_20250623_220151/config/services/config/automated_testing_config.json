@@ -1,0 +1,33 @@
+{
+  "regression_tests": {
+    "performance_tests": {
+      "frequency": "every 4 hours",
+      "targets": {
+        "response_time_p95_ms": 500,
+        "concurrent_users": 1000,
+        "availability_percent": 99.9,
+        "constitutional_compliance_percent": 95
+      }
+    },
+    "security_tests": {
+      "frequency": "daily",
+      "vulnerability_scanning": true,
+      "penetration_testing": true
+    },
+    "integration_tests": {
+      "frequency": "every 2 hours",
+      "governance_workflows": true,
+      "blockchain_integration": true
+    }
+  },
+  "alerting": {
+    "performance_degradation_threshold": 20,
+    "immediate_alert_channels": ["slack", "email", "pagerduty"],
+    "escalation_timeout_minutes": 15
+  },
+  "automated_rollback": {
+    "enabled": true,
+    "trigger_conditions": ["response_time_increase > 50%", "availability < 99%", "error_rate > 5%"],
+    "rollback_timeout_minutes": 5
+  }
+}

@@ -36,9 +36,7 @@ class Settings(BaseSettings):
     ALLOWED_HOSTS: str = "*"
 
     # Database Configuration
-    DATABASE_URL: str = (
-        "postgresql://acgs_user:acgs_password@localhost:5432/acgs_self_evolving_ai"
-    )
+    DATABASE_URL: str = "postgresql://acgs_user:acgs_password@localhost:5432/acgs_self_evolving_ai"
     DATABASE_POOL_SIZE: int = 10
     DATABASE_MAX_OVERFLOW: int = 20
 
@@ -134,11 +132,7 @@ class Settings(BaseSettings):
 
     def get_cors_origins_list(self) -> list[str]:
         """Get CORS origins as a list."""
-        return [
-            origin.strip()
-            for origin in self.BACKEND_CORS_ORIGINS.split(",")
-            if origin.strip()
-        ]
+        return [origin.strip() for origin in self.BACKEND_CORS_ORIGINS.split(",") if origin.strip()]
 
     def get_allowed_hosts_list(self) -> list[str]:
         """Get allowed hosts as a list."""
@@ -153,9 +147,7 @@ class Settings(BaseSettings):
     def get_celery_accept_content_list(self) -> list[str]:
         """Get Celery accept content as a list."""
         return [
-            content.strip()
-            for content in self.CELERY_ACCEPT_CONTENT.split(",")
-            if content.strip()
+            content.strip() for content in self.CELERY_ACCEPT_CONTENT.split(",") if content.strip()
         ]
 
     model_config = {
@@ -179,9 +171,7 @@ def validate_configuration(settings: Settings) -> bool:
     # Security validations
     if settings.ENVIRONMENT == "production":
         if settings.SECRET_KEY == "acgs-self-evolving-ai-secret-key-2024":
-            validation_errors.append(
-                "Production environment requires custom SECRET_KEY"
-            )
+            validation_errors.append("Production environment requires custom SECRET_KEY")
 
         if settings.DEBUG:
             validation_errors.append("DEBUG should be False in production")
@@ -228,9 +218,7 @@ def validate_configuration(settings: Settings) -> bool:
     # Quantumagi validations
     if settings.QUANTUMAGI_ENABLED:
         if settings.CONSTITUTION_HASH != "cdd01ef066bc6cf2":
-            validation_errors.append(
-                "CONSTITUTION_HASH must match Quantumagi deployment"
-            )
+            validation_errors.append("CONSTITUTION_HASH must match Quantumagi deployment")
 
         if settings.SOLANA_CLUSTER not in ["devnet", "testnet", "mainnet-beta"]:
             validation_errors.append("Invalid SOLANA_CLUSTER specified")

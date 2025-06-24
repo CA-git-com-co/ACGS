@@ -6,7 +6,7 @@ and optimization history in the ACGS-PGP database.
 """
 
 import uuid
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import (
     JSON,
@@ -140,7 +140,9 @@ class OptimizationHistoryModel(Base):
     category = Column(String(100), nullable=True, index=True)
 
     # Timing
-    timestamp = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), index=True)
+    timestamp = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), index=True
+    )
 
     # Relationships
     template = relationship("PromptTemplateModel", back_populates="optimization_history")

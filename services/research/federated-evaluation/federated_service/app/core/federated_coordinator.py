@@ -6,7 +6,7 @@ the overall federated evaluation lifecycle.
 """
 
 import logging
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from .federated_evaluator import federated_evaluator
@@ -96,9 +96,7 @@ class FederatedCoordinator:
                 "federated_evaluator": (
                     "initialized" if federated_evaluator else "not_initialized"
                 ),
-                "secure_aggregator": (
-                    "initialized" if secure_aggregator else "not_initialized"
-                ),
+                "secure_aggregator": ("initialized" if secure_aggregator else "not_initialized"),
                 "privacy_manager": (
                     "initialized" if differential_privacy_manager else "not_initialized"
                 ),

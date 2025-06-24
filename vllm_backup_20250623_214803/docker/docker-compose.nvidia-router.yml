@@ -1,0 +1,240 @@
+# NVIDIA LLM Router Docker Compose Configuration
+# This file defines the NVIDIA LLM Router services for ACGS-PGP integration
+
+version: '3.8'
+
+services:
+  # NVIDIA LLM Router Controller
+  # Manages routing policies, model configurations, and health monitoring
+  nvidia_llm_router_controller:
+    build:
+      context: ../../services/platform/nvidia-llm-router
+      dockerfile: Dockerfile.controller
+    container_name: acgs_nvidia_llm_router_controller
+    ports:
+      - '8080:8080' # Controller API port
+      - '9092:9092' # Metrics port
+    environment:
+      # NVIDIA API Configuration
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY}
+      - NVIDIA_API_BASE_URL=${NVIDIA_API_BASE_URL:-https://integrate.api.nvidia.com/v1}
+
+      # Router Configuration
+      - LLM_ROUTER_CONTROLLER_PORT=8080
+      - LLM_ROUTER_LOG_LEVEL=${LLM_ROUTER_LOG_LEVEL:-INFO}
+      - LLM_ROUTER_DEBUG_MODE=${LLM_ROUTER_DEBUG_MODE:-false}
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+
+      # Model Configuration
+      - DEFAULT_MODEL_TIER=${DEFAULT_MODEL_TIER:-standard}
+      - FALLBACK_MODEL=${FALLBACK_MODEL:-nvidia/llama-3.1-8b-instruct}
+      - MAX_CONCURRENT_REQUESTS=${MAX_CONCURRENT_REQUESTS:-100}
+      - REQUEST_TIMEOUT_SECONDS=${REQUEST_TIMEOUT_SECONDS:-30}
+
+      # ACGS Integration
+      - ENABLE_CONSTITUTIONAL_ROUTING=${ENABLE_CONSTITUTIONAL_ROUTING:-true}
+      - CONSTITUTIONAL_MODEL_TIER=${CONSTITUTIONAL_MODEL_TIER:-premium}
+      - POLICY_SYNTHESIS_MODEL=${POLICY_SYNTHESIS_MODEL:-nvidia/llama-3.1-nemotron-70b-instruct}
+
+      # Service URLs for integration
+      - AUTH_SERVICE_INTERNAL_URL=${AUTH_SERVICE_INTERNAL_URL:-http://auth_service:8000}
+      - AC_SERVICE_INTERNAL_URL=${AC_SERVICE_INTERNAL_URL:-http://ac_service:8001}
+      - GS_SERVICE_INTERNAL_URL=${GS_SERVICE_INTERNAL_URL:-http://gs_service:8004}
+      - PGC_SERVICE_INTERNAL_URL=${PGC_SERVICE_INTERNAL_URL:-http://pgc_service:8005}
+
+      # Database and Cache
+      - DATABASE_URL=${DATABASE_URL:-postgresql+asyncpg://acgs_user:acgs_password@postgres_db:5432/acgs_pgp_db}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/3}
+
+      # Security
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}
+      - API_KEY_ENCRYPTION_KEY=${API_KEY_ENCRYPTION_KEY:-your-encryption-key-change-in-production}
+
+      # Python path
+      - PYTHONPATH=/app:/app/shared
+    volumes:
+      - ../../services/platform/nvidia-llm-router:/app
+      - ../../services/shared:/app/shared
+      - nvidia_router_config:/app/config
+      - nvidia_router_logs:/app/logs
+    depends_on:
+      - redis
+      - postgres_db
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8080/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - acgs_network
+    # Resource limits for controller
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.25'
+
+  # NVIDIA LLM Router Server
+  # Handles incoming LLM requests and routes them to appropriate models
+  nvidia_llm_router_server:
+    build:
+      context: ../../services/platform/nvidia-llm-router
+      dockerfile: Dockerfile.server
+    container_name: acgs_nvidia_llm_router_server
+    ports:
+      - '8081:8081' # Router server port
+      - '9093:9093' # Metrics port
+    environment:
+      # NVIDIA API Configuration
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY}
+      - NVIDIA_API_BASE_URL=${NVIDIA_API_BASE_URL:-https://integrate.api.nvidia.com/v1}
+
+      # Router Configuration
+      - LLM_ROUTER_SERVER_PORT=8081
+      - LLM_ROUTER_CONTROLLER_URL=http://nvidia_llm_router_controller:8080
+      - LLM_ROUTER_LOG_LEVEL=${LLM_ROUTER_LOG_LEVEL:-INFO}
+      - LLM_ROUTER_DEBUG_MODE=${LLM_ROUTER_DEBUG_MODE:-false}
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+
+      # Model Configuration
+      - DEFAULT_MODEL_TIER=${DEFAULT_MODEL_TIER:-standard}
+      - FALLBACK_MODEL=${FALLBACK_MODEL:-nvidia/llama-3.1-8b-instruct}
+      - MAX_CONCURRENT_REQUESTS=${MAX_CONCURRENT_REQUESTS:-100}
+      - REQUEST_TIMEOUT_SECONDS=${REQUEST_TIMEOUT_SECONDS:-30}
+
+      # ACGS Integration
+      - ENABLE_CONSTITUTIONAL_ROUTING=${ENABLE_CONSTITUTIONAL_ROUTING:-true}
+      - CONSTITUTIONAL_MODEL_TIER=${CONSTITUTIONAL_MODEL_TIER:-premium}
+      - POLICY_SYNTHESIS_MODEL=${POLICY_SYNTHESIS_MODEL:-nvidia/llama-3.1-nemotron-70b-instruct}
+
+      # Service URLs for integration
+      - AUTH_SERVICE_INTERNAL_URL=${AUTH_SERVICE_INTERNAL_URL:-http://auth_service:8000}
+      - AC_SERVICE_INTERNAL_URL=${AC_SERVICE_INTERNAL_URL:-http://ac_service:8001}
+      - GS_SERVICE_INTERNAL_URL=${GS_SERVICE_INTERNAL_URL:-http://gs_service:8004}
+      - PGC_SERVICE_INTERNAL_URL=${PGC_SERVICE_INTERNAL_URL:-http://pgc_service:8005}
+
+      # Database and Cache
+      - DATABASE_URL=${DATABASE_URL:-postgresql+asyncpg://acgs_user:acgs_password@postgres_db:5432/acgs_pgp_db}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/3}
+
+      # Security
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}
+      - API_KEY_ENCRYPTION_KEY=${API_KEY_ENCRYPTION_KEY:-your-encryption-key-change-in-production}
+
+      # Python path
+      - PYTHONPATH=/app:/app/shared
+    volumes:
+      - ../../services/platform/nvidia-llm-router:/app
+      - ../../services/shared:/app/shared
+      - nvidia_router_config:/app/config
+      - nvidia_router_logs:/app/logs
+    depends_on:
+      - nvidia_llm_router_controller
+      - redis
+      - postgres_db
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8081/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - acgs_network
+    # Resource limits for server with GPU access consideration
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+
+  # Redis instance for LLM Router caching (if not using shared Redis)
+  nvidia_router_redis:
+    image: redis:7-alpine
+    container_name: acgs_nvidia_router_redis
+    ports:
+      - '6382:6379' # Dedicated Redis port for router
+    volumes:
+      - nvidia_router_redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - acgs_network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.25'
+        reservations:
+          memory: 256M
+          cpus: '0.1'
+
+# Networks
+networks:
+  acgs_network:
+    external: true
+    name: acgs_network
+
+# Volumes
+volumes:
+  nvidia_router_config:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./nvidia-router-config
+
+  nvidia_router_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./nvidia-router-logs
+
+  nvidia_router_redis_data:
+    driver: local
+# Additional configuration for GPU access (if needed for local model inference)
+# Uncomment and modify if you plan to run local NVIDIA models
+#
+# x-gpu-service: &gpu-service
+#   runtime: nvidia
+#   environment:
+#     - NVIDIA_VISIBLE_DEVICES=all
+#     - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+#   deploy:
+#     resources:
+#       reservations:
+#         devices:
+#           - driver: nvidia
+#             count: 1
+#             capabilities: [gpu]
+
+# Example service with GPU access:
+# nvidia_local_model_server:
+#   <<: *gpu-service
+#   build:
+#     context: ../../services/platform/nvidia-llm-router
+#     dockerfile: Dockerfile.local-model
+#   container_name: acgs_nvidia_local_model_server
+#   ports:
+#     - "8082:8082"
+#   environment:
+#     - CUDA_VISIBLE_DEVICES=0
+#     - MODEL_PATH=/models
+#   volumes:
+#     - nvidia_models:/models
+#   networks:
+#     - acgs_network

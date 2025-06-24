@@ -178,13 +178,9 @@ class ServiceRegistry:
                         self._services[service_type].port = port
                         # Update base_url if using localhost
                         if "localhost" in self._services[service_type].base_url:
-                            self._services[service_type].base_url = (
-                                f"http://localhost:{port}"
-                            )
+                            self._services[service_type].base_url = f"http://localhost:{port}"
                 except ValueError:
-                    logger.warning(
-                        f"Invalid port value for {port_key}: {os.environ[port_key]}"
-                    )
+                    logger.warning(f"Invalid port value for {port_key}: {os.environ[port_key]}")
 
     def register_service(self, service_type: ServiceType, config: ServiceConfig):
         # requires: Valid input parameters

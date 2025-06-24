@@ -1,0 +1,222 @@
+# OpenTelemetry Collector Configuration for ACGS-1
+# Advanced trace processing, sampling, and export configuration
+# Target: <1% performance overhead, intelligent sampling, multi-backend export
+
+receivers:
+  # OTLP receiver for OpenTelemetry protocol
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+        cors:
+          allowed_origins:
+            - 'http://localhost:*'
+            - 'https://localhost:*'
+          allowed_headers:
+            - '*'
+
+  # Jaeger receiver for legacy Jaeger clients
+  jaeger:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:14250
+      thrift_http:
+        endpoint: 0.0.0.0:14268
+      thrift_compact:
+        endpoint: 0.0.0.0:6831
+      thrift_binary:
+        endpoint: 0.0.0.0:6832
+
+  # Zipkin receiver for Zipkin-format traces
+  zipkin:
+    endpoint: 0.0.0.0:9411
+
+  # Prometheus receiver for metrics
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'otel-collector'
+          scrape_interval: 15s
+          static_configs:
+            - targets: ['localhost:8888']
+
+processors:
+  # Batch processor for efficient export
+  batch:
+    timeout: 1s
+    send_batch_size: 1024
+    send_batch_max_size: 2048
+
+  # Memory limiter to prevent OOM
+  memory_limiter:
+    limit_mib: 512
+    spike_limit_mib: 128
+    check_interval: 5s
+
+  # Probabilistic sampling for performance
+  probabilistic_sampler:
+    sampling_percentage: 10.0 # 10% sampling rate
+
+  # Tail sampling for intelligent sampling decisions
+  tail_sampling:
+    decision_wait: 10s
+    num_traces: 50000
+    expected_new_traces_per_sec: 100
+    policies:
+      # Always sample errors
+      - name: error-policy
+        type: status_code
+        status_code:
+          status_codes: [ERROR]
+
+      # Always sample slow requests (>500ms)
+      - name: slow-requests
+        type: latency
+        latency:
+          threshold_ms: 500
+
+      # Sample constitutional governance operations at higher rate
+      - name: constitutional-operations
+        type: string_attribute
+        string_attribute:
+          key: service.name
+          values: [pgc_service, gs_service]
+          invert_match: false
+
+      # Sample critical operations at higher rate
+      - name: critical-operations
+        type: string_attribute
+        string_attribute:
+          key: operation.type
+          values: [constitutional_validation, policy_synthesis, governance_workflow]
+          invert_match: false
+
+      # Default sampling for other traces
+      - name: default-policy
+        type: probabilistic
+        probabilistic:
+          sampling_percentage: 5
+
+  # Resource processor to add service metadata
+  resource:
+    attributes:
+      - key: deployment.environment
+        value: production
+        action: upsert
+      - key: service.namespace
+        value: acgs-1
+        action: upsert
+      - key: service.version
+        from_attribute: service.version
+        action: upsert
+
+  # Attributes processor for data enrichment
+  attributes:
+    actions:
+      # Add correlation ID from headers
+      - key: correlation.id
+        from_attribute: http.request.header.x-correlation-id
+        action: upsert
+
+      # Add user context
+      - key: user.id
+        from_attribute: http.request.header.x-user-id
+        action: upsert
+
+      # Add request context
+      - key: request.size
+        from_attribute: http.request.body.size
+        action: upsert
+
+      # Remove sensitive data
+      - key: http.request.header.authorization
+        action: delete
+      - key: http.request.header.cookie
+        action: delete
+
+exporters:
+  # OTLP exporter for Jaeger
+  otlp/jaeger:
+    endpoint: http://jaeger-all-in-one:4317
+    tls:
+      insecure: true
+
+  # Zipkin exporter (optional)
+  zipkin:
+    endpoint: http://zipkin:9411/api/v2/spans
+
+  # Prometheus exporter for trace metrics
+  prometheus:
+    endpoint: '0.0.0.0:8889'
+    namespace: acgs_tracing
+    const_labels:
+      environment: production
+      system: constitutional_governance
+
+  # Logging exporter for debugging
+  logging:
+    loglevel: info
+    sampling_initial: 5
+    sampling_thereafter: 200
+
+  # File exporter for trace backup
+  file:
+    path: /tmp/traces.json
+    rotation:
+      max_megabytes: 100
+      max_days: 7
+      max_backups: 3
+
+extensions:
+  # Health check extension
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+  # Performance profiler
+  pprof:
+    endpoint: 0.0.0.0:1777
+
+  # Memory ballast for stable memory usage
+  memory_ballast:
+    size_mib: 64
+
+  # Zpages for debugging
+  zpages:
+    endpoint: 0.0.0.0:55679
+
+service:
+  extensions: [health_check, pprof, memory_ballast, zpages]
+
+  pipelines:
+    # Traces pipeline
+    traces:
+      receivers: [otlp, jaeger, zipkin]
+      processors: [memory_limiter, resource, attributes, tail_sampling, batch]
+      exporters: [otlp/jaeger, logging]
+
+    # Metrics pipeline for trace-derived metrics
+    metrics:
+      receivers: [prometheus]
+      processors: [memory_limiter, resource, batch]
+      exporters: [prometheus, logging]
+
+    # Logs pipeline (if needed)
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, resource, batch]
+      exporters: [logging]
+
+  # Telemetry configuration
+  telemetry:
+    logs:
+      level: 'info'
+      development: false
+      sampling:
+        initial: 5
+        thereafter: 200
+
+    metrics:
+      level: 'detailed'
+      address: 0.0.0.0:8888

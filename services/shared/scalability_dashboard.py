@@ -122,9 +122,7 @@ class ScalabilityDashboard:
         """Add a new websocket connection."""
         await websocket.accept()
         self.websocket_connections.append(websocket)
-        logger.info(
-            f"Added websocket connection, total: {len(self.websocket_connections)}"
-        )
+        logger.info(f"Added websocket connection, total: {len(self.websocket_connections)}")
 
         # Send initial data
         try:
@@ -137,9 +135,7 @@ class ScalabilityDashboard:
         """Remove a websocket connection."""
         if websocket in self.websocket_connections:
             self.websocket_connections.remove(websocket)
-            logger.info(
-                f"Removed websocket connection, total: {len(self.websocket_connections)}"
-            )
+            logger.info(f"Removed websocket connection, total: {len(self.websocket_connections)}")
 
     async def get_dashboard_data(self) -> dict[str, Any]:
         """Get comprehensive dashboard data."""
@@ -190,14 +186,10 @@ class ScalabilityDashboard:
             charts["resource_chart"] = await self._create_resource_utilization_chart()
 
             # Concurrent operations chart
-            charts["concurrent_ops_chart"] = (
-                await self._create_concurrent_operations_chart()
-            )
+            charts["concurrent_ops_chart"] = await self._create_concurrent_operations_chart()
 
             # Scalability scores chart
-            charts["scalability_scores_chart"] = (
-                await self._create_scalability_scores_chart()
-            )
+            charts["scalability_scores_chart"] = await self._create_scalability_scores_chart()
 
             # Alert trend chart
             charts["alert_trend_chart"] = await self._create_alert_trend_chart()
@@ -373,9 +365,7 @@ class ScalabilityDashboard:
 
     async def _create_scalability_scores_chart(self) -> dict[str, Any]:
         """Create scalability scores chart."""
-        scalability_scores = (
-            await self.metrics_collector._calculate_scalability_scores()
-        )
+        scalability_scores = await self.metrics_collector._calculate_scalability_scores()
 
         if not scalability_scores:
             return {"data": [], "layout": {"title": "No scalability data available"}}
@@ -456,9 +446,7 @@ class ScalabilityDashboard:
     async def _get_alert_summary(self) -> dict[str, Any]:
         """Get alert summary for the dashboard."""
         active_alerts = [
-            alert
-            for alert in self.metrics_collector.active_alerts.values()
-            if not alert.resolved
+            alert for alert in self.metrics_collector.active_alerts.values() if not alert.resolved
         ]
 
         recent_alerts = list(self.metrics_collector.alert_history)[-10:]
@@ -503,9 +491,7 @@ class ScalabilityDashboard:
 
             # Check throughput
             if component_name in self.metrics_collector.throughput_metrics:
-                latest_throughput = self.metrics_collector.throughput_metrics[
-                    component_name
-                ]
+                latest_throughput = self.metrics_collector.throughput_metrics[component_name]
                 if (
                     latest_throughput
                     and latest_throughput[-1].operations_per_second
@@ -516,9 +502,7 @@ class ScalabilityDashboard:
 
             # Check resource utilization
             if component_name in self.metrics_collector.resource_metrics:
-                latest_resource = self.metrics_collector.resource_metrics[
-                    component_name
-                ]
+                latest_resource = self.metrics_collector.resource_metrics[component_name]
                 if latest_resource:
                     if (
                         latest_resource[-1].cpu_percent
@@ -553,28 +537,21 @@ class ScalabilityDashboard:
             if component_name in self.metrics_collector.latency_metrics:
                 metrics_queue = self.metrics_collector.latency_metrics[component_name]
                 if len(metrics_queue) >= 5:
-                    recent_latencies = [
-                        m.p95_latency_ms for m in list(metrics_queue)[-10:]
-                    ]
+                    recent_latencies = [m.p95_latency_ms for m in list(metrics_queue)[-10:]]
                     trend_direction = (
-                        "increasing"
-                        if recent_latencies[-1] > recent_latencies[0]
-                        else "decreasing"
+                        "increasing" if recent_latencies[-1] > recent_latencies[0] else "decreasing"
                     )
                     component_trends["latency"] = {
                         "direction": trend_direction,
                         "change_percent": (
-                            (recent_latencies[-1] - recent_latencies[0])
-                            / recent_latencies[0]
+                            (recent_latencies[-1] - recent_latencies[0]) / recent_latencies[0]
                         )
                         * 100,
                     }
 
             # Throughput trend
             if component_name in self.metrics_collector.throughput_metrics:
-                metrics_queue = self.metrics_collector.throughput_metrics[
-                    component_name
-                ]
+                metrics_queue = self.metrics_collector.throughput_metrics[component_name]
                 if len(metrics_queue) >= 5:
                     recent_throughputs = [
                         m.operations_per_second for m in list(metrics_queue)[-10:]
@@ -587,8 +564,7 @@ class ScalabilityDashboard:
                     component_trends["throughput"] = {
                         "direction": trend_direction,
                         "change_percent": (
-                            (recent_throughputs[-1] - recent_throughputs[0])
-                            / recent_throughputs[0]
+                            (recent_throughputs[-1] - recent_throughputs[0]) / recent_throughputs[0]
                         )
                         * 100,
                     }

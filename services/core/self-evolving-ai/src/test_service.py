@@ -126,9 +126,7 @@ class SelfEvolvingAITester:
     async def test_evolution_health(self) -> dict[str, Any]:
         """Test evolution engine health."""
         try:
-            async with self.session.get(
-                f"{self.base_url}/api/v1/evolution/health"
-            ) as response:
+            async with self.session.get(f"{self.base_url}/api/v1/evolution/health") as response:
                 if response.status == 200:
                     data = await response.json()
                     return {
@@ -147,9 +145,7 @@ class SelfEvolvingAITester:
     async def test_security_health(self) -> dict[str, Any]:
         """Test security manager health."""
         try:
-            async with self.session.get(
-                f"{self.base_url}/api/v1/security/health"
-            ) as response:
+            async with self.session.get(f"{self.base_url}/api/v1/security/health") as response:
                 if response.status == 200:
                     data = await response.json()
                     return {
@@ -168,9 +164,7 @@ class SelfEvolvingAITester:
     async def test_observability_health(self) -> dict[str, Any]:
         """Test observability framework health."""
         try:
-            async with self.session.get(
-                f"{self.base_url}/api/v1/observability/health"
-            ) as response:
+            async with self.session.get(f"{self.base_url}/api/v1/observability/health") as response:
                 if response.status == 200:
                     data = await response.json()
                     return {
@@ -189,9 +183,7 @@ class SelfEvolvingAITester:
     async def test_evolution_metrics(self) -> dict[str, Any]:
         """Test evolution metrics endpoint."""
         try:
-            async with self.session.get(
-                f"{self.base_url}/api/v1/evolution/metrics"
-            ) as response:
+            async with self.session.get(f"{self.base_url}/api/v1/evolution/metrics") as response:
                 if response.status == 200:
                     data = await response.json()
                     return {
@@ -210,9 +202,7 @@ class SelfEvolvingAITester:
     async def test_security_status(self) -> dict[str, Any]:
         """Test security status endpoint."""
         try:
-            async with self.session.get(
-                f"{self.base_url}/api/v1/security/status"
-            ) as response:
+            async with self.session.get(f"{self.base_url}/api/v1/security/status") as response:
                 if response.status == 200:
                     data = await response.json()
                     return {
@@ -231,9 +221,7 @@ class SelfEvolvingAITester:
     async def test_observability_status(self) -> dict[str, Any]:
         """Test observability status endpoint."""
         try:
-            async with self.session.get(
-                f"{self.base_url}/api/v1/observability/status"
-            ) as response:
+            async with self.session.get(f"{self.base_url}/api/v1/observability/status") as response:
                 if response.status == 200:
                     data = await response.json()
                     return {
@@ -317,9 +305,7 @@ class SelfEvolvingAITester:
         # Component health tests
         await self.run_test("Evolution Engine Health", self.test_evolution_health)
         await self.run_test("Security Manager Health", self.test_security_health)
-        await self.run_test(
-            "Observability Framework Health", self.test_observability_health
-        )
+        await self.run_test("Observability Framework Health", self.test_observability_health)
 
         # Metrics and status tests
         await self.run_test("Evolution Metrics", self.test_evolution_metrics)
@@ -352,9 +338,7 @@ class SelfEvolvingAITester:
             logger.info("\n❌ FAILED TESTS:")
             for test in self.test_results["test_details"]:
                 if not test["success"]:
-                    logger.info(
-                        f"  - {test['test_name']}: {test.get('error', 'Unknown error')}"
-                    )
+                    logger.info(f"  - {test['test_name']}: {test.get('error', 'Unknown error')}")
 
         logger.info("=" * 60)
 

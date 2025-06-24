@@ -6,33 +6,33 @@ import asyncio
 import logging
 import os
 from contextlib import asynccontextmanager
-from typing import Dict, Any
+from typing import Any, Dict
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
 
+from .api.v1 import constitutional_router, dgm_router, health_router, integration_router
 from .config import settings
-from .core.dgm_engine import DGMEngine
-from .core.constitutional_validator import ConstitutionalValidator
-from .core.performance_monitor import PerformanceMonitor
 from .core.archive_manager import ArchiveManager
+from .core.constitutional_validator import ConstitutionalValidator
+from .core.dgm_engine import DGMEngine
+from .core.performance_monitor import PerformanceMonitor
 from .database import database_manager
-from .api.v1 import dgm_router, constitutional_router, health_router, integration_router
-from .middleware.auth import AuthMiddleware
-from .middleware.security import SecurityMiddleware
-from .middleware.logging import LoggingMiddleware
 from .integrations.gs_service_integration import GSServiceIntegration
 from .integrations.performance_monitor import CrossServicePerformanceMonitor
 from .integrations.trigger_manager import ImprovementTriggerManager
+from .middleware.auth import AuthMiddleware
+from .middleware.logging import LoggingMiddleware
+from .middleware.security import SecurityMiddleware
 
 # Configure logging
 logging.basicConfig(
     level=getattr(logging, settings.LOG_LEVEL.upper()),
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -41,10 +41,10 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     """Application lifespan manager."""
     logger.info("Starting DGM Service...")
-    
+
     # Initialize database
     await database_manager.initialize()
-    
+
     # Initialize core components
     app.state.dgm_engine = DGMEngine()
     app.state.constitutional_validator = ConstitutionalValidator()
@@ -61,19 +61,15 @@ async def lifespan(app: FastAPI):
     await app.state.trigger_manager.start()
 
     # Start background tasks
-    app.state.monitor_task = asyncio.create_task(
-        app.state.performance_monitor.start_monitoring()
-    )
-    app.state.gs_monitor_task = asyncio.create_task(
-        app.state.gs_integration.start_monitoring()
-    )
+    app.state.monitor_task = asyncio.create_task(app.state.performance_monitor.start_monitoring())
+    app.state.gs_monitor_task = asyncio.create_task(app.state.gs_integration.start_monitoring())
     app.state.cross_service_task = asyncio.create_task(
         app.state.cross_service_monitor.start_monitoring()
     )
-    
+
     logger.info("DGM Service started successfully")
     yield
-    
+
     # Cleanup
     logger.info("Shutting down DGM Service...")
     app.state.monitor_task.cancel()
@@ -93,7 +89,7 @@ app = FastAPI(
     version="1.0.0",
     docs_url="/docs" if settings.ENVIRONMENT == "development" else None,
     redoc_url="/redoc" if settings.ENVIRONMENT == "development" else None,
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # Add middleware
@@ -105,10 +101,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.add_middleware(
-    TrustedHostMiddleware,
-    allowed_hosts=settings.ALLOWED_HOSTS
-)
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.ALLOWED_HOSTS)
 
 app.add_middleware(SecurityMiddleware)
 app.add_middleware(AuthMiddleware)
@@ -134,6 +127,7 @@ app.include_router(dgm_router, prefix="/api/v1/dgm", tags=["DGM Operations"])
 app.include_router(constitutional_router, prefix="/api/v1/constitutional", tags=["Constitutional"])
 app.include_router(integration_router, prefix="/api/v1/integration", tags=["Service Integration"])
 
+
 # Global exception handler
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
@@ -144,8 +138,8 @@ async def global_exception_handler(request, exc):
         content={
             "error": "Internal server error",
             "message": "An unexpected error occurred",
-            "request_id": getattr(request.state, "request_id", None)
-        }
+            "request_id": getattr(request.state, "request_id", None),
+        },
     )
 
 
@@ -162,8 +156,8 @@ async def root():
             "health": "/health",
             "metrics": "/metrics",
             "docs": "/docs" if settings.ENVIRONMENT == "development" else "disabled",
-            "api": "/api/v1"
-        }
+            "api": "/api/v1",
+        },
     }
 
 
@@ -176,7 +170,7 @@ def main():
         reload=settings.ENVIRONMENT == "development",
         log_level=settings.LOG_LEVEL.lower(),
         access_log=True,
-        workers=1 if settings.ENVIRONMENT == "development" else settings.WORKERS
+        workers=1 if settings.ENVIRONMENT == "development" else settings.WORKERS,
     )
 
 

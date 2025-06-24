@@ -19,21 +19,22 @@ import hashlib
 import json
 import time
 import uuid
-from datetime import datetime, timezone, timedelta
-from typing import Any, Dict, List, Optional, Set, Union
-from enum import Enum
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any, Dict, List, Optional, Set, Union
 
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import rsa, padding
-from cryptography.hazmat.backends import default_backend
 import structlog
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import padding, rsa
 
 logger = structlog.get_logger(__name__)
 
 
 class ComplianceFramework(str, Enum):
     """Supported compliance frameworks."""
+
     GDPR = "gdpr"
     CCPA = "ccpa"
     SOX = "sox"
@@ -48,6 +49,7 @@ class ComplianceFramework(str, Enum):
 
 class AuditEventType(str, Enum):
     """Audit event types."""
+
     USER_AUTHENTICATION = "user_authentication"
     USER_AUTHORIZATION = "user_authorization"
     DATA_ACCESS = "data_access"
@@ -67,6 +69,7 @@ class AuditEventType(str, Enum):
 
 class DataClassification(str, Enum):
     """Data classification for compliance."""
+
     PUBLIC = "public"
     INTERNAL = "internal"
     CONFIDENTIAL = "confidential"
@@ -79,6 +82,7 @@ class DataClassification(str, Enum):
 
 class RetentionPolicy(str, Enum):
     """Data retention policies."""
+
     DAYS_30 = "30_days"
     DAYS_90 = "90_days"
     MONTHS_6 = "6_months"
@@ -92,6 +96,7 @@ class RetentionPolicy(str, Enum):
 @dataclass
 class AuditEvent:
     """Comprehensive audit event record."""
+
     event_id: str
     timestamp: datetime
     event_type: AuditEventType
@@ -109,17 +114,17 @@ class AuditEvent:
     retention_policy: RetentionPolicy
     privacy_impact: bool
     constitutional_impact: bool
-    
+
     # Integrity fields
     content_hash: Optional[str] = None
     digital_signature: Optional[str] = None
     chain_hash: Optional[str] = None
-    
+
     # Compliance fields
     gdpr_lawful_basis: Optional[str] = None
     data_subject_id: Optional[str] = None
     processing_purpose: Optional[str] = None
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
@@ -145,13 +150,14 @@ class AuditEvent:
             "chain_hash": self.chain_hash,
             "gdpr_lawful_basis": self.gdpr_lawful_basis,
             "data_subject_id": self.data_subject_id,
-            "processing_purpose": self.processing_purpose
+            "processing_purpose": self.processing_purpose,
         }
 
 
 @dataclass
 class ComplianceRule:
     """Compliance rule definition."""
+
     rule_id: str
     framework: ComplianceFramework
     title: str
@@ -166,6 +172,7 @@ class ComplianceRule:
 @dataclass
 class ComplianceViolation:
     """Compliance violation record."""
+
     violation_id: str
     rule_id: str
     framework: ComplianceFramework
@@ -180,34 +187,34 @@ class ComplianceViolation:
 
 class AuditComplianceManager:
     """Comprehensive audit logging and compliance manager."""
-    
-    def __init__(self, 
-                 signing_key: Optional[rsa.RSAPrivateKey] = None,
-                 verification_key: Optional[rsa.RSAPublicKey] = None):
+
+    def __init__(
+        self,
+        signing_key: Optional[rsa.RSAPrivateKey] = None,
+        verification_key: Optional[rsa.RSAPublicKey] = None,
+    ):
         """Initialize audit compliance manager."""
         self.audit_events: List[AuditEvent] = []
         self.compliance_rules: Dict[str, ComplianceRule] = {}
         self.violations: List[ComplianceViolation] = []
         self.chain_hash = "0" * 64  # Genesis hash
-        
+
         # Cryptographic keys for digital signatures
         if signing_key is None:
             self.signing_key = rsa.generate_private_key(
-                public_exponent=65537,
-                key_size=2048,
-                backend=default_backend()
+                public_exponent=65537, key_size=2048, backend=default_backend()
             )
             self.verification_key = self.signing_key.public_key()
         else:
             self.signing_key = signing_key
             self.verification_key = verification_key or signing_key.public_key()
-        
+
         # Initialize compliance rules
         self._initialize_compliance_rules()
-    
+
     def _initialize_compliance_rules(self):
         """Initialize default compliance rules."""
-        
+
         # GDPR Rules
         gdpr_rules = [
             ComplianceRule(
@@ -219,7 +226,7 @@ class AuditComplianceManager:
                 validation_logic="gdpr_lawful_basis is not None",
                 severity="HIGH",
                 remediation_guidance="Specify lawful basis for data processing",
-                applicable_events=[AuditEventType.DATA_ACCESS, AuditEventType.DATA_MODIFICATION]
+                applicable_events=[AuditEventType.DATA_ACCESS, AuditEventType.DATA_MODIFICATION],
             ),
             ComplianceRule(
                 rule_id="GDPR_002",
@@ -230,10 +237,10 @@ class AuditComplianceManager:
                 validation_logic="action == 'data_subject_access_request'",
                 severity="MEDIUM",
                 remediation_guidance="Log all data subject access requests",
-                applicable_events=[AuditEventType.DATA_ACCESS]
-            )
+                applicable_events=[AuditEventType.DATA_ACCESS],
+            ),
         ]
-        
+
         # SOX Rules
         sox_rules = [
             ComplianceRule(
@@ -245,10 +252,10 @@ class AuditComplianceManager:
                 validation_logic="data_classification == 'financial' and user_id is not None",
                 severity="CRITICAL",
                 remediation_guidance="Ensure proper authorization for financial data access",
-                applicable_events=[AuditEventType.DATA_ACCESS, AuditEventType.DATA_MODIFICATION]
+                applicable_events=[AuditEventType.DATA_ACCESS, AuditEventType.DATA_MODIFICATION],
             )
         ]
-        
+
         # Constitutional Governance Rules
         constitutional_rules = [
             ComplianceRule(
@@ -260,44 +267,49 @@ class AuditComplianceManager:
                 validation_logic="constitutional_impact == True",
                 severity="CRITICAL",
                 remediation_guidance="Ensure constitutional validation for policy changes",
-                applicable_events=[AuditEventType.POLICY_CREATION, AuditEventType.POLICY_MODIFICATION]
+                applicable_events=[
+                    AuditEventType.POLICY_CREATION,
+                    AuditEventType.POLICY_MODIFICATION,
+                ],
             )
         ]
-        
+
         # Register all rules
         for rule in gdpr_rules + sox_rules + constitutional_rules:
             self.compliance_rules[rule.rule_id] = rule
-    
-    def log_audit_event(self, 
-                       event_type: AuditEventType,
-                       service_name: str,
-                       resource: str,
-                       action: str,
-                       result: str,
-                       user_id: Optional[str] = None,
-                       session_id: Optional[str] = None,
-                       ip_address: Optional[str] = None,
-                       user_agent: Optional[str] = None,
-                       details: Optional[Dict[str, Any]] = None,
-                       data_classification: DataClassification = DataClassification.INTERNAL,
-                       compliance_frameworks: Optional[List[ComplianceFramework]] = None,
-                       retention_policy: RetentionPolicy = RetentionPolicy.YEARS_7,
-                       privacy_impact: bool = False,
-                       constitutional_impact: bool = False,
-                       gdpr_lawful_basis: Optional[str] = None,
-                       data_subject_id: Optional[str] = None,
-                       processing_purpose: Optional[str] = None) -> str:
+
+    def log_audit_event(
+        self,
+        event_type: AuditEventType,
+        service_name: str,
+        resource: str,
+        action: str,
+        result: str,
+        user_id: Optional[str] = None,
+        session_id: Optional[str] = None,
+        ip_address: Optional[str] = None,
+        user_agent: Optional[str] = None,
+        details: Optional[Dict[str, Any]] = None,
+        data_classification: DataClassification = DataClassification.INTERNAL,
+        compliance_frameworks: Optional[List[ComplianceFramework]] = None,
+        retention_policy: RetentionPolicy = RetentionPolicy.YEARS_7,
+        privacy_impact: bool = False,
+        constitutional_impact: bool = False,
+        gdpr_lawful_basis: Optional[str] = None,
+        data_subject_id: Optional[str] = None,
+        processing_purpose: Optional[str] = None,
+    ) -> str:
         """Log comprehensive audit event."""
-        
+
         event_id = str(uuid.uuid4())
         timestamp = datetime.now(timezone.utc)
-        
+
         # Default compliance frameworks based on data classification
         if compliance_frameworks is None:
             compliance_frameworks = self._determine_compliance_frameworks(
                 data_classification, privacy_impact, constitutional_impact
             )
-        
+
         # Create audit event
         audit_event = AuditEvent(
             event_id=event_id,
@@ -319,27 +331,27 @@ class AuditComplianceManager:
             constitutional_impact=constitutional_impact,
             gdpr_lawful_basis=gdpr_lawful_basis,
             data_subject_id=data_subject_id,
-            processing_purpose=processing_purpose
+            processing_purpose=processing_purpose,
         )
-        
+
         # Calculate content hash
         content = json.dumps(audit_event.to_dict(), sort_keys=True)
         audit_event.content_hash = hashlib.sha256(content.encode()).hexdigest()
-        
+
         # Create digital signature
         audit_event.digital_signature = self._sign_event(audit_event)
-        
+
         # Update chain hash
         chain_input = f"{self.chain_hash}{audit_event.content_hash}"
         audit_event.chain_hash = hashlib.sha256(chain_input.encode()).hexdigest()
         self.chain_hash = audit_event.chain_hash
-        
+
         # Store audit event
         self.audit_events.append(audit_event)
-        
+
         # Check compliance violations
         self._check_compliance_violations(audit_event)
-        
+
         logger.info(
             "Audit event logged",
             event_id=event_id,
@@ -348,105 +360,103 @@ class AuditComplianceManager:
             resource=resource,
             action=action,
             result=result,
-            compliance_frameworks=[f.value for f in compliance_frameworks]
+            compliance_frameworks=[f.value for f in compliance_frameworks],
         )
-        
+
         return event_id
-    
-    def _determine_compliance_frameworks(self,
-                                       data_classification: DataClassification,
-                                       privacy_impact: bool,
-                                       constitutional_impact: bool) -> List[ComplianceFramework]:
+
+    def _determine_compliance_frameworks(
+        self,
+        data_classification: DataClassification,
+        privacy_impact: bool,
+        constitutional_impact: bool,
+    ) -> List[ComplianceFramework]:
         """Determine applicable compliance frameworks."""
         frameworks = [ComplianceFramework.ISO_27001, ComplianceFramework.SOC_2]
-        
+
         if privacy_impact or data_classification == DataClassification.PII:
             frameworks.extend([ComplianceFramework.GDPR, ComplianceFramework.CCPA])
-        
+
         if data_classification == DataClassification.PHI:
             frameworks.append(ComplianceFramework.HIPAA)
-        
+
         if data_classification == DataClassification.FINANCIAL:
             frameworks.append(ComplianceFramework.SOX)
-        
+
         if constitutional_impact or data_classification == DataClassification.CONSTITUTIONAL:
             frameworks.append(ComplianceFramework.CONSTITUTIONAL_GOVERNANCE)
-        
+
         return frameworks
-    
+
     def _sign_event(self, event: AuditEvent) -> str:
         """Create digital signature for audit event."""
         content = json.dumps(event.to_dict(), sort_keys=True).encode()
-        
+
         signature = self.signing_key.sign(
             content,
-            padding.PSS(
-                mgf=padding.MGF1(hashes.SHA256()),
-                salt_length=padding.PSS.MAX_LENGTH
-            ),
-            hashes.SHA256()
+            padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
+            hashes.SHA256(),
         )
-        
+
         import base64
+
         return base64.b64encode(signature).decode()
-    
+
     def verify_event_signature(self, event: AuditEvent) -> bool:
         """Verify digital signature of audit event."""
         try:
             import base64
+
             signature = base64.b64decode(event.digital_signature.encode())
-            
+
             # Temporarily remove signature for verification
             temp_signature = event.digital_signature
             event.digital_signature = None
-            
+
             content = json.dumps(event.to_dict(), sort_keys=True).encode()
-            
+
             # Restore signature
             event.digital_signature = temp_signature
-            
+
             self.verification_key.verify(
                 signature,
                 content,
-                padding.PSS(
-                    mgf=padding.MGF1(hashes.SHA256()),
-                    salt_length=padding.PSS.MAX_LENGTH
-                ),
-                hashes.SHA256()
+                padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
+                hashes.SHA256(),
             )
-            
+
             return True
-            
+
         except Exception as e:
             logger.error(f"Signature verification failed: {e}")
             return False
-    
+
     def verify_chain_integrity(self) -> bool:
         """Verify integrity of entire audit chain."""
         if not self.audit_events:
             return True
-        
+
         current_hash = "0" * 64  # Genesis hash
-        
+
         for event in self.audit_events:
             # Verify event signature
             if not self.verify_event_signature(event):
                 logger.error(f"Signature verification failed for event {event.event_id}")
                 return False
-            
+
             # Verify chain hash
             expected_chain_hash = hashlib.sha256(
                 f"{current_hash}{event.content_hash}".encode()
             ).hexdigest()
-            
+
             if event.chain_hash != expected_chain_hash:
                 logger.error(f"Chain integrity violation at event {event.event_id}")
                 return False
-            
+
             current_hash = event.chain_hash
-        
+
         return True
-    
+
     def _check_compliance_violations(self, event: AuditEvent):
         """Check for compliance violations."""
         for rule in self.compliance_rules.values():
@@ -464,62 +474,64 @@ class AuditComplianceManager:
                             description=f"Violation of {rule.title}: {rule.description}",
                             remediation_required=rule.severity in ["HIGH", "CRITICAL"],
                             remediation_deadline=datetime.now(timezone.utc) + timedelta(days=30),
-                            status="OPEN"
+                            status="OPEN",
                         )
-                        
+
                         self.violations.append(violation)
-                        
+
                         logger.warning(
                             "Compliance violation detected",
                             violation_id=violation.violation_id,
                             rule_id=rule.rule_id,
                             framework=rule.framework.value,
                             severity=rule.severity,
-                            event_id=event.event_id
+                            event_id=event.event_id,
                         )
-    
+
     def _evaluate_compliance_rule(self, rule: ComplianceRule, event: AuditEvent) -> bool:
         """Evaluate compliance rule against event (simplified implementation)."""
         # This is a simplified rule evaluation
         # In production, use a proper rule engine like OPA
-        
+
         if rule.rule_id == "GDPR_001":
             return event.gdpr_lawful_basis is not None
         elif rule.rule_id == "GDPR_002":
             return event.action == "data_subject_access_request"
         elif rule.rule_id == "SOX_001":
-            return (event.data_classification == DataClassification.FINANCIAL and 
-                   event.user_id is not None)
+            return (
+                event.data_classification == DataClassification.FINANCIAL
+                and event.user_id is not None
+            )
         elif rule.rule_id == "CONST_001":
             return event.constitutional_impact
-        
+
         return True  # Default to compliant
-    
-    def generate_compliance_report(self, 
-                                 framework: ComplianceFramework,
-                                 start_date: datetime,
-                                 end_date: datetime) -> Dict[str, Any]:
+
+    def generate_compliance_report(
+        self, framework: ComplianceFramework, start_date: datetime, end_date: datetime
+    ) -> Dict[str, Any]:
         """Generate compliance report for specific framework."""
-        
+
         # Filter events by framework and date range
         relevant_events = [
-            event for event in self.audit_events
+            event
+            for event in self.audit_events
             if framework in event.compliance_frameworks
             and start_date <= event.timestamp <= end_date
         ]
-        
+
         # Filter violations by framework and date range
         relevant_violations = [
-            violation for violation in self.violations
-            if violation.framework == framework
-            and start_date <= violation.timestamp <= end_date
+            violation
+            for violation in self.violations
+            if violation.framework == framework and start_date <= violation.timestamp <= end_date
         ]
-        
+
         # Calculate compliance metrics
         total_events = len(relevant_events)
         total_violations = len(relevant_violations)
         compliance_rate = ((total_events - total_violations) / max(total_events, 1)) * 100
-        
+
         # Group violations by severity
         violations_by_severity = {}
         for violation in relevant_violations:
@@ -527,18 +539,18 @@ class AuditComplianceManager:
             if severity not in violations_by_severity:
                 violations_by_severity[severity] = 0
             violations_by_severity[severity] += 1
-        
+
         return {
             "framework": framework.value,
             "report_period": {
                 "start_date": start_date.isoformat(),
-                "end_date": end_date.isoformat()
+                "end_date": end_date.isoformat(),
             },
             "summary": {
                 "total_events": total_events,
                 "total_violations": total_violations,
                 "compliance_rate": round(compliance_rate, 2),
-                "violations_by_severity": violations_by_severity
+                "violations_by_severity": violations_by_severity,
             },
             "events": [event.to_dict() for event in relevant_events],
             "violations": [
@@ -549,73 +561,85 @@ class AuditComplianceManager:
                     "timestamp": v.timestamp.isoformat(),
                     "severity": v.severity,
                     "description": v.description,
-                    "status": v.status
+                    "status": v.status,
                 }
                 for v in relevant_violations
             ],
-            "recommendations": self._generate_compliance_recommendations(framework, relevant_violations)
+            "recommendations": self._generate_compliance_recommendations(
+                framework, relevant_violations
+            ),
         }
-    
-    def _generate_compliance_recommendations(self, 
-                                           framework: ComplianceFramework,
-                                           violations: List[ComplianceViolation]) -> List[str]:
+
+    def _generate_compliance_recommendations(
+        self, framework: ComplianceFramework, violations: List[ComplianceViolation]
+    ) -> List[str]:
         """Generate compliance recommendations."""
         recommendations = []
-        
+
         if framework == ComplianceFramework.GDPR:
             if any(v.rule_id == "GDPR_001" for v in violations):
-                recommendations.append("Implement mandatory lawful basis specification for all data processing")
+                recommendations.append(
+                    "Implement mandatory lawful basis specification for all data processing"
+                )
             if any(v.rule_id == "GDPR_002" for v in violations):
                 recommendations.append("Enhance data subject access request logging")
-        
+
         elif framework == ComplianceFramework.SOX:
             if any(v.rule_id == "SOX_001" for v in violations):
                 recommendations.append("Strengthen access controls for financial data")
-        
+
         elif framework == ComplianceFramework.CONSTITUTIONAL_GOVERNANCE:
             if any(v.rule_id == "CONST_001" for v in violations):
-                recommendations.append("Ensure all policy changes undergo constitutional validation")
-        
+                recommendations.append(
+                    "Ensure all policy changes undergo constitutional validation"
+                )
+
         return recommendations
-    
+
     def anonymize_audit_data(self, event: AuditEvent) -> AuditEvent:
         """Anonymize audit data for privacy compliance."""
         anonymized_event = AuditEvent(**event.__dict__)
-        
+
         # Anonymize PII fields
         if event.privacy_impact:
-            anonymized_event.user_id = self._hash_identifier(event.user_id) if event.user_id else None
-            anonymized_event.ip_address = self._anonymize_ip(event.ip_address) if event.ip_address else None
-            anonymized_event.data_subject_id = self._hash_identifier(event.data_subject_id) if event.data_subject_id else None
-            
+            anonymized_event.user_id = (
+                self._hash_identifier(event.user_id) if event.user_id else None
+            )
+            anonymized_event.ip_address = (
+                self._anonymize_ip(event.ip_address) if event.ip_address else None
+            )
+            anonymized_event.data_subject_id = (
+                self._hash_identifier(event.data_subject_id) if event.data_subject_id else None
+            )
+
             # Anonymize details that might contain PII
             if event.details:
                 anonymized_event.details = self._anonymize_details(event.details)
-        
+
         return anonymized_event
-    
+
     def _hash_identifier(self, identifier: str) -> str:
         """Hash identifier for anonymization."""
         return hashlib.sha256(f"salt_{identifier}".encode()).hexdigest()[:16]
-    
+
     def _anonymize_ip(self, ip_address: str) -> str:
         """Anonymize IP address."""
         # For IPv4, zero out last octet
-        parts = ip_address.split('.')
+        parts = ip_address.split(".")
         if len(parts) == 4:
             return f"{parts[0]}.{parts[1]}.{parts[2]}.0"
         return "anonymized"
-    
+
     def _anonymize_details(self, details: Dict[str, Any]) -> Dict[str, Any]:
         """Anonymize details dictionary."""
         anonymized = {}
-        
+
         for key, value in details.items():
-            if any(pii_field in key.lower() for pii_field in ['email', 'name', 'phone', 'address']):
+            if any(pii_field in key.lower() for pii_field in ["email", "name", "phone", "address"]):
                 anonymized[key] = "[ANONYMIZED]"
             else:
                 anonymized[key] = value
-        
+
         return anonymized
 
 
@@ -647,5 +671,5 @@ __all__ = [
     "DataClassification",
     "RetentionPolicy",
     "initialize_audit_compliance_manager",
-    "get_audit_compliance_manager"
+    "get_audit_compliance_manager",
 ]

@@ -16,7 +16,7 @@ import asyncio
 import logging
 from collections import deque
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 import numpy as np
 
@@ -342,7 +342,8 @@ class ACGSPGPMetricsCollector:
                 recent_events = [
                     e
                     for e in self.enforcement_history
-                    if (datetime.now(timezone.utc) - datetime.fromisoformat(e["timestamp"])).seconds < 60
+                    if (datetime.now(timezone.utc) - datetime.fromisoformat(e["timestamp"])).seconds
+                    < 60
                 ]
                 self.performance_metrics.throughput_per_second = len(recent_events) / 60.0
 

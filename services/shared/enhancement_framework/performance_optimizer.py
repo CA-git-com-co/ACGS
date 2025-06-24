@@ -87,10 +87,7 @@ class PerformanceEnhancer:
                 metrics = self.get_performance_metrics()
 
                 # Check performance targets
-                if (
-                    metrics["avg_response_time"]
-                    > self.performance_targets["response_time_p95"]
-                ):
+                if metrics["avg_response_time"] > self.performance_targets["response_time_p95"]:
                     logger.warning(
                         f"Response time target exceeded: {metrics['avg_response_time']:.3f}s > "
                         f"{self.performance_targets['response_time_p95']}s"
@@ -168,9 +165,7 @@ class PerformanceEnhancer:
             sorted_times = sorted(self.response_times)
             p95_index = int(len(sorted_times) * 0.95)
             p95_response_time = (
-                sorted_times[p95_index]
-                if p95_index < len(sorted_times)
-                else sorted_times[-1]
+                sorted_times[p95_index] if p95_index < len(sorted_times) else sorted_times[-1]
             )
 
         return {

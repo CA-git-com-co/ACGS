@@ -9,7 +9,18 @@ Provides REST API for cross-domain principle testing framework including:
 """
 
 import logging
-from datetime import timezone, datetime
+from datetime import datetime, timezone
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from services.shared.database import get_async_db
+from services.shared.models import (
+    CrossDomainTestResult,
+    CrossDomainTestScenario,
+    DomainContext,
+)
 
 from .core.auth import User, require_verification_triggerer
 from .core.cross_domain_testing_engine import cross_domain_testing_engine
@@ -28,16 +39,6 @@ from .schemas import (
     DomainContextUpdate,
 )
 from .services.ac_client import ac_service_client
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from services.shared.database import get_async_db
-from services.shared.models import (
-    CrossDomainTestResult,
-    CrossDomainTestScenario,
-    DomainContext,
-)
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

@@ -10,9 +10,7 @@ try:
 
     # Add the correct path to services/shared
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    shared_path = os.path.join(
-        current_dir, "..", "..", "..", "..", "..", "services", "shared"
-    )
+    shared_path = os.path.join(current_dir, "..", "..", "..", "..", "..", "services", "shared")
     sys.path.insert(0, os.path.abspath(shared_path))
 
     from input_validation_middleware import InputValidationMiddleware
@@ -222,9 +220,7 @@ except ImportError as e:
     enforcement_router = APIRouter()
 
 try:
-    from .api.v1.alphaevolve_enforcement import (
-        router as alphaevolve_enforcement_router,
-    )
+    from .api.v1.alphaevolve_enforcement import router as alphaevolve_enforcement_router
 except ImportError as e:
     print(f"Warning: AlphaEvolve enforcement router not available: {e}")
     from fastapi import APIRouter
@@ -232,9 +228,7 @@ except ImportError as e:
     alphaevolve_enforcement_router = APIRouter()
 
 try:
-    from .api.v1.incremental_compilation import (
-        router as incremental_compilation_router,
-    )
+    from .api.v1.incremental_compilation import router as incremental_compilation_router
 except ImportError as e:
     print(f"Warning: Incremental compilation router not available: {e}")
     from fastapi import APIRouter
@@ -3292,10 +3286,4 @@ if __name__ == "__main__":
     import uvicorn
 
     print(f"🚀 Starting PGC Service on port {port}")
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=port,
-        reload=False,
-        log_level="info"
-    )
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False, log_level="info")

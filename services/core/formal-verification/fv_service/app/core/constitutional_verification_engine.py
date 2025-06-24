@@ -14,7 +14,7 @@ import hashlib
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
@@ -503,7 +503,9 @@ class ConstitutionalVerificationEngine:
                 else "NON_COMPLIANT"
             ),
             "issued_at": datetime.now(timezone.utc).isoformat(),
-            "valid_until": datetime.now(timezone.utc).replace(year=datetime.now().year + 1).isoformat(),
+            "valid_until": datetime.now(timezone.utc)
+            .replace(year=datetime.now().year + 1)
+            .isoformat(),
             "certificate_checksum": "",
         }
 

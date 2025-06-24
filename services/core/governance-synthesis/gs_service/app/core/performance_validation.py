@@ -7,7 +7,7 @@ Provides real-time monitoring and benchmarking capabilities.
 
 import logging
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
@@ -582,7 +582,8 @@ class PerformanceValidator:
             "report_generated": datetime.now(timezone.utc).isoformat(),
             "validation_period": {
                 "start_time": self.start_time.isoformat(),
-                "duration_hours": (datetime.now(timezone.utc) - self.start_time).total_seconds() / 3600,
+                "duration_hours": (datetime.now(timezone.utc) - self.start_time).total_seconds()
+                / 3600,
             },
             "summary_statistics": summary_stats,
             "performance_targets": self.check_performance_targets(),

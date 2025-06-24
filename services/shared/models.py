@@ -40,7 +40,7 @@ if not hasattr(Base, "metadata"):
     Base = declarative_base()
 import enum
 import uuid  # For generating UUIDs
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import (
     JSON,
@@ -70,9 +70,7 @@ class User(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     username = Column(String(100), unique=True, index=True, nullable=False)
-    hashed_password = Column(
-        String(255), nullable=False
-    )  # Increased length for stronger hashes
+    hashed_password = Column(String(255), nullable=False)  # Increased length for stronger hashes
     email = Column(String(255), unique=True, index=True, nullable=False)
     full_name = Column(String(255), nullable=True)
     # Roles: e.g., "system_admin", "principle_author", "policy_auditor", "service_account", "user"
@@ -118,9 +116,7 @@ class RefreshToken(Base):
     __tablename__ = "refresh_tokens"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(
-        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     jti = Column(
         String(36), unique=True, index=True, nullable=False
     )  # JWT ID (standard UUID length)
@@ -235,9 +231,7 @@ class PolicyRule(Base):
     compilation_status = Column(
         String(50), default="pending", nullable=False, index=True
     )  # pending, compiled, failed
-    compilation_metrics = Column(
-        JSONB, nullable=True
-    )  # Performance metrics for compilation
+    compilation_metrics = Column(JSONB, nullable=True)  # Performance metrics for compilation
 
     # Policy version tracking for incremental compilation
     policy_versions = relationship(
@@ -297,9 +291,7 @@ class AuditLog(Base):
         String(100), nullable=False, index=True
     )  # e.g., "USER_LOGIN", "POLICY_RULE_CREATED"
 
-    actor_id = Column(
-        Integer, ForeignKey("users.id"), nullable=True
-    )  # User performing action
+    actor_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # User performing action
     # Or if User.id is UUID:
     # actor_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
     actor = relationship("User", back_populates="audit_logs_as_actor")
@@ -310,12 +302,8 @@ class AuditLog(Base):
     entity_type = Column(
         String(100), nullable=True, index=True
     )  # e.g., "Principle", "PolicyRule", "User"
-    entity_id_int = Column(
-        Integer, nullable=True, index=True
-    )  # If entity has integer PK
-    entity_id_uuid = Column(
-        UUID(as_uuid=True), nullable=True, index=True
-    )  # If entity has UUID PK
+    entity_id_int = Column(Integer, nullable=True, index=True)  # If entity has integer PK
+    entity_id_uuid = Column(UUID(as_uuid=True), nullable=True, index=True)  # If entity has UUID PK
     entity_id_str = Column(
         String(255), nullable=True, index=True
     )  # If entity has string PK or for general refs
@@ -376,20 +364,12 @@ class PolicyVersion(Base):
     policy_rule = relationship("PolicyRule", back_populates="policy_versions")
 
     version_number = Column(Integer, nullable=False)
-    content_hash = Column(
-        String(64), nullable=False, index=True
-    )  # SHA-256 hash of policy content
-    compilation_hash = Column(
-        String(64), nullable=True, index=True
-    )  # Hash of compiled output
+    content_hash = Column(String(64), nullable=False, index=True)  # SHA-256 hash of policy content
+    compilation_hash = Column(String(64), nullable=True, index=True)  # Hash of compiled output
 
     # Compilation metadata
-    compilation_status = Column(
-        String(50), nullable=False, default="pending", index=True
-    )
-    compilation_time_ms = Column(
-        Float, nullable=True
-    )  # Compilation time in milliseconds
+    compilation_status = Column(String(50), nullable=False, default="pending", index=True)
+    compilation_time_ms = Column(Float, nullable=True)  # Compilation time in milliseconds
     compilation_strategy = Column(
         String(50), nullable=True
     )  # full, incremental, partial, optimized
@@ -405,15 +385,11 @@ class PolicyVersion(Base):
 
     # Deployment tracking
     deployed_at = Column(DateTime(timezone=True), nullable=True)
-    deployment_status = Column(
-        String(50), default="pending", nullable=False, index=True
-    )
+    deployment_status = Column(String(50), default="pending", nullable=False, index=True)
     deployment_metrics = Column(JSONB, nullable=True)
 
     # Backward compatibility tracking (3-version requirement)
-    compatible_versions = Column(
-        JSONB, nullable=True
-    )  # List of compatible version numbers
+    compatible_versions = Column(JSONB, nullable=True)  # List of compatible version numbers
     breaking_changes = Column(
         JSONB, nullable=True
     )  # List of breaking changes from previous version
@@ -428,9 +404,7 @@ class PolicyVersion(Base):
 
 
 class Policy(Base):
-    __tablename__ = (
-        "policies"  # A high-level policy object, potentially composed of multiple rules
-    )
+    __tablename__ = "policies"  # A high-level policy object, potentially composed of multiple rules
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(
@@ -476,9 +450,7 @@ class Policy(Base):
     created_by_user = relationship("User", back_populates="created_policies")
 
     # Relationship to the actual Datalog rules that implement this policy
-    rules = relationship(
-        "PolicyRule", back_populates="policy", cascade="all, delete-orphan"
-    )
+    rules = relationship("PolicyRule", back_populates="policy", cascade="all, delete-orphan")
 
     # For version history (simplified: link to previous version)
     # previous_version_id = Column(Integer, ForeignKey("policies.id"), nullable=True)
@@ -505,12 +477,8 @@ class ACMetaRule(Base):
     )  # e.g., {"threshold": 0.67, "stakeholder_roles": ["admin", "policy_manager"]}
 
     # Governance parameters
-    threshold = Column(
-        String(50), nullable=True
-    )  # e.g., "0.67", "simple_majority", "unanimous"
-    stakeholder_roles = Column(
-        JSONB, nullable=True
-    )  # List of roles that can participate
+    threshold = Column(String(50), nullable=True)  # e.g., "0.67", "simple_majority", "unanimous"
+    stakeholder_roles = Column(JSONB, nullable=True)  # List of roles that can participate
     decision_mechanism = Column(
         String(100), nullable=True
     )  # e.g., "supermajority_vote", "consensus", "expert_panel"
@@ -575,9 +543,7 @@ class ACAmendment(Base):
     urgency_level = Column(
         String(20), nullable=False, default="normal", index=True
     )  # "normal", "rapid", "emergency"
-    co_evolution_context = Column(
-        JSONB, nullable=True
-    )  # Context for rapid co-evolution scenarios
+    co_evolution_context = Column(JSONB, nullable=True)  # Context for rapid co-evolution scenarios
     expected_impact = Column(
         String(20), nullable=True, index=True
     )  # "low", "medium", "high", "critical"
@@ -663,9 +629,7 @@ class ACAmendmentComment(Base):
     )  # e.g., "citizen", "expert", "affected_party"
 
     comment_text = Column(Text, nullable=False)
-    sentiment = Column(
-        String(20), nullable=True, index=True
-    )  # "support", "oppose", "neutral"
+    sentiment = Column(String(20), nullable=True, index=True)  # "support", "oppose", "neutral"
 
     is_public = Column(Boolean, default=True, nullable=False)
     is_moderated = Column(Boolean, default=False, nullable=False)
@@ -699,20 +663,14 @@ class ACConflictResolution(Base):
 
     # Conflict analysis
     conflict_description = Column(Text, nullable=False)
-    severity = Column(
-        String(20), nullable=False, index=True
-    )  # "low", "medium", "high", "critical"
+    severity = Column(String(20), nullable=False, index=True)  # "low", "medium", "high", "critical"
 
     # Resolution strategy
     resolution_strategy = Column(
         String(100), nullable=False
     )  # e.g., "principle_priority_based", "contextual_balancing", "meta_rule_override"
-    resolution_details = Column(
-        JSONB, nullable=True
-    )  # Structured resolution information
-    precedence_order = Column(
-        JSONB, nullable=True
-    )  # Priority order of principles for this context
+    resolution_details = Column(JSONB, nullable=True)  # Structured resolution information
+    precedence_order = Column(JSONB, nullable=True)  # Priority order of principles for this context
 
     # Status and lifecycle
     status = Column(
@@ -894,15 +852,11 @@ class FederatedNode(Base):
     api_key_hash = Column(String(255), nullable=True)  # Hashed API key for security
 
     # Node capabilities and metadata
-    capabilities = Column(
-        JSONB, nullable=True
-    )  # {"models": ["gpt-4"], "max_tokens": 4096}
+    capabilities = Column(JSONB, nullable=True)  # {"models": ["gpt-4"], "max_tokens": 4096}
     configuration = Column(JSONB, nullable=True)  # Node-specific configuration
 
     # Status and health
-    status = Column(
-        Enum(NodeStatusEnum), default=NodeStatusEnum.ACTIVE, nullable=False, index=True
-    )
+    status = Column(Enum(NodeStatusEnum), default=NodeStatusEnum.ACTIVE, nullable=False, index=True)
     last_heartbeat = Column(DateTime(timezone=True), nullable=True)
     health_score = Column(Float, default=1.0, nullable=False)  # 0.0 to 1.0
 
@@ -913,9 +867,7 @@ class FederatedNode(Base):
     average_response_time_ms = Column(Float, default=0.0, nullable=False)
 
     # MAB integration
-    mab_template_preferences = Column(
-        JSONB, nullable=True
-    )  # Template performance history
+    mab_template_preferences = Column(JSONB, nullable=True)  # Template performance history
     prompt_optimization_history = Column(JSONB, nullable=True)  # MAB optimization data
 
     # Timestamps
@@ -953,9 +905,7 @@ class FederatedEvaluation(Base):
     target_platforms = Column(ARRAY(String), nullable=False)
 
     # Privacy and security
-    privacy_requirements = Column(
-        JSONB, nullable=True
-    )  # {"epsilon": 1.0, "mechanism": "laplace"}
+    privacy_requirements = Column(JSONB, nullable=True)  # {"epsilon": 1.0, "mechanism": "laplace"}
     privacy_budget_used = Column(Float, default=0.0, nullable=False)
 
     # MAB integration
@@ -1023,9 +973,7 @@ class EvaluationNodeAssignment(Base):
     __tablename__ = "evaluation_node_assignments"
 
     id = Column(Integer, primary_key=True, index=True)
-    evaluation_id = Column(
-        Integer, ForeignKey("federated_evaluations.id"), nullable=False
-    )
+    evaluation_id = Column(Integer, ForeignKey("federated_evaluations.id"), nullable=False)
     node_id = Column(Integer, ForeignKey("federated_nodes.id"), nullable=False)
 
     # Assignment details
@@ -1050,9 +998,7 @@ class EvaluationNodeResult(Base):
     __tablename__ = "evaluation_node_results"
 
     id = Column(Integer, primary_key=True, index=True)
-    evaluation_id = Column(
-        Integer, ForeignKey("federated_evaluations.id"), nullable=False
-    )
+    evaluation_id = Column(Integer, ForeignKey("federated_evaluations.id"), nullable=False)
     node_id = Column(Integer, ForeignKey("federated_nodes.id"), nullable=False)
 
     # Result data
@@ -1067,9 +1013,7 @@ class EvaluationNodeResult(Base):
     privacy_score = Column(Float, nullable=True)  # 0.0 to 1.0
 
     # Quality indicators
-    is_byzantine = Column(
-        Boolean, default=False, nullable=False
-    )  # Detected as Byzantine
+    is_byzantine = Column(Boolean, default=False, nullable=False)  # Detected as Byzantine
     confidence_score = Column(Float, nullable=True)  # 0.0 to 1.0
     validation_passed = Column(Boolean, nullable=True)
 
@@ -1097,9 +1041,7 @@ class SecureAggregationSession(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     session_id = Column(String(100), unique=True, nullable=False, index=True)
-    evaluation_id = Column(
-        Integer, ForeignKey("federated_evaluations.id"), nullable=False
-    )
+    evaluation_id = Column(Integer, ForeignKey("federated_evaluations.id"), nullable=False)
 
     # Aggregation configuration
     aggregation_method = Column(Enum(AggregationMethodEnum), nullable=False)
@@ -1107,9 +1049,7 @@ class SecureAggregationSession(Base):
     minimum_participants = Column(Integer, default=2, nullable=False)
 
     # Cryptographic details
-    encryption_scheme = Column(
-        String(100), nullable=True
-    )  # e.g., "homomorphic", "secret_sharing"
+    encryption_scheme = Column(String(100), nullable=True)  # e.g., "homomorphic", "secret_sharing"
     key_exchange_completed = Column(Boolean, default=False, nullable=False)
     verification_hashes = Column(JSONB, nullable=True)
 
@@ -1139,9 +1079,7 @@ class SecureAggregationSession(Base):
 
     # Relationships
     evaluation = relationship("FederatedEvaluation")
-    shares = relationship(
-        "SecureShare", back_populates="session", cascade="all, delete-orphan"
-    )
+    shares = relationship("SecureShare", back_populates="session", cascade="all, delete-orphan")
 
 
 class SecureShare(Base):
@@ -1151,9 +1089,7 @@ class SecureShare(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     share_id = Column(String(100), unique=True, nullable=False, index=True)
-    session_id = Column(
-        Integer, ForeignKey("secure_aggregation_sessions.id"), nullable=False
-    )
+    session_id = Column(Integer, ForeignKey("secure_aggregation_sessions.id"), nullable=False)
     node_id = Column(Integer, ForeignKey("federated_nodes.id"), nullable=False)
 
     # Share data
@@ -1180,28 +1116,20 @@ class PrivacyMetric(Base):
     __tablename__ = "privacy_metrics"
 
     id = Column(Integer, primary_key=True, index=True)
-    evaluation_id = Column(
-        Integer, ForeignKey("federated_evaluations.id"), nullable=False
-    )
+    evaluation_id = Column(Integer, ForeignKey("federated_evaluations.id"), nullable=False)
     node_id = Column(
         Integer, ForeignKey("federated_nodes.id"), nullable=True
     )  # Null for aggregated metrics
 
     # Privacy measurements
-    epsilon_consumed = Column(
-        Float, nullable=True
-    )  # Differential privacy budget consumed
+    epsilon_consumed = Column(Float, nullable=True)  # Differential privacy budget consumed
     delta_consumed = Column(Float, nullable=True)  # Differential privacy delta consumed
     privacy_score = Column(Float, nullable=True)  # Overall privacy score (0.0 to 1.0)
 
     # Specific privacy metrics
     data_minimization_score = Column(Float, nullable=True)  # How well data is minimized
-    anonymization_level = Column(
-        Float, nullable=True
-    )  # Level of anonymization achieved
-    inference_resistance = Column(
-        Float, nullable=True
-    )  # Resistance to inference attacks
+    anonymization_level = Column(Float, nullable=True)  # Level of anonymization achieved
+    inference_resistance = Column(Float, nullable=True)  # Resistance to inference attacks
 
     # Privacy mechanisms applied
     mechanisms_applied = Column(JSONB, nullable=True)  # List of privacy mechanisms used
@@ -1230,42 +1158,28 @@ class ConstitutionalValidation(Base):
     __tablename__ = "constitutional_validations"
 
     id = Column(Integer, primary_key=True, index=True)
-    evaluation_id = Column(
-        Integer, ForeignKey("federated_evaluations.id"), nullable=False
-    )
+    evaluation_id = Column(Integer, ForeignKey("federated_evaluations.id"), nullable=False)
 
     # Constitutional compliance
-    principle_ids_validated = Column(
-        ARRAY(Integer), nullable=True
-    )  # AC principle IDs checked
-    compliance_score = Column(
-        Float, nullable=True
-    )  # Overall compliance score (0.0 to 1.0)
+    principle_ids_validated = Column(ARRAY(Integer), nullable=True)  # AC principle IDs checked
+    compliance_score = Column(Float, nullable=True)  # Overall compliance score (0.0 to 1.0)
     constitutional_violations = Column(JSONB, nullable=True)  # Detected violations
 
     # Validation details
-    validation_method = Column(
-        String(100), nullable=True
-    )  # "automated", "human_review", "hybrid"
+    validation_method = Column(String(100), nullable=True)  # "automated", "human_review", "hybrid"
     validation_timestamp = Column(DateTime, nullable=True)
     validation_metadata = Column(JSON, nullable=True)
-    validator_confidence = Column(
-        Float, nullable=True
-    )  # Confidence in validation (0.0 to 1.0)
+    validator_confidence = Column(Float, nullable=True)  # Confidence in validation (0.0 to 1.0)
 
     # Cross-platform consistency
     consistency_across_platforms = Column(
         Float, nullable=True
     )  # Consistency score across platforms
-    platform_specific_issues = Column(
-        JSONB, nullable=True
-    )  # Platform-specific compliance issues
+    platform_specific_issues = Column(JSONB, nullable=True)  # Platform-specific compliance issues
 
     # Integration with Constitutional Council
     council_review_required = Column(Boolean, default=False, nullable=False)
-    council_decision = Column(
-        String(100), nullable=True
-    )  # "approved", "rejected", "conditional"
+    council_decision = Column(String(100), nullable=True)  # "approved", "rejected", "conditional"
     council_feedback = Column(Text, nullable=True)
 
     # Timestamps
@@ -1292,29 +1206,21 @@ class ConstitutionalViolation(Base):
     violation_type = Column(
         String(100), nullable=False, index=True
     )  # principle_violation, synthesis_failure, enforcement_breach, stakeholder_conflict
-    severity = Column(
-        String(20), nullable=False, index=True
-    )  # low, medium, high, critical
+    severity = Column(String(20), nullable=False, index=True)  # low, medium, high, critical
     principle_id = Column(Integer, ForeignKey("principles.id"), nullable=True)
     policy_id = Column(Integer, ForeignKey("policies.id"), nullable=True)
 
     # Violation details
     violation_description = Column(Text, nullable=False)
-    detection_method = Column(
-        String(100), nullable=False
-    )  # automated, manual, escalated
+    detection_method = Column(String(100), nullable=False)  # automated, manual, escalated
     fidelity_score = Column(
         Numeric(5, 4), nullable=True
     )  # Constitutional fidelity score at time of violation
-    distance_score = Column(
-        Numeric(5, 4), nullable=True
-    )  # Constitutional distance score
+    distance_score = Column(Numeric(5, 4), nullable=True)  # Constitutional distance score
 
     # Context and metadata
     context_data = Column(JSON, nullable=True)  # Additional context about the violation
-    detection_metadata = Column(
-        JSON, nullable=True
-    )  # Metadata from detection algorithms
+    detection_metadata = Column(JSON, nullable=True)  # Metadata from detection algorithms
 
     # Status tracking
     status = Column(
@@ -1343,9 +1249,7 @@ class ConstitutionalViolation(Base):
 
     # Timestamps
     created_at = Column(DateTime, default=func.now(), nullable=False)
-    updated_at = Column(
-        DateTime, default=func.now(), onupdate=func.now(), nullable=False
-    )
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
 
     # Indexes for performance
     __table_args__ = (
@@ -1371,9 +1275,7 @@ class ViolationAlert(Base):
         String(50), nullable=False, index=True
     )  # threshold, escalation, notification
     alert_level = Column(String(20), nullable=False, index=True)  # green, amber, red
-    threshold_value = Column(
-        Numeric(5, 4), nullable=True
-    )  # Threshold that triggered the alert
+    threshold_value = Column(Numeric(5, 4), nullable=True)  # Threshold that triggered the alert
 
     # Alert content
     title = Column(String(255), nullable=False)
@@ -1381,9 +1283,7 @@ class ViolationAlert(Base):
     recommended_actions = Column(JSON, nullable=True)  # List of recommended actions
 
     # Notification tracking
-    notification_channels = Column(
-        JSON, nullable=True
-    )  # List of channels used for notification
+    notification_channels = Column(JSON, nullable=True)  # List of channels used for notification
     notification_status = Column(
         String(50), default="pending", nullable=False
     )  # pending, sent, failed, acknowledged
@@ -1398,9 +1298,7 @@ class ViolationAlert(Base):
 
     # Timestamps
     created_at = Column(DateTime, default=func.now(), nullable=False, index=True)
-    updated_at = Column(
-        DateTime, default=func.now(), onupdate=func.now(), nullable=False
-    )
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
 
     # Indexes for performance
     __table_args__ = (
@@ -1422,9 +1320,7 @@ class ViolationThreshold(Base):
     )  # fidelity_score, violation_count, severity_based
 
     # Threshold values
-    green_threshold = Column(
-        Numeric(5, 4), nullable=False
-    )  # Normal operation threshold
+    green_threshold = Column(Numeric(5, 4), nullable=False)  # Normal operation threshold
     amber_threshold = Column(Numeric(5, 4), nullable=False)  # Warning threshold
     red_threshold = Column(Numeric(5, 4), nullable=False)  # Critical threshold
 
@@ -1439,9 +1335,7 @@ class ViolationThreshold(Base):
 
     # Timestamps
     created_at = Column(DateTime, default=func.now(), nullable=False)
-    updated_at = Column(
-        DateTime, default=func.now(), onupdate=func.now(), nullable=False
-    )
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
 
 
 class ViolationEscalation(Base):
@@ -1464,9 +1358,7 @@ class ViolationEscalation(Base):
     escalation_reason = Column(Text, nullable=False)
 
     # Escalation configuration
-    trigger_conditions = Column(
-        JSON, nullable=True
-    )  # Conditions that triggered escalation
+    trigger_conditions = Column(JSON, nullable=True)  # Conditions that triggered escalation
     escalation_rules = Column(JSON, nullable=True)  # Rules applied for escalation
 
     # Assignment and notification
@@ -1495,9 +1387,7 @@ class ViolationEscalation(Base):
     responded_at = Column(DateTime, nullable=True)
     resolved_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=func.now(), nullable=False)
-    updated_at = Column(
-        DateTime, default=func.now(), onupdate=func.now(), nullable=False
-    )
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
 
     # Indexes for performance
     __table_args__ = (
@@ -1522,27 +1412,17 @@ class DomainContext(Base):
     domain_description = Column(Text, nullable=True)
 
     # Regulatory framework information
-    regulatory_frameworks = Column(
-        JSONB, nullable=True
-    )  # List of applicable regulations
-    compliance_requirements = Column(
-        JSONB, nullable=True
-    )  # Specific compliance requirements
-    cultural_contexts = Column(
-        JSONB, nullable=True
-    )  # Cultural and social context factors
+    regulatory_frameworks = Column(JSONB, nullable=True)  # List of applicable regulations
+    compliance_requirements = Column(JSONB, nullable=True)  # Specific compliance requirements
+    cultural_contexts = Column(JSONB, nullable=True)  # Cultural and social context factors
 
     # Domain-specific constraints
-    domain_constraints = Column(
-        JSONB, nullable=True
-    )  # Technical and operational constraints
+    domain_constraints = Column(JSONB, nullable=True)  # Technical and operational constraints
     risk_factors = Column(JSONB, nullable=True)  # Domain-specific risk factors
     stakeholder_groups = Column(JSONB, nullable=True)  # Relevant stakeholder groups
 
     # Metadata
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -1577,9 +1457,7 @@ class CrossDomainTestScenario(Base):
 
     # Principle associations
     principle_ids = Column(JSONB, nullable=False)  # List of principle IDs to test
-    principle_adaptations = Column(
-        JSONB, nullable=True
-    )  # Domain-specific principle adaptations
+    principle_adaptations = Column(JSONB, nullable=True)  # Domain-specific principle adaptations
 
     # Status and results
     status = Column(
@@ -1590,9 +1468,7 @@ class CrossDomainTestScenario(Base):
     consistency_score = Column(Float, nullable=True)  # Cross-domain consistency score
 
     # Metadata
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -1614,17 +1490,11 @@ class CrossDomainTestResult(Base):
         nullable=False,
         index=True,
     )
-    test_run_id = Column(
-        String(100), nullable=False, index=True
-    )  # Unique identifier for test run
+    test_run_id = Column(String(100), nullable=False, index=True)  # Unique identifier for test run
 
     # Test execution details
-    domain_id = Column(
-        Integer, ForeignKey("domain_contexts.id"), nullable=False, index=True
-    )
-    principle_id = Column(
-        Integer, ForeignKey("principles.id"), nullable=False, index=True
-    )
+    domain_id = Column(Integer, ForeignKey("domain_contexts.id"), nullable=False, index=True)
+    principle_id = Column(Integer, ForeignKey("principles.id"), nullable=False, index=True)
     test_type = Column(String(50), nullable=False, index=True)
 
     # Results
@@ -1643,9 +1513,7 @@ class CrossDomainTestResult(Base):
     memory_usage_mb = Column(Float, nullable=True)
 
     # Metadata
-    executed_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    executed_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     executed_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
 
@@ -1676,20 +1544,14 @@ class ResearchDataExport(Base):
     statistical_summary = Column(JSONB, nullable=True)  # Statistical summary of data
 
     # Cryptographic integrity
-    data_hash = Column(
-        String(64), nullable=False, index=True
-    )  # SHA3-256 hash of export data
+    data_hash = Column(String(64), nullable=False, index=True)  # SHA3-256 hash of export data
     pgp_signature = Column(Text, nullable=True)  # PGP signature for integrity
     signed_by_key_id = Column(String(100), nullable=True)  # Key ID used for signing
 
     # Metadata
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     created_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    export_format = Column(
-        String(50), default="json", nullable=False
-    )  # "json", "csv", "parquet"
+    export_format = Column(String(50), default="json", nullable=False)  # "json", "csv", "parquet"
     file_size_bytes = Column(Integer, nullable=True)
 
 
@@ -1726,9 +1588,7 @@ Index(
 )
 
 # Task 13: Cross-Domain Testing Framework Indexes
-Index(
-    "ix_domain_context_name_active", DomainContext.domain_name, DomainContext.is_active
-)
+Index("ix_domain_context_name_active", DomainContext.domain_name, DomainContext.is_active)
 Index(
     "ix_cross_domain_scenario_domain_status",
     CrossDomainTestScenario.primary_domain_id,

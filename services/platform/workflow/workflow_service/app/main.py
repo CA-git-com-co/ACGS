@@ -217,9 +217,7 @@ async def health_check():
         "metrics": {
             "active_workflows": len(workflow_engine.running_workflows),
             "total_workflows": len(workflow_engine.workflows),
-            "active_alerts": len(
-                [a for a in workflow_monitor.alerts.values() if not a.resolved]
-            ),
+            "active_alerts": len([a for a in workflow_monitor.alerts.values() if not a.resolved]),
             "monitoring_tasks": len(workflow_monitor.monitoring_tasks),
         },
     }
@@ -238,9 +236,7 @@ async def metrics():
     metrics_data = []
 
     # Workflow metrics
-    metrics_data.append(
-        f"acgs_active_workflows {len(workflow_engine.running_workflows)}"
-    )
+    metrics_data.append(f"acgs_active_workflows {len(workflow_engine.running_workflows)}")
     metrics_data.append(f"acgs_total_workflows {len(workflow_engine.workflows)}")
 
     # Alert metrics
@@ -266,9 +262,7 @@ async def initialize_monitoring():
     logger.info("Initializing monitoring system")
 
     # Register service health monitoring
-    asyncio.create_task(
-        workflow_monitor.monitor_service_health("workflow_service", "/health")
-    )
+    asyncio.create_task(workflow_monitor.monitor_service_health("workflow_service", "/health"))
 
     # Set performance baselines
     automated_validator.set_performance_baseline(
@@ -365,9 +359,7 @@ async def check_stale_workflows():
             if workflow.started_at:
                 runtime = current_time - workflow.started_at
                 if runtime.total_seconds() > 3600:  # 1 hour
-                    logger.warning(
-                        f"Workflow {workflow_id} has been running for {runtime}"
-                    )
+                    logger.warning(f"Workflow {workflow_id} has been running for {runtime}")
 
                     # Create alert for long-running workflow
                     workflow_monitor._create_alert(
@@ -420,15 +412,14 @@ async def cleanup_resources():
 
     # Wait for tasks to complete
     if workflow_monitor.monitoring_tasks:
-        await asyncio.gather(
-            *workflow_monitor.monitoring_tasks.values(), return_exceptions=True
-        )
+        await asyncio.gather(*workflow_monitor.monitoring_tasks.values(), return_exceptions=True)
 
     logger.info("Resource cleanup completed")
 
 
 if __name__ == "__main__":
     import os
+
     import uvicorn
 
     uvicorn.run(

@@ -14,9 +14,19 @@ Classes:
 
 import logging
 from dataclasses import dataclass
-from datetime import timezone, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Any
+
+from sqlalchemy import and_, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from services.shared.database import get_async_db
+from services.shared.models import (
+    ConstitutionalViolation,
+    User,
+    ViolationEscalation,
+)
 
 # Import Constitutional Council integration
 from .core.constitutional_council_scalability import (
@@ -27,15 +37,6 @@ from .core.constitutional_council_scalability import (
 from .services.stakeholder_engagement import (
     NotificationChannel,
     StakeholderNotificationService,
-)
-from sqlalchemy import and_, func, select
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from services.shared.database import get_async_db
-from services.shared.models import (
-    ConstitutionalViolation,
-    User,
-    ViolationEscalation,
 )
 
 logger = logging.getLogger(__name__)
@@ -281,7 +282,8 @@ class ViolationEscalationService:
                 select(ViolationEscalation).where(
                     and_(
                         ViolationEscalation.status == "pending",
-                        ViolationEscalation.escalated_at < datetime.now(timezone.utc) - timedelta(hours=1),
+                        ViolationEscalation.escalated_at
+                        < datetime.now(timezone.utc) - timedelta(hours=1),
                     )
                 )
             )
@@ -338,7 +340,9 @@ class ViolationEscalationService:
             elif rule.trigger_type == EscalationTrigger.TIME_THRESHOLD:
                 # Check if violation has been unresolved for too long
                 max_unresolved_minutes = conditions.get("max_unresolved_minutes", 30)
-                threshold_time = datetime.now(timezone.utc) - timedelta(minutes=max_unresolved_minutes)
+                threshold_time = datetime.now(timezone.utc) - timedelta(
+                    minutes=max_unresolved_minutes
+                )
                 return violation.detected_at <= threshold_time and violation.status != "resolved"
 
             return False

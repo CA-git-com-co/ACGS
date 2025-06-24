@@ -1,0 +1,527 @@
+# ACGS-1 Production-Ready Container-Based Development Environment
+# Maintains compatibility with host-based architecture while enabling cloud-native deployment
+version: '3.8'
+
+# Custom network for service communication
+networks:
+  acgs_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# Persistent volumes for data storage
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  solana_keypairs:
+    driver: local
+  acgs_logs:
+    driver: local
+  acgs_data:
+    driver: local
+
+services:
+  # =============================================================================
+  # Infrastructure Services
+  # =============================================================================
+
+  # PostgreSQL Database with ACGS-specific configuration
+  postgres:
+    image: postgres:15-alpine
+    container_name: acgs_postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-acgs_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-acgs_password}
+      POSTGRES_DB: ${POSTGRES_DB:-acgs_db}
+      POSTGRES_INITDB_ARGS: '--encoding=UTF8 --locale=C'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    ports:
+      - '5432:5432'
+    networks:
+      - acgs_network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-acgs_user} -d ${POSTGRES_DB:-acgs_db}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+
+  # Redis Cache with optimized configuration
+  redis:
+    image: redis:7-alpine
+    container_name: acgs_redis
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - '6379:6379'
+    networks:
+      - acgs_network
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.25'
+
+  # HAProxy Load Balancer for service distribution
+  haproxy:
+    image: haproxy:2.8-alpine
+    container_name: acgs_haproxy
+    volumes:
+      - ./scripts/docker/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - ./ssl/certs/acgs.pem:/usr/local/etc/haproxy/ssl/acgs.pem:ro
+    ports:
+      - '80:80'
+      - '443:443' # HTTPS
+      - '8080:8080' # Stats interface
+    networks:
+      - acgs_network
+    depends_on:
+      - auth_service
+      - ac_service
+      - integrity_service
+      - fv_service
+      - gs_service
+      - pgc_service
+      - ec_service
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+
+  # =============================================================================
+  # ACGS Core Services (in dependency order)
+  # =============================================================================
+
+  # Auth Service (Port 8000) - Authentication and Authorization
+  auth_service:
+    build:
+      context: .
+      dockerfile: Dockerfile.acgs
+      target: production-runtime
+    container_name: acgs_auth_service
+    environment:
+      - SERVICE_NAME=auth_service
+      - SERVICE_PORT=8000
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=${AUTH_SECRET_KEY:-acgs-development-secret-key-2024}
+      - JWT_SECRET_KEY=${AUTH_SECRET_KEY:-acgs-development-secret-key-2024}
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    working_dir: /app/services/platform/authentication/auth_service
+    command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8000']
+    ports:
+      - '8000:8000'
+    volumes:
+      - acgs_logs:/app/logs
+      - acgs_data:/app/data
+    networks:
+      - acgs_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', '/app/health_check.sh']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+
+  # AC Service (Port 8001) - Constitutional AI
+  ac_service:
+    build:
+      context: .
+      dockerfile: Dockerfile.acgs
+      target: production-runtime
+    container_name: acgs_ac_service
+    environment:
+      - SERVICE_NAME=ac_service
+      - SERVICE_PORT=8001
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
+      - REDIS_URL=redis://redis:6379/1
+      - AUTH_SERVICE_URL=http://auth_service:8000
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - CONSTITUTIONAL_FIDELITY_THRESHOLD=${CONSTITUTIONAL_FIDELITY_THRESHOLD:-0.85}
+    working_dir: /app/services/core/constitutional-ai/ac_service
+    command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8001']
+    ports:
+      - '8001:8001'
+    volumes:
+      - acgs_logs:/app/logs
+      - acgs_data:/app/data
+    networks:
+      - acgs_network
+    depends_on:
+      auth_service:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', '/app/health_check.sh']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.75'
+
+  # Integrity Service (Port 8002) - Data Integrity and Cryptographic Verification
+  integrity_service:
+    build:
+      context: .
+      dockerfile: Dockerfile.acgs
+      target: production-runtime
+    container_name: acgs_integrity_service
+    environment:
+      - SERVICE_NAME=integrity_service
+      - SERVICE_PORT=8002
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
+      - REDIS_URL=redis://redis:6379/2
+      - AUTH_SERVICE_URL=http://auth_service:8000
+      - AC_SERVICE_URL=http://ac_service:8001
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    working_dir: /app/services/platform/integrity/integrity_service
+    command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8002']
+    ports:
+      - '8002:8002'
+    volumes:
+      - acgs_logs:/app/logs
+      - acgs_data:/app/data
+    networks:
+      - acgs_network
+    depends_on:
+      ac_service:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', '/app/health_check.sh']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+
+  # FV Service (Port 8003) - Formal Verification
+  fv_service:
+    build:
+      context: .
+      dockerfile: Dockerfile.acgs
+      target: production-runtime
+    container_name: acgs_fv_service
+    environment:
+      - SERVICE_NAME=fv_service
+      - SERVICE_PORT=8003
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
+      - REDIS_URL=redis://redis:6379/3
+      - AUTH_SERVICE_URL=http://auth_service:8000
+      - AC_SERVICE_URL=http://ac_service:8001
+      - INTEGRITY_SERVICE_URL=http://integrity_service:8002
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    working_dir: /app/services/core/formal-verification/fv_service
+    command: ['uvicorn', 'main:app', '--host', '0.0.0.0', '--port', '8003']
+    ports:
+      - '8003:8003'
+    volumes:
+      - acgs_logs:/app/logs
+      - acgs_data:/app/data
+    networks:
+      - acgs_network
+    depends_on:
+      integrity_service:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', '/app/health_check.sh']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.75'
+
+  # GS Service (Port 8004) - Governance Synthesis
+  gs_service:
+    build:
+      context: .
+      dockerfile: Dockerfile.acgs
+      target: production-runtime
+    container_name: acgs_gs_service
+    environment:
+      - SERVICE_NAME=gs_service
+      - SERVICE_PORT=8004
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
+      - REDIS_URL=redis://redis:6379/4
+      - AUTH_SERVICE_URL=http://auth_service:8000
+      - AC_SERVICE_URL=http://ac_service:8001
+      - INTEGRITY_SERVICE_URL=http://integrity_service:8002
+      - FV_SERVICE_URL=http://fv_service:8003
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - POLICY_QUALITY_THRESHOLD=${POLICY_QUALITY_THRESHOLD:-0.80}
+      - MAX_SYNTHESIS_LOOPS=${MAX_SYNTHESIS_LOOPS:-3}
+    working_dir: /app/services/core/governance-synthesis/gs_service
+    command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8004']
+    ports:
+      - '8004:8004'
+    volumes:
+      - acgs_logs:/app/logs
+      - acgs_data:/app/data
+    networks:
+      - acgs_network
+    depends_on:
+      fv_service:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', '/app/health_check.sh']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1.5G
+          cpus: '1.0'
+
+  # PGC Service (Port 8005) - Policy Governance Compliance
+  pgc_service:
+    build:
+      context: .
+      dockerfile: Dockerfile.acgs
+      target: production-runtime
+    container_name: acgs_pgc_service
+    environment:
+      - SERVICE_NAME=pgc_service
+      - SERVICE_PORT=8005
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
+      - REDIS_URL=redis://redis:6379/5
+      - AUTH_SERVICE_URL=http://auth_service:8000
+      - AC_SERVICE_URL=http://ac_service:8001
+      - INTEGRITY_SERVICE_URL=http://integrity_service:8002
+      - FV_SERVICE_URL=http://fv_service:8003
+      - GS_SERVICE_URL=http://gs_service:8004
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - PGC_LATENCY_TARGET=${PGC_LATENCY_TARGET:-25}
+      - CONSTITUTIONAL_HASH=${CONSTITUTIONAL_HASH:-cdd01ef066bc6cf2}
+    working_dir: /app/services/core/policy-governance/pgc_service
+    command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8005']
+    ports:
+      - '8005:8005'
+    volumes:
+      - acgs_logs:/app/logs
+      - acgs_data:/app/data
+    networks:
+      - acgs_network
+    depends_on:
+      gs_service:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', '/app/health_check.sh']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.75'
+
+  # EC Service (Port 8006) - Evolutionary Computation
+  ec_service:
+    build:
+      context: .
+      dockerfile: Dockerfile.acgs
+      target: production-runtime
+    container_name: acgs_ec_service
+    environment:
+      - SERVICE_NAME=ec_service
+      - SERVICE_PORT=8006
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
+      - REDIS_URL=redis://redis:6379/6
+      - AUTH_SERVICE_URL=http://auth_service:8000
+      - AC_SERVICE_URL=http://ac_service:8001
+      - GS_SERVICE_URL=http://gs_service:8004
+      - PGC_SERVICE_URL=http://pgc_service:8005
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - WINA_ENABLED=${WINA_ENABLED:-true}
+      - EVOLUTIONARY_COMPUTATION_ENABLED=${EVOLUTIONARY_COMPUTATION_ENABLED:-true}
+    working_dir: /app/services/core/evolutionary-computation/ec_service
+    command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8006']
+    ports:
+      - '8006:8006'
+    volumes:
+      - acgs_logs:/app/logs
+      - acgs_data:/app/data
+    networks:
+      - acgs_network
+    depends_on:
+      pgc_service:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', '/app/health_check.sh']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.75'
+
+  # =============================================================================
+  # Development Tools and Solana Environment
+  # =============================================================================
+
+  # Solana Development Container with Anchor support
+  solana_dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.acgs
+      target: development
+    container_name: acgs_solana_dev
+    environment:
+      - SOLANA_NETWORK=${SOLANA_NETWORK:-devnet}
+      - ANCHOR_PROVIDER_URL=${ANCHOR_PROVIDER_URL:-https://api.devnet.solana.com}
+      - CONSTITUTIONAL_HASH=${CONSTITUTIONAL_HASH:-cdd01ef066bc6cf2}
+    working_dir: /app/blockchain
+    command: ['tail', '-f', '/dev/null'] # Keep container running
+    volumes:
+      - ./blockchain:/app/blockchain
+      - solana_keypairs:/root/.config/solana
+      - acgs_logs:/app/logs
+    networks:
+      - acgs_network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+
+  # Log Aggregation Service
+  log_aggregator:
+    image: fluent/fluent-bit:2.2
+    container_name: acgs_log_aggregator
+    volumes:
+      - acgs_logs:/fluent-bit/logs:ro
+      - ./scripts/docker/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+    networks:
+      - acgs_network
+    depends_on:
+      - auth_service
+      - ac_service
+      - integrity_service
+      - fv_service
+      - gs_service
+      - pgc_service
+      - ec_service
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+
+  # Monitoring and Metrics
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: acgs_prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./scripts/docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - '9090:9090'
+    networks:
+      - acgs_network
+    depends_on:
+      - auth_service
+      - ac_service
+      - integrity_service
+      - fv_service
+      - gs_service
+      - pgc_service
+      - ec_service
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+
+  # Grafana Dashboard
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: acgs_grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin123}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./scripts/docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./scripts/docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - '3001:3000'
+    networks:
+      - acgs_network
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'

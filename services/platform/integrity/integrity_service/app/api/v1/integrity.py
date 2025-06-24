@@ -14,11 +14,12 @@ Key Features:
 
 import logging
 import sys
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
-from .database import get_async_db
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from .database import get_async_db
 
 # Import shared validation components
 sys.path.append("/home/dislove/ACGS-1/services/shared")
@@ -121,9 +122,7 @@ async def sign_policy_rule(
             if signature_request.algorithm:
                 sign_params["algorithm"] = signature_request.algorithm
 
-        result = await integrity_verifier.sign_policy_rule(
-            db=db, rule_id=rule_id, **sign_params
-        )
+        result = await integrity_verifier.sign_policy_rule(db=db, rule_id=rule_id, **sign_params)
 
         response_data = {
             "rule_id": rule_id,
@@ -178,9 +177,7 @@ async def sign_audit_log(
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to sign audit log: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to sign audit log: {str(e)}")
 
 
 @router.get("/policy-rules/{rule_id}/verify", response_model=IntegrityReport)
@@ -198,9 +195,7 @@ async def verify_policy_rule_integrity(
         return IntegrityReport(
             entity_type="policy_rule",
             entity_id=rule_id,
-            content_hash=verification_results["verification_details"].get(
-                "computed_hash", ""
-            ),
+            content_hash=verification_results["verification_details"].get("computed_hash", ""),
             signature_verified=verification_results["signature_verified"],
             timestamp_verified=verification_results["timestamp_verified"],
             merkle_verified=True,  # Not implemented yet for policy rules
@@ -213,9 +208,7 @@ async def verify_policy_rule_integrity(
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to verify policy rule: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to verify policy rule: {str(e)}")
 
 
 @router.get("/audit-logs/{log_id}/verify", response_model=IntegrityReport)
@@ -233,9 +226,7 @@ async def verify_audit_log_integrity(
         return IntegrityReport(
             entity_type="audit_log",
             entity_id=log_id,
-            content_hash=verification_results["verification_details"].get(
-                "computed_hash", ""
-            ),
+            content_hash=verification_results["verification_details"].get("computed_hash", ""),
             signature_verified=verification_results["signature_verified"],
             timestamp_verified=verification_results["timestamp_verified"],
             merkle_verified=True,  # Not implemented yet for individual logs
@@ -248,9 +239,7 @@ async def verify_audit_log_integrity(
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to verify audit log: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to verify audit log: {str(e)}")
 
 
 @router.post("/audit-logs/batch-verify")
@@ -265,18 +254,14 @@ async def batch_verify_audit_logs(
 
         for log_id in log_ids:
             try:
-                verification_result = (
-                    await integrity_verifier.verify_audit_log_integrity(
-                        db=db, log_id=log_id
-                    )
+                verification_result = await integrity_verifier.verify_audit_log_integrity(
+                    db=db, log_id=log_id
                 )
                 results.append(
                     {
                         "log_id": log_id,
                         "status": (
-                            "verified"
-                            if verification_result["overall_integrity"]
-                            else "failed"
+                            "verified" if verification_result["overall_integrity"] else "failed"
                         ),
                         "details": verification_result,
                     }
@@ -296,18 +281,14 @@ async def batch_verify_audit_logs(
                 "verified_logs": verified_logs,
                 "failed_logs": failed_logs,
                 "error_logs": error_logs,
-                "verification_rate": (
-                    verified_logs / total_logs if total_logs > 0 else 0
-                ),
+                "verification_rate": (verified_logs / total_logs if total_logs > 0 else 0),
             },
             "results": results,
             "verified_at": datetime.now(timezone.utc),
         }
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to batch verify audit logs: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to batch verify audit logs: {str(e)}")
 
 
 @router.get("/chain-integrity/audit-logs")
@@ -320,8 +301,9 @@ async def verify_audit_log_chain_integrity(
 ):
     """Verify chain integrity of audit logs within a range"""
     try:
-        from .models import AuditLog
         from sqlalchemy import select
+
+        from .models import AuditLog
 
         # Build query for audit log range
         stmt = select(AuditLog)
@@ -381,9 +363,7 @@ async def verify_audit_log_chain_integrity(
         }
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to verify chain integrity: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to verify chain integrity: {str(e)}")
 
 
 @router.get("/system-integrity-report")
@@ -405,8 +385,9 @@ async def generate_system_integrity_report(
 
         # Policy rules integrity check
         if include_policy_rules:
-            from .models import PolicyRule
             from sqlalchemy import select
+
+            from .models import PolicyRule
 
             # Get sample of policy rules
             stmt = select(PolicyRule).order_by(PolicyRule.id.desc()).limit(sample_size)
@@ -416,17 +397,13 @@ async def generate_system_integrity_report(
             policy_integrity_results = []
             for rule in policy_rules:
                 try:
-                    verification_result = (
-                        await integrity_verifier.verify_policy_rule_integrity(
-                            db=db, rule_id=rule.id
-                        )
+                    verification_result = await integrity_verifier.verify_policy_rule_integrity(
+                        db=db, rule_id=rule.id
                     )
                     policy_integrity_results.append(
                         {
                             "rule_id": rule.id,
-                            "integrity_status": verification_result[
-                                "overall_integrity"
-                            ],
+                            "integrity_status": verification_result["overall_integrity"],
                         }
                     )
                 except Exception as e:
@@ -444,9 +421,7 @@ async def generate_system_integrity_report(
             report["policy_rules"] = {
                 "total_checked": len(policy_integrity_results),
                 "integrity_rate": policy_integrity_rate,
-                "failed_rules": [
-                    r for r in policy_integrity_results if not r["integrity_status"]
-                ],
+                "failed_rules": [r for r in policy_integrity_results if not r["integrity_status"]],
             }
 
         # Audit logs integrity check
@@ -461,17 +436,13 @@ async def generate_system_integrity_report(
             audit_integrity_results = []
             for log in audit_logs:
                 try:
-                    verification_result = (
-                        await integrity_verifier.verify_audit_log_integrity(
-                            db=db, log_id=log.id
-                        )
+                    verification_result = await integrity_verifier.verify_audit_log_integrity(
+                        db=db, log_id=log.id
                     )
                     audit_integrity_results.append(
                         {
                             "log_id": log.id,
-                            "integrity_status": verification_result[
-                                "overall_integrity"
-                            ],
+                            "integrity_status": verification_result["overall_integrity"],
                         }
                     )
                 except Exception as e:
@@ -489,9 +460,7 @@ async def generate_system_integrity_report(
             report["audit_logs"] = {
                 "total_checked": len(audit_integrity_results),
                 "integrity_rate": audit_integrity_rate,
-                "failed_logs": [
-                    r for r in audit_integrity_results if not r["integrity_status"]
-                ],
+                "failed_logs": [r for r in audit_integrity_results if not r["integrity_status"]],
             }
 
         # Calculate overall system integrity

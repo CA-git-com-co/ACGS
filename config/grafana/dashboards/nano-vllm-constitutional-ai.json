@@ -1,0 +1,226 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "ACGS Nano-vLLM Constitutional AI Dashboard",
+    "tags": ["acgs", "nano-vllm", "constitutional-ai", "staging"],
+    "style": "dark",
+    "timezone": "browser",
+    "refresh": "10s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Constitutional Compliance Score",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "constitutional_compliance_score",
+            "legendFormat": "Compliance Score"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 1,
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 0.75},
+                {"color": "green", "value": 0.85}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Request Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(nano_vllm_requests_total[5m])",
+            "legendFormat": "Requests/sec"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Response Time (95th percentile)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(nano_vllm_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "95th percentile"
+          }
+        ],
+        "yAxes": [
+          {
+            "unit": "s",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0}
+      },
+      {
+        "id": 4,
+        "title": "Error Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(nano_vllm_requests_total{status=~\"5..\"}[5m]) / rate(nano_vllm_requests_total[5m])",
+            "legendFormat": "Error Rate"
+          }
+        ],
+        "yAxes": [
+          {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        ],
+        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0}
+      },
+      {
+        "id": 5,
+        "title": "Constitutional Reasoning Performance",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(constitutional_reasoning_requests_total[5m])",
+            "legendFormat": "Constitutional Requests/sec"
+          },
+          {
+            "expr": "rate(constitutional_reasoning_failures_total[5m])",
+            "legendFormat": "Failures/sec"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 6,
+        "title": "Memory Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "nano_vllm_memory_usage_bytes / 1024 / 1024 / 1024",
+            "legendFormat": "Memory Usage (GB)"
+          },
+          {
+            "expr": "nano_vllm_memory_limit_bytes / 1024 / 1024 / 1024",
+            "legendFormat": "Memory Limit (GB)"
+          }
+        ],
+        "yAxes": [
+          {
+            "unit": "bytes",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 7,
+        "title": "Concurrent Requests",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "nano_vllm_concurrent_requests",
+            "legendFormat": "Concurrent Requests"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 16}
+      },
+      {
+        "id": 8,
+        "title": "Model Performance",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "nano_vllm_model_inference_duration_seconds",
+            "legendFormat": "{{model}} Inference Time"
+          }
+        ],
+        "yAxes": [
+          {
+            "unit": "s",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 16}
+      },
+      {
+        "id": 9,
+        "title": "GPU Utilization",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "nano_vllm_gpu_utilization_percent",
+            "legendFormat": "GPU {{gpu_id}} Utilization"
+          }
+        ],
+        "yAxes": [
+          {
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 16}
+      },
+      {
+        "id": 10,
+        "title": "Constitutional Principle Violations",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "constitutional_principle_violations_total",
+            "legendFormat": "{{principle}} Violations",
+            "format": "table"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+      },
+      {
+        "id": 11,
+        "title": "Reasoning Chain Quality",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "nano_vllm_reasoning_quality_score",
+            "legendFormat": "Quality Score"
+          },
+          {
+            "expr": "nano_vllm_reasoning_chain_length",
+            "legendFormat": "Chain Length"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "instance",
+          "type": "query",
+          "query": "label_values(nano_vllm_requests_total, instance)",
+          "refresh": 1
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "name": "Deployments",
+          "datasource": "Prometheus",
+          "expr": "changes(nano_vllm_build_info[1h])",
+          "iconColor": "green"
+        }
+      ]
+    }
+  }
+}

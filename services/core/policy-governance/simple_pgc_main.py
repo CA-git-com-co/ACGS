@@ -6,6 +6,7 @@ Minimal Policy Governance and Compliance service for testing purposes.
 
 import logging
 import time
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -54,7 +55,7 @@ async def root():
             "Policy Enforcement",
             "Governance Workflows",
         ],
-        "description": "Minimal PGC service for Phase 3 validation testing"
+        "description": "Minimal PGC service for Phase 3 validation testing",
     }
 
 
@@ -62,7 +63,7 @@ async def root():
 async def health_check():
     """Health check endpoint."""
     uptime_seconds = time.time() - service_start_time
-    
+
     return {
         "status": "healthy",
         "service": "simple_pgc_service",
@@ -128,7 +129,7 @@ async def get_policies():
                 "version": "1.0.0",
             },
             {
-                "id": "POL-002", 
+                "id": "POL-002",
                 "name": "Democratic Participation Policy",
                 "description": "Requires democratic participation in governance decisions",
                 "status": "active",
@@ -151,17 +152,17 @@ async def get_policies():
 async def validate_policy(policy_data: dict):
     """Validate a policy against governance rules."""
     start_time = time.time()
-    
+
     # Simple validation logic
     is_valid = (
-        "name" in policy_data and
-        "description" in policy_data and
-        len(policy_data.get("name", "")) > 0 and
-        len(policy_data.get("description", "")) > 10
+        "name" in policy_data
+        and "description" in policy_data
+        and len(policy_data.get("name", "")) > 0
+        and len(policy_data.get("description", "")) > 10
     )
-    
+
     processing_time = (time.time() - start_time) * 1000
-    
+
     return {
         "validation_result": "valid" if is_valid else "invalid",
         "policy_id": policy_data.get("id", "unknown"),
@@ -209,7 +210,7 @@ async def get_governance_workflows():
             },
             {
                 "id": "WF-002",
-                "name": "Constitutional Amendment Workflow", 
+                "name": "Constitutional Amendment Workflow",
                 "description": "Workflow for constitutional amendments",
                 "status": "active",
                 "steps": ["proposal", "review", "public_consultation", "voting", "ratification"],
@@ -229,6 +230,6 @@ async def get_governance_workflows():
 
 if __name__ == "__main__":
     import uvicorn
-    
+
     logger.info("🚀 Starting Simple PGC Service on port 8005")
     uvicorn.run(app, host="0.0.0.0", port=8005)

@@ -18,6 +18,7 @@ import asyncio
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
+
 from services.core.governance_synthesis.app.core.wina_rego_synthesis import (
     WINARegoSynthesisMetrics,
     WINARegoSynthesisResult,

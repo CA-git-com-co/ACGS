@@ -6,6 +6,7 @@ Starts the GS service with minimal security for health check compatibility
 
 import os
 import sys
+
 import uvicorn
 
 # Add the service directory to Python path

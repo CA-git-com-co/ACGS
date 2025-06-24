@@ -7,7 +7,7 @@ and A/B test result tracking for prompt template optimization.
 
 import logging
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
@@ -243,7 +243,9 @@ class ABTestingFramework:
             return
 
         # Check maximum duration
-        duration_hours = (datetime.now(timezone.utc) - test_result.start_time).total_seconds() / 3600
+        duration_hours = (
+            datetime.now(timezone.utc) - test_result.start_time
+        ).total_seconds() / 3600
         max_duration_reached = duration_hours >= self.config.maximum_duration_hours
 
         # Perform statistical analysis

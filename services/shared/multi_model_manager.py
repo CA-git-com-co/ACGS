@@ -130,12 +130,8 @@ class MultiModelManager:
         # Validate weights sum to 1.0
         total_weight = sum(self.model_weights.values())
         if abs(total_weight - 1.0) > 0.01:
-            logger.warning(
-                f"Model weights sum to {total_weight:.3f}, normalizing to 1.0"
-            )
-            self.model_weights = {
-                k: v / total_weight for k, v in self.model_weights.items()
-            }
+            logger.warning(f"Model weights sum to {total_weight:.3f}, normalizing to 1.0")
+            self.model_weights = {k: v / total_weight for k, v in self.model_weights.items()}
 
         # Failover configuration for model reliability
         self.failover_config = self.config.get(
@@ -256,9 +252,7 @@ class MultiModelManager:
             "validation_timestamp": time.time(),
         }
 
-    def ensure_constitutional_compliance(
-        self, analysis_result: dict[str, Any]
-    ) -> dict[str, Any]:
+    def ensure_constitutional_compliance(self, analysis_result: dict[str, Any]) -> dict[str, Any]:
         """
         Ensure analysis result includes constitutional compliance metadata.
 
@@ -311,9 +305,7 @@ class MultiModelManager:
 
         # Normalize weights for participating models only
         participating_models = set(model_responses.keys())
-        participating_weights = {
-            k: v for k, v in weights.items() if k in participating_models
-        }
+        participating_weights = {k: v for k, v in weights.items() if k in participating_models}
 
         if not participating_weights:
             # Equal weights if no configured weights
@@ -323,8 +315,7 @@ class MultiModelManager:
 
         total_weight = sum(participating_weights.values())
         normalized_weights = {
-            model: weight / total_weight
-            for model, weight in participating_weights.items()
+            model: weight / total_weight for model, weight in participating_weights.items()
         }
 
         # Calculate weighted votes for decisions
@@ -397,9 +388,7 @@ class MultiModelManager:
                 "participating_models": result.participating_models,
                 "tie_broken": result.tie_broken,
                 "tie_breaking_strategy": (
-                    result.tie_breaking_strategy.value
-                    if result.tie_breaking_strategy
-                    else None
+                    result.tie_breaking_strategy.value if result.tie_breaking_strategy else None
                 ),
                 "processing_time_ms": result.processing_time_ms,
                 "model_votes": [
@@ -473,9 +462,7 @@ class MultiModelManager:
                 model_config = self.get_enhanced_model_config(model_name)
                 if model_config:
                     # Create async request function for this model
-                    async def create_model_request(
-                        model_id=model_name, model_role=role
-                    ):
+                    async def create_model_request(model_id=model_name, model_role=role):
                         # requires: Valid input parameters
                         # ensures: Correct function execution
                         # sha256: func_hash
@@ -486,10 +473,8 @@ class MultiModelManager:
                     model_requests[model_name] = create_model_request
 
             # Apply performance optimization
-            optimization_result = (
-                await self.performance_optimizer.optimize_multi_model_request(
-                    model_requests, strategies
-                )
+            optimization_result = await self.performance_optimizer.optimize_multi_model_request(
+                model_requests, strategies
             )
 
             # Extract model responses
@@ -651,9 +636,7 @@ class MultiModelManager:
             self.initialized = True
 
             init_time = (time.time() - start_time) * 1000
-            logger.info(
-                f"MultiModelManager initialized successfully in {init_time:.2f}ms"
-            )
+            logger.info(f"MultiModelManager initialized successfully in {init_time:.2f}ms")
 
             # Record initialization metrics
             self.metrics.record_constitutional_principle_operation(
@@ -700,9 +683,7 @@ class MultiModelManager:
             strategy = consensus_strategy or self.default_consensus_strategy
 
             # Check cache first
-            cache_key = self._generate_cache_key(
-                policy_content, analysis_type, strategy
-            )
+            cache_key = self._generate_cache_key(policy_content, analysis_type, strategy)
             cached_result = await self._get_cached_result(cache_key)
             if cached_result:
                 return cached_result
@@ -713,9 +694,7 @@ class MultiModelManager:
             )
 
             # Step 2: Get LLM-based analyses
-            llm_results = await self._get_llm_analyses(
-                policy_content, analysis_type, context
-            )
+            llm_results = await self._get_llm_analyses(policy_content, analysis_type, context)
 
             # Step 3: Combine results using consensus strategy
             consensus_result = await self._apply_consensus_strategy(
@@ -757,9 +736,7 @@ class MultiModelManager:
                 model_results=[],
                 agreement_score=0.0,
                 processing_time_ms=processing_time,
-                recommendations=[
-                    "Multi-model analysis failed - review system configuration"
-                ],
+                recommendations=["Multi-model analysis failed - review system configuration"],
                 metadata={"error": str(e)},
             )
 
@@ -773,10 +750,8 @@ class MultiModelManager:
         try:
             start_time = time.time()
 
-            result = (
-                await self.constitutional_analyzer.analyze_constitutional_compliance(
-                    policy_content, analysis_type, context
-                )
+            result = await self.constitutional_analyzer.analyze_constitutional_compliance(
+                policy_content, analysis_type, context
             )
 
             processing_time = (time.time() - start_time) * 1000
@@ -903,9 +878,7 @@ class MultiModelManager:
             )
 
         except Exception as e:
-            logger.error(
-                f"Error in single LLM analysis for {model_config['model_id']}: {e}"
-            )
+            logger.error(f"Error in single LLM analysis for {model_config['model_id']}: {e}")
             return ModelResult(
                 model_id=model_config["model_id"],
                 model_type="llm",
@@ -948,28 +921,18 @@ REASONING: <brief explanation>
 """
         return prompt
 
-    def _parse_llm_compliance_response(
-        self, response_content: str
-    ) -> tuple[float, float]:
+    def _parse_llm_compliance_response(self, response_content: str) -> tuple[float, float]:
         """Parse LLM response to extract compliance and confidence scores."""
         try:
             import re
 
             # Extract compliance score
-            compliance_match = re.search(
-                r"COMPLIANCE_SCORE:\s*([0-9.]+)", response_content
-            )
-            compliance_score = (
-                float(compliance_match.group(1)) if compliance_match else 0.5
-            )
+            compliance_match = re.search(r"COMPLIANCE_SCORE:\s*([0-9.]+)", response_content)
+            compliance_score = float(compliance_match.group(1)) if compliance_match else 0.5
 
             # Extract confidence score
-            confidence_match = re.search(
-                r"CONFIDENCE_SCORE:\s*([0-9.]+)", response_content
-            )
-            confidence_score = (
-                float(confidence_match.group(1)) if confidence_match else 0.5
-            )
+            confidence_match = re.search(r"CONFIDENCE_SCORE:\s*([0-9.]+)", response_content)
+            confidence_score = float(confidence_match.group(1)) if confidence_match else 0.5
 
             # Ensure scores are in valid range
             compliance_score = max(0.0, min(1.0, compliance_score))
@@ -993,30 +956,22 @@ REASONING: <brief explanation>
             all_results = [embedding_result] + llm_results
 
             if strategy == ConsensusStrategy.WEIGHTED_AVERAGE:
-                final_score, final_confidence = self._weighted_average_consensus(
-                    all_results
-                )
+                final_score, final_confidence = self._weighted_average_consensus(all_results)
             elif strategy == ConsensusStrategy.CONFIDENCE_BASED:
-                final_score, final_confidence = self._confidence_based_consensus(
-                    all_results
-                )
+                final_score, final_confidence = self._confidence_based_consensus(all_results)
             elif strategy == ConsensusStrategy.EMBEDDING_PRIORITY:
                 final_score, final_confidence = self._embedding_priority_consensus(
                     embedding_result, llm_results
                 )
             else:
                 # Default to weighted average
-                final_score, final_confidence = self._weighted_average_consensus(
-                    all_results
-                )
+                final_score, final_confidence = self._weighted_average_consensus(all_results)
 
             # Calculate agreement score
             agreement_score = self._calculate_agreement_score(all_results)
 
             # Generate recommendations
-            recommendations = self._generate_consensus_recommendations(
-                all_results, agreement_score
-            )
+            recommendations = self._generate_consensus_recommendations(all_results, agreement_score)
 
             processing_time = (time.time() - start_time) * 1000
 
@@ -1031,9 +986,7 @@ REASONING: <brief explanation>
                 metadata={
                     "embedding_weight": self.model_weights.get("embedding", 0.4),
                     "total_models": len(all_results),
-                    "successful_models": len(
-                        [r for r in all_results if r.compliance_score > 0]
-                    ),
+                    "successful_models": len([r for r in all_results if r.compliance_score > 0]),
                 },
             )
 
@@ -1048,15 +1001,11 @@ REASONING: <brief explanation>
                 model_results=all_results,
                 agreement_score=0.0,
                 processing_time_ms=processing_time,
-                recommendations=[
-                    "Consensus strategy failed - review model coordination"
-                ],
+                recommendations=["Consensus strategy failed - review model coordination"],
                 metadata={"error": str(e)},
             )
 
-    def _weighted_average_consensus(
-        self, results: list[ModelResult]
-    ) -> tuple[float, float]:
+    def _weighted_average_consensus(self, results: list[ModelResult]) -> tuple[float, float]:
         """Calculate enhanced weighted average consensus with improved model recognition."""
         total_weight = 0.0
         weighted_compliance = 0.0
@@ -1100,9 +1049,7 @@ REASONING: <brief explanation>
             return self.model_weights.get("qwen3_235b", 0.25)
         elif "qwen3_32b" in model_id_lower or "qwen3-32b" in model_id_lower:
             return self.model_weights.get("qwen3_32b", 0.20)
-        elif (
-            "deepseek_chat_v3" in model_id_lower or "deepseek-chat-v3" in model_id_lower
-        ):
+        elif "deepseek_chat_v3" in model_id_lower or "deepseek-chat-v3" in model_id_lower:
             return self.model_weights.get("deepseek_chat_v3", 0.20)
         elif "deepseek_r1" in model_id_lower or "deepseek-r1" in model_id_lower:
             return self.model_weights.get("deepseek_r1", 0.10)
@@ -1110,17 +1057,13 @@ REASONING: <brief explanation>
             # Use metadata weight if available, otherwise default
             return result.metadata.get("weight", 0.05) if result.metadata else 0.05
 
-    def _confidence_based_consensus(
-        self, results: list[ModelResult]
-    ) -> tuple[float, float]:
+    def _confidence_based_consensus(self, results: list[ModelResult]) -> tuple[float, float]:
         """Calculate confidence-based consensus."""
         if not results:
             return 0.0, 0.0
 
         # Weight by confidence scores
-        total_confidence = sum(
-            r.confidence_score for r in results if r.compliance_score > 0
-        )
+        total_confidence = sum(r.confidence_score for r in results if r.compliance_score > 0)
 
         if total_confidence > 0:
             weighted_compliance = (
@@ -1132,9 +1075,7 @@ REASONING: <brief explanation>
                 / total_confidence
             )
 
-            avg_confidence = total_confidence / len(
-                [r for r in results if r.compliance_score > 0]
-            )
+            avg_confidence = total_confidence / len([r for r in results if r.compliance_score > 0])
         else:
             weighted_compliance = 0.0
             avg_confidence = 0.0
@@ -1152,24 +1093,22 @@ REASONING: <brief explanation>
         # Calculate LLM average
         valid_llm_results = [r for r in llm_results if r.compliance_score > 0]
         if valid_llm_results:
-            llm_avg_compliance = sum(
-                r.compliance_score for r in valid_llm_results
-            ) / len(valid_llm_results)
-            llm_avg_confidence = sum(
-                r.confidence_score for r in valid_llm_results
-            ) / len(valid_llm_results)
+            llm_avg_compliance = sum(r.compliance_score for r in valid_llm_results) / len(
+                valid_llm_results
+            )
+            llm_avg_confidence = sum(r.confidence_score for r in valid_llm_results) / len(
+                valid_llm_results
+            )
         else:
             llm_avg_compliance = 0.0
             llm_avg_confidence = 0.0
 
         # Combine with embedding priority
         final_compliance = (
-            embedding_result.compliance_score * embedding_weight
-            + llm_avg_compliance * llm_weight
+            embedding_result.compliance_score * embedding_weight + llm_avg_compliance * llm_weight
         )
         final_confidence = (
-            embedding_result.confidence_score * embedding_weight
-            + llm_avg_confidence * llm_weight
+            embedding_result.confidence_score * embedding_weight + llm_avg_confidence * llm_weight
         )
 
         return final_compliance, final_confidence
@@ -1211,14 +1150,10 @@ REASONING: <brief explanation>
         failed_models = [r for r in results if r.compliance_score == 0]
         if failed_models:
             model_names = [r.model_id for r in failed_models]
-            recommendations.append(
-                f"🔧 Model failures detected: {', '.join(model_names)}"
-            )
+            recommendations.append(f"🔧 Model failures detected: {', '.join(model_names)}")
 
         # Check compliance levels
-        compliance_scores = [
-            r.compliance_score for r in results if r.compliance_score > 0
-        ]
+        compliance_scores = [r.compliance_score for r in results if r.compliance_score > 0]
         if compliance_scores:
             avg_compliance = sum(compliance_scores) / len(compliance_scores)
             if avg_compliance < 0.7:
@@ -1231,15 +1166,11 @@ REASONING: <brief explanation>
                 )
 
         # Performance recommendations
-        processing_times = [
-            r.processing_time_ms for r in results if r.processing_time_ms > 0
-        ]
+        processing_times = [r.processing_time_ms for r in results if r.processing_time_ms > 0]
         if processing_times:
             avg_time = sum(processing_times) / len(processing_times)
             if avg_time > 1000:  # >1 second
-                recommendations.append(
-                    "⏱️ High processing time - consider model optimization"
-                )
+                recommendations.append("⏱️ High processing time - consider model optimization")
 
         if not recommendations:
             recommendations.append("✅ Constitutional analysis completed successfully")
@@ -1322,8 +1253,7 @@ REASONING: <brief explanation>
             "performance_metrics": {
                 "total_analyses": self.total_analyses,
                 "successful_analyses": self.successful_analyses,
-                "success_rate": (self.successful_analyses / max(1, self.total_analyses))
-                * 100,
+                "success_rate": (self.successful_analyses / max(1, self.total_analyses)) * 100,
             },
         }
 
@@ -1333,13 +1263,11 @@ REASONING: <brief explanation>
                 # Test constitutional analyzer
                 if self.constitutional_analyzer:
                     analyzer_health = await self.constitutional_analyzer.health_check()
-                    health_status["components"]["constitutional_analyzer"] = (
-                        analyzer_health["status"]
-                    )
+                    health_status["components"]["constitutional_analyzer"] = analyzer_health[
+                        "status"
+                    ]
                 else:
-                    health_status["components"][
-                        "constitutional_analyzer"
-                    ] = "unavailable"
+                    health_status["components"]["constitutional_analyzer"] = "unavailable"
 
                 # Test AI model service
                 if self.ai_model_service:
@@ -1378,9 +1306,7 @@ REASONING: <brief explanation>
                 }
 
                 # Check if performance targets are met
-                health_status["performance_targets_met"] = (
-                    test_time < 500.0
-                )  # <500ms target
+                health_status["performance_targets_met"] = test_time < 500.0  # <500ms target
 
             except Exception as e:
                 health_status["status"] = "degraded"

@@ -176,10 +176,10 @@ The research infrastructure consists of several key components:
 ### Statistical Analysis
 
 - `POST /api/v1/analysis` - Run statistical analysis
-- `POST /api/v1/analysis/constitutional-compliance` - Analyze compliance
-- `POST /api/v1/analysis/llm-reliability` - Analyze reliability
-- `POST /api/v1/analysis/bias-detection` - Analyze bias
-- `POST /api/v1/analysis/comparative-analysis` - Compare experiments
+- `POST /api/v1/docs/reports/constitutional-compliance` - Analyze compliance
+- `POST /api/v1/docs/reports/llm-reliability` - Analyze reliability
+- `POST /api/v1/docs/reports/bias-detection` - Analyze bias
+- `POST /api/v1/docs/reports/comparative-analysis` - Compare experiments
 
 ### Research Automation
 

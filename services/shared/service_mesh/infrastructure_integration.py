@@ -254,9 +254,7 @@ class RedisLoadBalancingCache:
             for inst in instances
         ]
 
-        await self.redis_client.setex(
-            key, self.INSTANCE_TTL, json.dumps(instances_data)
-        )
+        await self.redis_client.setex(key, self.INSTANCE_TTL, json.dumps(instances_data))
 
     async def get_cached_service_instances(
         self, service_type: ServiceType
@@ -280,9 +278,7 @@ class RedisLoadBalancingCache:
 
         await self.redis_client.setex(key, self.SESSION_TTL, instance_id)
 
-    async def get_session_affinity(
-        self, session_id: str, service_type: ServiceType
-    ) -> str | None:
+    async def get_session_affinity(self, session_id: str, service_type: ServiceType) -> str | None:
         """Get cached session affinity."""
         key = f"{self.SESSION_AFFINITY_PREFIX}:{session_id}:{service_type.value}"
 
@@ -295,9 +291,7 @@ class RedisLoadBalancingCache:
         """Cache load balancing metrics."""
         key = f"{self.METRICS_PREFIX}:{metrics.service_type}:{metrics.instance_id}"
 
-        await self.redis_client.setex(
-            key, self.METRICS_TTL, json.dumps(asdict(metrics))
-        )
+        await self.redis_client.setex(key, self.METRICS_TTL, json.dumps(asdict(metrics)))
 
     async def get_cached_metrics(
         self, service_type: str, instance_id: str
@@ -383,9 +377,7 @@ class InfrastructureIntegrationManager:
     performance monitoring for optimal load balancing performance.
     """
 
-    def __init__(
-        self, redis_client: AdvancedRedisClient, db_config: ConnectionPoolConfig
-    ):
+    def __init__(self, redis_client: AdvancedRedisClient, db_config: ConnectionPoolConfig):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -616,8 +608,6 @@ async def get_infrastructure_manager() -> InfrastructureIntegrationManager:
         # Initialize with default configuration
         redis_client = AdvancedRedisClient("load_balancing")
         db_config = ConnectionPoolConfig()
-        _infrastructure_manager = InfrastructureIntegrationManager(
-            redis_client, db_config
-        )
+        _infrastructure_manager = InfrastructureIntegrationManager(redis_client, db_config)
 
     return _infrastructure_manager

@@ -19,9 +19,9 @@ class FallbackCache:
         with self.lock:
             if len(self.cache) >= self.max_size:
                 # Remove oldest entries
-                oldest_keys = sorted(
-                    self.cache.keys(), key=lambda k: self.cache[k]["timestamp"]
-                )[:10]
+                oldest_keys = sorted(self.cache.keys(), key=lambda k: self.cache[k]["timestamp"])[
+                    :10
+                ]
                 for old_key in oldest_keys:
                     del self.cache[old_key]
 

@@ -134,9 +134,7 @@ async def list_reproducibility_tests(
 
 
 @router.get("/tests/{test_id}", response_model=ReproducibilityTestResponse)
-async def get_reproducibility_test(
-    test_id: str, db: AsyncSession = Depends(get_db_session)
-):
+async def get_reproducibility_test(test_id: str, db: AsyncSession = Depends(get_db_session)):
     """Get reproducibility test result by ID."""
     try:
         # Placeholder implementation
@@ -246,9 +244,7 @@ async def validate_experiment_reproducibility(
 
 
 @router.get("/reports/reproducibility-summary")
-async def get_reproducibility_summary(
-    db: AsyncSession = Depends(get_db_session), days: int = 30
-):
+async def get_reproducibility_summary(db: AsyncSession = Depends(get_db_session), days: int = 30):
     """Get reproducibility summary report."""
     try:
         # Placeholder implementation

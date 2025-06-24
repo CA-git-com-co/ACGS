@@ -51,9 +51,7 @@ class GovernanceSession:
     state: SessionState = SessionState.ACTIVE
 
     # Service affinities
-    service_affinities: dict[str, str] = field(
-        default_factory=dict
-    )  # service_type -> instance_id
+    service_affinities: dict[str, str] = field(default_factory=dict)  # service_type -> instance_id
 
     # Workflow state
     current_step: str = "initial"
@@ -254,9 +252,7 @@ class GovernanceSessionManager:
         self._sessions[session_id] = session
         await self._persist_session(session)
 
-        logger.info(
-            f"Created governance session {session_id} for {workflow_type.value}"
-        )
+        logger.info(f"Created governance session {session_id} for {workflow_type.value}")
         return session
 
     async def get_session(self, session_id: str) -> GovernanceSession | None:
@@ -322,9 +318,7 @@ class GovernanceSessionManager:
             session.add_service_affinity(service_type, instance_id)
             await self.update_session(session)
 
-    async def get_service_affinity(
-        self, session_id: str, service_type: ServiceType
-    ) -> str | None:
+    async def get_service_affinity(self, session_id: str, service_type: ServiceType) -> str | None:
         """
         Get service affinity for a session.
 
@@ -377,9 +371,7 @@ class GovernanceSessionManager:
             session.complete_workflow()
             await self.update_session(session)
 
-    async def get_active_sessions(
-        self, user_id: str | None = None
-    ) -> list[GovernanceSession]:
+    async def get_active_sessions(self, user_id: str | None = None) -> list[GovernanceSession]:
         """
         Get active governance sessions.
 
@@ -415,9 +407,7 @@ class GovernanceSessionManager:
             "session_ttl": self.session_ttl,
         }
 
-    def _generate_session_id(
-        self, workflow_type: GovernanceWorkflowType, user_id: str
-    ) -> str:
+    def _generate_session_id(self, workflow_type: GovernanceWorkflowType, user_id: str) -> str:
         """Generate unique session ID."""
         timestamp = str(time.time())
         data = f"{workflow_type.value}:{user_id}:{timestamp}"

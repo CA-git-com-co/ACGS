@@ -71,7 +71,11 @@ logger = logging.getLogger(__name__)
 
 # Enhanced Security Middleware
 try:
-    from services.shared.security_middleware import apply_production_security_middleware, SecurityConfig
+    from services.shared.security_middleware import (
+        SecurityConfig,
+        apply_production_security_middleware,
+    )
+
     SECURITY_MIDDLEWARE_AVAILABLE = True
 except ImportError:
     SECURITY_MIDDLEWARE_AVAILABLE = False
@@ -96,9 +100,7 @@ async def lifespan(app: FastAPI):
     settings = get_settings()
 
     try:
-        logger.info(
-            "🚀 Starting ACGS-1 Self-Evolving AI Architecture Foundation Service"
-        )
+        logger.info("🚀 Starting ACGS-1 Self-Evolving AI Architecture Foundation Service")
 
         # Initialize observability framework first
         observability_framework = ObservabilityFramework(settings)
@@ -146,9 +148,7 @@ async def lifespan(app: FastAPI):
         logger.info("⚠️ Startup health check temporarily disabled")
 
         logger.info("🎯 Self-Evolving AI Architecture Foundation Service ready")
-        logger.info(
-            "📊 Performance targets: >1000 concurrent actions, >99.9% availability"
-        )
+        logger.info("📊 Performance targets: >1000 concurrent actions, >99.9% availability")
         logger.info("🔒 Security: 4-layer architecture with human oversight")
         logger.info("🏛️ Quantumagi compatibility: Constitution Hash cdd01ef066bc6cf2")
 
@@ -241,16 +241,16 @@ app = FastAPI(
 async def add_security_headers(request, call_next):
     """Add comprehensive OWASP-recommended security headers."""
     response = await call_next(request)
-    
+
     # Core security headers
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    
+
     # HSTS (HTTP Strict Transport Security)
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
-    
+
     # Content Security Policy (CSP) - Enhanced for XSS protection
     csp_policy = (
         "default-src 'self'; "
@@ -264,26 +264,25 @@ async def add_security_headers(request, call_next):
         "form-action 'self'"
     )
     response.headers["Content-Security-Policy"] = csp_policy
-    
+
     # Permissions Policy
     permissions_policy = (
         "geolocation=(), microphone=(), camera=(), "
         "payment=(), usb=(), magnetometer=(), gyroscope=()"
     )
     response.headers["Permissions-Policy"] = permissions_policy
-    
+
     # Additional security headers
     response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
     response.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
     response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
     response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
-    
+
     # ACGS-1 specific headers
     response.headers["X-ACGS-Security"] = "enabled"
     response.headers["X-Constitutional-Hash"] = "cdd01ef066bc6cf2"
-    
-    return response
 
+    return response
 
 
 # Apply enhanced security middleware

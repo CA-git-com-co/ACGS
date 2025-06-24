@@ -10,7 +10,7 @@ import json
 import logging
 import uuid
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -163,13 +163,9 @@ class ResearchAutomationService:
 
         # Start pipeline execution
         execution_id = str(uuid.uuid4())
-        asyncio.create_task(
-            self._execute_pipeline(pipeline, execution_id, parameters or {})
-        )
+        asyncio.create_task(self._execute_pipeline(pipeline, execution_id, parameters or {}))
 
-        logger.info(
-            f"Triggered pipeline {pipeline_id} with execution ID {execution_id}"
-        )
+        logger.info(f"Triggered pipeline {pipeline_id} with execution ID {execution_id}")
         return execution_id
 
     async def create_constitutional_compliance_pipeline(self) -> str:
@@ -408,9 +404,7 @@ class ResearchAutomationService:
         """Execute a research pipeline."""
         try:
             self.active_pipelines[pipeline.id] = PipelineStatus.RUNNING
-            logger.info(
-                f"Starting pipeline execution {execution_id} for {pipeline.name}"
-            )
+            logger.info(f"Starting pipeline execution {execution_id} for {pipeline.name}")
 
             # Execute each stage
             for stage in pipeline.stages:
@@ -440,9 +434,7 @@ class ResearchAutomationService:
         elif stage_type == "monitoring":
             await self._execute_monitoring_stage(stage_config, execution_id, parameters)
         elif stage_type == "optimization":
-            await self._execute_optimization_stage(
-                stage_config, execution_id, parameters
-            )
+            await self._execute_optimization_stage(stage_config, execution_id, parameters)
         elif stage_type == "reporting":
             await self._execute_reporting_stage(stage_config, execution_id, parameters)
         else:

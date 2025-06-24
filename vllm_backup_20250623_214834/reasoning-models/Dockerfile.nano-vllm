@@ -1,0 +1,46 @@
+# ACGS-1 Nano-vLLM Reasoning Service Dockerfile
+# Lightweight vLLM alternative with constitutional AI capabilities
+
+FROM python:3.11-slim
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    git \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create app directory
+WORKDIR /app
+
+# Copy requirements first for better caching
+COPY requirements-nano-vllm.txt /app/
+RUN pip install --no-cache-dir -r requirements-nano-vllm.txt
+
+# Install Nano-vLLM
+RUN pip install git+https://github.com/GeeeekExplorer/nano-vllm.git
+
+# Copy application code
+COPY . /app/
+
+# Create necessary directories
+RUN mkdir -p /app/logs /app/config /app/models
+
+# Set permissions
+RUN chmod +x /app/*.py
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Expose port
+EXPOSE 8000
+
+# Run the application
+CMD ["python", "nano-vllm-integration.py"]

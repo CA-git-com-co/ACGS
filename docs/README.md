@@ -2,24 +2,39 @@
 
 Welcome to the ACGS-1 (Autonomous Constitutional Governance System) documentation.
 
-## Quick Links
+## 🚀 Quick Start Guides
+
+| Guide | Description | Audience | Time |
+|-------|-------------|----------|------|
+| [**Main README**](../README.md) | Complete system overview and setup | All users | 15 min |
+| [**Deployment Quick Start**](DEPLOYMENT_QUICK_START_GUIDE.md) | Fast deployment guide | Developers/DevOps | 10 min |
+| [**API Reference**](API_REFERENCE_CONSOLIDATED.md) | Consolidated API documentation | Developers | 20 min |
+| [**Troubleshooting Guide**](TROUBLESHOOTING.md) | Comprehensive issue resolution | All users | As needed |
+
+## 📋 Essential Links
 
 - [System Architecture](architecture/system_architecture.md)
-- [API Reference](api/api_reference.md)
 - [Deployment Guide](deployment/deployment_guide.md)
 - [Governance Workflows](governance/governance_workflows.md)
 - [Policy Synthesis Engine](governance/policy_synthesis_engine.md)
+- [Operations Runbook](operations/DAILY_OPERATIONS_RUNBOOK.md)
 
-## Documentation Structure
+## 📂 Documentation Structure
 
-- **architecture/** - System design and architecture documentation
-- **api/** - API documentation and specifications
-- **deployment/** - Deployment guides and configurations
-- **development/** - Development setup and guidelines
-- **governance/** - Governance workflows and processes
-- **security/** - Security documentation and guidelines
-- **operations/** - Operational runbooks and procedures
-- **troubleshooting/** - Troubleshooting guides and FAQs
+### Core Documentation (Root Level)
+- **[API_REFERENCE_CONSOLIDATED.md](API_REFERENCE_CONSOLIDATED.md)** - Complete API guide for all services
+- **[DEPLOYMENT_QUICK_START_GUIDE.md](DEPLOYMENT_QUICK_START_GUIDE.md)** - Fast deployment instructions
+- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Comprehensive troubleshooting guide
+- **[DOCUMENTATION_MAINTENANCE_GUIDE.md](DOCUMENTATION_MAINTENANCE_GUIDE.md)** - Documentation standards
+
+### Organized Categories
+- **[api/](api/)** - Individual service API documentation and specifications
+- **[architecture/](architecture/)** - System design and architecture documentation
+- **[deployment/](deployment/)** - Detailed deployment guides and configurations
+- **[development/](development/)** - Development setup and guidelines
+- **[governance/](governance/)** - Governance workflows and processes
+- **[security/](security/)** - Security documentation and guidelines
+- **[operations/](operations/)** - Operational runbooks and procedures
 
 ## System Overview
 

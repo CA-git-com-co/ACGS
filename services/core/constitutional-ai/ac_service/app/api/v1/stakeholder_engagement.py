@@ -26,13 +26,13 @@ async def get_current_active_user_placeholder() -> User:
     )
 
 
+from services.shared.langgraph_config import ConstitutionalCouncilConfig
+
 from .services.stakeholder_engagement import (
     StakeholderEngagementInput,
     StakeholderEngagementStatus,
     get_stakeholder_engagement_service,
 )
-
-from services.shared.langgraph_config import ConstitutionalCouncilConfig
 
 logger = logging.getLogger(__name__)
 

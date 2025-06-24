@@ -67,12 +67,12 @@ ACGS-1/
    pip install -r requirements.txt
    ```
 
-4. **Install Node.js dependencies** (for frontend applications):
+4. **Install Node.js dependencies** (for frontend application):
 
    ```bash
-   cd applications/governance-dashboard
+   cd project
    npm install
-   cd ../..
+   cd ..
    ```
 
 5. **Build Anchor programs**:
@@ -109,7 +109,7 @@ ACGS-1/
 1. **Core Services** (Constitutional AI, Governance Synthesis, etc.):
 
    ```bash
-   cd services/core/your-service
+   cd services/core/your-service/service_directory
    # Using UV (recommended)
    uv sync && uv run uvicorn app.main:app --reload --port 800X
 
@@ -141,8 +141,8 @@ ACGS-1/
 1. **Governance Dashboard**:
 
    ```bash
-   cd applications/governance-dashboard
-   npm start                       # Development server
+   cd project
+   npm run dev                     # Development server
    npm run build                   # Production build
    ```
 
@@ -204,7 +204,7 @@ python -m pytest tests/unit/
 python -m pytest tests/integration/
 
 # Frontend tests
-cd applications/governance-dashboard && npm test
+cd project && npm test
 
 # Full test suite
 ./run_tests.sh

@@ -12,13 +12,14 @@ from datetime import datetime, timedelta
 from typing import Any
 from uuid import uuid4
 
-from .models import ACAmendment, ACAmendmentComment, ACAmendmentVote
 from fastapi import WebSocket, WebSocketDisconnect
 from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.constitutional_metrics import get_constitutional_metrics
 from services.shared.metrics import get_metrics
+
+from .models import ACAmendment, ACAmendmentComment, ACAmendmentVote
 
 logger = logging.getLogger(__name__)
 

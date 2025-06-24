@@ -37,14 +37,10 @@ except ImportError:
                     meminfo = {}
                     for line in f:
                         key, value = line.split(":")
-                        meminfo[key.strip()] = (
-                            int(value.split()[0]) * 1024
-                        )  # Convert KB to bytes
+                        meminfo[key.strip()] = int(value.split()[0]) * 1024  # Convert KB to bytes
 
                     total = meminfo.get("MemTotal", 8 * 1024**3)  # Default 8GB
-                    available = meminfo.get(
-                        "MemAvailable", meminfo.get("MemFree", total // 2)
-                    )
+                    available = meminfo.get("MemAvailable", meminfo.get("MemFree", total // 2))
                     used = total - available
                     percent = (used / total) * 100
 
@@ -204,9 +200,7 @@ class MemoryOptimizer:
         try:
             # Log psutil availability
             if not self.psutil_available:
-                logger.warning(
-                    "psutil not available - using fallback memory monitoring"
-                )
+                logger.warning("psutil not available - using fallback memory monitoring")
             else:
                 logger.info("psutil available - using full memory monitoring")
 
@@ -219,9 +213,7 @@ class MemoryOptimizer:
             # Get baseline memory usage
             self.baseline_memory = self.get_current_memory_usage()
             logger.info(f"Memory optimizer initialized for {self.service_name}")
-            logger.info(
-                f"Baseline memory: {self.baseline_memory.process_memory_mb:.1f} MB"
-            )
+            logger.info(f"Baseline memory: {self.baseline_memory.process_memory_mb:.1f} MB")
 
         except Exception as e:
             logger.error(f"Failed to initialize memory optimizer: {e}")
@@ -430,8 +422,7 @@ class MemoryOptimizer:
                 # Check for significant memory growth
                 for stat in top_stats[:5]:  # Top 5 memory growth areas
                     if (
-                        stat.size_diff
-                        > self.thresholds.leak_detection_threshold * 1024 * 1024
+                        stat.size_diff > self.thresholds.leak_detection_threshold * 1024 * 1024
                     ):  # Convert MB to bytes
                         logger.warning(
                             f"Potential memory leak detected: {stat.traceback.format()[-1]} "
@@ -453,9 +444,7 @@ class MemoryOptimizer:
         """Add callback for optimization events."""
         self.optimization_callbacks.append(callback)
 
-    async def _trigger_optimization_callbacks(
-        self, event_type: str, metrics: MemoryMetrics | None
-    ):
+    async def _trigger_optimization_callbacks(self, event_type: str, metrics: MemoryMetrics | None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -505,10 +494,7 @@ class MemoryOptimizer:
         current = self.get_current_memory_usage()
 
         # Add to history if not already there
-        if (
-            not self.memory_history
-            or self.memory_history[-1].timestamp != current.timestamp
-        ):
+        if not self.memory_history or self.memory_history[-1].timestamp != current.timestamp:
             self.memory_history.append(current)
             # Trim history
             if len(self.memory_history) > self.max_history_size:
@@ -550,8 +536,7 @@ class MemoryOptimizer:
                 < self.thresholds.critical_threshold,
                 "within_warning_threshold": current.memory_percent
                 < self.thresholds.warning_threshold,
-                "production_ready": current.memory_percent
-                < self.thresholds.critical_threshold,
+                "production_ready": current.memory_percent < self.thresholds.critical_threshold,
             },
         }
 

@@ -1,6 +1,6 @@
 import logging
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 from fastapi import (
     APIRouter,

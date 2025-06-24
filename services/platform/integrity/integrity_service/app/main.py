@@ -44,9 +44,7 @@ try:
 
     # Add the correct path to services/shared
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    shared_path = os.path.join(
-        current_dir, "..", "..", "..", "..", "services", "shared"
-    )
+    shared_path = os.path.join(current_dir, "..", "..", "..", "..", "services", "shared")
     sys.path.insert(0, os.path.abspath(shared_path))
 
     from comprehensive_audit_logger import (
@@ -152,16 +150,16 @@ app = FastAPI(
 async def add_security_headers(request, call_next):
     """Add comprehensive OWASP-recommended security headers."""
     response = await call_next(request)
-    
+
     # Core security headers
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    
+
     # HSTS (HTTP Strict Transport Security)
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
-    
+
     # Content Security Policy (CSP) - Enhanced for XSS protection
     csp_policy = (
         "default-src 'self'; "
@@ -175,24 +173,24 @@ async def add_security_headers(request, call_next):
         "form-action 'self'"
     )
     response.headers["Content-Security-Policy"] = csp_policy
-    
+
     # Permissions Policy
     permissions_policy = (
         "geolocation=(), microphone=(), camera=(), "
         "payment=(), usb=(), magnetometer=(), gyroscope=()"
     )
     response.headers["Permissions-Policy"] = permissions_policy
-    
+
     # Additional security headers
     response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
     response.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
     response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
     response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
-    
+
     # ACGS-1 specific headers
     response.headers["X-ACGS-Security"] = "enabled"
     response.headers["X-Constitutional-Hash"] = "cdd01ef066bc6cf2"
-    
+
     return response
 
 
@@ -269,6 +267,7 @@ try:
 except ImportError as e:
     logger.warning(f"⚠️ Prometheus metrics not available: {e}")
     PROMETHEUS_AVAILABLE = False
+
 
 # Add metrics endpoint
 @app.get("/metrics")
@@ -535,6 +534,7 @@ async def shutdown_event():
 
 if __name__ == "__main__":
     import os
+
     import uvicorn
 
     # Production-grade server configuration
@@ -543,13 +543,13 @@ if __name__ == "__main__":
         "port": int(os.getenv("PORT", str(SERVICE_PORT))),
         "log_level": os.getenv("LOG_LEVEL", "info"),
         "access_log": os.getenv("ACCESS_LOG", "true").lower() == "true",
-        "workers": int(os.getenv("WORKERS", "1")),  # Single worker for development, increase for production
+        "workers": int(
+            os.getenv("WORKERS", "1")
+        ),  # Single worker for development, increase for production
         "loop": "asyncio",
         "http": "httptools",
         "lifespan": "on",
     }
 
-    logger.info(
-        f"🚀 Starting ACGS-1 {SERVICE_PHASE} Integrity Service on port {config['port']}"
-    )
+    logger.info(f"🚀 Starting ACGS-1 {SERVICE_PHASE} Integrity Service on port {config['port']}")
     uvicorn.run(app, **config)

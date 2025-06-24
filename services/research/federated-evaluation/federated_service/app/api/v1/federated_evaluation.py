@@ -145,9 +145,7 @@ async def register_federated_node(
 
 @router.get("/nodes", response_model=list[NodeStatusResponse])
 async def list_federated_nodes(
-    platform_type: PlatformType | None = Query(
-        None, description="Filter by platform type"
-    ),
+    platform_type: PlatformType | None = Query(None, description="Filter by platform type"),
     status_filter: str | None = Query(None, description="Filter by node status"),
     current_user: dict = Depends(get_current_active_user),
 ):
@@ -177,9 +175,7 @@ async def list_federated_nodes(
 
 
 @router.get("/nodes/{node_id}", response_model=NodeStatusResponse)
-async def get_node_status(
-    node_id: str, current_user: dict = Depends(get_current_active_user)
-):
+async def get_node_status(node_id: str, current_user: dict = Depends(get_current_active_user)):
     """Get the status of a specific federated node."""
     try:
         node_status = await federated_evaluator.get_node_status(node_id)
@@ -245,12 +241,8 @@ async def get_federated_metrics(current_user: dict = Depends(get_current_active_
     try:
         # Get metrics from all components
         evaluation_metrics = await federated_evaluator.get_evaluation_metrics()
-        aggregation_metrics = (
-            await federated_evaluator.secure_aggregator.get_aggregation_metrics()
-        )
-        privacy_metrics = (
-            await federated_evaluator.privacy_manager.get_privacy_metrics()
-        )
+        aggregation_metrics = await federated_evaluator.secure_aggregator.get_aggregation_metrics()
+        privacy_metrics = await federated_evaluator.privacy_manager.get_privacy_metrics()
 
         # Collect node metrics
         node_metrics = {}
@@ -266,9 +258,7 @@ async def get_federated_metrics(current_user: dict = Depends(get_current_active_
                 [n for n in federated_evaluator.nodes.values() if n.status == "active"]
             ),
             "active_evaluations": len(federated_evaluator.active_evaluations),
-            "privacy_budget_remaining": privacy_metrics["privacy_budget"][
-                "epsilon_remaining"
-            ],
+            "privacy_budget_remaining": privacy_metrics["privacy_budget"]["epsilon_remaining"],
             "overall_success_rate": evaluation_metrics.get("successful_evaluations", 0)
             / max(1, evaluation_metrics.get("total_evaluations", 1)),
         }
@@ -325,9 +315,7 @@ async def quarantine_node(
     """Manually quarantine a node (Admin only)."""
     try:
         # Check if user has admin privileges
-        if not current_user.get("roles") or "admin" not in current_user.get(
-            "roles", []
-        ):
+        if not current_user.get("roles") or "admin" not in current_user.get("roles", []):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Admin privileges required to quarantine nodes",
@@ -363,9 +351,7 @@ async def restore_quarantined_node(
     """Restore a quarantined node (Admin only)."""
     try:
         # Check if user has admin privileges
-        if not current_user.get("roles") or "admin" not in current_user.get(
-            "roles", []
-        ):
+        if not current_user.get("roles") or "admin" not in current_user.get("roles", []):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Admin privileges required to restore nodes",

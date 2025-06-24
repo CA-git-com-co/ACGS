@@ -83,7 +83,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 # Add the project root to Python path for shared imports
-project_root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "..", "..")
+project_root = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "..", ".."
+)
 sys.path.insert(0, project_root)
 
 from services.shared.api_models import HealthCheckResponse, ServiceInfo, create_success_response
@@ -237,9 +239,9 @@ if SECURITY_MIDDLEWARE_AVAILABLE and "SecurityHeadersMiddleware" in globals():
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 
 # Add CORS middleware with SECURE production settings
-allowed_origins = os.getenv(
-    "ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:8080"
-).split(",")
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:8080").split(
+    ","
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,  # SECURITY FIX: No longer allow all origins
@@ -369,20 +371,12 @@ except ImportError as e:
 if ROUTERS_AVAILABLE:
     try:
         # Include the authentication router
-        app.include_router(
-            auth_router, prefix="/auth", tags=["Authentication & Authorization"]
-        )
+        app.include_router(auth_router, prefix="/auth", tags=["Authentication & Authorization"])
 
         # Include enterprise authentication routers
-        app.include_router(
-            mfa_router, prefix="/auth/mfa", tags=["Multi-Factor Authentication"]
-        )
-        app.include_router(
-            oauth_router, prefix="/auth/oauth", tags=["OAuth 2.0 & OpenID Connect"]
-        )
-        app.include_router(
-            api_keys_router, prefix="/auth/api-keys", tags=["API Key Management"]
-        )
+        app.include_router(mfa_router, prefix="/auth/mfa", tags=["Multi-Factor Authentication"])
+        app.include_router(oauth_router, prefix="/auth/oauth", tags=["OAuth 2.0 & OpenID Connect"])
+        app.include_router(api_keys_router, prefix="/auth/api-keys", tags=["API Key Management"])
         logger.info("✅ All API routers included successfully")
     except Exception as e:
         logger.warning(f"⚠️ Failed to include some routers: {e}")
@@ -509,9 +503,7 @@ async def startup_event():
     logger.info(f"🔌 Port: {SERVICE_PORT}")
     logger.info(f"📚 API Documentation: http://localhost:{SERVICE_PORT}/docs")
     logger.info(f"🔍 Health Check: http://localhost:{SERVICE_PORT}/health")
-    logger.info(
-        f"🔐 Enterprise Features: {'Enabled' if ROUTERS_AVAILABLE else 'Minimal Mode'}"
-    )
+    logger.info(f"🔐 Enterprise Features: {'Enabled' if ROUTERS_AVAILABLE else 'Minimal Mode'}")
 
 
 # Add shutdown event
@@ -526,6 +518,7 @@ async def shutdown_event():
 
 if __name__ == "__main__":
     import os
+
     import uvicorn
 
     # Production-grade server configuration
@@ -534,7 +527,9 @@ if __name__ == "__main__":
         "port": int(os.getenv("PORT", str(SERVICE_PORT))),
         "log_level": os.getenv("LOG_LEVEL", "info"),
         "access_log": os.getenv("ACCESS_LOG", "true").lower() == "true",
-        "workers": int(os.getenv("WORKERS", "1")),  # Single worker for development, increase for production
+        "workers": int(
+            os.getenv("WORKERS", "1")
+        ),  # Single worker for development, increase for production
         "loop": "asyncio",
         "http": "httptools",
         "lifespan": "on",

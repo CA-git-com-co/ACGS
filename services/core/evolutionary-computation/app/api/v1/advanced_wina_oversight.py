@@ -18,9 +18,10 @@ import logging
 import time
 from typing import Any
 
-from ...core.wina_oversight_coordinator import WINAECOversightCoordinator
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
+
+from ...core.wina_oversight_coordinator import WINAECOversightCoordinator
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

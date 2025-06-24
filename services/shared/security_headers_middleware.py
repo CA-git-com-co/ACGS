@@ -32,9 +32,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "connect-src 'self' https:; "
             "frame-ancestors 'none'"
         )
-        response.headers["Strict-Transport-Security"] = (
-            "max-age=31536000; includeSubDomains"
-        )
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         response.headers["Permissions-Policy"] = (
             "geolocation=(), microphone=(), camera=(), "
             "payment=(), usb=(), magnetometer=(), gyroscope=()"

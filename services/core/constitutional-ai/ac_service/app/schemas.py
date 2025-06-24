@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, Field, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 # Base schema for Principle attributes
@@ -832,3 +832,180 @@ class ConsultationMetricsResponse(BaseModel):
                 "time_period_days": 30,
             }
         }
+
+
+# ============================================================================
+# INPUT VALIDATION SCHEMAS
+# ============================================================================
+
+class ContentValidationRequest(BaseModel):
+    """Schema for content validation requests with comprehensive input validation."""
+    
+    content: str = Field(
+        ...,
+        min_length=1,
+        max_length=50000,
+        description="Content to validate for constitutional compliance"
+    )
+    test_mode: bool = Field(
+        default=False,
+        description="Enable test mode for development and testing"
+    )
+    adversarial_test: bool = Field(
+        default=False,
+        description="Enable adversarial testing mode for red-teaming"
+    )
+    context: str | None = Field(
+        default=None,
+        max_length=1000,
+        description="Additional context for validation"
+    )
+    severity_threshold: str | None = Field(
+        default="medium",
+        regex="^(low|medium|high|critical)$",
+        description="Minimum severity threshold for reporting violations"
+    )
+    
+    @field_validator('content')
+    @classmethod
+    def validate_content(cls, v: str) -> str:
+        """Validate and sanitize content input."""
+        if not v or not v.strip():
+            raise ValueError("Content cannot be empty or whitespace only")
+        
+        # Basic content sanitization
+        v = v.strip()
+        
+        # Check for potentially malicious patterns
+        dangerous_patterns = [
+            '<script',
+            'javascript:',
+            'data:text/html',
+            'vbscript:',
+            'onload=',
+            'onerror=',
+        ]
+        
+        v_lower = v.lower()
+        for pattern in dangerous_patterns:
+            if pattern in v_lower:
+                raise ValueError(f"Content contains potentially dangerous pattern: {pattern}")
+        
+        return v
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "content": "This proposal aims to improve data privacy protections for all users.",
+                "test_mode": False,
+                "adversarial_test": False,
+                "context": "Privacy policy proposal evaluation",
+                "severity_threshold": "medium"
+            }
+        }
+    )
+
+
+class ContentValidationResponse(BaseModel):
+    """Schema for content validation responses."""
+    
+    content: str = Field(..., description="Original content that was validated")
+    is_compliant: bool = Field(..., description="Whether content meets constitutional standards")
+    compliance_score: float = Field(
+        ..., 
+        ge=0.0, 
+        le=1.0, 
+        description="Compliance score between 0.0 and 1.0"
+    )
+    validation_results: list[dict] = Field(
+        default=[],
+        description="Detailed validation results and findings"
+    )
+    severity: str = Field(
+        ...,
+        regex="^(low|medium|high|critical|unknown)$", 
+        description="Overall severity of any violations found"
+    )
+    recommendations: list[str] = Field(
+        default=[],
+        description="Recommendations for improving compliance"
+    )
+    timestamp: datetime = Field(
+        default_factory=datetime.utcnow,
+        description="Validation timestamp"
+    )
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "content": "This proposal aims to improve data privacy protections.",
+                "is_compliant": True,
+                "compliance_score": 0.85,
+                "validation_results": [
+                    {
+                        "principle": "Privacy Protection",
+                        "status": "compliant",
+                        "score": 0.9,
+                        "details": "Strong privacy protections aligned with principles"
+                    }
+                ],
+                "severity": "low",
+                "recommendations": [
+                    "Consider adding specific data retention policies"
+                ],
+                "timestamp": "2024-01-15T14:30:00Z"
+            }
+        }
+    )
+
+
+class ConstitutionalComplianceRequest(BaseModel):
+    """Schema for constitutional compliance validation requests."""
+    
+    policy: dict = Field(
+        ...,
+        description="Policy object to validate for constitutional compliance"
+    )
+    principles: list[dict] | None = Field(
+        default=None,
+        description="Specific principles to validate against (optional)"
+    )
+    validation_mode: str = Field(
+        default="comprehensive",
+        regex="^(basic|comprehensive|detailed)$",
+        description="Level of validation to perform"
+    )
+    include_reasoning: bool = Field(
+        default=True,
+        description="Include detailed reasoning in response"
+    )
+    
+    @field_validator('policy')
+    @classmethod
+    def validate_policy(cls, v: dict) -> dict:
+        """Validate policy structure."""
+        if not isinstance(v, dict):
+            raise ValueError("Policy must be a dictionary object")
+        
+        if not v:
+            raise ValueError("Policy cannot be empty")
+        
+        # Ensure policy has required basic structure
+        if 'content' not in v and 'text' not in v and 'description' not in v:
+            raise ValueError("Policy must contain 'content', 'text', or 'description' field")
+        
+        return v
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "policy": {
+                    "title": "Data Privacy Policy",
+                    "content": "Users have the right to control their personal data...",
+                    "category": "privacy"
+                },
+                "validation_mode": "comprehensive",
+                "include_reasoning": True
+            }
+        }
+    )

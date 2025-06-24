@@ -13,7 +13,7 @@ with the Constitutional Council StateGraph to provide:
 import asyncio
 import logging
 from dataclasses import dataclass, field
-from datetime import timezone, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from enum import Enum
@@ -21,13 +21,14 @@ from typing import Any
 
 import httpx
 from app import crud
-from .models import ACAmendment
 from pydantic import BaseModel, Field, validator
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.langgraph_config import ConstitutionalCouncilConfig
 from services.shared.models import User
+
+from .models import ACAmendment
 
 logger = logging.getLogger(__name__)
 
@@ -231,7 +232,9 @@ class StakeholderNotificationService:
                 raise ValueError("No stakeholders found for required roles")
 
             # Calculate engagement deadline
-            deadline = datetime.now(timezone.utc) + timedelta(hours=engagement_input.engagement_period_hours)
+            deadline = datetime.now(timezone.utc) + timedelta(
+                hours=engagement_input.engagement_period_hours
+            )
 
             # Create engagement status
             engagement_status = StakeholderEngagementStatus(
@@ -444,7 +447,9 @@ class StakeholderNotificationService:
             },
             "engagement": {
                 "deadline": deadline.isoformat(),
-                "hours_remaining": int((deadline - datetime.now(timezone.utc)).total_seconds() / 3600),
+                "hours_remaining": int(
+                    (deadline - datetime.now(timezone.utc)).total_seconds() / 3600
+                ),
                 "notification_type": notification_type,
             },
             "actions": {

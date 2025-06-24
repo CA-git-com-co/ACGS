@@ -1,7 +1,14 @@
 import logging
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 from app import crud, schemas  # Import from app directory
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession  # Changed
+
+from services.shared.database import (  # Corrected import for async db session
+    get_async_db,
+)
+
 from .core.auth import (  # Import from app directory
     User,
     require_admin_role,
@@ -10,12 +17,6 @@ from .core.cryptographic_signing import (
     ConstitutionalSignature,
     ConstitutionalSigningService,
     get_constitutional_signing_service,
-)
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession  # Changed
-
-from services.shared.database import (  # Corrected import for async db session
-    get_async_db,
 )
 
 logger = logging.getLogger(__name__)
@@ -330,14 +331,14 @@ async def validate_constitutional_endpoint(
         import json
         import time
 
+        from services.shared.redis_client import ACGSRedisClient
+
         from .services.advanced_cache import (
             CACHE_TTL_POLICIES,
             LRUCache,
             MultiTierCache,
             RedisCache,
         )
-
-        from services.shared.redis_client import ACGSRedisClient
 
         # Initialize Redis client for caching
         redis_client = ACGSRedisClient("ac_service")

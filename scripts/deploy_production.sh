@@ -59,8 +59,8 @@ check_prerequisites() {
     fi
     
     # Check if required environment files exist
-    if [ ! -f "config/production.env" ]; then
-        log_error "Production environment file not found: config/production.env"
+    if [ ! -f "config/environments/production.env" ]; then
+        log_error "Production environment file not found: config/environments/production.env"
         exit 1
     fi
     

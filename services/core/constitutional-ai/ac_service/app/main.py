@@ -27,9 +27,7 @@ try:
 
     # Add the correct path to services/shared
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    shared_path = os.path.join(
-        current_dir, "..", "..", "..", "..", "..", "services", "shared"
-    )
+    shared_path = os.path.join(current_dir, "..", "..", "..", "..", "..", "services", "shared")
     sys.path.insert(0, os.path.abspath(shared_path))
 
     from security_middleware import (
@@ -60,6 +58,25 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
+
+from .schemas import (
+    ContentValidationRequest,
+    ContentValidationResponse,
+    ConstitutionalComplianceRequest,
+)
+
+# Import standardized error handling
+try:
+    from services.shared.middleware.error_handling import (
+        setup_error_handlers,
+        ConstitutionalComplianceError,
+        SecurityValidationError,
+    )
+    ERROR_HANDLING_AVAILABLE = True
+    print("✅ Standardized error handling middleware loaded successfully")
+except ImportError as e:
+    print(f"⚠️ Error handling middleware not available: {e}")
+    ERROR_HANDLING_AVAILABLE = False
 
 # Configure enhanced logging
 logging.basicConfig(
@@ -142,6 +159,13 @@ app = FastAPI(
     openapi_url="/openapi.json",
     lifespan=lifespan,
 )
+
+# Setup standardized error handling
+if ERROR_HANDLING_AVAILABLE:
+    setup_error_handlers(app, service_name="constitutional-ai-service")
+    logger.info("✅ Standardized error handling configured")
+else:
+    logger.warning("⚠️ Using fallback error handling")
 
 
 @app.middleware("http")
@@ -239,16 +263,29 @@ try:
 except ImportError as e:
     logger.warning(f"⚠️ Security middleware not available: {e}")
 
-# Add fallback security middleware
-app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
+# Add fallback security middleware with restricted hosts
+allowed_hosts = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,acgs.local").split(",")
+allowed_hosts = [host.strip() for host in allowed_hosts if host.strip()]
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=allowed_hosts)
 
-# Add CORS middleware with production settings
+# Add CORS middleware with secure production settings
+cors_origins = os.getenv("BACKEND_CORS_ORIGINS", "http://localhost:3000,http://localhost:8080").split(",")
+cors_origins = [origin.strip() for origin in cors_origins if origin.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
+    allow_origins=cors_origins,  # Restricted to configured origins only
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
+    allow_headers=[
+        "Accept",
+        "Accept-Language", 
+        "Content-Language",
+        "Content-Type",
+        "Authorization",
+        "X-Request-ID",
+        "X-Constitutional-Hash"
+    ],
     expose_headers=["X-Request-ID", "X-Response-Time", "X-Compliance-Score"],
 )
 
@@ -265,6 +302,7 @@ try:
 except ImportError as e:
     logger.warning(f"⚠️ Prometheus metrics not available: {e}")
     PROMETHEUS_AVAILABLE = False
+
 
 # Add metrics endpoint
 @app.get("/metrics")
@@ -727,13 +765,13 @@ def _calculate_average_severity(validation_results) -> str:
         return "critical"
 
 
-@app.post("/api/v1/validate")
-async def validate_content_simple(request_data: dict[str, Any]):
+@app.post("/api/v1/validate", response_model=ContentValidationResponse)
+async def validate_content_simple(request: ContentValidationRequest):
     """Simple content validation endpoint for red-teaming and security testing."""
     try:
-        content = request_data.get("content", "")
-        test_mode = request_data.get("test_mode", False)
-        adversarial_test = request_data.get("adversarial_test", False)
+        content = request.content
+        test_mode = request.test_mode
+        adversarial_test = request.adversarial_test
 
         # Constitutional threat detection
         threat_patterns = [
@@ -746,216 +784,116 @@ async def validate_content_simple(request_data: dict[str, Any]):
             "absolute power",
         ]
 
-        threats_detected = [pattern for pattern in threat_patterns if pattern in content.lower()]
+        threats_detected = [
+            {
+                "type": "threat_pattern",
+                "pattern": pattern,
+                "message": f"Detected threat pattern: {pattern}",
+                "severity": "high"
+            }
+            for pattern in threat_patterns if pattern in content.lower()
+        ]
 
         # Constitutional compliance check
         constitutional_violations = []
         if "ignore constitutional" in content.lower() or "bypass constitutional" in content.lower():
-            constitutional_violations.append("Constitutional bypass attempt detected")
+            constitutional_violations.append({
+                "type": "constitutional_violation",
+                "violation": "bypass_attempt",
+                "message": "Constitutional bypass attempt detected",
+                "severity": "critical"
+            })
 
         if "unrestricted access" in content.lower():
-            constitutional_violations.append("Unrestricted access violation")
+            constitutional_violations.append({
+                "type": "constitutional_violation", 
+                "violation": "unrestricted_access",
+                "message": "Unrestricted access violation",
+                "severity": "high"
+            })
 
         if "void constitutional" in content.lower():
-            constitutional_violations.append("Constitutional nullification attempt")
+            constitutional_violations.append({
+                "type": "constitutional_violation",
+                "violation": "nullification_attempt", 
+                "message": "Constitutional nullification attempt",
+                "severity": "critical"
+            })
 
         # Determine validation result
-        if threats_detected or constitutional_violations:
-            validation_result = "blocked"
-            status_msg = "Constitutional threat detected"
-        else:
-            validation_result = "valid"
-            status_msg = "Content validated successfully"
+        is_compliant = not (threats_detected or constitutional_violations)
+        all_violations = threats_detected + constitutional_violations
+        compliance_score = max(0.0, 1.0 - (len(all_violations) * 0.2))
+        severity = _calculate_average_severity(all_violations) if all_violations else "low"
+        
+        # Generate recommendations
+        recommendations = []
+        if threats_detected:
+            recommendations.append("Review content for potential security threats")
+        if constitutional_violations:
+            recommendations.append("Align content with constitutional principles")
+        if not is_compliant:
+            recommendations.append("Consider revising content to improve compliance")
 
-        return {
-            "validation_result": validation_result,
-            "status": status_msg,
-            "threats_detected": threats_detected,
-            "constitutional_violations": constitutional_violations,
-            "test_mode": test_mode,
-            "adversarial_test": adversarial_test,
-            "service": "ac_service",
-        }
+        return ContentValidationResponse(
+            content=content,
+            is_compliant=is_compliant,
+            compliance_score=compliance_score,
+            validation_results=all_violations,
+            severity=severity,
+            recommendations=recommendations,
+        )
 
     except Exception as e:
         logger.error(f"Content validation failed: {e}")
-        return {
-            "validation_result": "error",
-            "status": f"Validation failed: {str(e)}",
-            "threats_detected": [],
-            "constitutional_violations": [],
-            "test_mode": request_data.get("test_mode", False),
-        }
+        return ContentValidationResponse(
+            content=content if 'content' in locals() else "",
+            is_compliant=False,
+            compliance_score=0.0,
+            validation_results=[{
+                "type": "system_error",
+                "message": f"Validation failed: {str(e)}",
+                "severity": "critical"
+            }],
+            severity="critical",
+            recommendations=["Please contact system administrator"],
+        )
 
 
 @app.post("/api/v1/constitutional/validate")
-async def validate_constitutional_compliance(request: dict[str, Any]):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+async def validate_constitutional_compliance(request: ConstitutionalComplianceRequest):
     """Enhanced constitutional compliance validation with sophisticated algorithms."""
-    start_time = time.time()
-
-    policy = request.get("policy", {})
-    rules_to_check = request.get(
-        "rules", ["CONST-001", "CONST-002", "CONST-003", "CONST-004", "CONST-005"]
-    )
-    validation_level = request.get("level", "comprehensive")
-    enable_formal_verification = request.get("enable_formal_verification", False)
-
-    validation_id = f"VAL-{int(time.time())}-{hashlib.sha256(str(policy).encode()).hexdigest()[:8]}"
-
-    # Log audit trail
-    if audit_logger:
-        try:
-            await audit_logger.log_validation_request(
-                validation_id, policy, rules_to_check, validation_level
+    try:
+        # Import the refactored validation service
+        from .services.constitutional_validation_service import ConstitutionalValidationService
+        
+        # Create validation service instance
+        validation_service = ConstitutionalValidationService(
+            audit_logger=audit_logger,
+            violation_detector=violation_detector,
+            fv_client=fv_client
+        )
+        
+        # Perform validation using the refactored service
+        result = await validation_service.validate_constitutional_compliance(request)
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"Constitutional compliance validation failed: {e}")
+        
+        if ERROR_HANDLING_AVAILABLE:
+            raise ConstitutionalComplianceError(
+                f"Validation failed: {str(e)}",
+                violations=["system_error"]
             )
-        except Exception as e:
-            logger.warning(f"Audit logging failed: {e}")
-
-    validation_results = []
-    overall_compliant = True
-    compliance_score = 0.0
-    formal_verification_results = None
-
-    # Enhanced constitutional rule validation with sophisticated algorithms
-    rule_checks = {
-        "CONST-001": {
-            "name": "Democratic Participation",
-            "algorithm": "multi_dimensional_analysis",
-            "check": _advanced_democratic_check,
-            "weight": 0.20,
-            "formal_verification": True,
-        },
-        "CONST-002": {
-            "name": "Transparency Requirement",
-            "algorithm": "transparency_scoring",
-            "check": _advanced_transparency_check,
-            "weight": 0.20,
-            "formal_verification": True,
-        },
-        "CONST-003": {
-            "name": "Constitutional Compliance",
-            "algorithm": "constitutional_fidelity_analysis",
-            "check": _advanced_constitutional_check,
-            "weight": 0.25,
-            "formal_verification": True,
-        },
-        "CONST-004": {
-            "name": "Accountability Framework",
-            "algorithm": "accountability_assessment",
-            "check": _advanced_accountability_check,
-            "weight": 0.20,
-            "formal_verification": False,
-        },
-        "CONST-005": {
-            "name": "Rights Protection",
-            "algorithm": "rights_preservation_analysis",
-            "check": _advanced_rights_check,
-            "weight": 0.15,
-            "formal_verification": True,
-        },
-    }
-
-    # Perform enhanced validation
-    for rule_id in rules_to_check:
-        if rule_id in rule_checks:
-            rule_info = rule_checks[rule_id]
-
-            # Use sophisticated compliance algorithm
-            compliance_result = rule_info["check"](policy)
-            is_compliant = compliance_result["compliant"]
-            confidence = compliance_result["confidence"]
-            detailed_analysis = compliance_result["analysis"]
-
-            compliance_check = {
-                "rule_id": rule_id,
-                "rule_name": rule_info["name"],
-                "algorithm": rule_info["algorithm"],
-                "compliant": is_compliant,
-                "confidence": confidence,
-                "weight": rule_info["weight"],
-                "detailed_analysis": detailed_analysis,
-                "recommendations": compliance_result.get("recommendations", []),
-                "severity": compliance_result.get("severity", "medium"),
-                "formal_verification_eligible": rule_info["formal_verification"],
+        else:
+            return {
+                "validation_id": f"ERROR-{int(time.time())}",
+                "overall_compliant": False,
+                "error": str(e),
+                "timestamp": time.time()
             }
-
-            if not is_compliant:
-                overall_compliant = False
-
-                # Real-time violation detection
-                if violation_detector:
-                    try:
-                        await violation_detector.detect_violation(
-                            validation_id, rule_id, compliance_check
-                        )
-                    except Exception as e:
-                        logger.warning(f"Violation detection failed: {e}")
-
-            compliance_score += rule_info["weight"] * confidence
-            validation_results.append(compliance_check)
-
-    # Formal verification integration if requested and available
-    if enable_formal_verification and fv_client and overall_compliant:
-        try:
-            formal_verification_results = await fv_client.verify_constitutional_compliance(
-                policy, validation_results
-            )
-        except Exception as e:
-            logger.warning(f"Formal verification failed: {e}")
-
-    processing_time = (time.time() - start_time) * 1000
-
-    result = {
-        "validation_id": validation_id,
-        "policy_id": policy.get("policy_id", "unknown"),
-        "overall_compliant": overall_compliant,
-        "compliance_score": round(compliance_score, 4),
-        "validation_level": validation_level,
-        "results": validation_results,
-        "formal_verification": formal_verification_results,
-        "summary": {
-            "total_rules_checked": len(validation_results),
-            "rules_passed": sum(1 for r in validation_results if r["compliant"]),
-            "rules_failed": sum(1 for r in validation_results if not r["compliant"]),
-            "overall_confidence": (
-                round(
-                    sum(r["confidence"] for r in validation_results) / len(validation_results),
-                    4,
-                )
-                if validation_results
-                else 0
-            ),
-            "average_severity": _calculate_average_severity(validation_results),
-        },
-        "next_steps": (
-            [
-                "Review failed rule compliance",
-                "Implement recommended changes",
-                "Re-validate after modifications",
-                "Consider formal verification",
-            ]
-            if not overall_compliant
-            else [
-                "Proceed to policy governance compliance check",
-                "Submit for stakeholder review",
-                "Consider production deployment",
-            ]
-        ),
-        "timestamp": time.time(),
-        "processing_time_ms": round(processing_time, 2),
-    }
-
-    # Log audit trail
-    if audit_logger:
-        try:
-            await audit_logger.log_validation_result(validation_id, result)
-        except Exception as e:
-            logger.warning(f"Audit result logging failed: {e}")
-
-    return result
 
 
 @app.post("/api/v1/constitutional/validate-advanced")

@@ -10,10 +10,17 @@ import asyncio
 import logging
 import os
 import sys
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import sessionmaker
+
+from services.shared.database import Base
+from services.shared.langgraph_config import ConstitutionalCouncilConfig
+from services.shared.models import User
 
 from .models import ACAmendment
 from .services.stakeholder_engagement import (
@@ -22,12 +29,6 @@ from .services.stakeholder_engagement import (
     StakeholderNotificationService,
     StakeholderRole,
 )
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
-
-from services.shared.database import Base
-from services.shared.langgraph_config import ConstitutionalCouncilConfig
-from services.shared.models import User
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

@@ -112,9 +112,7 @@ class ACServiceInterface(ServiceInterface):
         """Create new principle."""
 
     @abstractmethod
-    async def get_principles(
-        self, filters: dict[str, Any] = None
-    ) -> list[dict[str, Any]]:
+    async def get_principles(self, filters: dict[str, Any] = None) -> list[dict[str, Any]]:
         """Get principles with optional filters."""
 
     @abstractmethod
@@ -124,9 +122,7 @@ class ACServiceInterface(ServiceInterface):
         """Vote on a principle."""
 
     @abstractmethod
-    async def audit_compliance(
-        self, target: str, criteria: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def audit_compliance(self, target: str, criteria: dict[str, Any]) -> dict[str, Any]:
         """Perform compliance audit."""
 
 
@@ -138,9 +134,7 @@ class GSServiceInterface(ServiceInterface):
         """Synthesize governance rules."""
 
     @abstractmethod
-    async def analyze_principles(
-        self, principles: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    async def analyze_principles(self, principles: list[dict[str, Any]]) -> dict[str, Any]:
         """Analyze principles for synthesis."""
 
     @abstractmethod
@@ -172,15 +166,11 @@ class PGCServiceInterface(ServiceInterface):
         """Compile policy for execution."""
 
     @abstractmethod
-    async def evaluate_policy(
-        self, policy_id: str, context: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def evaluate_policy(self, policy_id: str, context: dict[str, Any]) -> dict[str, Any]:
         """Evaluate policy against context."""
 
     @abstractmethod
-    async def enforce_policy(
-        self, policy_id: str, action: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def enforce_policy(self, policy_id: str, action: dict[str, Any]) -> dict[str, Any]:
         """Enforce policy on action."""
 
 
@@ -192,9 +182,7 @@ class IntegrityServiceInterface(ServiceInterface):
         """Sign data with cryptographic signature."""
 
     @abstractmethod
-    async def verify_signature(
-        self, data: dict[str, Any], signature: str, key_id: str
-    ) -> bool:
+    async def verify_signature(self, data: dict[str, Any], signature: str, key_id: str) -> bool:
         """Verify cryptographic signature."""
 
     @abstractmethod
@@ -214,15 +202,11 @@ class ECServiceInterface(ServiceInterface):
         """Monitor system health and performance."""
 
     @abstractmethod
-    async def oversee_governance(
-        self, governance_data: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def oversee_governance(self, governance_data: dict[str, Any]) -> dict[str, Any]:
         """Oversee governance processes."""
 
     @abstractmethod
-    async def generate_report(
-        self, report_type: str, parameters: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def generate_report(self, report_type: str, parameters: dict[str, Any]) -> dict[str, Any]:
         """Generate system reports."""
 
 
@@ -254,27 +238,19 @@ class MetricsInterface(ABC):
     """Interface for metrics collection."""
 
     @abstractmethod
-    async def record_counter(
-        self, name: str, value: int = 1, tags: dict[str, str] = None
-    ) -> None:
+    async def record_counter(self, name: str, value: int = 1, tags: dict[str, str] = None) -> None:
         """Record counter metric."""
 
     @abstractmethod
-    async def record_gauge(
-        self, name: str, value: float, tags: dict[str, str] = None
-    ) -> None:
+    async def record_gauge(self, name: str, value: float, tags: dict[str, str] = None) -> None:
         """Record gauge metric."""
 
     @abstractmethod
-    async def record_histogram(
-        self, name: str, value: float, tags: dict[str, str] = None
-    ) -> None:
+    async def record_histogram(self, name: str, value: float, tags: dict[str, str] = None) -> None:
         """Record histogram metric."""
 
     @abstractmethod
-    async def record_timer(
-        self, name: str, duration: float, tags: dict[str, str] = None
-    ) -> None:
+    async def record_timer(self, name: str, duration: float, tags: dict[str, str] = None) -> None:
         """Record timer metric."""
 
     @abstractmethod
@@ -286,9 +262,7 @@ class LoggingInterface(ABC):
     """Interface for structured logging."""
 
     @abstractmethod
-    async def log(
-        self, level: str, message: str, context: dict[str, Any] = None
-    ) -> None:
+    async def log(self, level: str, message: str, context: dict[str, Any] = None) -> None:
         """Log message with context."""
 
     @abstractmethod

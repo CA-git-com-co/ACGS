@@ -183,12 +183,12 @@ export VLLM_WORKER_MULTIPROC_METHOD=spawn
 
 echo "Starting NVIDIA AceReason-Nemotron-1.1-7B on port $NVIDIA_PORT..."
 
-vllm serve "$NVIDIA_MODEL" \\
+nano-vllm-service.py "$NVIDIA_MODEL" \\
     --host 0.0.0.0 \\
     --port $NVIDIA_PORT \\
-    --tensor-parallel-size 1 \\
+    # --tensor-parallel-size (handled by Nano-vLLM) 1 \\
     --max-model-len 32768 \\
-    --gpu-memory-utilization 0.8 \\
+    # --gpu-memory-utilization (handled by Nano-vLLM) 0.8 \\
     --swap-space 4 \\
     --disable-log-requests \\
     --trust-remote-code \\
@@ -235,12 +235,12 @@ export VLLM_WORKER_MULTIPROC_METHOD=spawn
 
 echo "Starting Microsoft Phi-4-mini-reasoning on port $MICROSOFT_PORT..."
 
-vllm serve "$MICROSOFT_MODEL" \\
+nano-vllm-service.py "$MICROSOFT_MODEL" \\
     --host 0.0.0.0 \\
     --port $MICROSOFT_PORT \\
-    --tensor-parallel-size 1 \\
+    # --tensor-parallel-size (handled by Nano-vLLM) 1 \\
     --max-model-len 16384 \\
-    --gpu-memory-utilization 0.7 \\
+    # --gpu-memory-utilization (handled by Nano-vLLM) 0.7 \\
     --swap-space 2 \\
     --disable-log-requests \\
     --trust-remote-code \\
@@ -306,12 +306,12 @@ if command -v nvidia-smi >/dev/null 2>&1 && [ "$GPU_COMPATIBLE" = "true" ]; then
     export CUDA_VISIBLE_DEVICES=2
     export VLLM_WORKER_MULTIPROC_METHOD=spawn
 
-    vllm serve "$MULTIMODAL_MODEL" \\
+    nano-vllm-service.py "$MULTIMODAL_MODEL" \\
         --host 0.0.0.0 \\
         --port $MULTIMODAL_PORT \\
-        --tensor-parallel-size 1 \\
+        # --tensor-parallel-size (handled by Nano-vLLM) 1 \\
         --max-model-len 16384 \\
-        --gpu-memory-utilization 0.6 \\
+        # --gpu-memory-utilization (handled by Nano-vLLM) 0.6 \\
         --swap-space 4 \\
         --disable-log-requests \\
         --trust-remote-code \\
@@ -321,10 +321,10 @@ else
     echo "Using CPU-only deployment due to GPU compatibility issues..."
     export CUDA_VISIBLE_DEVICES=""
 
-    vllm serve "$MULTIMODAL_MODEL" \\
+    nano-vllm-service.py "$MULTIMODAL_MODEL" \\
         --host 0.0.0.0 \\
         --port $MULTIMODAL_PORT \\
-        --tensor-parallel-size 1 \\
+        # --tensor-parallel-size (handled by Nano-vLLM) 1 \\
         --max-model-len 8192 \\
         --disable-log-requests \\
         --trust-remote-code \\

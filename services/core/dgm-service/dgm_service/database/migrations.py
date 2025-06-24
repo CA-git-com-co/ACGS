@@ -4,20 +4,20 @@ Database migrations for DGM service.
 
 import asyncio
 import logging
-from typing import Dict, Any
+from typing import Any, Dict
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from ..models import (
-    Base,
-    DGMArchive,
-    PerformanceMetric,
-    ConstitutionalComplianceLog,
     BanditState,
+    Base,
+    ConstitutionalComplianceLog,
+    DGMArchive,
     ImprovementWorkspace,
-    SystemConfiguration
+    PerformanceMetric,
+    SystemConfiguration,
 )
 
 logger = logging.getLogger(__name__)
@@ -34,15 +34,9 @@ class DGMMigrationManager:
 
     async def initialize(self):
         """Initialize database connection."""
-        self.engine = create_async_engine(
-            self.database_url,
-            echo=False,
-            pool_pre_ping=True
-        )
+        self.engine = create_async_engine(self.database_url, echo=False, pool_pre_ping=True)
         self.session_factory = sessionmaker(
-            bind=self.engine,
-            class_=AsyncSession,
-            expire_on_commit=False
+            bind=self.engine, class_=AsyncSession, expire_on_commit=False
         )
         logger.info("DGM migration manager initialized")
 
@@ -52,14 +46,14 @@ class DGMMigrationManager:
             "schema_created": False,
             "tables_created": [],
             "indexes_created": [],
-            "errors": []
+            "errors": [],
         }
 
         try:
             async with self.session_factory() as session:
                 # Create DGM schema
                 await session.execute(text("CREATE SCHEMA IF NOT EXISTS dgm"))
-                await session.execute(text("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\""))
+                await session.execute(text('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'))
                 await session.commit()
                 result["schema_created"] = True
                 logger.info("DGM schema created successfully")
@@ -75,7 +69,7 @@ class DGMMigrationManager:
                     "bandit_states",
                     "improvement_workspaces",
                     "system_configurations",
-                    "metric_aggregations"
+                    "metric_aggregations",
                 ]
 
                 # Create additional indexes
@@ -85,7 +79,7 @@ class DGMMigrationManager:
                     "idx_performance_metrics_composite",
                     "idx_compliance_logs_service_level",
                     "idx_bandit_states_context_arm",
-                    "idx_workspaces_status_created"
+                    "idx_workspaces_status_created",
                 ]
 
                 await session.commit()
@@ -105,30 +99,26 @@ class DGMMigrationManager:
             CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_dgm_archive_status_timestamp
             ON dgm.dgm_archive (status, timestamp DESC)
             """,
-
             # Performance metrics indexes
             """
             CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_performance_metrics_composite
             ON dgm.performance_metrics (service_name, metric_type, timestamp DESC)
             """,
-
             # Compliance logs indexes
             """
             CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_compliance_logs_service_level
             ON dgm.constitutional_compliance_logs (service_name, compliance_level, assessed_at DESC)
             """,
-
             # Bandit states indexes
             """
             CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_bandit_states_context_arm
             ON dgm.bandit_states (context_key, arm_id, last_updated DESC)
             """,
-
             # Workspace indexes
             """
             CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_workspaces_status_created
             ON dgm.improvement_workspaces (status, created_at DESC)
-            """
+            """,
         ]
 
         for index_sql in indexes:
@@ -145,14 +135,16 @@ class DGMMigrationManager:
             "tables": {},
             "indexes": {},
             "constitutional_compliance": False,
-            "errors": []
+            "errors": [],
         }
 
         try:
             async with self.session_factory() as session:
                 # Check schema existence
                 result = await session.execute(
-                    text("SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name = 'dgm'")
+                    text(
+                        "SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name = 'dgm'"
+                    )
                 )
                 verification_report["schema_exists"] = result.scalar() > 0
 
@@ -164,23 +156,27 @@ class DGMMigrationManager:
                     "bandit_states",
                     "improvement_workspaces",
                     "system_configurations",
-                    "metric_aggregations"
+                    "metric_aggregations",
                 ]
 
                 for table_name in table_names:
                     result = await session.execute(
-                        text(f"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'dgm' AND table_name = '{table_name}'")
+                        text(
+                            f"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'dgm' AND table_name = '{table_name}'"
+                        )
                     )
                     table_exists = result.scalar() > 0
                     verification_report["tables"][table_name] = {
                         "exists": table_exists,
-                        "status": "healthy" if table_exists else "missing"
+                        "status": "healthy" if table_exists else "missing",
                     }
 
                 # Check constitutional compliance configuration
                 try:
                     result = await session.execute(
-                        text("SELECT COUNT(*) FROM dgm.system_configurations WHERE key = 'constitutional_hash'")
+                        text(
+                            "SELECT COUNT(*) FROM dgm.system_configurations WHERE key = 'constitutional_hash'"
+                        )
                     )
                     verification_report["constitutional_compliance"] = result.scalar() > 0
                 except Exception:
@@ -198,7 +194,7 @@ class DGMMigrationManager:
             "tables_dropped": [],
             "schema_dropped": False,
             "errors": [],
-            "warnings": []
+            "warnings": [],
         }
 
         try:
@@ -211,12 +207,14 @@ class DGMMigrationManager:
                     "bandit_states",
                     "improvement_workspaces",
                     "system_configurations",
-                    "dgm_archive"
+                    "dgm_archive",
                 ]
 
                 for table_name in table_drop_order:
                     try:
-                        await session.execute(text(f"DROP TABLE IF EXISTS dgm.{table_name} CASCADE"))
+                        await session.execute(
+                            text(f"DROP TABLE IF EXISTS dgm.{table_name} CASCADE")
+                        )
                         rollback_result["tables_dropped"].append(table_name)
                         logger.warning(f"Dropped table: dgm.{table_name}")
                     except Exception as e:
@@ -243,13 +241,15 @@ class DGMMigrationManager:
             "checks_failed": 0,
             "warnings": [],
             "errors": [],
-            "details": {}
+            "details": {},
         }
 
         try:
             async with self.session_factory() as session:
                 # Check 1: Constitutional hash consistency
-                result = await session.execute(text("""
+                result = await session.execute(
+                    text(
+                        """
                 SELECT COUNT(DISTINCT constitutional_hash) as hash_count,
                        COUNT(*) as total_records
                 FROM (
@@ -265,7 +265,9 @@ class DGMMigrationManager:
                     UNION ALL
                     SELECT constitutional_hash FROM dgm.system_configurations
                 ) all_hashes
-                """))
+                """
+                    )
+                )
                 hash_check = result.fetchone()
 
                 if hash_check.hash_count == 1:
@@ -279,12 +281,16 @@ class DGMMigrationManager:
                     integrity_result["details"]["constitutional_hash"] = "FAIL"
 
                 # Check 2: Foreign key integrity
-                result = await session.execute(text("""
+                result = await session.execute(
+                    text(
+                        """
                 SELECT COUNT(*) as orphaned_metrics
                 FROM dgm.performance_metrics pm
                 LEFT JOIN dgm.dgm_archive da ON pm.improvement_id = da.improvement_id
                 WHERE pm.improvement_id IS NOT NULL AND da.improvement_id IS NULL
-                """))
+                """
+                    )
+                )
                 orphaned_metrics = result.scalar()
 
                 if orphaned_metrics == 0:
@@ -298,11 +304,15 @@ class DGMMigrationManager:
                     integrity_result["details"]["foreign_key_integrity"] = "FAIL"
 
                 # Check 3: Compliance score ranges
-                result = await session.execute(text("""
+                result = await session.execute(
+                    text(
+                        """
                 SELECT COUNT(*) as invalid_scores
                 FROM dgm.constitutional_compliance_logs
                 WHERE compliance_score < 0.0 OR compliance_score > 1.0
-                """))
+                """
+                    )
+                )
                 invalid_scores = result.scalar()
 
                 if invalid_scores == 0:
@@ -316,11 +326,15 @@ class DGMMigrationManager:
                     integrity_result["details"]["compliance_score_range"] = "FAIL"
 
                 # Check 4: Timestamp consistency
-                result = await session.execute(text("""
+                result = await session.execute(
+                    text(
+                        """
                 SELECT COUNT(*) as future_timestamps
                 FROM dgm.dgm_archive
                 WHERE created_at > NOW() OR updated_at > NOW()
-                """))
+                """
+                    )
+                )
                 future_timestamps = result.scalar()
 
                 if future_timestamps == 0:
@@ -332,7 +346,9 @@ class DGMMigrationManager:
                     )
                     integrity_result["details"]["timestamp_consistency"] = "WARNING"
 
-                logger.info(f"Data integrity check completed: {integrity_result['checks_passed']} passed, {integrity_result['checks_failed']} failed")
+                logger.info(
+                    f"Data integrity check completed: {integrity_result['checks_passed']} passed, {integrity_result['checks_failed']} failed"
+                )
 
         except Exception as e:
             logger.error(f"Data integrity check error: {e}")
@@ -346,7 +362,7 @@ class DGMMigrationManager:
             "configurations_created": 0,
             "baseline_metrics_created": 0,
             "default_bandit_states_created": 0,
-            "errors": []
+            "errors": [],
         }
 
         try:
@@ -359,45 +375,49 @@ class DGMMigrationManager:
                         "value_type": "string",
                         "description": "ACGS constitutional compliance hash",
                         "category": "compliance",
-                        "is_readonly": True
+                        "is_readonly": True,
                     },
                     {
                         "key": "max_improvement_attempts",
                         "value": "10",
                         "value_type": "integer",
                         "description": "Maximum improvement attempts per cycle",
-                        "category": "safety"
+                        "category": "safety",
                     },
                     {
                         "key": "safety_threshold",
                         "value": "0.8",
                         "value_type": "float",
                         "description": "Minimum safety threshold for improvements",
-                        "category": "safety"
+                        "category": "safety",
                     },
                     {
                         "key": "bandit_exploration_rate",
                         "value": "0.1",
                         "value_type": "float",
                         "description": "Conservative exploration rate for bandit algorithms",
-                        "category": "learning"
-                    }
+                        "category": "learning",
+                    },
                 ]
 
                 for config in default_configs:
                     await session.execute(
-                        text("""
+                        text(
+                            """
                         INSERT INTO dgm.system_configurations
                         (key, value, value_type, description, category, is_readonly, constitutional_hash)
                         VALUES (:key, :value, :value_type, :description, :category, :is_readonly, :constitutional_hash)
                         ON CONFLICT (key) DO NOTHING
-                        """),
-                        {**config, "constitutional_hash": "cdd01ef066bc6cf2"}
+                        """
+                        ),
+                        {**config, "constitutional_hash": "cdd01ef066bc6cf2"},
                     )
                     migration_result["configurations_created"] += 1
 
                 await session.commit()
-                logger.info(f"Created {migration_result['configurations_created']} default configurations")
+                logger.info(
+                    f"Created {migration_result['configurations_created']} default configurations"
+                )
 
         except Exception as e:
             logger.error(f"Data migration error: {e}")
@@ -409,20 +429,23 @@ class DGMMigrationManager:
         """Create a backup of the current DGM schema."""
         if not backup_name:
             from datetime import datetime
+
             backup_name = f"dgm_backup_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
 
         backup_result = {
             "backup_name": backup_name,
             "tables_backed_up": [],
             "backup_location": f"dgm_backups.{backup_name}",
-            "errors": []
+            "errors": [],
         }
 
         try:
             async with self.session_factory() as session:
                 # Create backup schema
                 await session.execute(text(f"CREATE SCHEMA IF NOT EXISTS dgm_backups"))
-                await session.execute(text(f"CREATE SCHEMA IF NOT EXISTS dgm_backups.{backup_name}"))
+                await session.execute(
+                    text(f"CREATE SCHEMA IF NOT EXISTS dgm_backups.{backup_name}")
+                )
 
                 # Backup each table
                 tables = [
@@ -432,15 +455,19 @@ class DGMMigrationManager:
                     "bandit_states",
                     "improvement_workspaces",
                     "system_configurations",
-                    "metric_aggregations"
+                    "metric_aggregations",
                 ]
 
                 for table in tables:
                     try:
-                        await session.execute(text(f"""
+                        await session.execute(
+                            text(
+                                f"""
                         CREATE TABLE dgm_backups.{backup_name}.{table} AS
                         SELECT * FROM dgm.{table}
-                        """))
+                        """
+                            )
+                        )
                         backup_result["tables_backed_up"].append(table)
                     except Exception as e:
                         backup_result["errors"].append(f"Error backing up {table}: {e}")
@@ -456,19 +483,19 @@ class DGMMigrationManager:
 
     async def restore_from_backup(self, backup_name: str) -> Dict[str, Any]:
         """Restore DGM schema from a backup."""
-        restore_result = {
-            "backup_name": backup_name,
-            "tables_restored": [],
-            "errors": []
-        }
+        restore_result = {"backup_name": backup_name, "tables_restored": [], "errors": []}
 
         try:
             async with self.session_factory() as session:
                 # Verify backup exists
-                result = await session.execute(text(f"""
+                result = await session.execute(
+                    text(
+                        f"""
                 SELECT COUNT(*) FROM information_schema.schemata
                 WHERE schema_name = 'dgm_backups.{backup_name}'
-                """))
+                """
+                    )
+                )
 
                 if result.scalar() == 0:
                     raise ValueError(f"Backup {backup_name} not found")
@@ -481,7 +508,7 @@ class DGMMigrationManager:
                     "bandit_states",
                     "improvement_workspaces",
                     "system_configurations",
-                    "metric_aggregations"
+                    "metric_aggregations",
                 ]
 
                 for table in tables:
@@ -490,10 +517,14 @@ class DGMMigrationManager:
                         await session.execute(text(f"TRUNCATE TABLE dgm.{table} CASCADE"))
 
                         # Restore from backup
-                        await session.execute(text(f"""
+                        await session.execute(
+                            text(
+                                f"""
                         INSERT INTO dgm.{table}
                         SELECT * FROM dgm_backups.{backup_name}.{table}
-                        """))
+                        """
+                            )
+                        )
                         restore_result["tables_restored"].append(table)
                     except Exception as e:
                         restore_result["errors"].append(f"Error restoring {table}: {e}")

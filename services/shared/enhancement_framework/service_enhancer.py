@@ -147,9 +147,7 @@ class ACGSServiceEnhancer:
 
         # Configure circuit breaker
         if enabled:
-            self.performance_enhancer.circuit_breaker_threshold = (
-                circuit_breaker_threshold
-            )
+            self.performance_enhancer.circuit_breaker_threshold = circuit_breaker_threshold
 
         logger.info(f"Performance optimization configured for {self.service_name}")
 

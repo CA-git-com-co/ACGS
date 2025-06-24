@@ -1,0 +1,36 @@
+{
+  "input_validation": {
+    "max_request_size_mb": 10,
+    "max_json_depth": 10,
+    "max_array_length": 1000,
+    "allowed_content_types": [
+      "application/json",
+      "application/x-www-form-urlencoded",
+      "multipart/form-data"
+    ]
+  },
+  "sanitization_rules": {
+    "strip_html_tags": true,
+    "escape_sql_chars": true,
+    "normalize_unicode": true,
+    "remove_null_bytes": true
+  },
+  "sql_injection_prevention": {
+    "use_parameterized_queries": true,
+    "escape_special_chars": true,
+    "validate_input_types": true,
+    "log_suspicious_queries": true
+  },
+  "xss_prevention": {
+    "content_security_policy": true,
+    "output_encoding": true,
+    "input_sanitization": true,
+    "validate_urls": true
+  },
+  "csrf_protection": {
+    "enabled": true,
+    "token_validation": true,
+    "same_origin_check": true,
+    "referer_validation": true
+  }
+}

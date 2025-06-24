@@ -12,13 +12,13 @@ from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
+from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, and_
 
-from ..models import ACAmendment, ACAmendmentVote, User
-from ..schemas import ACAmendmentCreate, ACAmendmentVoteCreate
-from ..monitoring.scalability_metrics import get_metrics_collector, GovernancePhase
 from ..core.constitutional_council_scalability import ConstitutionalCouncilScalabilityFramework
+from ..models import ACAmendment, ACAmendmentVote, User
+from ..monitoring.scalability_metrics import GovernancePhase, get_metrics_collector
+from ..schemas import ACAmendmentCreate, ACAmendmentVoteCreate
 
 logger = logging.getLogger(__name__)
 

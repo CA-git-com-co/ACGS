@@ -123,9 +123,7 @@ class ACGSHttpClient:
         """Close the HTTP client."""
         await self.client.aclose()
 
-    @retry(
-        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10)
-    )
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
     async def request(
         self,
         method: str,
@@ -178,9 +176,7 @@ class ACGSHttpClient:
             duration = time.time() - start_time
 
             # Log request metrics
-            logger.info(
-                f"HTTP {method} {endpoint} - {response.status_code} - {duration:.3f}s"
-            )
+            logger.info(f"HTTP {method} {endpoint} - {response.status_code} - {duration:.3f}s")
 
             if response.status_code >= 400:
                 self.circuit_breaker.record_failure()
@@ -200,9 +196,7 @@ class ACGSHttpClient:
         except httpx.RequestError as e:
             self.circuit_breaker.record_failure()
             logger.error(f"Request error for {endpoint}: {e}")
-            raise ServiceUnavailableError(
-                f"Service unavailable: {str(e)}", "SERVICE_UNAVAILABLE"
-            )
+            raise ServiceUnavailableError(f"Service unavailable: {str(e)}", "SERVICE_UNAVAILABLE")
         except Exception as e:
             self.circuit_breaker.record_failure()
             logger.error(f"Unexpected error for {endpoint}: {e}")

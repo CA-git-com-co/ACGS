@@ -1,0 +1,35 @@
+# Nano-vLLM Migration Configuration
+migration:
+  enabled: true
+  fallback_to_vllm: true
+  parallel_deployment: true
+  
+models:
+  nvidia_acerreason:
+    model_path: "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF"
+    tensor_parallel_size: 1
+    gpu_memory_utilization: 0.9
+    port: 8000
+    
+  microsoft_phi4:
+    model_path: "microsoft/Phi-4"
+    tensor_parallel_size: 1
+    gpu_memory_utilization: 0.6
+    port: 8001
+    
+  nvidia_multimodal:
+    model_path: "nvidia/Llama-3.1-Nemotron-Nano-VL-8B-V1"
+    tensor_parallel_size: 1
+    gpu_memory_utilization: 0.6
+    port: 8002
+
+safety:
+  backup_enabled: true
+  health_checks: true
+  rollback_on_failure: true
+  validation_tests: true
+
+performance:
+  benchmark_comparison: true
+  memory_monitoring: true
+  latency_tracking: true

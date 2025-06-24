@@ -11,13 +11,14 @@ Tests the comprehensive Policy Synthesis Enhancement system including:
 from unittest.mock import Mock
 
 import pytest
+
+from services.shared.models import Principle
+
 from .core.performance_optimizer import (
     SynthesisPerformanceMetrics,
     WINAPerformanceOptimizer,
 )
 from .services.qec_error_correction_service import QECErrorCorrectionService
-
-from services.shared.models import Principle
 
 
 class TestProactiveErrorPrediction:

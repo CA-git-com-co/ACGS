@@ -7,7 +7,7 @@ the Gemini-LangGraph quickstart for constitutional governance workflows.
 """
 
 import operator
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Annotated, Any, TypedDict
 
@@ -86,9 +86,7 @@ class ConstitutionalCouncilState(BaseACGSState):
     # Amendment proposal data
     amendment_proposal: dict[str, Any] | None
     amendment_id: str | None
-    amendment_type: (
-        str | None
-    )  # "principle_addition", "principle_modification", "meta_rule_change"
+    amendment_type: str | None  # "principle_addition", "principle_modification", "meta_rule_change"
 
     # Stakeholder engagement
     stakeholder_feedback: Annotated[list[dict[str, Any]], operator.add]
@@ -113,9 +111,7 @@ class ConstitutionalCouncilState(BaseACGSState):
     escalation_required: bool | None
 
     # Workflow state tracking
-    current_phase: (
-        str | None
-    )  # "proposal", "feedback", "analysis", "voting", "implementation"
+    current_phase: str | None  # "proposal", "feedback", "analysis", "voting", "implementation"
     phase_deadlines: dict[str, str] | None
     automated_processing: bool | None
 

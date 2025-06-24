@@ -143,9 +143,7 @@ class FrameworkValidator:
         try:
             # Test with valid constitutional hash
             headers = {"X-Constitutional-Hash": "cdd01ef066bc6cf2"}
-            response = await self.client.get(
-                f"{self.service_url}/status", headers=headers
-            )
+            response = await self.client.get(f"{self.service_url}/status", headers=headers)
 
             if response.status_code != 200:
                 return {
@@ -162,9 +160,7 @@ class FrameworkValidator:
 
             # Test with invalid constitutional hash (should fail in strict mode)
             invalid_headers = {"X-Constitutional-Hash": "invalid_hash"}
-            response = await self.client.get(
-                f"{self.service_url}/status", headers=invalid_headers
-            )
+            response = await self.client.get(f"{self.service_url}/status", headers=invalid_headers)
 
             # In strict mode, this should return 400
             if response.status_code == 400:
@@ -232,9 +228,7 @@ class FrameworkValidator:
             # Test enhanced status endpoint (if available)
             enhanced_status_available = False
             try:
-                response = await self.client.get(
-                    f"{self.service_url}/api/v1/pgc/enhanced-status"
-                )
+                response = await self.client.get(f"{self.service_url}/api/v1/pgc/enhanced-status")
                 enhanced_status_available = response.status_code == 200
             except:
                 pass
@@ -254,9 +248,7 @@ class FrameworkValidator:
             # Test cache stats endpoint (if available)
             cache_stats_available = False
             try:
-                response = await self.client.get(
-                    f"{self.service_url}/api/v1/pgc/cache-stats"
-                )
+                response = await self.client.get(f"{self.service_url}/api/v1/pgc/cache-stats")
                 cache_stats_available = response.status_code == 200
                 if cache_stats_available:
                     cache_data = response.json()
@@ -297,9 +289,7 @@ class FrameworkValidator:
                     }
 
             # Check if most endpoints are available
-            available_count = sum(
-                1 for result in endpoint_results.values() if result["available"]
-            )
+            available_count = sum(1 for result in endpoint_results.values() if result["available"])
             endpoints_passed = available_count >= len(endpoints_to_test) * 0.8
 
             return {
@@ -316,9 +306,7 @@ class FrameworkValidator:
         """Test error handling and graceful degradation."""
         try:
             # Test non-existent endpoint
-            response = await self.client.get(
-                f"{self.service_url}/non-existent-endpoint"
-            )
+            response = await self.client.get(f"{self.service_url}/non-existent-endpoint")
             handles_404 = response.status_code == 404
 
             # Test malformed request (if applicable)

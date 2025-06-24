@@ -13,6 +13,7 @@ from unittest.mock import MagicMock
 import pytest
 from fastapi import HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials
+
 from services.core.governance_synthesis.app.services.security_compliance import (
     AuditLogger,
     InputValidator,

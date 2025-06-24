@@ -4,10 +4,10 @@ Archive model for DGM improvements.
 
 import enum
 from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 from uuid import UUID
 
-from sqlalchemy import Column, String, Text, DateTime, Enum, Numeric, JSON
+from sqlalchemy import JSON, Column, DateTime, Enum, Numeric, String, Text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
@@ -17,6 +17,7 @@ Base = declarative_base()
 
 class ImprovementStatus(enum.Enum):
     """Status of an improvement."""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -26,10 +27,10 @@ class ImprovementStatus(enum.Enum):
 
 class DGMArchive(Base):
     """Archive table for DGM improvements."""
-    
+
     __tablename__ = "dgm_archive"
     __table_args__ = {"schema": "dgm"}
-    
+
     id = Column(PG_UUID(as_uuid=True), primary_key=True, server_default=func.uuid_generate_v4())
     improvement_id = Column(PG_UUID(as_uuid=True), nullable=False, unique=True)
     timestamp = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
@@ -44,11 +45,13 @@ class DGMArchive(Base):
     metadata = Column(JSON)
     created_by = Column(String(255))
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
-    
+    updated_at = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
+    )
+
     def __repr__(self):
         return f"<DGMArchive(improvement_id={self.improvement_id}, status={self.status})>"
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary representation."""
         return {
@@ -66,5 +69,5 @@ class DGMArchive(Base):
             "metadata": self.metadata,
             "created_by": self.created_by,
             "created_at": self.created_at.isoformat() if self.created_at else None,
-            "updated_at": self.updated_at.isoformat() if self.updated_at else None
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }
