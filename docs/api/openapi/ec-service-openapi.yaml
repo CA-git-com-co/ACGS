@@ -1,0 +1,425 @@
+openapi: 3.0.3
+info:
+  title: ACGS-1 Evolutionary Computation Service API
+  description: |
+    Enterprise-grade WINA-optimized oversight and governance platform providing
+    advanced evolutionary computation algorithms, constitutional compliance verification,
+    and intelligent performance optimization.
+    
+    Constitutional Hash: cdd01ef066bc6cf2
+  version: 3.0.0
+  contact:
+    name: ACGS-1 Development Team
+    url: https://github.com/CA-git-com-co/ACGS
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8006
+    description: Local development server
+  - url: https://ec.acgs.local
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+paths:
+  /health:
+    get:
+      summary: Service health check
+      description: Returns the current health status of the evolutionary computation service
+      tags:
+        - Health
+      security: []
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /api/v1/oversight/coordinate:
+    post:
+      summary: Coordinate WINA-optimized EC oversight
+      description: Coordinate WINA-optimized EC oversight operation with constitutional compliance
+      tags:
+        - WINA Oversight
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OversightCoordinationRequest'
+      responses:
+        '200':
+          description: Oversight coordination completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OversightCoordinationResponse'
+
+  /api/v1/advanced-wina/optimization/run:
+    post:
+      summary: Run advanced optimization algorithms
+      description: Run advanced optimization algorithms for resource allocation and coordination
+      tags:
+        - Advanced WINA Optimization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdvancedOptimizationRequest'
+      responses:
+        '200':
+          description: Advanced optimization completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdvancedOptimizationResponse'
+
+  /api/v1/advanced-wina/monitoring/real-time:
+    get:
+      summary: Real-time WINA monitoring
+      description: Get real-time monitoring data for WINA activities and performance
+      tags:
+        - Real-Time Monitoring
+      responses:
+        '200':
+          description: Real-time monitoring data retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RealTimeMonitoringResponse'
+
+  /api/v1/alphaevolve/optimize:
+    post:
+      summary: Optimize EC algorithms with constitutional constraints
+      description: Optimize EC algorithm configuration with constitutional constraints and WINA insights
+      tags:
+        - AlphaEvolve Integration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlphaEvolveOptimizationRequest'
+      responses:
+        '200':
+          description: AlphaEvolve optimization completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlphaEvolveOptimizationResponse'
+
+  /api/v1/evolution/multi-objective:
+    post:
+      summary: Multi-objective optimization
+      description: Run multi-objective optimization for complex governance problems
+      tags:
+        - Evolutionary Computation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultiObjectiveOptimizationRequest'
+      responses:
+        '200':
+          description: Multi-objective optimization completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MultiObjectiveOptimizationResponse'
+
+  /api/v1/wina/performance/metrics:
+    get:
+      summary: Get WINA performance metrics
+      description: Get comprehensive WINA performance metrics and insights
+      tags:
+        - WINA Performance
+      responses:
+        '200':
+          description: WINA performance metrics retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WINAPerformanceMetricsResponse'
+
+  /api/v1/monitoring/system:
+    get:
+      summary: System performance monitoring
+      description: Get comprehensive system performance monitoring data
+      tags:
+        - System Monitoring
+      responses:
+        '200':
+          description: System monitoring data retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemMonitoringResponse'
+
+  /api/v1/reporting/oversight:
+    get:
+      summary: Get oversight reports
+      description: Get comprehensive oversight reports and analytics
+      tags:
+        - Reporting & Analytics
+      parameters:
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: report_type
+          in: query
+          schema:
+            type: string
+            enum: [performance, constitutional, optimization]
+      responses:
+        '200':
+          description: Oversight reports retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OversightReportsResponse'
+
+  /metrics:
+    get:
+      summary: Prometheus metrics
+      description: Service metrics for monitoring
+      tags:
+        - Monitoring
+      security: []
+      responses:
+        '200':
+          description: Metrics data
+          content:
+            text/plain:
+              schema:
+                type: string
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, unhealthy]
+        service:
+          type: string
+          example: ec_service_production
+        version:
+          type: string
+          example: "3.0.0"
+        phase:
+          type: string
+          example: "Phase 3 - Production Implementation"
+        components:
+          type: object
+          properties:
+            evolution_engine:
+              type: string
+              enum: [operational, degraded]
+            wina_coordinator:
+              type: string
+              enum: [operational, degraded, unavailable]
+            constitutional_verifier:
+              type: string
+              enum: [operational, degraded]
+            performance_monitor:
+              type: string
+              enum: [operational, degraded]
+        performance_metrics:
+          type: object
+          properties:
+            uptime_seconds:
+              type: number
+            target_response_time:
+              type: string
+              example: "<300ms"
+            availability_target:
+              type: string
+              example: ">99.9%"
+
+    OversightCoordinationRequest:
+      type: object
+      required:
+        - target_system
+        - oversight_type
+      properties:
+        target_system:
+          type: string
+          description: Target system for oversight
+          example: "governance_optimization"
+        oversight_type:
+          type: string
+          enum: [constitutional_compliance, performance_optimization, resource_allocation]
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+          default: medium
+        context:
+          type: object
+          properties:
+            system_state:
+              type: string
+            performance_metrics:
+              type: object
+            constitutional_principles:
+              type: array
+              items:
+                type: string
+        strategy:
+          type: string
+          enum: [adaptive_wina_optimization, constitutional_first, performance_first]
+          default: adaptive_wina_optimization
+        enable_learning:
+          type: boolean
+          default: true
+
+    OversightCoordinationResponse:
+      type: object
+      properties:
+        oversight_id:
+          type: string
+          format: uuid
+        wina_strategy:
+          type: object
+          properties:
+            strategy_type:
+              type: string
+            optimization_level:
+              type: string
+            expected_improvement:
+              type: number
+        constitutional_compliance:
+          type: object
+          properties:
+            compliant:
+              type: boolean
+            score:
+              type: number
+              minimum: 0
+              maximum: 1
+            violations:
+              type: array
+              items:
+                type: object
+        optimization_recommendations:
+          type: array
+          items:
+            type: object
+        constitutional_hash:
+          type: string
+          example: "cdd01ef066bc6cf2"
+        processing_time_ms:
+          type: number
+
+    AdvancedOptimizationRequest:
+      type: object
+      required:
+        - algorithm_type
+        - optimization_target
+      properties:
+        algorithm_type:
+          type: string
+          enum: [resource_allocation, coordination_efficiency, performance_tuning, governance_compliance]
+        optimization_target:
+          type: string
+          description: Target for optimization
+        constraints:
+          type: object
+          properties:
+            constitutional_compliance:
+              type: number
+              minimum: 0
+              maximum: 1
+            performance_threshold:
+              type: number
+            resource_limits:
+              type: object
+        optimization_parameters:
+          type: object
+          properties:
+            population_size:
+              type: integer
+              minimum: 10
+              maximum: 1000
+            max_generations:
+              type: integer
+              minimum: 10
+              maximum: 10000
+            mutation_rate:
+              type: number
+              minimum: 0
+              maximum: 1
+            crossover_rate:
+              type: number
+              minimum: 0
+              maximum: 1
+        enable_pgc_integration:
+          type: boolean
+          default: true
+        enable_real_time_monitoring:
+          type: boolean
+          default: true
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+        constitutional_hash:
+          type: string
+          example: "cdd01ef066bc6cf2"
+        timestamp:
+          type: string
+          format: date-time
+
+tags:
+  - name: Health
+    description: Service health and status endpoints
+  - name: WINA Oversight
+    description: WINA-optimized oversight coordination
+  - name: Advanced WINA Optimization
+    description: Advanced WINA optimization algorithms
+  - name: Real-Time Monitoring
+    description: Real-time monitoring and alerting
+  - name: AlphaEvolve Integration
+    description: AlphaEvolve governance optimization
+  - name: Evolutionary Computation
+    description: Evolutionary computation algorithms
+  - name: WINA Performance
+    description: WINA performance metrics and optimization
+  - name: System Monitoring
+    description: System performance monitoring
+  - name: Reporting & Analytics
+    description: Comprehensive reporting and analytics
+  - name: Monitoring
+    description: Service monitoring and metrics

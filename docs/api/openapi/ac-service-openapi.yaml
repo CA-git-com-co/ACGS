@@ -1,0 +1,481 @@
+openapi: 3.0.3
+info:
+  title: ACGS-1 Constitutional AI Service API
+  description: |
+    Constitutional AI service providing advanced constitutional compliance validation,
+    formal verification integration, and real-time constitutional violation detection.
+    
+    Constitutional Hash: cdd01ef066bc6cf2
+  version: 3.0.0
+  contact:
+    name: ACGS-1 Development Team
+    url: https://github.com/CA-git-com-co/ACGS
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8001
+    description: Local development server
+  - url: https://ac.acgs.local
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+paths:
+  /health:
+    get:
+      summary: Service health check
+      description: Returns the current health status of the constitutional AI service
+      tags:
+        - Health
+      security: []
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /api/v1/constitutional/validate:
+    post:
+      summary: Validate constitutional compliance
+      description: Validate action or policy against constitutional principles
+      tags:
+        - Constitutional Compliance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConstitutionalValidationRequest'
+      responses:
+        '200':
+          description: Validation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstitutionalValidationResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/principles:
+    get:
+      summary: List constitutional principles
+      description: Retrieve all constitutional principles
+      tags:
+        - Constitutional Principles
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+          description: Filter by principle category
+        - name: active
+          in: query
+          schema:
+            type: boolean
+          description: Filter by active status
+      responses:
+        '200':
+          description: Principles retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrinciplesResponse'
+
+    post:
+      summary: Create constitutional principle
+      description: Create a new constitutional principle
+      tags:
+        - Constitutional Principles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePrincipleRequest'
+      responses:
+        '201':
+          description: Principle created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrincipleResponse'
+
+  /api/v1/principles/{principle_id}:
+    get:
+      summary: Get constitutional principle
+      description: Retrieve specific constitutional principle
+      tags:
+        - Constitutional Principles
+      parameters:
+        - name: principle_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Principle retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrincipleResponse'
+
+    put:
+      summary: Update constitutional principle
+      description: Update existing constitutional principle
+      tags:
+        - Constitutional Principles
+      parameters:
+        - name: principle_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePrincipleRequest'
+      responses:
+        '200':
+          description: Principle updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrincipleResponse'
+
+  /api/v1/constitutional-council/members:
+    get:
+      summary: List council members
+      description: Get constitutional council members
+      tags:
+        - Constitutional Council
+      responses:
+        '200':
+          description: Council members retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CouncilMembersResponse'
+
+  /api/v1/constitutional-council/proposals:
+    get:
+      summary: List constitutional proposals
+      description: Get all constitutional proposals
+      tags:
+        - Constitutional Council
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, review, voting, approved, rejected]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Proposals retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProposalsResponse'
+
+    post:
+      summary: Submit constitutional proposal
+      description: Submit new constitutional proposal for review
+      tags:
+        - Constitutional Council
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProposalRequest'
+      responses:
+        '201':
+          description: Proposal submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProposalResponse'
+
+  /api/v1/constitutional-council/vote:
+    post:
+      summary: Cast vote on proposal
+      description: Cast vote on constitutional proposal
+      tags:
+        - Constitutional Council
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoteRequest'
+      responses:
+        '200':
+          description: Vote cast successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoteResponse'
+
+  /api/v1/compliance/status:
+    get:
+      summary: Get compliance status
+      description: Get overall constitutional compliance status
+      tags:
+        - Compliance Monitoring
+      responses:
+        '200':
+          description: Compliance status retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplianceStatusResponse'
+
+  /api/v1/compliance/violations:
+    get:
+      summary: Get constitutional violations
+      description: Retrieve recent constitutional violations
+      tags:
+        - Compliance Monitoring
+      parameters:
+        - name: since
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Get violations since this timestamp
+        - name: severity
+          in: query
+          schema:
+            type: string
+            enum: [low, medium, high, critical]
+      responses:
+        '200':
+          description: Violations retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViolationsResponse'
+
+  /api/v1/fidelity/metrics:
+    get:
+      summary: Get constitutional fidelity metrics
+      description: Retrieve constitutional fidelity and adherence metrics
+      tags:
+        - Monitoring
+      responses:
+        '200':
+          description: Fidelity metrics retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FidelityMetricsResponse'
+
+  /metrics:
+    get:
+      summary: Prometheus metrics
+      description: Service metrics for monitoring
+      tags:
+        - Monitoring
+      security: []
+      responses:
+        '200':
+          description: Metrics data
+          content:
+            text/plain:
+              schema:
+                type: string
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, unhealthy]
+        service:
+          type: string
+          example: ac_service
+        version:
+          type: string
+          example: "3.0.0"
+        constitutional_hash:
+          type: string
+          example: "cdd01ef066bc6cf2"
+        timestamp:
+          type: string
+          format: date-time
+
+    ConstitutionalValidationRequest:
+      type: object
+      required:
+        - action
+        - context
+      properties:
+        action:
+          type: string
+          description: Action to validate
+          example: "policy_creation"
+        context:
+          type: object
+          properties:
+            policy_id:
+              type: string
+            user_id:
+              type: string
+            metadata:
+              type: object
+        validation_level:
+          type: string
+          enum: [basic, comprehensive]
+          default: basic
+
+    ConstitutionalValidationResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            validation_result:
+              type: object
+              properties:
+                compliant:
+                  type: boolean
+                confidence:
+                  type: number
+                  minimum: 0
+                  maximum: 1
+                hash_valid:
+                  type: boolean
+                principles_checked:
+                  type: integer
+                violations:
+                  type: array
+                  items:
+                    type: object
+            constitutional_hash:
+              type: string
+              example: "cdd01ef066bc6cf2"
+            timestamp:
+              type: string
+              format: date-time
+
+    CreatePrincipleRequest:
+      type: object
+      required:
+        - title
+        - description
+        - category
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          maxLength: 2000
+        category:
+          type: string
+          enum: [democratic_process, transparency, accountability, privacy, fairness]
+        priority:
+          type: integer
+          minimum: 1
+          maximum: 10
+        enforcement_level:
+          type: string
+          enum: [advisory, mandatory, constitutional]
+
+    PrincipleResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            title:
+              type: string
+            description:
+              type: string
+            category:
+              type: string
+            priority:
+              type: integer
+            enforcement_level:
+              type: string
+            active:
+              type: boolean
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+        constitutional_hash:
+          type: string
+          example: "cdd01ef066bc6cf2"
+        timestamp:
+          type: string
+          format: date-time
+
+tags:
+  - name: Health
+    description: Service health and status endpoints
+  - name: Constitutional Compliance
+    description: Constitutional validation and compliance checking
+  - name: Constitutional Principles
+    description: Management of constitutional principles
+  - name: Constitutional Council
+    description: Constitutional council operations and voting
+  - name: Compliance Monitoring
+    description: Compliance status and violation monitoring
+  - name: Monitoring
+    description: Service monitoring and metrics

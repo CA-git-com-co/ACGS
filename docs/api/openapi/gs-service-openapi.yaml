@@ -1,0 +1,419 @@
+openapi: 3.0.3
+info:
+  title: ACGS-1 Governance Synthesis Service API
+  description: |
+    Enterprise-grade AI-powered policy generation platform that synthesizes enforceable
+    governance policies from constitutional principles using advanced multi-model LLM
+    ensembles and constitutional compliance validation.
+    
+    Constitutional Hash: cdd01ef066bc6cf2
+  version: 3.0.0
+  contact:
+    name: ACGS-1 Development Team
+    url: https://github.com/CA-git-com-co/ACGS
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8004
+    description: Local development server
+  - url: https://gs.acgs.local
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+paths:
+  /health:
+    get:
+      summary: Service health check
+      description: Returns the current health status of the governance synthesis service
+      tags:
+        - Health
+      security: []
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /api/v1/synthesize:
+    post:
+      summary: Generate policies from constitutional principles
+      description: Synthesize governance policies using AI models and constitutional principles
+      tags:
+        - Core Synthesis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SynthesisRequest'
+      responses:
+        '200':
+          description: Policy synthesis completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SynthesisResponse'
+
+  /api/v1/enhanced-synthesis/synthesize:
+    post:
+      summary: Enhanced synthesis with OPA validation
+      description: Enhanced policy synthesis with comprehensive OPA validation
+      tags:
+        - Enhanced Synthesis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnhancedSynthesisRequest'
+      responses:
+        '200':
+          description: Enhanced synthesis completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnhancedSynthesisResponse'
+
+  /api/v1/enhanced-synthesis/multi-model-consensus:
+    post:
+      summary: Multi-model consensus synthesis
+      description: Policy synthesis using multiple AI models with consensus mechanisms
+      tags:
+        - Multi-Model Consensus
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultiModelConsensusRequest'
+      responses:
+        '200':
+          description: Multi-model consensus completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MultiModelConsensusResponse'
+
+  /api/v1/enhanced-synthesis/batch:
+    post:
+      summary: Batch policy synthesis
+      description: Synthesize multiple policies in parallel
+      tags:
+        - Batch Processing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchSynthesisRequest'
+      responses:
+        '200':
+          description: Batch synthesis completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchSynthesisResponse'
+
+  /api/v1/constitutional/synthesize:
+    post:
+      summary: Constitutional policy synthesis
+      description: Synthesize policies with constitutional compliance validation
+      tags:
+        - Constitutional Synthesis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConstitutionalSynthesisRequest'
+      responses:
+        '200':
+          description: Constitutional synthesis completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstitutionalSynthesisResponse'
+
+  /api/v1/constitutional/validate:
+    get:
+      summary: Constitutional hash validation
+      description: Get constitutional hash validation information
+      tags:
+        - Constitutional Validation
+      responses:
+        '200':
+          description: Constitutional validation status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstitutionalValidationResponse'
+
+  /api/v1/alphaevolve/optimize:
+    post:
+      summary: AlphaEvolve governance optimization
+      description: Optimize policies using AlphaEvolve algorithms
+      tags:
+        - AlphaEvolve Optimization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlphaEvolveOptimizationRequest'
+      responses:
+        '200':
+          description: Optimization completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlphaEvolveOptimizationResponse'
+
+  /api/v1/performance/metrics:
+    get:
+      summary: Get performance metrics
+      description: Performance optimization metrics and targets
+      tags:
+        - Monitoring
+      responses:
+        '200':
+          description: Performance metrics retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceMetricsResponse'
+
+  /api/v1/status:
+    get:
+      summary: Get detailed API status
+      description: Detailed API status and capabilities
+      tags:
+        - System Status
+      responses:
+        '200':
+          description: API status retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIStatusResponse'
+
+  /metrics:
+    get:
+      summary: Prometheus metrics
+      description: Service metrics for monitoring
+      tags:
+        - Monitoring
+      security: []
+      responses:
+        '200':
+          description: Metrics data
+          content:
+            text/plain:
+              schema:
+                type: string
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, unhealthy]
+        service:
+          type: string
+          example: gs_service_production
+        version:
+          type: string
+          example: "3.0.0"
+        phase:
+          type: string
+          example: "Phase A3 - Production Implementation"
+        synthesis_capabilities:
+          type: object
+          properties:
+            standard_synthesis:
+              type: boolean
+            enhanced_validation:
+              type: boolean
+            multi_model_consensus:
+              type: boolean
+            human_review_integration:
+              type: boolean
+        performance_metrics:
+          type: object
+          properties:
+            uptime_seconds:
+              type: number
+            synthesis_engines:
+              type: integer
+            api_endpoints:
+              type: integer
+
+    SynthesisRequest:
+      type: object
+      required:
+        - synthesis_goal
+        - constitutional_principles
+      properties:
+        synthesis_goal:
+          type: string
+          description: Goal for policy synthesis
+          example: "Create privacy protection policy for citizen data"
+        constitutional_principles:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConstitutionalPrinciple'
+        constraints:
+          type: array
+          items:
+            type: string
+          description: Policy constraints and requirements
+        target_format:
+          type: string
+          enum: [opa_policy, natural_language, structured_json]
+          default: opa_policy
+        validation_level:
+          type: string
+          enum: [basic, comprehensive, formal_proof]
+          default: basic
+
+    ConstitutionalPrinciple:
+      type: object
+      required:
+        - type
+        - description
+      properties:
+        type:
+          type: string
+          enum: [privacy_rights, transparency, accountability, equality, fairness]
+        description:
+          type: string
+          description: Detailed description of the principle
+        priority:
+          type: integer
+          minimum: 1
+          maximum: 10
+          description: Priority level (1-10)
+
+    SynthesisResponse:
+      type: object
+      properties:
+        synthesis_id:
+          type: string
+          format: uuid
+        policy_content:
+          type: string
+          description: Generated policy content
+        constitutional_compliance:
+          type: object
+          properties:
+            compliant:
+              type: boolean
+            score:
+              type: number
+              minimum: 0
+              maximum: 1
+            violations:
+              type: array
+              items:
+                type: object
+        synthesis_quality:
+          type: object
+          properties:
+            overall_score:
+              type: number
+              minimum: 0
+              maximum: 1
+            metrics:
+              type: object
+        constitutional_hash:
+          type: string
+          example: "cdd01ef066bc6cf2"
+        generation_time_ms:
+          type: number
+
+    MultiModelConsensusRequest:
+      type: object
+      required:
+        - synthesis_goal
+        - constitutional_principles
+      properties:
+        synthesis_goal:
+          type: string
+        constitutional_principles:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConstitutionalPrinciple'
+        ai_models:
+          type: array
+          items:
+            type: string
+            enum: [gemini-2.5-pro, gemini-2.0-flash, deepseek-r1, nvidia-qwen]
+          default: [gemini-2.5-pro, deepseek-r1, nvidia-qwen]
+        consensus_threshold:
+          type: number
+          minimum: 0.5
+          maximum: 1.0
+          default: 0.95
+        enable_red_teaming:
+          type: boolean
+          default: true
+        enable_constitutional_fidelity:
+          type: boolean
+          default: true
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+        constitutional_hash:
+          type: string
+          example: "cdd01ef066bc6cf2"
+        timestamp:
+          type: string
+          format: date-time
+
+tags:
+  - name: Health
+    description: Service health and status endpoints
+  - name: Core Synthesis
+    description: Basic policy synthesis operations
+  - name: Enhanced Synthesis
+    description: Enhanced synthesis with validation
+  - name: Multi-Model Consensus
+    description: Multi-model consensus synthesis
+  - name: Batch Processing
+    description: Batch policy synthesis operations
+  - name: Constitutional Synthesis
+    description: Constitutional compliance synthesis
+  - name: Constitutional Validation
+    description: Constitutional validation operations
+  - name: AlphaEvolve Optimization
+    description: AlphaEvolve governance optimization
+  - name: System Status
+    description: System status and capabilities
+  - name: Monitoring
+    description: Performance metrics and monitoring
