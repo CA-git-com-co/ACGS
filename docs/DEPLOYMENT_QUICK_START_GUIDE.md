@@ -1,12 +1,23 @@
 # ACGS Deployment Quick Start Guide
 
-**Version**: 2.0  
-**Last Updated**: 2025-06-23  
+**Version**: 2.0
+**Last Updated**: 2025-06-24
 **Tested On**: Ubuntu 22.04, macOS 13+, Windows 11
 
 ## 🎯 Overview
 
 This guide provides step-by-step instructions for deploying ACGS-1 in development, staging, and production environments.
+
+## ⚠️ Implementation Status Notice
+
+**Service Implementation Status**:
+- ✅ **Production Ready**: Auth (8000), AC (8001), Integrity (8002) services
+- 🧪 **Prototype**: FV (8003), GS (8004), PGC (8005), EC (8006) services
+
+**Deployment Recommendations**:
+- **Development/Testing**: All services can be deployed for development and testing
+- **Production**: Only deploy production-ready services (Auth, AC, Integrity) for production workloads
+- **Prototype Services**: Suitable for development but require additional work for production deployment
 
 ## 📋 Prerequisites
 

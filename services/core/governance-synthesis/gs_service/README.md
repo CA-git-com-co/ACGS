@@ -2,12 +2,26 @@
 
 ## Overview
 
-The Governance Synthesis (GS) Service is an enterprise-grade AI-powered policy generation platform that synthesizes enforceable governance policies from constitutional principles using advanced multi-model LLM ensembles, constitutional compliance validation, and sophisticated consensus mechanisms.
+The Governance Synthesis (GS) Service is a **prototype implementation** of an AI-powered policy generation platform. This service provides basic policy synthesis capabilities with plans for advanced multi-model LLM integration and sophisticated consensus mechanisms.
 
+**Implementation Status**: 🧪 **Prototype**
 **Service Port**: 8004
-**Service Version**: 3.0.0 (Phase A3 Production)
+**Service Version**: 3.0.0
 **Constitutional Hash**: `cdd01ef066bc6cf2`
 **Health Check**: http://localhost:8004/health
+
+## ⚠️ Prototype Limitations
+
+**Current Implementation Status**:
+- ✅ Basic policy synthesis endpoints implemented
+- ✅ Health check and status monitoring functional
+- ✅ Constitutional compliance integration framework
+- ⚠️ **Many API routers temporarily disabled due to import issues**
+- ⚠️ **Running in "minimal mode" with reduced functionality**
+- ⚠️ **Multi-model consensus not fully implemented**
+- ⚠️ **Advanced synthesis workflows incomplete**
+
+**Production Readiness**: This service requires router stabilization and feature completion before production deployment.
 
 ## Core Features
 
