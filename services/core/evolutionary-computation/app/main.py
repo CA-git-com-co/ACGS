@@ -309,6 +309,16 @@ add_security_middleware(app)
 # Add compression middleware
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
+# Add constitutional hash middleware
+@app.middleware("http")
+async def add_constitutional_headers(request, call_next):
+    """Add constitutional compliance headers"""
+    response = await call_next(request)
+    response.headers["x-constitutional-hash"] = "cdd01ef066bc6cf2"
+    response.headers["x-service-name"] = "evolutionary_computation"
+    response.headers["x-service-version"] = "v1"
+    return response
+
 # Add enhanced Prometheus metrics middleware
 try:
     import sys

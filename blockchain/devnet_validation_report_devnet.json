@@ -30,7 +30,7 @@
     "constitution": {
       "status": "\u2705 Constitution initialized",
       "file_exists": true,
-      "constitution_hash": "cdd01ef066bc6cf2",
+      "constitution_hash": "1b33abb9a724f5dd",
       "version": "1.0.0",
       "effective_date": "2025-06-07T00:00:00Z"
     },
@@ -40,9 +40,9 @@
       "total_policies": 3,
       "active_policies": 3,
       "policy_categories": [
-        "Safety",
         "Financial",
-        "Governance"
+        "Governance",
+        "Safety"
       ]
     },
     "governance_accounts": {

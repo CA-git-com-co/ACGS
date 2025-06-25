@@ -1,0 +1,265 @@
+{
+  "test_suite": "ACGS-PGP Quick Concurrent Load Testing",
+  "timestamp": "2025-06-24T22:55:00.220227+00:00",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "results": {
+    "ac": {
+      "concurrent_levels": {
+        "service": "ac",
+        "service_name": "Constitutional AI Service",
+        "level_results": {
+          "level_10": {
+            "service": "ac",
+            "service_name": "Constitutional AI Service",
+            "concurrent_level": 10,
+            "total_requests": 50,
+            "successful_requests": 50,
+            "failed_requests": 0,
+            "success_rate": 100.0,
+            "requests_per_second": 73.70370656734316,
+            "avg_response_time_ms": 19.37356472015381,
+            "test_duration_seconds": 0.6783919334411621,
+            "meets_concurrent_target": true,
+            "meets_performance_target": true
+          },
+          "level_15": {
+            "service": "ac",
+            "service_name": "Constitutional AI Service",
+            "concurrent_level": 15,
+            "total_requests": 75,
+            "successful_requests": 75,
+            "failed_requests": 0,
+            "success_rate": 100.0,
+            "requests_per_second": 104.74524326905339,
+            "avg_response_time_ms": 28.40253512064616,
+            "test_duration_seconds": 0.7160229682922363,
+            "meets_concurrent_target": true,
+            "meets_performance_target": true
+          },
+          "level_20": {
+            "service": "ac",
+            "service_name": "Constitutional AI Service",
+            "concurrent_level": 20,
+            "total_requests": 100,
+            "successful_requests": 100,
+            "failed_requests": 0,
+            "success_rate": 100.0,
+            "requests_per_second": 123.4063449331009,
+            "avg_response_time_ms": 41.06790065765381,
+            "test_duration_seconds": 0.8103311061859131,
+            "meets_concurrent_target": true,
+            "meets_performance_target": true
+          }
+        },
+        "max_stable_concurrent": 20,
+        "passes_concurrent_test": true
+      },
+      "throughput": {
+        "service": "ac",
+        "service_name": "Constitutional AI Service",
+        "total_requests": 100,
+        "successful_requests": 100,
+        "success_rate": 100.0,
+        "requests_per_second": 341.68675444734913,
+        "avg_response_time_ms": 238.11076879501343,
+        "test_duration_seconds": 0.2926657199859619,
+        "meets_throughput_target": true
+      }
+    },
+    "integrity": {
+      "concurrent_levels": {
+        "service": "integrity",
+        "service_name": "Integrity Service",
+        "level_results": {
+          "level_10": {
+            "service": "integrity",
+            "service_name": "Integrity Service",
+            "concurrent_level": 10,
+            "total_requests": 50,
+            "successful_requests": 50,
+            "failed_requests": 0,
+            "success_rate": 100.0,
+            "requests_per_second": 78.966587919176,
+            "avg_response_time_ms": 15.852971076965332,
+            "test_duration_seconds": 0.6331791877746582,
+            "meets_concurrent_target": true,
+            "meets_performance_target": true
+          },
+          "level_15": {
+            "service": "integrity",
+            "service_name": "Integrity Service",
+            "concurrent_level": 15,
+            "total_requests": 75,
+            "successful_requests": 75,
+            "failed_requests": 0,
+            "success_rate": 100.0,
+            "requests_per_second": 109.45873438616734,
+            "avg_response_time_ms": 21.582180658976238,
+            "test_duration_seconds": 0.6851897239685059,
+            "meets_concurrent_target": true,
+            "meets_performance_target": true
+          },
+          "level_20": {
+            "service": "integrity",
+            "service_name": "Integrity Service",
+            "concurrent_level": 20,
+            "total_requests": 100,
+            "successful_requests": 100,
+            "failed_requests": 0,
+            "success_rate": 100.0,
+            "requests_per_second": 129.1178020657351,
+            "avg_response_time_ms": 32.86667823791504,
+            "test_duration_seconds": 0.7744865417480469,
+            "meets_concurrent_target": true,
+            "meets_performance_target": true
+          }
+        },
+        "max_stable_concurrent": 20,
+        "passes_concurrent_test": true
+      },
+      "throughput": {
+        "service": "integrity",
+        "service_name": "Integrity Service",
+        "total_requests": 100,
+        "successful_requests": 100,
+        "success_rate": 100.0,
+        "requests_per_second": 390.0357460357609,
+        "avg_response_time_ms": 201.17902994155884,
+        "test_duration_seconds": 0.25638675689697266,
+        "meets_throughput_target": true
+      }
+    },
+    "fv": {
+      "concurrent_levels": {
+        "service": "fv",
+        "service_name": "Formal Verification Service",
+        "level_results": {
+          "level_10": {
+            "service": "fv",
+            "service_name": "Formal Verification Service",
+            "concurrent_level": 10,
+            "total_requests": 50,
+            "successful_requests": 50,
+            "failed_requests": 0,
+            "success_rate": 100.0,
+            "requests_per_second": 82.61197207705007,
+            "avg_response_time_ms": 9.450840950012207,
+            "test_duration_seconds": 0.6052391529083252,
+            "meets_concurrent_target": true,
+            "meets_performance_target": true
+          },
+          "level_15": {
+            "service": "fv",
+            "service_name": "Formal Verification Service",
+            "concurrent_level": 15,
+            "total_requests": 75,
+            "successful_requests": 75,
+            "failed_requests": 0,
+            "success_rate": 100.0,
+            "requests_per_second": 115.22264507550922,
+            "avg_response_time_ms": 14.717016220092773,
+            "test_duration_seconds": 0.6509137153625488,
+            "meets_concurrent_target": true,
+            "meets_performance_target": true
+          },
+          "level_20": {
+            "service": "fv",
+            "service_name": "Formal Verification Service",
+            "concurrent_level": 20,
+            "total_requests": 100,
+            "successful_requests": 100,
+            "failed_requests": 0,
+            "success_rate": 100.0,
+            "requests_per_second": 139.71191585648623,
+            "avg_response_time_ms": 22.4524188041687,
+            "test_duration_seconds": 0.7157585620880127,
+            "meets_concurrent_target": true,
+            "meets_performance_target": true
+          }
+        },
+        "max_stable_concurrent": 20,
+        "passes_concurrent_test": true
+      },
+      "throughput": {
+        "service": "fv",
+        "service_name": "Formal Verification Service",
+        "total_requests": 100,
+        "successful_requests": 100,
+        "success_rate": 100.0,
+        "requests_per_second": 484.2977210559558,
+        "avg_response_time_ms": 146.71407461166382,
+        "test_duration_seconds": 0.20648455619812012,
+        "meets_throughput_target": true
+      }
+    },
+    "ec": {
+      "concurrent_levels": {
+        "service": "ec",
+        "service_name": "Executive Council Service",
+        "level_results": {
+          "level_10": {
+            "service": "ec",
+            "service_name": "Executive Council Service",
+            "concurrent_level": 10,
+            "total_requests": 50,
+            "successful_requests": 50,
+            "failed_requests": 0,
+            "success_rate": 100.0,
+            "requests_per_second": 79.52092211799261,
+            "avg_response_time_ms": 15.644497871398926,
+            "test_duration_seconds": 0.628765344619751,
+            "meets_concurrent_target": true,
+            "meets_performance_target": true
+          },
+          "level_15": {
+            "service": "ec",
+            "service_name": "Executive Council Service",
+            "concurrent_level": 15,
+            "total_requests": 75,
+            "successful_requests": 75,
+            "failed_requests": 0,
+            "success_rate": 100.0,
+            "requests_per_second": 105.05271791474031,
+            "avg_response_time_ms": 25.901629130045574,
+            "test_duration_seconds": 0.7139272689819336,
+            "meets_concurrent_target": true,
+            "meets_performance_target": true
+          },
+          "level_20": {
+            "service": "ec",
+            "service_name": "Executive Council Service",
+            "concurrent_level": 20,
+            "total_requests": 100,
+            "successful_requests": 100,
+            "failed_requests": 0,
+            "success_rate": 100.0,
+            "requests_per_second": 135.7600051011507,
+            "avg_response_time_ms": 26.157798767089844,
+            "test_duration_seconds": 0.7365939617156982,
+            "meets_concurrent_target": true,
+            "meets_performance_target": true
+          }
+        },
+        "max_stable_concurrent": 20,
+        "passes_concurrent_test": true
+      },
+      "throughput": {
+        "service": "ec",
+        "service_name": "Executive Council Service",
+        "total_requests": 100,
+        "successful_requests": 100,
+        "success_rate": 100.0,
+        "requests_per_second": 472.8464442698299,
+        "avg_response_time_ms": 159.13512229919434,
+        "test_duration_seconds": 0.2114851474761963,
+        "meets_throughput_target": true
+      }
+    }
+  },
+  "summary": {
+    "total_tests": 8,
+    "passed_tests": 8,
+    "success_rate": 100.0,
+    "overall_status": "passed"
+  }
+}
