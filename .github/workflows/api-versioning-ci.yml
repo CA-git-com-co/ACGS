@@ -649,12 +649,12 @@ jobs:
           path: /tmp/sdk_artifacts/
 
       - name: Create GitHub Release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ needs.version_bump.outputs.new_version }}
-          release_name: API Version ${{ needs.version_bump.outputs.new_version }}
+          name: API Version ${{ needs.version_bump.outputs.new_version }}
           body: |
             ${{ needs.version_bump.outputs.release_notes }}
 

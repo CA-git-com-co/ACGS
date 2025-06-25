@@ -1,0 +1,73 @@
+{
+  "services": {
+    "auth_service": {
+      "memory_request": "256Mi",
+      "memory_limit": "512Mi",
+      "cpu_request": "100m",
+      "cpu_limit": "300m",
+      "connection_pool_size": 15,
+      "max_connections": 50,
+      "keepalive_timeout": 30
+    },
+    "ac_service": {
+      "memory_request": "512Mi",
+      "memory_limit": "1Gi",
+      "cpu_request": "200m",
+      "cpu_limit": "500m",
+      "connection_pool_size": 25,
+      "max_connections": 100,
+      "keepalive_timeout": 60
+    },
+    "integrity_service": {
+      "memory_request": "256Mi",
+      "memory_limit": "512Mi",
+      "cpu_request": "100m",
+      "cpu_limit": "300m",
+      "connection_pool_size": 15,
+      "max_connections": 50,
+      "keepalive_timeout": 30
+    },
+    "fv_service": {
+      "memory_request": "512Mi",
+      "memory_limit": "1Gi",
+      "cpu_request": "200m",
+      "cpu_limit": "500m",
+      "connection_pool_size": 20,
+      "max_connections": 75,
+      "keepalive_timeout": 45
+    },
+    "gs_service": {
+      "memory_request": "1Gi",
+      "memory_limit": "2Gi",
+      "cpu_request": "300m",
+      "cpu_limit": "800m",
+      "connection_pool_size": 30,
+      "max_connections": 150,
+      "keepalive_timeout": 90
+    },
+    "pgc_service": {
+      "memory_request": "1Gi",
+      "memory_limit": "2Gi",
+      "cpu_request": "300m",
+      "cpu_limit": "1000m",
+      "connection_pool_size": 35,
+      "max_connections": 200,
+      "keepalive_timeout": 120
+    },
+    "ec_service": {
+      "memory_request": "512Mi",
+      "memory_limit": "1Gi",
+      "cpu_request": "200m",
+      "cpu_limit": "500m",
+      "connection_pool_size": 20,
+      "max_connections": 75,
+      "keepalive_timeout": 45
+    }
+  },
+  "global_optimizations": {
+    "constitutional_hash": "cdd01ef066bc6cf2",
+    "response_time_target": "500ms",
+    "throughput_target": "1000_rps",
+    "availability_target": "99.9%"
+  }
+}

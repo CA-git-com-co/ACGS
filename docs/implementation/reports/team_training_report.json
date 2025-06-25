@@ -1,42 +1,42 @@
 {
   "training_summary": {
-    "start_date": "2025-06-22T16:36:20.064579+00:00",
-    "end_date": "2025-06-22T16:36:20.064804+00:00",
+    "start_date": "2025-06-25T05:52:13.905745+00:00",
+    "end_date": "2025-06-25T05:52:13.905979+00:00",
     "total_duration_hours": 14.0,
     "total_participants": 19,
     "training_completion_rate": 100.0,
-    "certification_rate": 52.6,
+    "certification_rate": 84.2,
     "avg_session_completion_rate": 94.7,
     "avg_satisfaction_score": 4.4
   },
   "team_statistics": {
     "Development": {
       "total_members": 8,
-      "certified_members": 3,
-      "certification_rate": 37.5,
-      "avg_knowledge_score": 81.9,
-      "avg_practical_score": 86.2
+      "certified_members": 7,
+      "certification_rate": 87.5,
+      "avg_knowledge_score": 86.5,
+      "avg_practical_score": 88.1
     },
     "DevOps": {
       "total_members": 4,
       "certified_members": 4,
       "certification_rate": 100.0,
-      "avg_knowledge_score": 82.8,
-      "avg_practical_score": 93.8
+      "avg_knowledge_score": 84.2,
+      "avg_practical_score": 91.0
     },
     "QA": {
       "total_members": 4,
-      "certified_members": 0,
-      "certification_rate": 0.0,
-      "avg_knowledge_score": 77.5,
-      "avg_practical_score": 81.0
+      "certified_members": 2,
+      "certification_rate": 50.0,
+      "avg_knowledge_score": 78.8,
+      "avg_practical_score": 89.2
     },
     "Architecture": {
       "total_members": 3,
       "certified_members": 3,
       "certification_rate": 100.0,
-      "avg_knowledge_score": 92.7,
-      "avg_practical_score": 90.7
+      "avg_knowledge_score": 90.0,
+      "avg_practical_score": 92.0
     }
   },
   "session_details": [
@@ -88,17 +88,17 @@
       "name": "Alice Johnson",
       "role": "Developer",
       "team": "Development",
-      "knowledge_score": 78,
+      "knowledge_score": 95,
       "practical_score": 85,
-      "certified": false,
+      "certified": true,
       "training_completed": true
     },
     {
       "name": "Bob Smith",
       "role": "Developer",
       "team": "Development",
-      "knowledge_score": 86,
-      "practical_score": 85,
+      "knowledge_score": 85,
+      "practical_score": 88,
       "certified": true,
       "training_completed": true
     },
@@ -106,8 +106,8 @@
       "name": "Carol Davis",
       "role": "Developer",
       "team": "Development",
-      "knowledge_score": 94,
-      "practical_score": 84,
+      "knowledge_score": 83,
+      "practical_score": 83,
       "certified": true,
       "training_completed": true
     },
@@ -115,9 +115,9 @@
       "name": "David Wilson",
       "role": "Developer",
       "team": "Development",
-      "knowledge_score": 79,
-      "practical_score": 83,
-      "certified": false,
+      "knowledge_score": 89,
+      "practical_score": 92,
+      "certified": true,
       "training_completed": true
     },
     {
@@ -125,7 +125,7 @@
       "role": "Developer",
       "team": "Development",
       "knowledge_score": 75,
-      "practical_score": 84,
+      "practical_score": 93,
       "certified": false,
       "training_completed": true
     },
@@ -133,17 +133,17 @@
       "name": "Frank Brown",
       "role": "Developer",
       "team": "Development",
-      "knowledge_score": 79,
-      "practical_score": 91,
-      "certified": false,
+      "knowledge_score": 95,
+      "practical_score": 87,
+      "certified": true,
       "training_completed": true
     },
     {
       "name": "Grace Lee",
       "role": "Developer",
       "team": "Development",
-      "knowledge_score": 86,
-      "practical_score": 83,
+      "knowledge_score": 89,
+      "practical_score": 86,
       "certified": true,
       "training_completed": true
     },
@@ -151,9 +151,9 @@
       "name": "Henry Taylor",
       "role": "Developer",
       "team": "Development",
-      "knowledge_score": 78,
-      "practical_score": 95,
-      "certified": false,
+      "knowledge_score": 81,
+      "practical_score": 91,
+      "certified": true,
       "training_completed": true
     },
     {
@@ -161,7 +161,7 @@
       "role": "DevOps Engineer",
       "team": "DevOps",
       "knowledge_score": 82,
-      "practical_score": 95,
+      "practical_score": 97,
       "certified": true,
       "training_completed": true
     },
@@ -169,8 +169,8 @@
       "name": "Julia Rodriguez",
       "role": "DevOps Engineer",
       "team": "DevOps",
-      "knowledge_score": 80,
-      "practical_score": 97,
+      "knowledge_score": 94,
+      "practical_score": 86,
       "certified": true,
       "training_completed": true
     },
@@ -178,8 +178,8 @@
       "name": "Kevin O'Connor",
       "role": "DevOps Engineer",
       "team": "DevOps",
-      "knowledge_score": 80,
-      "practical_score": 90,
+      "knowledge_score": 81,
+      "practical_score": 94,
       "certified": true,
       "training_completed": true
     },
@@ -187,8 +187,8 @@
       "name": "Lisa Wang",
       "role": "DevOps Engineer",
       "team": "DevOps",
-      "knowledge_score": 89,
-      "practical_score": 93,
+      "knowledge_score": 80,
+      "practical_score": 87,
       "certified": true,
       "training_completed": true
     },
@@ -196,8 +196,8 @@
       "name": "Mike Thompson",
       "role": "QA Engineer",
       "team": "QA",
-      "knowledge_score": 83,
-      "practical_score": 79,
+      "knowledge_score": 73,
+      "practical_score": 92,
       "certified": false,
       "training_completed": true
     },
@@ -205,8 +205,8 @@
       "name": "Nancy Kim",
       "role": "QA Engineer",
       "team": "QA",
-      "knowledge_score": 75,
-      "practical_score": 78,
+      "knowledge_score": 71,
+      "practical_score": 92,
       "certified": false,
       "training_completed": true
     },
@@ -214,25 +214,25 @@
       "name": "Oscar Patel",
       "role": "QA Engineer",
       "team": "QA",
-      "knowledge_score": 76,
-      "practical_score": 79,
-      "certified": false,
+      "knowledge_score": 82,
+      "practical_score": 86,
+      "certified": true,
       "training_completed": true
     },
     {
       "name": "Paula Garcia",
       "role": "QA Engineer",
       "team": "QA",
-      "knowledge_score": 76,
-      "practical_score": 88,
-      "certified": false,
+      "knowledge_score": 89,
+      "practical_score": 87,
+      "certified": true,
       "training_completed": true
     },
     {
       "name": "Quinn Foster",
       "role": "Architect",
       "team": "Architecture",
-      "knowledge_score": 96,
+      "knowledge_score": 93,
       "practical_score": 90,
       "certified": true,
       "training_completed": true
@@ -241,8 +241,8 @@
       "name": "Rachel Green",
       "role": "Architect",
       "team": "Architecture",
-      "knowledge_score": 91,
-      "practical_score": 88,
+      "knowledge_score": 88,
+      "practical_score": 98,
       "certified": true,
       "training_completed": true
     },
@@ -250,8 +250,8 @@
       "name": "Steve Adams",
       "role": "Architect",
       "team": "Architecture",
-      "knowledge_score": 91,
-      "practical_score": 94,
+      "knowledge_score": 89,
+      "practical_score": 88,
       "certified": true,
       "training_completed": true
     }
@@ -260,7 +260,7 @@
     "completion_rate_target": 100,
     "completion_rate_achieved": 100.0,
     "certification_rate_target": 95,
-    "certification_rate_achieved": 52.6,
+    "certification_rate_achieved": 84.2,
     "satisfaction_target": 4.0,
     "satisfaction_achieved": 4.4,
     "all_criteria_met": false

@@ -98,6 +98,124 @@ paths:
       requestBody:
         required: true
         content:
+
+  /api/v1/dgm/sandbox/validate:
+    post:
+      summary: DGM sandbox validation
+      description: Validate DGM operations in sandbox environment before production deployment
+      tags:
+        - DGM Safety Patterns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DGMSandboxRequest'
+      responses:
+        '200':
+          description: Sandbox validation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DGMSandboxResponse'
+        '400':
+          description: Invalid sandbox request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/dgm/human-review:
+    post:
+      summary: Request human review
+      description: Submit DGM operation for human review and approval
+      tags:
+        - DGM Safety Patterns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HumanReviewRequest'
+      responses:
+        '202':
+          description: Human review request submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HumanReviewResponse'
+
+    get:
+      summary: Get human review status
+      description: Retrieve status of pending human review requests
+      tags:
+        - DGM Safety Patterns
+      parameters:
+        - name: review_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Specific review ID to check
+      responses:
+        '200':
+          description: Human review status retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HumanReviewStatusResponse'
+
+  /api/v1/emergency/shutdown:
+    post:
+      summary: Emergency shutdown
+      description: Initiate emergency shutdown with <30min RTO capability
+      tags:
+        - Emergency Procedures
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmergencyShutdownRequest'
+      responses:
+        '200':
+          description: Emergency shutdown initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmergencyShutdownResponse'
+        '403':
+          description: Insufficient permissions for emergency shutdown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/rollback:
+    post:
+      summary: Rollback to safe state
+      description: Rollback system to previous safe constitutional state
+      tags:
+        - DGM Safety Patterns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RollbackRequest'
+      responses:
+        '200':
+          description: Rollback completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RollbackResponse'
+        '400':
+          description: Invalid rollback request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
           application/json:
             schema:
               $ref: '#/components/schemas/CreatePrincipleRequest'
@@ -466,6 +584,188 @@ components:
           type: string
           format: date-time
 
+    DGMSandboxRequest:
+      type: object
+      required:
+        - operation_type
+        - parameters
+      properties:
+        operation_type:
+          type: string
+          enum: [policy_generation, constitutional_update, governance_change]
+          description: Type of DGM operation to validate
+        parameters:
+          type: object
+          description: Operation-specific parameters
+        safety_threshold:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+          default: 0.95
+          description: Required safety threshold for validation
+        constitutional_hash:
+          type: string
+          example: cdd01ef066bc6cf2
+          description: Constitutional hash for compliance validation
+
+    DGMSandboxResponse:
+      type: object
+      properties:
+        validation_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [passed, failed, requires_review]
+        safety_score:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+        constitutional_compliance:
+          type: boolean
+        violations:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              severity:
+                type: string
+                enum: [low, medium, high, critical]
+              description:
+                type: string
+        recommendations:
+          type: array
+          items:
+            type: string
+
+    HumanReviewRequest:
+      type: object
+      required:
+        - operation_id
+        - operation_type
+        - priority
+      properties:
+        operation_id:
+          type: string
+          format: uuid
+        operation_type:
+          type: string
+          enum: [constitutional_change, high_risk_policy, emergency_override]
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+        description:
+          type: string
+          maxLength: 1000
+        context:
+          type: object
+          description: Additional context for human reviewers
+        deadline:
+          type: string
+          format: date-time
+          description: Review deadline (if applicable)
+
+    HumanReviewResponse:
+      type: object
+      properties:
+        review_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [submitted, in_review, approved, rejected, escalated]
+        estimated_completion:
+          type: string
+          format: date-time
+        reviewer_assigned:
+          type: boolean
+        tracking_url:
+          type: string
+          format: uri
+
+    EmergencyShutdownRequest:
+      type: object
+      required:
+        - reason
+        - authorization_code
+      properties:
+        reason:
+          type: string
+          maxLength: 500
+          description: Reason for emergency shutdown
+        authorization_code:
+          type: string
+          description: Emergency authorization code
+        scope:
+          type: string
+          enum: [service, system, full]
+          default: service
+          description: Scope of emergency shutdown
+        preserve_data:
+          type: boolean
+          default: true
+          description: Whether to preserve data during shutdown
+
+    EmergencyShutdownResponse:
+      type: object
+      properties:
+        shutdown_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [initiated, in_progress, completed, failed]
+        estimated_rto:
+          type: string
+          description: Estimated Recovery Time Objective (<30min)
+        affected_services:
+          type: array
+          items:
+            type: string
+        recovery_instructions:
+          type: string
+
+    RollbackRequest:
+      type: object
+      required:
+        - target_state
+      properties:
+        target_state:
+          type: string
+          description: Target state identifier or timestamp
+        reason:
+          type: string
+          maxLength: 500
+        preserve_recent_data:
+          type: boolean
+          default: false
+        validation_required:
+          type: boolean
+          default: true
+
+    RollbackResponse:
+      type: object
+      properties:
+        rollback_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [initiated, in_progress, completed, failed]
+        target_state:
+          type: string
+        rollback_time:
+          type: string
+          format: date-time
+        affected_components:
+          type: array
+          items:
+            type: string
+        validation_results:
+          type: object
+
 tags:
   - name: Health
     description: Service health and status endpoints
@@ -477,5 +777,9 @@ tags:
     description: Constitutional council operations and voting
   - name: Compliance Monitoring
     description: Compliance status and violation monitoring
+  - name: DGM Safety Patterns
+    description: DGM sandbox validation, human review, and rollback mechanisms
+  - name: Emergency Procedures
+    description: Emergency shutdown and recovery procedures (<30min RTO)
   - name: Monitoring
     description: Service monitoring and metrics

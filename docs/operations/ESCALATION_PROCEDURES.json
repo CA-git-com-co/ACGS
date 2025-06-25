@@ -25,13 +25,18 @@
       "description": "Minor functionality issues, performance degradation < 50%",
       "response_time_hours": 2,
       "resolution_target_hours": 24,
-      "escalation_chain": ["API Team Member (0-2 hours)", "API Team Lead (2-8 hours)"]
+      "escalation_chain": [
+        "API Team Member (0-2 hours)",
+        "API Team Lead (2-8 hours)"
+      ]
     },
     "P3_Low": {
       "description": "Documentation issues, non-critical feature problems",
       "response_time_hours": 24,
       "resolution_target_days": 7,
-      "escalation_chain": ["API Team Member (next business day)"]
+      "escalation_chain": [
+        "API Team Member (next business day)"
+      ]
     }
   },
   "communication_channels": {
@@ -41,9 +46,23 @@
     "emergency_hotline": "+1-555-ACGS-911"
   },
   "notification_rules": {
-    "P0_notifications": ["SMS", "Phone Call", "Slack", "Email"],
-    "P1_notifications": ["Slack", "Email", "SMS"],
-    "P2_notifications": ["Slack", "Email"],
-    "P3_notifications": ["Email"]
+    "P0_notifications": [
+      "SMS",
+      "Phone Call",
+      "Slack",
+      "Email"
+    ],
+    "P1_notifications": [
+      "Slack",
+      "Email",
+      "SMS"
+    ],
+    "P2_notifications": [
+      "Slack",
+      "Email"
+    ],
+    "P3_notifications": [
+      "Email"
+    ]
   }
 }

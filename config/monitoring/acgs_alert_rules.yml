@@ -1,0 +1,172 @@
+# ACGS-PGP Production Alert Rules
+# Constitutional AI Governance System Monitoring
+
+groups:
+  - name: acgs_critical_alerts
+    interval: 30s
+    rules:
+      # Critical: Constitutional Compliance Violations
+      - alert: ConstitutionalComplianceViolation
+        expr: acgs_constitutional_compliance_rate < 0.75
+        for: 0s
+        labels:
+          severity: critical
+          service: constitutional_ai
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Constitutional compliance violation detected"
+          description: "Constitutional compliance rate is {{ $value | humanizePercentage }}, below 75% threshold"
+          runbook_url: "https://docs.acgs.ai/runbooks/constitutional-compliance"
+          
+      # Critical: Service Down
+      - alert: ACGSServiceDown
+        expr: up{job=~"acgs-.*"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: "{{ $labels.job }}"
+        annotations:
+          summary: "ACGS service {{ $labels.job }} is down"
+          description: "Service {{ $labels.job }} has been down for more than 1 minute"
+          runbook_url: "https://docs.acgs.ai/runbooks/service-recovery"
+          
+      # Critical: Constitutional Hash Mismatch
+      - alert: ConstitutionalHashMismatch
+        expr: acgs_constitutional_hash_valid{hash="cdd01ef066bc6cf2"} == 0
+        for: 0s
+        labels:
+          severity: critical
+          service: constitutional_ai
+        annotations:
+          summary: "Constitutional hash validation failed"
+          description: "Constitutional hash cdd01ef066bc6cf2 validation failed"
+          runbook_url: "https://docs.acgs.ai/runbooks/constitutional-hash"
+
+  - name: acgs_high_priority_alerts
+    interval: 60s
+    rules:
+      # High: Response Time Exceeded
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=~"acgs-.*"}[5m])) > 2.0
+        for: 5m
+        labels:
+          severity: high
+          service: "{{ $labels.job }}"
+        annotations:
+          summary: "High response time for {{ $labels.job }}"
+          description: "95th percentile response time is {{ $value }}s, exceeding 2s target"
+          runbook_url: "https://docs.acgs.ai/runbooks/performance-optimization"
+          
+      # High: DGM Safety Pattern Failure
+      - alert: DGMSafetyPatternFailure
+        expr: acgs_dgm_sandbox_active == 0 or acgs_dgm_rollback_ready == 0
+        for: 2m
+        labels:
+          severity: high
+          service: dgm_safety
+        annotations:
+          summary: "DGM safety pattern failure detected"
+          description: "DGM safety patterns (sandbox/rollback) are not operational"
+          runbook_url: "https://docs.acgs.ai/runbooks/dgm-safety"
+          
+      # High: Emergency Shutdown Not Ready
+      - alert: EmergencyShutdownNotReady
+        expr: acgs_emergency_shutdown_ready == 0
+        for: 5m
+        labels:
+          severity: high
+          service: emergency_procedures
+        annotations:
+          summary: "Emergency shutdown procedures not ready"
+          description: "Emergency shutdown readiness check failed"
+          runbook_url: "https://docs.acgs.ai/runbooks/emergency-shutdown"
+
+  - name: acgs_moderate_alerts
+    interval: 300s
+    rules:
+      # Moderate: High Resource Usage
+      - alert: HighCPUUsage
+        expr: rate(process_cpu_seconds_total{job=~"acgs-.*"}[5m]) * 100 > 80
+        for: 15m
+        labels:
+          severity: moderate
+          service: "{{ $labels.job }}"
+        annotations:
+          summary: "High CPU usage for {{ $labels.job }}"
+          description: "CPU usage is {{ $value }}%, above 80% threshold"
+          runbook_url: "https://docs.acgs.ai/runbooks/resource-optimization"
+          
+      # Moderate: High Memory Usage
+      - alert: HighMemoryUsage
+        expr: process_resident_memory_bytes{job=~"acgs-.*"} / 1024 / 1024 / 1024 > 1.0
+        for: 15m
+        labels:
+          severity: moderate
+          service: "{{ $labels.job }}"
+        annotations:
+          summary: "High memory usage for {{ $labels.job }}"
+          description: "Memory usage is {{ $value }}GB, above 1GB threshold"
+          runbook_url: "https://docs.acgs.ai/runbooks/resource-optimization"
+          
+      # Moderate: Blockchain Cost Overrun
+      - alert: BlockchainCostOverrun
+        expr: rate(acgs_blockchain_cost_sol_total[5m]) > 0.008
+        for: 10m
+        labels:
+          severity: moderate
+          service: blockchain
+        annotations:
+          summary: "Blockchain cost overrun detected"
+          description: "SOL cost rate is {{ $value }} per minute, above 0.008 SOL budget"
+          runbook_url: "https://docs.acgs.ai/runbooks/blockchain-cost-optimization"
+
+  - name: acgs_operational_alerts
+    interval: 600s
+    rules:
+      # Operational: Human Review Queue Backlog
+      - alert: HumanReviewQueueBacklog
+        expr: acgs_dgm_human_review_queue > 10
+        for: 1h
+        labels:
+          severity: operational
+          service: human_review
+        annotations:
+          summary: "Human review queue backlog"
+          description: "{{ $value }} items in human review queue for over 1 hour"
+          runbook_url: "https://docs.acgs.ai/runbooks/human-review"
+          
+      # Operational: Low Constitutional Compliance Trend
+      - alert: ConstitutionalComplianceTrend
+        expr: avg_over_time(acgs_constitutional_compliance_rate[1h]) < 0.90
+        for: 30m
+        labels:
+          severity: operational
+          service: constitutional_ai
+        annotations:
+          summary: "Constitutional compliance trending down"
+          description: "Average compliance over 1h is {{ $value | humanizePercentage }}, below 90%"
+          runbook_url: "https://docs.acgs.ai/runbooks/compliance-optimization"
+
+  - name: acgs_recording_rules
+    interval: 30s
+    rules:
+      # Recording rule: System health percentage
+      - record: acgs:system_health_percentage
+        expr: (count(up{job=~"acgs-.*"} == 1) / count(up{job=~"acgs-.*"})) * 100
+        
+      # Recording rule: Average response time
+      - record: acgs:avg_response_time
+        expr: avg(histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=~"acgs-.*"}[5m])))
+        
+      # Recording rule: Constitutional compliance rate
+      - record: acgs:constitutional_compliance_rate
+        expr: avg(acgs_constitutional_compliance_rate)
+        
+      # Recording rule: Production readiness score
+      - record: acgs:production_readiness_score
+        expr: |
+          (
+            (acgs:system_health_percentage >= 90) * 0.4 +
+            (acgs:avg_response_time <= 2.0) * 0.3 +
+            (acgs:constitutional_compliance_rate >= 0.95) * 0.3
+          ) * 100

@@ -1,7 +1,7 @@
 {
   "validation_metadata": {
-    "validation_timestamp": "2025-06-17T13:18:42.256736+00:00",
-    "total_duration_seconds": 0.0002665519714355469,
+    "validation_timestamp": "2025-06-25T05:48:10.054605+00:00",
+    "total_duration_seconds": 0.0003337860107421875,
     "validation_type": "Complete End-to-End System Validation",
     "constitution_hash": "cdd01ef066bc6cf2"
   },
@@ -216,8 +216,8 @@
   },
   "final_certification": {
     "certification_metadata": {
-      "certification_id": "ACGS-COMPLETE-E2E-1750166322",
-      "issued_timestamp": "2025-06-17T13:18:42.256697+00:00",
+      "certification_id": "ACGS-COMPLETE-E2E-1750830490",
+      "issued_timestamp": "2025-06-25T05:48:10.054551+00:00",
       "certification_type": "Complete End-to-End System Validation",
       "constitution_hash": "cdd01ef066bc6cf2",
       "validation_framework_version": "v2.1"

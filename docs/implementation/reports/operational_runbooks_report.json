@@ -1,7 +1,7 @@
 {
   "runbook_summary": {
-    "start_time": "2025-06-22T16:53:56.240699+00:00",
-    "end_time": "2025-06-22T16:53:56.241299+00:00",
+    "start_time": "2025-06-25T05:51:48.614646+00:00",
+    "end_time": "2025-06-25T05:51:48.615281+00:00",
     "duration_seconds": 0.0,
     "total_components": 5,
     "successful_components": 5,
@@ -18,7 +18,7 @@
         "missing_sections": [],
         "emergency_contacts": 4,
         "rollback_procedures": 3,
-        "document_size_kb": 9.4
+        "document_size_kb": 9.42
       }
     },
     {

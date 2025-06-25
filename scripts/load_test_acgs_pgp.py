@@ -75,7 +75,7 @@ class ACGSPGPLoadTester:
     def __init__(self, concurrent_requests: int = 15):
         self.concurrent_requests = concurrent_requests
         self.services = [
-            ServiceEndpoint("auth_service", 8000, "/health", ["/health", "/"]),
+            ServiceEndpoint("auth_service", 8000, "/health", ["/health", "/api/v1/auth/info"]),
             ServiceEndpoint("ac_service", 8001, "/health", ["/health"]),
             ServiceEndpoint("integrity_service", 8002, "/health", ["/health"]),
             ServiceEndpoint("fv_service", 8003, "/health", ["/health"]),

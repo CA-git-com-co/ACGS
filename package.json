@@ -6,8 +6,7 @@
   "type": "module",
   "workspaces": [
     "applications/*",
-    "blockchain",
-    "tools/mcp-inspector"
+    "blockchain"
   ],
   "scripts": {
     "install:all": "pnpm install",
@@ -28,9 +27,8 @@
     "deps:audit": "pnpm audit",
     "deps:update": "pnpm update --recursive",
     "deps:outdated": "pnpm outdated --recursive",
-    "prepare": "husky install",
-    "postinstall": "pnpm run setup:git-hooks",
-    "setup:git-hooks": "husky install && husky add .husky/pre-commit 'pnpm run lint && pnpm run format:check'",
+    "prepare": "husky",
+    "postinstall": "echo 'Dependencies installed successfully'",
     "dev": "concurrently \"pnpm run --filter=applications/app dev\" \"pnpm run --filter=applications/governance-dashboard dev\"",
     "start": "pnpm run --recursive start"
   },

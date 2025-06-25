@@ -1,0 +1,368 @@
+openapi: 3.0.3
+info:
+  title: ACGS-PGP Authentication Service API
+  description: |
+    Authentication and authorization service for the ACGS-PGP (Autonomous Constitutional Governance System - Policy Generation Platform).
+    
+    This service provides secure JWT-based authentication with constitutional compliance validation.
+    
+    **Constitutional Hash**: `cdd01ef066bc6cf2`
+    
+    **Security Features**:
+    - JWT token authentication with HS256 algorithm
+    - Role-based access control (RBAC)
+    - Rate limiting and CSRF protection
+    - Constitutional compliance validation
+    - Audit logging for all authentication events
+    
+  version: 3.0.0
+  contact:
+    name: ACGS Platform Team
+    url: https://docs.acgs.ai/auth-service
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8000
+    description: Development server
+  - url: https://auth.acgs.ai
+    description: Production server
+
+security:
+  - BearerAuth: []
+  - ConstitutionalHash: []
+
+paths:
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Returns the current health status of the authentication service
+      tags:
+        - Health
+      security: []
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                status: "healthy"
+                service: "auth_service"
+                version: "3.0.0"
+                timestamp: 1750820294.86
+                constitutional_hash: "cdd01ef066bc6cf2"
+
+  /metrics:
+    get:
+      summary: Prometheus metrics
+      description: Returns Prometheus-compatible metrics for monitoring
+      tags:
+        - Monitoring
+      security: []
+      responses:
+        '200':
+          description: Prometheus metrics
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /api/v1/auth/login:
+    post:
+      summary: User authentication
+      description: Authenticate user credentials and return JWT tokens
+      tags:
+        - Authentication
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            example:
+              username: "admin"
+              password: "secure_password"
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/auth/refresh:
+    post:
+      summary: Refresh JWT token
+      description: Refresh an expired JWT token using a refresh token
+      tags:
+        - Authentication
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/auth/logout:
+    post:
+      summary: User logout
+      description: Invalidate current session and JWT token
+      tags:
+        - Authentication
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogoutResponse'
+        '401':
+          description: Invalid or expired token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/auth/validate:
+    get:
+      summary: Validate JWT token
+      description: Validate JWT token and return user information with constitutional compliance check
+      tags:
+        - Validation
+      responses:
+        '200':
+          description: Token is valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResponse'
+        '401':
+          description: Invalid or expired token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Constitutional compliance violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/auth/info:
+    get:
+      summary: Service information
+      description: Returns service information including constitutional hash
+      tags:
+        - Information
+      security: []
+      responses:
+        '200':
+          description: Service information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceInfoResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for authentication
+    ConstitutionalHash:
+      type: apiKey
+      in: header
+      name: X-Constitutional-Hash
+      description: Constitutional compliance hash (cdd01ef066bc6cf2)
+
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: User's username
+          example: "admin"
+        password:
+          type: string
+          format: password
+          description: User's password
+          example: "secure_password"
+
+    RefreshRequest:
+      type: object
+      required:
+        - refresh_token
+      properties:
+        refresh_token:
+          type: string
+          description: Refresh token for JWT renewal
+          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+
+    LoginResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: JWT access token
+          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+        token_type:
+          type: string
+          description: Token type
+          example: "bearer"
+        expires_in:
+          type: integer
+          description: Token expiration time in seconds
+          example: 1800
+        refresh_token:
+          type: string
+          description: Refresh token for token renewal
+          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+
+    ValidationResponse:
+      type: object
+      properties:
+        valid:
+          type: boolean
+          description: Whether the token is valid
+          example: true
+        user_id:
+          type: string
+          description: User identifier
+          example: "user_123"
+        username:
+          type: string
+          description: Username
+          example: "admin"
+        roles:
+          type: array
+          items:
+            type: string
+          description: User roles
+          example: ["admin", "constitutional_reviewer"]
+        constitutional_compliance:
+          type: boolean
+          description: Constitutional compliance status
+          example: true
+
+    LogoutResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Logout confirmation message
+          example: "Successfully logged out"
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Service health status
+          example: "healthy"
+        service:
+          type: string
+          description: Service name
+          example: "auth_service"
+        version:
+          type: string
+          description: Service version
+          example: "3.0.0"
+        timestamp:
+          type: number
+          description: Current timestamp
+          example: 1750820294.86
+        constitutional_hash:
+          type: string
+          description: Constitutional compliance hash
+          example: "cdd01ef066bc6cf2"
+
+    ServiceInfoResponse:
+      type: object
+      properties:
+        service:
+          type: string
+          description: Service name
+          example: "auth_service"
+        version:
+          type: string
+          description: Service version
+          example: "3.0.0"
+        status:
+          type: string
+          description: Service status
+          example: "operational"
+        constitutional_hash:
+          type: string
+          description: Constitutional compliance hash
+          example: "cdd01ef066bc6cf2"
+        endpoints:
+          type: array
+          items:
+            type: string
+          description: Available endpoints
+          example: ["/health", "/metrics", "/api/v1/auth/validate"]
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "Authentication failed"
+        detail:
+          type: string
+          description: Detailed error information
+          example: "Invalid username or password"
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp
+          example: "2025-06-25T03:00:00Z"
+
+tags:
+  - name: Health
+    description: Service health and status endpoints
+  - name: Monitoring
+    description: Monitoring and metrics endpoints
+  - name: Authentication
+    description: User authentication and session management
+  - name: Validation
+    description: Token validation and authorization
+  - name: Information
+    description: Service information and metadata

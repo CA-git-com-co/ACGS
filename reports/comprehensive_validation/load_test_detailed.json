@@ -1,7 +1,7 @@
 {
-  "test_id": "1b76bc61-7437-4803-90f7-03757bf36960",
-  "timestamp": "2025-06-17T10:55:03.049668+00:00",
-  "test_duration_seconds": 182.58132004737854,
+  "test_id": "ef7df923-3b6c-45ba-8c89-8c9d50703af1",
+  "timestamp": "2025-06-25T05:43:17.465828+00:00",
+  "test_duration_seconds": 182.2204692363739,
   "configuration": {
     "max_concurrent_users": 1000,
     "target_response_time_ms": 500.0,
@@ -9,51 +9,51 @@
     "target_sol_cost": 0.01
   },
   "overall_metrics": {
-    "total_requests": 169074,
-    "successful_requests": 24715,
-    "failed_requests": 144359,
-    "success_rate_percent": 14.617859635425908,
-    "requests_per_second": 926.020251995804,
-    "avg_response_time_ms": 155.6274398724222,
-    "p95_response_time_ms": 1292.4809694290154,
-    "p99_response_time_ms": 1751.5748786926279,
-    "avg_sol_cost": 0.010005079212204502
+    "total_requests": 196360,
+    "successful_requests": 28758,
+    "failed_requests": 167602,
+    "success_rate_percent": 14.645548991647994,
+    "requests_per_second": 1077.5957323723303,
+    "avg_response_time_ms": 5.715203679845715,
+    "p95_response_time_ms": 13.947355747222877,
+    "p99_response_time_ms": 58.58721971511843,
+    "avg_sol_cost": 0.009966892504804477
   },
   "service_metrics": {
     "auth": {
-      "total_requests": 16704,
-      "success_rate": 21.180555555555554,
-      "avg_response_time_ms": 2.3307698537159127
+      "total_requests": 19604,
+      "success_rate": 20.919200163231995,
+      "avg_response_time_ms": 5.223365796248932
     },
     "ac": {
-      "total_requests": 29699,
-      "success_rate": 11.82868110037375,
-      "avg_response_time_ms": 1.8111321106956042
+      "total_requests": 34350,
+      "success_rate": 11.903930131004367,
+      "avg_response_time_ms": 7.1061023088036785
     },
     "integrity": {
-      "total_requests": 29396,
-      "success_rate": 11.698870594638725,
-      "avg_response_time_ms": 1.5450736470401338
+      "total_requests": 34637,
+      "success_rate": 12.036261800964287,
+      "avg_response_time_ms": 6.21381432754469
     },
     "fv": {
-      "total_requests": 23319,
-      "success_rate": 15.03495004073931,
-      "avg_response_time_ms": 1.7247565188410618
+      "total_requests": 26796,
+      "success_rate": 15.129123749813406,
+      "avg_response_time_ms": 5.049591765476673
     },
     "gs": {
-      "total_requests": 17046,
-      "success_rate": 20.82600023465916,
-      "avg_response_time_ms": 1.6770117719408493
+      "total_requests": 19735,
+      "success_rate": 21.140106409931594,
+      "avg_response_time_ms": 4.732496557848337
     },
     "pgc": {
-      "total_requests": 29681,
-      "success_rate": 12.24015363363768,
-      "avg_response_time_ms": 1048.1764584443406
+      "total_requests": 34406,
+      "success_rate": 11.92815206650003,
+      "avg_response_time_ms": 4.997898031164099
     },
     "ec": {
-      "total_requests": 23229,
-      "success_rate": 15.222351371130912,
-      "avg_response_time_ms": 1.805553069481483
+      "total_requests": 26832,
+      "success_rate": 15.164728682170542,
+      "avg_response_time_ms": 6.696526381388787
     }
   },
   "performance_assessment": {

@@ -1,0 +1,644 @@
+openapi: 3.0.3
+info:
+  title: ACGS-PGP Constitutional AI Service API
+  description: |
+    Constitutional AI Service for the ACGS-PGP (Autonomous Constitutional Governance System - Policy Generation Platform).
+    
+    This service provides advanced constitutional analysis, compliance validation, formal verification integration, 
+    and real-time constitutional violation detection with sophisticated governance capabilities.
+    
+    **Constitutional Hash**: `cdd01ef066bc6cf2`
+    
+    **Core Features**:
+    - Multi-dimensional constitutional fidelity analysis
+    - Formal verification integration with mathematical proofs
+    - Real-time constitutional violation detection
+    - AI model integration (Google Gemini, DeepSeek-R1, NVIDIA Qwen)
+    - Collective Constitutional AI with democratic principle sourcing
+    - Comprehensive audit logging and compliance tracking
+    
+  version: 3.0.0
+  contact:
+    name: ACGS Constitutional AI Team
+    url: https://docs.acgs.ai/ac-service
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8001
+    description: Development server
+  - url: https://ac.acgs.ai
+    description: Production server
+
+security:
+  - BearerAuth: []
+  - ConstitutionalHash: []
+
+paths:
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Returns the current health status of the Constitutional AI service
+      tags:
+        - Health
+      security: []
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                status: "healthy"
+                service: "ac_service"
+                version: "3.0.0"
+                timestamp: 1750820294.86
+                constitutional_hash: "cdd01ef066bc6cf2"
+                compliance_engine: "operational"
+                ai_models:
+                  gemini: "connected"
+                  deepseek: "connected"
+                  nvidia_qwen: "connected"
+
+  /metrics:
+    get:
+      summary: Prometheus metrics
+      description: Returns Prometheus-compatible metrics for constitutional compliance monitoring
+      tags:
+        - Monitoring
+      security: []
+      responses:
+        '200':
+          description: Prometheus metrics
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /:
+    get:
+      summary: Service information
+      description: Returns comprehensive service information and capabilities
+      tags:
+        - Information
+      security: []
+      responses:
+        '200':
+          description: Service information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceInfoResponse'
+
+  /api/v1/constitutional/validate:
+    post:
+      summary: Validate constitutional compliance
+      description: Validate constitutional compliance with sophisticated multi-dimensional algorithms
+      tags:
+        - Constitutional Validation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConstitutionalComplianceRequest'
+            example:
+              policy:
+                id: "pol_123"
+                title: "Privacy Protection Policy"
+                content: "Policy content..."
+                category: "privacy"
+                impact_level: "high"
+              validation_mode: "comprehensive"
+              include_reasoning: true
+              principles:
+                - id: "CONST-001"
+                  name: "Democratic Participation"
+      responses:
+        '200':
+          description: Constitutional validation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstitutionalValidationResponse'
+        '400':
+          description: Invalid request or constitutional compliance violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: Get constitutional hash validation
+      description: Returns constitutional hash validation information and compliance framework status
+      tags:
+        - Constitutional Validation
+      responses:
+        '200':
+          description: Constitutional hash validation information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstitutionalHashResponse'
+
+  /api/v1/constitutional/validate-advanced:
+    post:
+      summary: Advanced constitutional validation
+      description: Advanced constitutional validation with formal verification and comprehensive analysis
+      tags:
+        - Constitutional Validation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdvancedValidationRequest'
+      responses:
+        '200':
+          description: Advanced validation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdvancedValidationResponse'
+
+  /api/v1/constitutional/analyze:
+    post:
+      summary: Analyze constitutional impact
+      description: Analyze constitutional impact of proposed policy changes
+      tags:
+        - Constitutional Analysis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConstitutionalAnalysisRequest'
+      responses:
+        '200':
+          description: Constitutional impact analysis completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstitutionalAnalysisResponse'
+
+  /api/v1/compliance/status:
+    get:
+      summary: Overall compliance status
+      description: Returns overall constitutional compliance status across the system
+      tags:
+        - Compliance Monitoring
+      responses:
+        '200':
+          description: Compliance status information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplianceStatusResponse'
+
+  /api/v1/constitutional/violations:
+    get:
+      summary: Recent constitutional violations
+      description: Returns recent constitutional violations and alerts
+      tags:
+        - Compliance Monitoring
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of violations to return
+          schema:
+            type: integer
+            default: 50
+            maximum: 100
+        - name: severity
+          in: query
+          description: Filter by violation severity
+          schema:
+            type: string
+            enum: [critical, high, moderate, low]
+      responses:
+        '200':
+          description: Constitutional violations list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViolationsResponse'
+
+  /api/v1/constitutional/audit-log:
+    get:
+      summary: Constitutional audit log
+      description: Returns comprehensive audit log of constitutional validations
+      tags:
+        - Audit & Compliance
+      parameters:
+        - name: start_date
+          in: query
+          description: Start date for audit log (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: end_date
+          in: query
+          description: End date for audit log (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: limit
+          in: query
+          description: Maximum number of audit entries to return
+          schema:
+            type: integer
+            default: 100
+            maximum: 1000
+      responses:
+        '200':
+          description: Audit log entries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditLogResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for authentication
+    ConstitutionalHash:
+      type: apiKey
+      in: header
+      name: X-Constitutional-Hash
+      description: Constitutional compliance hash (cdd01ef066bc6cf2)
+
+  schemas:
+    ConstitutionalComplianceRequest:
+      type: object
+      required:
+        - policy
+      properties:
+        policy:
+          type: object
+          description: Policy to validate
+          properties:
+            id:
+              type: string
+              description: Policy identifier
+            title:
+              type: string
+              description: Policy title
+            content:
+              type: string
+              description: Policy content
+            category:
+              type: string
+              description: Policy category
+            impact_level:
+              type: string
+              enum: [low, moderate, high, critical]
+        validation_mode:
+          type: string
+          enum: [basic, standard, comprehensive]
+          default: comprehensive
+          description: Level of validation detail
+        include_reasoning:
+          type: boolean
+          default: true
+          description: Include detailed reasoning in response
+        principles:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+          description: Specific constitutional principles to validate against
+
+    ConstitutionalValidationResponse:
+      type: object
+      properties:
+        validation_id:
+          type: string
+          description: Unique validation identifier
+        constitutional_hash:
+          type: string
+          description: Constitutional compliance hash
+        overall_compliance:
+          type: object
+          properties:
+            compliant:
+              type: boolean
+            confidence:
+              type: number
+              format: float
+            score:
+              type: number
+              format: float
+        rule_validations:
+          type: array
+          items:
+            type: object
+            properties:
+              rule_id:
+                type: string
+              name:
+                type: string
+              compliant:
+                type: boolean
+              confidence:
+                type: number
+                format: float
+              weight:
+                type: number
+                format: float
+              analysis:
+                type: string
+        formal_verification:
+          type: object
+          properties:
+            verified:
+              type: boolean
+            proof_id:
+              type: string
+            mathematical_validity:
+              type: boolean
+        processing_time_ms:
+          type: number
+          format: float
+
+    AdvancedValidationRequest:
+      allOf:
+        - $ref: '#/components/schemas/ConstitutionalComplianceRequest'
+        - type: object
+          properties:
+            enable_formal_verification:
+              type: boolean
+              default: true
+            level:
+              type: string
+              enum: [comprehensive, exhaustive]
+              default: comprehensive
+
+    AdvancedValidationResponse:
+      allOf:
+        - $ref: '#/components/schemas/ConstitutionalValidationResponse'
+        - type: object
+          properties:
+            advanced_analysis:
+              type: object
+              properties:
+                constitutional_fidelity_score:
+                  type: number
+                  format: float
+                risk_assessment:
+                  type: object
+                compliance_trends:
+                  type: object
+                stakeholder_impact:
+                  type: object
+            validation_type:
+              type: string
+              enum: [advanced]
+            total_processing_time_ms:
+              type: number
+              format: float
+
+    ConstitutionalAnalysisRequest:
+      type: object
+      required:
+        - changes
+      properties:
+        changes:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              target:
+                type: string
+              modification:
+                type: string
+        scope:
+          type: string
+          enum: [basic, comprehensive, exhaustive]
+          default: comprehensive
+
+    ConstitutionalAnalysisResponse:
+      type: object
+      properties:
+        analysis_id:
+          type: string
+        scope:
+          type: string
+        changes_analyzed:
+          type: integer
+        constitutional_impacts:
+          type: array
+          items:
+            type: object
+        risk_assessment:
+          type: object
+          properties:
+            overall_risk:
+              type: string
+              enum: [low, moderate, high, critical]
+            risk_factors:
+              type: array
+              items:
+                type: string
+            mitigation_strategies:
+              type: array
+              items:
+                type: string
+        recommendations:
+          type: array
+          items:
+            type: string
+
+    ConstitutionalHashResponse:
+      type: object
+      properties:
+        constitutional_hash:
+          type: string
+          description: Current constitutional hash
+        validation_status:
+          type: string
+          enum: [valid, invalid]
+        service:
+          type: string
+        version:
+          type: string
+        timestamp:
+          type: number
+          format: float
+        compliance_framework:
+          type: object
+          properties:
+            hash_algorithm:
+              type: string
+            validation_level:
+              type: string
+            integrity_verified:
+              type: boolean
+        constitutional_state:
+          type: object
+          properties:
+            active:
+              type: boolean
+            rules_loaded:
+              type: boolean
+            compliance_engine:
+              type: string
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        service:
+          type: string
+        version:
+          type: string
+        timestamp:
+          type: number
+          format: float
+        constitutional_hash:
+          type: string
+        compliance_engine:
+          type: string
+        ai_models:
+          type: object
+          properties:
+            gemini:
+              type: string
+            deepseek:
+              type: string
+            nvidia_qwen:
+              type: string
+
+    ServiceInfoResponse:
+      type: object
+      properties:
+        service:
+          type: string
+        version:
+          type: string
+        status:
+          type: string
+        port:
+          type: integer
+        phase:
+          type: string
+        capabilities:
+          type: array
+          items:
+            type: string
+        endpoints:
+          type: object
+        algorithms:
+          type: object
+
+    ComplianceStatusResponse:
+      type: object
+      properties:
+        overall_compliance_rate:
+          type: number
+          format: float
+        active_violations:
+          type: integer
+        compliance_trends:
+          type: object
+        last_updated:
+          type: string
+          format: date-time
+
+    ViolationsResponse:
+      type: object
+      properties:
+        violations:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              severity:
+                type: string
+              rule_id:
+                type: string
+              description:
+                type: string
+              timestamp:
+                type: string
+                format: date-time
+        total_count:
+          type: integer
+        page_info:
+          type: object
+
+    AuditLogResponse:
+      type: object
+      properties:
+        audit_entries:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              validation_id:
+                type: string
+              timestamp:
+                type: string
+                format: date-time
+              action:
+                type: string
+              result:
+                type: object
+        total_count:
+          type: integer
+        page_info:
+          type: object
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+        detail:
+          type: string
+          description: Detailed error information
+        timestamp:
+          type: string
+          format: date-time
+        constitutional_hash:
+          type: string
+          description: Constitutional hash for context
+
+tags:
+  - name: Health
+    description: Service health and status endpoints
+  - name: Monitoring
+    description: Monitoring and metrics endpoints
+  - name: Information
+    description: Service information and metadata
+  - name: Constitutional Validation
+    description: Core constitutional compliance validation
+  - name: Constitutional Analysis
+    description: Constitutional impact analysis and assessment
+  - name: Compliance Monitoring
+    description: Compliance status and violation monitoring
+  - name: Audit & Compliance
+    description: Audit logging and compliance tracking

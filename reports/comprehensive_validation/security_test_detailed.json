@@ -1,6 +1,6 @@
 {
-  "timestamp": "2025-06-17T10:55:03.153876+00:00",
-  "test_duration_seconds": 0.0986788272857666,
+  "timestamp": "2025-06-25T05:43:17.593957+00:00",
+  "test_duration_seconds": 0.12189078330993652,
   "total_tests_executed": 4,
   "total_vulnerabilities_found": 0,
   "security_score": 100.0,
