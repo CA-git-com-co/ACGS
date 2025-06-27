@@ -58,7 +58,7 @@ declare -A SERVICES=(
 check_service() {
     local service_name=$1
     local port=$2
-    
+
     if curl -f -s --connect-timeout 5 --max-time 10 "http://localhost:$port/health" > /dev/null 2>&1; then
         return 0
     else
@@ -66,14 +66,158 @@ check_service() {
     fi
 }
 
+# Function to validate constitutional compliance
+check_constitutional_compliance() {
+    local service_name=$1
+    local port=$2
+    local compliance_threshold=0.95
+
+    print_status "Validating constitutional compliance for $service_name..."
+
+    # Check if service has constitutional compliance endpoint
+    local compliance_response=$(curl -s --connect-timeout 5 --max-time 10 "http://localhost:$port/constitutional/compliance" 2>/dev/null || echo "")
+
+    if [ -n "$compliance_response" ]; then
+        # Extract compliance score (assuming JSON response with "compliance_score" field)
+        local compliance_score=$(echo "$compliance_response" | grep -o '"compliance_score":[0-9.]*' | cut -d: -f2 | tr -d ' ')
+
+        if [ -n "$compliance_score" ]; then
+            # Compare compliance score with threshold using awk for floating point comparison
+            local meets_threshold=$(awk -v score="$compliance_score" -v threshold="$compliance_threshold" 'BEGIN { print (score >= threshold) ? "1" : "0" }')
+
+            if [ "$meets_threshold" = "1" ]; then
+                print_success "$service_name constitutional compliance: $compliance_score (>= $compliance_threshold) ✓"
+                return 0
+            else
+                print_error "$service_name constitutional compliance: $compliance_score (< $compliance_threshold) ✗"
+                return 1
+            fi
+        else
+            print_warning "$service_name constitutional compliance endpoint returned invalid score"
+            return 1
+        fi
+    else
+        print_warning "$service_name does not have constitutional compliance endpoint"
+        return 1
+    fi
+}
+
+# Function to validate DGM safety patterns
+check_dgm_safety() {
+    local service_name=$1
+    local port=$2
+
+    print_status "Validating DGM safety patterns for $service_name..."
+
+    # Check sandbox status
+    local sandbox_response=$(curl -s --connect-timeout 5 --max-time 10 "http://localhost:$port/dgm/sandbox/status" 2>/dev/null || echo "")
+    if [[ "$sandbox_response" == *"active"* ]]; then
+        print_success "$service_name DGM sandbox: ACTIVE ✓"
+    else
+        print_warning "$service_name DGM sandbox: INACTIVE"
+        return 1
+    fi
+
+    # Check human review capability
+    local review_response=$(curl -s --connect-timeout 5 --max-time 10 "http://localhost:$port/dgm/review/status" 2>/dev/null || echo "")
+    if [[ "$review_response" == *"enabled"* ]]; then
+        print_success "$service_name DGM human review: ENABLED ✓"
+    else
+        print_warning "$service_name DGM human review: DISABLED"
+        return 1
+    fi
+
+    # Check rollback capability
+    local rollback_response=$(curl -s --connect-timeout 5 --max-time 10 "http://localhost:$port/dgm/rollback/status" 2>/dev/null || echo "")
+    if [[ "$rollback_response" == *"ready"* ]]; then
+        print_success "$service_name DGM rollback: READY ✓"
+        return 0
+    else
+        print_warning "$service_name DGM rollback: NOT READY"
+        return 1
+    fi
+}
+
+# Function to test emergency shutdown capability (<30min RTO)
+test_emergency_shutdown() {
+    local service_name=$1
+    local port=$2
+
+    print_status "Testing emergency shutdown capability for $service_name..."
+
+    local start_time=$(date +%s)
+
+    # Trigger emergency shutdown
+    local shutdown_response=$(curl -s -X POST --connect-timeout 5 --max-time 10 "http://localhost:$port/emergency/shutdown" 2>/dev/null || echo "")
+
+    if [[ "$shutdown_response" == *"initiated"* ]]; then
+        # Wait for service to become unavailable
+        local attempts=0
+        while [ $attempts -lt 180 ]; do  # 30 minutes = 1800 seconds, check every 10 seconds
+            if ! check_service "$service_name" "$port"; then
+                local end_time=$(date +%s)
+                local shutdown_time=$((end_time - start_time))
+                local shutdown_minutes=$((shutdown_time / 60))
+
+                if [ $shutdown_time -le 1800 ]; then  # 30 minutes = 1800 seconds
+                    print_success "$service_name emergency shutdown: ${shutdown_minutes}m ${shutdown_time}s (<30min RTO) ✓"
+                    return 0
+                else
+                    print_error "$service_name emergency shutdown: ${shutdown_minutes}m ${shutdown_time}s (>30min RTO) ✗"
+                    return 1
+                fi
+            fi
+            sleep 10
+            attempts=$((attempts + 1))
+        done
+
+        print_error "$service_name emergency shutdown: TIMEOUT (>30min RTO) ✗"
+        return 1
+    else
+        print_warning "$service_name does not support emergency shutdown endpoint"
+        return 1
+    fi
+}
+
+# Function to validate performance targets
+check_performance_targets() {
+    local service_name=$1
+    local port=$2
+
+    print_status "Validating performance targets for $service_name..."
+
+    # Test response time (≤2s target)
+    local start_time=$(date +%s%3N)  # milliseconds
+    local health_response=$(curl -s --connect-timeout 5 --max-time 3 "http://localhost:$port/health" 2>/dev/null || echo "")
+    local end_time=$(date +%s%3N)
+    local response_time=$((end_time - start_time))
+
+    if [ $response_time -le 2000 ]; then  # 2000ms = 2s
+        print_success "$service_name response time: ${response_time}ms (≤2s) ✓"
+    else
+        print_error "$service_name response time: ${response_time}ms (>2s) ✗"
+        return 1
+    fi
+
+    # Test throughput capability (basic check)
+    local throughput_response=$(curl -s --connect-timeout 5 --max-time 10 "http://localhost:$port/metrics/throughput" 2>/dev/null || echo "")
+    if [[ "$throughput_response" == *"rps"* ]]; then
+        print_success "$service_name throughput metrics: AVAILABLE ✓"
+    else
+        print_warning "$service_name throughput metrics: NOT AVAILABLE"
+    fi
+
+    return 0
+}
+
 # Function to stop existing service
 stop_service() {
     local service_name=$1
     local port=$2
     local pid_file="$PID_DIR/${service_name}.pid"
-    
+
     print_status "Stopping existing $service_name processes..."
-    
+
     # Kill by PID file if exists
     if [ -f "$pid_file" ]; then
         local pid=$(cat "$pid_file")
@@ -83,11 +227,11 @@ stop_service() {
         fi
         rm -f "$pid_file"
     fi
-    
+
     # Kill any uvicorn processes on the port
     pkill -f "uvicorn.*:$port" || true
     pkill -f "$service_name" || true
-    
+
     # Wait for process to stop
     sleep 2
 }
@@ -191,6 +335,24 @@ start_service() {
     export SECRET_KEY="acgs-development-secret-key-2024-phase3-completion-testing-$(date +%s)"
     export CSRF_SECRET_KEY="acgs-development-csrf-secret-key-2024-phase3-completion"
     export PYTHONPATH="$PROJECT_ROOT:$PROJECT_ROOT/services:$PYTHONPATH"
+
+    # Constitutional governance configuration
+    export CONSTITUTIONAL_HASH="cdd01ef066bc6cf2"
+    export OPA_SERVER_URL="http://localhost:8181"
+    export CONSTITUTIONAL_COMPLIANCE_THRESHOLD="0.95"
+    export GOVERNANCE_VALIDATION_ENABLED="true"
+
+    # Real AI Model Integrations
+    export GOOGLE_GEMINI_ENABLED="true"
+    export DEEPSEEK_R1_ENABLED="true"
+    export NVIDIA_QWEN_ENABLED="true"
+    export NANO_VLLM_ENABLED="true"
+
+    # DGM Safety Patterns
+    export DGM_SANDBOX_ENABLED="true"
+    export DGM_HUMAN_REVIEW_ENABLED="true"
+    export DGM_ROLLBACK_ENABLED="true"
+    export EMERGENCY_SHUTDOWN_RTO_MINUTES="30"
     
     # Service-specific environment variables
     case $service_name in
@@ -302,28 +464,94 @@ main() {
         sleep 3  # Wait between service starts
     done
     
-    print_status "Step 3: Final health check"
+    print_status "Step 3: Comprehensive validation"
     sleep 10  # Wait for all services to stabilize
-    
+
     echo ""
     print_success "🎉 Service Startup Completed!"
     echo "================================================"
     echo "✅ Total services started: $started_services/$total_services"
     echo ""
-    
-    # Final health check for all services
-    print_status "Final health check for all services:"
+
+    # Comprehensive validation for all services
+    print_status "Step 3.1: Basic health check for all services:"
+    local healthy_services=0
     for service_name in "${service_order[@]}"; do
         local config=${SERVICES[$service_name]}
         local port=$(echo $config | cut -d: -f1)
-        
+
         if check_service "$service_name" "$port"; then
             print_success "✅ $service_name (port $port): OPERATIONAL"
+            healthy_services=$((healthy_services + 1))
         else
             print_error "❌ $service_name (port $port): FAILED"
         fi
     done
+
+    print_status "Step 3.2: Constitutional compliance validation:"
+    local compliant_services=0
+    for service_name in "${service_order[@]}"; do
+        local config=${SERVICES[$service_name]}
+        local port=$(echo $config | cut -d: -f1)
+
+        if check_service "$service_name" "$port"; then
+            if check_constitutional_compliance "$service_name" "$port"; then
+                compliant_services=$((compliant_services + 1))
+            fi
+        fi
+    done
+
+    print_status "Step 3.3: DGM safety pattern validation:"
+    local dgm_safe_services=0
+    for service_name in "${service_order[@]}"; do
+        local config=${SERVICES[$service_name]}
+        local port=$(echo $config | cut -d: -f1)
+
+        if check_service "$service_name" "$port"; then
+            if check_dgm_safety "$service_name" "$port"; then
+                dgm_safe_services=$((dgm_safe_services + 1))
+            fi
+        fi
+    done
+
+    print_status "Step 3.4: Performance target validation:"
+    local performant_services=0
+    for service_name in "${service_order[@]}"; do
+        local config=${SERVICES[$service_name]}
+        local port=$(echo $config | cut -d: -f1)
+
+        if check_service "$service_name" "$port"; then
+            if check_performance_targets "$service_name" "$port"; then
+                performant_services=$((performant_services + 1))
+            fi
+        fi
+    done
     
+    echo ""
+    echo "📊 ACGS-PGP System Validation Summary"
+    echo "================================================"
+    echo "✅ Services Started: $started_services/$total_services"
+    echo "✅ Health Checks: $healthy_services/$total_services"
+    echo "✅ Constitutional Compliance: $compliant_services/$total_services"
+    echo "✅ DGM Safety Patterns: $dgm_safe_services/$total_services"
+    echo "✅ Performance Targets: $performant_services/$total_services"
+    echo ""
+
+    # Calculate overall compliance percentage
+    local total_checks=$((total_services * 4))  # 4 checks per service
+    local passed_checks=$((healthy_services + compliant_services + dgm_safe_services + performant_services))
+    local compliance_percentage=$((passed_checks * 100 / total_checks))
+
+    echo "🎯 Overall System Compliance: $compliance_percentage%"
+
+    if [ $compliance_percentage -ge 95 ]; then
+        print_success "🎉 ACGS-PGP SYSTEM READY FOR PRODUCTION (≥95% compliance)"
+    elif [ $compliance_percentage -ge 80 ]; then
+        print_warning "⚠️ ACGS-PGP SYSTEM READY FOR STAGING ($compliance_percentage% compliance)"
+    else
+        print_error "❌ ACGS-PGP SYSTEM REQUIRES REMEDIATION (<80% compliance)"
+    fi
+
     echo ""
     echo "📄 Logs directory: $LOG_DIR"
     echo "📄 PID files: $PID_DIR"
@@ -332,18 +560,28 @@ main() {
     echo "   Stop all services: pkill -f 'uvicorn.*:800[0-6]'"
     echo "   Check logs: tail -f $LOG_DIR/<service_name>.log"
     echo ""
-    echo "🔍 Health Check Commands:"
+    echo "🔍 Validation Commands:"
     for service_name in "${service_order[@]}"; do
         local config=${SERVICES[$service_name]}
         local port=$(echo $config | cut -d: -f1)
-        echo "   $service_name: curl -s http://localhost:$port/health"
+        echo "   $service_name health: curl -s http://localhost:$port/health"
+        echo "   $service_name compliance: curl -s http://localhost:$port/constitutional/compliance"
+        echo "   $service_name DGM: curl -s http://localhost:$port/dgm/sandbox/status"
     done
-    
-    if [ $started_services -eq $total_services ]; then
-        print_success "🎯 ALL SERVICES OPERATIONAL - Phase 3 Complete!"
+
+    echo ""
+    echo "🚨 Emergency Shutdown Command:"
+    echo "   Emergency shutdown: curl -X POST http://localhost:<port>/emergency/shutdown"
+    echo "   Target RTO: <30 minutes"
+
+    if [ $started_services -eq $total_services ] && [ $compliance_percentage -ge 95 ]; then
+        print_success "🎯 ACGS-PGP PRODUCTION DEPLOYMENT READY!"
+        return 0
+    elif [ $started_services -eq $total_services ] && [ $compliance_percentage -ge 80 ]; then
+        print_warning "⚠️ ACGS-PGP STAGING DEPLOYMENT READY - Production requires ≥95% compliance"
         return 0
     else
-        print_warning "⚠️ Some services failed to start - Check logs for details"
+        print_error "❌ ACGS-PGP SYSTEM VALIDATION FAILED - Check logs and remediate issues"
         return 1
     fi
 }

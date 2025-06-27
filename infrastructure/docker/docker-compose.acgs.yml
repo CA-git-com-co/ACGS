@@ -194,6 +194,13 @@ services:
       - JWT_SECRET_KEY=${AUTH_SECRET_KEY:-acgs-development-secret-key-2024}
       - ENVIRONMENT=${ENVIRONMENT:-development}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - OPA_SERVER_URL=http://opa:8181
+      # Real AI Model Integrations
+      - GOOGLE_GEMINI_ENABLED=${GOOGLE_GEMINI_ENABLED:-true}
+      - DEEPSEEK_R1_ENABLED=${DEEPSEEK_R1_ENABLED:-true}
+      - NVIDIA_QWEN_ENABLED=${NVIDIA_QWEN_ENABLED:-true}
+      - NANO_VLLM_ENABLED=${NANO_VLLM_ENABLED:-true}
     working_dir: /app/services/platform/authentication/auth_service
     command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8000']
     ports:
@@ -220,8 +227,11 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
-          cpus: '0.5'
+          memory: 1Gi
+          cpus: '500m'
+        reservations:
+          memory: 512Mi
+          cpus: '200m'
 
   # AC Service (Port 8001) - Constitutional AI
   ac_service:
@@ -241,6 +251,11 @@ services:
       - CONSTITUTIONAL_FIDELITY_THRESHOLD=${CONSTITUTIONAL_FIDELITY_THRESHOLD:-0.85}
       - OPA_SERVER_URL=http://opa:8181
       - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      # Real AI Model Integrations
+      - GOOGLE_GEMINI_ENABLED=${GOOGLE_GEMINI_ENABLED:-true}
+      - DEEPSEEK_R1_ENABLED=${DEEPSEEK_R1_ENABLED:-true}
+      - NVIDIA_QWEN_ENABLED=${NVIDIA_QWEN_ENABLED:-true}
+      - NANO_VLLM_ENABLED=${NANO_VLLM_ENABLED:-true}
     working_dir: /app/services/core/constitutional-ai/ac_service
     command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8001']
     ports:
@@ -263,8 +278,11 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
-          cpus: '0.75'
+          memory: 1Gi
+          cpus: '500m'
+        reservations:
+          memory: 512Mi
+          cpus: '200m'
 
   # Integrity Service (Port 8002) - Data Integrity and Cryptographic Verification
   integrity_service:
@@ -282,6 +300,13 @@ services:
       - AC_SERVICE_URL=http://ac_service:8001
       - ENVIRONMENT=${ENVIRONMENT:-development}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - OPA_SERVER_URL=http://opa:8181
+      # Real AI Model Integrations
+      - GOOGLE_GEMINI_ENABLED=${GOOGLE_GEMINI_ENABLED:-true}
+      - DEEPSEEK_R1_ENABLED=${DEEPSEEK_R1_ENABLED:-true}
+      - NVIDIA_QWEN_ENABLED=${NVIDIA_QWEN_ENABLED:-true}
+      - NANO_VLLM_ENABLED=${NANO_VLLM_ENABLED:-true}
     working_dir: /app/services/platform/integrity/integrity_service
     command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8002']
     ports:
@@ -304,8 +329,11 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
-          cpus: '0.5'
+          memory: 1Gi
+          cpus: '500m'
+        reservations:
+          memory: 512Mi
+          cpus: '200m'
 
   # FV Service (Port 8003) - Formal Verification
   fv_service:
@@ -324,6 +352,13 @@ services:
       - INTEGRITY_SERVICE_URL=http://integrity_service:8002
       - ENVIRONMENT=${ENVIRONMENT:-development}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - OPA_SERVER_URL=http://opa:8181
+      # Real AI Model Integrations
+      - GOOGLE_GEMINI_ENABLED=${GOOGLE_GEMINI_ENABLED:-true}
+      - DEEPSEEK_R1_ENABLED=${DEEPSEEK_R1_ENABLED:-true}
+      - NVIDIA_QWEN_ENABLED=${NVIDIA_QWEN_ENABLED:-true}
+      - NANO_VLLM_ENABLED=${NANO_VLLM_ENABLED:-true}
     working_dir: /app/services/core/formal-verification/fv_service
     command: ['uvicorn', 'main:app', '--host', '0.0.0.0', '--port', '8003']
     ports:
@@ -346,8 +381,11 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
-          cpus: '0.75'
+          memory: 1Gi
+          cpus: '500m'
+        reservations:
+          memory: 512Mi
+          cpus: '200m'
 
   # GS Service (Port 8004) - Governance Synthesis
   gs_service:
@@ -369,6 +407,13 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - POLICY_QUALITY_THRESHOLD=${POLICY_QUALITY_THRESHOLD:-0.80}
       - MAX_SYNTHESIS_LOOPS=${MAX_SYNTHESIS_LOOPS:-3}
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - OPA_SERVER_URL=http://opa:8181
+      # Real AI Model Integrations
+      - GOOGLE_GEMINI_ENABLED=${GOOGLE_GEMINI_ENABLED:-true}
+      - DEEPSEEK_R1_ENABLED=${DEEPSEEK_R1_ENABLED:-true}
+      - NVIDIA_QWEN_ENABLED=${NVIDIA_QWEN_ENABLED:-true}
+      - NANO_VLLM_ENABLED=${NANO_VLLM_ENABLED:-true}
     working_dir: /app/services/core/governance-synthesis/gs_service
     command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8004']
     ports:
@@ -391,8 +436,11 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1.5G
-          cpus: '1.0'
+          memory: 1Gi
+          cpus: '500m'
+        reservations:
+          memory: 512Mi
+          cpus: '200m'
 
   # PGC Service (Port 8005) - Policy Governance Compliance
   pgc_service:
@@ -416,6 +464,11 @@ services:
       - PGC_LATENCY_TARGET=${PGC_LATENCY_TARGET:-25}
       - CONSTITUTIONAL_HASH=${CONSTITUTIONAL_HASH:-cdd01ef066bc6cf2}
       - OPA_SERVER_URL=http://opa:8181
+      # Real AI Model Integrations
+      - GOOGLE_GEMINI_ENABLED=${GOOGLE_GEMINI_ENABLED:-true}
+      - DEEPSEEK_R1_ENABLED=${DEEPSEEK_R1_ENABLED:-true}
+      - NVIDIA_QWEN_ENABLED=${NVIDIA_QWEN_ENABLED:-true}
+      - NANO_VLLM_ENABLED=${NANO_VLLM_ENABLED:-true}
     working_dir: /app/services/core/policy-governance/pgc_service
     command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8005']
     ports:
@@ -438,8 +491,11 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
-          cpus: '0.75'
+          memory: 1Gi
+          cpus: '500m'
+        reservations:
+          memory: 512Mi
+          cpus: '200m'
 
   # EC Service (Port 8006) - Evolutionary Computation
   ec_service:
@@ -461,6 +517,13 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - WINA_ENABLED=${WINA_ENABLED:-true}
       - EVOLUTIONARY_COMPUTATION_ENABLED=${EVOLUTIONARY_COMPUTATION_ENABLED:-true}
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - OPA_SERVER_URL=http://opa:8181
+      # Real AI Model Integrations
+      - GOOGLE_GEMINI_ENABLED=${GOOGLE_GEMINI_ENABLED:-true}
+      - DEEPSEEK_R1_ENABLED=${DEEPSEEK_R1_ENABLED:-true}
+      - NVIDIA_QWEN_ENABLED=${NVIDIA_QWEN_ENABLED:-true}
+      - NANO_VLLM_ENABLED=${NANO_VLLM_ENABLED:-true}
     working_dir: /app/services/core/evolutionary-computation/ec_service
     command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8006']
     ports:
@@ -483,8 +546,11 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
-          cpus: '0.75'
+          memory: 1Gi
+          cpus: '500m'
+        reservations:
+          memory: 512Mi
+          cpus: '200m'
 
   # =============================================================================
   # Development Tools and Solana Environment

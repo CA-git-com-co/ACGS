@@ -1,6 +1,0 @@
-{
-  "parameters": {
-    "excludedNamespaces": { "value": [ "kube-system", "azure-arc" ] },
-    "allowedProfiles": { "value": [ "runtime/default", "docker/default" ] }
-  }
-}

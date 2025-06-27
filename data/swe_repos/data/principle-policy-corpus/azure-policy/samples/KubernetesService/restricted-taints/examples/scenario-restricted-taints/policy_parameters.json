@@ -1,5 +1,0 @@
-{
-    "reservedTaints": {
-        "value": ["CriticalAddonsOnly"]
-    }
-}

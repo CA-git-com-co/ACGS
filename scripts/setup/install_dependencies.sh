@@ -1,6 +1,7 @@
 #!/bin/bash
-# ACGS-1 Dependency Installation Script
-# This script installs all required dependencies for the ACGS-1 Constitutional Governance System
+# ACGS-PGP Dependency Installation Script
+# This script installs all required dependencies for the ACGS-PGP Constitutional Governance System
+# Uses proper package managers: pnpm for Node.js, cargo for Rust, UV for Python
 
 set -e  # Exit on any error
 
@@ -39,9 +40,21 @@ check_prerequisites() {
     command -v python3 >/dev/null 2>&1 || missing_deps+=("python3")
     command -v pip3 >/dev/null 2>&1 || missing_deps+=("python3-pip")
     command -v node >/dev/null 2>&1 || missing_deps+=("nodejs")
-    command -v npm >/dev/null 2>&1 || missing_deps+=("npm")
     command -v docker >/dev/null 2>&1 || missing_deps+=("docker")
     command -v docker-compose >/dev/null 2>&1 || missing_deps+=("docker-compose")
+
+    # Check for preferred package managers (will install if missing)
+    if ! command -v pnpm >/dev/null 2>&1; then
+        log "pnpm not found, will install during Node.js setup"
+    fi
+
+    if ! command -v cargo >/dev/null 2>&1; then
+        log "cargo not found, will install during Rust setup"
+    fi
+
+    if ! command -v uv >/dev/null 2>&1; then
+        log "uv not found, will install during Python setup"
+    fi
     
     if [ ${#missing_deps[@]} -ne 0 ]; then
         error "Missing required dependencies: ${missing_deps[*]}"
@@ -124,63 +137,130 @@ install_python_dependencies() {
     success "Python dependencies installed (${services_found} service directories processed)"
 }
 
-# Install Node.js dependencies
+# Install Node.js dependencies with pnpm
 install_nodejs_dependencies() {
-    log "📦 Installing Node.js dependencies..."
-    
-    # Install root package dependencies
+    log "📦 Installing Node.js dependencies with pnpm..."
+
+    # Install pnpm if not available
+    if ! command -v pnpm >/dev/null 2>&1; then
+        log "Installing pnpm package manager..."
+        if command -v npm >/dev/null 2>&1; then
+            npm install -g pnpm
+        else
+            curl -fsSL https://get.pnpm.io/install.sh | sh -
+            export PATH="$HOME/.local/share/pnpm:$PATH"
+        fi
+    fi
+
+    # Verify pnpm installation
+    if ! command -v pnpm >/dev/null 2>&1; then
+        error "Failed to install pnpm, falling back to npm"
+
+        # Fallback to npm
+        if [ -f "package.json" ]; then
+            log "Installing root Node.js dependencies with npm..."
+            npm install
+            success "Root Node.js dependencies installed with npm"
+        fi
+
+        for app_dir in applications/*/; do
+            if [ -d "$app_dir" ] && [ -f "${app_dir}package.json" ]; then
+                log "Installing dependencies for ${app_dir} with npm..."
+                cd "$app_dir"
+                npm install
+                cd - > /dev/null
+            fi
+        done
+        return
+    fi
+
+    # Install root package dependencies with pnpm
     if [ -f "package.json" ]; then
-        log "Installing root Node.js dependencies..."
-        npm install
-        success "Root Node.js dependencies installed"
+        log "Installing root Node.js dependencies with pnpm..."
+        pnpm install
+        success "Root Node.js dependencies installed with pnpm"
     else
         log "No root package.json found, skipping root dependencies"
     fi
-    
-    # Install application dependencies
+
+    # Install application dependencies with pnpm
     local apps_found=0
-    
+
     for app_dir in applications/*/; do
         if [ -d "$app_dir" ] && [ -f "${app_dir}package.json" ]; then
-            log "Installing dependencies for ${app_dir}..."
+            log "Installing dependencies for ${app_dir} with pnpm..."
             cd "$app_dir"
-            npm install
+            pnpm install
             cd - > /dev/null
             ((apps_found++))
         fi
     done
-    
-    success "Node.js dependencies installed (${apps_found} application directories processed)"
+
+    success "Node.js dependencies installed with pnpm (${apps_found} application directories processed)"
 }
 
-# Install Rust dependencies (if applicable)
+# Install Rust dependencies with proper cargo usage
 install_rust_dependencies() {
-    log "🦀 Installing Rust dependencies..."
-    
+    log "🦀 Installing Rust dependencies for constitutional governance..."
+
+    # Install Rust if not present
+    if ! command -v cargo >/dev/null 2>&1; then
+        log "Installing Rust..."
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+        source ~/.cargo/env
+    fi
+
     if command -v cargo >/dev/null 2>&1; then
+        # Update Rust to latest stable
+        log "Updating Rust to latest stable..."
+        rustup update stable
+        rustup default stable
+
+        # Install required Rust components
+        log "Installing Rust components..."
+        rustup component add rustfmt clippy
+
+        # Build blockchain components if present
         if [ -f "blockchain/Cargo.toml" ]; then
-            log "Building Rust blockchain components..."
+            log "Building ACGS-PGP blockchain components..."
             cd blockchain
+
+            # Check dependencies and build
+            cargo check
             cargo build --release
+
+            # Run tests to validate constitutional governance components
+            log "Running constitutional governance tests..."
+            cargo test --release
+
             cd - > /dev/null
-            success "Rust dependencies built"
+            success "ACGS-PGP Rust blockchain components built and tested"
         else
-            log "No blockchain Cargo.toml found, skipping Rust dependencies"
+            log "No blockchain Cargo.toml found, skipping blockchain dependencies"
         fi
-        
-        # Install Anchor CLI if not present
+
+        # Install Anchor CLI if not present (for Solana development)
         if ! command -v anchor >/dev/null 2>&1; then
-            log "Installing Anchor CLI..."
+            log "Installing Anchor CLI for Solana development..."
             cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
-            avm install latest
-            avm use latest
-            success "Anchor CLI installed"
+            if command -v avm >/dev/null 2>&1; then
+                avm install latest
+                avm use latest
+                success "Anchor CLI installed"
+            else
+                warning "AVM installation failed, but continuing..."
+            fi
         else
             log "Anchor CLI already installed"
         fi
+
+        # Install additional Rust tools for constitutional governance
+        log "Installing additional Rust tools..."
+        cargo install cargo-audit cargo-outdated cargo-tree
+
+        success "Rust dependencies and tools installed"
     else
-        warning "Cargo not found, skipping Rust dependencies"
-        echo "To install Rust: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+        error "Failed to install Rust, skipping Rust dependencies"
     fi
 }
 

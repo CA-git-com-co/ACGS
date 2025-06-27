@@ -1,6 +1,0 @@
-{
-  "parameters": {
-    "excludedNamespaces": { "value": [ "kube-system", "azure-arc" ] },
-    "forbiddenSysctls": { "value": [ "kernel.*" ] }
-  }
-}
