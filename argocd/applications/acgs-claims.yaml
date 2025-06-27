@@ -1,0 +1,267 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: acgs-service-claims
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: acgs-service-claims
+    app.kubernetes.io/part-of: acgs-gitops
+    app.kubernetes.io/component: application
+  annotations:
+    argocd.argoproj.io/sync-wave: '1'
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  # Source configuration
+  source:
+    repoURL: https://github.com/CA-git-com-co/ACGS.git
+    targetRevision: HEAD
+    path: claims
+
+    # Directory configuration for monitoring claims
+    directory:
+      recurse: true
+      include: '*.yaml'
+      exclude: ''
+      jsonnet: {}
+
+  # Destination configuration
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: acgs-system
+
+  # Sync policy configuration
+  syncPolicy:
+    # Automated sync configuration
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+
+    # Sync options
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - RespectIgnoreDifferences=true
+      - ApplyOutOfSyncOnly=true
+
+    # Retry configuration
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+
+  # Ignore differences for certain fields
+  ignoreDifferences:
+    - group: acgs.io
+      kind: ACGSServiceClaim
+      jsonPointers:
+        - /status
+        - /metadata/resourceVersion
+        - /metadata/generation
+        - /metadata/managedFields
+
+    - group: github.upbound.io
+      kind: Repository
+      jsonPointers:
+        - /status
+        - /metadata/resourceVersion
+        - /metadata/generation
+
+    - group: github.upbound.io
+      kind: RepositoryFile
+      jsonPointers:
+        - /status
+        - /metadata/resourceVersion
+        - /metadata/generation
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: acgs-gitops
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: acgs-gitops
+    app.kubernetes.io/part-of: acgs-gitops
+spec:
+  description: ACGS GitOps Project for service claims and infrastructure
+
+  # Source repositories
+  sourceRepos:
+    - https://github.com/CA-git-com-co/ACGS.git
+    - https://github.com/CA-git-com-co/*
+
+  # Destination clusters and namespaces
+  destinations:
+    - namespace: acgs-system
+      server: https://kubernetes.default.svc
+    - namespace: acgs-production
+      server: https://kubernetes.default.svc
+    - namespace: acgs-staging
+      server: https://kubernetes.default.svc
+    - namespace: crossplane-system
+      server: https://kubernetes.default.svc
+
+  # Cluster resource whitelist
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+    - group: admissionregistration.k8s.io
+      kind: ValidatingAdmissionWebhook
+    - group: admissionregistration.k8s.io
+      kind: MutatingAdmissionWebhook
+
+  # Namespace resource whitelist
+  namespaceResourceWhitelist:
+    - group: ''
+      kind: ConfigMap
+    - group: ''
+      kind: Secret
+    - group: ''
+      kind: Service
+    - group: ''
+      kind: ServiceAccount
+    - group: apps
+      kind: Deployment
+    - group: apps
+      kind: StatefulSet
+    - group: apps
+      kind: DaemonSet
+    - group: networking.k8s.io
+      kind: NetworkPolicy
+    - group: networking.k8s.io
+      kind: Ingress
+    - group: acgs.io
+      kind: ACGSServiceClaim
+    - group: github.upbound.io
+      kind: Repository
+    - group: github.upbound.io
+      kind: RepositoryFile
+    - group: pkg.crossplane.io
+      kind: Provider
+    - group: pkg.crossplane.io
+      kind: Function
+
+  # Roles for project access
+  roles:
+    - name: admin
+      description: Admin access to ACGS GitOps project
+      policies:
+        - p, proj:acgs-gitops:admin, applications, *, acgs-gitops/*, allow
+        - p, proj:acgs-gitops:admin, repositories, *, *, allow
+        - p, proj:acgs-gitops:admin, clusters, *, *, allow
+      groups:
+        - acgs-admins
+
+    - name: developer
+      description: Developer access to ACGS GitOps project
+      policies:
+        - p, proj:acgs-gitops:developer, applications, get, acgs-gitops/*, allow
+        - p, proj:acgs-gitops:developer, applications, sync, acgs-gitops/*, allow
+        - p, proj:acgs-gitops:developer, repositories, get, *, allow
+      groups:
+        - acgs-developers
+
+    - name: readonly
+      description: Read-only access to ACGS GitOps project
+      policies:
+        - p, proj:acgs-gitops:readonly, applications, get, acgs-gitops/*, allow
+        - p, proj:acgs-gitops:readonly, repositories, get, *, allow
+      groups:
+        - acgs-viewers
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: acgs-system
+  labels:
+    name: acgs-system
+    app.kubernetes.io/name: acgs-system
+    app.kubernetes.io/part-of: acgs-gitops
+    argocd.argoproj.io/managed-by: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '0'
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: crossplane-providers
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: crossplane-providers
+    app.kubernetes.io/part-of: acgs-gitops
+  annotations:
+    argocd.argoproj.io/sync-wave: '0'
+spec:
+  project: acgs-gitops
+
+  source:
+    repoURL: https://github.com/CA-git-com-co/ACGS.git
+    targetRevision: HEAD
+    path: crossplane/providers
+
+    directory:
+      recurse: true
+      include: '*.yaml'
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: crossplane-system
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: crossplane-compositions
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: crossplane-compositions
+    app.kubernetes.io/part-of: acgs-gitops
+  annotations:
+    argocd.argoproj.io/sync-wave: '1'
+spec:
+  project: acgs-gitops
+
+  source:
+    repoURL: https://github.com/CA-git-com-co/ACGS.git
+    targetRevision: HEAD
+    path: crossplane
+
+    directory:
+      recurse: true
+      include: '*.yaml'
+      exclude: 'providers/*'
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: crossplane-system
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - PrunePropagationPolicy=foreground
+      - SkipDryRunOnMissingResource=true

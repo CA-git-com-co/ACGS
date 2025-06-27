@@ -21,7 +21,7 @@ services:
       - NVIDIA_MODEL_PATH=nvidia/Llama-3.1-Nemotron-70B-Instruct-HF
       - MICROSOFT_MODEL_PATH=microsoft/Phi-4
       - ENABLE_FALLBACK=true
-      - LOG_LEVEL=DEBUG  # More verbose logging for staging
+      - LOG_LEVEL=DEBUG # More verbose logging for staging
       - PYTHONPATH=/app
 
       # Performance Settings (Production-like)
@@ -47,7 +47,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 12G  # Increased for staging validation
+          memory: 12G # Increased for staging validation
           cpus: '6.0'
         reservations:
           memory: 6G
@@ -58,10 +58,10 @@ services:
               value: 1
 
     ports:
-      - "8100:8000"  # NVIDIA AceReason equivalent (staging port)
-      - "8101:8001"  # Microsoft Phi-4 equivalent (staging port)
-      - "8102:8002"  # Multimodal equivalent (staging port)
-      - "9190:9090"  # Prometheus metrics (staging port)
+      - '8100:8000' # NVIDIA AceReason equivalent (staging port)
+      - '8101:8001' # Microsoft Phi-4 equivalent (staging port)
+      - '8102:8002' # Multimodal equivalent (staging port)
+      - '9190:9090' # Prometheus metrics (staging port)
 
     volumes:
       # Model cache
@@ -84,18 +84,18 @@ services:
     restart: unless-stopped
 
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 15s  # More frequent health checks
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      interval: 15s # More frequent health checks
       timeout: 10s
       retries: 5
-      start_period: 120s  # Allow more time for model loading
+      start_period: 120s # Allow more time for model loading
 
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "100m"  # Larger logs for staging analysis
-        max-file: "5"
-        labels: "service=nano-vllm,environment=staging,component=reasoning"
+        max-size: '100m' # Larger logs for staging analysis
+        max-file: '5'
+        labels: 'service=nano-vllm,environment=staging,component=reasoning'
 
   # =============================================================================
   # Prometheus Monitoring for Staging
@@ -108,11 +108,11 @@ services:
       - '--storage.tsdb.path=/prometheus'
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=7d'  # 7 days retention for staging
+      - '--storage.tsdb.retention.time=7d' # 7 days retention for staging
       - '--web.enable-lifecycle'
       - '--web.enable-admin-api'
     ports:
-      - "9191:9090"  # Staging Prometheus port
+      - '9191:9090' # Staging Prometheus port
     volumes:
       - ../../config/monitoring/prometheus-nano-vllm-staging.yml:/etc/prometheus/prometheus.yml:ro
       - ../../config/monitoring/alert-rules-staging.yml:/etc/prometheus/alert-rules.yml:ro
@@ -134,7 +134,7 @@ services:
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_INSTALL_PLUGINS=grafana-piechart-panel
     ports:
-      - "3100:3000"  # Staging Grafana port
+      - '3100:3000' # Staging Grafana port
     volumes:
       - ../../config/grafana/staging:/etc/grafana/provisioning:ro
       - ../../config/grafana/dashboards/nano-vllm-constitutional-ai.json:/var/lib/grafana/dashboards/nano-vllm.json:ro
@@ -168,7 +168,7 @@ services:
     depends_on:
       - nano-vllm-reasoning-staging
     profiles:
-      - load-testing  # Only start when explicitly requested
+      - load-testing # Only start when explicitly requested
 
   # =============================================================================
   # Constitutional AI Validator
@@ -193,7 +193,7 @@ services:
       - nano-vllm-reasoning-staging
       - prometheus-staging
     profiles:
-      - validation  # Only start when explicitly requested
+      - validation # Only start when explicitly requested
 
 # =============================================================================
 # Networks and Volumes
@@ -212,7 +212,6 @@ volumes:
     driver: local
   grafana_staging_data:
     driver: local
-
 # =============================================================================
 # Profiles for Different Testing Scenarios
 # =============================================================================

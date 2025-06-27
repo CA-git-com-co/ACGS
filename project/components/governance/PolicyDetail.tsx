@@ -11,12 +11,13 @@ interface PolicyDetailProps {
 export async function PolicyDetail({ id }: PolicyDetailProps) {
   // Simulate data fetching
   await new Promise(resolve => setTimeout(resolve, 200));
-  
+
   // Mock policy data
   const policy = {
     id,
     title: 'Data Privacy Protection Act',
-    description: 'Comprehensive framework for protecting citizen data privacy and establishing rights for data subjects.',
+    description:
+      'Comprehensive framework for protecting citizen data privacy and establishing rights for data subjects.',
     content: `## Overview
 
 This policy establishes a comprehensive framework for protecting the privacy of personal data belonging to citizens. It defines the rights of data subjects, obligations of data controllers, and enforcement mechanisms to ensure compliance.
@@ -96,15 +97,9 @@ Violations of this policy may result in:
                 <p className="text-muted-foreground">{policy.description}</p>
               </div>
               <div className="flex items-center gap-2">
-                <Badge className={getStatusColor(policy.status)}>
-                  {policy.status}
-                </Badge>
-                <Badge variant="outline">
-                  {policy.domain}
-                </Badge>
-                <Badge variant="outline">
-                  Version {policy.version}
-                </Badge>
+                <Badge className={getStatusColor(policy.status)}>{policy.status}</Badge>
+                <Badge variant="outline">{policy.domain}</Badge>
+                <Badge variant="outline">Version {policy.version}</Badge>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -178,7 +173,14 @@ Violations of this policy may result in:
         </CardHeader>
         <CardContent>
           <div className="prose max-w-none">
-            <div dangerouslySetInnerHTML={{ __html: policy.content.replace(/\n/g, '<br />').replace(/##\s/g, '<h2>').replace(/<br \/><br \/>/g, '</h2><br />') }} />
+            <div
+              dangerouslySetInnerHTML={{
+                __html: policy.content
+                  .replace(/\n/g, '<br />')
+                  .replace(/##\s/g, '<h2>')
+                  .replace(/<br \/><br \/>/g, '</h2><br />'),
+              }}
+            />
           </div>
         </CardContent>
       </Card>

@@ -5,7 +5,7 @@ info:
     Enterprise-grade mathematical proof engine providing comprehensive formal verification
     of policies, constitutional compliance validation, and safety property verification
     using Z3 SMT solver and advanced theorem proving.
-    
+
     Constitutional Hash: cdd01ef066bc6cf2
   version: 2.0.0
   contact:
@@ -202,6 +202,94 @@ paths:
               schema:
                 $ref: '#/components/schemas/EnterpriseStatusResponse'
 
+  /api/v1/constitutional/emergency-shutdown:
+    post:
+      summary: Emergency shutdown procedure
+      description: Initiate emergency shutdown with <30min RTO for critical incidents
+      tags:
+        - DGM Safety Patterns
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmergencyShutdownRequest'
+      responses:
+        '200':
+          description: Emergency shutdown initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmergencyShutdownResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/dgm/sandbox/execute:
+    post:
+      summary: Execute verification in sandbox
+      description: Execute formal verification in isolated sandbox environment
+      tags:
+        - DGM Safety Patterns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SandboxExecutionRequest'
+      responses:
+        '200':
+          description: Sandbox execution completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SandboxExecutionResponse'
+
+  /api/v1/dgm/human-review:
+    post:
+      summary: Submit for human review
+      description: Submit critical verification results for human review
+      tags:
+        - DGM Safety Patterns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HumanReviewRequest'
+      responses:
+        '200':
+          description: Submitted for human review
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HumanReviewResponse'
+
+  /api/v1/dgm/rollback:
+    post:
+      summary: Rollback verification changes
+      description: Rollback verification changes to previous safe state
+      tags:
+        - DGM Safety Patterns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RollbackRequest'
+      responses:
+        '200':
+          description: Rollback completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RollbackResponse'
+
   /metrics:
     get:
       summary: Prometheus metrics
@@ -236,7 +324,7 @@ components:
           example: enhanced_fv_service
         version:
           type: string
-          example: "2.0.0"
+          example: '2.0.0'
         port:
           type: integer
           example: 8003
@@ -262,13 +350,13 @@ components:
           properties:
             target_response_time:
               type: string
-              example: "<500ms"
+              example: '<500ms'
             availability_target:
               type: string
-              example: ">99.9%"
+              example: '>99.9%'
             concurrent_verification_support:
               type: string
-              example: ">100 tasks"
+              example: '>100 tasks'
 
     VerificationRequest:
       type: object
@@ -336,7 +424,7 @@ components:
           type: number
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
 
     ParallelVerificationRequest:
       type: object
@@ -381,7 +469,157 @@ components:
               type: object
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
+        timestamp:
+          type: string
+          format: date-time
+
+    EmergencyShutdownRequest:
+      type: object
+      required:
+        - reason
+        - authorization_token
+      properties:
+        reason:
+          type: string
+          description: Reason for emergency shutdown
+          example: 'Constitutional violation detected'
+        authorization_token:
+          type: string
+          description: Admin authorization token
+        rto_target_minutes:
+          type: integer
+          default: 30
+          description: Recovery time objective in minutes
+
+    EmergencyShutdownResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: 'shutdown_initiated'
+        shutdown_id:
+          type: string
+          example: 'emergency_shutdown_20250627_123456'
+        estimated_rto_minutes:
+          type: integer
+          example: 25
+        constitutional_hash:
+          type: string
+          example: 'cdd01ef066bc6cf2'
+        timestamp:
+          type: string
+          format: date-time
+
+    SandboxExecutionRequest:
+      type: object
+      required:
+        - verification_request
+      properties:
+        verification_request:
+          type: object
+          description: Verification request to execute in sandbox
+        sandbox_config:
+          type: object
+          properties:
+            timeout_seconds:
+              type: integer
+              default: 300
+            memory_limit_mb:
+              type: integer
+              default: 1024
+            isolation_level:
+              type: string
+              enum: [basic, strict, maximum]
+              default: strict
+
+    SandboxExecutionResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [completed, timeout, error]
+        execution_id:
+          type: string
+        verification_result:
+          type: object
+          description: Verification results from sandbox
+        sandbox_metrics:
+          type: object
+          properties:
+            execution_time_ms:
+              type: number
+            memory_used_mb:
+              type: number
+            isolation_violations:
+              type: integer
+
+    HumanReviewRequest:
+      type: object
+      required:
+        - verification_result
+        - review_priority
+      properties:
+        verification_result:
+          type: object
+          description: Verification result requiring human review
+        review_priority:
+          type: string
+          enum: [low, medium, high, critical]
+        review_reason:
+          type: string
+          description: Reason for human review requirement
+        constitutional_implications:
+          type: array
+          items:
+            type: string
+
+    HumanReviewResponse:
+      type: object
+      properties:
+        review_id:
+          type: string
+        status:
+          type: string
+          enum: [submitted, in_review, approved, rejected]
+        estimated_review_time_hours:
+          type: integer
+        reviewer_assigned:
+          type: boolean
+        constitutional_hash:
+          type: string
+          example: 'cdd01ef066bc6cf2'
+
+    RollbackRequest:
+      type: object
+      required:
+        - target_state
+      properties:
+        target_state:
+          type: string
+          description: Target state identifier to rollback to
+        rollback_reason:
+          type: string
+          description: Reason for rollback
+        preserve_audit_trail:
+          type: boolean
+          default: true
+
+    RollbackResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [completed, failed, partial]
+        rollback_id:
+          type: string
+        previous_state:
+          type: string
+        current_state:
+          type: string
+        constitutional_hash:
+          type: string
+          example: 'cdd01ef066bc6cf2'
         timestamp:
           type: string
           format: date-time
@@ -403,3 +641,5 @@ tags:
     description: Enterprise verification capabilities
   - name: Monitoring
     description: Performance metrics and monitoring
+  - name: DGM Safety Patterns
+    description: Democratic Governance Model safety patterns including sandbox execution, human review, and emergency procedures

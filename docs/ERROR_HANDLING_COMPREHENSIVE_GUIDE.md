@@ -2,7 +2,7 @@
 
 **Version**: 3.0.0  
 **Last Updated**: 2025-06-24  
-**Scope**: All ACGS services and components  
+**Scope**: All ACGS services and components
 
 ## Overview
 
@@ -35,6 +35,7 @@ This guide provides comprehensive error handling documentation for all ACGS serv
 #### Error Conditions
 
 **Authentication Failures**:
+
 - `AUTH_001`: Invalid credentials (🟡 MEDIUM)
 - `AUTH_002`: Account locked due to failed attempts (🟠 HIGH)
 - `AUTH_003`: Token expired or invalid (🟡 MEDIUM)
@@ -42,11 +43,13 @@ This guide provides comprehensive error handling documentation for all ACGS serv
 - `AUTH_005`: OAuth provider unavailable (🟠 HIGH)
 
 **Authorization Failures**:
+
 - `AUTH_101`: Insufficient permissions (🟡 MEDIUM)
 - `AUTH_102`: Role assignment error (🟠 HIGH)
 - `AUTH_103`: API key invalid or revoked (🟡 MEDIUM)
 
 **System Failures**:
+
 - `AUTH_201`: Database connection lost (🔴 CRITICAL)
 - `AUTH_202`: Redis cache unavailable (🟠 HIGH)
 - `AUTH_203`: Rate limit exceeded (🟡 MEDIUM)
@@ -83,12 +86,14 @@ This guide provides comprehensive error handling documentation for all ACGS serv
 #### Error Conditions
 
 **Constitutional Compliance Errors**:
+
 - `AC_001`: Constitutional principle violation detected (🟠 HIGH)
 - `AC_002`: Compliance scoring failure (🟡 MEDIUM)
 - `AC_003`: Principle conflict detected (🟠 HIGH)
 - `AC_004`: Constitutional hash mismatch (🔴 CRITICAL)
 
 **Formal Verification Errors**:
+
 - `AC_101`: FV service integration failure (🟠 HIGH)
 - `AC_102`: Verification timeout (🟡 MEDIUM)
 - `AC_103`: Invalid verification request (🟡 MEDIUM)
@@ -104,11 +109,13 @@ This guide provides comprehensive error handling documentation for all ACGS serv
 #### Error Conditions
 
 **Cryptographic Errors**:
+
 - `INT_001`: Digital signature verification failed (🔴 CRITICAL)
 - `INT_002`: Hash validation failure (🔴 CRITICAL)
 - `INT_003`: PGP key not found or invalid (🟠 HIGH)
 
 **Audit Trail Errors**:
+
 - `INT_101`: Audit log corruption detected (🔴 CRITICAL)
 - `INT_102`: Immutable storage failure (🔴 CRITICAL)
 - `INT_103`: Audit chain broken (🔴 CRITICAL)
@@ -127,11 +134,13 @@ This guide provides comprehensive error handling documentation for all ACGS serv
 #### Known Limitations
 
 **Z3 Integration Errors**:
+
 - `FV_001`: Z3 solver not available (🟠 HIGH)
 - `FV_002`: Mock verification active (🟡 MEDIUM)
 - `FV_003`: Proof generation simulated (🟡 MEDIUM)
 
 **Implementation Gaps**:
+
 - `FV_101`: Advanced algorithms not implemented (🟡 MEDIUM)
 - `FV_102`: Performance optimization incomplete (🟡 MEDIUM)
 
@@ -156,11 +165,13 @@ This guide provides comprehensive error handling documentation for all ACGS serv
 #### Known Limitations
 
 **Router Availability Errors**:
+
 - `GS_001`: API router disabled due to import issues (🟠 HIGH)
 - `GS_002`: Running in minimal mode (🟡 MEDIUM)
 - `GS_003`: Multi-model consensus unavailable (🟠 HIGH)
 
 **Synthesis Errors**:
+
 - `GS_101`: Policy synthesis incomplete (🟡 MEDIUM)
 - `GS_102`: Model integration failure (🟠 HIGH)
 
@@ -169,6 +180,7 @@ This guide provides comprehensive error handling documentation for all ACGS serv
 #### Known Limitations
 
 **Initialization Errors**:
+
 - `PGC_001`: Policy manager initialization disabled (🟠 HIGH)
 - `PGC_002`: Debug mode active (🟡 MEDIUM)
 - `PGC_003`: OPA integration incomplete (🟠 HIGH)
@@ -178,6 +190,7 @@ This guide provides comprehensive error handling documentation for all ACGS serv
 #### Known Limitations
 
 **Dependency Errors**:
+
 - `EC_001`: WINA coordinator mock implementation (🟡 MEDIUM)
 - `EC_002`: Service client fallback active (🟡 MEDIUM)
 - `EC_003`: Performance collector uncertain (🟡 MEDIUM)
@@ -189,10 +202,12 @@ This guide provides comprehensive error handling documentation for all ACGS serv
 ### Circuit Breaker Patterns
 
 **Implementation Status**:
+
 - ✅ **Production Services**: Circuit breakers implemented
 - 🧪 **Prototype Services**: Basic error handling, circuit breakers incomplete
 
 **Circuit Breaker States**:
+
 - **CLOSED**: Normal operation
 - **OPEN**: Service unavailable, requests rejected
 - **HALF_OPEN**: Testing service recovery
@@ -200,6 +215,7 @@ This guide provides comprehensive error handling documentation for all ACGS serv
 ### Retry Strategies
 
 **Exponential Backoff**:
+
 ```
 Retry Delay = base_delay * (2 ^ attempt_number)
 Max Retries = 3
@@ -207,6 +223,7 @@ Max Delay = 30 seconds
 ```
 
 **Retry Conditions**:
+
 - Network timeouts
 - Temporary service unavailability
 - Rate limit exceeded (with appropriate delay)
@@ -214,6 +231,7 @@ Max Delay = 30 seconds
 ### Graceful Degradation
 
 **Service Dependencies**:
+
 - **Auth Service**: Core dependency, no degradation
 - **AC Service**: Constitutional compliance required
 - **Integrity Service**: Data integrity required
@@ -226,11 +244,13 @@ Max Delay = 30 seconds
 ### Error Metrics
 
 **Production Services**:
+
 - Error rate < 1%
 - Mean time to recovery (MTTR) < 5 minutes
 - Alert response time < 2 minutes
 
 **Prototype Services**:
+
 - Error tracking for development
 - Performance monitoring for optimization
 - Stability assessment for production readiness

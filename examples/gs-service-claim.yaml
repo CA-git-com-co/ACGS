@@ -1,0 +1,212 @@
+apiVersion: acgs.io/v1alpha1
+kind: ACGSServiceClaim
+metadata:
+  name: gs-service-demo
+  namespace: acgs-system
+  labels:
+    app.kubernetes.io/name: gs-service-demo
+    app.kubernetes.io/component: governance-synthesis
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/managed-by: crossplane
+    acgs.io/service-type: gs
+    acgs.io/constitutional-hash: cdd01ef066bc6cf2
+  annotations:
+    acgs.io/description: 'Demo Governance Synthesis service for ACGS GitOps workflow'
+    acgs.io/created-by: 'acgs-gitops-demo'
+    acgs.io/version: '1.0.0'
+spec:
+  # Service configuration
+  serviceType: gs
+  serviceName: gs-service-demo
+  constitutionalHash: 'cdd01ef066bc6cf2'
+
+  # Deployment specifications
+  deployment:
+    replicas: 2
+    resources:
+      requests:
+        cpu: '300m'
+        memory: '768Mi'
+      limits:
+        cpu: '800m'
+        memory: '1.5Gi'
+    port: 8004
+    healthCheck:
+      enabled: true
+      path: '/health'
+      initialDelaySeconds: 45
+      periodSeconds: 15
+
+  # Database configuration
+  database:
+    enabled: true
+    type: postgresql
+    connectionPoolSize: 15
+
+  # GitOps configuration
+  gitops:
+    enabled: true
+    repository:
+      name: 'gs-service-demo-governance-synthesis'
+      description: 'ACGS Governance Synthesis Service - Demo implementation for policy synthesis and governance workflows'
+      private: true
+      hasIssues: true
+      hasProjects: true
+      hasWiki: false
+      autoInit: true
+      defaultBranch: 'main'
+    sync:
+      automated: true
+      prune: true
+      selfHeal: true
+
+  # Monitoring configuration
+  monitoring:
+    enabled: true
+    prometheus:
+      enabled: true
+      port: 9090
+      path: '/metrics'
+    logging:
+      level: 'INFO'
+      structured: true
+
+---
+# Additional example for auth service
+apiVersion: acgs.io/v1alpha1
+kind: ACGSServiceClaim
+metadata:
+  name: auth-service-demo
+  namespace: acgs-system
+  labels:
+    app.kubernetes.io/name: auth-service-demo
+    app.kubernetes.io/component: authentication
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/managed-by: crossplane
+    acgs.io/service-type: auth
+    acgs.io/constitutional-hash: cdd01ef066bc6cf2
+  annotations:
+    acgs.io/description: 'Demo Authentication service for ACGS GitOps workflow'
+    acgs.io/created-by: 'acgs-gitops-demo'
+    acgs.io/version: '1.0.0'
+spec:
+  serviceType: auth
+  serviceName: auth-service-demo
+  constitutionalHash: 'cdd01ef066bc6cf2'
+
+  deployment:
+    replicas: 3
+    resources:
+      requests:
+        cpu: '250m'
+        memory: '512Mi'
+      limits:
+        cpu: '600m'
+        memory: '1Gi'
+    port: 8000
+    healthCheck:
+      enabled: true
+      path: '/health'
+      initialDelaySeconds: 30
+      periodSeconds: 10
+
+  database:
+    enabled: true
+    type: postgresql
+    connectionPoolSize: 20
+
+  gitops:
+    enabled: true
+    repository:
+      name: 'auth-service-demo-authentication'
+      description: 'ACGS Authentication Service - Demo implementation for user authentication and authorization'
+      private: true
+      hasIssues: true
+      hasProjects: true
+      hasWiki: false
+      autoInit: true
+      defaultBranch: 'main'
+    sync:
+      automated: true
+      prune: true
+      selfHeal: true
+
+  monitoring:
+    enabled: true
+    prometheus:
+      enabled: true
+      port: 9090
+      path: '/metrics'
+    logging:
+      level: 'INFO'
+      structured: true
+
+---
+# Example for ac service (Audit & Compliance)
+apiVersion: acgs.io/v1alpha1
+kind: ACGSServiceClaim
+metadata:
+  name: ac-service-demo
+  namespace: acgs-system
+  labels:
+    app.kubernetes.io/name: ac-service-demo
+    app.kubernetes.io/component: audit-compliance
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/managed-by: crossplane
+    acgs.io/service-type: ac
+    acgs.io/constitutional-hash: cdd01ef066bc6cf2
+  annotations:
+    acgs.io/description: 'Demo Audit & Compliance service for ACGS GitOps workflow'
+    acgs.io/created-by: 'acgs-gitops-demo'
+    acgs.io/version: '1.0.0'
+spec:
+  serviceType: ac
+  serviceName: ac-service-demo
+  constitutionalHash: 'cdd01ef066bc6cf2'
+
+  deployment:
+    replicas: 2
+    resources:
+      requests:
+        cpu: '200m'
+        memory: '512Mi'
+      limits:
+        cpu: '500m'
+        memory: '1Gi'
+    port: 8001
+    healthCheck:
+      enabled: true
+      path: '/health'
+      initialDelaySeconds: 30
+      periodSeconds: 10
+
+  database:
+    enabled: true
+    type: postgresql
+    connectionPoolSize: 10
+
+  gitops:
+    enabled: true
+    repository:
+      name: 'ac-service-demo-audit-compliance'
+      description: 'ACGS Audit & Compliance Service - Demo implementation for constitutional AI compliance monitoring'
+      private: true
+      hasIssues: true
+      hasProjects: true
+      hasWiki: false
+      autoInit: true
+      defaultBranch: 'main'
+    sync:
+      automated: true
+      prune: true
+      selfHeal: true
+
+  monitoring:
+    enabled: true
+    prometheus:
+      enabled: true
+      port: 9090
+      path: '/metrics'
+    logging:
+      level: 'INFO'
+      structured: true

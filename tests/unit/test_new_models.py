@@ -7,6 +7,7 @@ Replaces GPT-4 usage in ACGS-1 constitutional governance system.
 import asyncio
 import os
 import sys
+import pytest
 
 # Add the services path to import our modules
 sys.path.append("/home/dislove/ACGS-1/services/shared")
@@ -147,6 +148,7 @@ def test_openrouter_models():
         return False
 
 
+@pytest.mark.asyncio
 async def test_multi_model_manager():
     """Test the updated MultiModelManager with new models"""
     print("\n🧪 Testing MultiModelManager with new models...")

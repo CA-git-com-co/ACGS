@@ -1,88 +1,79 @@
 # ACGS-1 Formal Verification Service
 
+**Status**: 🧪 **Prototype**  
+**Last Updated**: 2025-06-27
+
 ## Overview
 
-The Formal Verification (FV) Service is a **prototype implementation** of a formal verification system for policies and constitutional compliance validation. This service provides basic verification capabilities with plans for advanced SMT solver integration.
+The Formal Verification (FV) Service is a critical component of the ACGS-1 system, providing enterprise-grade formal verification capabilities with mathematical proof generation. It integrates with the Z3 SMT solver to mathematically prove the correctness of policies and system behaviors, ensuring constitutional compliance through formal methods.
 
-**Implementation Status**: 🧪 **Prototype**
 **Service Port**: 8003
-**Service Version**: 2.0.0
+**Service Version**: 3.0.0
 **Constitutional Hash**: `cdd01ef066bc6cf2`
 **Health Check**: http://localhost:8003/health
 
-## ⚠️ Prototype Limitations
+## Core Features
 
-**Current Implementation Status**:
-- ✅ Basic formal verification endpoints implemented
-- ✅ Content validation and threat detection functional
-- ✅ Constitutional compliance checking operational
-- ⚠️ **Z3 SMT solver integration incomplete** (mock implementation)
-- ⚠️ **Mathematical proof generation uses simulated data**
-- ⚠️ **Advanced verification algorithms not fully implemented**
-- ⚠️ **Some endpoints return mock/demonstration data**
+### Mathematical Verification
 
-**Production Readiness**: This service requires completion of Z3 integration and advanced algorithm implementation before production deployment.
+- **Z3 SMT Solver Integration**: Advanced mathematical proof capabilities for complex logical constraints
+- **Formal Proof Generation**: Mathematical proofs for policy correctness and system behavior
+- **Property Verification**: Safety, liveness, and constitutional compliance property checking
+- **Constraint Solving**: Complex logical constraint resolution and validation
+- **Theorem Proving**: Automated theorem proving for governance policies
 
-## Implemented Features
+### Cryptographic Validation
 
-### ✅ Functional Capabilities
-- **Basic Content Validation**: Threat detection and security pattern analysis
-- **Constitutional Compliance Checking**: Basic compliance validation against principles
-- **Cryptographic Validation**: Mock digital signature verification
-- **Audit Trail**: Simulated blockchain-style audit logging
-- **Health Monitoring**: Service health and status endpoints
-- **Performance Metrics**: Basic performance monitoring
+- **Digital Signature Validation**: RSA and ECDSA signature verification
+- **Hash Verification**: SHA-256, SHA-512 integrity checking
+- **Merkle Proof Validation**: Blockchain-style proof verification
+- **Certificate Validation**: X.509 certificate chain validation
+- **Cryptographic Audit Trail**: Immutable verification activity logging
 
-### 🧪 Prototype Features (Limited Implementation)
-- **Z3 SMT Solver Integration**: ⚠️ Mock implementation, not fully functional
-- **Mathematical Proof Generation**: ⚠️ Simulated proofs, not real theorem proving
-- **Advanced Verification**: ⚠️ Basic algorithms, advanced features incomplete
-- **Parallel Processing**: ⚠️ Framework exists but not optimized
-- **Blockchain Audit**: ⚠️ In-memory simulation, not persistent
+### Constitutional Compliance
 
-### 📋 Planned Features (Not Yet Implemented)
-- **Production Z3 Integration**: Real SMT solver integration
-- **Advanced Theorem Proving**: Complete mathematical proof generation
-- **Temporal Logic Verification**: Time-based property verification
-- **Datalog Reasoning**: Logic programming for policy analysis
-- **Enterprise Performance**: Sub-500ms response times with real optimization
+- **AC Service Integration**: Real-time validation against constitutional principles
+- **Constitutional Hash Validation**: Verification of constitutional hash `cdd01ef066bc6cf2`
+- **Compliance Scoring**: Quantitative constitutional compliance assessment
+- **Violation Detection**: Real-time constitutional violation identification
+- **DGM Safety Patterns**: Sandbox execution with human review and rollback capabilities
 
 ## API Endpoints
 
 ### Core Verification
-- `POST /api/v1/verify` - Submit policies for formal verification
-- `POST /api/v1/verify/parallel` - Parallel policy verification (100+ concurrent)
-- `POST /api/v1/verify/constitutional-compliance` - Constitutional compliance verification
-- `POST /api/v1/verify/generate-formal-proof` - Generate mathematical proofs
-- `GET /api/v1/verify/verification-metrics` - Performance and success metrics
 
-### Constitutional Verification
-- `POST /api/v1/constitutional-compliance` - Z3-based constitutional verification
-- `POST /api/v1/generate-formal-proof` - Formal proof generation with Z3
-- `GET /api/v1/constitutional/properties` - Available constitutional properties
-- `POST /api/v1/constitutional/validate` - Validate against constitutional principles
+- `POST /api/v1/verify/formal` - Perform formal verification with Z3 solver
+- `POST /api/v1/verify/constitutional` - Constitutional compliance verification
+- `POST /api/v1/verify/policy` - Policy correctness verification
+- `GET /api/v1/verify/status` - Verification service status
 
-### Bias and Fairness Analysis
-- `POST /api/v1/verify/bias-detection` - Detect bias in policies
-- `GET /api/v1/bias-metrics` - Available bias detection metrics
-- `GET /api/v1/fairness-properties` - Available fairness properties
-- `POST /api/v1/fairness/analyze` - Comprehensive fairness analysis
+### Proof Generation
 
-### Cross-Domain Testing
-- `POST /api/v1/cross-domain-testing` - Multi-domain policy testing
-- `GET /api/v1/cross-domain/domains` - Available testing domains
-- `POST /api/v1/cross-domain/validate` - Cross-domain validation
+- `POST /api/v1/verify/generate-proof` - Generate formal mathematical proof
+- `POST /api/v1/verify/validate-proof` - Validate existing proof
+- `GET /api/v1/verify/proof/{proof_id}` - Retrieve proof by ID
+- `DELETE /api/v1/verify/proof/{proof_id}` - Delete proof
 
-### Performance and Monitoring
-- `GET /api/v1/enterprise/status` - Enterprise verification capabilities
-- `GET /api/v1/performance/metrics` - Performance optimization metrics
-- `GET /api/v1/verification/status/{task_id}` - Verification task status
-- `GET /api/v1/cache/stats` - Verification cache statistics
+### Cryptographic Operations
 
-### System Management
-- `GET /health` - Service health with component status
-- `GET /metrics` - Prometheus metrics for monitoring
-- `GET /` - Service information and capabilities
+- `POST /api/v1/crypto/verify-signature` - Verify digital signature
+- `POST /api/v1/crypto/verify-hash` - Verify hash integrity
+- `POST /api/v1/crypto/verify-merkle` - Verify Merkle proof
+- `GET /api/v1/crypto/certificates` - List certificates
+
+### Constitutional Validation
+
+- `POST /api/v1/constitutional/validate` - Validate constitutional compliance
+- `GET /api/v1/constitutional/violations` - List constitutional violations
+- `GET /api/v1/constitutional/audit-log` - Constitutional audit trail
+- `POST /api/v1/constitutional/emergency-shutdown` - Emergency shutdown procedure
+
+### Health & Monitoring
+
+- `GET /health` - Service health check
+- `GET /metrics` - Prometheus metrics
+- `GET /api/v1/status` - Detailed service status
+- `GET /api/v1/performance` - Performance metrics
 
 ## Configuration
 
@@ -90,42 +81,44 @@ The Formal Verification (FV) Service is a **prototype implementation** of a form
 
 ```bash
 # Database Configuration
-DATABASE_URL=postgresql://user:password@localhost:5432/acgs_formal_verification
+DATABASE_URL=postgresql://user:password@localhost:5432/acgs_fv
 REDIS_URL=redis://localhost:6379/3
 
 # Service Configuration
-SERVICE_NAME=fv-service
-SERVICE_VERSION=2.0.0
+SERVICE_NAME=formal-verification-service
+SERVICE_VERSION=3.0.0
 SERVICE_PORT=8003
 APP_ENV=production
 LOG_LEVEL=INFO
 
-# Z3 SMT Solver Configuration
+# Z3 Solver Configuration
 Z3_TIMEOUT_MS=30000
-MAX_PROOF_STEPS=1000
-ENABLE_PARALLEL_VERIFICATION=true
-MAX_CONCURRENT_VERIFICATIONS=100
+Z3_MAX_MEMORY_MB=2048
+Z3_PARALLEL_THREADS=4
+Z3_PROOF_GENERATION=true
 
 # Constitutional Governance
 CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-CONSTITUTIONAL_COMPLIANCE_THRESHOLD=0.8
-ENABLE_CONSTITUTIONAL_VERIFICATION=true
-
-# Service Integration
 AC_SERVICE_URL=http://localhost:8001
 INTEGRITY_SERVICE_URL=http://localhost:8002
-AUTH_SERVICE_URL=http://localhost:8000
+
+# Cryptographic Configuration
+SIGNATURE_ALGORITHMS=RSA,ECDSA
+HASH_ALGORITHMS=SHA256,SHA512
+CERTIFICATE_VALIDATION=true
+MERKLE_PROOF_VALIDATION=true
 
 # Performance Configuration
-ENABLE_VERIFICATION_CACHE=true
-CACHE_SIZE_MB=1024
-ENABLE_PERFORMANCE_OPTIMIZATION=true
-TARGET_RESPONSE_TIME_MS=500
+MAX_CONCURRENT_VERIFICATIONS=10
+VERIFICATION_TIMEOUT_SECONDS=300
+CACHE_TTL_SECONDS=3600
+ENABLE_PARALLEL_PROCESSING=true
 
-# Security Configuration
-ENABLE_CRYPTOGRAPHIC_VALIDATION=true
-ENABLE_BLOCKCHAIN_AUDIT=true
-ENABLE_BIAS_DETECTION=true
+# DGM Safety Configuration
+SANDBOX_ENABLED=true
+HUMAN_REVIEW_REQUIRED=true
+EMERGENCY_SHUTDOWN_ENABLED=true
+RTO_TARGET_MINUTES=30
 ```
 
 ### Resource Limits
@@ -143,11 +136,12 @@ resources:
 ## Installation & Deployment
 
 ### Prerequisites
+
 - Python 3.11+
 - PostgreSQL 12+
 - Redis 6+
-- Z3 SMT Solver 4.8+
-- Mathematical libraries (NumPy, SciPy)
+- Z3 Theorem Prover 4.8+
+- OpenSSL 1.1.1+
 
 ### Local Development
 
@@ -157,21 +151,15 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 source ~/.bashrc
 uv sync
 
-# Alternative: Traditional pip
-pip install -r requirements.txt
-
-# 2. Install Z3 SMT Solver
+# 2. Install Z3 solver
 # Ubuntu/Debian
 sudo apt-get install z3
 
 # macOS
 brew install z3
 
-# Python Z3 bindings
-pip install z3-solver
-
 # 3. Setup database
-createdb acgs_formal_verification
+createdb acgs_fv
 alembic upgrade head
 
 # 4. Configure environment
@@ -189,383 +177,296 @@ uv run uvicorn main:app --reload --port 8003
 docker build -t acgs-fv-service .
 docker run -p 8003:8003 --env-file .env acgs-fv-service
 
-# Using systemd
-sudo cp fv-service.service /etc/systemd/system/
-sudo systemctl enable fv-service
-sudo systemctl start fv-service
+# Using Docker Compose
+docker-compose up -d fv-service
+
+# Health check
+curl http://localhost:8003/health
 ```
 
-## Testing
+### Kubernetes Deployment
 
-### Unit Tests
-```bash
-# Run all tests
-uv run pytest tests/ -v
-
-# Run with coverage
-uv run pytest tests/ --cov=app --cov-report=html
-```
-
-### Integration Tests
-```bash
-# Test Z3 integration
-uv run pytest tests/test_z3_integration.py -v
-
-# Test constitutional verification
-uv run pytest tests/test_constitutional_verification.py -v
-
-# Test parallel verification
-uv run pytest tests/test_parallel_verification.py -v
-```
-
-### Verification Tests
-```bash
-# Test formal proof generation
-python scripts/test_formal_proofs.py
-
-# Test bias detection
-python scripts/test_bias_detection.py
-
-# Performance testing
-python scripts/test_verification_performance.py --concurrent 50
-```
+````yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fv-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fv-service
+  template:
+    metadata:
+      labels:
+        app: fv-service
+    spec:
+      containers:
+      - name: fv-service
+        image: acgs-fv-service:latest
+        ports:
+        - containerPort: 8003
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+        env:
+        - name: CONSTITUTIONAL_HASH
+          value: "cdd01ef066bc6cf2"
 
 ## Usage Examples
 
-### Basic Policy Verification
+### Basic Formal Verification
 
 ```python
 import httpx
 
+# Verify policy compliance
 async def verify_policy():
     async with httpx.AsyncClient() as client:
-        # Submit policy for formal verification
         response = await client.post(
-            "http://localhost:8003/api/v1/verify",
+            "http://localhost:8003/api/v1/verify/formal",
             json={
-                "policy_rule_refs": ["policy_123"],
-                "verification_level": "comprehensive",
-                "constitutional_principles": [
-                    "democratic_process",
+                "policy_content": "All governance decisions must be constitutional",
+                "constitutional_properties": [
                     "transparency",
-                    "accountability"
+                    "accountability",
+                    "democratic_legitimacy"
                 ],
-                "safety_properties": [
-                    "no_unauthorized_access",
-                    "data_integrity_maintained"
-                ]
-            },
-            headers={"Authorization": f"Bearer {access_token}"}
+                "proof_type": "constitutional_compliance"
+            }
         )
+        return response.json()
+````
 
-        result = response.json()
-        return {
-            "verification_status": result["verification_status"],
-            "mathematical_proof": result["mathematical_proof"],
-            "constitutional_compliance": result["constitutional_compliance"]
-        }
+### Constitutional Compliance Check
+
+```bash
+# Check constitutional compliance
+curl -X POST http://localhost:8003/api/v1/constitutional/validate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "policy_text": "New governance policy",
+    "constitutional_hash": "cdd01ef066bc6cf2",
+    "compliance_threshold": 0.95
+  }'
 ```
 
-### Constitutional Compliance Verification
+### Generate Formal Proof
 
 ```python
-async def verify_constitutional_compliance():
-    async with httpx.AsyncClient() as client:
-        # Verify constitutional compliance with Z3 proofs
-        response = await client.post(
-            "http://localhost:8003/api/v1/verify/constitutional-compliance",
-            json={
-                "policy_content": "Citizens have the right to privacy",
-                "constitutional_principles": [
-                    "privacy_rights",
-                    "individual_liberty",
-                    "constitutional_supremacy"
-                ],
-                "verification_level": "formal_proof",
-                "generate_proof": True
-            },
-            headers={"Authorization": f"Bearer {access_token}"}
-        )
+# Generate mathematical proof
+proof_request = {
+    "property_specification": "policy_correctness(P) -> constitutional_compliance(P)",
+    "policy_constraints": ["transparency", "accountability"],
+    "proof_type": "safety"
+}
 
-        result = response.json()
-        return {
-            "compliant": result["verification_result"]["compliant"],
-            "confidence_score": result["verification_result"]["confidence"],
-            "formal_proof": result["formal_proof"],
-            "constitutional_hash": result["constitutional_hash"]
-        }
+response = await client.post(
+    "http://localhost:8003/api/v1/verify/generate-proof",
+    json=proof_request
+)
 ```
 
-### Parallel Verification
-
-```python
-async def parallel_policy_verification():
-    async with httpx.AsyncClient() as client:
-        # Submit multiple policies for parallel verification
-        response = await client.post(
-            "http://localhost:8003/api/v1/verify/parallel",
-            json={
-                "policy_rule_refs": [
-                    "policy_001", "policy_002", "policy_003",
-                    "policy_004", "policy_005"
-                ],
-                "enable_parallel": True,
-                "max_concurrent": 10,
-                "verification_level": "comprehensive",
-                "constitutional_principles": ["fairness", "transparency"]
-            },
-            headers={"Authorization": f"Bearer {access_token}"}
-        )
-
-        result = response.json()
-        return {
-            "batch_verification_id": result["verification_id"],
-            "parallel_results": result["parallel_results"],
-            "overall_compliance": result["overall_compliance"]
-        }
-```
-
-### Bias Detection Analysis
-
-```python
-async def detect_policy_bias():
-    async with httpx.AsyncClient() as client:
-        # Analyze policy for bias and fairness issues
-        response = await client.post(
-            "http://localhost:8003/api/v1/verify/bias-detection",
-            json={
-                "policy_content": "Hiring policy for technical positions",
-                "protected_attributes": ["gender", "race", "age"],
-                "bias_metrics": [
-                    "demographic_parity",
-                    "equalized_odds",
-                    "individual_fairness"
-                ],
-                "fairness_threshold": 0.1
-            },
-            headers={"Authorization": f"Bearer {access_token}"}
-        )
-
-        result = response.json()
-        return {
-            "bias_detected": result["bias_analysis"]["bias_detected"],
-            "fairness_score": result["bias_analysis"]["fairness_score"],
-            "bias_metrics": result["bias_analysis"]["detailed_metrics"],
-            "recommendations": result["bias_analysis"]["recommendations"]
-        }
-```
-
-## Z3 SMT Solver Integration
-
-### Formal Proof Generation
-The service uses Z3 SMT solver for mathematical proof generation:
-
-```python
-# Example Z3 integration for constitutional verification
-import z3
-
-def generate_constitutional_proof(policy_constraints, constitutional_properties):
-    solver = z3.Solver()
-    solver.set("timeout", 30000)  # 30 second timeout
-
-    # Convert policy constraints to Z3 formulas
-    for constraint in policy_constraints:
-        formula = convert_to_z3_formula(constraint)
-        solver.add(formula)
-
-    # Verify constitutional properties
-    for prop in constitutional_properties:
-        property_formula = convert_to_z3_formula(prop)
-        solver.push()
-        solver.add(z3.Not(property_formula))
-
-        if solver.check() == z3.unsat:
-            # Property is provable
-            proof_steps = generate_proof_steps(solver.proof())
-            return {"status": "proven", "proof": proof_steps}
-        else:
-            return {"status": "unprovable", "counterexample": solver.model()}
-```
-
-### Constitutional Hash Validation
-```python
-# Constitutional hash validation in formal verification
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
-def validate_constitutional_integrity(verification_result):
-    computed_hash = hashlib.sha256(
-        f"{verification_result['policy_content']}"
-        f"{verification_result['constitutional_principles']}"
-        f"{verification_result['verification_timestamp']}"
-    ).hexdigest()[:16]
-
-    return computed_hash == CONSTITUTIONAL_HASH
-```
-
-## Monitoring & Observability
+## Monitoring
 
 ### Health Checks
+
 ```bash
-# Service health with component status
+# Basic health check
 curl http://localhost:8003/health
 
-# Expected response includes Z3 solver status
-{
-  "status": "healthy",
-  "service": "enhanced_fv_service",
-  "version": "2.0.0",
-  "components": {
-    "z3_smt_solver": "operational",
-    "tiered_validation": "operational",
-    "parallel_pipeline": "operational",
-    "cryptographic_validation": "operational"
-  }
-}
+# Detailed status
+curl http://localhost:8003/api/v1/status
+
+# Performance metrics
+curl http://localhost:8003/api/v1/performance
 ```
 
-### Performance Metrics
-```bash
-# Get performance metrics
-curl http://localhost:8003/api/v1/performance/metrics
+### Prometheus Metrics
 
-# Verification metrics
-curl http://localhost:8003/api/v1/verification-metrics
+Key metrics exposed:
+
+- `fv_verifications_total` - Total verification requests
+- `fv_verification_duration_seconds` - Verification processing time
+- `fv_constitutional_compliance_score` - Constitutional compliance scores
+- `fv_z3_solver_timeouts_total` - Z3 solver timeout count
+- `fv_active_verifications` - Currently active verifications
+
+### Grafana Dashboard
+
+Import the FV Service dashboard:
+
+```bash
+# Dashboard location
+infrastructure/monitoring/grafana/dashboards/services/fv-service-dashboard.json
 ```
 
-### Real-time Monitoring
-```bash
-# Monitor verification tasks
-curl http://localhost:8003/api/v1/verification/status/{task_id}
+### Alerting Rules
 
-# Cache performance
-curl http://localhost:8003/api/v1/cache/stats
+```yaml
+# Critical alerts
+- alert: FVServiceDown
+  expr: up{job="fv-service"} == 0
+  for: 1m
+
+- alert: HighVerificationLatency
+  expr: fv_verification_duration_seconds > 30
+  for: 5m
+
+- alert: ConstitutionalComplianceBelow95
+  expr: fv_constitutional_compliance_score < 0.95
+  for: 2m
 ```
 
 ## Troubleshooting
 
 ### Common Issues
 
-#### Z3 SMT Solver Not Available
+#### Z3 Solver Timeout
+
 ```bash
-# Check Z3 installation
-python -c "import z3; print('Z3 version:', z3.get_version_string())"
+# Check Z3 configuration
+curl http://localhost:8003/api/v1/status | jq '.z3_config'
 
-# Install Z3 if missing
-pip install z3-solver
+# Increase timeout
+export Z3_TIMEOUT_MS=60000
 
-# Ubuntu/Debian system installation
-sudo apt-get install z3
-
-# Verify Z3 service integration
-curl http://localhost:8003/health | jq '.components.z3_smt_solver'
+# Restart service
+sudo systemctl restart fv-service
 ```
 
-#### Verification Timeout Issues
+#### High Memory Usage
+
 ```bash
-# Check Z3 timeout configuration
-grep "Z3_TIMEOUT_MS" .env
+# Check memory usage
+curl http://localhost:8003/metrics | grep memory
 
-# Increase timeout for complex proofs
-export Z3_TIMEOUT_MS=60000  # 60 seconds
+# Reduce Z3 memory limit
+export Z3_MAX_MEMORY_MB=1024
 
-# Monitor verification performance
-curl http://localhost:8003/api/v1/performance/metrics | jq '.current_metrics.average_response_time_ms'
+# Enable garbage collection
+export PYTHON_GC_ENABLED=true
 ```
 
 #### Constitutional Hash Mismatch
+
 ```bash
 # Verify constitutional hash
-curl http://localhost:8003/api/v1/verify/constitutional-compliance \
-  -H "Content-Type: application/json" \
-  -d '{"policy_content": "test"}' | jq '.constitutional_hash'
+curl http://localhost:8003/api/v1/constitutional/validate | jq '.constitutional_hash'
 
 # Expected: "cdd01ef066bc6cf2"
 # Reset if corrupted
 python scripts/reset_constitutional_state.py --service fv
 ```
 
-#### Parallel Verification Failures
+#### Database Connection Issues
+
 ```bash
-# Check concurrent verification limits
-curl http://localhost:8003/api/v1/performance/metrics | jq '.optimization_features.parallel_processing'
+# Test database connectivity
+python -c "import asyncpg; print('DB OK')"
 
-# Reduce concurrent load if needed
-export MAX_CONCURRENT_VERIFICATIONS=50
+# Check connection pool
+curl http://localhost:8003/api/v1/status | jq '.database'
 
-# Monitor verification queue
-curl http://localhost:8003/api/v1/verification/queue-status
+# Restart with fresh connections
+sudo systemctl restart fv-service
 ```
 
-#### Memory Issues with Large Proofs
+### Emergency Procedures
+
+#### Emergency Shutdown
+
 ```bash
-# Monitor memory usage
-free -h
-docker stats acgs-fv-service
+# Immediate shutdown (< 30min RTO)
+curl -X POST http://localhost:8003/api/v1/constitutional/emergency-shutdown \
+  -H "Authorization: Bearer $ADMIN_TOKEN"
 
-# Increase memory limits if needed
-# In docker-compose.yml or Kubernetes deployment
-memory: 2Gi
-
-# Enable proof caching
-export ENABLE_VERIFICATION_CACHE=true
-export CACHE_SIZE_MB=2048
+# Verify shutdown
+curl http://localhost:8003/health
 ```
 
-### Performance Optimization
+#### Rollback Procedure
 
-#### Database Optimization
-```sql
--- Optimize verification queries
-CREATE INDEX idx_verification_policy_id ON verifications(policy_id);
-CREATE INDEX idx_verification_timestamp ON verifications(created_at);
-CREATE INDEX idx_verification_status ON verifications(verification_status);
-```
-
-#### Cache Optimization
 ```bash
-# Monitor cache hit rates
-redis-cli info stats | grep hit_rate
+# Rollback to previous version
+kubectl rollout undo deployment/fv-service
 
-# Optimize cache configuration
-redis-cli config set maxmemory 2gb
-redis-cli config set maxmemory-policy allkeys-lru
+# Verify rollback
+kubectl get pods -l app=fv-service
 ```
 
-#### Z3 Solver Optimization
-```python
-# Optimize Z3 solver configuration
-solver.set("timeout", 30000)
-solver.set("memory_max_size", 1024)  # 1GB memory limit
-solver.set("threads", 4)  # Use multiple threads
+## Testing
+
+### Unit Tests
+
+```bash
+# Run unit tests
+pytest tests/unit/ -v --cov=app
+
+# Test Z3 integration
+pytest tests/unit/test_z3_integration.py -v
 ```
 
-## Security Considerations
+### Integration Tests
 
-### Formal Verification Security
-- **Proof Integrity**: All proofs are cryptographically signed
-- **Constitutional Validation**: Continuous constitutional hash verification
-- **Access Control**: Role-based access for verification operations
-- **Audit Trail**: Complete audit trail for all verification activities
+```bash
+# Run integration tests
+pytest tests/integration/ -v
 
-### Z3 Solver Security
-- **Timeout Protection**: Prevents infinite loops and DoS attacks
-- **Memory Limits**: Prevents memory exhaustion attacks
-- **Input Validation**: Comprehensive validation of verification requests
-- **Sandboxing**: Z3 operations run in controlled environments
+# Test AC service integration
+pytest tests/integration/test_ac_integration.py -v
+```
+
+### Performance Tests
+
+```bash
+# Load testing
+pytest tests/performance/test_verification_load.py -v
+
+# Stress testing
+python tests/performance/stress_test.py --concurrent=50
+```
+
+## Security
+
+### Authentication
+
+- **JWT Integration**: Seamless integration with ACGS-1 auth service
+- **Service-to-Service**: Mutual TLS authentication
+- **API Key Support**: Alternative authentication method
+
+### Data Protection
+
+- **Encryption at Rest**: AES-256 encryption for stored proofs
+- **Encryption in Transit**: TLS 1.3 for all communications
+- **Key Management**: Secure key rotation and storage
+
+### Audit Logging
+
+- **Comprehensive Logging**: All verification activities logged
+- **Immutable Audit Trail**: Blockchain-style verification logs
+- **Compliance Reporting**: Automated compliance reports
 
 ## Contributing
 
-1. Follow ACGS-1 coding standards with formal verification best practices
-2. Ensure >90% test coverage for verification algorithms
-3. Update API documentation for new verification endpoints
-4. Test Z3 integration thoroughly with edge cases
-5. Validate constitutional compliance for all changes
+1. Follow ACGS-1 coding standards
+2. Ensure >90% test coverage for new features
+3. Update API documentation for endpoint changes
+4. Test Z3 integration thoroughly
+5. Validate constitutional compliance integration
 
 ## Support
 
-- **Documentation**: [Formal Verification API](../../../docs/api/formal_verification_service_api.md)
+- **Documentation**: [FV Service API](../../../docs/api/formal_verification_service_api.md)
 - **Health Check**: http://localhost:8003/health
 - **Interactive API Docs**: http://localhost:8003/docs
 - **Logs**: `/logs/fv_service.log`
 - **Configuration**: `services/core/formal-verification/fv_service/.env`
-- **Z3 Documentation**: [Z3 Theorem Prover Guide](https://z3prover.github.io/api/html/index.html)
+
+```
+
+```

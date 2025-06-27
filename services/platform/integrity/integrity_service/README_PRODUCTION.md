@@ -5,6 +5,7 @@
 The Integrity Service provides enterprise-grade cryptographic integrity, digital signature management, audit trail capabilities, and PGP assurance for the ACGS-PGP (Autonomous Constitutional Governance System - Policy Generation Platform). It ensures data integrity, traceability, and verifiability across all governance operations with blockchain-style verification.
 
 **Service Details:**
+
 - **Port**: 8002
 - **Version**: 3.0.0
 - **Constitutional Hash**: `cdd01ef066bc6cf2`
@@ -14,6 +15,7 @@ The Integrity Service provides enterprise-grade cryptographic integrity, digital
 ## Architecture
 
 ### Core Components
+
 - **Cryptographic Integrity Verification**: SHA-256 hashing and digital signatures
 - **Digital Signature Management**: PGP/GPG signature creation and validation
 - **Audit Trail with Blockchain Verification**: Immutable audit logging
@@ -22,6 +24,7 @@ The Integrity Service provides enterprise-grade cryptographic integrity, digital
 - **Research Data Pipeline**: Secure data export and analysis
 
 ### Dependencies
+
 - **Database**: PostgreSQL (audit logs, signatures, keys)
 - **Authentication Service**: Port 8000 (JWT token validation)
 - **Blockchain Integration**: Solana network (immutable proof storage)
@@ -32,9 +35,11 @@ The Integrity Service provides enterprise-grade cryptographic integrity, digital
 ### Core Service Information
 
 #### GET /
+
 Service information and capabilities overview.
 
 **Response:**
+
 ```json
 {
   "service": "ACGS-1 Production Integrity Service",
@@ -56,9 +61,11 @@ Service information and capabilities overview.
 ```
 
 #### GET /health
+
 Comprehensive health check with dependency status.
 
 **Response:**
+
 ```json
 {
   "status": "healthy",
@@ -82,9 +89,11 @@ Comprehensive health check with dependency status.
 ### Constitutional Compliance
 
 #### GET /api/v1/constitutional/validate
+
 Constitutional hash validation and integrity verification.
 
 **Response:**
+
 ```json
 {
   "constitutional_hash": "cdd01ef066bc6cf2",
@@ -115,9 +124,11 @@ Constitutional hash validation and integrity verification.
 ### Integrity Verification
 
 #### POST /api/v1/integrity/policy-rules/{rule_id}/sign
+
 Sign a policy rule with digital signature and timestamp.
 
 **Request:**
+
 ```json
 {
   "signature_algorithm": "RSA-SHA256",
@@ -130,6 +141,7 @@ Sign a policy rule with digital signature and timestamp.
 ```
 
 **Response:**
+
 ```json
 {
   "signature_id": "SIG-1750820294",
@@ -147,9 +159,11 @@ Sign a policy rule with digital signature and timestamp.
 ```
 
 #### POST /api/v1/integrity/policy-rules/{rule_id}/verify
+
 Verify the integrity and signature of a policy rule.
 
 **Response:**
+
 ```json
 {
   "verification_id": "VER-1750820294",
@@ -171,17 +185,21 @@ Verify the integrity and signature of a policy rule.
 ```
 
 #### POST /api/v1/integrity/audit-logs/{log_id}/sign
+
 Sign an audit log entry with digital signature and chain integrity.
 
 #### POST /api/v1/integrity/audit-logs/{log_id}/verify
+
 Verify the integrity and signature of an audit log entry.
 
 ### Cryptographic Operations
 
 #### POST /api/v1/crypto/sign
+
 Generate digital signature for data.
 
 **Request:**
+
 ```json
 {
   "data": "Policy content to sign",
@@ -192,9 +210,11 @@ Generate digital signature for data.
 ```
 
 #### POST /api/v1/crypto/verify
+
 Verify digital signature.
 
 **Request:**
+
 ```json
 {
   "data": "Original data",
@@ -204,22 +224,27 @@ Verify digital signature.
 ```
 
 #### POST /api/v1/crypto/merkle/build
+
 Build Merkle tree for data integrity verification.
 
 #### POST /api/v1/crypto/merkle/verify
+
 Verify Merkle tree proof.
 
 ### System Integrity
 
 #### GET /api/v1/integrity/system-integrity-report
+
 Generate comprehensive system integrity report.
 
 **Parameters:**
+
 - `include_policy_rules`: Include policy rule integrity (default: true)
 - `include_audit_logs`: Include audit log integrity (default: true)
 - `sample_size`: Number of entries to verify (default: 100)
 
 **Response:**
+
 ```json
 {
   "report_generated_at": "2025-06-25T03:00:00Z",
@@ -247,12 +272,15 @@ Generate comprehensive system integrity report.
 ### PGP Assurance
 
 #### POST /api/v1/pgp/generate-keys
+
 Generate new PGP key pair.
 
 #### POST /api/v1/pgp/verify-signature
+
 Verify PGP signature and integrity package.
 
 **Request:**
+
 ```json
 {
   "data": "Data to verify",
@@ -267,12 +295,15 @@ Verify PGP signature and integrity package.
 ### Appeals & Dispute Resolution
 
 #### GET /api/v1/appeals
+
 List integrity-verified appeals.
 
 #### POST /api/v1/appeals
+
 Create new appeal with integrity verification.
 
 #### POST /api/v1/appeals/{appeal_id}/vote
+
 Submit integrity-verified vote on appeal.
 
 ## Configuration
@@ -316,28 +347,31 @@ CACHE_TTL_SECONDS=1800
 ```yaml
 resources:
   requests:
-    memory: "256Mi"
-    cpu: "100m"
+    memory: '256Mi'
+    cpu: '100m'
   limits:
-    memory: "512Mi"
-    cpu: "300m"
+    memory: '512Mi'
+    cpu: '300m'
 ```
 
 ## Security
 
 ### Cryptographic Security
+
 - **Digital Signatures**: RSA-4096 and ECDSA-P256 support
 - **Hash Algorithms**: SHA-256, SHA-512 for data integrity
 - **Key Management**: Automated key rotation every 90 days
 - **PGP/GPG Integration**: Enterprise-grade signature verification
 
 ### Blockchain Integration
+
 - **Immutable Proof Storage**: Solana blockchain integration
 - **Merkle Tree Verification**: Efficient batch verification
 - **Transaction Integrity**: Cryptographic proof of operations
 - **Audit Trail**: Blockchain-backed audit logging
 
 ### Access Control
+
 - **JWT Authentication**: Integration with auth service
 - **Role-Based Permissions**: Auditor, admin, internal service roles
 - **API Rate Limiting**: Protection against abuse
@@ -381,36 +415,39 @@ spec:
         app: integrity-service
     spec:
       containers:
-      - name: integrity-service
-        image: acgs-integrity-service:latest
-        ports:
-        - containerPort: 8002
-        env:
-        - name: CONSTITUTIONAL_HASH
-          value: "cdd01ef066bc6cf2"
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "100m"
-          limits:
-            memory: "512Mi"
-            cpu: "300m"
+        - name: integrity-service
+          image: acgs-integrity-service:latest
+          ports:
+            - containerPort: 8002
+          env:
+            - name: CONSTITUTIONAL_HASH
+              value: 'cdd01ef066bc6cf2'
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '100m'
+            limits:
+              memory: '512Mi'
+              cpu: '300m'
 ```
 
 ## Monitoring
 
 ### Health Checks
+
 - **Endpoint**: `/health`
 - **Frequency**: Every 30 seconds
 - **Dependencies**: Database, crypto service, PGP service
 
 ### Metrics
+
 - **Signature Operations**: Creation and verification rates
 - **Integrity Verifications**: Success/failure rates
 - **Blockchain Operations**: Transaction success rates
 - **Key Management**: Key rotation and certificate status
 
 ### Alerts
+
 - **Critical**: Service down, cryptographic failures, blockchain connectivity
 - **High**: Signature verification failures, key expiration warnings
 - **Moderate**: High verification latency, cache misses
@@ -420,12 +457,14 @@ spec:
 ### Common Issues
 
 1. **Cryptographic Operation Failures**
+
    ```bash
    # Check crypto service status
    curl -s http://localhost:8002/health | jq '.dependencies.crypto_service'
    ```
 
 2. **PGP Key Issues**
+
    ```bash
    # Verify PGP service
    curl -s http://localhost:8002/health | jq '.dependencies.pgp_service'

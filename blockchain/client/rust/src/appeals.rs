@@ -9,7 +9,7 @@ impl AcgsClient {
         &self,
         policy_id: u64,
         violation_details: String,
-        evidence_hash: [u8; 32],
+        _evidence_hash: [u8; 32],
         appeal_type: AppealType,
     ) -> Result<Signature> {
         let (appeal_pda, _bump) = Pubkey::find_program_address(

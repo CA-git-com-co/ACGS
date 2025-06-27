@@ -8,18 +8,11 @@ import { Toaster } from '@/components/ui/sonner';
 
 export function ClientProviders({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="light"
-      enableSystem
-      disableTransitionOnChange
-    >
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
       <SessionProvider>
         <QueryProvider>
           <FeatureFlagProvider>
-            <div className="min-h-screen bg-background">
-              {children}
-            </div>
+            <div className="min-h-screen bg-background">{children}</div>
             <Toaster richColors position="top-right" />
           </FeatureFlagProvider>
         </QueryProvider>

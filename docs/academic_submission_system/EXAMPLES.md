@@ -22,6 +22,7 @@ This document provides practical examples and templates for using the Academic S
 Complete template for arXiv submission:
 
 **Directory Structure:**
+
 ```
 arxiv_paper/
 ├── main.tex
@@ -39,6 +40,7 @@ arxiv_paper/
 ```
 
 **main.tex:**
+
 ```latex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -216,6 +218,7 @@ Publishing Research Initiative.
 ```
 
 **references.bib:**
+
 ```bibtex
 @article{smith2023challenges,
     title={Challenges in Academic Paper Submission: A Comprehensive Survey},
@@ -249,6 +252,7 @@ Publishing Research Initiative.
 ```
 
 **README.txt:**
+
 ```
 Academic Paper Validation System Example
 
@@ -277,6 +281,7 @@ for academic submissions.
 ### IEEE Conference Paper Template
 
 **main.tex (IEEE format):**
+
 ```latex
 \documentclass[conference]{IEEEtran}
 \IEEEoverridecommandlockouts
@@ -358,6 +363,7 @@ Conf. Academic Tools}, 2022, pp. 67-82.
 ### ACM Article Template
 
 **main.tex (ACM format):**
+
 ```latex
 \documentclass[sigconf]{acmart}
 

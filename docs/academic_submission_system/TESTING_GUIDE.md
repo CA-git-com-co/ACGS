@@ -48,14 +48,14 @@ from pathlib import Path
 from quality_assurance.submission_validator import SubmissionValidator, ValidationResult
 
 class TestSubmissionValidator:
-    
+
     @pytest.fixture
     def temp_paper_dir(self):
         """Create temporary paper directory for testing."""
         temp_dir = tempfile.mkdtemp()
         paper_dir = Path(temp_dir) / "test_paper"
         paper_dir.mkdir()
-        
+
         # Create basic paper structure
         (paper_dir / "main.tex").write_text("""
         \\documentclass{article}
@@ -70,54 +70,54 @@ class TestSubmissionValidator:
         Test content here.
         \\end{document}
         """)
-        
+
         (paper_dir / "README.txt").write_text("Test paper for validation")
-        
+
         yield paper_dir
-        
+
         # Cleanup
         shutil.rmtree(temp_dir)
-    
+
     def test_validator_initialization(self, temp_paper_dir):
         """Test validator initialization."""
         validator = SubmissionValidator(str(temp_paper_dir))
         assert validator.submission_path == temp_paper_dir
         assert validator.results == []
         assert validator.recommendations == []
-    
+
     def test_file_structure_validation_pass(self, temp_paper_dir):
         """Test file structure validation with valid structure."""
         validator = SubmissionValidator(str(temp_paper_dir))
         validator._validate_file_structure()
-        
+
         # Should have one PASS result for file structure
         file_structure_results = [r for r in validator.results if r.check_name == "File Structure"]
         assert len(file_structure_results) == 1
         assert file_structure_results[0].status == "PASS"
-    
+
     def test_file_structure_validation_fail(self, temp_paper_dir):
         """Test file structure validation with missing files."""
         # Remove main.tex
         (temp_paper_dir / "main.tex").unlink()
-        
+
         validator = SubmissionValidator(str(temp_paper_dir))
         validator._validate_file_structure()
-        
+
         # Should have one FAIL result
         file_structure_results = [r for r in validator.results if r.check_name == "File Structure"]
         assert len(file_structure_results) == 1
         assert file_structure_results[0].status == "FAIL"
         assert "main.tex" in file_structure_results[0].message
-    
+
     def test_latex_syntax_validation(self, temp_paper_dir):
         """Test LaTeX syntax validation."""
         validator = SubmissionValidator(str(temp_paper_dir))
         validator._validate_latex_syntax()
-        
+
         latex_results = [r for r in validator.results if r.check_name == "LaTeX Syntax"]
         assert len(latex_results) == 1
         assert latex_results[0].status in ["PASS", "WARNING"]
-    
+
     def test_latex_syntax_with_errors(self, temp_paper_dir):
         """Test LaTeX syntax validation with errors."""
         # Create LaTeX file with syntax errors
@@ -129,25 +129,25 @@ class TestSubmissionValidator:
         Missing closing brace above
         \\end{document}
         """)
-        
+
         validator = SubmissionValidator(str(temp_paper_dir))
         validator._validate_latex_syntax()
-        
+
         latex_results = [r for r in validator.results if r.check_name == "LaTeX Syntax"]
         assert len(latex_results) == 1
         assert latex_results[0].status == "WARNING"
         assert "brace" in latex_results[0].message.lower()
-    
+
     def test_bibliography_validation_missing(self, temp_paper_dir):
         """Test bibliography validation with missing bib file."""
         validator = SubmissionValidator(str(temp_paper_dir))
         validator._validate_bibliography()
-        
+
         bib_results = [r for r in validator.results if r.check_name == "Bibliography"]
         assert len(bib_results) == 1
         assert bib_results[0].status == "WARNING"
         assert "No bibliography file" in bib_results[0].message
-    
+
     def test_bibliography_validation_present(self, temp_paper_dir):
         """Test bibliography validation with valid bib file."""
         # Create bibliography file
@@ -159,20 +159,20 @@ class TestSubmissionValidator:
             year={2023}
         }
         """)
-        
+
         validator = SubmissionValidator(str(temp_paper_dir))
         validator._validate_bibliography()
-        
+
         bib_results = [r for r in validator.results if r.check_name == "Bibliography"]
         assert len(bib_results) == 1
         assert bib_results[0].status == "PASS"
         assert "1 entries" in bib_results[0].message
-    
+
     def test_complete_validation(self, temp_paper_dir):
         """Test complete validation workflow."""
         validator = SubmissionValidator(str(temp_paper_dir))
         report = validator.validate_submission()
-        
+
         # Check report structure
         assert report.submission_path == str(temp_paper_dir)
         assert len(report.validation_results) > 0
@@ -182,7 +182,7 @@ class TestSubmissionValidator:
         assert report.timestamp is not None
 
 class TestValidationResult:
-    
+
     def test_validation_result_creation(self):
         """Test ValidationResult creation."""
         result = ValidationResult(
@@ -190,13 +190,13 @@ class TestValidationResult:
             status="PASS",
             message="Test message"
         )
-        
+
         assert result.check_name == "Test Check"
         assert result.status == "PASS"
         assert result.message == "Test message"
         assert result.details is None
         assert result.timestamp is not None
-    
+
     def test_validation_result_with_details(self):
         """Test ValidationResult with details."""
         details = {"count": 5, "items": ["item1", "item2"]}
@@ -206,7 +206,7 @@ class TestValidationResult:
             message="Test warning",
             details=details
         )
-        
+
         assert result.details == details
         assert result.status == "WARNING"
 ```
@@ -223,14 +223,14 @@ from pathlib import Path
 from quality_assurance.compliance_checker import ComplianceChecker
 
 class TestComplianceChecker:
-    
+
     @pytest.fixture
     def temp_paper_dir(self):
         """Create temporary paper directory for testing."""
         temp_dir = tempfile.mkdtemp()
         paper_dir = Path(temp_dir) / "test_paper"
         paper_dir.mkdir()
-        
+
         # Create basic paper structure
         (paper_dir / "main.tex").write_text("""
         \\documentclass{article}
@@ -246,47 +246,47 @@ class TestComplianceChecker:
         Test content.
         \\end{document}
         """)
-        
+
         yield paper_dir
         shutil.rmtree(temp_dir)
-    
+
     def test_checker_initialization(self):
         """Test ComplianceChecker initialization."""
         checker = ComplianceChecker()
         assert hasattr(checker, 'check_compliance')
-    
+
     def test_arxiv_compliance_basic(self, temp_paper_dir):
         """Test basic arXiv compliance checking."""
         checker = ComplianceChecker()
         results = checker.check_compliance(str(temp_paper_dir), "arxiv")
-        
+
         assert isinstance(results, list)
         assert len(results) > 0
-        
+
         # Check that we have results for key arXiv requirements
         rule_ids = [r.rule_id for r in results]
         assert any("size" in rule_id.lower() for rule_id in rule_ids)
         assert any("title" in rule_id.lower() for rule_id in rule_ids)
-    
+
     def test_ieee_compliance_basic(self, temp_paper_dir):
         """Test basic IEEE compliance checking."""
         checker = ComplianceChecker()
         results = checker.check_compliance(str(temp_paper_dir), "ieee")
-        
+
         assert isinstance(results, list)
         assert len(results) > 0
-    
+
     def test_unsupported_venue(self, temp_paper_dir):
         """Test compliance checking with unsupported venue."""
         checker = ComplianceChecker()
-        
+
         with pytest.raises(ValueError):
             checker.check_compliance(str(temp_paper_dir), "unsupported_venue")
-    
+
     def test_nonexistent_path(self):
         """Test compliance checking with nonexistent path."""
         checker = ComplianceChecker()
-        
+
         with pytest.raises(FileNotFoundError):
             checker.check_compliance("/nonexistent/path", "arxiv")
 ```
@@ -304,34 +304,34 @@ from unittest.mock import patch, MagicMock
 from cli.academic_cli import AcademicCLI
 
 class TestAcademicCLI:
-    
+
     @pytest.fixture
     def temp_paper_dir(self):
         """Create temporary paper directory for testing."""
         temp_dir = tempfile.mkdtemp()
         paper_dir = Path(temp_dir) / "test_paper"
         paper_dir.mkdir()
-        
+
         (paper_dir / "main.tex").write_text("\\documentclass{article}\\begin{document}Test\\end{document}")
         (paper_dir / "README.txt").write_text("Test paper")
-        
+
         yield paper_dir
         shutil.rmtree(temp_dir)
-    
+
     def test_cli_initialization(self):
         """Test CLI initialization."""
         cli = AcademicCLI()
         assert cli.parser is not None
         assert cli.supported_venues == ["arxiv", "ieee", "acm"]
-    
+
     def test_validate_command_help(self):
         """Test validate command help."""
         cli = AcademicCLI()
-        
+
         # Test that help doesn't raise an exception
         with pytest.raises(SystemExit):
             cli.run(["validate", "--help"])
-    
+
     @patch('cli.academic_cli.SubmissionValidator')
     def test_validate_command_success(self, mock_validator, temp_paper_dir):
         """Test successful validation command."""
@@ -341,24 +341,24 @@ class TestAcademicCLI:
         mock_report.compliance_score = 85.0
         mock_report.validation_results = []
         mock_report.recommendations = []
-        
+
         mock_validator_instance = MagicMock()
         mock_validator_instance.validate_submission.return_value = mock_report
         mock_validator.return_value = mock_validator_instance
-        
+
         cli = AcademicCLI()
         result = cli.run(["validate", str(temp_paper_dir)])
-        
+
         assert result == 0  # Success exit code
         mock_validator.assert_called_once_with(temp_paper_dir)
-    
+
     def test_validate_command_nonexistent_path(self):
         """Test validation with nonexistent path."""
         cli = AcademicCLI()
         result = cli.run(["validate", "/nonexistent/path"])
-        
+
         assert result == 1  # Error exit code
-    
+
     @patch('cli.academic_cli.ComplianceChecker')
     def test_compliance_command(self, mock_checker, temp_paper_dir):
         """Test compliance command."""
@@ -367,26 +367,26 @@ class TestAcademicCLI:
         mock_checker_instance = MagicMock()
         mock_checker_instance.check_compliance.return_value = mock_results
         mock_checker.return_value = mock_checker_instance
-        
+
         cli = AcademicCLI()
         result = cli.run(["compliance", str(temp_paper_dir), "--venue", "arxiv"])
-        
+
         assert result == 0
         mock_checker_instance.check_compliance.assert_called_once()
-    
+
     def test_status_command(self, temp_paper_dir):
         """Test status command."""
         cli = AcademicCLI()
         result = cli.run(["status", str(temp_paper_dir)])
-        
+
         # Status command should always succeed if path exists
         assert result == 0
-    
+
     def test_invalid_command(self):
         """Test invalid command."""
         cli = AcademicCLI()
         result = cli.run(["invalid_command"])
-        
+
         assert result == 1
 ```
 
@@ -405,14 +405,14 @@ import json
 from pathlib import Path
 
 class TestEndToEnd:
-    
+
     @pytest.fixture
     def complete_paper(self):
         """Create a complete, valid paper for testing."""
         temp_dir = tempfile.mkdtemp()
         paper_dir = Path(temp_dir) / "complete_paper"
         paper_dir.mkdir()
-        
+
         # Create main.tex
         (paper_dir / "main.tex").write_text("""
         \\documentclass{article}
@@ -446,7 +446,7 @@ class TestEndToEnd:
         \\bibliography{references}
         \\end{document}
         """)
-        
+
         # Create bibliography
         (paper_dir / "references.bib").write_text("""
         @article{test2023,
@@ -460,27 +460,27 @@ class TestEndToEnd:
             doi={10.1000/test.2023.001}
         }
         """)
-        
+
         # Create figures directory and figure
         figs_dir = paper_dir / "figs"
         figs_dir.mkdir()
         (figs_dir / "test_figure.png").write_bytes(b"fake_png_data")
-        
+
         # Create README
         (paper_dir / "README.txt").write_text("""
         Complete Test Paper
-        
+
         This is a test paper for end-to-end validation testing.
-        
+
         Files:
         - main.tex: Main paper
         - references.bib: Bibliography
         - figs/test_figure.png: Test figure
         """)
-        
+
         yield paper_dir
         shutil.rmtree(temp_dir)
-    
+
     def test_cli_validation_workflow(self, complete_paper):
         """Test complete CLI validation workflow."""
         # Run validation
@@ -488,50 +488,50 @@ class TestEndToEnd:
             "python", "cli/academic_cli.py", "validate", str(complete_paper),
             "--format", "json", "--output", "test_validation.json"
         ], capture_output=True, text=True, cwd="arxiv_submission_package")
-        
+
         assert result.returncode == 0
-        
+
         # Check that report was generated
         report_path = Path("arxiv_submission_package/test_validation.json")
         assert report_path.exists()
-        
+
         # Parse and validate report
         with open(report_path) as f:
             report_data = json.load(f)
-        
+
         assert "overall_status" in report_data
         assert "compliance_score" in report_data
         assert "validation_results" in report_data
-        
+
         # Cleanup
         report_path.unlink()
-    
+
     def test_multi_venue_compliance(self, complete_paper):
         """Test compliance checking across multiple venues."""
         venues = ["arxiv", "ieee", "acm"]
-        
+
         for venue in venues:
             result = subprocess.run([
                 "python", "cli/academic_cli.py", "compliance", str(complete_paper),
                 "--venue", venue, "--output", f"{venue}_compliance.md"
             ], capture_output=True, text=True, cwd="arxiv_submission_package")
-            
+
             # Should succeed for all venues
             assert result.returncode in [0, 1]  # 0 = pass, 1 = fail but valid
-            
+
             # Check report was generated
             report_path = Path(f"arxiv_submission_package/{venue}_compliance.md")
             assert report_path.exists()
-            
+
             # Cleanup
             report_path.unlink()
-    
+
     def test_status_command_integration(self, complete_paper):
         """Test status command integration."""
         result = subprocess.run([
             "python", "cli/academic_cli.py", "status", str(complete_paper)
         ], capture_output=True, text=True, cwd="arxiv_submission_package")
-        
+
         assert result.returncode == 0
         assert "Academic Submission Status" in result.stdout
         assert "Key Files:" in result.stdout
@@ -554,14 +554,14 @@ from pathlib import Path
 from quality_assurance.submission_validator import SubmissionValidator
 
 class TestPerformance:
-    
+
     @pytest.fixture
     def sample_paper(self):
         """Create sample paper for performance testing."""
         temp_dir = tempfile.mkdtemp()
         paper_dir = Path(temp_dir) / "perf_paper"
         paper_dir.mkdir()
-        
+
         # Create a reasonably sized paper
         content = "\\section{Test Section}\n" + "Test content. " * 1000
         (paper_dir / "main.tex").write_text(f"""
@@ -576,76 +576,76 @@ class TestPerformance:
         {content}
         \\end{{document}}
         """)
-        
+
         (paper_dir / "README.txt").write_text("Performance test paper")
-        
+
         yield paper_dir
         shutil.rmtree(temp_dir)
-    
+
     def test_validation_performance(self, sample_paper):
         """Test validation performance for single paper."""
         start_time = time.time()
-        
+
         validator = SubmissionValidator(str(sample_paper))
         report = validator.validate_submission()
-        
+
         end_time = time.time()
         validation_time = end_time - start_time
-        
+
         # Validation should complete within reasonable time
         assert validation_time < 10.0  # 10 seconds max
         assert report.overall_status is not None
-        
+
         print(f"Validation completed in {validation_time:.2f} seconds")
-    
+
     def test_concurrent_validation(self, sample_paper):
         """Test concurrent validation performance."""
         num_workers = 5
         num_validations = 10
-        
+
         def validate_paper():
             validator = SubmissionValidator(str(sample_paper))
             return validator.validate_submission()
-        
+
         start_time = time.time()
-        
+
         with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
             futures = [executor.submit(validate_paper) for _ in range(num_validations)]
             results = [future.result() for future in concurrent.futures.as_completed(futures)]
-        
+
         end_time = time.time()
         total_time = end_time - start_time
-        
+
         # All validations should complete
         assert len(results) == num_validations
         assert all(r.overall_status is not None for r in results)
-        
+
         # Should be faster than sequential
         avg_time_per_validation = total_time / num_validations
         assert avg_time_per_validation < 5.0  # 5 seconds per validation max
-        
+
         print(f"Concurrent validation: {total_time:.2f}s total, {avg_time_per_validation:.2f}s average")
-    
+
     def test_memory_usage(self, sample_paper):
         """Test memory usage during validation."""
         import psutil
         import os
-        
+
         process = psutil.Process(os.getpid())
         initial_memory = process.memory_info().rss / 1024 / 1024  # MB
-        
+
         # Run multiple validations
         for _ in range(10):
             validator = SubmissionValidator(str(sample_paper))
             report = validator.validate_submission()
             del validator, report
-        
+
         final_memory = process.memory_info().rss / 1024 / 1024  # MB
         memory_increase = final_memory - initial_memory
-        
+
         # Memory increase should be reasonable
         assert memory_increase < 100  # Less than 100MB increase
-        
+
         print(f"Memory usage: {initial_memory:.1f}MB -> {final_memory:.1f}MB (+{memory_increase:.1f}MB)")
 ```
 
@@ -674,7 +674,7 @@ def minimal_paper():
     temp_dir = tempfile.mkdtemp()
     paper_dir = Path(temp_dir) / "minimal_paper"
     paper_dir.mkdir()
-    
+
     (paper_dir / "main.tex").write_text("""
     \\documentclass{article}
     \\title{Minimal Test Paper}
@@ -688,9 +688,9 @@ def minimal_paper():
     Minimal content.
     \\end{document}
     """)
-    
+
     (paper_dir / "README.txt").write_text("Minimal test paper")
-    
+
     yield paper_dir
     shutil.rmtree(temp_dir)
 
@@ -700,10 +700,10 @@ def invalid_paper():
     temp_dir = tempfile.mkdtemp()
     paper_dir = Path(temp_dir) / "invalid_paper"
     paper_dir.mkdir()
-    
+
     # Missing main.tex intentionally
     (paper_dir / "README.txt").write_text("Invalid test paper")
-    
+
     yield paper_dir
     shutil.rmtree(temp_dir)
 
@@ -764,34 +764,34 @@ jobs:
     strategy:
       matrix:
         python-version: [3.9, 3.10, 3.11]
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-    
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-        pip install pytest pytest-cov
-    
-    - name: Run unit tests
-      run: pytest tests/unit/ -v
-    
-    - name: Run integration tests
-      run: pytest tests/integration/ -v
-    
-    - name: Run performance tests
-      run: pytest tests/performance/ -v -m "not slow"
-    
-    - name: Generate coverage report
-      run: pytest --cov=quality_assurance --cov-report=xml
-    
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      - uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+
+      - name: Run unit tests
+        run: pytest tests/unit/ -v
+
+      - name: Run integration tests
+        run: pytest tests/integration/ -v
+
+      - name: Run performance tests
+        run: pytest tests/performance/ -v -m "not slow"
+
+      - name: Generate coverage report
+        run: pytest --cov=quality_assurance --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
 ```
 
 This comprehensive testing guide ensures the Academic Submission System maintains high quality and reliability across all components and use cases.

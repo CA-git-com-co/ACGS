@@ -231,11 +231,7 @@
     "dashboard": {
       "id": null,
       "title": "ACGS-PGP System Monitoring",
-      "tags": [
-        "acgs-pgp",
-        "constitutional-ai",
-        "governance"
-      ],
+      "tags": ["acgs-pgp", "constitutional-ai", "governance"],
       "timezone": "browser",
       "refresh": "5s",
       "time": {

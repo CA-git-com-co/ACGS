@@ -70,7 +70,7 @@ export function PolicyFilters() {
               id="search"
               placeholder="Search by title or description..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="pl-9"
             />
           </div>
@@ -80,19 +80,14 @@ export function PolicyFilters() {
         <div className="space-y-3">
           <Label className="text-sm font-medium">Status</Label>
           <div className="space-y-2">
-            {statuses.map((status) => (
+            {statuses.map(status => (
               <div key={status.id} className="flex items-center space-x-2">
                 <Checkbox
                   id={status.id}
                   checked={selectedStatuses.includes(status.id)}
-                  onCheckedChange={(checked) =>
-                    handleStatusChange(status.id, checked as boolean)
-                  }
+                  onCheckedChange={checked => handleStatusChange(status.id, checked as boolean)}
                 />
-                <Label
-                  htmlFor={status.id}
-                  className="text-sm font-normal cursor-pointer"
-                >
+                <Label htmlFor={status.id} className="text-sm font-normal cursor-pointer">
                   {status.label}
                 </Label>
               </div>
@@ -104,19 +99,14 @@ export function PolicyFilters() {
         <div className="space-y-3">
           <Label className="text-sm font-medium">Domain</Label>
           <div className="space-y-2">
-            {domains.map((domain) => (
+            {domains.map(domain => (
               <div key={domain.id} className="flex items-center space-x-2">
                 <Checkbox
                   id={domain.id}
                   checked={selectedDomains.includes(domain.id)}
-                  onCheckedChange={(checked) =>
-                    handleDomainChange(domain.id, checked as boolean)
-                  }
+                  onCheckedChange={checked => handleDomainChange(domain.id, checked as boolean)}
                 />
-                <Label
-                  htmlFor={domain.id}
-                  className="text-sm font-normal cursor-pointer"
-                >
+                <Label htmlFor={domain.id} className="text-sm font-normal cursor-pointer">
                   {domain.label}
                 </Label>
               </div>
@@ -125,11 +115,7 @@ export function PolicyFilters() {
         </div>
 
         {/* Clear Filters */}
-        <Button
-          variant="outline"
-          onClick={clearFilters}
-          className="w-full"
-        >
+        <Button variant="outline" onClick={clearFilters} className="w-full">
           Clear Filters
         </Button>
       </CardContent>

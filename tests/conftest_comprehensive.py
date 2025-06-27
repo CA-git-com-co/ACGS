@@ -294,3 +294,141 @@ os.environ.setdefault("DATABASE_URL", TEST_DB_URL)
 os.environ.setdefault("REDIS_URL", "redis://localhost:6379/1")
 os.environ.setdefault("SECRET_KEY", "test-secret-key-for-testing-only")
 os.environ.setdefault("CONSTITUTIONAL_HASH", "cdd01ef066bc6cf2")
+
+
+# Additional missing fixtures for comprehensive testing
+
+@pytest.fixture
+def mock_service_registry():
+    """Mock service registry fixture."""
+    from unittest.mock import Mock
+    import time
+
+    registry = Mock()
+    registry.services = {
+        "auth": {"url": "http://localhost:8000", "status": "healthy", "version": "3.0.0"},
+        "ac": {"url": "http://localhost:8001", "status": "healthy", "version": "3.0.0"},
+        "integrity": {"url": "http://localhost:8002", "status": "healthy", "version": "3.0.0"},
+        "fv": {"url": "http://localhost:8003", "status": "healthy", "version": "2.0.0"},
+        "gs": {"url": "http://localhost:8004", "status": "healthy", "version": "3.0.0"},
+        "pgc": {"url": "http://localhost:8005", "status": "healthy", "version": "3.0.0"},
+        "ec": {"url": "http://localhost:8006", "status": "healthy", "version": "1.0.0"}
+    }
+    registry.constitutional_hash = "cdd01ef066bc6cf2"
+
+    async def get_service(service_name: str):
+        return registry.services.get(service_name)
+
+    async def health_check(service_name: str):
+        service = registry.services.get(service_name)
+        if not service:
+            return {"status": "not_found"}
+        return {
+            "status": service["status"],
+            "constitutional_hash": registry.constitutional_hash,
+            "timestamp": time.time()
+        }
+
+    registry.get_service = get_service
+    registry.health_check = health_check
+    return registry
+
+
+@pytest.fixture
+def test_user_data():
+    """Test user data fixture."""
+    import time
+    from dataclasses import dataclass
+    from typing import List
+
+    @dataclass
+    class TestUser:
+        user_id: str
+        username: str
+        email: str
+        role: str
+        permissions: List[str]
+        created_at: float
+        is_active: bool = True
+
+    return [
+        TestUser(
+            user_id="user_001",
+            username="test_admin",
+            email="admin@acgs.test",
+            role="admin",
+            permissions=["read", "write", "admin", "constitutional_review"],
+            created_at=time.time() - 86400
+        ),
+        TestUser(
+            user_id="user_002",
+            username="test_user",
+            email="user@acgs.test",
+            role="user",
+            permissions=["read"],
+            created_at=time.time() - 3600
+        )
+    ]
+
+
+@pytest.fixture
+def test_policy_data():
+    """Test policy data fixture."""
+    import time
+    from dataclasses import dataclass
+    from typing import List, Dict, Any
+
+    @dataclass
+    class TestPolicy:
+        policy_id: str
+        name: str
+        description: str
+        rules: List[Dict[str, Any]]
+        version: str
+        constitutional_hash: str
+        created_at: float
+        is_active: bool = True
+
+    return [
+        TestPolicy(
+            policy_id="policy_001",
+            name="Constitutional Compliance Policy",
+            description="Core constitutional compliance requirements",
+            rules=[
+                {"type": "constitutional_check", "required": True, "threshold": 0.95},
+                {"type": "hash_validation", "hash": "cdd01ef066bc6cf2"},
+                {"type": "audit_logging", "enabled": True}
+            ],
+            version="1.0.0",
+            constitutional_hash="cdd01ef066bc6cf2",
+            created_at=time.time() - 86400
+        )
+    ]
+
+
+@pytest.fixture
+def performance_metrics():
+    """Performance metrics fixture."""
+    import time
+    from dataclasses import dataclass
+    from typing import Optional
+
+    @dataclass
+    class PerformanceMetric:
+        metric_name: str
+        value: float
+        unit: str
+        timestamp: float
+        service: str
+        threshold: Optional[float] = None
+
+    current_time = time.time()
+
+    return [
+        PerformanceMetric("response_time", 0.045, "seconds", current_time, "auth", 2.0),
+        PerformanceMetric("response_time", 0.084, "seconds", current_time, "ac", 2.0),
+        PerformanceMetric("throughput", 1785, "rps", current_time, "auth", 1000),
+        PerformanceMetric("throughput", 658, "rps", current_time, "ac", 1000),
+        PerformanceMetric("memory_usage", 512.5, "MB", current_time, "auth", 1024),
+        PerformanceMetric("cpu_usage", 25.4, "percent", current_time, "auth", 80)
+    ]

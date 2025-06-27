@@ -15,6 +15,9 @@ data:
   database-url: 'postgresql://acgs_user:acgs_password@acgs-postgres.acgs-shared.svc.cluster.local:5432/acgs_db'
   redis-url: 'redis://acgs-redis.acgs-shared.svc.cluster.local:6379'
   prometheus-url: 'http://acgs-prometheus.acgs-shared.svc.cluster.local:9090'
+  acge-model-endpoint: 'http://acge-model-service.acgs-shared.svc.cluster.local:8080'
+  acge-enabled: 'true'
+  phase: 'phase-2'
 
 ---
 # Auth Service - Green
@@ -73,6 +76,21 @@ spec:
                 secretKeyRef:
                   name: acgs-secrets
                   key: jwt-secret-key
+            - name: ACGE_MODEL_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: acgs-green-config
+                  key: acge-model-endpoint
+            - name: ACGE_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: acgs-green-config
+                  key: acge-enabled
+            - name: PHASE
+              valueFrom:
+                configMapKeyRef:
+                  name: acgs-green-config
+                  key: phase
           livenessProbe:
             httpGet:
               path: /health
@@ -166,6 +184,21 @@ spec:
                   key: constitutional-hash
             - name: AUTH_SERVICE_URL
               value: 'http://acgs-auth-service-green:8000'
+            - name: ACGE_MODEL_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: acgs-green-config
+                  key: acge-model-endpoint
+            - name: ACGE_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: acgs-green-config
+                  key: acge-enabled
+            - name: PHASE
+              valueFrom:
+                configMapKeyRef:
+                  name: acgs-green-config
+                  key: phase
           livenessProbe:
             httpGet:
               path: /health

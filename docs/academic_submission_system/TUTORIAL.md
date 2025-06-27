@@ -87,21 +87,21 @@ Create `main.tex`:
 \maketitle
 
 \begin{abstract}
-This is a tutorial paper demonstrating the Academic Submission System. 
-The abstract should be between 50 and 300 words to pass validation. 
-This paper covers the basic structure required for academic submissions 
-and demonstrates how the validation system works. We include multiple 
-sections, figures, and references to show comprehensive validation 
-capabilities. The system checks for LaTeX syntax, bibliography 
+This is a tutorial paper demonstrating the Academic Submission System.
+The abstract should be between 50 and 300 words to pass validation.
+This paper covers the basic structure required for academic submissions
+and demonstrates how the validation system works. We include multiple
+sections, figures, and references to show comprehensive validation
+capabilities. The system checks for LaTeX syntax, bibliography
 completeness, figure references, and venue-specific compliance.
 \end{abstract}
 
 \section{Introduction}
 \label{sec:introduction}
 
-Academic paper submission requires careful attention to formatting, 
-structure, and compliance with venue requirements. This tutorial 
-demonstrates how to use the Academic Submission System to validate 
+Academic paper submission requires careful attention to formatting,
+structure, and compliance with venue requirements. This tutorial
+demonstrates how to use the Academic Submission System to validate
 papers before submission.
 
 The system performs comprehensive checks including:
@@ -116,8 +116,8 @@ The system performs comprehensive checks including:
 \section{Methodology}
 \label{sec:methodology}
 
-Our approach involves automated validation of academic submissions 
-using a multi-stage pipeline. Figure~\ref{fig:workflow} shows the 
+Our approach involves automated validation of academic submissions
+using a multi-stage pipeline. Figure~\ref{fig:workflow} shows the
 validation workflow.
 
 The validation process includes several key components:
@@ -131,7 +131,7 @@ The validation process includes several key components:
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{figs/validation_workflow}
-    \caption{Academic submission validation workflow showing the 
+    \caption{Academic submission validation workflow showing the
     multi-stage validation process from input to final report.}
     \label{fig:workflow}
 \end{figure}
@@ -139,8 +139,8 @@ The validation process includes several key components:
 \section{Results}
 \label{sec:results}
 
-The validation system successfully identifies common issues in 
-academic submissions. Table~\ref{tab:results} shows validation 
+The validation system successfully identifies common issues in
+academic submissions. Table~\ref{tab:results} shows validation
 results for different paper types.
 
 \begin{table}[htbp]
@@ -154,19 +154,19 @@ results for different paper types.
     arXiv & 78\% & 18\% & 4\% \\
     \hline
     \end{tabular}
-    \caption{Validation results by paper type showing pass, warning, 
+    \caption{Validation results by paper type showing pass, warning,
     and failure rates across different submission venues.}
     \label{tab:results}
 \end{table}
 
-As cited in~\cite{smith2023validation}, automated validation 
+As cited in~\cite{smith2023validation}, automated validation
 significantly improves submission quality.
 
 \section{Discussion}
 \label{sec:discussion}
 
-The results demonstrate the effectiveness of automated validation 
-for academic submissions. The system catches common errors and 
+The results demonstrate the effectiveness of automated validation
+for academic submissions. The system catches common errors and
 provides actionable recommendations for improvement.
 
 Key benefits include:
@@ -180,12 +180,12 @@ Key benefits include:
 \section{Conclusion}
 \label{sec:conclusion}
 
-This tutorial has demonstrated the Academic Submission System's 
-capabilities for validating academic papers. The system provides 
-comprehensive checking and clear feedback to help authors prepare 
+This tutorial has demonstrated the Academic Submission System's
+capabilities for validating academic papers. The system provides
+comprehensive checking and clear feedback to help authors prepare
 high-quality submissions.
 
-Future work will include additional venue support and enhanced 
+Future work will include additional venue support and enhanced
 content quality metrics as discussed in~\cite{jones2023future}.
 
 \bibliographystyle{plain}
@@ -285,6 +285,7 @@ python cli/academic_cli.py validate tutorial_paper/
 ```
 
 You'll see output similar to:
+
 ```
 2025-06-24 14:30:22 - INFO - Validating submission: tutorial_paper
 2025-06-24 14:30:22 - INFO - Target venue: arxiv
@@ -387,6 +388,7 @@ python cli/academic_cli.py validate tutorial_paper/
 ```
 
 You should now see improved results:
+
 ```
 📊 Validation Summary
 ==================================================
@@ -457,6 +459,7 @@ python web/app.py
 ```
 
 You'll see:
+
 ```
 Starting Academic Submission Web Interface...
 Access the application at: http://localhost:5000
@@ -479,6 +482,7 @@ Access the application at: http://localhost:5000
 ### Step 3: View Results
 
 The web interface will show:
+
 - **Overall Status**: Visual indicator (EXCELLENT, GOOD, etc.)
 - **Compliance Score**: Percentage with color coding
 - **Detailed Results**: Expandable sections for each check
@@ -540,17 +544,17 @@ echo "Batch validation starting..."
 for paper_dir in papers/*/; do
     if [ -d "$paper_dir" ]; then
         echo "Processing: $paper_dir"
-        
+
         # Validate paper
         python cli/academic_cli.py validate "$paper_dir" \
             --output "${paper_dir}/validation_report.md" \
             --format markdown
-        
+
         # Check arXiv compliance
         python cli/academic_cli.py compliance "$paper_dir" \
             --venue arxiv \
             --output "${paper_dir}/arxiv_compliance.md"
-        
+
         # Generate summary
         echo "$(basename "$paper_dir"): $(grep 'Overall Status' "${paper_dir}/validation_report.md")"
     fi
@@ -567,29 +571,29 @@ Create `.vscode/tasks.json`:
 
 ```json
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "Validate Paper",
-            "type": "shell",
-            "command": "python",
-            "args": [
-                "cli/academic_cli.py",
-                "validate",
-                "${workspaceFolder}",
-                "--output",
-                "validation_report.md"
-            ],
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared"
-            },
-            "problemMatcher": []
-        }
-    ]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Validate Paper",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "cli/academic_cli.py",
+        "validate",
+        "${workspaceFolder}",
+        "--output",
+        "validation_report.md"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ]
 }
 ```
 
@@ -657,65 +661,65 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    
-    - name: Install dependencies
-      run: |
-        cd arxiv_submission_package
-        pip install -r requirements.txt
-    
-    - name: Validate paper
-      run: |
-        cd arxiv_submission_package
-        python cli/academic_cli.py validate ../paper/ --format json --output validation.json
-    
-    - name: Check compliance
-      run: |
-        cd arxiv_submission_package
-        python cli/academic_cli.py compliance ../paper/ --venue arxiv --output arxiv_compliance.md
-    
-    - name: Upload validation results
-      uses: actions/upload-artifact@v3
-      with:
-        name: validation-results
-        path: |
-          arxiv_submission_package/validation.json
-          arxiv_submission_package/arxiv_compliance.md
-    
-    - name: Comment on PR
-      if: github.event_name == 'pull_request'
-      uses: actions/github-script@v6
-      with:
-        script: |
-          const fs = require('fs');
-          const validation = JSON.parse(fs.readFileSync('arxiv_submission_package/validation.json', 'utf8'));
-          
-          const comment = `## Paper Validation Results
-          
-          **Overall Status:** ${validation.overall_status}
-          **Compliance Score:** ${validation.compliance_score.toFixed(1)}%
-          
-          **Summary:**
-          - ✅ Passed: ${validation.validation_results.filter(r => r.status === 'PASS').length}
-          - ⚠️ Warnings: ${validation.validation_results.filter(r => r.status === 'WARNING').length}
-          - ❌ Failed: ${validation.validation_results.filter(r => r.status === 'FAIL').length}
-          
-          ${validation.recommendations.length > 0 ? '**Recommendations:**\n' + validation.recommendations.map(r => `- ${r}`).join('\n') : ''}
-          `;
-          
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: comment
-          });
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd arxiv_submission_package
+          pip install -r requirements.txt
+
+      - name: Validate paper
+        run: |
+          cd arxiv_submission_package
+          python cli/academic_cli.py validate ../paper/ --format json --output validation.json
+
+      - name: Check compliance
+        run: |
+          cd arxiv_submission_package
+          python cli/academic_cli.py compliance ../paper/ --venue arxiv --output arxiv_compliance.md
+
+      - name: Upload validation results
+        uses: actions/upload-artifact@v3
+        with:
+          name: validation-results
+          path: |
+            arxiv_submission_package/validation.json
+            arxiv_submission_package/arxiv_compliance.md
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const validation = JSON.parse(fs.readFileSync('arxiv_submission_package/validation.json', 'utf8'));
+
+            const comment = `## Paper Validation Results
+
+            **Overall Status:** ${validation.overall_status}
+            **Compliance Score:** ${validation.compliance_score.toFixed(1)}%
+
+            **Summary:**
+            - ✅ Passed: ${validation.validation_results.filter(r => r.status === 'PASS').length}
+            - ⚠️ Warnings: ${validation.validation_results.filter(r => r.status === 'WARNING').length}
+            - ❌ Failed: ${validation.validation_results.filter(r => r.status === 'FAIL').length}
+
+            ${validation.recommendations.length > 0 ? '**Recommendations:**\n' + validation.recommendations.map(r => `- ${r}`).join('\n') : ''}
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
 ```
 
 ### Pre-commit Hooks
@@ -752,19 +756,19 @@ from pathlib import Path
 def validate_paper(paper_path, venues=['arxiv']):
     """Validate paper and return results."""
     results = {}
-    
+
     # Run validation
     cmd = [
-        'python', 'cli/academic_cli.py', 'validate', 
+        'python', 'cli/academic_cli.py', 'validate',
         str(paper_path), '--format', 'json', '--output', 'temp_validation.json'
     ]
-    
+
     try:
         subprocess.run(cmd, check=True, capture_output=True)
-        
+
         with open('temp_validation.json', 'r') as f:
             results['validation'] = json.load(f)
-        
+
         # Check compliance for each venue
         results['compliance'] = {}
         for venue in venues:
@@ -777,12 +781,12 @@ def validate_paper(paper_path, venues=['arxiv']):
                 'success': result.returncode == 0,
                 'output': result.stdout
             }
-        
+
         return results
-        
+
     except subprocess.CalledProcessError as e:
         return {'error': str(e)}
-    
+
     finally:
         # Cleanup
         Path('temp_validation.json').unlink(missing_ok=True)
@@ -791,10 +795,10 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("Usage: python validate_api.py <paper_path>")
         sys.exit(1)
-    
+
     paper_path = sys.argv[1]
     results = validate_paper(paper_path)
-    
+
     print(json.dumps(results, indent=2))
 ```
 

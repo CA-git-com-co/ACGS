@@ -14,56 +14,70 @@ The ACGS-PGP (Autonomous Constitutional Governance System - Policy Generation Pl
 The system consists of 7 core microservices, each with specific responsibilities:
 
 ### 1. Authentication Service (Port 8000)
+
 **Purpose**: Enterprise-grade authentication and authorization
 **Key Features**:
+
 - JWT token management with MFA support
 - Role-based access control (RBAC)
 - Session management with CSRF protection
 - Constitutional compliance integration
 
 ### 2. Constitutional AI Service (Port 8001)
+
 **Purpose**: Constitutional compliance validation and governance
 **Key Features**:
+
 - Real-time constitutional compliance checking
 - Constitutional council voting mechanisms
 - AI-powered constitutional analysis (Gemini, DeepSeek-R1)
 - Formal verification integration
 
 ### 3. Integrity Service (Port 8002)
+
 **Purpose**: Cryptographic integrity and audit trail management
 **Key Features**:
+
 - Digital signature generation and verification
 - PGP assurance and key management
 - Audit trail with blockchain-style verification
 - Policy storage with integrity guarantees
 
 ### 4. Formal Verification Service (Port 8003)
+
 **Purpose**: Mathematical proof validation and policy verification
 **Key Features**:
+
 - Z3 SMT solver integration
 - Policy consistency and completeness checking
 - Formal proof generation and validation
 - Constitutional compliance verification
 
 ### 5. Governance Synthesis Service (Port 8004)
+
 **Purpose**: AI-powered policy generation and synthesis
 **Key Features**:
+
 - Multi-model LLM ensemble (Gemini, DeepSeek-R1, NVIDIA Qwen)
 - Constitutional prompting and policy generation
 - Multi-model consensus and validation
 - Performance optimization with caching
 
 ### 6. Policy Governance Compiler Service (Port 8005)
+
 **Purpose**: Policy compilation, enforcement, and workflow orchestration
 **Key Features**:
+
 - Open Policy Agent (OPA) integration
 - Real-time policy enforcement
 - Governance workflow orchestration
 - Constitutional compliance monitoring
 
 ### 7. Evolutionary Computation Service (Port 8006)
+
 **Purpose**: WINA-optimized oversight and evolutionary computation
 **Key Features**:
+
 - WINA (Weighted Intelligence Network Architecture) oversight
 - Evolutionary computation algorithms
 - Performance monitoring and optimization
@@ -72,6 +86,7 @@ The system consists of 7 core microservices, each with specific responsibilities
 ## AI Model Integration Architecture
 
 ### Multi-Model LLM Ensemble
+
 The system integrates multiple AI models for robust governance:
 
 ```
@@ -96,6 +111,7 @@ The system integrates multiple AI models for robust governance:
 ```
 
 ### Model Specialization
+
 - **Constitutional Analysis**: Gemini 2.5 Pro for complex reasoning
 - **Policy Generation**: Gemini 2.0 Flash for fast synthesis
 - **Formal Verification**: DeepSeek-R1 for logical validation
@@ -105,6 +121,7 @@ The system integrates multiple AI models for robust governance:
 ## DGM Safety Patterns
 
 ### Constitutional AI Constraints
+
 The system implements DGM safety patterns with constitutional constraints:
 
 1. **Sandbox Execution**: All AI operations run in controlled environments
@@ -114,6 +131,7 @@ The system implements DGM safety patterns with constitutional constraints:
 5. **Constitutional Compliance**: Continuous validation against constitutional hash
 
 ### Safety Architecture
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    DGM Safety Layer                        │
@@ -136,11 +154,12 @@ The following diagram illustrates the complete ACGS-PGP system architecture with
 
 ![ACGS-PGP System Architecture](../diagrams/acgs-pgp-architecture.svg)
 
-*Note: The diagram shows the 7-service microservices architecture with AI model integrations, data layer, monitoring infrastructure, and DGM safety patterns.*
+_Note: The diagram shows the 7-service microservices architecture with AI model integrations, data layer, monitoring infrastructure, and DGM safety patterns._
 
 ## Communication Patterns
 
 ### Service-to-Service Communication
+
 - **Authentication**: All inter-service calls use JWT tokens from Auth Service
 - **Protocol**: HTTP/HTTPS with REST APIs and JSON payloads
 - **Circuit Breakers**: Automatic failure detection and isolation
@@ -148,6 +167,7 @@ The following diagram illustrates the complete ACGS-PGP system architecture with
 - **Rate Limiting**: Per-service and per-endpoint rate limits
 
 ### Event-Driven Architecture
+
 ```
 ┌─────────────┐    Events    ┌─────────────┐    Events    ┌─────────────┐
 │   Service   │─────────────→│   Message   │─────────────→│   Service   │
@@ -157,6 +177,7 @@ The following diagram illustrates the complete ACGS-PGP system architecture with
 ```
 
 ### Constitutional Compliance Flow
+
 1. **Request Initiation**: Service receives request
 2. **Authentication**: JWT validation via Auth Service
 3. **Constitutional Check**: AC Service validates compliance
@@ -167,12 +188,14 @@ The following diagram illustrates the complete ACGS-PGP system architecture with
 ## Data Architecture
 
 ### Database Design
+
 - **Primary Database**: PostgreSQL with per-service schemas
 - **Caching Layer**: Redis for session storage and performance optimization
 - **Backup Strategy**: Encrypted backups with integrity verification
 - **Data Retention**: 7-year audit trail retention for compliance
 
 ### Data Flow Patterns
+
 ```
 ┌─────────────┐    Write     ┌─────────────┐    Replicate  ┌─────────────┐
 │   Service   │─────────────→│ PostgreSQL  │──────────────→│   Backup    │
@@ -190,6 +213,7 @@ The following diagram illustrates the complete ACGS-PGP system architecture with
 ## Security Architecture
 
 ### Multi-Layer Security
+
 1. **Network Security**: TLS 1.3 for all communications
 2. **Authentication**: JWT with MFA and RBAC
 3. **Authorization**: Role-based access control with fine-grained permissions
@@ -197,6 +221,7 @@ The following diagram illustrates the complete ACGS-PGP system architecture with
 5. **Audit Trail**: Comprehensive logging with integrity verification
 
 ### Constitutional Security
+
 - **Hash Validation**: Continuous validation of constitutional hash `cdd01ef066bc6cf2`
 - **Compliance Monitoring**: Real-time constitutional violation detection
 - **Emergency Procedures**: Automated shutdown and rollback capabilities
@@ -205,12 +230,14 @@ The following diagram illustrates the complete ACGS-PGP system architecture with
 ## Performance Architecture
 
 ### Performance Targets
+
 - **Response Time**: ≤2s P99 for all API endpoints
 - **Throughput**: >100 requests/second per service
 - **Availability**: >99.9% uptime with <30min RTO
 - **Constitutional Compliance**: >95% compliance score
 
 ### Optimization Strategies
+
 - **Caching**: Multi-level caching with Redis and application-level caches
 - **Connection Pooling**: Database connection pooling for efficiency
 - **Async Processing**: Background processing for non-critical operations
@@ -219,12 +246,14 @@ The following diagram illustrates the complete ACGS-PGP system architecture with
 ## Monitoring & Observability
 
 ### Monitoring Stack
+
 - **Metrics Collection**: Prometheus for time-series metrics
 - **Visualization**: Grafana dashboards for real-time monitoring
 - **Log Aggregation**: Centralized logging with structured logs
 - **Alerting**: Multi-channel alerting for critical events
 
 ### Key Metrics
+
 - **Service Health**: Uptime, response time, error rates
 - **Constitutional Compliance**: Compliance scores, violation counts
 - **AI Model Performance**: Model response times, accuracy metrics
@@ -233,13 +262,16 @@ The following diagram illustrates the complete ACGS-PGP system architecture with
 ## Deployment Architecture
 
 ### Resource Allocation
+
 All services use standardized resource limits:
+
 - **CPU Request**: 200m (0.2 cores)
 - **CPU Limit**: 500m (0.5 cores)
 - **Memory Request**: 512Mi
 - **Memory Limit**: 1Gi
 
 ### Deployment Patterns
+
 - **Blue-Green Deployment**: Zero-downtime deployments
 - **Rolling Updates**: Gradual service updates with health checks
 - **Canary Releases**: Phased rollouts with monitoring
@@ -248,12 +280,14 @@ All services use standardized resource limits:
 ## Disaster Recovery
 
 ### Backup Strategy
+
 - **Database Backups**: Daily encrypted backups with integrity verification
 - **Configuration Backups**: Version-controlled configuration management
 - **Service State**: Stateless services with external state storage
 - **Recovery Testing**: Regular disaster recovery drills
 
 ### Business Continuity
+
 - **RTO (Recovery Time Objective)**: <30 minutes
 - **RPO (Recovery Point Objective)**: <1 hour
 - **Failover Procedures**: Automated failover with manual override

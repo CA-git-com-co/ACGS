@@ -11,13 +11,14 @@ interface PolicyCommentsProps {
 export async function PolicyComments({ policyId }: PolicyCommentsProps) {
   // Simulate data fetching
   await new Promise(resolve => setTimeout(resolve, 150));
-  
+
   const comments = [
     {
       id: '1',
       author: 'Sarah Johnson',
       role: 'Legal Advisor',
-      content: 'The implementation timeline seems reasonable, but we should consider the impact on existing systems during Phase 2.',
+      content:
+        'The implementation timeline seems reasonable, but we should consider the impact on existing systems during Phase 2.',
       timestamp: '2025-01-15 14:30',
       avatar: '/avatar1.jpg',
     },
@@ -25,7 +26,8 @@ export async function PolicyComments({ policyId }: PolicyCommentsProps) {
       id: '2',
       author: 'Michael Chen',
       role: 'Technical Lead',
-      content: 'From a technical perspective, the data minimization principle will require significant changes to our current data collection practices.',
+      content:
+        'From a technical perspective, the data minimization principle will require significant changes to our current data collection practices.',
       timestamp: '2025-01-15 15:45',
       avatar: '/avatar2.jpg',
     },
@@ -33,7 +35,8 @@ export async function PolicyComments({ policyId }: PolicyCommentsProps) {
       id: '3',
       author: 'Emma Williams',
       role: 'Compliance Officer',
-      content: 'We need to ensure that the enforcement mechanisms are clearly defined and practical for implementation.',
+      content:
+        'We need to ensure that the enforcement mechanisms are clearly defined and practical for implementation.',
       timestamp: '2025-01-16 09:15',
       avatar: '/avatar3.jpg',
     },
@@ -50,12 +53,15 @@ export async function PolicyComments({ policyId }: PolicyCommentsProps) {
       <CardContent className="space-y-6">
         {/* Comments List */}
         <div className="space-y-4">
-          {comments.map((comment) => (
+          {comments.map(comment => (
             <div key={comment.id} className="flex gap-3">
               <Avatar className="h-8 w-8">
                 <AvatarImage src={comment.avatar} alt={comment.author} />
                 <AvatarFallback>
-                  {comment.author.split(' ').map(n => n[0]).join('')}
+                  {comment.author
+                    .split(' ')
+                    .map(n => n[0])
+                    .join('')}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 space-y-1">
@@ -73,10 +79,7 @@ export async function PolicyComments({ policyId }: PolicyCommentsProps) {
 
         {/* Add Comment */}
         <div className="space-y-3 border-t pt-4">
-          <Textarea
-            placeholder="Add a comment..."
-            className="min-h-[80px]"
-          />
+          <Textarea placeholder="Add a comment..." className="min-h-[80px]" />
           <div className="flex justify-end">
             <Button size="sm">
               <Send className="h-4 w-4 mr-2" />

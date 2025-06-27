@@ -23,12 +23,12 @@ export default async function PolicyPage({ params }: PolicyPageProps) {
       <Suspense fallback={<LoadingSkeleton className="h-96" />}>
         <PolicyDetail id={params.id} />
       </Suspense>
-      
+
       <div className="grid gap-6 lg:grid-cols-2">
         <Suspense fallback={<LoadingSkeleton className="h-64" />}>
           <PolicyComments policyId={params.id} />
         </Suspense>
-        
+
         <Suspense fallback={<LoadingSkeleton className="h-64" />}>
           <PolicyHistory policyId={params.id} />
         </Suspense>

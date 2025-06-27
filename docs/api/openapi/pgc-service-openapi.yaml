@@ -5,7 +5,7 @@ info:
     Enterprise-grade policy enforcement engine providing real-time governance policy
     enforcement, workflow orchestration, and constitutional compliance validation
     using Open Policy Agent (OPA) integration.
-    
+
     Constitutional Hash: cdd01ef066bc6cf2
   version: 3.0.0
   contact:
@@ -229,6 +229,88 @@ paths:
               schema:
                 $ref: '#/components/schemas/APIStatusResponse'
 
+  /api/v1/constitutional/emergency-shutdown:
+    post:
+      summary: Emergency shutdown procedure
+      description: Initiate emergency shutdown with <30min RTO for critical incidents
+      tags:
+        - DGM Safety Patterns
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmergencyShutdownRequest'
+      responses:
+        '200':
+          description: Emergency shutdown initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmergencyShutdownResponse'
+
+  /api/v1/dgm/sandbox/enforce:
+    post:
+      summary: Execute enforcement in sandbox
+      description: Execute policy enforcement in isolated sandbox environment
+      tags:
+        - DGM Safety Patterns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SandboxEnforcementRequest'
+      responses:
+        '200':
+          description: Sandbox enforcement completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SandboxEnforcementResponse'
+
+  /api/v1/dgm/human-review:
+    post:
+      summary: Submit for human review
+      description: Submit critical enforcement decisions for human review
+      tags:
+        - DGM Safety Patterns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HumanReviewRequest'
+      responses:
+        '200':
+          description: Submitted for human review
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HumanReviewResponse'
+
+  /api/v1/dgm/rollback:
+    post:
+      summary: Rollback enforcement changes
+      description: Rollback enforcement changes to previous safe state
+      tags:
+        - DGM Safety Patterns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RollbackRequest'
+      responses:
+        '200':
+          description: Rollback completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RollbackResponse'
+
   /metrics:
     get:
       summary: Prometheus metrics
@@ -263,10 +345,10 @@ components:
           example: pgc_service_production
         version:
           type: string
-          example: "3.0.0"
+          example: '3.0.0'
         phase:
           type: string
-          example: "Phase 3 - Production Implementation"
+          example: 'Phase 3 - Production Implementation'
         components:
           type: object
           properties:
@@ -298,7 +380,7 @@ components:
         query:
           type: string
           description: OPA query to evaluate
-          example: "data.acgs.authz.allow"
+          example: 'data.acgs.authz.allow'
         input_data:
           type: object
           description: Input data for policy evaluation
@@ -357,7 +439,7 @@ components:
               type: integer
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
 
     RealtimeComplianceRequest:
       type: object
@@ -400,10 +482,119 @@ components:
               type: object
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
         timestamp:
           type: string
           format: date-time
+
+    EmergencyShutdownRequest:
+      type: object
+      required:
+        - reason
+        - authorization_token
+      properties:
+        reason:
+          type: string
+          description: Reason for emergency shutdown
+        authorization_token:
+          type: string
+          description: Admin authorization token
+        rto_target_minutes:
+          type: integer
+          default: 30
+
+    EmergencyShutdownResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: 'shutdown_initiated'
+        shutdown_id:
+          type: string
+        estimated_rto_minutes:
+          type: integer
+        constitutional_hash:
+          type: string
+          example: 'cdd01ef066bc6cf2'
+
+    SandboxEnforcementRequest:
+      type: object
+      required:
+        - enforcement_request
+      properties:
+        enforcement_request:
+          type: object
+          description: Enforcement request to execute in sandbox
+        sandbox_config:
+          type: object
+          properties:
+            timeout_seconds:
+              type: integer
+              default: 300
+            opa_isolation:
+              type: boolean
+              default: true
+
+    SandboxEnforcementResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [completed, timeout, error]
+        execution_id:
+          type: string
+        enforcement_result:
+          type: object
+        sandbox_metrics:
+          type: object
+
+    HumanReviewRequest:
+      type: object
+      required:
+        - enforcement_decision
+        - review_priority
+      properties:
+        enforcement_decision:
+          type: object
+        review_priority:
+          type: string
+          enum: [low, medium, high, critical]
+        review_reason:
+          type: string
+
+    HumanReviewResponse:
+      type: object
+      properties:
+        review_id:
+          type: string
+        status:
+          type: string
+          enum: [submitted, in_review, approved, rejected]
+        constitutional_hash:
+          type: string
+          example: 'cdd01ef066bc6cf2'
+
+    RollbackRequest:
+      type: object
+      required:
+        - target_state
+      properties:
+        target_state:
+          type: string
+        rollback_reason:
+          type: string
+
+    RollbackResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [completed, failed, partial]
+        rollback_id:
+          type: string
+        constitutional_hash:
+          type: string
+          example: 'cdd01ef066bc6cf2'
 
 tags:
   - name: Health
@@ -426,3 +617,5 @@ tags:
     description: System status and capabilities
   - name: Monitoring
     description: Performance metrics and monitoring
+  - name: DGM Safety Patterns
+    description: Democratic Governance Model safety patterns including sandbox execution, human review, and emergency procedures

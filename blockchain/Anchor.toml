@@ -31,4 +31,4 @@ members = [
 ]
 
 [toolchain]
-channel = "1.75.0"
+channel = "1.87.0"

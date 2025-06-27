@@ -10,6 +10,7 @@ for constitutional governance tasks in the ACGS-PGP framework.
 import asyncio
 import logging
 import os
+import pytest
 
 # Add the backend path to sys.path for imports
 # sys.path.append('/home/dislove/ACGS-master/services')  # Removed during reorganization
@@ -31,6 +32,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.asyncio
 async def test_basic_reasoning():
     """Test basic reasoning capabilities with Qwen model."""
     print("\n🧠 Testing Basic Reasoning Capabilities")
@@ -100,6 +102,7 @@ async def test_basic_reasoning():
         return False
 
 
+@pytest.mark.asyncio
 async def test_constitutional_compliance():
     """Test constitutional compliance analysis."""
     print("\n🏛️ Testing Constitutional Compliance Analysis")
@@ -154,6 +157,7 @@ async def test_constitutional_compliance():
         return False
 
 
+@pytest.mark.asyncio
 async def test_policy_synthesis():
     """Test policy synthesis capabilities."""
     print("\n📜 Testing Policy Synthesis")
@@ -220,6 +224,7 @@ async def test_policy_synthesis():
         return False
 
 
+@pytest.mark.asyncio
 async def test_model_capabilities():
     """Test model capabilities reporting."""
     print("\n🔧 Testing Model Capabilities")

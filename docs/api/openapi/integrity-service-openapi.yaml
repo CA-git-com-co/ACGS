@@ -4,7 +4,7 @@ info:
   description: |
     Enterprise-grade cryptographic integrity, digital signature management, 
     and audit trail capabilities for the ACGS-PGP system.
-    
+
     Constitutional Hash: cdd01ef066bc6cf2
   version: 3.0.0
   contact:
@@ -363,10 +363,10 @@ components:
           example: integrity_service
         version:
           type: string
-          example: "3.0.0"
+          example: '3.0.0'
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
         timestamp:
           type: string
           format: date-time
@@ -464,7 +464,7 @@ components:
               type: object
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
         timestamp:
           type: string
           format: date-time

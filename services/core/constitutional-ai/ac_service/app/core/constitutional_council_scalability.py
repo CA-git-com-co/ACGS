@@ -217,9 +217,10 @@ class RapidAmendmentHandler:
 
     async def _get_active_amendment_count(self, db: AsyncSession) -> int:
         """Get count of currently active amendments."""
+        from ..models import ACAmendment as ACAmendmentModel
         result = await db.execute(
-            select(func.count(ACAmendment.id)).where(
-                ACAmendment.status.in_(["proposed", "voting", "discussion"])
+            select(func.count(ACAmendmentModel.id)).where(
+                ACAmendmentModel.status.in_(["proposed", "voting", "discussion"])
             )
         )
         return result.scalar() or 0
@@ -233,13 +234,12 @@ class RapidAmendmentHandler:
 
         # Check for amendments affecting same principles
         if hasattr(amendment_data, "affected_principle_ids"):
+            from ..models import ACAmendment as ACAmendmentModel
             result = await db.execute(
-                select(ACAmendment.id, ACAmendment.title).where(
+                select(ACAmendmentModel.id, ACAmendmentModel.proposed_changes).where(
                     and_(
-                        ACAmendment.status.in_(["proposed", "voting"]),
-                        ACAmendment.affected_principle_ids.op("&&")(
-                            amendment_data.affected_principle_ids
-                        ),
+                        ACAmendmentModel.status.in_(["proposed", "voting"]),
+                        ACAmendmentModel.principle_id == amendment_data.principle_id,
                     )
                 )
             )
@@ -707,8 +707,9 @@ class ConstitutionalCouncilScalabilityFramework:
         # Get recent amendments (last 30 days)
         thirty_days_ago = datetime.utcnow() - timedelta(days=30)
 
+        from ..models import ACAmendment as ACAmendmentModel
         recent_amendments = await db.execute(
-            select(ACAmendment).where(ACAmendment.created_at >= thirty_days_ago)
+            select(ACAmendmentModel).where(ACAmendmentModel.created_at >= thirty_days_ago)
         )
         amendments = recent_amendments.scalars().all()
 

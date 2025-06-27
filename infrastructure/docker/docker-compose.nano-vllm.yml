@@ -32,9 +32,9 @@ services:
       - REASONING_DEPTH=standard
 
     ports:
-      - "8000:8000"  # NVIDIA AceReason equivalent
-      - "8001:8001"  # Microsoft Phi-4 equivalent
-      - "8002:8002"  # Multimodal equivalent
+      - '8000:8000' # NVIDIA AceReason equivalent
+      - '8001:8001' # Microsoft Phi-4 equivalent
+      - '8002:8002' # Multimodal equivalent
 
     volumes:
       # Model cache
@@ -59,25 +59,25 @@ services:
     deploy:
       resources:
         limits:
-          memory: 8G  # Reduced from 32G
-          cpus: '4.0'  # Reduced from 8.0
+          memory: 8G # Reduced from 32G
+          cpus: '4.0' # Reduced from 8.0
         reservations:
           memory: 4G
           cpus: '2.0'
 
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 60s  # Faster startup than vLLM
+      start_period: 60s # Faster startup than vLLM
 
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "50m"  # Smaller logs
-        max-file: "3"
-        labels: "service=nano-vllm,environment=${ENVIRONMENT:-development}"
+        max-size: '50m' # Smaller logs
+        max-file: '3'
+        labels: 'service=nano-vllm,environment=${ENVIRONMENT:-development}'
 
   # =============================================================================
   # Monitoring and Metrics (Optional)
@@ -89,7 +89,7 @@ services:
       - '--path.rootfs=/host'
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     ports:
-      - "9100:9100"
+      - '9100:9100'
     volumes:
       - /:/host:ro,rslave
     networks:

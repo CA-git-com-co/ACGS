@@ -1,87 +1,34 @@
-version: '3.8'
-
 networks:
-  acgs_monitoring:
+  acgs-monitoring:
     driver: bridge
-    name: acgs_monitoring_network
-
+    name: acgs-monitoring-network
 services:
   alertmanager:
-    container_name: acgs_alertmanager
-    image: prom/alertmanager:v0.25.0
+    container_name: acgs-alertmanager
+    image: prom/alertmanager:latest
     networks:
-      - acgs_monitoring
+      - acgs-monitoring
     ports:
       - 9093:9093
     volumes:
-      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
-      - alertmanager_data:/alertmanager
-    restart: unless-stopped
-    command:
-      - '--config.file=/etc/alertmanager/alertmanager.yml'
-      - '--storage.path=/alertmanager'
-      - '--web.external-url=http://localhost:9093'
-      - '--cluster.listen-address=0.0.0.0:9094'
-    healthcheck:
-      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:9093/-/healthy']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+      - ./config/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
   grafana:
-    container_name: acgs_grafana
+    container_name: acgs-grafana
+    depends_on:
+      - prometheus
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=acgs_admin_2024
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_USERS_ALLOW_SIGN_UP=false
-      - GF_USERS_ALLOW_ORG_CREATE=false
-      - GF_USERS_AUTO_ASSIGN_ORG=true
-      - GF_USERS_AUTO_ASSIGN_ORG_ROLE=Viewer
-      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource,grafana-worldmap-panel
-      - GF_ALERTING_ENABLED=false
-      - GF_UNIFIED_ALERTING_ENABLED=true
-      - GF_RENDERING_SERVER_URL=http://renderer:8081/render
-      - GF_RENDERING_CALLBACK_URL=http://grafana:3000/
-      - GF_LOG_FILTERS=rendering:debug
-    image: grafana/grafana:9.3.8
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+      GF_SECURITY_ADMIN_PASSWORD: acgs_admin_2025
+      GF_USERS_ALLOW_SIGN_UP: 'false'
+    image: grafana/grafana:latest
     networks:
-      - acgs_monitoring
+      - acgs-monitoring
     ports:
       - 3000:3000
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
-      - ./grafana/datasources:/etc/grafana/provisioning/datasources:ro
-    restart: unless-stopped
-    user: '472:472'
-    healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1',
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    depends_on:
-      - prometheus
-  node-exporter:
-    command:
-      - --path.procfs=/host/proc
-      - --path.rootfs=/rootfs
-      - --path.sysfs=/host/sys
-      - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)
-    container_name: acgs_node_exporter
-    image: prom/node-exporter:latest
-    networks:
-      - acgs_monitoring
-    ports:
-      - 9100:9100
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
+      - ./config/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./config/grafana/datasources:/etc/grafana/provisioning/datasources:ro
   prometheus:
     command:
       - --config.file=/etc/prometheus/prometheus.yml
@@ -90,82 +37,19 @@ services:
       - --web.console.templates=/etc/prometheus/consoles
       - --storage.tsdb.retention.time=200h
       - --web.enable-lifecycle
-      - --web.enable-admin-api
-      - --storage.tsdb.max-block-duration=2h
-      - --storage.tsdb.min-block-duration=2h
-      - --query.max-concurrency=50
-      - --query.timeout=2m
-    container_name: acgs_prometheus
-    image: prom/prometheus:v2.40.7
+    container_name: acgs-prometheus
+    environment:
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+    image: prom/prometheus:latest
     networks:
-      - acgs_monitoring
+      - acgs-monitoring
     ports:
       - 9090:9090
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - ./rules:/etc/prometheus/rules:ro
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./config/rules:/etc/prometheus/rules:ro
       - prometheus_data:/prometheus
-    restart: unless-stopped
-    user: '65534:65534'
-    environment:
-      - PROMETHEUS_RETENTION_TIME=200h
-      - PROMETHEUS_STORAGE_PATH=/prometheus
-    healthcheck:
-      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:9090/-/healthy']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-  # Additional monitoring services for comprehensive coverage
-  # Redis Exporter for cache monitoring
-  redis-exporter:
-    container_name: acgs_redis_exporter
-    image: oliver006/redis_exporter:latest
-    networks:
-      - acgs_monitoring
-    ports:
-      - 9121:9121
-    environment:
-      - REDIS_ADDR=redis://redis:6379
-      - REDIS_EXPORTER_LOG_FORMAT=txt
-    restart: unless-stopped
-    command:
-      - '--redis.addr=redis://redis:6379'
-      - '--web.listen-address=0.0.0.0:9121'
-      - '--web.telemetry-path=/metrics'
-
-  # PostgreSQL Exporter for database monitoring
-  postgres-exporter:
-    container_name: acgs_postgres_exporter
-    image: prometheuscommunity/postgres-exporter:latest
-    networks:
-      - acgs_monitoring
-    ports:
-      - 9187:9187
-    environment:
-      - DATA_SOURCE_NAME=postgresql://postgres:password@postgres:5432/acgs?sslmode=disable
-      - PG_EXPORTER_EXTEND_QUERY_PATH=/etc/postgres_exporter/queries.yaml
-    restart: unless-stopped
-    volumes:
-      - ./postgres_exporter/queries.yaml:/etc/postgres_exporter/queries.yaml:ro
-
-  # Grafana Image Renderer for PDF reports
-  grafana-renderer:
-    container_name: acgs_grafana_renderer
-    image: grafana/grafana-image-renderer:latest
-    networks:
-      - acgs_monitoring
-    ports:
-      - 8081:8081
-    environment:
-      - ENABLE_METRICS=true
-      - HTTP_PORT=8081
-    restart: unless-stopped
-
+version: '3.8'
 volumes:
-  grafana_data:
-    driver: local
-  prometheus_data:
-    driver: local
-  alertmanager_data:
-    driver: local
+  grafana_data: {}
+  prometheus_data: {}

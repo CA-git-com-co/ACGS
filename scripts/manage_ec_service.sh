@@ -4,7 +4,7 @@
 
 SERVICE_NAME="ec_service"
 SERVICE_PORT=8006
-PROJECT_ROOT="/home/dislove/ACGS-1"
+PROJECT_ROOT="."
 LOG_DIR="$PROJECT_ROOT/logs"
 PID_DIR="$PROJECT_ROOT/pids"
 
@@ -31,7 +31,7 @@ start_service() {
     # Start service based on type
     case "$SERVICE_NAME" in
         "auth_service"|"ac_service"|"integrity_service"|"fv_service"|"ec_service")
-            cd "$PROJECT_ROOT/services/core/$SERVICE_NAME"
+            cd "$PROJECT_ROOT/services/core/evolutionary-computation"
             python -m uvicorn app.main:app --host 0.0.0.0 --port $SERVICE_PORT > "$LOG_DIR/$SERVICE_NAME.log" 2>&1 &
             ;;
         "gs_service")

@@ -3,10 +3,7 @@
 //! Replaces blockchain/scripts/validate_devnet_deployment.py with native Rust implementation
 
 use acgs_blockchain_client::AcgsClient;
-use anchor_client::solana_sdk::{
-    pubkey::Pubkey,
-    signature::Keypair,
-};
+use anchor_client::solana_sdk::signature::Keypair;
 use anyhow::{Result, Context};
 use clap::{Parser, ValueEnum};
 use colored::*;

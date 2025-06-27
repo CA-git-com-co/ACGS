@@ -35,9 +35,12 @@ jobs:
           pip install ruff black mypy
           if [ -f requirements-test.txt ]; then
             pip install -r requirements-test.txt
-          else
-            echo "requirements-test.txt not found, installing basic dependencies"
+          elif [ -f requirements.txt ]; then
+            pip install -r requirements.txt
             pip install pytest pytest-cov pytest-asyncio
+          else
+            echo "No requirements files found, installing basic dependencies"
+            pip install pytest pytest-cov pytest-asyncio fastapi uvicorn pydantic
           fi
 
       - name: Run Python linting (Ruff)
@@ -69,36 +72,54 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      - name: Check for Node.js projects
+        run: |
+          echo "🔍 Checking for Node.js projects in the repository..."
+
+          # Look for package.json files
+          if find . -name "package.json" -not -path "./node_modules/*" | head -5; then
+            echo "✅ Found Node.js projects"
+          else
+            echo "ℹ️ No Node.js projects found, skipping Node.js setup"
+          fi
+
       - name: Install Node.js dependencies
         run: |
-          if [ -d "applications/governance-dashboard" ]; then
-            cd applications/governance-dashboard
-            if [ -f package.json ]; then
-              npm ci || npm install
-            else
-              echo "package.json not found in governance-dashboard"
+          echo "🔧 Setting up Node.js dependencies..."
+
+          # Check various possible locations for Node.js projects
+          for dir in "applications/governance-dashboard" "project" "frontend" "client"; do
+            if [ -d "$dir" ] && [ -f "$dir/package.json" ]; then
+              echo "Found Node.js project in $dir"
+              cd "$dir"
+              npm ci || npm install || echo "Failed to install dependencies in $dir"
+              cd ..
             fi
-          else
-            echo "governance-dashboard directory not found, skipping Node.js setup"
-          fi
+          done
 
       - name: Run TypeScript linting
         run: |
-          if [ -d "applications/governance-dashboard" ] && [ -f "applications/governance-dashboard/package.json" ]; then
-            cd applications/governance-dashboard
-            npm run lint || echo "TypeScript linting completed with warnings"
-          else
-            echo "Skipping TypeScript linting - governance-dashboard not properly configured"
-          fi
+          echo "🔍 Running TypeScript linting where available..."
+
+          for dir in "applications/governance-dashboard" "project" "frontend" "client"; do
+            if [ -d "$dir" ] && [ -f "$dir/package.json" ]; then
+              cd "$dir"
+              npm run lint 2>/dev/null || echo "Linting not available or completed with warnings in $dir"
+              cd ..
+            fi
+          done
 
       - name: Run TypeScript type checking
         run: |
-          if [ -d "applications/governance-dashboard" ] && [ -f "applications/governance-dashboard/package.json" ]; then
-            cd applications/governance-dashboard
-            npm run typecheck || echo "TypeScript type checking completed with warnings"
-          else
-            echo "Skipping TypeScript type checking - governance-dashboard not properly configured"
-          fi
+          echo "🔍 Running TypeScript type checking where available..."
+
+          for dir in "applications/governance-dashboard" "project" "frontend" "client"; do
+            if [ -d "$dir" ] && [ -f "$dir/package.json" ]; then
+              cd "$dir"
+              npm run typecheck 2>/dev/null || npm run type-check 2>/dev/null || echo "Type checking not available in $dir"
+              cd ..
+            fi
+          done
 
   # Phase 2: Unit Tests
   unit-tests:

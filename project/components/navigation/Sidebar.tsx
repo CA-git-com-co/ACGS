@@ -84,19 +84,15 @@ export function Sidebar() {
     <div className="fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] w-64 border-r bg-background">
       <div className="space-y-4 py-4">
         <div className="px-3 py-2">
-          <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
-            Navigation
-          </h2>
+          <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">Navigation</h2>
           <div className="space-y-1">
-            {sidebarItems.map((item) => (
+            {sidebarItems.map(item => (
               <div key={item.href}>
                 <Link
                   href={item.href}
                   className={cn(
                     'flex items-center rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors',
-                    pathname === item.href
-                      ? 'bg-accent text-accent-foreground'
-                      : 'transparent'
+                    pathname === item.href ? 'bg-accent text-accent-foreground' : 'transparent'
                   )}
                 >
                   <item.icon className="mr-2 h-4 w-4" />
@@ -104,7 +100,7 @@ export function Sidebar() {
                 </Link>
                 {item.submenu && (
                   <div className="ml-6 mt-1 space-y-1">
-                    {item.submenu.map((subItem) => (
+                    {item.submenu.map(subItem => (
                       <Link
                         key={subItem.href}
                         href={subItem.href}

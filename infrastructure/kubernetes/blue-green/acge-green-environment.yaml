@@ -1,0 +1,422 @@
+# ACGE Phase 2 Green Environment Deployment
+# Complete green environment with ACGE integration for all 7 services
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acge-green-config
+  namespace: acgs-green
+  labels:
+    app: acge
+    environment: green
+    phase: phase-2
+data:
+  environment: 'green'
+  constitutional-hash: 'cdd01ef066bc6cf2'
+  database-url: 'postgresql://acgs_user:acgs_password@acgs-postgres.acgs-shared.svc.cluster.local:5432/acgs_db'
+  redis-url: 'redis://acgs-redis.acgs-shared.svc.cluster.local:6379'
+  prometheus-url: 'http://acgs-prometheus.acgs-shared.svc.cluster.local:9090'
+  acge-model-endpoint: 'http://acge-model-service.acgs-shared.svc.cluster.local:8080'
+  acge-enabled: 'true'
+  phase: 'phase-2'
+  migration-mode: 'blue-green'
+  constitutional-compliance-threshold: '0.95'
+  response-time-target: '2000'
+  throughput-target: '1000'
+
+---
+# ACGE Model Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: acge-model-service
+  namespace: acgs-shared
+  labels:
+    app: acge-model-service
+    component: constitutional-ai
+    phase: phase-2
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: acge-model-service
+  template:
+    metadata:
+      labels:
+        app: acge-model-service
+        component: constitutional-ai
+    spec:
+      containers:
+        - name: acge-model
+          image: acgs/acge-model:latest
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: CONSTITUTIONAL_HASH
+              value: 'cdd01ef066bc6cf2'
+            - name: MODEL_PATH
+              value: '/models/acge-constitutional'
+            - name: INFERENCE_TIMEOUT
+              value: '2000'
+            - name: BATCH_SIZE
+              value: '32'
+            - name: GPU_MEMORY
+              value: '16GB'
+          resources:
+            requests:
+              memory: '8Gi'
+              cpu: '2'
+              nvidia.com/gpu: '1'
+            limits:
+              memory: '16Gi'
+              cpu: '4'
+              nvidia.com/gpu: '1'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      nodeSelector:
+        nvidia.com/gpu: 'true'
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Equal
+          value: 'true'
+          effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: acge-model-service
+  namespace: acgs-shared
+  labels:
+    app: acge-model-service
+spec:
+  selector:
+    app: acge-model-service
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: http
+  type: ClusterIP
+
+---
+# Auth Service - Green with ACGE Integration
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: acgs-auth-service-green
+  namespace: acgs-green
+  labels:
+    app: acgs-auth-service
+    environment: green
+    service: auth
+    phase: phase-2
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: acgs-auth-service
+      environment: green
+  template:
+    metadata:
+      labels:
+        app: acgs-auth-service
+        environment: green
+        service: auth
+      annotations:
+        acge.constitutional.ai/enabled: 'true'
+        acge.constitutional.ai/compliance-required: 'true'
+    spec:
+      containers:
+        - name: auth-service
+          image: acgs/auth-service:acge-v2
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: SERVICE_NAME
+              value: 'auth_service'
+            - name: SERVICE_PORT
+              value: '8000'
+            - name: ENVIRONMENT
+              value: 'green'
+            - name: CONSTITUTIONAL_HASH
+              valueFrom:
+                configMapKeyRef:
+                  name: acge-green-config
+                  key: constitutional-hash
+            - name: ACGE_MODEL_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: acge-green-config
+                  key: acge-model-endpoint
+            - name: ACGE_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: acge-green-config
+                  key: acge-enabled
+            - name: PHASE
+              valueFrom:
+                configMapKeyRef:
+                  name: acge-green-config
+                  key: phase
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: acge-green-config
+                  key: database-url
+            - name: REDIS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: acge-green-config
+                  key: redis-url
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-secrets
+                  key: jwt-secret-key
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/constitutional
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '200m'
+            limits:
+              memory: '1Gi'
+              cpu: '500m'
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: acgs-auth-service-green
+  namespace: acgs-green
+  labels:
+    app: acgs-auth-service
+    environment: green
+spec:
+  selector:
+    app: acgs-auth-service
+    environment: green
+  ports:
+    - port: 8000
+      targetPort: 8000
+      name: http
+  type: ClusterIP
+
+---
+# AC Service - Green with ACGE Single Model
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: acgs-ac-service-green
+  namespace: acgs-green
+  labels:
+    app: acgs-ac-service
+    environment: green
+    service: constitutional-ai
+    phase: phase-2
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: acgs-ac-service
+      environment: green
+  template:
+    metadata:
+      labels:
+        app: acgs-ac-service
+        environment: green
+        service: constitutional-ai
+      annotations:
+        acge.constitutional.ai/enabled: 'true'
+        acge.constitutional.ai/single-model: 'true'
+    spec:
+      containers:
+        - name: ac-service
+          image: acgs/ac-service:acge-v2
+          ports:
+            - containerPort: 8001
+              name: http
+          env:
+            - name: SERVICE_NAME
+              value: 'ac_service'
+            - name: SERVICE_PORT
+              value: '8001'
+            - name: ENVIRONMENT
+              value: 'green'
+            - name: CONSTITUTIONAL_HASH
+              valueFrom:
+                configMapKeyRef:
+                  name: acge-green-config
+                  key: constitutional-hash
+            - name: ACGE_MODEL_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: acge-green-config
+                  key: acge-model-endpoint
+            - name: ACGE_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: acge-green-config
+                  key: acge-enabled
+            - name: SINGLE_MODEL_MODE
+              value: 'true'
+            - name: MULTI_MODEL_DISABLED
+              value: 'true'
+            - name: AUTH_SERVICE_URL
+              value: 'http://acgs-auth-service-green:8000'
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: acge-green-config
+                  key: database-url
+            - name: REDIS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: acge-green-config
+                  key: redis-url
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8001
+            initialDelaySeconds: 45
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /api/v1/constitutional/acge-validate
+              port: 8001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: '2Gi'
+              cpu: '500m'
+            limits:
+              memory: '4Gi'
+              cpu: '1'
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: acgs-ac-service-green
+  namespace: acgs-green
+  labels:
+    app: acgs-ac-service
+    environment: green
+spec:
+  selector:
+    app: acgs-ac-service
+    environment: green
+  ports:
+    - port: 8001
+      targetPort: 8001
+      name: http
+  type: ClusterIP
+
+---
+# Integrity Service - Green with ACGE Integration
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: acgs-integrity-service-green
+  namespace: acgs-green
+  labels:
+    app: acgs-integrity-service
+    environment: green
+    service: integrity
+    phase: phase-2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: acgs-integrity-service
+      environment: green
+  template:
+    metadata:
+      labels:
+        app: acgs-integrity-service
+        environment: green
+        service: integrity
+      annotations:
+        acge.constitutional.ai/enabled: 'true'
+    spec:
+      containers:
+        - name: integrity-service
+          image: acgs/integrity-service:acge-v2
+          ports:
+            - containerPort: 8002
+              name: http
+          env:
+            - name: SERVICE_NAME
+              value: 'integrity_service'
+            - name: SERVICE_PORT
+              value: '8002'
+            - name: ENVIRONMENT
+              value: 'green'
+            - name: CONSTITUTIONAL_HASH
+              valueFrom:
+                configMapKeyRef:
+                  name: acge-green-config
+                  key: constitutional-hash
+            - name: ACGE_MODEL_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: acge-green-config
+                  key: acge-model-endpoint
+            - name: ACGE_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: acge-green-config
+                  key: acge-enabled
+            - name: AUTH_SERVICE_URL
+              value: 'http://acgs-auth-service-green:8000'
+            - name: AC_SERVICE_URL
+              value: 'http://acgs-ac-service-green:8001'
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '200m'
+            limits:
+              memory: '1Gi'
+              cpu: '500m'
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: acgs-integrity-service-green
+  namespace: acgs-green
+  labels:
+    app: acgs-integrity-service
+    environment: green
+spec:
+  selector:
+    app: acgs-integrity-service
+    environment: green
+  ports:
+    - port: 8002
+      targetPort: 8002
+      name: http
+  type: ClusterIP

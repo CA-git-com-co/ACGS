@@ -11,10 +11,12 @@ This guide documents the real integrations within the ACGS-PGP (AI Compliance Go
 The ACGS-PGP system consists of seven core microservices that work together to provide constitutional AI governance:
 
 **Platform Services:**
+
 - `auth-service` (Port 8000) - Authentication and authorization
 - `integrity-service` (Port 8002) - Data integrity and cryptographic verification
 
 **Core Governance Services:**
+
 - `ac-service` (Port 8001) - Constitutional AI compliance validation
 - `fv-service` (Port 8003) - Formal verification and proof validation
 - `gs-service` (Port 8004) - Governance synthesis and policy generation
@@ -52,20 +54,20 @@ class ConstitutionalComplianceResponse:
 
 class ACGSPGPIntegrationClient:
     """Main integration client for ACGS-PGP services"""
-    
+
     def __init__(self, base_url: str = "http://localhost", timeout: int = 30):
         self.base_url = base_url
         self.client = httpx.AsyncClient(timeout=timeout)
         self.services = {
             "auth": f"{base_url}:8000",
-            "ac": f"{base_url}:8001", 
+            "ac": f"{base_url}:8001",
             "integrity": f"{base_url}:8002",
             "fv": f"{base_url}:8003",
             "gs": f"{base_url}:8004",
             "pgc": f"{base_url}:8005",
             "ec": f"{base_url}:8006"
         }
-    
+
     async def authenticate(self, username: str, password: str) -> str:
         """Authenticate with auth-service and get JWT token"""
         response = await self.client.post(
@@ -74,28 +76,28 @@ class ACGSPGPIntegrationClient:
         )
         response.raise_for_status()
         return response.json()["access_token"]
-    
+
     async def validate_constitutional_compliance(
-        self, 
-        content: str, 
+        self,
+        content: str,
         token: str,
         principles: List[str] = None
     ) -> ConstitutionalComplianceResponse:
         """Validate content against constitutional AI principles"""
         headers = {"Authorization": f"Bearer {token}"}
-        
+
         request_data = ConstitutionalComplianceRequest(
             content=content,
             principles=principles or ["harmlessness", "truthfulness", "privacy", "fairness"]
         )
-        
+
         response = await self.client.post(
             f"{self.services['ac']}/api/v1/analyze",
             json=request_data.__dict__,
             headers=headers
         )
         response.raise_for_status()
-        
+
         result = response.json()
         return ConstitutionalComplianceResponse(**result)
 ```
@@ -109,20 +111,20 @@ The AC Service provides constitutional AI compliance validation with DGM sandbox
 ```python
 class ConstitutionalAIService:
     """Integration with actual AC Service (Port 8001)"""
-    
+
     def __init__(self, client: ACGSPGPIntegrationClient):
         self.client = client
         self.service_url = client.services["ac"]
-    
+
     async def analyze_compliance(
-        self, 
-        text: str, 
+        self,
+        text: str,
         token: str,
         analysis_type: str = "comprehensive"
     ) -> Dict:
         """Analyze text for constitutional compliance"""
         headers = {"Authorization": f"Bearer {token}"}
-        
+
         payload = {
             "text": text,
             "principles": ["transparency", "fairness", "harmlessness"],
@@ -130,7 +132,7 @@ class ConstitutionalAIService:
             "dgm_sandbox_enabled": True,
             "human_review_threshold": 0.8
         }
-        
+
         response = await self.client.client.post(
             f"{self.service_url}/api/v1/analyze",
             json=payload,
@@ -138,15 +140,15 @@ class ConstitutionalAIService:
         )
         response.raise_for_status()
         return response.json()
-    
+
     async def validate_amendment(
-        self, 
-        amendment: Dict, 
+        self,
+        amendment: Dict,
         token: str
     ) -> Dict:
         """Validate constitutional amendment"""
         headers = {"Authorization": f"Bearer {token}"}
-        
+
         response = await self.client.client.post(
             f"{self.service_url}/api/v1/constitutional-council/amendments",
             json=amendment,
@@ -154,18 +156,18 @@ class ConstitutionalAIService:
         )
         response.raise_for_status()
         return response.json()
-    
+
     async def trigger_emergency_shutdown(self, token: str, reason: str) -> Dict:
         """Trigger emergency shutdown for constitutional violations"""
         headers = {"Authorization": f"Bearer {token}"}
-        
+
         payload = {
             "reason": reason,
             "severity": "critical",
             "auto_trigger": True,
             "rto_minutes": 30
         }
-        
+
         response = await self.client.client.post(
             f"{self.service_url}/api/v1/emergency/shutdown",
             json=payload,
@@ -184,19 +186,19 @@ The GS Service provides governance synthesis with multi-model consensus:
 ```python
 class GovernanceSynthesisService:
     """Integration with actual GS Service (Port 8004)"""
-    
+
     def __init__(self, client: ACGSPGPIntegrationClient):
         self.client = client
         self.service_url = client.services["gs"]
-    
+
     async def synthesize_policy(
-        self, 
-        policy_request: Dict, 
+        self,
+        policy_request: Dict,
         token: str
     ) -> Dict:
         """Synthesize policy using multi-model consensus"""
         headers = {"Authorization": f"Bearer {token}"}
-        
+
         payload = {
             **policy_request,
             "multi_model_consensus": True,
@@ -204,7 +206,7 @@ class GovernanceSynthesisService:
             "risk_strategy": "four-tier",
             "dgm_sandbox_validation": True
         }
-        
+
         response = await self.client.client.post(
             f"{self.service_url}/api/v1/synthesize/policy",
             json=payload,
@@ -212,15 +214,15 @@ class GovernanceSynthesisService:
         )
         response.raise_for_status()
         return response.json()
-    
+
     async def validate_synthesis_quality(
-        self, 
-        synthesis_id: str, 
+        self,
+        synthesis_id: str,
         token: str
     ) -> Dict:
         """Validate synthesis quality and constitutional compliance"""
         headers = {"Authorization": f"Bearer {token}"}
-        
+
         response = await self.client.client.get(
             f"{self.service_url}/api/v1/synthesize/validate/{synthesis_id}",
             headers=headers
@@ -235,44 +237,44 @@ class GovernanceSynthesisService:
 
 Based on actual implementation found in the codebase:
 
-```python
+````python
 from services.shared.ai_model_service import AIModelService
 
 class GeminiIntegration:
     """Real Google Gemini 2.5 Flash integration"""
-    
+
     def __init__(self):
         self.ai_service = AIModelService()
-    
+
     async def constitutional_analysis(
-        self, 
-        prompt: str, 
+        self,
+        prompt: str,
         constitutional_constraints: Dict
     ) -> Dict:
         """Perform constitutional analysis using Gemini 2.5 Flash"""
-        
+
         enhanced_prompt = f"""
         Constitutional AI Analysis Request:
-        
+
         Content: {prompt}
-        
+
         Constitutional Constraints:
         {constitutional_constraints}
-        
+
         Please analyze this content for constitutional compliance and provide:
         1. Compliance score (0-1)
         2. Identified violations
         3. Recommended corrections
         4. Human review requirement assessment
         """
-        
+
         response = await self.ai_service.generate_response(
             prompt=enhanced_prompt,
             model="gemini-2.5-flash",
             temperature=0.3,
             max_tokens=2000
         )
-        
+
         return {
             "model": "gemini-2.5-flash",
             "analysis": response.content,
@@ -825,7 +827,7 @@ async def complete_constitutional_ai_workflow():
 
 if __name__ == "__main__":
     asyncio.run(complete_constitutional_ai_workflow())
-```
+````
 
 ## 10. Deployment and Monitoring
 
@@ -876,4 +878,7 @@ class ACGSPGPHealthMonitor:
 ```
 
 This integration guide provides practical, implementable patterns for working with the actual ACGS-PGP system architecture, focusing on constitutional AI compliance, DGM safety patterns, and real service integrations found in the codebase.
+
+```
+
 ```

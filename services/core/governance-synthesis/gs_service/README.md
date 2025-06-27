@@ -1,103 +1,94 @@
 # ACGS-1 Governance Synthesis Service
 
+**Status**: 🧪 **Prototype**  
+**Last Updated**: 2025-06-27
+
 ## Overview
 
-The Governance Synthesis (GS) Service is a **prototype implementation** of an AI-powered policy generation platform. This service provides basic policy synthesis capabilities with plans for advanced multi-model LLM integration and sophisticated consensus mechanisms.
+The Governance Synthesis (GS) Service is a core component of the ACGS-1 system, responsible for synthesizing governance policies from constitutional principles using advanced AI model integration. It employs a multi-model LLM consensus mechanism with Google Gemini, DeepSeek-R1, NVIDIA Qwen, and Nano-vLLM to ensure robust and reliable policy generation.
 
-**Implementation Status**: 🧪 **Prototype**
 **Service Port**: 8004
 **Service Version**: 3.0.0
 **Constitutional Hash**: `cdd01ef066bc6cf2`
 **Health Check**: http://localhost:8004/health
 
-## ⚠️ Prototype Limitations
-
-**Current Implementation Status**:
-- ✅ Basic policy synthesis endpoints implemented
-- ✅ Health check and status monitoring functional
-- ✅ Constitutional compliance integration framework
-- ⚠️ **Many API routers temporarily disabled due to import issues**
-- ⚠️ **Running in "minimal mode" with reduced functionality**
-- ⚠️ **Multi-model consensus not fully implemented**
-- ⚠️ **Advanced synthesis workflows incomplete**
-
-**Production Readiness**: This service requires router stabilization and feature completion before production deployment.
-
 ## Core Features
 
-### AI-Powered Policy Synthesis
-- **Multi-Model LLM Ensemble**: Google Gemini (2.0 Flash, 2.5 Pro), DeepSeek-R1, NVIDIA Qwen integration
-- **Constitutional Prompting**: AI models trained on constitutional principles and governance frameworks
-- **Policy Generation**: Automated generation of enforceable governance policies
-- **Multi-Model Consensus**: Weighted voting and consensus mechanisms across AI models
-- **Constitutional Compliance**: Real-time validation against constitutional principles
+### AI Model Integration
 
-### Advanced Synthesis Capabilities
-- **Enhanced Validation**: Comprehensive policy validation with formal verification integration
-- **Human Review Integration**: Human-in-the-loop validation for critical policies
-- **Proactive Error Prediction**: AI-powered error detection and prevention
-- **Batch Processing**: Parallel synthesis of multiple policies
-- **Template Management**: Reusable policy templates and frameworks
+- **Google Gemini Integration**: 2.0 Flash and 2.5 Pro variants for constitutional analysis
+- **DeepSeek-R1**: Advanced reasoning and formal verification support
+- **NVIDIA Qwen**: Multi-model consensus and governance workflows
+- **Nano-vLLM**: Lightweight inference with GPU/CPU fallback
+- **Multi-Model Consensus**: Ensemble approach for >99.9% reliability
 
-### Enterprise Features
-- **Performance Optimization**: <2s response times with >95% accuracy targets
-- **Reliability Enhancement**: >99.9% availability with circuit breaker patterns
-- **AlphaEvolve Integration**: Advanced governance optimization algorithms
-- **WINA Oversight**: Weighted Intelligence Network Architecture monitoring
-- **Real-time Monitoring**: Comprehensive performance and quality metrics
+### Policy Synthesis
 
-### Constitutional Governance
-- **Constitutional Fidelity**: Continuous validation against constitutional hash
-- **Compliance Scoring**: Multi-dimensional constitutional compliance assessment
-- **Impact Analysis**: Assessment of policy changes on constitutional framework
-- **Audit Trail**: Complete audit trail for all policy synthesis activities
-- **Transparency Reporting**: Public reporting and governance transparency
+- **Constitutional Policy Generation**: Synthesis from constitutional principles
+- **Multi-Stakeholder Coordination**: Stakeholder interest representation
+- **Democratic Process Management**: Voting and deliberation tools
+- **Policy Validation**: Constitutional compliance verification
+- **Conflict Resolution**: Automated policy conflict detection and resolution
+
+### Governance Workflows
+
+- **Constitutional Council Integration**: Democratic oversight capabilities
+- **Governance Workflow Orchestration**: End-to-end governance process management
+- **Policy Evolution**: Dynamic policy adaptation and improvement
+- **Stakeholder Engagement**: Multi-party governance participation
+- **Decision Audit Trail**: Comprehensive governance decision logging
+
+### DGM Safety Patterns
+
+- **Sandbox Execution**: Isolated policy synthesis environment
+- **Human Review Interface**: Critical decision review workflows
+- **Gradual Rollout**: Phased policy deployment with validation gates
+- **Emergency Shutdown**: <30min RTO emergency procedures
+- **Constitutional Compliance Monitoring**: Real-time compliance tracking
 
 ## API Endpoints
 
-### Core Policy Synthesis
-- `POST /api/v1/synthesize` - Generate policies from constitutional principles
-- `POST /api/v1/enhanced-synthesis/synthesize` - Enhanced synthesis with OPA validation
-- `POST /api/v1/enhanced-synthesis/multi-model-consensus` - Multi-model consensus synthesis
-- `POST /api/v1/enhanced-synthesis/batch` - Batch policy synthesis
-- `POST /api/v1/multi-model/synthesize` - LangGraph workflow orchestration
+### Policy Synthesis
 
-### Constitutional Synthesis
-- `POST /api/v1/constitutional/synthesize` - Constitutional policy synthesis
-- `GET /api/v1/constitutional/validate` - Constitutional hash validation
-- `POST /api/v1/constitutional/compliance` - Constitutional compliance validation
-- `GET /api/v1/constitutional/principles` - Available constitutional principles
+- `POST /api/v1/synthesis/generate` - Generate governance policy
+- `POST /api/v1/synthesis/validate` - Validate policy against constitution
+- `POST /api/v1/synthesis/consensus` - Multi-model consensus generation
+- `GET /api/v1/synthesis/history` - Policy generation history
 
-### Policy Management
-- `GET /api/v1/policy-management/policies` - List managed policies
-- `POST /api/v1/policy-management/policies` - Create new policy
-- `PUT /api/v1/policy-management/policies/{id}` - Update existing policy
-- `DELETE /api/v1/policy-management/policies/{id}` - Delete policy
-- `GET /api/v1/policy-management/templates` - Policy templates
+### Constitutional Analysis
 
-### Advanced Optimization
-- `POST /api/v1/alphaevolve/optimize` - AlphaEvolve governance optimization
-- `GET /api/v1/alphaevolve/strategies` - Available optimization strategies
-- `POST /api/v1/mab/synthesize` - Multi-Armed Bandit optimized synthesis
-- `GET /api/v1/mab/performance` - MAB performance metrics
+- `POST /api/v1/constitutional/analyze` - Analyze constitutional compliance
+- `POST /api/v1/constitutional/principles` - Extract constitutional principles
+- `GET /api/v1/constitutional/violations` - List constitutional violations
+- `POST /api/v1/constitutional/emergency-shutdown` - Emergency shutdown
 
-### Performance & Monitoring
-- `GET /api/v1/performance/metrics` - Performance optimization metrics
-- `GET /api/v1/performance/targets` - Performance target status
-- `GET /api/v1/monitoring/synthesis` - Synthesis monitoring data
-- `GET /api/v1/monitoring/constitutional` - Constitutional compliance monitoring
+### Stakeholder Management
 
-### Phase A3 Production Features
-- `POST /api/v1/phase-a3/synthesize` - Phase A3 enhanced synthesis
-- `POST /api/v1/phase-a3/consensus` - Phase A3 consensus mechanisms
-- `GET /api/v1/phase-a3/strategies` - Available synthesis strategies
-- `GET /api/v1/phase-a3/performance` - Phase A3 performance metrics
+- `POST /api/v1/stakeholders/register` - Register stakeholder
+- `GET /api/v1/stakeholders/list` - List active stakeholders
+- `POST /api/v1/stakeholders/coordinate` - Coordinate stakeholder input
+- `GET /api/v1/stakeholders/feedback` - Retrieve stakeholder feedback
 
-### System Management
-- `GET /health` - Service health with component status
-- `GET /api/v1/status` - Detailed API status and capabilities
-- `GET /metrics` - Prometheus metrics for monitoring
-- `GET /` - Service information and governance workflows
+### Democratic Processes
+
+- `POST /api/v1/democracy/create-vote` - Create democratic vote
+- `POST /api/v1/democracy/cast-vote` - Cast vote in process
+- `GET /api/v1/democracy/results` - Get voting results
+- `POST /api/v1/democracy/deliberation` - Start deliberation process
+
+### AI Model Management
+
+- `GET /api/v1/models/status` - AI model status and health
+- `POST /api/v1/models/consensus` - Trigger multi-model consensus
+- `GET /api/v1/models/performance` - Model performance metrics
+- `POST /api/v1/models/fallback` - Enable fallback models
+
+### Health & Monitoring
+
+- `GET /health` - Service health check
+- `GET /metrics` - Prometheus metrics
+- `GET /api/v1/status` - Detailed service status
+- `GET /api/v1/performance` - Performance metrics
 
 ## Configuration
 
@@ -105,57 +96,50 @@ The Governance Synthesis (GS) Service is a **prototype implementation** of an AI
 
 ```bash
 # Database Configuration
-DATABASE_URL=postgresql://user:password@localhost:5432/acgs_governance_synthesis
+DATABASE_URL=postgresql://user:password@localhost:5432/acgs_gs
 REDIS_URL=redis://localhost:6379/4
 
 # Service Configuration
-SERVICE_NAME=gs-service
+SERVICE_NAME=governance-synthesis-service
 SERVICE_VERSION=3.0.0
 SERVICE_PORT=8004
 APP_ENV=production
 LOG_LEVEL=INFO
 
 # AI Model Configuration
-GEMINI_API_KEY=your-gemini-api-key
-GEMINI_MODEL_FLASH=gemini-2.0-flash-exp
-GEMINI_MODEL_PRO=gemini-2.5-pro
+GOOGLE_GEMINI_API_KEY=your-gemini-api-key
 DEEPSEEK_API_KEY=your-deepseek-api-key
-DEEPSEEK_MODEL=deepseek-chat-v3
 NVIDIA_API_KEY=your-nvidia-api-key
-NVIDIA_MODEL=nvidia/qwen3-235b
-OPENAI_API_KEY=your-openai-fallback-key
+NANO_VLLM_ENDPOINT=http://localhost:8000
+
+# Model Selection
+PRIMARY_MODEL=google-gemini-2.5-pro
+SECONDARY_MODEL=deepseek-r1
+FALLBACK_MODEL=nano-vllm
+CONSENSUS_THRESHOLD=0.8
 
 # Constitutional Governance
 CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-CONSTITUTIONAL_COMPLIANCE_THRESHOLD=0.8
-ENABLE_CONSTITUTIONAL_VALIDATION=true
-
-# Synthesis Configuration
-MAX_POLICY_LENGTH=5000
-MIN_CONSTITUTIONAL_COMPLIANCE=0.8
-CONSENSUS_THRESHOLD=0.7
-MAX_CONCURRENT_GENERATIONS=10
-GENERATION_TIMEOUT_SECONDS=300
-RESPONSE_TIME_TARGET_MS=500
-
-# Performance Targets
-TARGET_RESPONSE_TIME_MS=2000
-TARGET_ACCURACY=0.95
-TARGET_AVAILABILITY=0.999
-ERROR_REDUCTION_TARGET=0.5
-
-# Service Integration
 AC_SERVICE_URL=http://localhost:8001
 FV_SERVICE_URL=http://localhost:8003
-INTEGRITY_SERVICE_URL=http://localhost:8002
-AUTH_SERVICE_URL=http://localhost:8000
+PGC_SERVICE_URL=http://localhost:8005
 
-# Advanced Features
+# Policy Synthesis Configuration
+MAX_POLICY_LENGTH=10000
+SYNTHESIS_TIMEOUT_SECONDS=300
 ENABLE_MULTI_MODEL_CONSENSUS=true
-ENABLE_ALPHAEVOLVE_OPTIMIZATION=true
-ENABLE_HUMAN_REVIEW_INTEGRATION=true
-ENABLE_PROACTIVE_ERROR_PREDICTION=true
-ENABLE_BATCH_PROCESSING=true
+CONSENSUS_MODELS=3
+
+# DGM Safety Configuration
+SANDBOX_ENABLED=true
+HUMAN_REVIEW_REQUIRED=true
+EMERGENCY_SHUTDOWN_ENABLED=true
+RTO_TARGET_MINUTES=30
+
+# Performance Configuration
+MAX_CONCURRENT_SYNTHESIS=5
+CACHE_TTL_SECONDS=1800
+ENABLE_ASYNC_PROCESSING=true
 ```
 
 ### Resource Limits
@@ -173,11 +157,12 @@ resources:
 ## Installation & Deployment
 
 ### Prerequisites
+
 - Python 3.11+
 - PostgreSQL 12+
 - Redis 6+
-- AI Model API Access (Gemini, DeepSeek, NVIDIA, OpenAI)
-- LangGraph and LangChain libraries
+- AI Model API Keys (Gemini, DeepSeek, NVIDIA)
+- Nano-vLLM service (optional)
 
 ### Local Development
 
@@ -187,71 +172,33 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 source ~/.bashrc
 uv sync
 
-# Alternative: Traditional pip
-pip install -r requirements.txt
-
-# 2. Install AI/ML dependencies
-pip install langchain langgraph google-generativeai openai
-
-# 3. Setup database
-createdb acgs_governance_synthesis
+# 2. Setup database
+createdb acgs_gs
 alembic upgrade head
 
-# 4. Configure environment
+# 3. Configure environment
 cp .env.example .env
-# Edit .env with your AI model API keys and configuration
+# Edit .env with your API keys and configuration
+
+# 4. Start Nano-vLLM (optional)
+./scripts/start_nano_vllm.sh
 
 # 5. Start service
-uv run uvicorn app.main:app --reload --port 8004
+uv run uvicorn main:app --reload --port 8004
 ```
 
 ### Production Deployment
 
-```bash
+````bash
 # Using Docker
 docker build -t acgs-gs-service .
 docker run -p 8004:8004 --env-file .env acgs-gs-service
 
-# Using systemd
-sudo cp gs-service.service /etc/systemd/system/
-sudo systemctl enable gs-service
-sudo systemctl start gs-service
-```
+# Using Docker Compose
+docker-compose up -d gs-service
 
-## Testing
-
-### Unit Tests
-```bash
-# Run all tests
-uv run pytest tests/ -v
-
-# Run with coverage
-uv run pytest tests/ --cov=app --cov-report=html
-```
-
-### Integration Tests
-```bash
-# Test AI model integration
-uv run pytest tests/test_ai_models.py -v
-
-# Test multi-model consensus
-uv run pytest tests/test_consensus.py -v
-
-# Test constitutional compliance
-uv run pytest tests/test_constitutional_synthesis.py -v
-```
-
-### Synthesis Tests
-```bash
-# Test policy synthesis
-python scripts/test_policy_synthesis.py
-
-# Test multi-model consensus
-python scripts/test_multi_model_consensus.py
-
-# Performance testing
-python scripts/test_synthesis_performance.py --concurrent 20
-```
+# Health check
+curl http://localhost:8004/health
 
 ## Usage Examples
 
@@ -260,426 +207,295 @@ python scripts/test_synthesis_performance.py --concurrent 20
 ```python
 import httpx
 
-async def synthesize_governance_policy():
+# Generate governance policy
+async def synthesize_policy():
     async with httpx.AsyncClient() as client:
-        # Synthesize policy from constitutional principles
         response = await client.post(
-            "http://localhost:8004/api/v1/synthesize",
+            "http://localhost:8004/api/v1/synthesis/generate",
             json={
-                "synthesis_goal": "Create privacy protection policy for citizen data",
                 "constitutional_principles": [
-                    {
-                        "type": "privacy_rights",
-                        "description": "Citizens have fundamental right to data privacy",
-                        "priority": 9
-                    },
-                    {
-                        "type": "transparency",
-                        "description": "Government operations must be transparent",
-                        "priority": 8
-                    }
+                    "transparency",
+                    "accountability",
+                    "democratic_legitimacy"
                 ],
-                "constraints": [
-                    "Must comply with existing data protection laws",
-                    "Should not impede legitimate government functions"
+                "policy_domain": "data_governance",
+                "stakeholder_requirements": [
+                    "privacy_protection",
+                    "data_accessibility"
                 ],
-                "target_format": "opa_policy",
-                "validation_level": "comprehensive"
-            },
-            headers={"Authorization": f"Bearer {access_token}"}
+                "use_consensus": True
+            }
         )
-
-        result = response.json()
-        return {
-            "policy_content": result["policy_content"],
-            "constitutional_compliance": result["constitutional_compliance"],
-            "synthesis_quality": result["synthesis_quality"]
-        }
-```
-
-### Multi-Model Consensus Synthesis
-
-```python
-async def multi_model_consensus_synthesis():
-    async with httpx.AsyncClient() as client:
-        # Use multiple AI models for consensus-based synthesis
-        response = await client.post(
-            "http://localhost:8004/api/v1/enhanced-synthesis/multi-model-consensus",
-            json={
-                "synthesis_goal": "Develop fair hiring policy for government positions",
-                "constitutional_principles": [
-                    {
-                        "type": "equality",
-                        "description": "Equal opportunity for all citizens",
-                        "priority": 10
-                    },
-                    {
-                        "type": "merit_based",
-                        "description": "Selection based on qualifications and merit",
-                        "priority": 9
-                    }
-                ],
-                "ai_models": ["gemini-2.5-pro", "deepseek-r1", "nvidia-qwen"],
-                "consensus_threshold": 0.95,
-                "enable_red_teaming": True,
-                "enable_constitutional_fidelity": True
-            },
-            headers={"Authorization": f"Bearer {access_token}"}
-        )
-
-        result = response.json()
-        return {
-            "consensus_policy": result["consensus_result"]["policy_content"],
-            "model_agreement": result["consensus_result"]["consensus_score"],
-            "constitutional_compliance": result["constitutional_compliance"],
-            "red_team_analysis": result["red_team_results"]
-        }
-```
-
-### Batch Policy Synthesis
-
-```python
-async def batch_policy_synthesis():
-    async with httpx.AsyncClient() as client:
-        # Synthesize multiple policies in parallel
-        response = await client.post(
-            "http://localhost:8004/api/v1/enhanced-synthesis/batch",
-            json={
-                "requests": [
-                    {
-                        "synthesis_goal": "Environmental protection policy",
-                        "constitutional_principles": [
-                            {"type": "environmental_stewardship", "description": "Protect environment for future generations", "priority": 9}
-                        ]
-                    },
-                    {
-                        "synthesis_goal": "Education access policy",
-                        "constitutional_principles": [
-                            {"type": "education_rights", "description": "Universal access to quality education", "priority": 10}
-                        ]
-                    },
-                    {
-                        "synthesis_goal": "Healthcare equity policy",
-                        "constitutional_principles": [
-                            {"type": "healthcare_rights", "description": "Equal access to healthcare services", "priority": 10}
-                        ]
-                    }
-                ],
-                "enable_parallel_processing": True,
-                "max_concurrent": 5
-            },
-            headers={"Authorization": f"Bearer {access_token}"}
-        )
-
-        result = response.json()
-        return {
-            "batch_id": result["batch_id"],
-            "policies_synthesized": len(result["results"]),
-            "overall_quality": result["overall_quality"],
-            "synthesis_results": result["results"]
-        }
-```
-
-### AlphaEvolve Optimization
-
-```python
-async def alphaevolve_policy_optimization():
-    async with httpx.AsyncClient() as client:
-        # Optimize policy using AlphaEvolve algorithms
-        response = await client.post(
-            "http://localhost:8004/api/v1/alphaevolve/optimize",
-            json={
-                "policy_content": "Current policy text to optimize",
-                "optimization_goals": [
-                    "maximize_constitutional_compliance",
-                    "minimize_implementation_complexity",
-                    "enhance_citizen_satisfaction"
-                ],
-                "optimization_strategy": "multi_objective",
-                "max_iterations": 100,
-                "convergence_threshold": 0.95
-            },
-            headers={"Authorization": f"Bearer {access_token}"}
-        )
-
-        result = response.json()
-        return {
-            "optimized_policy": result["optimized_policy"],
-            "optimization_score": result["optimization_metrics"]["overall_score"],
-            "improvements": result["optimization_metrics"]["improvements"],
-            "iterations_used": result["optimization_metrics"]["iterations"]
-        }
-```
-
-## AI Model Integration
-
-### Google Gemini Integration
-The service integrates multiple Gemini models for specialized tasks:
-
-```python
-# Gemini model configuration
-GEMINI_MODELS = {
-    "flash": "gemini-2.0-flash-exp",  # Fast synthesis
-    "pro": "gemini-2.5-pro",         # Complex reasoning
-}
-
-# Constitutional prompting example
-constitutional_prompt = f"""
-You are a constitutional AI assistant specialized in governance policy synthesis.
-
-CONSTITUTIONAL PRINCIPLES:
-{constitutional_principles}
-
-SYNTHESIS GOAL:
-{synthesis_goal}
-
-Generate a governance policy that:
-1. Fully complies with all constitutional principles
-2. Is enforceable and implementable
-3. Balances competing interests fairly
-4. Includes clear implementation guidelines
-
-Constitutional Hash: {CONSTITUTIONAL_HASH}
-"""
-```
+        return response.json()
+````
 
 ### Multi-Model Consensus
-```python
-# Multi-model consensus mechanism
-async def get_multi_model_consensus(prompt, context):
-    models = ["gemini-2.5-pro", "deepseek-r1", "nvidia-qwen"]
-    responses = []
 
-    for model in models:
-        response = await generate_policy(model, prompt, context)
-        responses.append(response)
-
-    # Weighted consensus based on constitutional compliance
-    consensus = calculate_weighted_consensus(responses)
-    return consensus
+```bash
+# Trigger multi-model consensus
+curl -X POST http://localhost:8004/api/v1/models/consensus \
+  -H "Content-Type: application/json" \
+  -d '{
+    "policy_text": "Proposed governance policy",
+    "models": ["gemini-2.5-pro", "deepseek-r1", "nvidia-qwen"],
+    "consensus_threshold": 0.8
+  }'
 ```
 
-### Constitutional Compliance Validation
+### Stakeholder Coordination
+
 ```python
-# Constitutional hash validation
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+# Register stakeholder and coordinate input
+stakeholder_data = {
+    "name": "Privacy Advocacy Group",
+    "type": "civil_society",
+    "interests": ["privacy", "transparency"],
+    "contact": "privacy@example.org"
+}
 
-def validate_constitutional_compliance(policy_content):
-    compliance_score = calculate_compliance_score(policy_content)
-    hash_validation = validate_constitutional_hash(policy_content)
-
-    return {
-        "compliant": compliance_score >= 0.8,
-        "score": compliance_score,
-        "hash_valid": hash_validation,
-        "constitutional_hash": CONSTITUTIONAL_HASH
-    }
+response = await client.post(
+    "http://localhost:8004/api/v1/stakeholders/register",
+    json=stakeholder_data
+)
 ```
 
-## Monitoring & Observability
+### Democratic Voting Process
+
+```bash
+# Create democratic vote
+curl -X POST http://localhost:8004/api/v1/democracy/create-vote \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Data Governance Policy Approval",
+    "description": "Vote on proposed data governance policy",
+    "options": ["approve", "reject", "amend"],
+    "duration_hours": 72
+  }'
+```
+
+## Monitoring
 
 ### Health Checks
+
 ```bash
-# Service health with component status
+# Basic health check
 curl http://localhost:8004/health
 
-# Expected response includes AI model status
-{
-  "status": "healthy",
-  "service": "gs_service_production",
-  "version": "3.0.0",
-  "synthesis_capabilities": {
-    "standard_synthesis": true,
-    "enhanced_validation": true,
-    "multi_model_consensus": true,
-    "human_review_integration": true
-  }
-}
-```
-
-### Performance Metrics
-```bash
-# Get performance metrics
-curl http://localhost:8004/api/v1/performance/metrics
-
-# Synthesis performance targets
-curl http://localhost:8004/api/v1/performance/targets
-
-# Constitutional compliance monitoring
-curl http://localhost:8004/api/v1/monitoring/constitutional
-```
-
-### Real-time Monitoring
-```bash
-# Monitor synthesis operations
-curl http://localhost:8004/api/v1/monitoring/synthesis
+# Detailed status with AI models
+curl http://localhost:8004/api/v1/status
 
 # AI model performance
-curl http://localhost:8004/api/v1/monitoring/ai-models
-
-# Constitutional validation status
-curl http://localhost:8004/api/v1/constitutional/validate
+curl http://localhost:8004/api/v1/models/performance
 ```
+
+### Prometheus Metrics
+
+Key metrics exposed:
+
+- `gs_synthesis_requests_total` - Total policy synthesis requests
+- `gs_synthesis_duration_seconds` - Policy synthesis processing time
+- `gs_constitutional_compliance_score` - Constitutional compliance scores
+- `gs_consensus_accuracy` - Multi-model consensus accuracy
+- `gs_active_stakeholders` - Currently active stakeholders
+- `gs_ai_model_response_time` - AI model response times
+
+### Grafana Dashboard
+
+Import the GS Service dashboard:
+
+```bash
+# Dashboard location
+infrastructure/monitoring/grafana/dashboards/services/gs-service-dashboard.json
+```
+
+### Alerting Rules
+
+````yaml
+# Critical alerts
+- alert: GSServiceDown
+  expr: up{job="gs-service"} == 0
+  for: 1m
+
+- alert: HighSynthesisLatency
+  expr: gs_synthesis_duration_seconds > 60
+  for: 5m
+
+- alert: AIModelFailure
+  expr: gs_ai_model_response_time > 30
+  for: 3m
+
+- alert: ConstitutionalComplianceBelow95
+  expr: gs_constitutional_compliance_score < 0.95
+  for: 2m
 
 ## Troubleshooting
 
 ### Common Issues
 
 #### AI Model API Failures
+
 ```bash
-# Test AI model connectivity
-python -c "
-import google.generativeai as genai
-genai.configure(api_key='your-api-key')
-model = genai.GenerativeModel('gemini-2.5-pro')
-print('Gemini API: OK')
-"
+# Check AI model connectivity
+curl http://localhost:8004/api/v1/models/status
 
-# Check API quotas
-curl -H "Authorization: Bearer $GEMINI_API_KEY" \
-  https://generativelanguage.googleapis.com/v1/models
+# Test individual models
+python scripts/test_ai_models.py --model gemini
+python scripts/test_ai_models.py --model deepseek
+python scripts/test_ai_models.py --model nvidia-qwen
 
-# Enable fallback models if primary fails
-export ENABLE_FALLBACK_MODELS=true
+# Enable fallback models
+curl -X POST http://localhost:8004/api/v1/models/fallback
+````
+
+#### High Synthesis Latency
+
+```bash
+# Check current performance
+curl http://localhost:8004/api/v1/performance | jq '.synthesis_metrics'
+
+# Reduce concurrent synthesis
+export MAX_CONCURRENT_SYNTHESIS=3
+
+# Enable caching
+export CACHE_TTL_SECONDS=3600
+
+# Restart service
+sudo systemctl restart gs-service
+```
+
+#### Multi-Model Consensus Failures
+
+```bash
+# Check consensus configuration
+curl http://localhost:8004/api/v1/status | jq '.consensus_config'
+
+# Lower consensus threshold temporarily
+export CONSENSUS_THRESHOLD=0.7
+
+# Check individual model health
+curl http://localhost:8004/api/v1/models/status | jq '.model_health'
 ```
 
 #### Constitutional Hash Mismatch
+
 ```bash
 # Verify constitutional hash
-curl http://localhost:8004/api/v1/constitutional/validate | jq '.constitutional_hash'
+curl http://localhost:8004/api/v1/constitutional/analyze | jq '.constitutional_hash'
 
 # Expected: "cdd01ef066bc6cf2"
 # Reset if corrupted
 python scripts/reset_constitutional_state.py --service gs
 ```
 
-#### Synthesis Performance Issues
+### Emergency Procedures
+
+#### Emergency Shutdown
+
 ```bash
-# Check synthesis performance
-curl http://localhost:8004/api/v1/performance/metrics | jq '.current_metrics'
+# Immediate shutdown (< 30min RTO)
+curl -X POST http://localhost:8004/api/v1/constitutional/emergency-shutdown \
+  -H "Authorization: Bearer $ADMIN_TOKEN"
 
-# Monitor response times
-curl http://localhost:8004/api/v1/performance/targets | jq '.response_time'
-
-# Optimize synthesis configuration
-export RESPONSE_TIME_TARGET_MS=1500
-export MAX_CONCURRENT_GENERATIONS=5
+# Verify shutdown
+curl http://localhost:8004/health
 ```
 
-#### Multi-Model Consensus Failures
+#### Rollback Procedure
+
 ```bash
-# Check model availability
-curl http://localhost:8004/api/v1/monitoring/ai-models
+# Rollback to previous version
+kubectl rollout undo deployment/gs-service
 
-# Reduce consensus threshold if needed
-export CONSENSUS_THRESHOLD=0.6
-
-# Enable single-model fallback
-export ENABLE_SINGLE_MODEL_FALLBACK=true
+# Verify rollback
+kubectl get pods -l app=gs-service
 ```
 
-#### Memory Issues with Large Policies
+#### AI Model Fallback
+
 ```bash
-# Monitor memory usage
-free -h
-docker stats acgs-gs-service
+# Switch to fallback models
+export PRIMARY_MODEL=nano-vllm
+export SECONDARY_MODEL=local-model
 
-# Increase memory limits
-# In docker-compose.yml or Kubernetes deployment
-memory: 2Gi
-
-# Reduce policy length limits
-export MAX_POLICY_LENGTH=3000
+# Restart with fallback configuration
+sudo systemctl restart gs-service
 ```
 
-### Performance Optimization
+## Testing
 
-#### Database Optimization
-```sql
--- Optimize synthesis queries
-CREATE INDEX idx_synthesis_timestamp ON synthesis_requests(created_at);
-CREATE INDEX idx_synthesis_status ON synthesis_requests(status);
-CREATE INDEX idx_synthesis_user ON synthesis_requests(user_id);
-```
+### Unit Tests
 
-#### Cache Optimization
 ```bash
-# Monitor cache performance
-redis-cli info stats | grep hit_rate
+# Run unit tests
+pytest tests/unit/ -v --cov=app
 
-# Optimize synthesis caching
-redis-cli config set maxmemory 2gb
-redis-cli config set maxmemory-policy allkeys-lru
+# Test AI model integration
+pytest tests/unit/test_ai_models.py -v
+
+# Test policy synthesis
+pytest tests/unit/test_synthesis.py -v
 ```
 
-#### AI Model Optimization
-```python
-# Optimize AI model calls
-async def optimize_model_calls():
-    # Use caching for similar requests
-    cache_key = hashlib.md5(prompt.encode()).hexdigest()
-    cached_result = await redis.get(cache_key)
+### Integration Tests
 
-    if cached_result:
-        return json.loads(cached_result)
+```bash
+# Run integration tests
+pytest tests/integration/ -v
 
-    # Batch similar requests
-    result = await model.generate_content(prompt)
-    await redis.setex(cache_key, 3600, json.dumps(result))
+# Test multi-service integration
+pytest tests/integration/test_service_integration.py -v
 
-    return result
+# Test stakeholder workflows
+pytest tests/integration/test_stakeholder_workflows.py -v
 ```
 
-## Security Considerations
+### Performance Tests
+
+```bash
+# Load testing
+pytest tests/performance/test_synthesis_load.py -v
+
+# Stress testing with multiple models
+python tests/performance/stress_test_consensus.py --models=3 --concurrent=10
+```
+
+## Security
+
+### Authentication
+
+- **JWT Integration**: Seamless integration with ACGS-1 auth service
+- **Service-to-Service**: Mutual TLS authentication
+- **API Key Management**: Secure AI model API key storage
+
+### Data Protection
+
+- **Encryption at Rest**: AES-256 encryption for policy data
+- **Encryption in Transit**: TLS 1.3 for all communications
+- **Key Management**: Secure API key rotation and storage
 
 ### AI Model Security
-- **API Key Protection**: Secure storage and rotation of AI model API keys
-- **Input Validation**: Comprehensive validation of synthesis requests
-- **Output Sanitization**: Sanitization of AI-generated policy content
-- **Rate Limiting**: Protection against API abuse and DoS attacks
 
-### Constitutional Security
-- **Hash Validation**: Continuous validation of constitutional hash
-- **Compliance Monitoring**: Real-time constitutional violation detection
-- **Audit Trail**: Complete audit trail for all synthesis activities
-- **Access Control**: Role-based access for synthesis operations
+- **API Key Rotation**: Automated API key rotation
+- **Rate Limiting**: AI model API rate limiting
+- **Fallback Security**: Secure fallback model configuration
 
 ## Contributing
 
-1. Follow ACGS-1 coding standards with AI/ML best practices
-2. Ensure >90% test coverage for synthesis algorithms
-3. Update API documentation for new synthesis endpoints
-4. Test AI model integration thoroughly with edge cases
-5. Validate constitutional compliance for all changes
+1. Follow ACGS-1 coding standards
+2. Ensure >90% test coverage for new features
+3. Update API documentation for endpoint changes
+4. Test AI model integration thoroughly
+5. Validate constitutional compliance integration
+6. Test multi-model consensus mechanisms
 
 ## Support
 
-- **Documentation**: [Governance Synthesis API](../../../docs/api/governance_synthesis_service_api.md)
+- **Documentation**: [GS Service API](../../../docs/api/governance_synthesis_service_api.md)
 - **Health Check**: http://localhost:8004/health
 - **Interactive API Docs**: http://localhost:8004/docs
 - **Logs**: `/logs/gs_service.log`
 - **Configuration**: `services/core/governance-synthesis/gs_service/.env`
-- **AI Model Documentation**:
-  - [Google Gemini API](https://ai.google.dev/docs)
-  - [DeepSeek API](https://platform.deepseek.com/docs)
-  - [NVIDIA API](https://docs.nvidia.com/ai-enterprise/)
 
-1. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-2. Copy `.env.example` to `.env` and set:
-   - `AC_SERVICE_URL` - URL of the AC service
-   - `INTEGRITY_SERVICE_URL` - URL of the Integrity service
-
-### Running Service
-
-```bash
-uvicorn main:app --reload
 ```
 
-### Running Tests
-
-```bash
-pytest tests
 ```

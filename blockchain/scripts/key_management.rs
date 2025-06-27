@@ -2,10 +2,7 @@
 //! Secure key generation, backup, and authority management for Solana programs
 //! Replaces blockchain/scripts/key_management.sh with native Rust implementation
 
-use anchor_client::solana_sdk::{
-    pubkey::Pubkey,
-    signature::{Keypair, Signer},
-};
+use anchor_client::solana_sdk::signature::{Keypair, Signer};
 use anyhow::{Result, Context};
 use clap::{Parser, Subcommand};
 use colored::*;

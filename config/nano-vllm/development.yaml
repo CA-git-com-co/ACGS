@@ -1,43 +1,43 @@
 # Nano-vLLM Development Configuration
 service:
-  name: "nano-vllm-reasoning"
-  version: "1.0.0"
-  environment: "development"
+  name: 'nano-vllm-reasoning'
+  version: '1.0.0'
+  environment: 'development'
 
 models:
   nvidia_acerreason:
-    model_path: "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF"
+    model_path: 'nvidia/Llama-3.1-Nemotron-70B-Instruct-HF'
     tensor_parallel_size: 1
     gpu_memory_utilization: 0.7
     max_model_len: 16384
     port: 8000
-    specialties: ["governance", "accountability"]
-    
+    specialties: ['governance', 'accountability']
+
   microsoft_phi4:
-    model_path: "microsoft/Phi-4"
+    model_path: 'microsoft/Phi-4'
     tensor_parallel_size: 1
     gpu_memory_utilization: 0.5
     max_model_len: 8192
     port: 8001
-    specialties: ["ethics", "fairness"]
+    specialties: ['ethics', 'fairness']
 
 constitutional:
-  principles_file: "/app/constitutional/principles.yaml"
+  principles_file: '/app/constitutional/principles.yaml'
   compliance_threshold: 0.75
-  reasoning_depth: "standard"
+  reasoning_depth: 'standard'
   require_citations: false
 
 performance:
   max_concurrent_requests: 5
   request_timeout: 60
   health_check_interval: 30
-  
+
 logging:
-  level: "DEBUG"
-  format: "structured"
-  file: "/app/logs/nano-vllm-development.log"
+  level: 'DEBUG'
+  format: 'structured'
+  file: '/app/logs/nano-vllm-development.log'
 
 monitoring:
   metrics_enabled: true
   prometheus_port: 9090
-  health_endpoint: "/health"
+  health_endpoint: '/health'

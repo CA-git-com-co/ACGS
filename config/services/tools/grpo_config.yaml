@@ -91,12 +91,12 @@ trainer:
           ip: localhost
           models:
             nvidia_acerreason:
-              model_path: "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF"
+              model_path: 'nvidia/Llama-3.1-Nemotron-70B-Instruct-HF'
               tensor_parallel_size: 1
               gpu_memory_utilization: 0.9
               max_model_len: 32768
             microsoft_phi4:
-              model_path: "microsoft/Phi-4"
+              model_path: 'microsoft/Phi-4'
               tensor_parallel_size: 1
               gpu_memory_utilization: 0.6
               max_model_len: 16384

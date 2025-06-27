@@ -12,24 +12,25 @@ Successfully resolved the major datetime JSON serialization issue in security mi
 
 ### ✅ Successfully Working Services (4/7)
 
-| Service | Port | Status | Content-Type | Format |
-|---------|------|--------|--------------|--------|
-| AC Service | 8001 | ✅ HTTP 200 | `text/plain; version=0.0.4; charset=utf-8` | Prometheus |
+| Service           | Port | Status      | Content-Type                               | Format     |
+| ----------------- | ---- | ----------- | ------------------------------------------ | ---------- |
+| AC Service        | 8001 | ✅ HTTP 200 | `text/plain; version=0.0.4; charset=utf-8` | Prometheus |
 | Integrity Service | 8002 | ✅ HTTP 200 | `text/plain; version=0.0.4; charset=utf-8` | Prometheus |
-| FV Service | 8003 | ✅ HTTP 200 | `text/plain; version=0.0.4; charset=utf-8` | Prometheus |
-| EC Service | 8006 | ✅ HTTP 200 | `text/plain; version=0.0.4; charset=utf-8` | Prometheus |
+| FV Service        | 8003 | ✅ HTTP 200 | `text/plain; version=0.0.4; charset=utf-8` | Prometheus |
+| EC Service        | 8006 | ✅ HTTP 200 | `text/plain; version=0.0.4; charset=utf-8` | Prometheus |
 
 ### ❌ Services with Remaining Issues (3/7)
 
-| Service | Port | Status | Content-Type | Issue |
-|---------|------|--------|--------------|-------|
-| Auth Service | 8000 | ❌ Not Tested | - | Datetime serialization in rate limiting |
-| GS Service | 8004 | ❌ HTTP 500 | `application/json` | Internal server error, JSON fallback |
-| PGC Service | 8005 | ❌ HTTP 500 | `text/plain` | Internal server error, different issue |
+| Service      | Port | Status        | Content-Type       | Issue                                   |
+| ------------ | ---- | ------------- | ------------------ | --------------------------------------- |
+| Auth Service | 8000 | ❌ Not Tested | -                  | Datetime serialization in rate limiting |
+| GS Service   | 8004 | ❌ HTTP 500   | `application/json` | Internal server error, JSON fallback    |
+| PGC Service  | 8005 | ❌ HTTP 500   | `text/plain`       | Internal server error, different issue  |
 
 ## Sample Prometheus Metrics Output
 
 ### AC Service (8001) - Working Example
+
 ```
 # HELP acgs_service_info ACGS-1 Phase A3 Service Information
 # TYPE acgs_service_info info
@@ -47,9 +48,11 @@ python_gc_objects_collected_total{generation="0"} 1234.0
 ## Key Fixes Applied
 
 ### 1. Security Middleware Rate Limiting Fix
+
 **Issue:** Rate limiting was applied to all endpoints including `/metrics`, causing datetime serialization errors.
 
 **Fix:** Modified security middleware to exclude public endpoints from rate limiting:
+
 ```python
 # 3. Rate limiting (if available) - skip for public endpoints
 if self.rate_limiter and not self._is_public_endpoint(request.url.path):
@@ -57,19 +60,23 @@ if self.rate_limiter and not self._is_public_endpoint(request.url.path):
 ```
 
 ### 2. Datetime Serialization Fix
+
 **Issue:** Datetime objects in rate limiting info were not being properly serialized to JSON.
 
 **Fix:** Added comprehensive datetime serialization in multiple places:
+
 - `_serialize_datetime_objects()` method for recursive datetime conversion
 - Applied to rate limiting info before logging
 - Applied to security event logging
 
 ### 3. Public Endpoint Exclusion
+
 **Issue:** Security checks were being applied to metrics endpoints.
 
 **Fix:** Enhanced `_is_public_endpoint()` method to properly exclude:
+
 - `/health`
-- `/metrics` 
+- `/metrics`
 - `/docs`
 - `/openapi.json`
 
@@ -85,18 +92,21 @@ All working services use the standardized implementation:
 ## Remaining Issues Analysis
 
 ### Auth Service (8000)
+
 - **Root Cause:** Datetime serialization issue in security middleware rate limiting
 - **Impact:** Service cannot start properly due to security middleware errors
 - **Priority:** Critical (affects authentication for entire system)
 - **Estimated Fix Time:** 1-2 hours
 
-### GS Service (8004) 
+### GS Service (8004)
+
 - **Root Cause:** Internal server error in metrics endpoint implementation
 - **Impact:** Returns JSON error format instead of Prometheus metrics
 - **Priority:** High (governance synthesis metrics needed for monitoring)
 - **Estimated Fix Time:** 2-4 hours
 
 ### PGC Service (8005)
+
 - **Root Cause:** Internal server error in service startup or metrics generation
 - **Impact:** Returns plain text error instead of metrics
 - **Priority:** High (policy governance metrics critical for compliance)
@@ -105,12 +115,14 @@ All working services use the standardized implementation:
 ## Prometheus Target Discovery
 
 ### Working Targets (4/7)
+
 - `ac_service:8001/metrics` ✅
-- `integrity_service:8002/metrics` ✅  
+- `integrity_service:8002/metrics` ✅
 - `fv_service:8003/metrics` ✅
 - `ec_service:8006/metrics` ✅
 
 ### Failed Targets (3/7)
+
 - `auth_service:8000/metrics` ❌
 - `gs_service:8004/metrics` ❌
 - `pgc_service:8005/metrics` ❌

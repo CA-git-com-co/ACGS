@@ -21,7 +21,7 @@ The Academic Submission System includes a comprehensive compilation framework th
 # LaTeX paper only
 ./compile.sh latex
 
-# Python package only  
+# Python package only
 ./compile.sh package
 
 # Quick build (no tests)
@@ -48,6 +48,7 @@ python3 build.py --release --report
 Advanced LaTeX compilation with sophisticated error handling and optimization.
 
 **Features:**
+
 - Multiple engine support (pdflatex, xelatex, lualatex)
 - Automatic dependency detection
 - Venue-specific optimization (arXiv, IEEE, ACM, Springer, Elsevier)
@@ -56,6 +57,7 @@ Advanced LaTeX compilation with sophisticated error handling and optimization.
 - Cross-reference and bibliography handling
 
 **Usage:**
+
 ```bash
 # Basic compilation
 python3 latex_compiler.py
@@ -75,6 +77,7 @@ python3 latex_compiler.py --report --verbose
 
 **Error Handling:**
 The LaTeX compiler provides intelligent error analysis:
+
 - Syntax error detection with line numbers
 - Missing package identification
 - Reference/citation validation
@@ -86,6 +89,7 @@ The LaTeX compiler provides intelligent error analysis:
 Handles compilation of all system components.
 
 **Features:**
+
 - LaTeX paper compilation
 - Python package building
 - Documentation generation
@@ -93,6 +97,7 @@ Handles compilation of all system components.
 - Comprehensive reporting
 
 **Usage:**
+
 ```bash
 # Individual components
 python3 compiler.py latex          # LaTeX only
@@ -110,6 +115,7 @@ python3 compiler.py all --verbose --report
 Coordinates the complete build process with advanced configuration.
 
 **Features:**
+
 - Configurable build pipeline
 - Test integration
 - Code quality checks
@@ -117,6 +123,7 @@ Coordinates the complete build process with advanced configuration.
 - Build metadata tracking
 
 **Usage:**
+
 ```bash
 # Full build
 python3 build.py
@@ -142,6 +149,7 @@ python3 build.py --engine xelatex --venue ieee
 Cross-platform shell scripts for easy compilation.
 
 **Linux/macOS (`compile.sh`):**
+
 ```bash
 # Make executable (first time only)
 chmod +x compile.sh
@@ -153,6 +161,7 @@ chmod +x compile.sh
 ```
 
 **Windows (`compile.bat`):**
+
 ```cmd
 REM Run from Command Prompt
 compile.bat all
@@ -223,16 +232,19 @@ Create a `build_config.json` file for custom settings:
 ## Output Files
 
 ### LaTeX Compilation
+
 - `main.pdf`: Compiled paper
 - `main.log`: Compilation log
 - `latex_compilation_report.md`: Detailed compilation report
 
 ### Package Building
+
 - `dist/*.tar.gz`: Source distribution
 - `dist/*.whl`: Wheel distribution
 - `build/`: Build artifacts
 
 ### Documentation
+
 - `docs/`: Documentation files
 - `validation_report.md`: Submission validation
 - `build_report.md`: Complete build report
@@ -242,18 +254,21 @@ Create a `build_config.json` file for custom settings:
 ### Common LaTeX Errors
 
 **Missing Packages:**
+
 ```
 Error: Package 'somepackage' not found
 Solution: Install missing LaTeX package or remove from document
 ```
 
 **Undefined References:**
+
 ```
 Error: Reference 'sec:nonexistent' undefined
 Solution: Check \label and \ref commands for typos
 ```
 
 **Bibliography Issues:**
+
 ```
 Error: Citations found but no bibliography file
 Solution: Add .bib file or remove citations
@@ -262,12 +277,14 @@ Solution: Add .bib file or remove citations
 ### Build Failures
 
 **Python Package Issues:**
+
 ```
 Error: setup.py not found
 Solution: Ensure you're in the correct directory with setup.py
 ```
 
 **Missing Dependencies:**
+
 ```
 Error: Command 'pdflatex' not found
 Solution: Install TeX Live, MiKTeX, or MacTeX
@@ -276,12 +293,14 @@ Solution: Install TeX Live, MiKTeX, or MacTeX
 ## Performance
 
 ### Compilation Speed
+
 - **Typical LaTeX paper**: 2-5 seconds
 - **Large papers (50+ pages)**: 10-30 seconds
 - **Package building**: 5-15 seconds
 - **Full build with tests**: 1-3 minutes
 
 ### Optimization Tips
+
 - Use `--quick` for development builds
 - Enable watch mode for iterative editing
 - Clean artifacts regularly to avoid conflicts
@@ -290,18 +309,21 @@ Solution: Install TeX Live, MiKTeX, or MacTeX
 ## Troubleshooting
 
 ### LaTeX Issues
+
 1. **Check Dependencies**: Ensure LaTeX distribution is installed
 2. **Review Log Files**: Check `main.log` for detailed errors
 3. **Validate Syntax**: Use `--verbose` for detailed output
 4. **Clean and Retry**: Run `make latex-clean` and recompile
 
 ### Package Issues
+
 1. **Check Python Version**: Requires Python 3.9+
 2. **Install Dependencies**: Run `pip install -r requirements.txt`
 3. **Verify Setup**: Check `setup.py` configuration
 4. **Clean Build**: Remove `build/` and `dist/` directories
 
 ### General Issues
+
 1. **Check Permissions**: Ensure files are readable/writable
 2. **Verify Paths**: Check that all referenced files exist
 3. **Review Reports**: Check generated reports for details
@@ -322,6 +344,7 @@ Solution: Install TeX Live, MiKTeX, or MacTeX
 ### IDE Integration
 
 **VS Code Tasks:**
+
 ```json
 {
   "label": "Compile LaTeX",
@@ -347,27 +370,35 @@ Solution: Install TeX Live, MiKTeX, or MacTeX
 ## Advanced Features
 
 ### Watch Mode
+
 Automatically recompile when files change:
+
 ```bash
 python3 latex_compiler.py --watch
 ```
 
 ### Dependency Detection
+
 Automatically finds and tracks:
+
 - Input files (`\input`, `\include`)
 - Figure files (`\includegraphics`)
 - Bibliography files (`\bibliography`)
 - Style files (`.cls`, `.sty`)
 
 ### Error Suggestions
+
 Intelligent error analysis with helpful suggestions:
+
 - Missing package recommendations
 - Syntax error explanations
 - Reference validation
 - Bibliography completeness checks
 
 ### Venue Optimization
+
 Automatic optimization for different publication venues:
+
 - File size limits
 - Format requirements
 - Package compatibility

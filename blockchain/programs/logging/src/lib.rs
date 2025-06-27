@@ -2,6 +2,9 @@
 // Quantumagi Logging System - Comprehensive Event Logging and Monitoring
 // Provides audit trail and real-time monitoring for governance events
 
+// Suppress expected cfg warnings from Anchor macros due to CLI/crate version differences
+#![allow(unexpected_cfgs)]
+
 use anchor_lang::prelude::*;
 
 declare_id!("yAfEigJebmeuEWrkfMiPZcAPcoiMJ3kPHvMT6LTqecG");

@@ -1,0 +1,617 @@
+openapi: 3.0.3
+info:
+  title: ACGE (Adaptive Constitutional Governance Engine) API
+  description: |
+    Comprehensive API documentation for ACGE integration with ACGS-PGP system.
+    Provides constitutional AI governance with single highly-aligned model architecture,
+    edge deployment capabilities, and cross-domain constitutional modules.
+
+    **Constitutional Hash**: `cdd01ef066bc6cf2`
+    **System Version**: 1.0.0
+    **Architecture**: ACGS-1 Lite with ACGE Integration
+  version: 1.0.0
+  contact:
+    name: ACGS-PGP Development Team
+    email: acgs-support@constitutional-ai.org
+  license:
+    name: Constitutional AI License
+    url: https://constitutional-ai.org/license
+
+servers:
+  - url: https://acge-api.constitutional-ai.org/api/v1
+    description: Production ACGE API Server
+  - url: https://acge-staging.constitutional-ai.org/api/v1
+    description: Staging ACGE API Server
+  - url: http://localhost:8080/api/v1
+    description: Local Development Server
+
+security:
+  - BearerAuth: []
+  - ConstitutionalHash: []
+
+paths:
+  /health:
+    get:
+      summary: ACGE System Health Check
+      description: Returns comprehensive health status of ACGE core model and all integrated services
+      tags:
+        - System Health
+      security: []
+      responses:
+        '200':
+          description: System is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+        '503':
+          description: System is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /constitutional/validate:
+    post:
+      summary: Constitutional Compliance Validation
+      description: |
+        Validates decisions, policies, or actions against constitutional AI principles
+        using ACGE single highly-aligned model with >95% accuracy requirement.
+      tags:
+        - Constitutional Governance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConstitutionalValidationRequest'
+      responses:
+        '200':
+          description: Constitutional validation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstitutionalValidationResponse'
+        '400':
+          description: Invalid request format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /policy/synthesize:
+    post:
+      summary: Automated Policy Synthesis
+      description: |
+        Generates constitutional policies using ACGE automated policy synthesis module
+        with human-on-the-loop oversight and DGM safety patterns.
+      tags:
+        - Policy Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicySynthesisRequest'
+      responses:
+        '200':
+          description: Policy synthesis completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicySynthesisResponse'
+        '202':
+          description: Policy synthesis in progress (async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncOperationResponse'
+
+  /edge/nodes:
+    get:
+      summary: List Edge Nodes
+      description: Returns status and configuration of all ACGE edge deployment nodes
+      tags:
+        - Edge Deployment
+      parameters:
+        - name: status
+          in: query
+          description: Filter by node status
+          schema:
+            type: string
+            enum: [online, offline, syncing, error]
+        - name: region
+          in: query
+          description: Filter by geographical region
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Edge nodes list retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EdgeNodesList'
+
+  /edge/nodes/{nodeId}/sync:
+    post:
+      summary: Trigger Edge Node Synchronization
+      description: |
+        Manually trigger constitutional data synchronization for specific edge node
+        with constitutional hash validation and conflict resolution.
+      tags:
+        - Edge Deployment
+      parameters:
+        - name: nodeId
+          in: path
+          required: true
+          description: Unique identifier for edge node
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Synchronization initiated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncOperationResponse'
+
+  /cross-domain/modules:
+    get:
+      summary: List Cross-Domain Constitutional Modules
+      description: Returns available industry-specific constitutional modules (Healthcare, Financial, etc.)
+      tags:
+        - Cross-Domain Governance
+      responses:
+        '200':
+          description: Cross-domain modules list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrossDomainModulesList'
+
+  /cross-domain/modules/{moduleId}/validate:
+    post:
+      summary: Domain-Specific Constitutional Validation
+      description: |
+        Validates decisions against industry-specific constitutional principles
+        (e.g., HIPAA for healthcare, SOX for financial services).
+      tags:
+        - Cross-Domain Governance
+      parameters:
+        - name: moduleId
+          in: path
+          required: true
+          description: Domain module identifier (healthcare, financial, automotive)
+          schema:
+            type: string
+            enum: [healthcare, financial, automotive]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DomainValidationRequest'
+      responses:
+        '200':
+          description: Domain-specific validation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DomainValidationResponse'
+
+  /monitoring/metrics:
+    get:
+      summary: ACGE Performance Metrics
+      description: |
+        Returns comprehensive performance metrics including constitutional compliance scores,
+        response times, throughput, and edge deployment status.
+      tags:
+        - Monitoring
+      parameters:
+        - name: timeRange
+          in: query
+          description: Time range for metrics (1h, 24h, 7d, 30d)
+          schema:
+            type: string
+            enum: [1h, 24h, 7d, 30d]
+            default: 1h
+      responses:
+        '200':
+          description: Performance metrics retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceMetrics'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from ACGS-PGP Auth Service (port 8000)
+    ConstitutionalHash:
+      type: apiKey
+      in: header
+      name: X-Constitutional-Hash
+      description: Constitutional hash validation (cdd01ef066bc6cf2)
+
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        constitutional_hash:
+          type: string
+          example: 'cdd01ef066bc6cf2'
+        timestamp:
+          type: string
+          format: date-time
+        services:
+          type: object
+          properties:
+            acge_core:
+              $ref: '#/components/schemas/ServiceHealth'
+            symbolic_policy_engine:
+              $ref: '#/components/schemas/ServiceHealth'
+            edge_nodes:
+              type: array
+              items:
+                $ref: '#/components/schemas/EdgeNodeHealth'
+        performance_metrics:
+          type: object
+          properties:
+            response_time_p95:
+              type: number
+              format: float
+              description: 95th percentile response time in seconds
+            constitutional_compliance_score:
+              type: number
+              format: float
+              minimum: 0
+              maximum: 1
+              description: Current constitutional compliance score
+            throughput_rps:
+              type: integer
+              description: Current requests per second
+
+    ServiceHealth:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        response_time_ms:
+          type: number
+          format: float
+        last_check:
+          type: string
+          format: date-time
+
+    ConstitutionalValidationRequest:
+      type: object
+      required:
+        - decision
+        - context
+      properties:
+        decision:
+          type: object
+          description: Decision, policy, or action to validate
+        context:
+          type: object
+          description: Contextual information for validation
+        domain:
+          type: string
+          enum: [general, healthcare, financial, automotive]
+          default: general
+        compliance_threshold:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          default: 0.95
+
+    ConstitutionalValidationResponse:
+      type: object
+      properties:
+        constitutional_hash:
+          type: string
+          example: 'cdd01ef066bc6cf2'
+        compliance_score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+        is_compliant:
+          type: boolean
+        violations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComplianceViolation'
+        recommendations:
+          type: array
+          items:
+            type: string
+        audit_trail:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditEntry'
+        processing_time_ms:
+          type: number
+          format: float
+
+    ComplianceViolation:
+      type: object
+      properties:
+        type:
+          type: string
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+        message:
+          type: string
+        constitutional_principle:
+          type: string
+
+    PolicySynthesisRequest:
+      type: object
+      required:
+        - requirements
+      properties:
+        requirements:
+          type: object
+          description: Policy requirements and constraints
+        domain:
+          type: string
+          enum: [general, healthcare, financial, automotive]
+        synthesis_mode:
+          type: string
+          enum: [automated, human_review_required]
+          default: automated
+
+    PolicySynthesisResponse:
+      type: object
+      properties:
+        policy_id:
+          type: string
+          format: uuid
+        synthesized_policy:
+          type: object
+        constitutional_compliance_score:
+          type: number
+          format: float
+        requires_human_review:
+          type: boolean
+        opa_rules:
+          type: string
+          description: Generated OPA Rego rules
+
+    EdgeNodesList:
+      type: object
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/EdgeNode'
+        total_count:
+          type: integer
+        online_count:
+          type: integer
+
+    EdgeNode:
+      type: object
+      properties:
+        node_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [online, offline, syncing, error]
+        region:
+          type: string
+        last_sync:
+          type: string
+          format: date-time
+        constitutional_hash:
+          type: string
+        performance_metrics:
+          $ref: '#/components/schemas/EdgeNodeMetrics'
+
+    EdgeNodeHealth:
+      type: object
+      properties:
+        node_id:
+          type: string
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        last_heartbeat:
+          type: string
+          format: date-time
+
+    EdgeNodeMetrics:
+      type: object
+      properties:
+        response_time_ms:
+          type: number
+          format: float
+        constitutional_compliance_score:
+          type: number
+          format: float
+        requests_per_second:
+          type: number
+          format: float
+
+    CrossDomainModulesList:
+      type: object
+      properties:
+        modules:
+          type: array
+          items:
+            $ref: '#/components/schemas/CrossDomainModule'
+
+    CrossDomainModule:
+      type: object
+      properties:
+        module_id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        compliance_frameworks:
+          type: array
+          items:
+            type: string
+        constitutional_principles:
+          type: object
+        version:
+          type: string
+
+    DomainValidationRequest:
+      type: object
+      required:
+        - decision
+        - domain_context
+      properties:
+        decision:
+          type: object
+        domain_context:
+          type: object
+        compliance_frameworks:
+          type: array
+          items:
+            type: string
+
+    DomainValidationResponse:
+      type: object
+      properties:
+        domain:
+          type: string
+        compliance_score:
+          type: number
+          format: float
+        framework_compliance:
+          type: object
+          additionalProperties:
+            type: number
+            format: float
+        violations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComplianceViolation'
+
+    PerformanceMetrics:
+      type: object
+      properties:
+        constitutional_compliance:
+          type: object
+          properties:
+            current_score:
+              type: number
+              format: float
+            target_score:
+              type: number
+              format: float
+              example: 0.95
+            trend:
+              type: string
+              enum: [improving, stable, degrading]
+        response_time:
+          type: object
+          properties:
+            p50_ms:
+              type: number
+              format: float
+            p95_ms:
+              type: number
+              format: float
+            p99_ms:
+              type: number
+              format: float
+            target_ms:
+              type: number
+              format: float
+              example: 2000
+        throughput:
+          type: object
+          properties:
+            current_rps:
+              type: number
+              format: float
+            target_rps:
+              type: number
+              format: float
+              example: 1000
+        edge_deployment:
+          type: object
+          properties:
+            total_nodes:
+              type: integer
+            online_nodes:
+              type: integer
+            sync_status:
+              type: string
+              enum: [synchronized, syncing, out_of_sync]
+
+    AsyncOperationResponse:
+      type: object
+      properties:
+        operation_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, in_progress, completed, failed]
+        estimated_completion:
+          type: string
+          format: date-time
+
+    SyncOperationResponse:
+      type: object
+      properties:
+        sync_id:
+          type: string
+          format: uuid
+        node_id:
+          type: string
+        status:
+          type: string
+          enum: [initiated, in_progress, completed, failed]
+        constitutional_hash:
+          type: string
+
+    AuditEntry:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        action:
+          type: string
+        user_id:
+          type: string
+        constitutional_hash:
+          type: string
+        details:
+          type: object
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        constitutional_hash:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        request_id:
+          type: string
+          format: uuid

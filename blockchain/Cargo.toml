@@ -18,10 +18,8 @@ resolver = "1"
 # Using secure commit that fixes the vulnerability while maintaining Solana compatibility
 ed25519-dalek = { git = "https://github.com/dalek-cryptography/ed25519-dalek", rev = "1042cb60a07cdaacb59ca209716b69f444460f8f" }
 
-# RUSTSEC-2024-0344: Fix timing variability in curve25519-dalek Scalar29::sub/Scalar52::sub
-# Critical: Timing side-channel vulnerability in scalar arithmetic operations
-# Using git-based patch to ensure compatibility with Solana SDK constraints
-curve25519-dalek = { git = "https://github.com/dalek-cryptography/curve25519-dalek", tag = "curve25519-4.1.3" }
+# Note: curve25519-dalek v3.2.1 is used by dependencies and doesn't require patching
+# The v4.1.3 patch was removed as it's not used in the current dependency graph
 
 [profile.release]
 overflow-checks = true

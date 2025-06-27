@@ -4,11 +4,7 @@ import { authOptions } from '@/lib/auth/config';
 import { Navigation } from '@/components/navigation/Navigation';
 import { Sidebar } from '@/components/navigation/Sidebar';
 
-export default async function GovernanceLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function GovernanceLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -20,9 +16,7 @@ export default async function GovernanceLayout({
       <Navigation />
       <div className="flex">
         <Sidebar />
-        <main className="flex-1 ml-64 p-6">
-          {children}
-        </main>
+        <main className="flex-1 ml-64 p-6">{children}</main>
       </div>
     </div>
   );

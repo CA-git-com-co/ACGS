@@ -1,6 +1,7 @@
 # Academic Submission System User Guide
 
 ## Table of Contents
+
 1. [Getting Started](#getting-started)
 2. [Command Line Interface](#command-line-interface)
 3. [Web Interface](#web-interface)
@@ -23,19 +24,21 @@ Before using the Academic Submission System, ensure you have:
 ### Installation
 
 1. **Clone the Repository**
+
    ```bash
    git clone https://github.com/CA-git-com-co/ACGS.git
    cd ACGS/arxiv_submission_package
    ```
 
 2. **Set Up Python Environment**
+
    ```bash
    # Create virtual environment (recommended)
    python -m venv academic_env
    source academic_env/bin/activate  # Linux/Mac
    # or
    academic_env\Scripts\activate  # Windows
-   
+
    # Install dependencies
    pip install -r requirements.txt
    ```
@@ -65,6 +68,7 @@ python cli/academic_cli.py compliance . --venue arxiv
 ### Basic Commands
 
 #### Validate Command
+
 The `validate` command performs comprehensive validation of your academic submission:
 
 ```bash
@@ -82,6 +86,7 @@ python cli/academic_cli.py validate /path/to/paper/ --verbose
 ```
 
 #### Compliance Command
+
 Check venue-specific compliance requirements:
 
 ```bash
@@ -99,6 +104,7 @@ python cli/academic_cli.py compliance /path/to/paper/ --venue arxiv --output arx
 ```
 
 #### Status Command
+
 Get a quick overview of your submission:
 
 ```bash
@@ -106,6 +112,7 @@ python cli/academic_cli.py status /path/to/paper/
 ```
 
 This provides:
+
 - File structure overview
 - Key files presence check
 - Quick validation summary
@@ -127,6 +134,7 @@ python cli/academic_cli.py --config custom_config.json validate /path/to/paper/
 ### Advanced Usage
 
 #### Batch Processing
+
 Validate multiple papers:
 
 ```bash
@@ -138,6 +146,7 @@ done
 ```
 
 #### Integration with Build Systems
+
 Add to your Makefile:
 
 ```makefile
@@ -166,23 +175,28 @@ python web/app.py
 ### Using the Web Interface
 
 #### 1. Upload Files
+
 - Navigate to the Upload page
 - Select multiple files or drag and drop
 - Supported formats: `.tex`, `.bib`, `.png`, `.jpg`, `.pdf`, `.eps`, `.txt`, `.md`
 - Maximum file size: 50MB total
 
 #### 2. View Validation Results
+
 After upload, you'll see:
+
 - **Overall Status**: EXCELLENT, GOOD, ACCEPTABLE, or NEEDS_IMPROVEMENT
 - **Compliance Score**: Percentage score (0-100%)
 - **Detailed Results**: Check-by-check breakdown
 - **Recommendations**: Specific improvement suggestions
 
 #### 3. Download Reports
+
 - **Markdown Report**: Human-readable validation report
 - **JSON Report**: Machine-readable results for automation
 
 #### 4. Compliance Checking
+
 - Select venue (arXiv, IEEE, ACM)
 - View venue-specific compliance results
 - Download compliance reports
@@ -190,6 +204,7 @@ After upload, you'll see:
 ### API Endpoints
 
 #### Validation API
+
 ```bash
 # Upload ZIP file for validation
 curl -X POST -F "file=@submission.zip" http://localhost:5000/api/validate
@@ -205,6 +220,7 @@ curl -X POST -F "file=@submission.zip" http://localhost:5000/api/validate
 ```
 
 #### Compliance API
+
 ```bash
 # Check compliance for existing submission
 curl -X POST -H "Content-Type: application/json" \
@@ -217,21 +233,25 @@ curl -X POST -H "Content-Type: application/json" \
 ### Status Levels
 
 #### EXCELLENT ✅
+
 - All checks passed
 - Maximum 2 warnings
 - Ready for submission
 
 #### GOOD ✅
+
 - All critical checks passed
 - Some warnings present
 - Minor improvements recommended
 
 #### ACCEPTABLE ⚠️
+
 - 1-2 critical issues
 - Multiple warnings
 - Requires attention before submission
 
 #### NEEDS_IMPROVEMENT ❌
+
 - 3+ critical issues
 - Significant problems detected
 - Major revisions required
@@ -239,37 +259,44 @@ curl -X POST -H "Content-Type: application/json" \
 ### Validation Checks
 
 #### File Structure
+
 - **Required Files**: `main.tex`, `README.txt`
 - **Optional Files**: Bibliography (`.bib`), figures directory
 - **Organization**: Proper file naming and structure
 
 #### LaTeX Syntax
+
 - **Brace Matching**: Balanced `{` and `}`
 - **References**: All `\ref{}` have corresponding `\label{}`
 - **Citations**: All `\cite{}` have bibliography entries
 - **Packages**: Compatible package usage
 
 #### Bibliography
+
 - **Completeness**: Required fields for each entry type
 - **Formatting**: Proper BibTeX syntax
 - **Quality**: No empty fields, valid URLs/DOIs
 
 #### Figures
+
 - **Existence**: All referenced figures exist
 - **Formats**: Compatible image formats
 - **Captions**: Proper figure captions and labels
 
 #### Content Quality
+
 - **Abstract**: Appropriate length (50-300 words)
 - **Structure**: Minimum 3 sections recommended
 - **Placeholders**: No TODO, FIXME, or lorem ipsum text
 
 #### Accessibility
+
 - **Captions**: All figures have captions
 - **Headings**: Proper section hierarchy
 - **Color**: Not relying solely on color for information
 
 #### Reproducibility
+
 - **Documentation**: README and code availability
 - **Data**: Data access information
 - **Keywords**: Reproducibility-related terms
@@ -278,6 +305,7 @@ curl -X POST -H "Content-Type: application/json" \
 ### Compliance Score Calculation
 
 The compliance score is calculated as:
+
 ```
 Score = (PASS × 1.0 + WARNING × 0.5 + FAIL × 0.0) / Total Checks × 100%
 ```
@@ -292,18 +320,21 @@ Score = (PASS × 1.0 + WARNING × 0.5 + FAIL × 0.0) / Total Checks × 100%
 ### arXiv Submission
 
 #### Requirements
+
 - **File Size**: Maximum 50MB total
 - **File Types**: LaTeX, PDF figures, standard formats
 - **Structure**: Must include title, author, abstract
 - **Bibliography**: BibTeX format recommended
 
 #### Best Practices
+
 - Use PDFLaTeX for compilation
 - Include all source files
 - Optimize figure sizes
 - Provide clear README
 
 #### Common Issues
+
 - **Oversized submissions**: Compress figures, remove unnecessary files
 - **Missing abstracts**: Add `\begin{abstract}...\end{abstract}`
 - **Broken references**: Check all `\ref{}` and `\cite{}` commands
@@ -311,12 +342,14 @@ Score = (PASS × 1.0 + WARNING × 0.5 + FAIL × 0.0) / Total Checks × 100%
 ### IEEE Publications
 
 #### Requirements
+
 - **Template**: Use official IEEE templates
 - **References**: IEEE citation style
 - **Figures**: High-resolution, professional quality
 - **Copyright**: Include IEEE copyright notice
 
 #### Best Practices
+
 - Follow IEEE formatting guidelines strictly
 - Use IEEE reference style
 - Include author biographies
@@ -325,12 +358,14 @@ Score = (PASS × 1.0 + WARNING × 0.5 + FAIL × 0.0) / Total Checks × 100%
 ### ACM Publications
 
 #### Requirements
+
 - **Template**: ACM article template
 - **Metadata**: Complete author information
 - **References**: ACM reference format
 - **Accessibility**: Alt text for figures
 
 #### Best Practices
+
 - Use ACM Computing Classification System
 - Include complete author affiliations
 - Provide accessible content
@@ -341,6 +376,7 @@ Score = (PASS × 1.0 + WARNING × 0.5 + FAIL × 0.0) / Total Checks × 100%
 ### Paper Organization
 
 #### Directory Structure
+
 ```
 paper/
 ├── main.tex              # Main LaTeX file
@@ -360,6 +396,7 @@ paper/
 ```
 
 #### File Naming
+
 - Use descriptive, lowercase names
 - Avoid spaces and special characters
 - Use underscores for separation: `figure_1_results.png`
@@ -368,6 +405,7 @@ paper/
 ### LaTeX Best Practices
 
 #### Document Structure
+
 ```latex
 \documentclass{article}
 \usepackage[utf8]{inputenc}
@@ -409,6 +447,7 @@ Your abstract here (50-300 words).
 ```
 
 #### Figure Management
+
 ```latex
 % Good figure inclusion
 \begin{figure}[htbp]
@@ -423,6 +462,7 @@ As shown in Figure~\ref{fig:results}, our method outperforms...
 ```
 
 #### Bibliography Management
+
 ```bibtex
 @article{author2023title,
     title={Complete and Descriptive Title},
@@ -440,6 +480,7 @@ As shown in Figure~\ref{fig:results}, our method outperforms...
 ### Quality Assurance
 
 #### Pre-Submission Checklist
+
 - [ ] All figures are high-resolution and clearly labeled
 - [ ] All references are complete and properly formatted
 - [ ] Abstract is within word limits and clearly written
@@ -450,6 +491,7 @@ As shown in Figure~\ref{fig:results}, our method outperforms...
 - [ ] Ethical considerations are addressed
 
 #### Validation Workflow
+
 1. **Draft Completion**: Write complete first draft
 2. **Initial Validation**: Run basic validation checks
 3. **Content Review**: Review and revise content
@@ -464,36 +506,46 @@ As shown in Figure~\ref{fig:results}, our method outperforms...
 ### Common Validation Errors
 
 #### "Missing required files: main.tex"
+
 **Problem**: The main LaTeX file is not found or named incorrectly.
-**Solution**: 
+**Solution**:
+
 - Ensure your main file is named `main.tex`
 - Check file permissions and accessibility
 - Verify you're running validation in the correct directory
 
 #### "Unmatched braces: X difference"
+
 **Problem**: LaTeX syntax error with mismatched braces.
 **Solution**:
+
 - Use a LaTeX editor with brace matching
 - Check for missing `}` after `\begin{environment}`
 - Verify all command arguments are properly enclosed
 
 #### "Undefined references: [ref1, ref2]"
+
 **Problem**: References to non-existent labels.
 **Solution**:
+
 - Check all `\ref{}` commands have corresponding `\label{}`
 - Verify label names match exactly (case-sensitive)
 - Ensure labels are defined before references
 
 #### "Citations found but no bibliography file"
+
 **Problem**: Using `\cite{}` without a `.bib` file.
 **Solution**:
+
 - Add a `.bib` file with bibliography entries
 - Include `\bibliography{filename}` in your LaTeX
 - Verify bibliography file is in the correct location
 
 #### "Missing referenced figures"
+
 **Problem**: Figures referenced in text don't exist.
 **Solution**:
+
 - Check figure file names match `\includegraphics{}` commands
 - Verify figure files are in the correct directory
 - Ensure file extensions are included if required
@@ -501,15 +553,19 @@ As shown in Figure~\ref{fig:results}, our method outperforms...
 ### Performance Issues
 
 #### Slow Validation
+
 **Problem**: Validation takes too long.
 **Solution**:
+
 - Check for very large files or many figures
 - Optimize figure sizes and formats
 - Use incremental validation for large projects
 
 #### Memory Issues
+
 **Problem**: Out of memory errors during validation.
 **Solution**:
+
 - Reduce figure sizes and resolution
 - Split large documents into smaller parts
 - Close other applications to free memory
@@ -517,8 +573,10 @@ As shown in Figure~\ref{fig:results}, our method outperforms...
 ### Installation Issues
 
 #### Missing Dependencies
+
 **Problem**: Import errors or missing modules.
 **Solution**:
+
 ```bash
 # Update pip and reinstall
 pip install --upgrade pip
@@ -532,8 +590,10 @@ pip install matplotlib seaborn
 ```
 
 #### Permission Errors
+
 **Problem**: Cannot access files or directories.
 **Solution**:
+
 ```bash
 # Fix file permissions
 chmod +x cli/academic_cli.py
@@ -546,6 +606,7 @@ ls -la arxiv_submission_package/
 ### Getting Additional Help
 
 #### Enable Debug Mode
+
 ```bash
 # Maximum verbosity
 python cli/academic_cli.py --verbose validate /path/to/paper/
@@ -555,6 +616,7 @@ python quality_assurance/submission_validator.py /path/to/paper/
 ```
 
 #### Check System Requirements
+
 ```bash
 # Verify Python version
 python --version
@@ -567,6 +629,7 @@ pdflatex --version
 ```
 
 #### Community Support
+
 - **GitHub Issues**: Report bugs and request features
 - **Documentation**: Check the complete documentation
 - **Examples**: Review example papers and configurations

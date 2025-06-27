@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opa
+  labels:
+    app: opa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: opa
+  template:
+    metadata:
+      labels:
+        app: opa
+    spec:
+      containers:
+        - name: opa
+          image: openpolicyagent/opa:latest-envoy
+          args:
+            - 'run'
+            - '--server'
+            - '--addr=0.0.0.0:8181'
+            - '--log-level=info'
+            - '--config-file=/config/opa-config.yaml'
+            - '/policies'
+          ports:
+            - containerPort: 8181
+            - containerPort: 8282
+          volumeMounts:
+            - name: opa-config
+              mountPath: /config
+            - name: opa-policies
+              mountPath: /policies
+          env:
+            - name: CONSTITUTIONAL_HASH
+              value: 'cdd01ef066bc6cf2'
+            - name: CONSTITUTIONAL_COMPLIANCE_THRESHOLD
+              value: '0.8'
+            - name: GOVERNANCE_VALIDATION_ENABLED
+              value: 'true'
+            - name: PGC_SERVICE_URL
+              value: 'http://policy-governance-service:8050'
+            - name: GS_SERVICE_URL
+              value: 'http://governance-synthesis-service:8040'
+            - name: AC_SERVICE_URL
+              value: 'http://constitutional-ai-service:8010'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opa
+spec:
+  selector:
+    app: opa
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8181
+      targetPort: 8181
+    - name: diagnostics
+      protocol: TCP
+      port: 8282
+      targetPort: 8282
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opa-config
+data:
+  opa-config.yaml: |
+    decision_logs:
+      console: true
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opa-policies
+data:
+  example.rego: |
+    package example
+
+    default allow = false
+
+    allow {
+      input.method == "GET"
+      input.path == "/health"
+    }

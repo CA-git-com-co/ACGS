@@ -604,6 +604,7 @@ pids/
 backup_*/
 **/backup_*/
 backup_reorganization/
+
 # Project-specific directories
 /backups
 /blockchain/target
@@ -612,6 +613,7 @@ backup_reorganization/
 /.roo
 /.taskmaster
 /blockchain/node_modules
+/gpu/
 
 # Task Master AI files
 tasks.json

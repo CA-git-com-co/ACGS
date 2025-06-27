@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class TestResults:
+class PerformanceTestResults:
     """Test results container."""
 
     service_name: str
@@ -58,10 +58,10 @@ async def test_endpoint_performance(
     method: str = "GET",
     data: dict[str, Any] = None,
     concurrent_requests: int = 100,
-) -> TestResults:
+) -> PerformanceTestResults:
     """Test endpoint performance with concurrent requests."""
 
-    results = TestResults(
+    results = PerformanceTestResults(
         service_name=url.split(":")[1].split("/")[0] if ":" in url else "unknown",
         endpoint=url,
         total_requests=0,

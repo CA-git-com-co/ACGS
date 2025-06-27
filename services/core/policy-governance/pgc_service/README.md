@@ -1,5 +1,8 @@
 # ACGS-1 Policy Governance Compiler Service
 
+**Status**: 🧪 **Prototype**  
+**Last Updated**: 2025-06-27
+
 ## Overview
 
 The Policy Governance Compiler (PGC) Service is an enterprise-grade policy enforcement engine that provides real-time governance policy enforcement, workflow orchestration, and constitutional compliance validation using Open Policy Agent (OPA) integration and advanced optimization algorithms.
@@ -12,6 +15,7 @@ The Policy Governance Compiler (PGC) Service is an enterprise-grade policy enfor
 ## Core Features
 
 ### Real-Time Policy Enforcement
+
 - **Open Policy Agent Integration**: Advanced OPA integration for policy evaluation
 - **Ultra-Low Latency**: <25ms P95 latency for 95% of enforcement requests
 - **Real-Time Compliance**: Sub-200ms constitutional compliance validation
@@ -19,6 +23,7 @@ The Policy Governance Compiler (PGC) Service is an enterprise-grade policy enfor
 - **Policy Evaluation**: Comprehensive policy query evaluation against active policies
 
 ### Policy Lifecycle Management
+
 - **Comprehensive Lifecycle**: Complete policy creation, review, approval, and activation workflow
 - **Multi-Stakeholder Processes**: Coordinated governance processes across stakeholders
 - **Workflow Orchestration**: Automated governance workflow management
@@ -26,6 +31,7 @@ The Policy Governance Compiler (PGC) Service is an enterprise-grade policy enfor
 - **Incremental Compilation**: Zero-downtime policy updates with hot-swapping
 
 ### Advanced Enforcement Capabilities
+
 - **Constitutional Compliance**: Continuous validation against constitutional hash
 - **AlphaEvolve Integration**: Advanced enforcement optimization algorithms
 - **WINA Optimization**: Weighted Intelligence Network Architecture for enforcement
@@ -33,6 +39,7 @@ The Policy Governance Compiler (PGC) Service is an enterprise-grade policy enfor
 - **Audit Trail**: Comprehensive audit logging for all enforcement actions
 
 ### Enterprise Features
+
 - **Performance Optimization**: P99 latency <500ms, P95 latency <25ms targets
 - **High Availability**: >99.5% availability with automatic failover
 - **Scalability**: Horizontal scaling with load balancing
@@ -42,6 +49,7 @@ The Policy Governance Compiler (PGC) Service is an enterprise-grade policy enfor
 ## API Endpoints
 
 ### Policy Enforcement
+
 - `POST /api/v1/enforcement/evaluate` - Evaluate policy queries against active policies
 - `POST /api/v1/enforcement/realtime-compliance` - Real-time compliance checking (<200ms)
 - `POST /api/v1/enforcement/intercept-action` - Intercept and validate governance actions
@@ -49,6 +57,7 @@ The Policy Governance Compiler (PGC) Service is an enterprise-grade policy enfor
 - `POST /api/v1/enforcement/batch-evaluate` - Batch policy evaluation
 
 ### Policy Lifecycle Management
+
 - `POST /api/v1/lifecycle/create` - Create new policy in lifecycle
 - `POST /api/v1/lifecycle/review` - Submit policy for review
 - `POST /api/v1/lifecycle/approve` - Approve policy for activation
@@ -56,36 +65,42 @@ The Policy Governance Compiler (PGC) Service is an enterprise-grade policy enfor
 - `GET /api/v1/lifecycle/status/{policy_id}` - Get policy lifecycle status
 
 ### Governance Workflows
+
 - `POST /api/v1/governance-workflows/initiate` - Initiate governance workflow
 - `GET /api/v1/governance-workflows/status/{workflow_id}` - Get workflow status
 - `POST /api/v1/governance-workflows/advance` - Advance workflow to next stage
 - `GET /api/v1/governance-workflows/active` - List active workflows
 
 ### Incremental Compilation
+
 - `POST /api/v1/incremental/deploy` - Deploy policy update with zero-downtime
 - `POST /api/v1/incremental/rollback` - Rollback to previous policy version
 - `GET /api/v1/incremental/status` - Get compilation and deployment status
 - `GET /api/v1/incremental/metrics` - Compilation performance metrics
 
 ### Ultra-Low Latency Optimization
+
 - `POST /api/v1/ultra-low-latency/evaluate` - Optimized policy evaluation (<25ms)
 - `GET /api/v1/ultra-low-latency/metrics` - Ultra-low latency performance metrics
 - `POST /api/v1/ultra-low-latency/optimize` - Optimize enforcement paths
 - `GET /api/v1/ultra-low-latency/cache-stats` - Cache performance statistics
 
 ### AlphaEvolve Enhancement
+
 - `POST /api/v1/alphaevolve/optimize-enforcement` - AlphaEvolve enforcement optimization
 - `GET /api/v1/alphaevolve/strategies` - Available optimization strategies
 - `POST /api/v1/alphaevolve/evaluate` - AlphaEvolve-optimized policy evaluation
 - `GET /api/v1/alphaevolve/performance` - AlphaEvolve performance metrics
 
 ### Constitutional Compliance
+
 - `POST /api/v1/constitutional/validate` - Constitutional compliance validation
 - `GET /api/v1/constitutional/status` - Constitutional compliance status
 - `POST /api/v1/constitutional/workflow` - Constitutional compliance workflow
 - `GET /api/v1/constitutional/metrics` - Constitutional compliance metrics
 
 ### System Management
+
 - `GET /health` - Service health with component status
 - `GET /api/v1/status` - Detailed API status and capabilities
 - `GET /metrics` - Prometheus metrics for monitoring
@@ -168,6 +183,7 @@ resources:
 ## Installation & Deployment
 
 ### Prerequisites
+
 - Python 3.11+
 - PostgreSQL 12+
 - Redis 6+
@@ -225,6 +241,7 @@ docker-compose up -d
 ## Testing
 
 ### Unit Tests
+
 ```bash
 # Run all tests
 uv run pytest tests/ -v
@@ -234,6 +251,7 @@ uv run pytest tests/ --cov=app --cov-report=html
 ```
 
 ### Integration Tests
+
 ```bash
 # Test OPA integration
 uv run pytest tests/test_opa_integration.py -v
@@ -246,6 +264,7 @@ uv run pytest tests/test_constitutional_compliance.py -v
 ```
 
 ### Performance Tests
+
 ```bash
 # Test enforcement latency
 python scripts/test_enforcement_latency.py
@@ -427,6 +446,7 @@ async def ultra_low_latency_evaluation():
 ## Open Policy Agent Integration
 
 ### OPA Configuration
+
 The service integrates with OPA for policy evaluation:
 
 ```rego
@@ -466,6 +486,7 @@ privacy_consent_valid if {
 ```
 
 ### OPA Health Check
+
 ```python
 # OPA connectivity verification
 async def check_opa_health():
@@ -478,6 +499,7 @@ async def check_opa_health():
 ```
 
 ### Constitutional Hash Validation
+
 ```python
 # Constitutional hash validation in policy enforcement
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -492,6 +514,7 @@ def validate_constitutional_enforcement(enforcement_result):
 ## Monitoring & Observability
 
 ### Health Checks
+
 ```bash
 # Service health with component status
 curl http://localhost:8005/health
@@ -514,6 +537,7 @@ curl http://localhost:8005/health
 ```
 
 ### Performance Metrics
+
 ```bash
 # Get enforcement performance metrics
 curl http://localhost:8005/api/v1/enforcement/compliance-metrics
@@ -526,6 +550,7 @@ curl http://localhost:8005/api/v1/incremental/metrics
 ```
 
 ### Real-time Monitoring
+
 ```bash
 # Monitor enforcement operations
 curl http://localhost:8005/api/v1/monitoring/enforcement
@@ -542,6 +567,7 @@ curl http://localhost:8005/api/v1/constitutional/status
 ### Common Issues
 
 #### OPA Server Not Available
+
 ```bash
 # Check OPA server status
 curl http://localhost:8181/health
@@ -554,6 +580,7 @@ curl http://localhost:8005/health | jq '.components.opa_server'
 ```
 
 #### High Enforcement Latency
+
 ```bash
 # Check current latency metrics
 curl http://localhost:8005/api/v1/enforcement/compliance-metrics | jq '.performance_metrics'
@@ -566,6 +593,7 @@ opa fmt --diff policies/
 ```
 
 #### Constitutional Hash Mismatch
+
 ```bash
 # Verify constitutional hash
 curl http://localhost:8005/api/v1/constitutional/status | jq '.constitutional_hash'
@@ -576,6 +604,7 @@ python scripts/reset_constitutional_state.py --service pgc
 ```
 
 #### Policy Compilation Failures
+
 ```bash
 # Check compilation status
 curl http://localhost:8005/api/v1/incremental/status
@@ -590,6 +619,7 @@ curl -X POST http://localhost:8005/api/v1/incremental/rollback \
 ```
 
 #### Circuit Breaker Activation
+
 ```bash
 # Check circuit breaker status
 curl http://localhost:8005/api/v1/monitoring/circuit-breaker
@@ -604,6 +634,7 @@ export CIRCUIT_BREAKER_THRESHOLD=10
 ### Performance Optimization
 
 #### OPA Policy Optimization
+
 ```rego
 # Optimize OPA policies for performance
 package acgs.authz.optimized
@@ -624,6 +655,7 @@ allow if {
 ```
 
 #### Database Optimization
+
 ```sql
 -- Optimize enforcement queries
 CREATE INDEX idx_enforcement_timestamp ON enforcement_logs(timestamp);
@@ -632,6 +664,7 @@ CREATE INDEX idx_enforcement_action ON enforcement_logs(action_type);
 ```
 
 #### Cache Optimization
+
 ```bash
 # Monitor cache performance
 redis-cli info stats | grep hit_rate
@@ -644,12 +677,14 @@ redis-cli config set maxmemory-policy allkeys-lru
 ## Security Considerations
 
 ### Policy Enforcement Security
+
 - **OPA Security**: Secure OPA server configuration with authentication
 - **Constitutional Validation**: Continuous constitutional hash verification
 - **Access Control**: Role-based access for policy enforcement operations
 - **Audit Trail**: Comprehensive logging of all enforcement decisions
 
 ### Real-Time Enforcement Security
+
 - **Input Validation**: Comprehensive validation of enforcement requests
 - **Rate Limiting**: Protection against enforcement abuse
 - **Circuit Breakers**: Protection against cascade failures

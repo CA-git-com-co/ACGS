@@ -2,12 +2,12 @@ name: Academic Submission System Tests
 
 on:
   push:
-    branches: [ master, main, develop ]
+    branches: [master, main, develop]
     paths:
       - 'arxiv_submission_package/**'
       - '.github/workflows/test.yml'
   pull_request:
-    branches: [ master, main, develop ]
+    branches: [master, main, develop]
     paths:
       - 'arxiv_submission_package/**'
       - '.github/workflows/test.yml'
@@ -26,283 +26,301 @@ jobs:
             python-version: '3.9'
           - os: macos-latest
             python-version: '3.9'
-    
+
     defaults:
       run:
         working-directory: arxiv_submission_package
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-    
-    - name: Cache pip dependencies
-      uses: actions/cache@v4
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-    
-    - name: Install system dependencies (Ubuntu)
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y texlive-latex-base texlive-latex-extra texlive-fonts-recommended
-    
-    - name: Install system dependencies (macOS)
-      if: matrix.os == 'macos-latest'
-      run: |
-        brew install --cask mactex-no-gui || true
-        echo "/usr/local/texlive/2023/bin/universal-darwin" >> $GITHUB_PATH || true
-    
-    - name: Install Python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install -r requirements-test.txt
-    
-    - name: Lint with flake8
-      run: |
-        flake8 quality_assurance cli web --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 quality_assurance cli web --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    
-    - name: Type check with mypy
-      run: |
-        mypy quality_assurance cli web --ignore-missing-imports || true
-    
-    - name: Security check with bandit
-      run: |
-        bandit -r quality_assurance cli web -f json -o bandit-report.json || true
-    
-    - name: Run unit tests
-      run: |
-        pytest tests/unit/ -v --tb=short --cov=quality_assurance --cov=cli --cov=web --cov-report=xml --cov-report=term-missing
-    
-    - name: Run integration tests
-      run: |
-        pytest tests/integration/ -v --tb=short -m "not slow"
-    
-    - name: Run performance tests (quick)
-      run: |
-        pytest tests/performance/ -v --tb=short -m "not slow and not benchmark"
-    
-    - name: Upload coverage to Codecov
-      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./arxiv_submission_package/coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: false
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install system dependencies (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-extra texlive-fonts-recommended
+
+      - name: Install system dependencies (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew install --cask mactex-no-gui || true
+          echo "/usr/local/texlive/2023/bin/universal-darwin" >> $GITHUB_PATH || true
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+          if [ -f requirements-test.txt ]; then
+            pip install -r requirements-test.txt
+          else
+            pip install pytest pytest-cov flake8 mypy bandit
+          fi
+
+      - name: Lint with flake8
+        run: |
+          flake8 quality_assurance cli web --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 quality_assurance cli web --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Type check with mypy
+        run: |
+          mypy quality_assurance cli web --ignore-missing-imports || true
+
+      - name: Security check with bandit
+        run: |
+          bandit -r quality_assurance cli web -f json -o bandit-report.json || true
+
+      - name: Run unit tests
+        run: |
+          pytest tests/unit/ -v --tb=short --cov=quality_assurance --cov=cli --cov=web --cov-report=xml --cov-report=term-missing
+
+      - name: Run integration tests
+        run: |
+          pytest tests/integration/ -v --tb=short -m "not slow"
+
+      - name: Run performance tests (quick)
+        run: |
+          pytest tests/performance/ -v --tb=short -m "not slow and not benchmark"
+
+      - name: Upload coverage to Codecov
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./arxiv_submission_package/coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
 
   integration-tests:
     runs-on: ubuntu-latest
     needs: test
     if: github.event_name == 'push' || github.event.pull_request.draft == false
-    
+
     defaults:
       run:
         working-directory: arxiv_submission_package
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    
-    - name: Install system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-bibtex-extra
-    
-    - name: Install Python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install -r requirements-test.txt
-    
-    - name: Run full integration tests
-      run: |
-        pytest tests/integration/ -v --tb=short --durations=10
-    
-    - name: Run CLI integration tests
-      run: |
-        pytest tests/integration/ -v -m cli --tb=short
-    
-    - name: Run web integration tests
-      run: |
-        pytest tests/integration/ -v -m web --tb=short
-    
-    - name: Test CLI commands directly
-      run: |
-        # Create test paper
-        mkdir -p test_paper
-        echo '\documentclass{article}\begin{document}\title{Test}\author{Test}\maketitle\begin{abstract}Test abstract with sufficient length for validation.\end{abstract}\section{Introduction}Test content.\end{document}' > test_paper/main.tex
-        echo 'Test paper for CLI testing' > test_paper/README.txt
-        
-        # Test CLI commands
-        python cli/academic_cli.py validate test_paper/ --format json --output test_validation.json
-        python cli/academic_cli.py status test_paper/
-        python cli/academic_cli.py compliance test_paper/ --venue arxiv --output test_compliance.md
-        
-        # Verify outputs
-        test -f test_validation.json
-        test -f test_compliance.md
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-bibtex-extra
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+          if [ -f requirements-test.txt ]; then
+            pip install -r requirements-test.txt
+          else
+            pip install pytest pytest-cov flake8 mypy bandit
+          fi
+
+      - name: Run full integration tests
+        run: |
+          pytest tests/integration/ -v --tb=short --durations=10
+
+      - name: Run CLI integration tests
+        run: |
+          pytest tests/integration/ -v -m cli --tb=short
+
+      - name: Run web integration tests
+        run: |
+          pytest tests/integration/ -v -m web --tb=short
+
+      - name: Test CLI commands directly
+        run: |
+          # Create test paper
+          mkdir -p test_paper
+          echo '\documentclass{article}\begin{document}\title{Test}\author{Test}\maketitle\begin{abstract}Test abstract with sufficient length for validation.\end{abstract}\section{Introduction}Test content.\end{document}' > test_paper/main.tex
+          echo 'Test paper for CLI testing' > test_paper/README.txt
+
+          # Test CLI commands
+          python cli/academic_cli.py validate test_paper/ --format json --output test_validation.json
+          python cli/academic_cli.py status test_paper/
+          python cli/academic_cli.py compliance test_paper/ --venue arxiv --output test_compliance.md
+
+          # Verify outputs
+          test -f test_validation.json
+          test -f test_compliance.md
 
   performance-tests:
     runs-on: ubuntu-latest
     needs: test
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    
+
     defaults:
       run:
         working-directory: arxiv_submission_package
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    
-    - name: Install system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y texlive-latex-base texlive-latex-extra
-    
-    - name: Install Python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install -r requirements-test.txt
-    
-    - name: Run performance tests
-      run: |
-        pytest tests/performance/ -v --tb=short --benchmark-only --benchmark-json=benchmark.json
-    
-    - name: Store benchmark results
-      uses: benchmark-action/github-action-benchmark@v1
-      if: github.ref == 'refs/heads/master'
-      with:
-        tool: 'pytest'
-        output-file-path: arxiv_submission_package/benchmark.json
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        auto-push: true
-        comment-on-alert: true
-        alert-threshold: '200%'
-        fail-on-alert: false
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-extra
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+          if [ -f requirements-test.txt ]; then
+            pip install -r requirements-test.txt
+          else
+            pip install pytest pytest-cov flake8 mypy bandit
+          fi
+
+      - name: Run performance tests
+        run: |
+          pytest tests/performance/ -v --tb=short --benchmark-only --benchmark-json=benchmark.json
+
+      - name: Store benchmark results
+        uses: benchmark-action/github-action-benchmark@v1
+        if: github.ref == 'refs/heads/master'
+        with:
+          tool: 'pytest'
+          output-file-path: arxiv_submission_package/benchmark.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+          comment-on-alert: true
+          alert-threshold: '200%'
+          fail-on-alert: false
 
   security-scan:
     runs-on: ubuntu-latest
-    
+
     defaults:
       run:
         working-directory: arxiv_submission_package
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install bandit safety
-    
-    - name: Run Bandit security scan
-      run: |
-        bandit -r quality_assurance cli web -f json -o bandit-report.json
-    
-    - name: Run Safety dependency scan
-      run: |
-        safety check --json --output safety-report.json || true
-    
-    - name: Upload security reports
-      uses: actions/upload-artifact@v4
-      with:
-        name: security-reports
-        path: |
-          arxiv_submission_package/bandit-report.json
-          arxiv_submission_package/safety-report.json
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit safety
+
+      - name: Run Bandit security scan
+        run: |
+          bandit -r quality_assurance cli web -f json -o bandit-report.json
+
+      - name: Run Safety dependency scan
+        run: |
+          safety check --json --output safety-report.json || true
+
+      - name: Upload security reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: |
+            arxiv_submission_package/bandit-report.json
+            arxiv_submission_package/safety-report.json
 
   code-quality:
     runs-on: ubuntu-latest
-    
+
     defaults:
       run:
         working-directory: arxiv_submission_package
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install black isort flake8 mypy
-    
-    - name: Check code formatting with Black
-      run: |
-        black --check --diff quality_assurance cli web tests
-    
-    - name: Check import sorting with isort
-      run: |
-        isort --check-only --diff quality_assurance cli web tests
-    
-    - name: Lint with flake8
-      run: |
-        flake8 quality_assurance cli web tests --max-line-length=127 --extend-ignore=E203,W503
-    
-    - name: Type check with mypy
-      run: |
-        mypy quality_assurance cli web --ignore-missing-imports
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install black isort flake8 mypy
+
+      - name: Check code formatting with Black
+        run: |
+          black --check --diff quality_assurance cli web tests
+
+      - name: Check import sorting with isort
+        run: |
+          isort --check-only --diff quality_assurance cli web tests
+
+      - name: Lint with flake8
+        run: |
+          flake8 quality_assurance cli web tests --max-line-length=127 --extend-ignore=E203,W503
+
+      - name: Type check with mypy
+        run: |
+          mypy quality_assurance cli web --ignore-missing-imports
 
   documentation:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install sphinx sphinx-rtd-theme
-    
-    - name: Check documentation links
-      run: |
-        # Check for broken links in markdown files
-        find docs -name "*.md" -exec grep -l "http" {} \; | head -5 || true
-    
-    - name: Validate documentation structure
-      run: |
-        # Check that key documentation files exist
-        test -f docs/academic_submission_system/README.md
-        test -f docs/academic_submission_system/USER_GUIDE.md
-        test -f docs/academic_submission_system/API_REFERENCE.md
-        test -f docs/academic_submission_system/TUTORIAL.md
-        test -f docs/academic_submission_system/TESTING_GUIDE.md
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install sphinx sphinx-rtd-theme
+
+      - name: Check documentation links
+        run: |
+          # Check for broken links in markdown files
+          find docs -name "*.md" -exec grep -l "http" {} \; | head -5 || true
+
+      - name: Validate documentation structure
+        run: |
+          # Check that key documentation files exist
+          test -f docs/academic_submission_system/README.md
+          test -f docs/academic_submission_system/USER_GUIDE.md
+          test -f docs/academic_submission_system/API_REFERENCE.md
+          test -f docs/academic_submission_system/TUTORIAL.md
+          test -f docs/academic_submission_system/TESTING_GUIDE.md

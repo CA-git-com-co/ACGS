@@ -5,7 +5,7 @@ info:
     Enterprise-grade AI-powered policy generation platform that synthesizes enforceable
     governance policies from constitutional principles using advanced multi-model LLM
     ensembles and constitutional compliance validation.
-    
+
     Constitutional Hash: cdd01ef066bc6cf2
   version: 3.0.0
   contact:
@@ -202,6 +202,88 @@ paths:
               schema:
                 $ref: '#/components/schemas/APIStatusResponse'
 
+  /api/v1/constitutional/emergency-shutdown:
+    post:
+      summary: Emergency shutdown procedure
+      description: Initiate emergency shutdown with <30min RTO for critical incidents
+      tags:
+        - DGM Safety Patterns
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmergencyShutdownRequest'
+      responses:
+        '200':
+          description: Emergency shutdown initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmergencyShutdownResponse'
+
+  /api/v1/dgm/sandbox/synthesize:
+    post:
+      summary: Execute synthesis in sandbox
+      description: Execute policy synthesis in isolated sandbox environment
+      tags:
+        - DGM Safety Patterns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SandboxSynthesisRequest'
+      responses:
+        '200':
+          description: Sandbox synthesis completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SandboxSynthesisResponse'
+
+  /api/v1/dgm/human-review:
+    post:
+      summary: Submit for human review
+      description: Submit critical synthesis results for human review
+      tags:
+        - DGM Safety Patterns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HumanReviewRequest'
+      responses:
+        '200':
+          description: Submitted for human review
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HumanReviewResponse'
+
+  /api/v1/dgm/rollback:
+    post:
+      summary: Rollback synthesis changes
+      description: Rollback synthesis changes to previous safe state
+      tags:
+        - DGM Safety Patterns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RollbackRequest'
+      responses:
+        '200':
+          description: Rollback completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RollbackResponse'
+
   /metrics:
     get:
       summary: Prometheus metrics
@@ -236,10 +318,10 @@ components:
           example: gs_service_production
         version:
           type: string
-          example: "3.0.0"
+          example: '3.0.0'
         phase:
           type: string
-          example: "Phase A3 - Production Implementation"
+          example: 'Phase A3 - Production Implementation'
         synthesis_capabilities:
           type: object
           properties:
@@ -270,7 +352,7 @@ components:
         synthesis_goal:
           type: string
           description: Goal for policy synthesis
-          example: "Create privacy protection policy for citizen data"
+          example: 'Create privacy protection policy for citizen data'
         constitutional_principles:
           type: array
           items:
@@ -340,7 +422,7 @@ components:
               type: object
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
         generation_time_ms:
           type: number
 
@@ -391,10 +473,147 @@ components:
               type: object
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
         timestamp:
           type: string
           format: date-time
+
+    EmergencyShutdownRequest:
+      type: object
+      required:
+        - reason
+        - authorization_token
+      properties:
+        reason:
+          type: string
+          description: Reason for emergency shutdown
+        authorization_token:
+          type: string
+          description: Admin authorization token
+        rto_target_minutes:
+          type: integer
+          default: 30
+
+    EmergencyShutdownResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: 'shutdown_initiated'
+        shutdown_id:
+          type: string
+        estimated_rto_minutes:
+          type: integer
+        constitutional_hash:
+          type: string
+          example: 'cdd01ef066bc6cf2'
+        timestamp:
+          type: string
+          format: date-time
+
+    SandboxSynthesisRequest:
+      type: object
+      required:
+        - synthesis_request
+      properties:
+        synthesis_request:
+          type: object
+          description: Synthesis request to execute in sandbox
+        sandbox_config:
+          type: object
+          properties:
+            timeout_seconds:
+              type: integer
+              default: 300
+            memory_limit_mb:
+              type: integer
+              default: 1024
+            ai_model_restrictions:
+              type: array
+              items:
+                type: string
+
+    SandboxSynthesisResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [completed, timeout, error]
+        execution_id:
+          type: string
+        synthesis_result:
+          type: object
+        sandbox_metrics:
+          type: object
+          properties:
+            execution_time_ms:
+              type: number
+            memory_used_mb:
+              type: number
+            ai_model_calls:
+              type: integer
+
+    HumanReviewRequest:
+      type: object
+      required:
+        - synthesis_result
+        - review_priority
+      properties:
+        synthesis_result:
+          type: object
+          description: Synthesis result requiring human review
+        review_priority:
+          type: string
+          enum: [low, medium, high, critical]
+        review_reason:
+          type: string
+        constitutional_implications:
+          type: array
+          items:
+            type: string
+
+    HumanReviewResponse:
+      type: object
+      properties:
+        review_id:
+          type: string
+        status:
+          type: string
+          enum: [submitted, in_review, approved, rejected]
+        estimated_review_time_hours:
+          type: integer
+        constitutional_hash:
+          type: string
+          example: 'cdd01ef066bc6cf2'
+
+    RollbackRequest:
+      type: object
+      required:
+        - target_state
+      properties:
+        target_state:
+          type: string
+        rollback_reason:
+          type: string
+        preserve_audit_trail:
+          type: boolean
+          default: true
+
+    RollbackResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [completed, failed, partial]
+        rollback_id:
+          type: string
+        previous_state:
+          type: string
+        current_state:
+          type: string
+        constitutional_hash:
+          type: string
+          example: 'cdd01ef066bc6cf2'
 
 tags:
   - name: Health
@@ -417,3 +636,5 @@ tags:
     description: System status and capabilities
   - name: Monitoring
     description: Performance metrics and monitoring
+  - name: DGM Safety Patterns
+    description: Democratic Governance Model safety patterns including sandbox execution, human review, and emergency procedures

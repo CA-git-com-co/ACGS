@@ -141,10 +141,10 @@ mod tests {
     #[test]
     fn test_governance_operations() {
         let payer = Keypair::new();
-        let client = AcgsClient::devnet(payer).expect("Failed to create client");
+        let _client = AcgsClient::devnet(payer).expect("Failed to create client");
 
         // Test constitutional principles creation
-        let principles = vec![
+        let _principles = vec![
             crate::governance::ConstitutionalPrinciple {
                 id: 1,
                 title: "Test Principle".to_string(),

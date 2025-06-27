@@ -297,6 +297,13 @@ jobs:
         working-directory: ${{ matrix.project }}
         run: cargo fmt --all -- --check
 
+      - name: Rust check with zero warnings policy
+        if: steps.check_project.outputs.exists == 'true'
+        working-directory: ${{ matrix.project }}
+        env:
+          RUSTFLAGS: '-D warnings'
+        run: cargo check --all-targets
+
       - name: Rust clippy
         if: steps.check_project.outputs.exists == 'true'
         working-directory: ${{ matrix.project }}

@@ -6,7 +6,7 @@ global:
   evaluation_interval: 15s
 
 rule_files:
-  - "kimi-alerts.yml"
+  - 'kimi-alerts.yml'
 
 scrape_configs:
   # Kimi Service Metrics
@@ -96,11 +96,11 @@ alerting:
   alertmanagers:
     - static_configs:
         - targets:
-          - alertmanager:9093
+            - alertmanager:9093
 
 # Remote write configuration (for long-term storage)
 remote_write:
-  - url: "http://prometheus:9090/api/v1/write"
+  - url: 'http://prometheus:9090/api/v1/write'
     queue_config:
       max_samples_per_send: 1000
       max_shards: 200

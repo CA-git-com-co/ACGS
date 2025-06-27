@@ -5,7 +5,7 @@ info:
     Enterprise-grade WINA-optimized oversight and governance platform providing
     advanced evolutionary computation algorithms, constitutional compliance verification,
     and intelligent performance optimization.
-    
+
     Constitutional Hash: cdd01ef066bc6cf2
   version: 3.0.0
   contact:
@@ -192,6 +192,88 @@ paths:
               schema:
                 $ref: '#/components/schemas/OversightReportsResponse'
 
+  /api/v1/constitutional/emergency-shutdown:
+    post:
+      summary: Emergency shutdown procedure
+      description: Initiate emergency shutdown with <30min RTO for critical incidents
+      tags:
+        - DGM Safety Patterns
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmergencyShutdownRequest'
+      responses:
+        '200':
+          description: Emergency shutdown initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmergencyShutdownResponse'
+
+  /api/v1/dgm/sandbox/evolve:
+    post:
+      summary: Execute evolution in sandbox
+      description: Execute evolutionary computation in isolated sandbox environment
+      tags:
+        - DGM Safety Patterns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SandboxEvolutionRequest'
+      responses:
+        '200':
+          description: Sandbox evolution completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SandboxEvolutionResponse'
+
+  /api/v1/dgm/human-review:
+    post:
+      summary: Submit for human review
+      description: Submit critical evolution decisions for human review
+      tags:
+        - DGM Safety Patterns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HumanReviewRequest'
+      responses:
+        '200':
+          description: Submitted for human review
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HumanReviewResponse'
+
+  /api/v1/dgm/rollback:
+    post:
+      summary: Rollback evolution changes
+      description: Rollback evolution changes to previous safe state
+      tags:
+        - DGM Safety Patterns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RollbackRequest'
+      responses:
+        '200':
+          description: Rollback completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RollbackResponse'
+
   /metrics:
     get:
       summary: Prometheus metrics
@@ -226,10 +308,10 @@ components:
           example: ec_service_production
         version:
           type: string
-          example: "3.0.0"
+          example: '3.0.0'
         phase:
           type: string
-          example: "Phase 3 - Production Implementation"
+          example: 'Phase 3 - Production Implementation'
         components:
           type: object
           properties:
@@ -252,10 +334,10 @@ components:
               type: number
             target_response_time:
               type: string
-              example: "<300ms"
+              example: '<300ms'
             availability_target:
               type: string
-              example: ">99.9%"
+              example: '>99.9%'
 
     OversightCoordinationRequest:
       type: object
@@ -266,7 +348,7 @@ components:
         target_system:
           type: string
           description: Target system for oversight
-          example: "governance_optimization"
+          example: 'governance_optimization'
         oversight_type:
           type: string
           enum: [constitutional_compliance, performance_optimization, resource_allocation]
@@ -327,7 +409,7 @@ components:
             type: object
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
         processing_time_ms:
           type: number
 
@@ -339,7 +421,13 @@ components:
       properties:
         algorithm_type:
           type: string
-          enum: [resource_allocation, coordination_efficiency, performance_tuning, governance_compliance]
+          enum:
+            [
+              resource_allocation,
+              coordination_efficiency,
+              performance_tuning,
+              governance_compliance,
+            ]
         optimization_target:
           type: string
           description: Target for optimization
@@ -397,10 +485,117 @@ components:
               type: object
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
         timestamp:
           type: string
           format: date-time
+
+    EmergencyShutdownRequest:
+      type: object
+      required:
+        - reason
+        - authorization_token
+      properties:
+        reason:
+          type: string
+          description: Reason for emergency shutdown
+        authorization_token:
+          type: string
+          description: Admin authorization token
+        rto_target_minutes:
+          type: integer
+          default: 30
+
+    EmergencyShutdownResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: 'shutdown_initiated'
+        shutdown_id:
+          type: string
+        estimated_rto_minutes:
+          type: integer
+        constitutional_hash:
+          type: string
+          example: 'cdd01ef066bc6cf2'
+
+    SandboxEvolutionRequest:
+      type: object
+      required:
+        - evolution_request
+      properties:
+        evolution_request:
+          type: object
+          description: Evolution request to execute in sandbox
+        sandbox_config:
+          type: object
+          properties:
+            timeout_seconds:
+              type: integer
+              default: 1800
+            wina_isolation:
+              type: boolean
+              default: true
+
+    SandboxEvolutionResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [completed, timeout, error]
+        execution_id:
+          type: string
+        evolution_result:
+          type: object
+        sandbox_metrics:
+          type: object
+
+    HumanReviewRequest:
+      type: object
+      required:
+        - evolution_decision
+        - review_priority
+      properties:
+        evolution_decision:
+          type: object
+        review_priority:
+          type: string
+          enum: [low, medium, high, critical]
+
+    HumanReviewResponse:
+      type: object
+      properties:
+        review_id:
+          type: string
+        status:
+          type: string
+          enum: [submitted, in_review, approved, rejected]
+        constitutional_hash:
+          type: string
+          example: 'cdd01ef066bc6cf2'
+
+    RollbackRequest:
+      type: object
+      required:
+        - target_state
+      properties:
+        target_state:
+          type: string
+        rollback_reason:
+          type: string
+
+    RollbackResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [completed, failed, partial]
+        rollback_id:
+          type: string
+        constitutional_hash:
+          type: string
+          example: 'cdd01ef066bc6cf2'
 
 tags:
   - name: Health
@@ -423,3 +618,5 @@ tags:
     description: Comprehensive reporting and analytics
   - name: Monitoring
     description: Service monitoring and metrics
+  - name: DGM Safety Patterns
+    description: Democratic Governance Model safety patterns including sandbox execution, human review, and emergency procedures

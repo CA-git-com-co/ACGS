@@ -5,6 +5,7 @@
 The Authentication Service is a critical component of the ACGS-PGP (Autonomous Constitutional Governance System - Policy Generation Platform) that provides secure JWT-based authentication and authorization for all system components.
 
 **Service Details:**
+
 - **Port**: 8000
 - **Version**: 3.0.0
 - **Constitutional Hash**: `cdd01ef066bc6cf2`
@@ -14,6 +15,7 @@ The Authentication Service is a critical component of the ACGS-PGP (Autonomous C
 ## Architecture
 
 ### Core Components
+
 - **JWT Token Management**: Secure token generation and validation
 - **User Authentication**: Login/logout functionality
 - **Authorization**: Role-based access control (RBAC)
@@ -21,6 +23,7 @@ The Authentication Service is a critical component of the ACGS-PGP (Autonomous C
 - **Security Middleware**: Rate limiting, CSRF protection, audit logging
 
 ### Dependencies
+
 - **Database**: PostgreSQL (user management, sessions)
 - **Cache**: Redis (token caching, rate limiting)
 - **Constitutional AI Service**: Port 8001 (compliance validation)
@@ -30,9 +33,11 @@ The Authentication Service is a critical component of the ACGS-PGP (Autonomous C
 ### Authentication Endpoints
 
 #### POST /api/v1/auth/login
+
 Authenticate user and generate JWT token.
 
 **Request:**
+
 ```json
 {
   "username": "string",
@@ -41,6 +46,7 @@ Authenticate user and generate JWT token.
 ```
 
 **Response:**
+
 ```json
 {
   "access_token": "jwt_token_string",
@@ -51,9 +57,11 @@ Authenticate user and generate JWT token.
 ```
 
 #### POST /api/v1/auth/refresh
+
 Refresh expired JWT token.
 
 **Request:**
+
 ```json
 {
   "refresh_token": "refresh_token_string"
@@ -61,9 +69,11 @@ Refresh expired JWT token.
 ```
 
 #### POST /api/v1/auth/logout
+
 Invalidate current session.
 
 **Headers:**
+
 ```
 Authorization: Bearer <jwt_token>
 ```
@@ -71,15 +81,18 @@ Authorization: Bearer <jwt_token>
 ### Validation Endpoints
 
 #### GET /api/v1/auth/validate
+
 Validate JWT token and return user information.
 
 **Headers:**
+
 ```
 Authorization: Bearer <jwt_token>
 X-Constitutional-Hash: cdd01ef066bc6cf2
 ```
 
 **Response:**
+
 ```json
 {
   "valid": true,
@@ -91,9 +104,11 @@ X-Constitutional-Hash: cdd01ef066bc6cf2
 ```
 
 #### GET /api/v1/auth/info
+
 Service information and constitutional hash.
 
 **Response:**
+
 ```json
 {
   "service": "auth_service",
@@ -107,9 +122,11 @@ Service information and constitutional hash.
 ### Health & Monitoring
 
 #### GET /health
+
 Service health check.
 
 **Response:**
+
 ```json
 {
   "status": "healthy",
@@ -121,6 +138,7 @@ Service health check.
 ```
 
 #### GET /metrics
+
 Prometheus metrics endpoint.
 
 ## Configuration
@@ -160,11 +178,11 @@ AC_SERVICE_URL=http://localhost:8001
 ```yaml
 resources:
   requests:
-    memory: "512Mi"
-    cpu: "200m"
+    memory: '512Mi'
+    cpu: '200m'
   limits:
-    memory: "1Gi"
-    cpu: "500m"
+    memory: '1Gi'
+    cpu: '500m'
 ```
 
 ## Deployment
@@ -206,36 +224,39 @@ spec:
         app: auth-service
     spec:
       containers:
-      - name: auth-service
-        image: acgs-auth-service:latest
-        ports:
-        - containerPort: 8000
-        env:
-        - name: CONSTITUTIONAL_HASH
-          value: "cdd01ef066bc6cf2"
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "200m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
+        - name: auth-service
+          image: acgs-auth-service:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: CONSTITUTIONAL_HASH
+              value: 'cdd01ef066bc6cf2'
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '200m'
+            limits:
+              memory: '1Gi'
+              cpu: '500m'
 ```
 
 ## Security
 
 ### Authentication Security
+
 - **JWT Tokens**: HS256 algorithm with 30-minute expiration
 - **Password Hashing**: bcrypt with 12 rounds
 - **Rate Limiting**: 120 requests per minute per IP
 - **Account Lockout**: 5 failed attempts, 15-minute lockout
 
 ### Constitutional Compliance
+
 - All requests validated against constitutional hash `cdd01ef066bc6cf2`
 - Integration with Constitutional AI Service for compliance verification
 - Audit logging for all authentication events
 
 ### Security Headers
+
 - CSRF protection enabled
 - HTTPS-only cookies in production
 - Secure session management
@@ -243,17 +264,20 @@ spec:
 ## Monitoring
 
 ### Health Checks
+
 - **Endpoint**: `/health`
 - **Frequency**: Every 30 seconds
 - **Timeout**: 5 seconds
 
 ### Metrics
+
 - **Authentication Rate**: Successful/failed login attempts
 - **Token Validation Rate**: JWT validation requests
 - **Response Time**: P95 response time tracking
 - **Constitutional Compliance**: Compliance rate monitoring
 
 ### Alerts
+
 - **Critical**: Service down, constitutional compliance failure
 - **High**: High response time (>2s), authentication failures spike
 - **Moderate**: High resource usage, rate limit exceeded
@@ -263,15 +287,17 @@ spec:
 ### Common Issues
 
 1. **Service Not Starting**
+
    ```bash
    # Check logs
    docker logs acgs-auth-service
-   
+
    # Verify environment variables
    env | grep -E "(DATABASE_URL|REDIS_URL|CONSTITUTIONAL_HASH)"
    ```
 
 2. **Database Connection Issues**
+
    ```bash
    # Test database connectivity
    psql $DATABASE_URL -c "SELECT 1;"
@@ -286,19 +312,21 @@ spec:
 ### Emergency Procedures
 
 1. **Service Recovery**
+
    ```bash
    # Restart service
    kubectl rollout restart deployment/auth-service
-   
+
    # Check status
    kubectl get pods -l app=auth-service
    ```
 
 2. **Constitutional Compliance Failure**
+
    ```bash
    # Verify constitutional hash
    curl -s http://localhost:8000/api/v1/auth/info | jq '.constitutional_hash'
-   
+
    # Should return: "cdd01ef066bc6cf2"
    ```
 

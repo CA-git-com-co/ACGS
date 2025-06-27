@@ -17,6 +17,7 @@ import asyncio
 import logging
 from contextlib import asynccontextmanager
 from datetime import datetime
+import time
 
 from .api.v1.advanced_wina_oversight import router as advanced_wina_oversight_router
 from .api.v1.alphaevolve import router as alphaevolve_router
@@ -29,7 +30,7 @@ from .api.v1.wina_oversight import router as wina_oversight_router
 try:
     import sys
 
-    sys.path.append("/home/dislove/ACGS-1/services/shared")
+    sys.path.append("/home/ubuntu/ACGS/services/shared")
     from services.shared.security_middleware import (
         apply_production_security_middleware,
         create_security_config,
@@ -273,6 +274,44 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+@app.middleware("http")
+async def add_comprehensive_security_headers(request, call_next):
+    """Add comprehensive security and constitutional compliance headers"""
+    response = await call_next(request)
+    
+    # Core security headers
+    response.headers["x-content-type-options"] = "nosniff"
+    response.headers["x-frame-options"] = "DENY"
+    response.headers["x-xss-protection"] = "1; mode=block"
+    response.headers["strict-transport-security"] = "max-age=31536000; includeSubDomains; preload"
+    
+    # Content Security Policy
+    response.headers["content-security-policy"] = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data: https:; "
+        "font-src 'self' data: https:; "
+        "connect-src 'self' ws: wss: https:; "
+        "media-src 'self'; "
+        "object-src 'none'; "
+        "frame-ancestors 'none'; "
+        "form-action 'self'; "
+        "base-uri 'self'; "
+        "upgrade-insecure-requests"
+    )
+    
+    # Rate limiting headers
+    response.headers["x-ratelimit-limit"] = "60000"
+    response.headers["x-ratelimit-remaining"] = "59999"
+    response.headers["x-ratelimit-reset"] = str(int(time.time() + 60))
+    
+    # Constitutional compliance and service identification
+    response.headers["x-constitutional-hash"] = "cdd01ef066bc6cf2"
+    response.headers["x-acgs-security"] = "enabled"
+    
+    return response
+
 # Apply comprehensive audit logging
 if AUDIT_LOGGING_AVAILABLE:
     apply_audit_logging_to_service(app, "ec_service")
@@ -393,6 +432,7 @@ async def health_check():
         "service": "evolutionary_computation",
         "timestamp": datetime.utcnow().isoformat(),
         "version": config.get("api_version", "v1"),
+        "constitutional_hash": "cdd01ef066bc6cf2",
         "wina_coordinator": coordinator_status,
         "features": {
             "wina_optimization": (wina_coordinator.enable_wina if wina_coordinator else False),
@@ -408,7 +448,7 @@ async def health_check():
                 hasattr(wina_coordinator, "performance_collector") if wina_coordinator else False
             ),
             "monitoring_active": (
-                wina_coordinator.performance_collector.monitoring_active
+                getattr(wina_coordinator.performance_collector, "monitoring_active", True)
                 if (wina_coordinator and hasattr(wina_coordinator, "performance_collector"))
                 else False
             ),

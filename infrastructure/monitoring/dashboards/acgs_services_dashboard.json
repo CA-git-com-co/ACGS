@@ -2,11 +2,7 @@
   "dashboard": {
     "id": null,
     "title": "ACGS-1 Services Dashboard",
-    "tags": [
-      "acgs",
-      "services",
-      "monitoring"
-    ],
+    "tags": ["acgs", "services", "monitoring"],
     "timezone": "browser",
     "panels": [
       {

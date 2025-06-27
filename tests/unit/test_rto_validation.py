@@ -19,7 +19,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler("/home/dislove/ACGS-1/logs/rto_validation.log"),
+        logging.FileHandler("logs/rto_validation.log"),
         logging.StreamHandler(),
     ],
 )
@@ -30,7 +30,7 @@ class RTOValidationTester:
     """Automated RTO validation testing system for ACGS-1"""
 
     def __init__(self):
-        self.project_root = Path("/home/dislove/ACGS-1")
+        self.project_root = Path.cwd()
         self.constitution_hash = "cdd01ef066bc6cf2"
 
         # RTO targets in seconds
@@ -558,14 +558,14 @@ def main():
     args = parser.parse_args()
 
     # Ensure log directory exists
-    log_dir = Path("/home/dislove/ACGS-1/logs")
+    log_dir = Path("logs")
     log_dir.mkdir(exist_ok=True)
 
     tester = RTOValidationTester()
 
     if args.report:
         # Find latest RTO validation results
-        report_dir = Path("/home/dislove/ACGS-1/logs/rto_validation")
+        report_dir = Path("logs/rto_validation")
         if report_dir.exists():
             report_files = list(report_dir.glob("rto_validation_*.json"))
             if report_files:

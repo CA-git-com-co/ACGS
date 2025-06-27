@@ -9,10 +9,10 @@ const createJestConfig = nextJest({
 const customJestConfig = {
   // Add more setup options before each test is run
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  
+
   // Test environment
   testEnvironment: 'jest-environment-jsdom',
-  
+
   // Module name mapping for absolute imports
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
@@ -27,13 +27,13 @@ const customJestConfig = {
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
       '<rootDir>/__mocks__/fileMock.js',
   },
-  
+
   // Test file patterns
   testMatch: [
     '<rootDir>/**/__tests__/**/*.{js,jsx,ts,tsx}',
     '<rootDir>/**/*.(test|spec).{js,jsx,ts,tsx}',
   ],
-  
+
   // Files to ignore
   testPathIgnorePatterns: [
     '<rootDir>/.next/',
@@ -42,7 +42,7 @@ const customJestConfig = {
     '<rootDir>/dist/',
     '<rootDir>/build/',
   ],
-  
+
   // Coverage configuration
   collectCoverageFrom: [
     'components/**/*.{js,jsx,ts,tsx}',
@@ -58,7 +58,7 @@ const customJestConfig = {
     '!**/*.config.{js,ts}',
     '!**/middleware.ts',
   ],
-  
+
   // Coverage thresholds
   coverageThreshold: {
     global: {
@@ -68,10 +68,10 @@ const customJestConfig = {
       statements: 70,
     },
   },
-  
+
   // Coverage reporters
   coverageReporters: ['text', 'lcov', 'html'],
-  
+
   // Transform configuration
   transform: {
     '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
@@ -81,34 +81,32 @@ const customJestConfig = {
   transformIgnorePatterns: [
     'node_modules/(?!(uuid|@solana|@coral-xyz|@noble|bs58|borsh|jayson|rpc-websockets|@wallet-standard|@walletconnect|@ledgerhq|@keystonehq)/)',
   ],
-  
+
   // Module file extensions
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  
+
   // Setup files
   setupFiles: ['<rootDir>/jest.polyfills.js'],
-  
+
   // Test timeout
   testTimeout: 10000,
-  
+
   // Verbose output
   verbose: true,
-  
+
   // Clear mocks between tests
   clearMocks: true,
-  
+
   // Restore mocks after each test
   restoreMocks: true,
-  
 
-  
   // Global variables
   globals: {
     'ts-jest': {
       tsconfig: 'tsconfig.json',
     },
   },
-  
+
   // Test environment options
   testEnvironmentOptions: {
     url: 'http://localhost:3000',

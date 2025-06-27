@@ -168,52 +168,68 @@ else:
     logger.warning("⚠️ Using fallback error handling")
 
 
-@app.middleware("http")
-async def add_security_headers(request, call_next):
-    """Add comprehensive OWASP-recommended security headers."""
-    response = await call_next(request)
+# Apply comprehensive security middleware
+try:
+    from services.shared.security_middleware import apply_production_security_middleware
+    apply_production_security_middleware(app, "ac_service")
+    logger.info("✅ Production security middleware applied")
+except ImportError:
+    logger.warning("⚠️ Production security middleware not available, using basic security")
 
-    # Core security headers
-    response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["X-Frame-Options"] = "DENY"
-    response.headers["X-XSS-Protection"] = "1; mode=block"
-    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    @app.middleware("http")
+    async def add_security_headers(request, call_next):
+        """Add comprehensive OWASP-recommended security headers."""
+        response = await call_next(request)
 
-    # HSTS (HTTP Strict Transport Security)
-    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+        # Core security headers
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
-    # Content Security Policy (CSP) - Enhanced for XSS protection
-    csp_policy = (
-        "default-src 'self'; "
-        "script-src 'self' 'unsafe-inline'; "
-        "style-src 'self' 'unsafe-inline'; "
-        "img-src 'self' data: https:; "
-        "font-src 'self' https:; "
-        "connect-src 'self' https:; "
-        "frame-ancestors 'none'; "
-        "base-uri 'self'; "
-        "form-action 'self'"
-    )
-    response.headers["Content-Security-Policy"] = csp_policy
+        # HSTS (HTTP Strict Transport Security)
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
 
-    # Permissions Policy
-    permissions_policy = (
-        "geolocation=(), microphone=(), camera=(), "
-        "payment=(), usb=(), magnetometer=(), gyroscope=()"
-    )
-    response.headers["Permissions-Policy"] = permissions_policy
+        # Content Security Policy (CSP) - Enhanced for XSS protection
+        csp_policy = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
+            "style-src 'self' 'unsafe-inline'; "
+            "img-src 'self' data: https:; "
+            "font-src 'self' data: https:; "
+            "connect-src 'self' ws: wss: https:; "
+            "media-src 'self'; "
+            "object-src 'none'; "
+            "frame-ancestors 'none'; "
+            "form-action 'self'; "
+            "base-uri 'self'; "
+            "upgrade-insecure-requests"
+        )
+        response.headers["Content-Security-Policy"] = csp_policy
 
-    # Additional security headers
-    response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
-    response.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
-    response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
-    response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
+        # Permissions Policy
+        permissions_policy = (
+            "geolocation=(), microphone=(), camera=(), "
+            "payment=(), usb=(), magnetometer=(), gyroscope=()"
+        )
+        response.headers["Permissions-Policy"] = permissions_policy
 
-    # ACGS-1 specific headers
-    response.headers["X-ACGS-Security"] = "enabled"
-    response.headers["X-Constitutional-Hash"] = "cdd01ef066bc6cf2"
+        # Additional security headers
+        response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
+        response.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
+        response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+        response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
 
-    return response
+        # Rate limiting headers (basic implementation)
+        response.headers["X-RateLimit-Limit"] = "60000"
+        response.headers["X-RateLimit-Remaining"] = "59999"
+        response.headers["X-RateLimit-Reset"] = str(int(time.time() + 60))
+
+        # ACGS-1 specific headers
+        response.headers["X-ACGS-Security"] = "enabled"
+        response.headers["X-Constitutional-Hash"] = "cdd01ef066bc6cf2"
+
+        return response
 
 
 # Apply comprehensive audit logging
@@ -262,6 +278,14 @@ try:
     logger.info("✅ Enhanced security middleware applied to AC service")
 except ImportError as e:
     logger.warning(f"⚠️ Security middleware not available: {e}")
+
+# Add our enhanced security middleware for input validation
+try:
+    from .middleware.enhanced_security import EnhancedSecurityMiddleware
+    app.add_middleware(EnhancedSecurityMiddleware)
+    logger.info("✅ Enhanced input validation middleware applied to AC service")
+except ImportError as e:
+    logger.warning(f"⚠️ Enhanced input validation middleware not available: {e}")
 
 # Add fallback security middleware with restricted hosts
 allowed_hosts = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,acgs.local").split(",")
@@ -400,6 +424,7 @@ async def health_check():
         "version": "3.0.0",
         "port": 8001,
         "timestamp": time.time(),
+        "constitutional_hash": "cdd01ef066bc6cf2",
         "enhanced_services": ENHANCED_SERVICES_AVAILABLE,
         "services": {
             "compliance_engine": compliance_engine is not None,

@@ -11,10 +11,12 @@ This guide provides step-by-step instructions for deploying ACGS-1 in developmen
 ## ⚠️ Implementation Status Notice
 
 **Service Implementation Status**:
+
 - ✅ **Production Ready**: Auth (8000), AC (8001), Integrity (8002) services
 - 🧪 **Prototype**: FV (8003), GS (8004), PGC (8005), EC (8006) services
 
 **Deployment Recommendations**:
+
 - **Development/Testing**: All services can be deployed for development and testing
 - **Production**: Only deploy production-ready services (Auth, AC, Integrity) for production workloads
 - **Prototype Services**: Suitable for development but require additional work for production deployment
@@ -189,16 +191,16 @@ ENCRYPTION_KEY=your_encryption_key
 
 ### Service Ports
 
-| Service | Port | Health Check |
-|---------|------|--------------|
-| Authentication | 8000 | `/health` |
-| Constitutional AI | 8001 | `/health` |
-| Integrity | 8002 | `/health` |
-| Formal Verification | 8003 | `/health` |
-| Governance Synthesis | 8004 | `/health` |
-| Policy Governance | 8005 | `/health` |
-| Evolutionary Computation | 8006 | `/health` |
-| Darwin Gödel Machine | 8007 | `/health` |
+| Service                  | Port | Health Check |
+| ------------------------ | ---- | ------------ |
+| Authentication           | 8000 | `/health`    |
+| Constitutional AI        | 8001 | `/health`    |
+| Integrity                | 8002 | `/health`    |
+| Formal Verification      | 8003 | `/health`    |
+| Governance Synthesis     | 8004 | `/health`    |
+| Policy Governance        | 8005 | `/health`    |
+| Evolutionary Computation | 8006 | `/health`    |
+| Darwin Gödel Machine     | 8007 | `/health`    |
 
 ## ✅ Verification
 
@@ -237,6 +239,7 @@ cd project && npm test
 ### Common Issues
 
 **Service won't start**
+
 ```bash
 # Check logs
 docker-compose logs service-name
@@ -246,6 +249,7 @@ netstat -tulpn | grep :8001
 ```
 
 **Database connection failed**
+
 ```bash
 # Verify PostgreSQL is running
 docker-compose ps postgres
@@ -255,6 +259,7 @@ psql -h localhost -U acgs -d acgs_db
 ```
 
 **Frontend build errors**
+
 ```bash
 # Clear cache and reinstall
 cd project
@@ -265,11 +270,13 @@ npm install
 ### Performance Issues
 
 **High memory usage**
+
 - Reduce service replicas in Docker Compose
 - Increase Docker memory limits
 - Monitor with `docker stats`
 
 **Slow response times**
+
 - Check database query performance
 - Monitor Redis cache hit rates
 - Review service logs for bottlenecks

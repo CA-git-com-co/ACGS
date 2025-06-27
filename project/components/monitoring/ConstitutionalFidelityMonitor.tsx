@@ -8,19 +8,19 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 // import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
-import { 
-  AlertTriangle, 
-  CheckCircle, 
-  XCircle, 
-  Activity, 
-  TrendingUp, 
-  TrendingDown, 
-  Wifi, 
-  WifiOff, 
-  Clock, 
-  Shield, 
-  BarChart3, 
-  RefreshCw 
+import {
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Activity,
+  TrendingUp,
+  TrendingDown,
+  Wifi,
+  WifiOff,
+  Clock,
+  Shield,
+  BarChart3,
+  RefreshCw,
 } from 'lucide-react';
 
 // Types
@@ -71,7 +71,7 @@ interface FidelityHistoryPoint {
 
 /**
  * Constitutional Fidelity Monitor Component
- * 
+ *
  * Real-time monitoring dashboard for constitutional compliance with:
  * - Live fidelity score tracking with historical trend analysis
  * - Visual indicators for compliance levels (green: >0.85, amber: 0.70-0.85, red: <0.70)
@@ -81,10 +81,12 @@ interface FidelityHistoryPoint {
  */
 export const ConstitutionalFidelityMonitor: React.FC = () => {
   const [isConnected, setIsConnected] = useState(false);
-  const [fidelityScores, setFidelityScores] = useState<{[key: string]: FidelityScore}>({});
+  const [fidelityScores, setFidelityScores] = useState<{ [key: string]: FidelityScore }>({});
   const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetrics | null>(null);
   const [alerts, setAlerts] = useState<AlertData[]>([]);
-  const [connectionStatus, setConnectionStatus] = useState<'disconnected' | 'connected' | 'error'>('disconnected');
+  const [connectionStatus, setConnectionStatus] = useState<'disconnected' | 'connected' | 'error'>(
+    'disconnected'
+  );
 
   // Enhanced state for historical tracking and real-time monitoring
   const [fidelityHistory, setFidelityHistory] = useState<FidelityHistoryPoint[]>([]);
@@ -105,8 +107,8 @@ export const ConstitutionalFidelityMonitor: React.FC = () => {
   // Fidelity thresholds for alert levels
   const FIDELITY_THRESHOLDS = {
     green: 0.85,
-    amber: 0.70,
-    red: 0.55
+    amber: 0.7,
+    red: 0.55,
   };
 
   // Enhanced WebSocket connection management with auto-refresh
@@ -161,23 +163,24 @@ export const ConstitutionalFidelityMonitor: React.FC = () => {
   const connectWebSocket = () => {
     try {
       // Use environment variable or default to localhost
-      const wsUrl = process.env.NEXT_PUBLIC_FIDELITY_MONITOR_WS_URL || 
-                   `ws://localhost:8004/api/v1/ws/fidelity-monitor`;
+      const wsUrl =
+        process.env.NEXT_PUBLIC_FIDELITY_MONITOR_WS_URL ||
+        `ws://localhost:8004/api/v1/ws/fidelity-monitor`;
       wsRef.current = new WebSocket(wsUrl);
-      
+
       wsRef.current.onopen = () => {
         console.log('Constitutional Fidelity Monitor WebSocket connected');
         setIsConnected(true);
         setConnectionStatus('connected');
         setReconnectAttempts(0);
-        
+
         // Request initial performance metrics
         sendMessage({
-          type: 'get_performance_metrics'
+          type: 'get_performance_metrics',
         });
       };
-      
-      wsRef.current.onmessage = (event) => {
+
+      wsRef.current.onmessage = event => {
         try {
           const message = JSON.parse(event.data);
           handleWebSocketMessage(message);
@@ -185,12 +188,12 @@ export const ConstitutionalFidelityMonitor: React.FC = () => {
           console.error('Error parsing WebSocket message:', error);
         }
       };
-      
+
       wsRef.current.onclose = () => {
         console.log('Constitutional Fidelity Monitor WebSocket disconnected');
         setIsConnected(false);
         setConnectionStatus('disconnected');
-        
+
         // Attempt to reconnect
         if (reconnectAttempts < maxReconnectAttempts) {
           const delay = Math.pow(2, reconnectAttempts) * 1000; // Exponential backoff
@@ -200,12 +203,11 @@ export const ConstitutionalFidelityMonitor: React.FC = () => {
           }, delay);
         }
       };
-      
-      wsRef.current.onerror = (error) => {
+
+      wsRef.current.onerror = error => {
         console.error('Constitutional Fidelity Monitor WebSocket error:', error);
         setConnectionStatus('error');
       };
-      
     } catch (error) {
       console.error('Error connecting to WebSocket:', error);
       setConnectionStatus('error');
@@ -236,8 +238,8 @@ export const ConstitutionalFidelityMonitor: React.FC = () => {
           ...prev,
           [message.workflow_id]: {
             ...fidelityScore,
-            timestamp: message.timestamp
-          }
+            timestamp: message.timestamp,
+          },
         }));
 
         // Update current fidelity score and history
@@ -370,10 +372,7 @@ export const ConstitutionalFidelityMonitor: React.FC = () => {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <label className="text-sm">Auto-refresh</label>
-                <Switch
-                  checked={autoRefresh}
-                  onCheckedChange={setAutoRefresh}
-                />
+                <Switch checked={autoRefresh} onCheckedChange={setAutoRefresh} />
               </div>
               <div className="flex items-center space-x-2">
                 {getConnectionIcon()}
@@ -402,7 +401,9 @@ export const ConstitutionalFidelityMonitor: React.FC = () => {
           <CardContent>
             <div className="flex items-center space-x-2">
               <div className="text-2xl font-bold">
-                {currentFidelityScore !== null ? `${(currentFidelityScore * 100).toFixed(1)}%` : '--'}
+                {currentFidelityScore !== null
+                  ? `${(currentFidelityScore * 100).toFixed(1)}%`
+                  : '--'}
               </div>
               {currentFidelityScore !== null && (
                 <div className={`p-1 rounded-full ${getAlertLevelColor(alertLevel)}`}>
@@ -416,7 +417,7 @@ export const ConstitutionalFidelityMonitor: React.FC = () => {
               <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
                 <div
                   className="bg-blue-600 h-2 rounded-full transition-all"
-                  style={{ width: `${(currentFidelityScore * 100)}%` }}
+                  style={{ width: `${currentFidelityScore * 100}%` }}
                 />
               </div>
             )}
@@ -429,9 +430,7 @@ export const ConstitutionalFidelityMonitor: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{violationCount}</div>
-            <p className="text-xs text-muted-foreground">
-              {violationAlerts.length} recent alerts
-            </p>
+            <p className="text-xs text-muted-foreground">{violationAlerts.length} recent alerts</p>
           </CardContent>
         </Card>
 
@@ -441,14 +440,11 @@ export const ConstitutionalFidelityMonitor: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {performanceMetrics?.overall?.average_response_time 
+              {performanceMetrics?.overall?.average_response_time
                 ? `${performanceMetrics.overall.average_response_time.toFixed(0)}ms`
-                : '--'
-              }
+                : '--'}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Average response time
-            </p>
+            <p className="text-xs text-muted-foreground">Average response time</p>
           </CardContent>
         </Card>
 
@@ -489,15 +485,16 @@ export const ConstitutionalFidelityMonitor: React.FC = () => {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
                     <span>Overall Success Rate</span>
-                    <Badge variant={
-                      (performanceMetrics?.overall?.overall_success_rate || 0) > 0.95 
-                        ? 'default' 
-                        : 'secondary'
-                    }>
-                      {performanceMetrics?.overall?.overall_success_rate 
-                        ? `${(performanceMetrics.overall.overall_success_rate * 100).toFixed(1)}%`
-                        : 'N/A'
+                    <Badge
+                      variant={
+                        (performanceMetrics?.overall?.overall_success_rate || 0) > 0.95
+                          ? 'default'
+                          : 'secondary'
                       }
+                    >
+                      {performanceMetrics?.overall?.overall_success_rate
+                        ? `${(performanceMetrics.overall.overall_success_rate * 100).toFixed(1)}%`
+                        : 'N/A'}
                     </Badge>
                   </div>
                   <div className="flex justify-between items-center">
@@ -522,7 +519,7 @@ export const ConstitutionalFidelityMonitor: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {alerts.slice(0, 5).map((alert) => (
+                  {alerts.slice(0, 5).map(alert => (
                     <Alert key={alert.id} className="p-3">
                       <AlertTriangle className="h-4 w-4" />
                       <AlertDescription className="text-sm">
@@ -571,7 +568,9 @@ export const ConstitutionalFidelityMonitor: React.FC = () => {
                         </div>
                         <div>
                           <span className="text-muted-foreground">Success Rate</span>
-                          <div className="font-medium">{(metrics.success_rate * 100).toFixed(1)}%</div>
+                          <div className="font-medium">
+                            {(metrics.success_rate * 100).toFixed(1)}%
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -594,15 +593,21 @@ export const ConstitutionalFidelityMonitor: React.FC = () => {
                 {[...alerts, ...violationAlerts]
                   .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
                   .slice(0, 10)
-                  .map((alert) => (
+                  .map(alert => (
                     <div key={alert.id} className="border rounded-lg p-4">
                       <div className="flex justify-between items-start mb-2">
                         <h4 className="font-semibold">{alert.message}</h4>
-                        <Badge variant={
-                          alert.severity === 'critical' ? 'destructive' :
-                          alert.severity === 'high' ? 'destructive' :
-                          alert.severity === 'medium' ? 'secondary' : 'outline'
-                        }>
+                        <Badge
+                          variant={
+                            alert.severity === 'critical'
+                              ? 'destructive'
+                              : alert.severity === 'high'
+                                ? 'destructive'
+                                : alert.severity === 'medium'
+                                  ? 'secondary'
+                                  : 'outline'
+                          }
+                        >
                           {alert.severity}
                         </Badge>
                       </div>
@@ -610,13 +615,10 @@ export const ConstitutionalFidelityMonitor: React.FC = () => {
                         {new Date(alert.timestamp).toLocaleString()}
                       </div>
                       {'details' in alert && alert.details && (
-                        <div className="text-sm mt-2 p-2 bg-muted rounded">
-                          {alert.details}
-                        </div>
+                        <div className="text-sm mt-2 p-2 bg-muted rounded">{alert.details}</div>
                       )}
                     </div>
-                  ))
-                }
+                  ))}
                 {alerts.length === 0 && violationAlerts.length === 0 && (
                   <p className="text-muted-foreground">No alerts in history</p>
                 )}
@@ -642,7 +644,9 @@ export const ConstitutionalFidelityMonitor: React.FC = () => {
                     <div>
                       <span className="text-muted-foreground">Current Score</span>
                       <div className="font-medium">
-                        {currentFidelityScore ? `${(currentFidelityScore * 100).toFixed(1)}%` : 'N/A'}
+                        {currentFidelityScore
+                          ? `${(currentFidelityScore * 100).toFixed(1)}%`
+                          : 'N/A'}
                       </div>
                     </div>
                     <div>
@@ -652,9 +656,9 @@ export const ConstitutionalFidelityMonitor: React.FC = () => {
                     <div>
                       <span className="text-muted-foreground">Trend</span>
                       <div className="font-medium flex items-center">
-                        {fidelityHistory.length > 1 && 
-                         fidelityHistory[fidelityHistory.length - 1].score > 
-                         fidelityHistory[fidelityHistory.length - 2].score ? (
+                        {fidelityHistory.length > 1 &&
+                        fidelityHistory[fidelityHistory.length - 1].score >
+                          fidelityHistory[fidelityHistory.length - 2].score ? (
                           <TrendingUp className="h-4 w-4 text-green-600 mr-1" />
                         ) : (
                           <TrendingDown className="h-4 w-4 text-red-600 mr-1" />

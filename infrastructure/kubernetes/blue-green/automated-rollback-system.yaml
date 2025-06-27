@@ -1,0 +1,420 @@
+# ACGE Phase 2 Automated Rollback System
+# Constitutional compliance and performance-based automated rollback
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rollback-config
+  namespace: acgs-shared
+  labels:
+    app: rollback-system
+    component: automation
+    phase: phase-2
+data:
+  rollback-config.yml: |
+    # Rollback trigger configuration
+    triggers:
+      constitutional_compliance:
+        threshold: 0.95
+        evaluation_period: 180  # 3 minutes
+        consecutive_failures: 3
+        severity: critical
+        
+      response_time:
+        threshold: 2000  # 2 seconds in milliseconds
+        percentile: 95
+        evaluation_period: 120  # 2 minutes
+        consecutive_failures: 2
+        severity: high
+        
+      error_rate:
+        threshold: 0.01  # 1%
+        evaluation_period: 180  # 3 minutes
+        consecutive_failures: 3
+        severity: high
+        
+      availability:
+        threshold: 0.999  # 99.9%
+        evaluation_period: 60   # 1 minute
+        consecutive_failures: 1
+        severity: critical
+        
+      constitutional_hash_mismatch:
+        threshold: 0  # Any mismatch
+        evaluation_period: 0  # Immediate
+        consecutive_failures: 1
+        severity: critical
+
+    # Rollback execution configuration
+    execution:
+      timeout: 120  # 2 minutes
+      validation_timeout: 60  # 1 minute
+      notification_channels:
+        - slack
+        - email
+        - pagerduty
+      
+    # Service-specific configurations
+    services:
+      auth:
+        port: 8000
+        critical: true
+        rollback_timeout: 60
+        
+      ac:
+        port: 8001
+        critical: true
+        rollback_timeout: 120
+        
+      integrity:
+        port: 8002
+        critical: true
+        rollback_timeout: 90
+        
+      fv:
+        port: 8003
+        critical: false
+        rollback_timeout: 90
+        
+      gs:
+        port: 8004
+        critical: false
+        rollback_timeout: 120
+        
+      pgc:
+        port: 8005
+        critical: true
+        rollback_timeout: 180
+        
+      ec:
+        port: 8006
+        critical: false
+        rollback_timeout: 60
+
+---
+# Rollback Controller Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rollback-controller
+  namespace: acgs-shared
+  labels:
+    app: rollback-controller
+    component: automation
+    phase: phase-2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rollback-controller
+  template:
+    metadata:
+      labels:
+        app: rollback-controller
+        component: automation
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '8080'
+        prometheus.io/path: '/metrics'
+    spec:
+      serviceAccountName: rollback-controller
+      containers:
+        - name: rollback-controller
+          image: acgs/rollback-controller:latest
+          ports:
+            - containerPort: 8080
+              name: metrics
+            - containerPort: 8081
+              name: health
+          env:
+            - name: NAMESPACE_BLUE
+              value: 'acgs-blue'
+            - name: NAMESPACE_GREEN
+              value: 'acgs-green'
+            - name: NAMESPACE_SHARED
+              value: 'acgs-shared'
+            - name: CONSTITUTIONAL_HASH
+              value: 'cdd01ef066bc6cf2'
+            - name: PROMETHEUS_URL
+              value: 'http://prometheus:9090'
+            - name: MONITORING_INTERVAL
+              value: '30'
+            - name: LOG_LEVEL
+              value: 'info'
+          volumeMounts:
+            - name: rollback-config
+              mountPath: /etc/rollback
+            - name: kubeconfig
+              mountPath: /etc/kubeconfig
+              readOnly: true
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '100m'
+            limits:
+              memory: '512Mi'
+              cpu: '200m'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8081
+            initialDelaySeconds: 10
+            periodSeconds: 5
+      volumes:
+        - name: rollback-config
+          configMap:
+            name: rollback-config
+        - name: kubeconfig
+          secret:
+            secretName: rollback-kubeconfig
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rollback-controller
+  namespace: acgs-shared
+  labels:
+    app: rollback-controller
+spec:
+  selector:
+    app: rollback-controller
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: metrics
+    - port: 8081
+      targetPort: 8081
+      name: health
+  type: ClusterIP
+
+---
+# Service Account for Rollback Controller
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: rollback-controller
+  namespace: acgs-shared
+  labels:
+    app: rollback-controller
+
+---
+# ClusterRole for Rollback Controller
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: rollback-controller
+  labels:
+    app: rollback-controller
+rules:
+  - apiGroups: ['']
+    resources: ['services', 'endpoints', 'pods']
+    verbs: ['get', 'list', 'watch', 'update', 'patch']
+  - apiGroups: ['apps']
+    resources: ['deployments', 'replicasets']
+    verbs: ['get', 'list', 'watch', 'update', 'patch']
+  - apiGroups: ['networking.istio.io']
+    resources: ['virtualservices', 'destinationrules']
+    verbs: ['get', 'list', 'watch', 'update', 'patch']
+  - apiGroups: ['']
+    resources: ['events']
+    verbs: ['create', 'patch']
+  - apiGroups: ['']
+    resources: ['configmaps']
+    verbs: ['get', 'list', 'watch']
+
+---
+# ClusterRoleBinding for Rollback Controller
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: rollback-controller
+  labels:
+    app: rollback-controller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: rollback-controller
+subjects:
+  - kind: ServiceAccount
+    name: rollback-controller
+    namespace: acgs-shared
+
+---
+# Rollback Monitoring CronJob
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: rollback-monitor
+  namespace: acgs-shared
+  labels:
+    app: rollback-monitor
+    component: monitoring
+spec:
+  schedule: '*/1 * * * *' # Every minute
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: rollback-monitor
+        spec:
+          serviceAccountName: rollback-controller
+          containers:
+            - name: monitor
+              image: acgs/rollback-monitor:latest
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "Starting rollback monitoring check..."
+
+                  # Check constitutional compliance
+                  COMPLIANCE_SCORE=$(curl -s "http://prometheus:9090/api/v1/query?query=constitutional_compliance_score" | \
+                    jq -r '.data.result[0].value[1] // "1.0"')
+
+                  echo "Constitutional compliance score: $COMPLIANCE_SCORE"
+
+                  if (( $(echo "$COMPLIANCE_SCORE < 0.95" | bc -l) )); then
+                    echo "⚠️ Constitutional compliance below threshold: $COMPLIANCE_SCORE"
+                    curl -X POST http://rollback-controller:8080/trigger \
+                      -H "Content-Type: application/json" \
+                      -d '{"trigger":"constitutional_compliance","value":"'$COMPLIANCE_SCORE'","severity":"critical"}'
+                  fi
+
+                  # Check response time
+                  RESPONSE_TIME=$(curl -s "http://prometheus:9090/api/v1/query?query=histogram_quantile(0.95,%20rate(http_request_duration_seconds_bucket[5m]))" | \
+                    jq -r '.data.result[0].value[1] // "0.5"')
+
+                  echo "95th percentile response time: ${RESPONSE_TIME}s"
+
+                  if (( $(echo "$RESPONSE_TIME > 2.0" | bc -l) )); then
+                    echo "⚠️ Response time above threshold: ${RESPONSE_TIME}s"
+                    curl -X POST http://rollback-controller:8080/trigger \
+                      -H "Content-Type: application/json" \
+                      -d '{"trigger":"response_time","value":"'$RESPONSE_TIME'","severity":"high"}'
+                  fi
+
+                  # Check error rate
+                  ERROR_RATE=$(curl -s "http://prometheus:9090/api/v1/query?query=rate(http_requests_total{status=~\"5..\"}[5m])/rate(http_requests_total[5m])" | \
+                    jq -r '.data.result[0].value[1] // "0.0"')
+
+                  echo "Error rate: $ERROR_RATE"
+
+                  if (( $(echo "$ERROR_RATE > 0.01" | bc -l) )); then
+                    echo "⚠️ Error rate above threshold: $ERROR_RATE"
+                    curl -X POST http://rollback-controller:8080/trigger \
+                      -H "Content-Type: application/json" \
+                      -d '{"trigger":"error_rate","value":"'$ERROR_RATE'","severity":"high"}'
+                  fi
+
+                  # Check constitutional hash
+                  HASH_VALID=$(curl -s "http://prometheus:9090/api/v1/query?query=constitutional_hash_valid" | \
+                    jq -r '.data.result[0].value[1] // "1"')
+
+                  echo "Constitutional hash valid: $HASH_VALID"
+
+                  if [[ "$HASH_VALID" != "1" ]]; then
+                    echo "🚨 Constitutional hash validation failed!"
+                    curl -X POST http://rollback-controller:8080/trigger \
+                      -H "Content-Type: application/json" \
+                      -d '{"trigger":"constitutional_hash_mismatch","value":"0","severity":"critical"}'
+                  fi
+
+                  echo "✅ Rollback monitoring check completed"
+              env:
+                - name: PROMETHEUS_URL
+                  value: 'http://prometheus:9090'
+                - name: ROLLBACK_CONTROLLER_URL
+                  value: 'http://rollback-controller:8080'
+              resources:
+                requests:
+                  memory: '64Mi'
+                  cpu: '50m'
+                limits:
+                  memory: '128Mi'
+                  cpu: '100m'
+          restartPolicy: OnFailure
+
+---
+# Rollback Notification Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rollback-notifier
+  namespace: acgs-shared
+  labels:
+    app: rollback-notifier
+    component: notification
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rollback-notifier
+  template:
+    metadata:
+      labels:
+        app: rollback-notifier
+        component: notification
+    spec:
+      containers:
+        - name: notifier
+          image: acgs/rollback-notifier:latest
+          ports:
+            - containerPort: 8082
+              name: webhook
+          env:
+            - name: SLACK_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: notification-secrets
+                  key: slack-webhook-url
+            - name: PAGERDUTY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: notification-secrets
+                  key: pagerduty-api-key
+            - name: EMAIL_SMTP_HOST
+              value: 'smtp.gmail.com'
+            - name: EMAIL_SMTP_PORT
+              value: '587'
+            - name: EMAIL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: notification-secrets
+                  key: email-username
+            - name: EMAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: notification-secrets
+                  key: email-password
+          resources:
+            requests:
+              memory: '128Mi'
+              cpu: '50m'
+            limits:
+              memory: '256Mi'
+              cpu: '100m'
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rollback-notifier
+  namespace: acgs-shared
+  labels:
+    app: rollback-notifier
+spec:
+  selector:
+    app: rollback-notifier
+  ports:
+    - port: 8082
+      targetPort: 8082
+      name: webhook
+  type: ClusterIP

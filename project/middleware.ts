@@ -1,22 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
-const protectedRoutes = [
-  '/governance',
-  '/constitutional',
-  '/admin',
-];
+const protectedRoutes = ['/governance', '/constitutional', '/admin'];
 
-const publicRoutes = [
-  '/',
-  '/login',
-  '/about',
-  '/contact',
-];
+const publicRoutes = ['/', '/login', '/about', '/contact'];
 
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
-  
+
   // Skip middleware for API routes, static files, and Next.js internals
   if (
     path.startsWith('/api/') ||
@@ -27,13 +18,11 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const isProtectedRoute = protectedRoutes.some(route => 
-    path === route || path.startsWith(`${route}/`)
+  const isProtectedRoute = protectedRoutes.some(
+    route => path === route || path.startsWith(`${route}/`)
   );
 
-  const isPublicRoute = publicRoutes.some(route => 
-    path === route || path.startsWith(`${route}/`)
-  );
+  const isPublicRoute = publicRoutes.some(route => path === route || path.startsWith(`${route}/`));
 
   const token = await getToken({ req });
 
@@ -53,7 +42,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico).*)',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 };

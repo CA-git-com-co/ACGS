@@ -6,7 +6,6 @@ use acgs_blockchain_client::AcgsClient;
 use anchor_client::solana_sdk::{
     signature::{Keypair, Signer},
     pubkey::Pubkey,
-    commitment_config::CommitmentConfig,
 };
 use anyhow::Result;
 

@@ -95,6 +95,7 @@ services:
     networks:
       - acgs_network
     depends_on:
+      - opa
       - auth_service
       - ac_service
       - integrity_service
@@ -108,6 +109,70 @@ services:
         limits:
           memory: 256M
           cpus: '0.25'
+
+  # Open Policy Agent (OPA) - Policy Enforcement Engine
+  opa:
+    image: openpolicyagent/opa:latest-envoy
+    container_name: acgs_opa
+    command:
+      [
+        'run',
+        '--server',
+        '--addr',
+        '0.0.0.0:8181',
+        '--log-level',
+        'info',
+        '--config-file',
+        '/config/opa-config.yaml',
+        '/policies',
+      ]
+    ports:
+      - '8181:8181' # OPA API port
+      - '8282:8282' # OPA diagnostic port
+    volumes:
+      # Policy files
+      - ./config/opa/policies:/policies:ro
+      # Configuration
+      - ./infrastructure/docker/opa-config.yaml:/config/opa-config.yaml:ro
+      # Logs
+      - acgs_logs:/var/log/opa
+    environment:
+      # Constitutional governance
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - CONSTITUTIONAL_COMPLIANCE_THRESHOLD=0.8
+      - GOVERNANCE_VALIDATION_ENABLED=true
+
+      # Performance settings
+      - OPA_LOG_LEVEL=info
+      - OPA_LOG_FORMAT=json
+      - OPA_DECISION_LOGS_CONSOLE=true
+      - OPA_STATUS_CONSOLE=true
+
+      # Security settings
+      - OPA_AUTHENTICATION_ENABLED=false # Internal service
+      - OPA_AUTHORIZATION_ENABLED=true
+
+      # Integration settings
+      - PGC_SERVICE_URL=http://pgc_service:8005
+      - GS_SERVICE_URL=http://gs_service:8004
+      - AC_SERVICE_URL=http://ac_service:8001
+    networks:
+      - acgs_network
+    healthcheck:
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:8181/health']
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.2'
 
   # =============================================================================
   # ACGS Core Services (in dependency order)
@@ -143,6 +208,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      opa:
+        condition: service_healthy
     healthcheck:
       test: ['CMD', '/app/health_check.sh']
       interval: 30s
@@ -172,6 +239,8 @@ services:
       - ENVIRONMENT=${ENVIRONMENT:-development}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - CONSTITUTIONAL_FIDELITY_THRESHOLD=${CONSTITUTIONAL_FIDELITY_THRESHOLD:-0.85}
+      - OPA_SERVER_URL=http://opa:8181
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     working_dir: /app/services/core/constitutional-ai/ac_service
     command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8001']
     ports:
@@ -346,6 +415,7 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - PGC_LATENCY_TARGET=${PGC_LATENCY_TARGET:-25}
       - CONSTITUTIONAL_HASH=${CONSTITUTIONAL_HASH:-cdd01ef066bc6cf2}
+      - OPA_SERVER_URL=http://opa:8181
     working_dir: /app/services/core/policy-governance/pgc_service
     command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8005']
     ports:

@@ -1,0 +1,142 @@
+{
+  "timestamp": "2025-06-25T17:37:22.544065",
+  "total_services": 7,
+  "healthy_services": 6,
+  "unhealthy_services": 1,
+  "health_rate": 85.71428571428571,
+  "service_details": {
+    "auth_service": {
+      "status": "HEALTHY",
+      "port": 8000,
+      "response_time": "N/A",
+      "security_score": 100.0,
+      "security_headers": 8,
+      "constitutional_hash": "cdd01ef066bc6cf2",
+      "service_data": {
+        "status": "healthy",
+        "service": "auth_service",
+        "version": "3.1.0",
+        "timestamp": "2025-06-25T17:37:22.529302+00:00",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    "ac_service": {
+      "status": "HEALTHY",
+      "port": 8001,
+      "response_time": "N/A",
+      "security_score": 100.0,
+      "security_headers": 8,
+      "constitutional_hash": "cdd01ef066bc6cf2",
+      "service_data": {
+        "status": "healthy",
+        "service": "ac_service_production",
+        "version": "3.0.0",
+        "port": 8001,
+        "timestamp": 1750873042.5317862,
+        "constitutional_hash": "cdd01ef066bc6cf2",
+        "enhanced_services": false,
+        "services": {
+          "compliance_engine": false,
+          "violation_detector": false,
+          "audit_logger": false,
+          "fv_client": false
+        },
+        "performance": {
+          "response_time_target": "<100ms for compliance checks",
+          "accuracy_target": ">99% constitutional compliance detection",
+          "availability_target": ">99.9%"
+        }
+      }
+    },
+    "integrity_service": {
+      "status": "HEALTHY",
+      "port": 8002,
+      "response_time": "N/A",
+      "security_score": 87.5,
+      "security_headers": 7,
+      "constitutional_hash": "cdd01ef066bc6cf2",
+      "service_data": {
+        "status": "healthy",
+        "service": "integrity_service",
+        "version": "3.0.0",
+        "port": 8002,
+        "uptime_seconds": 5058.359619617462,
+        "constitutional_hash": "cdd01ef066bc6cf2",
+        "dependencies": {
+          "database": "connected",
+          "crypto_service": "operational",
+          "pgp_service": "operational"
+        },
+        "performance_metrics": {
+          "uptime_seconds": 5058.359619617462,
+          "routers_available": false,
+          "api_endpoints": 3
+        }
+      }
+    },
+    "fv_service": {
+      "status": "HEALTHY",
+      "port": 8003,
+      "response_time": "N/A",
+      "security_score": 87.5,
+      "security_headers": 7,
+      "constitutional_hash": "cdd01ef066bc6cf2",
+      "service_data": {
+        "status": "healthy",
+        "service": "enhanced_fv_service",
+        "version": "2.0.0",
+        "port": 8003,
+        "constitutional_hash": "cdd01ef066bc6cf2",
+        "enterprise_features_enabled": true,
+        "components": {
+          "z3_smt_solver": "unavailable",
+          "tiered_validation": "operational",
+          "parallel_pipeline": "operational",
+          "cryptographic_validation": "operational",
+          "blockchain_audit": "operational",
+          "ac_integration": "operational"
+        },
+        "performance_metrics": {
+          "target_response_time": "<500ms",
+          "availability_target": ">99.9%",
+          "concurrent_verification_support": ">100 tasks"
+        }
+      }
+    },
+    "gs_service": {
+      "status": "HEALTHY",
+      "port": 8004,
+      "response_time": "N/A",
+      "security_score": 100.0,
+      "security_headers": 8,
+      "constitutional_hash": "cdd01ef066bc6cf2",
+      "service_data": {
+        "status": "healthy",
+        "service": "gs_service",
+        "version": "3.1.0",
+        "timestamp": "2025-06-25T17:37:22.539943+00:00",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    "pgc_service": {
+      "status": "HEALTHY",
+      "port": 8005,
+      "response_time": "N/A",
+      "security_score": 100.0,
+      "security_headers": 8,
+      "constitutional_hash": "cdd01ef066bc6cf2",
+      "service_data": {
+        "status": "healthy",
+        "service": "pgc_service",
+        "version": "3.1.0",
+        "timestamp": "2025-06-25T17:37:22.542415+00:00",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    "ec_service": {
+      "status": "UNREACHABLE",
+      "port": 8006,
+      "error": "Cannot connect to host localhost:8006 ssl:default [Connect call failed ('127.0.0.1', 8006)]"
+    }
+  }
+}

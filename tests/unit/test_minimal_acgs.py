@@ -17,10 +17,11 @@ class ACGSMinimalTests(unittest.TestCase):
 
     def test_project_structure(self):
         """Test that project structure exists."""
-        project_root = "/home/dislove/ACGS-1"
-        self.assertTrue(os.path.exists(project_root))
-        self.assertTrue(os.path.exists(os.path.join(project_root, "services")))
-        self.assertTrue(os.path.exists(os.path.join(project_root, "blockchain")))
+        from pathlib import Path
+        project_root = Path(__file__).parent.parent.parent
+        self.assertTrue(project_root.exists())
+        self.assertTrue((project_root / "services").exists())
+        self.assertTrue((project_root / "blockchain").exists())
 
     def test_basic_functionality(self):
         """Test basic functionality."""

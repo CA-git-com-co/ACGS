@@ -4,15 +4,13 @@ import { Shield, CheckCircle } from 'lucide-react';
 export async function ConstitutionalHealth() {
   // Simulate data fetching
   await new Promise(resolve => setTimeout(resolve, 200));
-  
+
   const healthScore = 94;
 
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">
-          Constitutional Health
-        </CardTitle>
+        <CardTitle className="text-sm font-medium">Constitutional Health</CardTitle>
         <Shield className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
