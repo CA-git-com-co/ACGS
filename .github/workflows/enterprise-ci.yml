@@ -97,6 +97,8 @@ jobs:
           else
             echo "⚠️ GitHub API connectivity test failed, but continuing (may be firewall restriction)"
           fi
+          
+          echo "ready=true" >> $GITHUB_OUTPUT
 
           # Test crates.io connectivity with curl
           if curl -s --connect-timeout 10 --max-time 30 https://crates.io > /dev/null; then
@@ -117,20 +119,21 @@ jobs:
 
       - name: Get changed files
         id: changed_files
-        uses: tj-actions/changed-files@v46
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: |
-            blockchain/**
-            services/**
-            src/**
-            tests/**
-            scripts/**
-            .github/**
-          files_ignore: |
-            docs/**
-            README.md
-            *.md
+        run: |
+          # Simplified change detection using git
+          if [ "${{ github.event_name }}" == "push" ] && [ "${{ github.ref }}" != "refs/heads/master" ]; then
+            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD || echo "")
+          else
+            CHANGED_FILES=""
+          fi
+          
+          if [ -n "$CHANGED_FILES" ]; then
+            echo "any_changed=true" >> $GITHUB_OUTPUT
+            echo "all_changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+          else
+            echo "any_changed=true" >> $GITHUB_OUTPUT
+            echo "all_changed_files=all" >> $GITHUB_OUTPUT
+          fi
 
       - name: Determine components and test execution
         id: determine_changes
