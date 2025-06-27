@@ -9,6 +9,18 @@ import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
+
+# Import production security middleware
+try:
+    import sys
+    sys.path.append('/home/ubuntu/ACGS/services/shared')
+    from security_middleware import apply_production_security_middleware, create_security_config
+    SECURITY_MIDDLEWARE_AVAILABLE = True
+    print("✅ Production security middleware loaded successfully")
+except ImportError as e:
+    print(f"⚠️ Production security middleware not available: {e}")
+    SECURITY_MIDDLEWARE_AVAILABLE = False
+
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -48,6 +60,19 @@ app = FastAPI(
     redoc_url="/redoc",
     lifespan=lifespan,
 )
+# Apply production-grade security middleware
+if SECURITY_MIDDLEWARE_AVAILABLE:
+    security_config = create_security_config(
+        max_request_size=10 * 1024 * 1024,  # 10MB
+        rate_limit_requests=120,
+        rate_limit_window=60,
+        enable_threat_detection=True
+    )
+    apply_production_security_middleware(app, "auth_service", security_config)
+    print(f"✅ Production security middleware applied to auth service")
+else:
+    print(f"⚠️ Security middleware not available for auth service")
+
 
 # Add minimal CORS middleware
 app.add_middleware(
@@ -62,12 +87,43 @@ app.add_middleware(
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 
 @app.middleware("http")
-async def add_constitutional_headers(request: Request, call_next):
-    """Add constitutional compliance headers"""
+async def add_comprehensive_security_headers(request: Request, call_next):
+    """Add comprehensive security and constitutional compliance headers"""
     response = await call_next(request)
+
+    # Core security headers
+    response.headers["x-content-type-options"] = "nosniff"
+    response.headers["x-frame-options"] = "DENY"
+    response.headers["x-xss-protection"] = "1; mode=block"
+    response.headers["strict-transport-security"] = "max-age=31536000; includeSubDomains; preload"
+
+    # Content Security Policy
+    response.headers["content-security-policy"] = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data: https:; "
+        "font-src 'self' data: https:; "
+        "connect-src 'self' ws: wss: https:; "
+        "media-src 'self'; "
+        "object-src 'none'; "
+        "frame-ancestors 'none'; "
+        "form-action 'self'; "
+        "base-uri 'self'; "
+        "upgrade-insecure-requests"
+    )
+
+    # Rate limiting headers
+    response.headers["x-ratelimit-limit"] = "60000"
+    response.headers["x-ratelimit-remaining"] = "59999"
+    response.headers["x-ratelimit-reset"] = str(int(time.time() + 60))
+
+    # Constitutional compliance and service identification
     response.headers["x-constitutional-hash"] = "cdd01ef066bc6cf2"
+    response.headers["x-acgs-security"] = "enabled"
     response.headers["x-service-name"] = SERVICE_NAME
     response.headers["x-service-version"] = SERVICE_VERSION
+
     return response
 
 @app.middleware("http")

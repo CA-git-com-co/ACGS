@@ -114,6 +114,7 @@ class HealthCheckResponse(BaseModel):
     version: str = "3.0.0"
     port: int
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    constitutional_hash: str | None = None
     uptime_seconds: float | None = None
     dependencies: dict[str, str] = Field(default_factory=dict)
     performance_metrics: dict[str, Any] = Field(default_factory=dict)

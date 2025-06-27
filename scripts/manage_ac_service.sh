@@ -4,7 +4,7 @@
 
 SERVICE_NAME="ac_service"
 SERVICE_PORT=8001
-PROJECT_ROOT="/home/dislove/ACGS-1"
+PROJECT_ROOT="/home/ubuntu/ACGS"
 LOG_DIR="$PROJECT_ROOT/logs"
 PID_DIR="$PROJECT_ROOT/pids"
 
@@ -28,9 +28,26 @@ start_service() {
     pkill -f "$SERVICE_NAME" || true
     sleep 2
     
-    # Start service based on type
+    # Start service with performance optimization
     case "$SERVICE_NAME" in
-        "auth_service"|"ac_service"|"integrity_service"|"fv_service"|"ec_service")
+        "ac_service")
+            cd "$PROJECT_ROOT/services/core/constitutional-ai/ac_service"
+            # Use gunicorn with multiple workers for high throughput
+            gunicorn app.main:app \
+                --workers 4 \
+                --worker-class uvicorn.workers.UvicornWorker \
+                --bind 0.0.0.0:$SERVICE_PORT \
+                --max-requests 10000 \
+                --max-requests-jitter 1000 \
+                --keepalive 5 \
+                --timeout 30 \
+                --graceful-timeout 30 \
+                --preload \
+                --access-logfile - \
+                --error-logfile - \
+                > "$LOG_DIR/$SERVICE_NAME.log" 2>&1 &
+            ;;
+        "auth_service"|"integrity_service"|"fv_service"|"ec_service")
             cd "$PROJECT_ROOT/services/core/$SERVICE_NAME"
             python -m uvicorn app.main:app --host 0.0.0.0 --port $SERVICE_PORT > "$LOG_DIR/$SERVICE_NAME.log" 2>&1 &
             ;;

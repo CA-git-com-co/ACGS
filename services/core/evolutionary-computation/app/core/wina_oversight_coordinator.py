@@ -27,24 +27,21 @@ from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any
 
-# WINA imports
+# WINA imports - using local WINA modules
 try:
-    pass
-
-    # sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'shared'))  # Removed during reorganization
-    from wina.config import load_wina_config_from_env
-    from wina.constitutional_integration import (
+    from ..wina.config import load_wina_config_from_env
+    from ..wina.constitutional_integration import (
         ConstitutionalWINASupport,
     )
-    from wina.continuous_learning import (
+    from ..wina.continuous_learning import (
         FeedbackSignal,
         FeedbackType,
         get_wina_learning_system,
     )
-    from wina.core import WINACore
-    from wina.gating import GatingStrategy, RuntimeGating
-    from wina.metrics import WINAMetrics
-    from wina.performance_monitoring import (
+    from ..wina.core import WINACore
+    from ..wina.gating import GatingStrategy, RuntimeGating
+    from ..wina.metrics import WINAMetrics
+    from ..wina.performance_monitoring import (
         WINAComponentType,
         WINAConstitutionalComplianceMetrics,
         WINADynamicGatingMetrics,
@@ -58,9 +55,25 @@ try:
     WINA_AVAILABLE = True
 except ImportError as e:
     WINA_AVAILABLE = False
-    import logging
 
-    logging.getLogger(__name__).warning(f"WINA modules not available: {e}")
+    # Create mock classes for graceful degradation
+    class MockWINACore:
+        def __init__(self, config): pass
+    class MockWINAMetrics:
+        def __init__(self, config): pass
+    class MockConstitutionalWINASupport:
+        def __init__(self, config, integration_config): pass
+        async def initialize_efficiency_principles(self): pass
+    class MockRuntimeGating:
+        def __init__(self, config): pass
+    class MockWINAPerformanceCollector:
+        def __init__(self, monitoring_level): pass
+
+    def mock_load_wina_config_from_env():
+        return {}, {}
+
+    async def mock_get_wina_learning_system():
+        return None
 
 logger = logging.getLogger(__name__)
 
@@ -221,6 +234,61 @@ class WINAECOversightCoordinator:
             "batch_processing_size": 100,
             "cache_ttl_seconds": 300,
         }
+
+        # Initialize WINA components
+        if enable_wina and WINA_AVAILABLE:
+            try:
+                self.wina_config, self.wina_integration_config = load_wina_config_from_env()
+                self.wina_core = WINACore(self.wina_config)
+                self.wina_metrics = WINAMetrics(self.wina_config)
+                self.constitutional_wina = ConstitutionalWINASupport(
+                    self.wina_config, self.wina_integration_config
+                )
+                self.runtime_gating = RuntimeGating(self.wina_config)
+                # Initialize performance monitoring
+                self.performance_collector = WINAPerformanceCollector(
+                    monitoring_level=WINAMonitoringLevel.COMPREHENSIVE
+                )
+                # Initialize continuous learning system
+                self.learning_system = None  # Will be initialized asynchronously
+                logger.info("WINA optimization enabled for EC Layer oversight")
+            except Exception as e:
+                logger.warning(f"Failed to initialize WINA: {e}. Disabling WINA optimization.")
+                self.enable_wina = False
+        else:
+            self.enable_wina = False
+            # Use mock implementations for graceful degradation
+            if not WINA_AVAILABLE:
+                self.wina_core = MockWINACore({})
+                self.wina_metrics = MockWINAMetrics({})
+                self.constitutional_wina = MockConstitutionalWINASupport({}, {})
+                self.runtime_gating = MockRuntimeGating({})
+                self.performance_collector = MockWINAPerformanceCollector("standard")
+
+        # Performance tracking and learning
+        self._oversight_history: list[WINAOversightResult] = []
+        self._strategy_performance: dict[ECOversightStrategy, list[float]] = {
+            strategy: [] for strategy in ECOversightStrategy
+        }
+        self._constitutional_compliance_cache: dict[str, tuple[bool, datetime]] = {}
+        self._oversight_cache: dict[str, tuple[WINAOversightResult, datetime]] = {}
+        self._learning_feedback: dict[str, list[dict[str, Any]]] = {}
+        self._constitutional_principles: list[dict[str, Any]] = []
+
+        # Reporting infrastructure
+        self._oversight_reports: list[ECOversightReport] = []
+        self._governance_decisions_log: list[dict[str, Any]] = []
+        self._constitutional_updates_proposed: list[dict[str, Any]] = []
+
+        # Configuration
+        self.cache_ttl = timedelta(minutes=10)
+        self.max_cache_size = 1000
+        self.constitutional_compliance_threshold = 0.90
+        self.governance_efficiency_threshold = 0.15
+        self.learning_adaptation_frequency = timedelta(hours=6)
+        self.reporting_frequency = timedelta(hours=24)
+
+        logger.info("WINA EC Oversight Coordinator initialized")
 
     # Task #4: Advanced Optimization Algorithm Implementations
 
@@ -585,54 +653,6 @@ class WINAECOversightCoordinator:
         except Exception as e:
             logger.error(f"Alert condition checking failed: {e}")
             return []
-
-        # Initialize WINA components
-        if enable_wina and WINA_AVAILABLE:
-            try:
-                self.wina_config, self.wina_integration_config = load_wina_config_from_env()
-                self.wina_core = WINACore(self.wina_config)
-                self.wina_metrics = WINAMetrics(self.wina_config)
-                self.constitutional_wina = ConstitutionalWINASupport(
-                    self.wina_config, self.wina_integration_config
-                )
-                self.runtime_gating = RuntimeGating(self.wina_config)
-                # Initialize performance monitoring
-                self.performance_collector = WINAPerformanceCollector(
-                    monitoring_level=WINAMonitoringLevel.COMPREHENSIVE
-                )
-                # Initialize continuous learning system
-                self.learning_system = None  # Will be initialized asynchronously
-                logger.info("WINA optimization enabled for EC Layer oversight")
-            except Exception as e:
-                logger.warning(f"Failed to initialize WINA: {e}. Disabling WINA optimization.")
-                self.enable_wina = False
-        else:
-            self.enable_wina = False
-
-        # Performance tracking and learning
-        self._oversight_history: list[WINAOversightResult] = []
-        self._strategy_performance: dict[ECOversightStrategy, list[float]] = {
-            strategy: [] for strategy in ECOversightStrategy
-        }
-        self._constitutional_compliance_cache: dict[str, tuple[bool, datetime]] = {}
-        self._oversight_cache: dict[str, tuple[WINAOversightResult, datetime]] = {}
-        self._learning_feedback: dict[str, list[dict[str, Any]]] = {}
-        self._constitutional_principles: list[dict[str, Any]] = []
-
-        # Reporting infrastructure
-        self._oversight_reports: list[ECOversightReport] = []
-        self._governance_decisions_log: list[dict[str, Any]] = []
-        self._constitutional_updates_proposed: list[dict[str, Any]] = []
-
-        # Configuration
-        self.cache_ttl = timedelta(minutes=10)
-        self.max_cache_size = 1000
-        self.constitutional_compliance_threshold = 0.90
-        self.governance_efficiency_threshold = 0.15
-        self.learning_adaptation_frequency = timedelta(hours=6)
-        self.reporting_frequency = timedelta(hours=24)
-
-        logger.info("WINA EC Oversight Coordinator initialized")
 
     async def initialize_constitutional_principles(self):
         # requires: Valid input parameters

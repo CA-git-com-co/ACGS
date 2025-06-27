@@ -355,6 +355,7 @@ async def health_check(request: Request):
         version=SERVICE_VERSION,
         port=SERVICE_PORT,
         uptime_seconds=uptime_seconds,
+        constitutional_hash="cdd01ef066bc6cf2",
         dependencies={
             "database": "connected",
             "crypto_service": "operational",

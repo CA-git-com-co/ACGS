@@ -415,39 +415,23 @@ async def main():
     validator = ComprehensiveSystemValidator()
     results = await validator.validate_system_improvements()
     
-<<<<<<< HEAD
-    print("\\n" + "="*80)
-=======
     print("\n" + "="*80)
->>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
     print("🎯 ACGS-1 COMPREHENSIVE SYSTEM VALIDATION RESULTS")
     print("="*80)
     print(f"Overall Score: {results['overall_score']:.1f}%")
     print(f"System Ready: {'✅ YES' if results['system_ready'] else '❌ NO'}")
     
-<<<<<<< HEAD
-    print("\\nTarget Achievement:")
-=======
     print("\nTarget Achievement:")
->>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
     for target, achieved in results['targets_achieved'].items():
         status = "✅" if achieved else "❌"
         print(f"  {status} {target.replace('_', ' ').title()}")
     
     if results['recommendations']:
-<<<<<<< HEAD
-        print(f"\\nRecommendations ({len(results['recommendations'])}):")
-        for i, rec in enumerate(results['recommendations'], 1):
-            print(f"  {i}. {rec}")
-    
-    print("\\nDetailed Results:")
-=======
         print(f"\nRecommendations ({len(results['recommendations'])}):")
         for i, rec in enumerate(results['recommendations'], 1):
             print(f"  {i}. {rec}")
     
     print("\nDetailed Results:")
->>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
     for category, data in results['validation_results'].items():
         print(f"  {category.replace('_', ' ').title()}: {data}")
     

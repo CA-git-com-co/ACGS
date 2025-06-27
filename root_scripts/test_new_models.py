@@ -9,9 +9,11 @@ import os
 import sys
 
 # Add the services path to import our modules
-sys.path.append("/home/dislove/ACGS-1/services/shared")
+from pathlib import Path
+project_root = Path(__file__).parent.parent
+sys.path.append(str(project_root / "services/shared"))
 sys.path.append(
-    "/home/dislove/ACGS-1/services/core/governance-synthesis/gs_service/app"
+    str(project_root / "services/core/governance-synthesis/gs_service/app")
 )
 
 from groq import Groq

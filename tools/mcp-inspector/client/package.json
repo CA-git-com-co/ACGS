@@ -25,7 +25,6 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",
     "@radix-ui/react-checkbox": "^1.1.4",
-    "ajv": "^6.12.6",
     "@radix-ui/react-dialog": "^1.1.3",
     "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/react-label": "^2.1.0",
@@ -35,6 +34,7 @@
     "@radix-ui/react-tabs": "^1.1.1",
     "@radix-ui/react-toast": "^1.2.6",
     "@radix-ui/react-tooltip": "^1.1.8",
+    "ajv": "^6.12.6",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.4",
@@ -59,7 +59,8 @@
     "@types/react": "^18.3.10",
     "@types/react-dom": "^18.3.0",
     "@types/serve-handler": "^6.1.4",
-    "@vitejs/plugin-react": "^4.3.2",
+    "@types/testing-library__jest-dom": "^6.0.0",
+    "@vitejs/plugin-react": "^4.6.0",
     "autoprefixer": "^10.4.20",
     "co": "^4.6.0",
     "eslint": "^9.11.1",
@@ -73,6 +74,6 @@
     "ts-jest": "^29.2.6",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.7.0",
-    "vite": "^6.3.0"
+    "vite": "^6.3.5"
   }
 }

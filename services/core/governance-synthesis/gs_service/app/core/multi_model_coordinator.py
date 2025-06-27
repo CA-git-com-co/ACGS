@@ -13,12 +13,20 @@ Key Features:
 """
 
 import asyncio
+import hashlib
+import json
 import logging
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Optional
+
+try:
+    import redis.asyncio as redis
+    REDIS_AVAILABLE = True
+except ImportError:
+    REDIS_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -33,9 +41,54 @@ class EnsembleStrategy(Enum):
     WINA_OPTIMIZED = "wina_optimized"
 
 
+class RequestComplexity(Enum):
+    """Request complexity classification for adaptive routing."""
+
+    SIMPLE = "simple"           # Basic policies, single model sufficient
+    COMPLEX = "complex"         # Multi-faceted policies, ensemble needed
+    HIGH_STAKES = "high_stakes" # Critical policies, full ensemble + verification
+
+
+class RequestClassifier:
+    """Lightweight classifier for synthesis request complexity."""
+
+    def __init__(self):
+        self.complexity_keywords = {
+            RequestComplexity.HIGH_STAKES: [
+                "safety", "critical", "emergency", "security", "constitutional",
+                "violation", "breach", "audit", "compliance", "legal"
+            ],
+            RequestComplexity.COMPLEX: [
+                "multi", "integration", "workflow", "process", "stakeholder",
+                "consensus", "governance", "policy", "framework", "system"
+            ],
+            RequestComplexity.SIMPLE: [
+                "basic", "simple", "standard", "routine", "default", "template"
+            ]
+        }
+
+    def classify_request(self, synthesis_request: dict[str, Any]) -> RequestComplexity:
+        """Classify request complexity based on content analysis."""
+        request_text = str(synthesis_request).lower()
+
+        # Count keyword matches for each complexity level
+        complexity_scores = {}
+        for complexity, keywords in self.complexity_keywords.items():
+            score = sum(1 for keyword in keywords if keyword in request_text)
+            complexity_scores[complexity] = score
+
+        # Determine complexity based on highest score
+        if complexity_scores[RequestComplexity.HIGH_STAKES] > 0:
+            return RequestComplexity.HIGH_STAKES
+        elif complexity_scores[RequestComplexity.COMPLEX] > 1:
+            return RequestComplexity.COMPLEX
+        else:
+            return RequestComplexity.SIMPLE
+
+
 @dataclass
 class ModelPerformanceMetrics:
-    """Performance metrics for individual models."""
+    """Enhanced performance metrics for individual models with cost and capability tracking."""
 
     model_id: str
     synthesis_accuracy: float
@@ -44,6 +97,17 @@ class ModelPerformanceMetrics:
     gflops_usage: float
     reliability_score: float
     last_updated: datetime
+
+    # Enhanced metrics for router optimization
+    cost_per_token: float = 0.0
+    api_latency_ms: float = 0.0
+    error_rate: float = 0.0
+    specialized_capabilities: dict[str, float] = None  # e.g., {"creative": 0.9, "analytical": 0.7}
+    operational_status: str = "healthy"  # healthy, degraded, unavailable
+
+    def __post_init__(self):
+        if self.specialized_capabilities is None:
+            self.specialized_capabilities = {"general": 0.8}
 
 
 @dataclass
@@ -73,7 +137,7 @@ class MultiModelCoordinator:
         # ensures: Correct function execution
         # sha256: func_hash
         """
-        Initialize multi-model coordinator.
+        Initialize multi-model coordinator with enhanced routing capabilities.
 
         Args:
             config: Configuration dictionary with model settings
@@ -85,6 +149,12 @@ class MultiModelCoordinator:
             config.get("ensemble_strategy", "weighted_voting")
         )
         self.wina_optimization_enabled = config.get("wina_optimization_enabled", True)
+
+        # Enhanced router optimization components
+        self.request_classifier = RequestClassifier()
+        self.cache_enabled = config.get("cache_enabled", True) and REDIS_AVAILABLE
+        self.cache_ttl = config.get("cache_ttl", 3600)  # 1 hour default
+        self.redis_client = None
 
         # Model performance tracking
         self.model_metrics: dict[str, ModelPerformanceMetrics] = {}
@@ -99,18 +169,50 @@ class MultiModelCoordinator:
         self._initialized = False
         self.active_models = set()
 
+        # Enhanced model configurations with cost and capability data
+        self.model_configs = {
+            "gemini-2.5-pro": {
+                "cost_per_token": 0.002,
+                "capabilities": {"analytical": 0.95, "creative": 0.85, "constitutional": 0.92},
+                "max_tokens": 8192
+            },
+            "gemini-2.0-flash": {
+                "cost_per_token": 0.0005,
+                "capabilities": {"analytical": 0.80, "creative": 0.90, "constitutional": 0.75},
+                "max_tokens": 4096
+            },
+            "deepseek-r1": {
+                "cost_per_token": 0.001,
+                "capabilities": {"analytical": 0.90, "creative": 0.70, "constitutional": 0.88},
+                "max_tokens": 6144
+            }
+        }
+
     async def initialize(self):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        """Initialize the multi-model coordinator."""
+        """Initialize the multi-model coordinator with enhanced capabilities."""
         if self._initialized:
             return
 
         try:
-            # Initialize model performance metrics
+            # Initialize Redis cache if enabled
+            if self.cache_enabled:
+                try:
+                    redis_url = self.config.get("redis_url", "redis://localhost:6379/0")
+                    self.redis_client = redis.from_url(redis_url)
+                    await self.redis_client.ping()
+                    logger.info("Redis cache initialized successfully")
+                except Exception as e:
+                    logger.warning(f"Redis cache initialization failed: {e}")
+                    self.cache_enabled = False
+
+            # Initialize enhanced model performance metrics
             all_models = [self.primary_model] + self.fallback_models
             for model_id in all_models:
+                model_config = self.model_configs.get(model_id, {})
+
                 self.model_metrics[model_id] = ModelPerformanceMetrics(
                     model_id=model_id,
                     synthesis_accuracy=0.95,  # Initial baseline
@@ -119,11 +221,18 @@ class MultiModelCoordinator:
                     gflops_usage=1.0,
                     reliability_score=0.95,
                     last_updated=datetime.now(),
+                    # Enhanced metrics
+                    cost_per_token=model_config.get("cost_per_token", 0.001),
+                    api_latency_ms=100.0,
+                    error_rate=0.02,
+                    specialized_capabilities=model_config.get("capabilities", {"general": 0.8}),
+                    operational_status="healthy"
                 )
                 self.active_models.add(model_id)
 
             self._initialized = True
-            logger.info(f"Multi-model coordinator initialized with {len(all_models)} models")
+            logger.info(f"Enhanced multi-model coordinator initialized with {len(all_models)} models")
+            logger.info(f"Cache enabled: {self.cache_enabled}")
 
         except Exception as e:
             logger.error(f"Failed to initialize multi-model coordinator: {e}")
@@ -133,7 +242,7 @@ class MultiModelCoordinator:
         self, synthesis_request: dict[str, Any], enable_wina: bool = True
     ) -> EnsembleResult:
         """
-        Coordinate multi-model policy synthesis with ensemble strategies.
+        Enhanced multi-model policy synthesis with caching and adaptive routing.
 
         Args:
             synthesis_request: Policy synthesis request
@@ -148,12 +257,27 @@ class MultiModelCoordinator:
         start_time = time.time()
 
         try:
+            # Classify request complexity for adaptive routing
+            request_complexity = self.request_classifier.classify_request(synthesis_request)
+            logger.info(f"Request classified as: {request_complexity.value}")
+
+            # Check cache first if enabled
+            cache_key = None
+            if self.cache_enabled and self.redis_client:
+                cache_key = await self._generate_cache_key(synthesis_request, request_complexity)
+                cached_result = await self._get_cached_result(cache_key)
+                if cached_result:
+                    logger.info("Returning cached synthesis result")
+                    return cached_result
+
             logger.info(
                 f"Starting multi-model synthesis with strategy: {self.ensemble_strategy.value}"
             )
 
-            # Select models based on current performance and strategy
-            selected_models = await self._select_models_for_synthesis(synthesis_request)
+            # Select models based on request complexity and performance
+            selected_models = await self._select_models_for_synthesis(
+                synthesis_request, request_complexity
+            )
 
             # Execute synthesis across selected models
             model_results = await self._execute_parallel_synthesis(
@@ -169,6 +293,10 @@ class MultiModelCoordinator:
             # Calculate final metrics
             synthesis_time_ms = (time.time() - start_time) * 1000
             ensemble_result.synthesis_time_ms = synthesis_time_ms
+
+            # Cache result if enabled
+            if self.cache_enabled and cache_key and ensemble_result.confidence_score > 0.8:
+                await self._cache_result(cache_key, ensemble_result)
 
             # Store in history
             self.ensemble_history.append(ensemble_result)
@@ -196,12 +324,44 @@ class MultiModelCoordinator:
                 synthesis_time_ms=(time.time() - start_time) * 1000,
             )
 
-    async def _select_models_for_synthesis(self, request: dict[str, Any]) -> list[str]:
-        """Select optimal models for synthesis based on performance and strategy."""
+    async def _select_models_for_synthesis(
+        self, request: dict[str, Any], complexity: RequestComplexity = None
+    ) -> list[str]:
+        """Enhanced model selection with adaptive routing based on request complexity."""
+
+        # Filter out unhealthy models
+        healthy_models = {
+            model_id: metrics for model_id, metrics in self.model_metrics.items()
+            if metrics.operational_status == "healthy"
+        }
+
+        if not healthy_models:
+            logger.warning("No healthy models available, using all models")
+            healthy_models = self.model_metrics
+
+        # Adaptive routing based on request complexity
+        if complexity == RequestComplexity.SIMPLE:
+            # Use single fast, cost-effective model
+            cost_efficient = sorted(
+                healthy_models.items(),
+                key=lambda x: (x[1].cost_per_token, x[1].response_time_ms)
+            )
+            return [cost_efficient[0][0]] if cost_efficient else [self.primary_model]
+
+        elif complexity == RequestComplexity.HIGH_STAKES:
+            # Use full ensemble with constitutional priority
+            constitutional_sorted = sorted(
+                healthy_models.items(),
+                key=lambda x: x[1].constitutional_compliance,
+                reverse=True
+            )
+            return [model_id for model_id, _ in constitutional_sorted[:3]]
+
+        # Complex requests - use ensemble strategy
         if self.ensemble_strategy == EnsembleStrategy.WEIGHTED_VOTING:
             # Select top performing models
             sorted_models = sorted(
-                self.model_metrics.items(),
+                healthy_models.items(),
                 key=lambda x: x[1].reliability_score,
                 reverse=True,
             )
@@ -210,7 +370,7 @@ class MultiModelCoordinator:
         elif self.ensemble_strategy == EnsembleStrategy.CONSTITUTIONAL_PRIORITY:
             # Prioritize models with high constitutional compliance
             sorted_models = sorted(
-                self.model_metrics.items(),
+                healthy_models.items(),
                 key=lambda x: x[1].constitutional_compliance,
                 reverse=True,
             )
@@ -220,7 +380,7 @@ class MultiModelCoordinator:
             # Select models optimized for WINA performance
             wina_optimized = [
                 model_id
-                for model_id, metrics in self.model_metrics.items()
+                for model_id, metrics in healthy_models.items()
                 if metrics.gflops_usage < 0.7  # Models with good GFLOPs efficiency
             ]
             return wina_optimized[:2] if wina_optimized else [self.primary_model]
@@ -438,8 +598,65 @@ class MultiModelCoordinator:
 
                 metrics.last_updated = datetime.now()
 
+    async def _generate_cache_key(
+        self, synthesis_request: dict[str, Any], complexity: RequestComplexity
+    ) -> str:
+        """Generate cache key for synthesis request."""
+        # Create deterministic hash of request content and complexity
+        request_str = json.dumps(synthesis_request, sort_keys=True)
+        content = f"{request_str}:{complexity.value}:{self.ensemble_strategy.value}"
+        return hashlib.sha256(content.encode()).hexdigest()[:16]
+
+    async def _get_cached_result(self, cache_key: str) -> Optional[EnsembleResult]:
+        """Retrieve cached synthesis result."""
+        try:
+            if not self.redis_client:
+                return None
+
+            cached_data = await self.redis_client.get(f"synthesis:{cache_key}")
+            if cached_data:
+                data = json.loads(cached_data)
+                return EnsembleResult(
+                    synthesized_policy=data["synthesized_policy"],
+                    confidence_score=data["confidence_score"],
+                    contributing_models=data["contributing_models"],
+                    ensemble_strategy_used=EnsembleStrategy(data["ensemble_strategy_used"]),
+                    performance_metrics=data["performance_metrics"],
+                    constitutional_fidelity=data["constitutional_fidelity"],
+                    wina_optimization_applied=data["wina_optimization_applied"],
+                    synthesis_time_ms=data["synthesis_time_ms"]
+                )
+        except Exception as e:
+            logger.warning(f"Cache retrieval failed: {e}")
+        return None
+
+    async def _cache_result(self, cache_key: str, result: EnsembleResult):
+        """Cache synthesis result."""
+        try:
+            if not self.redis_client:
+                return
+
+            cache_data = {
+                "synthesized_policy": result.synthesized_policy,
+                "confidence_score": result.confidence_score,
+                "contributing_models": result.contributing_models,
+                "ensemble_strategy_used": result.ensemble_strategy_used.value,
+                "performance_metrics": result.performance_metrics,
+                "constitutional_fidelity": result.constitutional_fidelity,
+                "wina_optimization_applied": result.wina_optimization_applied,
+                "synthesis_time_ms": result.synthesis_time_ms
+            }
+
+            await self.redis_client.setex(
+                f"synthesis:{cache_key}",
+                self.cache_ttl,
+                json.dumps(cache_data)
+            )
+        except Exception as e:
+            logger.warning(f"Cache storage failed: {e}")
+
     def get_performance_summary(self) -> dict[str, Any]:
-        """Get comprehensive performance summary."""
+        """Get comprehensive performance summary with enhanced metrics."""
         if not self.ensemble_history:
             return {"status": "no_data"}
 
@@ -455,12 +672,17 @@ class MultiModelCoordinator:
             / len(recent_results),
             "wina_optimization_rate": sum(1 for r in recent_results if r.wina_optimization_applied)
             / len(recent_results),
+            "cache_enabled": self.cache_enabled,
             "model_metrics": {
                 model_id: {
                     "accuracy": metrics.synthesis_accuracy,
                     "compliance": metrics.constitutional_compliance,
                     "response_time": metrics.response_time_ms,
                     "reliability": metrics.reliability_score,
+                    "cost_per_token": metrics.cost_per_token,
+                    "error_rate": metrics.error_rate,
+                    "operational_status": metrics.operational_status,
+                    "capabilities": metrics.specialized_capabilities
                 }
                 for model_id, metrics in self.model_metrics.items()
             },

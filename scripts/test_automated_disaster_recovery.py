@@ -42,9 +42,10 @@ class AutomatedDisasterRecoveryTester:
     """
 
     def __init__(self):
-        self.project_root = Path("/home/dislove/ACGS-1")
-        self.backup_root = Path("/home/dislove/ACGS-1/backups")
-        self.logs_dir = Path("/home/dislove/ACGS-1/logs")
+        # Use dynamic project root detection
+        self.project_root = Path(__file__).parent.parent
+        self.backup_root = self.project_root / "backups"
+        self.logs_dir = self.project_root / "logs"
         self.test_results = {}
         self.constitution_hash = "cdd01ef066bc6cf2"
 

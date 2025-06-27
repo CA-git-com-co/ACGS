@@ -1,9 +1,11 @@
 import logging
 import re
+from typing import List, Dict, Any, Optional
 
 import z3
 
 from ..schemas import SMTSolverInput, SMTSolverOutput
+from .policy_smt_compiler import PolicySMTCompiler, SMTConstraint, PolicyType
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -12,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class Z3SMTSolverClient:
     """
-    Real Z3 SMT Solver integration for formal verification of policy rules against constitutional principles.
+    Enhanced Z3 SMT Solver integration with policy-to-SMT compilation for formal verification.
     """
 
     def __init__(self):
@@ -21,6 +23,9 @@ class Z3SMTSolverClient:
         # sha256: func_hash
         self.solver = z3.Solver()
         self.context_vars = {}  # Store Z3 variables for reuse
+        self.policy_compiler = PolicySMTCompiler()
+        self.constitutional_constraints: List[SMTConstraint] = []
+        self.formal_properties: List[SMTConstraint] = []
 
     async def check_satisfiability(self, solver_input: SMTSolverInput) -> SMTSolverOutput:
         """
@@ -86,6 +91,205 @@ class Z3SMTSolverClient:
                 is_unsatisfiable=False,
                 error_message=f"Z3 solver error: {str(e)}",
             )
+
+    async def verify_policy_compliance(
+        self, policy_content: str, policy_id: str,
+        constitutional_principles_file: str = None
+    ) -> Dict[str, Any]:
+        """
+        Enhanced policy verification with constitutional compliance checking.
+
+        Args:
+            policy_content: Policy content to verify
+            policy_id: Unique policy identifier
+            constitutional_principles_file: Path to constitutional principles
+
+        Returns:
+            Comprehensive verification result
+        """
+        try:
+            logger.info(f"Starting enhanced verification for policy {policy_id}")
+
+            # Reset solver and compiler state
+            self.solver.reset()
+            self.policy_compiler = PolicySMTCompiler()
+
+            # Compile policy to SMT constraints
+            policy_constraints = self.policy_compiler.compile_governance_policy(
+                policy_content, policy_id
+            )
+
+            # Load and compile constitutional principles if provided
+            if constitutional_principles_file:
+                self.constitutional_constraints = (
+                    self.policy_compiler.compile_constitutional_principles(
+                        constitutional_principles_file
+                    )
+                )
+
+            # Generate formal properties
+            self.formal_properties = self.policy_compiler.generate_formal_properties()
+
+            # Add all constraints to solver
+            all_constraints = (
+                policy_constraints +
+                self.constitutional_constraints +
+                self.formal_properties
+            )
+
+            for constraint in all_constraints:
+                self.solver.add(constraint.constraint)
+
+            # Check satisfiability
+            result = self.solver.check()
+
+            verification_result = {
+                "policy_id": policy_id,
+                "verification_status": str(result),
+                "is_satisfiable": result == z3.sat,
+                "is_unsatisfiable": result == z3.unsat,
+                "is_unknown": result == z3.unknown,
+                "constitutional_compliance": self._check_constitutional_compliance(),
+                "formal_properties_verified": self._verify_formal_properties(),
+                "constraint_summary": self.policy_compiler.get_compilation_summary(),
+                "recommendations": self._generate_verification_recommendations(result)
+            }
+
+            if result == z3.sat:
+                # Get model for satisfiable case
+                model = self.solver.model()
+                verification_result["model"] = self._extract_model_info(model)
+
+            logger.info(f"Enhanced verification completed for {policy_id}: {result}")
+            return verification_result
+
+        except Exception as e:
+            logger.error(f"Enhanced verification failed for {policy_id}: {e}")
+            return {
+                "policy_id": policy_id,
+                "verification_status": "error",
+                "error_message": str(e),
+                "constitutional_compliance": False,
+                "formal_properties_verified": False
+            }
+
+    def _check_constitutional_compliance(self) -> Dict[str, Any]:
+        """Check compliance with constitutional principles."""
+        try:
+            compliance_results = {}
+
+            for constraint in self.constitutional_constraints:
+                # Create temporary solver to check individual constraint
+                temp_solver = z3.Solver()
+                temp_solver.add(z3.Not(constraint.constraint))
+
+                result = temp_solver.check()
+                compliance_results[constraint.source_policy] = {
+                    "compliant": result == z3.unsat,
+                    "priority": constraint.priority,
+                    "policy_type": constraint.policy_type.value
+                }
+
+            overall_compliance = all(
+                result["compliant"] for result in compliance_results.values()
+            )
+
+            return {
+                "overall_compliant": overall_compliance,
+                "individual_results": compliance_results,
+                "compliance_score": (
+                    sum(1 for r in compliance_results.values() if r["compliant"]) /
+                    len(compliance_results) if compliance_results else 1.0
+                )
+            }
+
+        except Exception as e:
+            logger.error(f"Constitutional compliance check failed: {e}")
+            return {"overall_compliant": False, "error": str(e)}
+
+    def _verify_formal_properties(self) -> Dict[str, Any]:
+        """Verify formal properties (correctness, consistency, completeness)."""
+        try:
+            property_results = {}
+
+            for prop in self.formal_properties:
+                # Check if property holds
+                temp_solver = z3.Solver()
+                temp_solver.add(z3.Not(prop.constraint))
+
+                result = temp_solver.check()
+                property_results[prop.source_policy] = {
+                    "verified": result == z3.unsat,
+                    "priority": prop.priority,
+                    "property_type": prop.policy_type.value
+                }
+
+            verification_score = (
+                sum(1 for r in property_results.values() if r["verified"]) /
+                len(property_results) if property_results else 1.0
+            )
+
+            return {
+                "all_properties_verified": verification_score == 1.0,
+                "verification_score": verification_score,
+                "individual_results": property_results
+            }
+
+        except Exception as e:
+            logger.error(f"Formal properties verification failed: {e}")
+            return {"all_properties_verified": False, "error": str(e)}
+
+    def _generate_verification_recommendations(self, result) -> List[str]:
+        """Generate recommendations based on verification results."""
+        recommendations = []
+
+        try:
+            if result == z3.unsat:
+                recommendations.append(
+                    "Policy is formally verified and consistent with constitutional principles"
+                )
+            elif result == z3.sat:
+                recommendations.append(
+                    "Policy has potential inconsistencies - review model for conflicts"
+                )
+                recommendations.append(
+                    "Consider strengthening constitutional constraints"
+                )
+            elif result == z3.unknown:
+                recommendations.append(
+                    "Verification inconclusive - consider simplifying policy complexity"
+                )
+                recommendations.append(
+                    "Increase solver timeout or use different verification strategy"
+                )
+
+            # Add constitutional compliance recommendations
+            if hasattr(self, 'constitutional_constraints') and self.constitutional_constraints:
+                recommendations.append(
+                    "Ensure all constitutional principles are explicitly addressed"
+                )
+
+        except Exception as e:
+            logger.error(f"Failed to generate recommendations: {e}")
+            recommendations.append("Review verification system configuration")
+
+        return recommendations
+
+    def _extract_model_info(self, model) -> Dict[str, Any]:
+        """Extract useful information from Z3 model."""
+        try:
+            model_info = {}
+
+            for decl in model.decls():
+                var_name = decl.name()
+                var_value = model[decl]
+                model_info[var_name] = str(var_value)
+
+            return model_info
+
+        except Exception as e:
+            logger.error(f"Model extraction failed: {e}")
+            return {"error": str(e)}
 
     def _convert_datalog_to_z3(self, datalog_rules: list[str]) -> list[z3.BoolRef]:
         """

@@ -1,0 +1,165 @@
+{
+  "timestamp": "2025-06-25T15:52:05.628107",
+  "overall_security_score": 0.0,
+  "services_analyzed": 7,
+  "services_with_rate_limiting": 0,
+  "rate_limiting_coverage": 0.0,
+  "target_score": 80,
+  "meets_target": false,
+  "service_analysis": {
+    "auth_service": {
+      "port": 8000,
+      "security_headers": {
+        "X-Content-Type-Options": null,
+        "X-Frame-Options": null,
+        "X-XSS-Protection": null,
+        "Strict-Transport-Security": null,
+        "Content-Security-Policy": null,
+        "Referrer-Policy": null,
+        "X-Constitutional-Hash": null,
+        "X-RateLimit-Limit": null
+      },
+      "security_score": 0.0,
+      "headers_present": 0,
+      "headers_total": 8,
+      "rate_limiting": {
+        "enabled": false,
+        "test_requests": 10,
+        "rate_limited_responses": 0
+      },
+      "status": "healthy"
+    },
+    "ac_service": {
+      "port": 8001,
+      "security_headers": {
+        "X-Content-Type-Options": null,
+        "X-Frame-Options": null,
+        "X-XSS-Protection": null,
+        "Strict-Transport-Security": null,
+        "Content-Security-Policy": null,
+        "Referrer-Policy": null,
+        "X-Constitutional-Hash": null,
+        "X-RateLimit-Limit": null
+      },
+      "security_score": 0.0,
+      "headers_present": 0,
+      "headers_total": 8,
+      "rate_limiting": {
+        "enabled": false,
+        "test_requests": 10,
+        "rate_limited_responses": 0
+      },
+      "status": "healthy"
+    },
+    "integrity_service": {
+      "port": 8002,
+      "security_headers": {
+        "X-Content-Type-Options": null,
+        "X-Frame-Options": null,
+        "X-XSS-Protection": null,
+        "Strict-Transport-Security": null,
+        "Content-Security-Policy": null,
+        "Referrer-Policy": null,
+        "X-Constitutional-Hash": null,
+        "X-RateLimit-Limit": null
+      },
+      "security_score": 0.0,
+      "headers_present": 0,
+      "headers_total": 8,
+      "rate_limiting": {
+        "enabled": false,
+        "test_requests": 10,
+        "rate_limited_responses": 0
+      },
+      "status": "healthy"
+    },
+    "fv_service": {
+      "port": 8003,
+      "security_headers": {
+        "X-Content-Type-Options": null,
+        "X-Frame-Options": null,
+        "X-XSS-Protection": null,
+        "Strict-Transport-Security": null,
+        "Content-Security-Policy": null,
+        "Referrer-Policy": null,
+        "X-Constitutional-Hash": null,
+        "X-RateLimit-Limit": null
+      },
+      "security_score": 0.0,
+      "headers_present": 0,
+      "headers_total": 8,
+      "rate_limiting": {
+        "enabled": false,
+        "test_requests": 10,
+        "rate_limited_responses": 0
+      },
+      "status": "healthy"
+    },
+    "gs_service": {
+      "port": 8004,
+      "security_headers": {
+        "X-Content-Type-Options": null,
+        "X-Frame-Options": null,
+        "X-XSS-Protection": null,
+        "Strict-Transport-Security": null,
+        "Content-Security-Policy": null,
+        "Referrer-Policy": null,
+        "X-Constitutional-Hash": null,
+        "X-RateLimit-Limit": null
+      },
+      "security_score": 0.0,
+      "headers_present": 0,
+      "headers_total": 8,
+      "rate_limiting": {
+        "enabled": false,
+        "test_requests": 10,
+        "rate_limited_responses": 0
+      },
+      "status": "healthy"
+    },
+    "pgc_service": {
+      "port": 8005,
+      "security_headers": {
+        "X-Content-Type-Options": null,
+        "X-Frame-Options": null,
+        "X-XSS-Protection": null,
+        "Strict-Transport-Security": null,
+        "Content-Security-Policy": null,
+        "Referrer-Policy": null,
+        "X-Constitutional-Hash": null,
+        "X-RateLimit-Limit": null
+      },
+      "security_score": 0.0,
+      "headers_present": 0,
+      "headers_total": 8,
+      "rate_limiting": {
+        "enabled": false,
+        "test_requests": 10,
+        "rate_limited_responses": 0
+      },
+      "status": "healthy"
+    },
+    "ec_service": {
+      "port": 8006,
+      "security_headers": {
+        "X-Content-Type-Options": null,
+        "X-Frame-Options": null,
+        "X-XSS-Protection": null,
+        "Strict-Transport-Security": null,
+        "Content-Security-Policy": null,
+        "Referrer-Policy": null,
+        "X-Constitutional-Hash": null,
+        "X-RateLimit-Limit": null
+      },
+      "security_score": 0.0,
+      "headers_present": 0,
+      "headers_total": 8,
+      "rate_limiting": {
+        "enabled": false,
+        "test_requests": 10,
+        "rate_limited_responses": 0
+      },
+      "status": "unhealthy"
+    }
+  }
+}

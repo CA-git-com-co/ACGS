@@ -47,19 +47,24 @@ if DATABASE_URL.startswith("sqlite"):
         # SQLite doesn't support connection pooling parameters
     )
 else:
-    # PostgreSQL configuration (for production/development)
+    # PostgreSQL configuration (optimized for 1000 RPS)
     async_engine = create_async_engine(
         DATABASE_URL,
         echo=DB_ECHO,
         pool_pre_ping=True,
-        pool_size=20,  # Increased from default 5
-        max_overflow=30,  # Increased from default 10
-        pool_timeout=30,  # Connection timeout in seconds
-        pool_recycle=3600,  # Recycle connections every hour
+        pool_size=50,  # Increased for high throughput
+        max_overflow=75,  # Increased for burst capacity
+        pool_timeout=20,  # Reduced timeout for faster failure
+        pool_recycle=1800,  # More frequent recycling
         connect_args={
             "server_settings": {
-                "application_name": "acgs_pgp",
+                "application_name": "acgs_pgp_optimized",
                 "jit": "off",  # Disable JIT for consistent performance
+                "statement_timeout": "30s",
+                "idle_in_transaction_session_timeout": "60s",
+                "tcp_keepalives_idle": "300",
+                "tcp_keepalives_interval": "30",
+                "tcp_keepalives_count": "3",
             }
         },
     )
