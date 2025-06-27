@@ -92,13 +92,52 @@ jobs:
             pip install pytest pytest-cov pytest-asyncio
           fi
 
-          # Install service-specific requirements if they exist
+          # Install service-specific requirements with correct paths
+          case "${{ matrix.service }}" in
+            "auth")
+              if [ -f "services/platform/authentication/auth_service/requirements.txt" ]; then
+                pip install -r "services/platform/authentication/auth_service/requirements.txt"
+              fi
+              ;;
+            "ac")
+              if [ -f "services/core/constitutional-ai/requirements.txt" ]; then
+                pip install -r "services/core/constitutional-ai/requirements.txt"
+              fi
+              ;;
+            "integrity")
+              if [ -f "services/platform/integrity/requirements.txt" ]; then
+                pip install -r "services/platform/integrity/requirements.txt"
+              fi
+              ;;
+            "fv")
+              if [ -f "services/core/formal-verification/requirements.txt" ]; then
+                pip install -r "services/core/formal-verification/requirements.txt"
+              fi
+              ;;
+            "gs")
+              if [ -f "services/core/governance-synthesis/requirements.txt" ]; then
+                pip install -r "services/core/governance-synthesis/requirements.txt"
+              fi
+              ;;
+            "pgc")
+              if [ -f "services/core/policy-governance/requirements.txt" ]; then
+                pip install -r "services/core/policy-governance/requirements.txt"
+              fi
+              ;;
+            "ec")
+              if [ -f "services/core/evolutionary-computation/requirements.txt" ]; then
+                pip install -r "services/core/evolutionary-computation/requirements.txt"
+              fi
+              ;;
+          esac
+
+          # Fallback: Install service-specific requirements if they exist (old format)
           SERVICE_REQ_FILE="services/core/${{ matrix.service }}/requirements.txt"
           if [ -f "$SERVICE_REQ_FILE" ]; then
             pip install -r "$SERVICE_REQ_FILE"
           fi
 
-          # Install platform service requirements if applicable
+          # Install platform service requirements if applicable (old format)
           PLATFORM_REQ_FILE="services/platform/${{ matrix.service }}/requirements.txt"
           if [ -f "$PLATFORM_REQ_FILE" ]; then
             pip install -r "$PLATFORM_REQ_FILE"
@@ -108,8 +147,36 @@ jobs:
         run: |
           echo "🧪 Running tests for ${{ matrix.service }} service..."
 
-          # Try to find and run tests for the service
-          if [ -d "services/core/${{ matrix.service }}/tests" ]; then
+          # Try to find and run tests for the service with correct paths
+          TEST_DIR=""
+          case "${{ matrix.service }}" in
+            "auth")
+              TEST_DIR="services/platform/authentication/auth_service/tests"
+              ;;
+            "ac")
+              TEST_DIR="services/core/constitutional-ai/ac_service/tests"
+              ;;
+            "integrity")
+              TEST_DIR="services/platform/integrity/integrity_service/tests"
+              ;;
+            "fv")
+              TEST_DIR="services/core/formal-verification/fv_service/tests"
+              ;;
+            "gs")
+              TEST_DIR="services/core/governance-synthesis/gs_service/tests"
+              ;;
+            "pgc")
+              TEST_DIR="services/core/policy-governance/pgc_service/tests"
+              ;;
+            "ec")
+              TEST_DIR="services/core/evolutionary-computation/tests"
+              ;;
+          esac
+
+          if [ -n "$TEST_DIR" ] && [ -d "$TEST_DIR" ]; then
+            echo "Running tests from $TEST_DIR..."
+            python -m pytest "$TEST_DIR/" -v --tb=short || echo "Tests completed with issues"
+          elif [ -d "services/core/${{ matrix.service }}/tests" ]; then
             echo "Running core service tests..."
             python -m pytest services/core/${{ matrix.service }}/tests/ -v --tb=short || echo "Tests completed with issues"
           elif [ -d "services/platform/${{ matrix.service }}/tests" ]; then
@@ -126,16 +193,77 @@ jobs:
         run: |
           echo "🔍 Checking ${{ matrix.service }} service structure..."
 
-          # Check if service directory exists
-          if [ -d "services/core/${{ matrix.service }}" ]; then
-            echo "✅ Core service directory found"
-            ls -la "services/core/${{ matrix.service }}/"
-          elif [ -d "services/platform/${{ matrix.service }}" ]; then
-            echo "✅ Platform service directory found"
-            ls -la "services/platform/${{ matrix.service }}/"
-          else
-            echo "⚠️ Service directory not found for ${{ matrix.service }}"
-          fi
+          # Check if service directory exists with correct paths
+          case "${{ matrix.service }}" in
+            "auth")
+              if [ -d "services/platform/authentication/auth_service" ]; then
+                echo "✅ Auth service directory found"
+                ls -la "services/platform/authentication/auth_service/"
+              else
+                echo "⚠️ Auth service directory not found"
+              fi
+              ;;
+            "ac")
+              if [ -d "services/core/constitutional-ai/ac_service" ]; then
+                echo "✅ Constitutional AI service directory found"
+                ls -la "services/core/constitutional-ai/ac_service/"
+              else
+                echo "⚠️ Constitutional AI service directory not found"
+              fi
+              ;;
+            "integrity")
+              if [ -d "services/platform/integrity/integrity_service" ]; then
+                echo "✅ Integrity service directory found"
+                ls -la "services/platform/integrity/integrity_service/"
+              else
+                echo "⚠️ Integrity service directory not found"
+              fi
+              ;;
+            "fv")
+              if [ -d "services/core/formal-verification/fv_service" ]; then
+                echo "✅ Formal Verification service directory found"
+                ls -la "services/core/formal-verification/fv_service/"
+              else
+                echo "⚠️ Formal Verification service directory not found"
+              fi
+              ;;
+            "gs")
+              if [ -d "services/core/governance-synthesis/gs_service" ]; then
+                echo "✅ Governance Synthesis service directory found"
+                ls -la "services/core/governance-synthesis/gs_service/"
+              else
+                echo "⚠️ Governance Synthesis service directory not found"
+              fi
+              ;;
+            "pgc")
+              if [ -d "services/core/policy-governance/pgc_service" ]; then
+                echo "✅ Policy Governance service directory found"
+                ls -la "services/core/policy-governance/pgc_service/"
+              else
+                echo "⚠️ Policy Governance service directory not found"
+              fi
+              ;;
+            "ec")
+              if [ -d "services/core/evolutionary-computation" ]; then
+                echo "✅ Evolutionary Computation service directory found"
+                ls -la "services/core/evolutionary-computation/"
+              else
+                echo "⚠️ Evolutionary Computation service directory not found"
+              fi
+              ;;
+            *)
+              # Fallback to old format checks
+              if [ -d "services/core/${{ matrix.service }}" ]; then
+                echo "✅ Core service directory found"
+                ls -la "services/core/${{ matrix.service }}/"
+              elif [ -d "services/platform/${{ matrix.service }}" ]; then
+                echo "✅ Platform service directory found"
+                ls -la "services/platform/${{ matrix.service }}/"
+              else
+                echo "⚠️ Service directory not found for ${{ matrix.service }}"
+              fi
+              ;;
+          esac
 
   # Basic security scanning
   security_scan:
