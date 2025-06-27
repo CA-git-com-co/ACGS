@@ -1,7 +1,7 @@
 # ACGS API Reference - Consolidated Guide
 
-**Version**: 2.0  
-**Last Updated**: 2025-06-23  
+**Version**: 3.0  
+**Last Updated**: 2025-06-27  
 **Base URL**: `http://localhost:8000` (development)
 
 ## 🎯 Overview
@@ -40,6 +40,45 @@ curl -H "Authorization: Bearer <JWT_TOKEN>" \
 
 - **✅ Production Ready**: Fully implemented with comprehensive features and production-grade security
 - **🧪 Prototype**: Functional implementation with limitations (mock components, debug modes, disabled features)
+
+## 📊 Monitoring & Health Endpoints
+
+All services expose standard monitoring and health endpoints:
+
+### Health Check
+```bash
+GET /health
+# Returns service health status
+{
+  "status": "healthy",
+  "service": "authentication-service",
+  "version": "3.0.0",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "timestamp": "2025-06-27T12:00:00Z"
+}
+```
+
+### Prometheus Metrics
+```bash
+GET /metrics
+# Returns Prometheus-formatted metrics
+# TYPE http_requests_total counter
+# HELP http_requests_total Total number of HTTP requests
+http_requests_total{method="GET",status="200"} 1234
+```
+
+### Service Info
+```bash
+GET /info
+# Returns detailed service information
+{
+  "service": "constitutional-ai-service",
+  "version": "3.0.0",
+  "environment": "production",
+  "features": ["compliance_validation", "multi_model_consensus"],
+  "dependencies": ["auth-service", "integrity-service"]
+}
+```
 
 ## 📋 Common Response Formats
 

@@ -511,7 +511,7 @@ components:
       properties:
         status:
           type: string
-          example: "shutdown_initiated"
+          example: 'shutdown_initiated'
         shutdown_id:
           type: string
         estimated_rto_minutes:

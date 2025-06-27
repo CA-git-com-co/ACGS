@@ -1,5 +1,8 @@
 # ACGS-1 Governance Synthesis Service
 
+**Status**: 🧪 **Prototype**  
+**Last Updated**: 2025-06-27
+
 ## Overview
 
 The Governance Synthesis (GS) Service is a core component of the ACGS-1 system, responsible for synthesizing governance policies from constitutional principles using advanced AI model integration. It employs a multi-model LLM consensus mechanism with Google Gemini, DeepSeek-R1, NVIDIA Qwen, and Nano-vLLM to ensure robust and reliable policy generation.
@@ -186,7 +189,7 @@ uv run uvicorn main:app --reload --port 8004
 
 ### Production Deployment
 
-```bash
+````bash
 # Using Docker
 docker build -t acgs-gs-service .
 docker run -p 8004:8004 --env-file .env acgs-gs-service
@@ -224,7 +227,7 @@ async def synthesize_policy():
             }
         )
         return response.json()
-```
+````
 
 ### Multi-Model Consensus
 
@@ -307,7 +310,7 @@ infrastructure/monitoring/grafana/dashboards/services/gs-service-dashboard.json
 
 ### Alerting Rules
 
-```yaml
+````yaml
 # Critical alerts
 - alert: GSServiceDown
   expr: up{job="gs-service"} == 0
@@ -342,7 +345,7 @@ python scripts/test_ai_models.py --model nvidia-qwen
 
 # Enable fallback models
 curl -X POST http://localhost:8004/api/v1/models/fallback
-```
+````
 
 #### High Synthesis Latency
 
@@ -492,5 +495,7 @@ python tests/performance/stress_test_consensus.py --models=3 --concurrent=10
 - **Interactive API Docs**: http://localhost:8004/docs
 - **Logs**: `/logs/gs_service.log`
 - **Configuration**: `services/core/governance-synthesis/gs_service/.env`
+
 ```
+
 ```

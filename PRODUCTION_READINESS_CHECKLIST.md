@@ -52,11 +52,11 @@ This checklist outlines the criteria for declaring the ACGS-PGP system ready for
 
 All relevant stakeholders must review and sign off on the production readiness.
 
-- [ ] **Technical Lead**: **********\_\_\_\_********** Date: **\_\_\_\_**
-- [ ] **Product Owner**: **********\_\_\_\_********** Date: **\_\_\_\_**
-- [ ] **Security Officer**: **********\_\_\_\_********** Date: **\_\_\_\_**
-- [ ] **Legal/Compliance**: **********\_\_\_\_********** Date: **\_\_\_\_**
-- [ ] **Operations Lead**: **********\_\_\_\_********** Date: **\_\_\_\_**
+- [ ] **Technical Lead**: ****\*\*****\_\_\_\_****\*\***** Date: **\_\_\_\_**
+- [ ] **Product Owner**: ****\*\*****\_\_\_\_****\*\***** Date: **\_\_\_\_**
+- [ ] **Security Officer**: ****\*\*****\_\_\_\_****\*\***** Date: **\_\_\_\_**
+- [ ] **Legal/Compliance**: ****\*\*****\_\_\_\_****\*\***** Date: **\_\_\_\_**
+- [ ] **Operations Lead**: ****\*\*****\_\_\_\_****\*\***** Date: **\_\_\_\_**
 
 ## 4. Rollback Criteria and Emergency Procedures
 

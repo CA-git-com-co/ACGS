@@ -204,31 +204,31 @@ kubectl get deployments -n acgs-system
 
 ### Technical Validation
 
-- [ ] **System Architect**: ********\_******** Date: **\_\_\_**
-- [ ] **Lead Developer**: ********\_******** Date: **\_\_\_**
-- [ ] **DevOps Engineer**: ********\_******** Date: **\_\_\_**
+- [ ] **System Architect**: **\*\*\*\***\_**\*\*\*\*** Date: **\_\_\_**
+- [ ] **Lead Developer**: **\*\*\*\***\_**\*\*\*\*** Date: **\_\_\_**
+- [ ] **DevOps Engineer**: **\*\*\*\***\_**\*\*\*\*** Date: **\_\_\_**
 
 ### Security & Compliance
 
-- [ ] **Security Officer**: ********\_******** Date: **\_\_\_**
-- [ ] **Compliance Officer**: ********\_******** Date: **\_\_\_**
+- [ ] **Security Officer**: **\*\*\*\***\_**\*\*\*\*** Date: **\_\_\_**
+- [ ] **Compliance Officer**: **\*\*\*\***\_**\*\*\*\*** Date: **\_\_\_**
 
 ### Operations
 
-- [ ] **Operations Manager**: ********\_******** Date: **\_\_\_**
-- [ ] **Site Reliability Engineer**: ********\_******** Date: **\_\_\_**
+- [ ] **Operations Manager**: **\*\*\*\***\_**\*\*\*\*** Date: **\_\_\_**
+- [ ] **Site Reliability Engineer**: **\*\*\*\***\_**\*\*\*\*** Date: **\_\_\_**
 
 ### Final Approval
 
-- [ ] **Project Manager**: ********\_******** Date: **\_\_\_**
-- [ ] **Technical Director**: ********\_******** Date: **\_\_\_**
+- [ ] **Project Manager**: **\*\*\*\***\_**\*\*\*\*** Date: **\_\_\_**
+- [ ] **Technical Director**: **\*\*\*\***\_**\*\*\*\*** Date: **\_\_\_**
 
 ---
 
 **Production Deployment Authorized**: ☐ Yes ☐ No
 
-**Deployment Date**: ********\_********
+**Deployment Date**: **\*\*\*\***\_**\*\*\*\***
 
-**Deployment Lead**: ********\_********
+**Deployment Lead**: **\*\*\*\***\_**\*\*\*\***
 
-**Emergency Contact**: ********\_********
+**Emergency Contact**: **\*\*\*\***\_**\*\*\*\***

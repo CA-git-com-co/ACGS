@@ -483,7 +483,7 @@ components:
         reason:
           type: string
           description: Reason for emergency shutdown
-          example: "Constitutional violation detected"
+          example: 'Constitutional violation detected'
         authorization_token:
           type: string
           description: Admin authorization token
@@ -497,10 +497,10 @@ components:
       properties:
         status:
           type: string
-          example: "shutdown_initiated"
+          example: 'shutdown_initiated'
         shutdown_id:
           type: string
-          example: "emergency_shutdown_20250627_123456"
+          example: 'emergency_shutdown_20250627_123456'
         estimated_rto_minutes:
           type: integer
           example: 25

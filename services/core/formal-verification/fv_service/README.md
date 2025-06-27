@@ -1,5 +1,8 @@
 # ACGS-1 Formal Verification Service
 
+**Status**: 🧪 **Prototype**  
+**Last Updated**: 2025-06-27
+
 ## Overview
 
 The Formal Verification (FV) Service is a critical component of the ACGS-1 system, providing enterprise-grade formal verification capabilities with mathematical proof generation. It integrates with the Z3 SMT solver to mathematically prove the correctness of policies and system behaviors, ensuring constitutional compliance through formal methods.
@@ -183,7 +186,7 @@ curl http://localhost:8003/health
 
 ### Kubernetes Deployment
 
-```yaml
+````yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -237,7 +240,7 @@ async def verify_policy():
             }
         )
         return response.json()
-```
+````
 
 ### Constitutional Compliance Check
 
@@ -463,4 +466,7 @@ python tests/performance/stress_test.py --concurrent=50
 - **Interactive API Docs**: http://localhost:8003/docs
 - **Logs**: `/logs/fv_service.log`
 - **Configuration**: `services/core/formal-verification/fv_service/.env`
+
+```
+
 ```

@@ -1,5 +1,10 @@
 # AC Service (Constitutional AI Service)
 
+**Status**: ✅ **Production Ready**  
+**Port**: 8001  
+**Version**: 3.0.0  
+**Last Updated**: 2025-06-27
+
 ## Overview
 
 The AC Service is a core component of the ACGS-1 system, responsible for ensuring that all governance decisions and system actions adhere to the established constitutional principles. It uses a highly-aligned AI model to analyze governance contexts and provide real-time constitutional compliance validation.

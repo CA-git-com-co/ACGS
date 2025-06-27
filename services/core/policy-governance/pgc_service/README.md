@@ -1,5 +1,8 @@
 # ACGS-1 Policy Governance Compiler Service
 
+**Status**: 🧪 **Prototype**  
+**Last Updated**: 2025-06-27
+
 ## Overview
 
 The Policy Governance Compiler (PGC) Service is an enterprise-grade policy enforcement engine that provides real-time governance policy enforcement, workflow orchestration, and constitutional compliance validation using Open Policy Agent (OPA) integration and advanced optimization algorithms.

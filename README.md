@@ -6,20 +6,21 @@ The ACGS-PGP (Autonomous Constitutional Governance System - Policy Generation Pl
 
 **Constitutional Hash**: `cdd01ef066bc6cf2`
 **System Version**: 3.0.0
-**Last Updated**: 2025-06-24
+**Last Updated**: 2025-06-27
 **Architecture**: ACGS-1 Lite with Constitutional AI Constraints
 
 ## Core Service Architecture
 
-| Service               | Port | Purpose                                   | Implementation Status   | Health Check                 |
-| --------------------- | ---- | ----------------------------------------- | ----------------------- | ---------------------------- |
-| **auth-service**      | 8000 | Authentication & Authorization with MFA   | ✅ **Production Ready** | http://localhost:8000/health |
-| **ac-service**        | 8001 | Constitutional AI Management & Compliance | ✅ **Production Ready** | http://localhost:8001/health |
-| **integrity-service** | 8002 | Cryptographic Integrity & PGP Assurance   | ✅ **Production Ready** | http://localhost:8002/health |
-| **fv-service**        | 8003 | Formal Verification & Policy Validation   | 🧪 **Prototype**        | http://localhost:8003/health |
-| **gs-service**        | 8004 | Governance Synthesis & Policy Generation  | 🧪 **Prototype**        | http://localhost:8004/health |
-| **pgc-service**       | 8005 | Policy Governance Compiler & Enforcement  | 🧪 **Prototype**        | http://localhost:8005/health |
-| **ec-service**        | 8006 | Evolutionary Computation & WINA Oversight | 🧪 **Prototype**        | http://localhost:8006/health |
+| Service                              | Port | Purpose                                                                         | Implementation Status   | Health Check                 |
+| ------------------------------------ | ---- | ------------------------------------------------------------------------------- | ----------------------- | ---------------------------- |
+| **Authentication Service**           | 8000 | Identity and JWT token management for all requests                              | ✅ **Production Ready** | http://localhost:8000/health |
+| **Constitutional AI Service**        | 8001 | Manages constitutional principles and compliance checks                         | ✅ **Production Ready** | http://localhost:8001/health |
+| **Integrity Service**                | 8002 | Verifies data integrity and consistent constitutional hashing                   | ✅ **Production Ready** | http://localhost:8002/health |
+| **Formal Verification Service**      | 8003 | Performs mathematical policy verification and maintains audit trail             | 🧪 **Prototype**        | http://localhost:8003/health |
+| **Governance Synthesis Service**     | 8004 | Generates governance policies via multi-LLM consensus and QEC fault tolerance   | 🧪 **Prototype**        | http://localhost:8004/health |
+| **Policy Governance Service**        | 8005 | Real-time policy enforcement engine ensuring compliance at runtime              | 🧪 **Prototype**        | http://localhost:8005/health |
+| **Evolutionary Computation Service** | 8006 | Monitors performance and suggests optimizations (WINA framework)                | 🧪 **Prototype**        | http://localhost:8006/health |
+| **Darwin–Gödel Machine**             | 8007 | Self-evolving governance module that proposes and validates system improvements | 🧪 **Prototype**        | http://localhost:8007/health |
 
 ### Implementation Status Legend
 
@@ -32,7 +33,31 @@ The ACGS-PGP (Autonomous Constitutional Governance System - Policy Generation Pl
 - **Production Ready Services** (Auth, AC, Integrity): Complete implementations with comprehensive features, security middleware, and production-grade error handling
 - **Prototype Services** (FV, GS, PGC, EC): Functional but with limitations such as mock implementations, disabled features, or debugging modes. Suitable for development and testing but require additional work for production deployment
 
+## Recent Updates (June 2025)
+
+### Infrastructure Enhancements
+- ✅ **Monitoring Infrastructure**: Comprehensive Prometheus/Grafana stack deployed
+- ✅ **GitOps Integration**: ArgoCD deployment configurations for automated deployments
+- ✅ **E2E Testing**: End-to-end testing frameworks with offline validation support
+- ✅ **Security Hardening**: Enhanced security configurations and compliance frameworks
+
+### New Features
+- **Production Monitoring Dashboard**: Real-time metrics and alerting
+- **Constitutional Compliance Monitoring**: Automated compliance validation
+- **Emergency Response Procedures**: Automated shutdown and restore capabilities
+- **Comprehensive Validation Scripts**: System-wide health and compliance checks
+
 ## AI Model Integrations
+
+## Enterprise Architecture 2025 Vision
+
+The ACGS project is evolving towards a comprehensive, enterprise-scale constitutional AI governance platform that leverages breakthrough 2025 technologies. This next-generation architecture will feature:
+
+- **Advanced AI Model Integration:** A dynamic, multi-model approach using leading-edge models like OpenAI o3, DeepSeek R1, and Gemini 2.5 Pro for nuanced reasoning, cost-effective processing, and advanced analysis.
+- **Next-Generation Infrastructure:** A robust service mesh using Linkerd and eBPF for enhanced security and observability, alongside high-performance data stores like DragonflyDB and messaging systems like Apache Pulsar.
+- **Democratic and Secure Governance:** Integration with proven democratic platforms like Pol.is and Decidim, secured with post-quantum cryptography and immutable record-keeping on the Hedera Hashgraph.
+
+This forward-looking vision, detailed in the `services/GEMINI.md` document, positions ACGS at the forefront of AI governance, aiming to deliver a transparent, accountable, and democratically-governed AI ecosystem.
 
 ### Production AI Models
 
@@ -137,13 +162,41 @@ All services use consistent resource allocation:
 - **Service Config**: `/config/services/` - Individual service configurations
 - **Security Config**: `/config/security/` - Security policies and settings
 
+## Monitoring & Observability
+
+### Prometheus Metrics
+
+All services expose metrics on `/metrics` endpoint:
+
+```bash
+# View service metrics
+curl http://localhost:8000/metrics  # Auth service
+curl http://localhost:8001/metrics  # Constitutional AI service
+```
+
+### Grafana Dashboards
+
+Access Grafana dashboards for real-time monitoring:
+
+- **ACGS System Overview**: Overall system health and performance
+- **Constitutional Compliance**: Real-time compliance monitoring
+- **Service Performance**: Individual service metrics and SLAs
+
+### Alert Rules
+
+Critical alerts configured for:
+- Service availability < 99.5% (production services)
+- Constitutional compliance < 95%
+- Response time > 500ms (sustained)
+- Error rate > 5%
+
 ## Troubleshooting
 
 ### Common Issues
 
-#### PGC Service Degraded ⚠️
+#### Policy Governance Service Degraded ⚠️
 
-**Issue**: PGC service requires OPA (Open Policy Agent) on port 8181
+**Issue**: The Policy Governance Service requires OPA (Open Policy Agent) on port 8181
 
 **Resolution**:
 

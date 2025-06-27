@@ -1,5 +1,8 @@
 # ACGS-1 Evolutionary Computation Service
 
+**Status**: 🧪 **Prototype**  
+**Last Updated**: 2025-06-27
+
 ## Overview
 
 The Evolutionary Computation (EC) Service is an enterprise-grade WINA-optimized oversight and governance platform that provides advanced evolutionary computation algorithms, constitutional compliance verification, and intelligent performance optimization for the ACGS-PGP system. It implements the WINA (Weighted Intelligence Network Architecture) framework for autonomous governance evolution.
@@ -189,7 +192,7 @@ uv run uvicorn main:app --reload --port 8006
 
 ### Production Deployment
 
-```bash
+````bash
 # Using Docker
 docker build -t acgs-ec-service .
 docker run -p 8006:8006 --env-file .env acgs-ec-service
@@ -222,7 +225,7 @@ async def optimize_wina():
             }
         )
         return response.json()
-```
+````
 
 ### Genetic Algorithm Evolution
 
@@ -483,4 +486,7 @@ python tests/performance/stress_test_evolution.py --concurrent=5
 - **Interactive API Docs**: http://localhost:8006/docs
 - **Logs**: `/logs/ec_service.log`
 - **Configuration**: `services/core/evolutionary-computation/.env`
+
+```
+
 ```

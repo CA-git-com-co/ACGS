@@ -1,5 +1,8 @@
 # ACGS-PGP Deployment Guide
 
+**Last Updated**: 2025-06-27  
+**Version**: 3.0.0
+
 This guide provides step-by-step instructions for deploying the ACGS-PGP system.
 
 ## 1. Prerequisites
@@ -39,12 +42,35 @@ kubectl apply -f infrastructure/kubernetes/dragonflydb.yaml
 Deploy Prometheus and Grafana for system observability.
 
 ```bash
-# Deploy Prometheus (assuming Prometheus Operator or similar setup)
-# kubectl apply -f infrastructure/kubernetes/monitoring/prometheus-operator.yaml
-# kubectl apply -f infrastructure/kubernetes/monitoring/prometheus.yaml
+# Deploy Prometheus
+kubectl apply -f infrastructure/kubernetes/prometheus.yaml
 
 # Deploy Grafana
-# kubectl apply -f infrastructure/kubernetes/monitoring/grafana.yaml
+kubectl apply -f infrastructure/kubernetes/grafana.yaml
+
+# Deploy monitoring rules and dashboards
+kubectl apply -f infrastructure/kubernetes/monitoring/prometheus-rules.yaml
+kubectl apply -f config/monitoring/acgs_alert_rules.yml
+kubectl apply -f config/monitoring/constitutional_compliance_rules.yml
+
+# Configure Grafana dashboards
+# Access Grafana UI and import dashboards from:
+# - config/grafana/dashboards/nano-vllm-constitutional-ai.json
+# - config/monitoring/acgs_constitutional_dashboard.json
+# - config/monitoring/acgs_production_dashboard.json
+```
+
+#### Alternative: Docker Compose Monitoring Stack
+
+For non-Kubernetes deployments, use the Docker Compose monitoring stack:
+
+```bash
+# Deploy monitoring infrastructure with Docker Compose
+cd monitoring
+docker-compose -f docker-compose.monitoring.yml up -d
+
+# Verify monitoring services are running
+docker-compose -f docker-compose.monitoring.yml ps
 ```
 
 ### Phase 3: Deploy Core Microservices
