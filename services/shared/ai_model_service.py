@@ -8,6 +8,7 @@ Supports Google Gemini 2.5 Flash, DeepSeek-R1, and other AI models for various o
 import asyncio
 import dataclasses
 import logging
+import uuid
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
@@ -16,8 +17,17 @@ import httpx
 
 try:
     from .utils import get_config
+    from .deepseek_r1_pilot import DeepSeekR1PilotManager, PilotConfiguration
+    from .prompt_framework import get_constitutional_prompt, PromptRole
 except ImportError:
     from utils import get_config
+    from deepseek_r1_pilot import DeepSeekR1PilotManager, PilotConfiguration
+    try:
+        from prompt_framework import get_constitutional_prompt, PromptRole
+    except ImportError:
+        # Fallback if prompt framework not available
+        get_constitutional_prompt = lambda role: None
+        PromptRole = None
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +100,12 @@ class AIModelService:
         self.models = self._load_model_configurations()
         self.client = httpx.AsyncClient(timeout=30.0)
 
+        # Initialize DeepSeek R1 pilot manager for cost optimization
+        self.deepseek_pilot = DeepSeekR1PilotManager()
+
         logger.info(f"AIModelService initialized with {len(self.models)} models")
+        logger.info(f"DeepSeek R1 pilot: {'enabled' if self.deepseek_pilot.config.enabled else 'disabled'} "
+                   f"({self.deepseek_pilot.config.traffic_percentage}% traffic)")
 
     def _load_model_configurations(self) -> dict[str, ModelConfig]:
         """Load model configurations from centralized config."""
@@ -235,10 +250,12 @@ class AIModelService:
         role: ModelRole | None = None,
         max_tokens: int | None = None,
         temperature: float | None = None,
+        use_constitutional_prompt: bool = False,
+        constitutional_role: str | None = None,
         **kwargs,
     ) -> ModelResponse:
         """
-        Generate text using specified model or role.
+        Generate text using specified model or role with constitutional prompt framework.
 
         Args:
             prompt: Input prompt for text generation
@@ -246,6 +263,8 @@ class AIModelService:
             role: Model role to use (if model_name not specified)
             max_tokens: Override max tokens
             temperature: Override temperature
+            use_constitutional_prompt: Whether to use structured constitutional prompting
+            constitutional_role: Constitutional prompt role to apply
             **kwargs: Additional model-specific parameters
 
         Returns:
@@ -270,24 +289,32 @@ class AIModelService:
         if temperature is not None:
             model_config.temperature = temperature
 
+        # Apply constitutional prompt framework if requested
+        final_prompt = prompt
+        if use_constitutional_prompt and get_constitutional_prompt:
+            constitutional_system_prompt = get_constitutional_prompt(constitutional_role or "constitutional_validator")
+            if constitutional_system_prompt:
+                final_prompt = f"{constitutional_system_prompt}\n\n# User Query\n{prompt}"
+                logger.info(f"Applied constitutional prompt framework for role: {constitutional_role or 'constitutional_validator'}")
+
         # Generate text based on provider
         try:
             if model_config.provider == ModelProvider.GOOGLE:
-                return await self._generate_google(prompt, model_config, **kwargs)
+                return await self._generate_google(final_prompt, model_config, **kwargs)
             elif model_config.provider == ModelProvider.HUGGINGFACE:
-                return await self._generate_huggingface(prompt, model_config, **kwargs)
+                return await self._generate_huggingface(final_prompt, model_config, **kwargs)
             elif model_config.provider == ModelProvider.OPENROUTER:
-                return await self._generate_openrouter(prompt, model_config, **kwargs)
+                return await self._generate_openrouter(final_prompt, model_config, **kwargs)
             elif model_config.provider == ModelProvider.CEREBRAS:
-                return await self._generate_cerebras(prompt, model_config, **kwargs)
+                return await self._generate_cerebras(final_prompt, model_config, **kwargs)
             else:
                 # For other providers, use mock response for now
-                return await self._generate_mock(prompt, model_config, **kwargs)
+                return await self._generate_mock(final_prompt, model_config, **kwargs)
 
         except Exception as e:
             logger.error(f"Error generating text with {model_config.model_id}: {e}")
             # Fallback to mock response
-            return await self._generate_mock(prompt, model_config, error=str(e))
+            return await self._generate_mock(final_prompt, model_config, error=str(e))
 
     def _get_model_by_role(self, role: ModelRole) -> ModelConfig:
         """Get model configuration by role."""
@@ -515,6 +542,60 @@ class AIModelService:
             }
             for name, config in self.models.items()
         }
+
+    async def generate_with_pilot(self, prompt: str, model_name: str = "primary",
+                                 request_id: str = None, **kwargs) -> ModelResponse:
+        """
+        Generate AI response with DeepSeek R1 pilot A/B testing.
+
+        Implements cost optimization through DeepSeek R1 migration while
+        maintaining constitutional compliance and performance targets.
+        """
+        if request_id is None:
+            request_id = str(uuid.uuid4())
+
+        # Prepare request for pilot processing
+        request_data = {
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": kwargs.get("temperature", 0.2),
+            "max_tokens": kwargs.get("max_tokens", 8192),
+        }
+
+        try:
+            # Process through DeepSeek R1 pilot with A/B testing
+            if self.deepseek_pilot.config.enabled:
+                pilot_response = await self.deepseek_pilot.process_request(request_data, request_id)
+
+                # Convert pilot response to ModelResponse format
+                if "choices" in pilot_response and pilot_response["choices"]:
+                    content = pilot_response["choices"][0]["message"]["content"]
+                    usage = pilot_response.get("usage", {})
+
+                    return ModelResponse(
+                        content=content,
+                        model_id=self.deepseek_pilot.config.deepseek_r1_model,
+                        provider="deepseek_r1_pilot",
+                        tokens_used=usage.get("total_tokens", 0),
+                        finish_reason="completed",
+                        metadata={
+                            "pilot_enabled": True,
+                            "request_id": request_id,
+                            "constitutional_hash": self.deepseek_pilot.config.constitutional_hash,
+                            "cost_optimized": True,
+                        }
+                    )
+
+            # Fallback to standard model generation
+            return await self.generate(prompt, model_name, **kwargs)
+
+        except Exception as e:
+            logger.error(f"Error in pilot generation: {e}")
+            # Fallback to standard model on error
+            return await self.generate(prompt, model_name, **kwargs)
+
+    def get_pilot_summary(self) -> dict[str, Any]:
+        """Get DeepSeek R1 pilot performance summary."""
+        return self.deepseek_pilot.get_pilot_summary()
 
     async def close(self):
         # requires: Valid input parameters
