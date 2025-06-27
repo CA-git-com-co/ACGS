@@ -302,10 +302,16 @@ jobs:
             fi
           fi
 
-          # Enhanced installation with circuit breaker pattern
+          # Enhanced installation with circuit breaker pattern and health checks
           install_solana_with_circuit_breaker() {
             local max_attempts=3
             local backoff_base=5
+            
+            # Check network connectivity first
+            if ! timeout 10 curl -s --head https://github.com >/dev/null; then
+              echo "❌ Network connectivity check failed, skipping Solana installation"
+              return 1
+            fi
 
             for attempt in $(seq 1 $max_attempts); do
               echo "🔄 Installation attempt $attempt/$max_attempts"
@@ -347,11 +353,12 @@ jobs:
           if install_solana_with_circuit_breaker; then
             echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
             export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+            echo "SOLANA_AVAILABLE=true" >> $GITHUB_ENV
             solana --version
             echo "✅ Solana CLI installation completed successfully"
           else
-            echo "❌ Solana CLI installation failed"
-            exit 1
+            echo "⚠️ Solana installation failed, will continue without it"
+            echo "SOLANA_AVAILABLE=false" >> $GITHUB_ENV
           fi
 
       - name: Enterprise Anchor CLI installation

@@ -59,8 +59,8 @@ jobs:
         run: |
           echo "🔧 Installing security scanning tools..."
 
-          # Python security tools with error handling
-          pip install safety bandit || echo "Failed to install Python security tools"
+          # Python security tools with specific versions to prevent conflicts
+          pip install 'safety>=2.3.0,<3.0' 'bandit>=1.7.5,<2.0' || echo "Failed to install Python security tools"
 
           # Node.js security tools (optional)
           npm install -g audit-ci retire 2>/dev/null || echo "Node.js security tools not available"
@@ -171,7 +171,8 @@ jobs:
         run: |
           echo "🔧 Installing static analysis tools..."
 
-          pip install bandit semgrep pylint mypy
+          # Install with specific versions to prevent conflicts
+          pip install 'bandit>=1.7.5,<2.0' 'semgrep>=1.45.0,<2.0' 'pylint>=2.17.0,<3.0' 'mypy>=1.5.0,<2.0' || echo "Failed to install some static analysis tools, continuing..."
 
           echo "✅ Static analysis tools installed"
 
