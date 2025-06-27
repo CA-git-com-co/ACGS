@@ -100,32 +100,44 @@ jobs:
               fi
               ;;
             "ac")
-              if [ -f "services/core/constitutional-ai/requirements.txt" ]; then
+              if [ -f "services/core/constitutional-ai/ac_service/requirements.txt" ]; then
+                pip install -r "services/core/constitutional-ai/ac_service/requirements.txt"
+              elif [ -f "services/core/constitutional-ai/requirements.txt" ]; then
                 pip install -r "services/core/constitutional-ai/requirements.txt"
               fi
               ;;
             "integrity")
-              if [ -f "services/platform/integrity/requirements.txt" ]; then
+              if [ -f "services/platform/integrity/integrity_service/requirements.txt" ]; then
+                pip install -r "services/platform/integrity/integrity_service/requirements.txt"
+              elif [ -f "services/platform/integrity/requirements.txt" ]; then
                 pip install -r "services/platform/integrity/requirements.txt"
               fi
               ;;
             "fv")
-              if [ -f "services/core/formal-verification/requirements.txt" ]; then
+              if [ -f "services/core/formal-verification/fv_service/requirements.txt" ]; then
+                pip install -r "services/core/formal-verification/fv_service/requirements.txt"
+              elif [ -f "services/core/formal-verification/requirements.txt" ]; then
                 pip install -r "services/core/formal-verification/requirements.txt"
               fi
               ;;
             "gs")
-              if [ -f "services/core/governance-synthesis/requirements.txt" ]; then
+              if [ -f "services/core/governance-synthesis/gs_service/requirements.txt" ]; then
+                pip install -r "services/core/governance-synthesis/gs_service/requirements.txt"
+              elif [ -f "services/core/governance-synthesis/requirements.txt" ]; then
                 pip install -r "services/core/governance-synthesis/requirements.txt"
               fi
               ;;
             "pgc")
-              if [ -f "services/core/policy-governance/requirements.txt" ]; then
+              if [ -f "services/core/policy-governance/pgc_service/requirements.txt" ]; then
+                pip install -r "services/core/policy-governance/pgc_service/requirements.txt"
+              elif [ -f "services/core/policy-governance/requirements.txt" ]; then
                 pip install -r "services/core/policy-governance/requirements.txt"
               fi
               ;;
             "ec")
-              if [ -f "services/core/evolutionary-computation/requirements.txt" ]; then
+              if [ -f "services/core/evolutionary-computation/ec_service/requirements.txt" ]; then
+                pip install -r "services/core/evolutionary-computation/ec_service/requirements.txt"
+              elif [ -f "services/core/evolutionary-computation/requirements.txt" ]; then
                 pip install -r "services/core/evolutionary-computation/requirements.txt"
               fi
               ;;
@@ -141,6 +153,47 @@ jobs:
           PLATFORM_REQ_FILE="services/platform/${{ matrix.service }}/requirements.txt"
           if [ -f "$PLATFORM_REQ_FILE" ]; then
             pip install -r "$PLATFORM_REQ_FILE"
+          fi
+
+      - name: Validate service structure
+        run: |
+          echo "🔍 Validating service structure for ${{ matrix.service }}"
+          
+          case "${{ matrix.service }}" in
+            "auth")
+              SERVICE_DIR="services/platform/authentication/auth_service"
+              ;;
+            "ac")
+              SERVICE_DIR="services/core/constitutional-ai/ac_service"
+              ;;
+            "integrity")
+              SERVICE_DIR="services/platform/integrity/integrity_service"
+              ;;
+            "fv")
+              SERVICE_DIR="services/core/formal-verification/fv_service"
+              ;;
+            "gs")
+              SERVICE_DIR="services/core/governance-synthesis/gs_service"
+              ;;
+            "pgc")
+              SERVICE_DIR="services/core/policy-governance/pgc_service"
+              ;;
+            "ec")
+              SERVICE_DIR="services/core/evolutionary-computation"
+              ;;
+            *)
+              echo "⚠️ Unknown service: ${{ matrix.service }}"
+              SERVICE_DIR=""
+              ;;
+          esac
+
+          if [ -n "$SERVICE_DIR" ] && [ -d "$SERVICE_DIR" ]; then
+            echo "✅ Service directory exists: $SERVICE_DIR"
+            ls -la "$SERVICE_DIR" | head -10
+          else
+            echo "⚠️ Service directory not found: $SERVICE_DIR"
+            echo "Available services:"
+            find services/ -name "main.py" -o -name "*.py" | head -10 || true
           fi
 
       - name: Run service tests

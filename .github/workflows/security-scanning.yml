@@ -330,19 +330,11 @@ jobs:
           # Install checkov for infrastructure as code scanning
           pip install checkov || echo "Failed to install checkov"
 
-          # Install tfsec for Terraform scanning with retries
+          # Install tfsec for Terraform scanning (simplified)
           echo "Installing tfsec..."
-          for attempt in 1 2 3; do
-            if timeout 120 curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash; then
-              echo "✅ tfsec installed successfully"
-              break
-            elif [ $attempt -lt 3 ]; then
-              echo "Retrying tfsec installation (attempt $attempt/3)..."
-              sleep 5
-            else
-              echo "⚠️ Failed to install tfsec after 3 attempts"
-            fi
-          done
+          wget -q -O tfsec https://github.com/aquasecurity/tfsec/releases/latest/download/tfsec-linux-amd64 && \
+          chmod +x tfsec && \
+          sudo mv tfsec /usr/local/bin/ || echo "⚠️ Failed to install tfsec, continuing without it"
 
           echo "✅ Infrastructure security tools installation completed"
 
