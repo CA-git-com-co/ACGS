@@ -29,7 +29,7 @@ class PolicyPipelineTest:
 
 
 @dataclass
-class TestResult:
+class SecurityTestResult:
     """Test execution result."""
 
     test_name: str
@@ -51,7 +51,7 @@ class PolicyPipelineValidator:
             "pgc": "http://localhost:8005",
         }
 
-    async def test_service_health_with_security(self) -> list[TestResult]:
+    async def test_service_health_with_security(self) -> list[SecurityTestResult]:
         """Test that all services are healthy and security middleware is active."""
         results = []
 
@@ -81,7 +81,7 @@ class PolicyPipelineValidator:
 
                             if missing_headers:
                                 results.append(
-                                    TestResult(
+                                    SecurityTestResult(
                                         test_name=f"{service_name.upper()} Service Health + Security",
                                         passed=False,
                                         details=f"Service healthy but missing security headers: {missing_headers}",
@@ -91,7 +91,7 @@ class PolicyPipelineValidator:
                                 )
                             else:
                                 results.append(
-                                    TestResult(
+                                    SecurityTestResult(
                                         test_name=f"{service_name.upper()} Service Health + Security",
                                         passed=True,
                                         details="Service healthy with security headers present",
@@ -101,7 +101,7 @@ class PolicyPipelineValidator:
                                 )
                         else:
                             results.append(
-                                TestResult(
+                                SecurityTestResult(
                                     test_name=f"{service_name.upper()} Service Health + Security",
                                     passed=False,
                                     details=f"Service unhealthy: HTTP {response.status}",
@@ -112,7 +112,7 @@ class PolicyPipelineValidator:
             except Exception as e:
                 execution_time = (time.time() - start_time) * 1000
                 results.append(
-                    TestResult(
+                    SecurityTestResult(
                         test_name=f"{service_name.upper()} Service Health + Security",
                         passed=False,
                         details=f"Connection failed: {str(e)}",
@@ -138,14 +138,14 @@ class PolicyPipelineValidator:
 
                     # Should return 400 or 500 (blocked)
                     if response.status in [400, 500]:
-                        return TestResult(
+                        return SecurityTestResult(
                             test_name="Security Validation Blocking",
                             passed=True,
                             details=f"Malicious payload correctly blocked with HTTP {response.status}",
                             execution_time_ms=execution_time,
                         )
                     else:
-                        return TestResult(
+                        return SecurityTestResult(
                             test_name="Security Validation Blocking",
                             passed=False,
                             details=f"Malicious payload not blocked: HTTP {response.status}",
@@ -154,7 +154,7 @@ class PolicyPipelineValidator:
 
         except Exception as e:
             execution_time = (time.time() - start_time) * 1000
-            return TestResult(
+            return SecurityTestResult(
                 test_name="Security Validation Blocking",
                 passed=False,
                 details=f"Test failed: {str(e)}",
@@ -175,14 +175,14 @@ class PolicyPipelineValidator:
                     execution_time = (time.time() - start_time) * 1000
 
                     if response.status == 200:
-                        return TestResult(
+                        return SecurityTestResult(
                             test_name="Legitimate Requests Allowed",
                             passed=True,
                             details="Legitimate request passed through security middleware",
                             execution_time_ms=execution_time,
                         )
                     else:
-                        return TestResult(
+                        return SecurityTestResult(
                             test_name="Legitimate Requests Allowed",
                             passed=False,
                             details=f"Legitimate request blocked: HTTP {response.status}",
@@ -191,7 +191,7 @@ class PolicyPipelineValidator:
 
         except Exception as e:
             execution_time = (time.time() - start_time) * 1000
-            return TestResult(
+            return SecurityTestResult(
                 test_name="Legitimate Requests Allowed",
                 passed=False,
                 details=f"Test failed: {str(e)}",
@@ -223,14 +223,14 @@ class PolicyPipelineValidator:
                 execution_time = (time.time() - start_time) * 1000
 
                 if len(services_tested) >= 2:
-                    return TestResult(
+                    return SecurityTestResult(
                         test_name="Cross-Service Communication",
                         passed=True,
                         details=f"Multiple services responding: {', '.join(services_tested)}",
                         execution_time_ms=execution_time,
                     )
                 else:
-                    return TestResult(
+                    return SecurityTestResult(
                         test_name="Cross-Service Communication",
                         passed=False,
                         details=f"Insufficient services available: {', '.join(services_tested)}",
@@ -239,14 +239,14 @@ class PolicyPipelineValidator:
 
         except Exception as e:
             execution_time = (time.time() - start_time) * 1000
-            return TestResult(
+            return SecurityTestResult(
                 test_name="Cross-Service Communication",
                 passed=False,
                 details=f"Test failed: {str(e)}",
                 execution_time_ms=execution_time,
             )
 
-    async def run_all_tests(self) -> list[TestResult]:
+    async def run_all_tests(self) -> list[SecurityTestResult]:
         """Run all policy pipeline tests with security validation."""
         print("🔒 Starting ACGS-PGP Policy Pipeline + Security Tests...")
         print("Testing complete pipeline with security middleware active")
@@ -277,7 +277,7 @@ class PolicyPipelineValidator:
         return all_results
 
 
-def print_pipeline_report(results: list[TestResult]):
+def print_pipeline_report(results: list[SecurityTestResult]):
     """Print comprehensive pipeline test report."""
     print("\n" + "=" * 80)
     print("ACGS-PGP POLICY PIPELINE + SECURITY VALIDATION REPORT")

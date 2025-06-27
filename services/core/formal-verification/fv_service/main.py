@@ -34,13 +34,26 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
-# CORS middleware
+# Add secure CORS middleware with environment-based configuration
+import os
+cors_origins = os.getenv("BACKEND_CORS_ORIGINS", "http://localhost:3000,http://localhost:8080").split(",")
+cors_origins = [origin.strip() for origin in cors_origins if origin.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=cors_origins,  # Restricted to configured origins only
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=[
+        "Accept",
+        "Accept-Language", 
+        "Content-Language",
+        "Content-Type",
+        "Authorization",
+        "X-Request-ID",
+        "X-Constitutional-Hash"
+    ],
+    expose_headers=["X-Request-ID", "X-Response-Time", "X-Compliance-Score"],
 )
 
 # In-memory blockchain for audit trail

@@ -2,7 +2,7 @@
 // Comprehensive End-to-End Tests for Appeals Program
 // Migrated from TypeScript to eliminate Node.js dependency conflicts
 
-use acgs_blockchain_client::{AcgsClient, appeals::*};
+use acgs_blockchain_client::AcgsClient;
 use anchor_client::solana_sdk::{
     signature::{Keypair, Signer},
     pubkey::Pubkey,

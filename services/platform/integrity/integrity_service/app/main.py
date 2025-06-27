@@ -241,18 +241,31 @@ try:
 except ImportError as e:
     logger.warning(f"⚠️ Security middleware not available: {e}")
 
-# Add fallback security middleware
-app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
+# Add secure CORS middleware with environment-based configuration
+cors_origins = os.getenv("BACKEND_CORS_ORIGINS", "http://localhost:3000,http://localhost:8080").split(",")
+cors_origins = [origin.strip() for origin in cors_origins if origin.strip()]
 
-# Add CORS middleware with production settings
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
+    allow_origins=cors_origins,  # Restricted to configured origins only
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
-    expose_headers=["X-Request-ID", "X-Response-Time", "X-Correlation-ID"],
+    allow_headers=[
+        "Accept",
+        "Accept-Language", 
+        "Content-Language",
+        "Content-Type",
+        "Authorization",
+        "X-Request-ID",
+        "X-Constitutional-Hash"
+    ],
+    expose_headers=["X-Request-ID", "X-Response-Time", "X-Compliance-Score"],
 )
+
+# Add trusted host middleware with secure configuration
+allowed_hosts = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,acgs.local").split(",")
+allowed_hosts = [host.strip() for host in allowed_hosts if host.strip()]
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=allowed_hosts)
 
 # Add enhanced Prometheus metrics middleware
 try:

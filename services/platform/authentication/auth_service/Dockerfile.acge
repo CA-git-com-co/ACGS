@@ -1,0 +1,52 @@
+# ACGE Phase 2 Enhanced Auth Service Dockerfile
+# Constitutional compliance authentication service with ACGE integration
+
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install additional ACGE dependencies
+RUN pip install --no-cache-dir \
+    httpx==0.25.0 \
+    prometheus-client==0.17.1 \
+    pyjwt==2.8.0
+
+# Copy application code
+COPY . .
+
+# Create non-root user
+RUN useradd --create-home --shell /bin/bash acgs && \
+    chown -R acgs:acgs /app
+USER acgs
+
+# Environment variables
+ENV PYTHONPATH=/app
+ENV SERVICE_NAME=acgs-auth-service-acge
+ENV SERVICE_VERSION=2.0.0-phase2
+ENV SERVICE_PORT=8000
+ENV CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+ENV ACGE_ENABLED=true
+ENV PHASE=phase-2
+ENV ENVIRONMENT=green
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Expose port
+EXPOSE 8000
+
+# Run the application
+CMD ["python", "-m", "app.main_acge"]

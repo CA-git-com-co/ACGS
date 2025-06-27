@@ -56,7 +56,7 @@ class LoadTestConfig:
 
 
 @dataclass
-class TestResult:
+class LoadTestResult:
     """Individual test result."""
 
     url: str
@@ -73,7 +73,7 @@ class LoadTestRunner:
 
     def __init__(self, config: LoadTestConfig):
         self.config = config
-        self.results: List[TestResult] = []
+        self.results: List[LoadTestResult] = []
         self.active_users = 0
         self.start_time = 0
         self.session: Optional[aiohttp.ClientSession] = None
@@ -103,7 +103,7 @@ class LoadTestRunner:
             await self.session.close()
         logger.info("Load test session closed")
 
-    async def make_request(self, scenario: Dict) -> TestResult:
+    async def make_request(self, scenario: Dict) -> LoadTestResult:
         """Make a single HTTP request."""
         url = f"{self.config.base_url}{scenario['path']}"
         method = scenario["method"]
@@ -117,7 +117,7 @@ class LoadTestRunner:
                 # Read response to ensure complete request
                 await response.read()
 
-                return TestResult(
+                return LoadTestResult(
                     url=url,
                     method=method,
                     status_code=response.status,
@@ -127,7 +127,7 @@ class LoadTestRunner:
 
         except Exception as e:
             response_time_ms = (time.time() - start_time) * 1000
-            return TestResult(
+            return LoadTestResult(
                 url=url,
                 method=method,
                 status_code=0,

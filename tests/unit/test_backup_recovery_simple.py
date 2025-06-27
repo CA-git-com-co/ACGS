@@ -17,7 +17,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler("/home/dislove/ACGS-1/logs/backup_test.log"),
+        logging.FileHandler("logs/backup_test.log"),
         logging.StreamHandler(),
     ],
 )
@@ -28,8 +28,8 @@ class SimpleBackupTest:
     """Simple backup test for ACGS-1"""
 
     def __init__(self):
-        self.project_root = Path("/home/dislove/ACGS-1")
-        self.backup_root = Path("/home/dislove/ACGS-1/backups")
+        self.project_root = Path.cwd()
+        self.backup_root = Path.cwd() / "backups"
         self.test_results = {}
 
     def test_backup_infrastructure(self) -> dict:
@@ -316,7 +316,7 @@ class SimpleBackupTest:
 def main():
     """Main execution function"""
     # Ensure log directory exists
-    log_dir = Path("/home/dislove/ACGS-1/logs")
+    log_dir = Path("logs")
     log_dir.mkdir(exist_ok=True)
 
     backup_test = SimpleBackupTest()

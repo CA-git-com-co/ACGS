@@ -25,7 +25,7 @@ class SimplePerformanceTester:
     """Simple performance testing for ACGS-1."""
 
     def __init__(self):
-        self.project_root = Path("/home/dislove/ACGS-1")
+        self.project_root = Path.cwd()
         self.target_response_time = 500  # ms
         self.services = [8000, 8001, 8002, 8003, 8004, 8005, 8006]
 

@@ -3,10 +3,7 @@
 //! Replaces blockchain/scripts/deploy_quantumagi.py with native Rust implementation
 
 use acgs_blockchain_client::{AcgsClient, governance::ConstitutionalPrinciple};
-use anchor_client::solana_sdk::{
-    signature::{Keypair, Signer},
-    pubkey::Pubkey,
-};
+use anchor_client::solana_sdk::signature::Keypair;
 use anyhow::{Result, Context};
 use clap::{Parser, Subcommand};
 use colored::*;

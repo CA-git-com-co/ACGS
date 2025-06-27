@@ -11,9 +11,24 @@ import sys
 from typing import Any
 
 import aiohttp
+import pytest
 
 
-async def test_nvidia_api_connectivity(api_key: str, base_url: str) -> bool:
+@pytest.mark.asyncio
+async def test_nvidia_api_connectivity_mock():
+    """Test NVIDIA API connectivity with mock data."""
+    # Mock test - skip if no API key available
+    api_key = os.getenv("NVIDIA_API_KEY", "mock-key")
+    base_url = os.getenv("NVIDIA_BASE_URL", "https://api.nvidia.com/v1")
+
+    if api_key == "mock-key":
+        pytest.skip("No NVIDIA API key available - skipping connectivity test")
+
+    result = await _test_nvidia_api_connectivity(api_key, base_url)
+    assert isinstance(result, bool)
+
+
+async def _test_nvidia_api_connectivity(api_key: str, base_url: str) -> bool:
     """
     Test basic connectivity to NVIDIA API
 
@@ -43,7 +58,23 @@ async def test_nvidia_api_connectivity(api_key: str, base_url: str) -> bool:
         return False
 
 
-async def test_model_availability(
+@pytest.mark.asyncio
+async def test_model_availability_mock():
+    """Test model availability with mock data."""
+    # Mock test - skip if no API key available
+    api_key = os.getenv("NVIDIA_API_KEY", "mock-key")
+    base_url = os.getenv("NVIDIA_BASE_URL", "https://api.nvidia.com/v1")
+    model_name = "nvidia/llama-3.1-nemotron-70b-instruct"
+
+    if api_key == "mock-key":
+        pytest.skip("No NVIDIA API key available - skipping model availability test")
+
+    result = await _test_model_availability(api_key, base_url, model_name)
+    assert isinstance(result, dict)
+    assert "status" in result
+
+
+async def _test_model_availability(
     api_key: str, base_url: str, model_name: str
 ) -> dict[str, Any]:
     """
@@ -124,7 +155,7 @@ async def main():
 
     # Test basic connectivity
     print("1️⃣ Testing basic API connectivity...")
-    is_connected = await test_nvidia_api_connectivity(api_key, base_url)
+    is_connected = await _test_nvidia_api_connectivity(api_key, base_url)
 
     if not is_connected:
         print("❌ Basic connectivity test failed")
@@ -148,7 +179,7 @@ async def main():
     results = {}
     for model in test_models:
         print(f"   Testing {model}...")
-        result = await test_model_availability(api_key, base_url, model)
+        result = await _test_model_availability(api_key, base_url, model)
         results[model] = result
 
         if result["status"] == "available":

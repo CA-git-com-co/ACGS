@@ -74,17 +74,31 @@ else:
     print(f"⚠️ Security middleware not available for auth service")
 
 
-# Add minimal CORS middleware
+# Add secure CORS middleware with environment-based configuration
+cors_origins = os.getenv("BACKEND_CORS_ORIGINS", "http://localhost:3000,http://localhost:8080").split(",")
+cors_origins = [origin.strip() for origin in cors_origins if origin.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permissive for development
+    allow_origins=cors_origins,  # Restricted to configured origins only
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
+    allow_headers=[
+        "Accept",
+        "Accept-Language", 
+        "Content-Language",
+        "Content-Type",
+        "Authorization",
+        "X-Request-ID",
+        "X-Constitutional-Hash"
+    ],
+    expose_headers=["X-Request-ID", "X-Response-Time", "X-Compliance-Score"],
 )
 
-# Add trusted host middleware
-app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
+# Add trusted host middleware with secure configuration
+allowed_hosts = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,acgs.local").split(",")
+allowed_hosts = [host.strip() for host in allowed_hosts if host.strip()]
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=allowed_hosts)
 
 @app.middleware("http")
 async def add_comprehensive_security_headers(request: Request, call_next):

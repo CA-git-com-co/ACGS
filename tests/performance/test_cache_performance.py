@@ -352,12 +352,12 @@ class CachePerformanceTester:
 
         # Save results
         with open(
-            "/home/dislove/ACGS-1/logs/caching/performance_test_results.json", "w"
+            "logs/caching/performance_test_results.json", "w"
         ) as f:
             json.dump(results, f, indent=2)
 
         print(
-            "\n📊 Test results saved to: /home/dislove/ACGS-1/logs/caching/performance_test_results.json"
+            "\n📊 Test results saved to: logs/caching/performance_test_results.json"
         )
 
         await self.redis_client.close()
