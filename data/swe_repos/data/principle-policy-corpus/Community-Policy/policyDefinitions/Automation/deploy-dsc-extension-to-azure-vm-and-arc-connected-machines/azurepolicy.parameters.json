@@ -1,0 +1,33 @@
+{
+  "configurationUrl": {
+    "type": "String",
+    "metadata": {
+      "description": "URL for the configuration"
+    }
+  },
+  "configurationScript": {
+    "type": "String",
+    "metadata": {
+      "description": "Script for the configuration (e.g. ExampleDSC.zip)"
+    }
+  },
+  "configurationFunction": {
+    "type": "String",
+    "metadata": {
+      "description": "Configuration Function (e.g. ExampleDSC.ps1\\ExampleDSC)"
+    }
+  },
+  "effect": {
+    "type": "String",
+    "metadata": {
+      "displayName": "Effect",
+      "description": "DeployIfNotExists, AuditIfNotExists or Disabled the execution of the Policy"
+    },
+    "allowedValues": [
+      "DeployIfNotExists",
+      "AuditIfNotExists",
+      "Disabled"
+    ],
+    "defaultValue": "DeployIfNotExists"
+  }
+}

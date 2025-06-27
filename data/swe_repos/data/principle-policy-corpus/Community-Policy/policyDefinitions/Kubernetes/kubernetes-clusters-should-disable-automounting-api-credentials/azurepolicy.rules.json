@@ -1,0 +1,20 @@
+{
+  "if": {
+    "field": "type",
+    "in": [
+      "AKS Engine",
+      "Microsoft.Kubernetes/connectedClusters",
+      "Microsoft.ContainerService/managedClusters"
+    ]
+  },
+  "then": {
+    "effect": "[parameters('effect')]",
+    "details": {
+      "constraintTemplate": "https://raw.githubusercontent.com/Azure/Community-Policy/master/policyDefinitions/Kubernetes/kubernetes-clusters-should-disable-automounting-api-credentials/template.yaml",
+      "constraint": "https://raw.githubusercontent.com/Azure/Community-Policy/master/policyDefinitions/Kubernetes/kubernetes-clusters-should-disable-automounting-api-credentials/constraint.yaml",
+      "values": {
+        "excludedNamespaces": "[parameters('excludedNamespaces')]"
+      }
+    }
+  }
+}

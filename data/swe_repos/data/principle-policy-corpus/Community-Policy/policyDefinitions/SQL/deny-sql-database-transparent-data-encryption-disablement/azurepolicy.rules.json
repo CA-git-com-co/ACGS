@@ -1,0 +1,21 @@
+{
+  "if": {
+    "allOf": [
+      {
+        "field": "type",
+        "equals": "Microsoft.SQL/servers/databases/transparentDataEncryption"
+      },
+      {
+        "field": "Microsoft.Sql/servers/databases/transparentDataEncryption/state",
+        "notEquals": "enabled"
+      },
+      {
+        "value": "[indexOf(split(field('fullName'),'/'), 'master')]",
+        "notEquals": 1
+      }
+    ]
+  },
+  "then": {
+    "effect": "[parameters('effect')]"
+  }
+}

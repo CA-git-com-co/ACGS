@@ -1,0 +1,12 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sAzureContainerAllowedPorts
+metadata:
+  name: container-allowed-ports
+spec:
+  match:
+    excludedNamespaces: {{ .Values.excludedNamespaces }}
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+  parameters:
+    allowedPorts: {{ .Values.allowedContainerPorts }}

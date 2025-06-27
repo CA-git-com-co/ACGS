@@ -1,0 +1,20 @@
+{
+  "if": {
+    "field": "type",
+    "in": [
+      "AKS Engine",
+      "Microsoft.Kubernetes/connectedClusters",
+      "Microsoft.ContainerService/managedClusters"
+    ]
+  },
+  "then": {
+    "effect": "[parameters('effect')]",
+    "details": {
+      "constraintTemplate": "https://raw.githubusercontent.com/Azure/Community-Policy/master/policyDefinitions/Kubernetes/ensure-read-only-access-to-root-filesystem-in-a-kubernetes-cluster/template.yaml",
+      "constraint": "https://raw.githubusercontent.com/Azure/Community-Policy/master/policyDefinitions/Kubernetes/ensure-read-only-access-to-root-filesystem-in-a-kubernetes-cluster/constraint.yaml",
+      "values": {
+        "excludedNamespaces": "[parameters('excludedNamespaces')]"
+      }
+    }
+  }
+}

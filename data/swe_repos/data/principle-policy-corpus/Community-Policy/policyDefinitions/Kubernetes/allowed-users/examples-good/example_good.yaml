@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-users
+  labels:
+    app: nginx-users
+spec:
+  securityContext:
+    supplementalGroups:
+      - 150
+    fsGroup: 150
+  containers:
+    - name: nginx
+      image: nginx
+      securityContext:
+        runAsUser: 150
+        runAsGroup: 150
+      resources:
+        limits:
+          cpu: "100m"
+          memory: "30Mi"
