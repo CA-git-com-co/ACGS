@@ -1,9 +1,11 @@
 # ACGS Secret Management Setup
 
 ## Overview
+
 This guide provides secure methods for managing API keys and secrets in ACGS.
 
 ## ⚠️ SECURITY ALERT
+
 **CRITICAL**: API keys were previously hardcoded in .env files. They have been removed and must be configured securely.
 
 ## Setup Methods
@@ -50,21 +52,21 @@ metadata:
   name: acgs-api-keys
 type: Opaque
 stringData:
-  openrouter-api-key: "your_actual_openrouter_key"
-  ngc-api-key: "your_actual_ngc_key"
-  github-token: "your_actual_github_token"
+  openrouter-api-key: 'your_actual_openrouter_key'
+  ngc-api-key: 'your_actual_ngc_key'
+  github-token: 'your_actual_github_token'
 
 ---
 # Use in deployment
 spec:
   containers:
-  - name: ac-service
-    env:
-    - name: OPENROUTER_API_KEY
-      valueFrom:
-        secretKeyRef:
-          name: acgs-api-keys
-          key: openrouter-api-key
+    - name: ac-service
+      env:
+        - name: OPENROUTER_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: acgs-api-keys
+              key: openrouter-api-key
 ```
 
 ### Method 4: HashiCorp Vault (Enterprise)
@@ -82,11 +84,13 @@ vault kv get -field=openrouter_api_key secret/acgs/api-keys
 ## Quick Start (Development)
 
 1. Copy the example file:
+
    ```bash
    cp .env.example .env
    ```
 
 2. Set your environment variables:
+
    ```bash
    export OPENROUTER_API_KEY="your_key_here"
    export NGC_API_KEY="your_key_here"
@@ -127,6 +131,7 @@ If API keys are compromised:
 ## Support
 
 For additional help:
+
 - Review the [Security Documentation](../security/security-config.yml)
 - Check the [Authentication Service Documentation](../../services/platform/authentication/README.md)
 - Contact the security team for enterprise secret management setup

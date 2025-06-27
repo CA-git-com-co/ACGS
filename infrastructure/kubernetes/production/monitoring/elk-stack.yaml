@@ -18,7 +18,7 @@ data:
     discovery.type: single-node
     xpack.security.enabled: false
     xpack.monitoring.collection.enabled: true
-    
+
     # Index templates for ACGE logs
     index.template.constitutional_logs:
       index_patterns: ["constitutional-*"]
@@ -74,9 +74,9 @@ spec:
             - name: discovery.type
               value: single-node
             - name: ES_JAVA_OPTS
-              value: "-Xms2g -Xmx2g"
+              value: '-Xms2g -Xmx2g'
             - name: xpack.security.enabled
-              value: "false"
+              value: 'false'
           volumeMounts:
             - name: elasticsearch-data
               mountPath: /usr/share/elasticsearch/data
@@ -85,11 +85,11 @@ spec:
               subPath: elasticsearch.yml
           resources:
             requests:
-              memory: "4Gi"
-              cpu: "1"
+              memory: '4Gi'
+              cpu: '1'
             limits:
-              memory: "8Gi"
-              cpu: "2"
+              memory: '8Gi'
+              cpu: '2'
       volumes:
         - name: elasticsearch-data
           persistentVolumeClaim:
@@ -147,7 +147,7 @@ data:
     http.host: "0.0.0.0"
     path.config: /usr/share/logstash/pipeline
     xpack.monitoring.elasticsearch.hosts: ["http://elasticsearch:9200"]
-    
+
   pipeline.conf: |
     input {
       beats {
@@ -168,7 +168,7 @@ data:
         tags => ["acge-model"]
       }
     }
-    
+
     filter {
       # Parse Kubernetes logs
       if [kubernetes] {
@@ -227,7 +227,7 @@ data:
         target => "@timestamp"
       }
     }
-    
+
     output {
       # Constitutional compliance logs
       if "constitutional" in [tags] {
@@ -297,11 +297,11 @@ spec:
               subPath: pipeline.conf
           resources:
             requests:
-              memory: "2Gi"
-              cpu: "500m"
+              memory: '2Gi'
+              cpu: '500m'
             limits:
-              memory: "4Gi"
-              cpu: "1"
+              memory: '4Gi'
+              cpu: '1'
       volumes:
         - name: logstash-config
           configMap:
@@ -349,14 +349,14 @@ data:
     elasticsearch.hosts: ["http://elasticsearch:9200"]
     xpack.security.enabled: false
     xpack.monitoring.ui.container.elasticsearch.enabled: true
-    
+
     # ACGE-specific configurations
     logging.appenders.constitutional:
       type: file
       fileName: /usr/share/kibana/logs/constitutional.log
       layout:
         type: json
-    
+
     logging.loggers:
       - name: constitutional
         appenders: [constitutional]
@@ -390,18 +390,18 @@ spec:
               name: http
           env:
             - name: ELASTICSEARCH_HOSTS
-              value: "http://elasticsearch:9200"
+              value: 'http://elasticsearch:9200'
           volumeMounts:
             - name: kibana-config
               mountPath: /usr/share/kibana/config/kibana.yml
               subPath: kibana.yml
           resources:
             requests:
-              memory: "1Gi"
-              cpu: "500m"
+              memory: '1Gi'
+              cpu: '500m'
             limits:
-              memory: "2Gi"
-              cpu: "1"
+              memory: '2Gi'
+              cpu: '1'
       volumes:
         - name: kibana-config
           configMap:

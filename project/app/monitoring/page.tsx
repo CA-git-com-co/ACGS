@@ -31,9 +31,7 @@ export default function MonitoringPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">94.2%</div>
-            <p className="text-xs text-muted-foreground">
-              +2.1% from last hour
-            </p>
+            <p className="text-xs text-muted-foreground">+2.1% from last hour</p>
           </CardContent>
         </Card>
         <Card>
@@ -43,9 +41,7 @@ export default function MonitoringPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">3</div>
-            <p className="text-xs text-muted-foreground">
-              -2 from last hour
-            </p>
+            <p className="text-xs text-muted-foreground">-2 from last hour</p>
           </CardContent>
         </Card>
         <Card>
@@ -55,9 +51,7 @@ export default function MonitoringPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">245ms</div>
-            <p className="text-xs text-muted-foreground">
-              -15ms from last hour
-            </p>
+            <p className="text-xs text-muted-foreground">-15ms from last hour</p>
           </CardContent>
         </Card>
         <Card>
@@ -67,24 +61,24 @@ export default function MonitoringPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">99.9%</div>
-            <p className="text-xs text-muted-foreground">
-              Last 30 days
-            </p>
+            <p className="text-xs text-muted-foreground">Last 30 days</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Main Monitoring Dashboard */}
-      <Suspense fallback={
-        <Card>
-          <CardContent className="flex items-center justify-center h-96">
-            <div className="flex items-center space-x-2">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span>Loading monitoring dashboard...</span>
-            </div>
-          </CardContent>
-        </Card>
-      }>
+      <Suspense
+        fallback={
+          <Card>
+            <CardContent className="flex items-center justify-center h-96">
+              <div className="flex items-center space-x-2">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span>Loading monitoring dashboard...</span>
+              </div>
+            </CardContent>
+          </Card>
+        }
+      >
         <ConstitutionalFidelityMonitor />
       </Suspense>
     </div>

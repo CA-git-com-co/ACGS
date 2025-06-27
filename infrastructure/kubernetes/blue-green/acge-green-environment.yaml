@@ -85,11 +85,11 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 10
       nodeSelector:
-        nvidia.com/gpu: "true"
+        nvidia.com/gpu: 'true'
       tolerations:
         - key: nvidia.com/gpu
           operator: Equal
-          value: "true"
+          value: 'true'
           effect: NoSchedule
 
 ---
@@ -134,8 +134,8 @@ spec:
         environment: green
         service: auth
       annotations:
-        acge.constitutional.ai/enabled: "true"
-        acge.constitutional.ai/compliance-required: "true"
+        acge.constitutional.ai/enabled: 'true'
+        acge.constitutional.ai/compliance-required: 'true'
     spec:
       containers:
         - name: auth-service
@@ -249,8 +249,8 @@ spec:
         environment: green
         service: constitutional-ai
       annotations:
-        acge.constitutional.ai/enabled: "true"
-        acge.constitutional.ai/single-model: "true"
+        acge.constitutional.ai/enabled: 'true'
+        acge.constitutional.ai/single-model: 'true'
     spec:
       containers:
         - name: ac-service
@@ -360,7 +360,7 @@ spec:
         environment: green
         service: integrity
       annotations:
-        acge.constitutional.ai/enabled: "true"
+        acge.constitutional.ai/enabled: 'true'
     spec:
       containers:
         - name: integrity-service

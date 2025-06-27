@@ -17,13 +17,14 @@ interface PolicyListProps {
 export async function PolicyList({ filters }: PolicyListProps) {
   // Simulate data fetching with filters
   await new Promise(resolve => setTimeout(resolve, 300));
-  
+
   // Mock policy data
   const policies = [
     {
       id: '1',
       title: 'Data Privacy Protection Act',
-      description: 'Comprehensive framework for protecting citizen data privacy and establishing rights for data subjects.',
+      description:
+        'Comprehensive framework for protecting citizen data privacy and establishing rights for data subjects.',
       status: 'ACTIVE',
       domain: 'PRIVACY',
       lastModified: '2025-01-15',
@@ -112,7 +113,7 @@ export async function PolicyList({ filters }: PolicyListProps) {
 
   return (
     <div className="space-y-4">
-      {policies.map((policy) => (
+      {policies.map(policy => (
         <Card key={policy.id} className="hover:shadow-md transition-shadow">
           <CardHeader>
             <div className="flex items-start justify-between">
@@ -120,9 +121,7 @@ export async function PolicyList({ filters }: PolicyListProps) {
                 <CardTitle className="text-xl">{policy.title}</CardTitle>
                 <p className="text-muted-foreground">{policy.description}</p>
                 <div className="flex items-center gap-2">
-                  <Badge className={getStatusColor(policy.status)}>
-                    {policy.status}
-                  </Badge>
+                  <Badge className={getStatusColor(policy.status)}>{policy.status}</Badge>
                   <Badge variant="outline" className={getDomainColor(policy.domain)}>
                     {policy.domain}
                   </Badge>

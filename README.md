@@ -11,28 +11,31 @@ The ACGS-PGP (Autonomous Constitutional Governance System - Policy Generation Pl
 
 ## Core Service Architecture
 
-| Service | Port | Purpose | Implementation Status | Health Check |
-|---------|------|---------|----------------------|--------------|
-| **auth-service** | 8000 | Authentication & Authorization with MFA | ✅ **Production Ready** | http://localhost:8000/health |
-| **ac-service** | 8001 | Constitutional AI Management & Compliance | ✅ **Production Ready** | http://localhost:8001/health |
-| **integrity-service** | 8002 | Cryptographic Integrity & PGP Assurance | ✅ **Production Ready** | http://localhost:8002/health |
-| **fv-service** | 8003 | Formal Verification & Policy Validation | 🧪 **Prototype** | http://localhost:8003/health |
-| **gs-service** | 8004 | Governance Synthesis & Policy Generation | 🧪 **Prototype** | http://localhost:8004/health |
-| **pgc-service** | 8005 | Policy Governance Compiler & Enforcement | 🧪 **Prototype** | http://localhost:8005/health |
-| **ec-service** | 8006 | Evolutionary Computation & WINA Oversight | 🧪 **Prototype** | http://localhost:8006/health |
+| Service               | Port | Purpose                                   | Implementation Status   | Health Check                 |
+| --------------------- | ---- | ----------------------------------------- | ----------------------- | ---------------------------- |
+| **auth-service**      | 8000 | Authentication & Authorization with MFA   | ✅ **Production Ready** | http://localhost:8000/health |
+| **ac-service**        | 8001 | Constitutional AI Management & Compliance | ✅ **Production Ready** | http://localhost:8001/health |
+| **integrity-service** | 8002 | Cryptographic Integrity & PGP Assurance   | ✅ **Production Ready** | http://localhost:8002/health |
+| **fv-service**        | 8003 | Formal Verification & Policy Validation   | 🧪 **Prototype**        | http://localhost:8003/health |
+| **gs-service**        | 8004 | Governance Synthesis & Policy Generation  | 🧪 **Prototype**        | http://localhost:8004/health |
+| **pgc-service**       | 8005 | Policy Governance Compiler & Enforcement  | 🧪 **Prototype**        | http://localhost:8005/health |
+| **ec-service**        | 8006 | Evolutionary Computation & WINA Oversight | 🧪 **Prototype**        | http://localhost:8006/health |
 
 ### Implementation Status Legend
+
 - ✅ **Production Ready**: Fully implemented, tested, and ready for production deployment
 - 🧪 **Prototype**: Functional implementation with limitations, suitable for development/testing
 - 📋 **Planned**: Design specification only, implementation not yet started
 
 ### Service Implementation Notes
+
 - **Production Ready Services** (Auth, AC, Integrity): Complete implementations with comprehensive features, security middleware, and production-grade error handling
 - **Prototype Services** (FV, GS, PGC, EC): Functional but with limitations such as mock implementations, disabled features, or debugging modes. Suitable for development and testing but require additional work for production deployment
 
 ## AI Model Integrations
 
 ### Production AI Models
+
 - **Google Gemini** (2.0 Flash, 2.5 Pro) - Constitutional analysis and policy synthesis
 - **DeepSeek-R1** - Advanced reasoning and formal verification support
 - **NVIDIA Qwen** - Multi-model consensus and governance workflows
@@ -41,22 +44,26 @@ The ACGS-PGP (Autonomous Constitutional Governance System - Policy Generation Pl
 ### Performance Targets & Current Status
 
 **Production Services (Auth, AC, Integrity)**:
+
 - **Response Time**: <500ms target (Production services meeting target)
 - **Availability**: >99.5% target (Production services meeting target)
 - **Constitutional Compliance**: >95% target (AC service validated)
 
 **Prototype Services (FV, GS, PGC, EC)**:
+
 - **Response Time**: Variable (optimization in progress)
 - **Availability**: Development/testing level
 - **Feature Completeness**: Partial implementation with mock components
 
 **System-Wide Targets**:
+
 - **Emergency Shutdown**: <30min RTO capability (design target)
 - **Overall System Maturity**: Mixed (3 production + 4 prototype services)
 
 ## Quick Start
 
 ### Prerequisites
+
 - Python 3.11+
 - PostgreSQL 12+
 - Redis 6+
@@ -97,6 +104,7 @@ tail -f logs/<service>_service.log
 ## Security & Compliance
 
 ### Security Hardening ✅
+
 - **Shell Injection Protection**: Subprocess vulnerabilities patched
 - **Cryptographic Upgrade**: MD5 → SHA-256 migration complete
 - **Security Headers**: CORS, CSP, and security middleware applied
@@ -105,6 +113,7 @@ tail -f logs/<service>_service.log
 - **Authentication**: JWT with MFA support
 
 ### Constitutional Compliance
+
 - **DGM Safety Patterns**: Sandbox + human review + rollback
 - **Constitutional Hash Validation**: `cdd01ef066bc6cf2`
 - **Compliance Monitoring**: Real-time constitutional violation detection
@@ -113,13 +122,16 @@ tail -f logs/<service>_service.log
 ## Resource Configuration
 
 ### Standard Resource Limits
+
 All services use consistent resource allocation:
+
 - **CPU Request**: 200m
 - **CPU Limit**: 500m
 - **Memory Request**: 512Mi
 - **Memory Limit**: 1Gi
 
 ### Configuration Management
+
 - **Shared Config**: `/config/shared/` - Common service configurations
 - **Environment Config**: `/config/environments/` - Environment-specific settings
 - **Service Config**: `/config/services/` - Individual service configurations
@@ -130,9 +142,11 @@ All services use consistent resource allocation:
 ### Common Issues
 
 #### PGC Service Degraded ⚠️
+
 **Issue**: PGC service requires OPA (Open Policy Agent) on port 8181
 
 **Resolution**:
+
 ```bash
 # Install OPA
 curl -L -o opa https://openpolicyagent.org/downloads/v0.58.0/opa_linux_amd64_static
@@ -147,9 +161,11 @@ curl http://localhost:8181/health
 ```
 
 #### Service Startup Issues
+
 **Issue**: Services fail to start due to dependency issues
 
 **Resolution**:
+
 ```bash
 # Check database connectivity
 pg_isready -h localhost -p 5432
@@ -162,9 +178,11 @@ redis-cli ping
 ```
 
 #### Constitutional Compliance Failures
+
 **Issue**: Constitutional hash validation failures
 
 **Resolution**:
+
 ```bash
 # Verify constitutional hash
 echo "Expected: cdd01ef066bc6cf2"
@@ -177,18 +195,21 @@ python scripts/fix_constitutional_compliance_auth.py
 ## Monitoring & Observability
 
 ### Monitoring Stack
+
 - **Prometheus**: http://localhost:9090 - Metrics collection
 - **Grafana**: http://localhost:3000 - Dashboards and visualization
 - **Health Endpoints**: All services expose `/health` and `/metrics`
 - **Log Aggregation**: Centralized logging in `/logs/` directory
 
 ### Key Metrics
+
 - **Constitutional Compliance Score**: Target >0.8
 - **Response Time P99**: Target <2s
 - **Service Availability**: Target >99.9%
 - **Error Rate**: Target <1%
 
 ### Alerting
+
 - **Critical Alerts**: Constitutional violations, service failures
 - **Warning Alerts**: Performance degradation, resource limits
 - **Info Alerts**: Deployment events, configuration changes
@@ -196,6 +217,7 @@ python scripts/fix_constitutional_compliance_auth.py
 ## Emergency Procedures
 
 ### Emergency Shutdown
+
 ```bash
 # Immediate shutdown (< 30min RTO)
 ./scripts/emergency_rollback.py --immediate
@@ -205,6 +227,7 @@ python scripts/fix_constitutional_compliance_auth.py
 ```
 
 ### Disaster Recovery
+
 ```bash
 # Backup current state
 ./scripts/backup_system.py --full
@@ -216,6 +239,7 @@ python scripts/fix_constitutional_compliance_auth.py
 ## Documentation & Support
 
 ### Documentation Structure
+
 - **[API Documentation](docs/API_SPECIFICATIONS.md)** - Complete API reference
 - **[Architecture Guide](docs/architecture/system_architecture.md)** - System design
 - **[Deployment Guide](docs/deployment/DEPLOYMENT_QUICK_START_GUIDE.md)** - Step-by-step deployment
@@ -223,6 +247,7 @@ python scripts/fix_constitutional_compliance_auth.py
 - **[Security Guide](docs/security/SECURITY_POSTURE_ASSESSMENT.md)** - Security procedures
 
 ### Getting Help
+
 1. **Service Logs**: Check `/logs/<service>_service.log`
 2. **Health Checks**: Verify all service `/health` endpoints
 3. **Configuration**: Review `/config/shared/` and service-specific configs
@@ -230,6 +255,7 @@ python scripts/fix_constitutional_compliance_auth.py
 5. **Emergency**: Follow emergency procedures above
 
 ### Development Resources
+
 - **Service READMEs**: Individual service documentation in `services/*/README.md`
 - **API Testing**: Interactive docs at `http://localhost:<port>/docs`
 - **Code Examples**: See `docs/tutorials/` for usage examples

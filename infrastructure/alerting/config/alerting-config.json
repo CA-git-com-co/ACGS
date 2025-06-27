@@ -18,7 +18,7 @@
       "maxEscalations": 3
     },
     {
-      "id": "high-escalation", 
+      "id": "high-escalation",
       "severity": "high",
       "escalateAfter": 900000,
       "escalateTo": ["email"],

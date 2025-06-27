@@ -5,7 +5,7 @@ info:
     Enterprise-grade policy enforcement engine providing real-time governance policy
     enforcement, workflow orchestration, and constitutional compliance validation
     using Open Policy Agent (OPA) integration.
-    
+
     Constitutional Hash: cdd01ef066bc6cf2
   version: 3.0.0
   contact:
@@ -263,10 +263,10 @@ components:
           example: pgc_service_production
         version:
           type: string
-          example: "3.0.0"
+          example: '3.0.0'
         phase:
           type: string
-          example: "Phase 3 - Production Implementation"
+          example: 'Phase 3 - Production Implementation'
         components:
           type: object
           properties:
@@ -298,7 +298,7 @@ components:
         query:
           type: string
           description: OPA query to evaluate
-          example: "data.acgs.authz.allow"
+          example: 'data.acgs.authz.allow'
         input_data:
           type: object
           description: Input data for policy evaluation
@@ -357,7 +357,7 @@ components:
               type: integer
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
 
     RealtimeComplianceRequest:
       type: object
@@ -400,7 +400,7 @@ components:
               type: object
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
         timestamp:
           type: string
           format: date-time

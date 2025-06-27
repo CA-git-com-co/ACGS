@@ -4,7 +4,7 @@ info:
   description: |
     Constitutional AI service providing advanced constitutional compliance validation,
     formal verification integration, and real-time constitutional violation detection.
-    
+
     Constitutional Hash: cdd01ef066bc6cf2
   version: 3.0.0
   contact:
@@ -98,6 +98,16 @@ paths:
       requestBody:
         required: true
         content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePrincipleRequest'
+      responses:
+        '201':
+          description: Principle created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrincipleResponse'
 
   /api/v1/dgm/sandbox/validate:
     post:
@@ -216,16 +226,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreatePrincipleRequest'
-      responses:
-        '201':
-          description: Principle created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PrincipleResponse'
 
   /api/v1/principles/{principle_id}:
     get:
@@ -442,10 +442,10 @@ components:
           example: ac_service
         version:
           type: string
-          example: "3.0.0"
+          example: '3.0.0'
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
         timestamp:
           type: string
           format: date-time
@@ -459,7 +459,7 @@ components:
         action:
           type: string
           description: Action to validate
-          example: "policy_creation"
+          example: 'policy_creation'
         context:
           type: object
           properties:
@@ -502,7 +502,7 @@ components:
                     type: object
             constitutional_hash:
               type: string
-              example: "cdd01ef066bc6cf2"
+              example: 'cdd01ef066bc6cf2'
             timestamp:
               type: string
               format: date-time
@@ -579,7 +579,7 @@ components:
               type: object
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
         timestamp:
           type: string
           format: date-time

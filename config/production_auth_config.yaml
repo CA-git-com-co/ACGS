@@ -230,14 +230,14 @@ security_headers:
 # Rate Limiting - Optimized for 1000 RPS target
 rate_limiting:
   enabled: true
-  default_requests_per_minute: 60000  # 1000 RPS with safety margin
+  default_requests_per_minute: 60000 # 1000 RPS with safety margin
   burst_size: 1000
 
   # Service-specific limits (optimized for high throughput)
   service_limits:
     auth_service: 90000 # Higher limit for auth operations
-    ac_service: 60000   # Target service optimization
-    pgc_service: 48000  # Higher limit for policy enforcement
+    ac_service: 60000 # Target service optimization
+    pgc_service: 48000 # Higher limit for policy enforcement
     integrity_service: 36000
     fv_service: 24000
     gs_service: 60000

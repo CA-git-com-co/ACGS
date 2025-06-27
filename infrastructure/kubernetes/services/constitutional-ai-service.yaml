@@ -7,7 +7,7 @@ metadata:
     app: constitutional-ai-service
     app.kubernetes.io/name: constitutional-ai-service
     app.kubernetes.io/part-of: acgs-system
-    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/version: '1.0.0'
 spec:
   replicas: 3
   selector:
@@ -25,64 +25,64 @@ spec:
         runAsUser: 1000
         fsGroup: 2000
       containers:
-      - name: constitutional-ai-service
-        image: acgs/constitutional-ai-service:latest
-        ports:
-        - containerPort: 8001
-          name: http
-        env:
-        - name: SERVICE_PORT
-          value: "8001"
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: acgs-secrets
-              key: database-url
-        - name: REDIS_URL
-          value: "redis://dragonflydb:6379/1"
-        - name: AUTH_SERVICE_URL
-          value: "http://auth-service:8000"
-        - name: OPA_SERVER_URL
-          value: "http://opa:8181"
-        - name: CONSTITUTIONAL_HASH
-          value: "cdd01ef066bc6cf2"
-        - name: COMPLIANCE_THRESHOLD
-          value: "0.95"
-        resources:
-          requests:
-            cpu: 200m
-            memory: 512Mi
-          limits:
-            cpu: 500m
-            memory: 1Gi
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8001
-          initialDelaySeconds: 10
-          periodSeconds: 5
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8001
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        volumeMounts:
-        - name: tmp
-          mountPath: /tmp
-        - name: var-run
-          mountPath: /var/run
+        - name: constitutional-ai-service
+          image: acgs/constitutional-ai-service:latest
+          ports:
+            - containerPort: 8001
+              name: http
+          env:
+            - name: SERVICE_PORT
+              value: '8001'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-secrets
+                  key: database-url
+            - name: REDIS_URL
+              value: 'redis://dragonflydb:6379/1'
+            - name: AUTH_SERVICE_URL
+              value: 'http://auth-service:8000'
+            - name: OPA_SERVER_URL
+              value: 'http://opa:8181'
+            - name: CONSTITUTIONAL_HASH
+              value: 'cdd01ef066bc6cf2'
+            - name: COMPLIANCE_THRESHOLD
+              value: '0.95'
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8001
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: var-run
+              mountPath: /var/run
       volumes:
-      - name: tmp
-        emptyDir: {}
-      - name: var-run
-        emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+        - name: var-run
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
@@ -97,8 +97,8 @@ spec:
   selector:
     app: constitutional-ai-service
   ports:
-  - name: http
-    protocol: TCP
-    port: 8001
-    targetPort: 8001
+    - name: http
+      protocol: TCP
+      port: 8001
+      targetPort: 8001
   type: ClusterIP

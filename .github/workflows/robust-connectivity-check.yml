@@ -115,7 +115,7 @@ jobs:
           else
             echo "⚠️ GitHub API rate limit endpoint not accessible, but continuing"
           fi
-          
+
           echo "✅ GitHub API functionality test completed"
 
       - name: Alternative Connectivity Test

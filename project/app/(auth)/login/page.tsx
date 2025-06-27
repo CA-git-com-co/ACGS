@@ -81,7 +81,7 @@ export default function LoginPage() {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-            
+
             <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
               <Input
@@ -91,9 +91,7 @@ export default function LoginPage() {
                 {...register('username')}
                 className={errors.username ? 'border-red-500' : ''}
               />
-              {errors.username && (
-                <p className="text-sm text-red-500">{errors.username.message}</p>
-              )}
+              {errors.username && <p className="text-sm text-red-500">{errors.username.message}</p>}
             </div>
 
             <div className="space-y-2">
@@ -105,16 +103,10 @@ export default function LoginPage() {
                 {...register('password')}
                 className={errors.password ? 'border-red-500' : ''}
               />
-              {errors.password && (
-                <p className="text-sm text-red-500">{errors.password.message}</p>
-              )}
+              {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
             </div>
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading}
-            >
+            <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>

@@ -249,21 +249,21 @@ jobs:
           echo "🔍 Validating enterprise toolchain installation..."
           echo "Rust toolchain:"
           rustc --version && cargo --version
-          
+
           if [ "${{ env.SOLANA_AVAILABLE }}" = "true" ]; then
             echo "Solana CLI:"
             solana --version
           else
             echo "⚠️ Solana CLI not available"
           fi
-          
+
           if [ "${{ env.ANCHOR_AVAILABLE }}" = "true" ]; then
             echo "Anchor CLI:"
             anchor --version
           else
             echo "⚠️ Anchor CLI not available"
           fi
-          
+
           echo "✅ Available toolchain components validated successfully"
 
   # Parallel Job 1: Rust Code Quality & Build

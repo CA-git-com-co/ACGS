@@ -97,7 +97,7 @@ jobs:
           else
             echo "⚠️ GitHub API connectivity test failed, but continuing (may be firewall restriction)"
           fi
-          
+
           echo "ready=true" >> $GITHUB_OUTPUT
 
           # Test crates.io connectivity with curl
@@ -126,7 +126,7 @@ jobs:
           else
             CHANGED_FILES=""
           fi
-          
+
           if [ -n "$CHANGED_FILES" ]; then
             echo "any_changed=true" >> $GITHUB_OUTPUT
             echo "all_changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT

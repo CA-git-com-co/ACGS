@@ -11,8 +11,8 @@ global:
 
 # Rule files for alerting and recording rules
 rule_files:
-  - "alert_rules.yml"
-  - "constitutional_compliance_rules.yml"
+  - 'alert_rules.yml'
+  - 'constitutional_compliance_rules.yml'
 
 # Scrape configuration
 scrape_configs:
@@ -102,8 +102,8 @@ scrape_configs:
     scrape_interval: 30s
     static_configs:
       - targets:
-          - 'localhost:8001'  # AC Service
-          - 'localhost:8005'  # PGC Service
+          - 'localhost:8001' # AC Service
+          - 'localhost:8005' # PGC Service
 
   # AI Model performance metrics
   - job_name: 'ai-model-metrics'
@@ -111,8 +111,8 @@ scrape_configs:
     scrape_interval: 60s
     static_configs:
       - targets:
-          - 'localhost:8001'  # AC Service
-          - 'localhost:8004'  # GS Service
+          - 'localhost:8001' # AC Service
+          - 'localhost:8004' # GS Service
 
   # System metrics
   - job_name: 'node-exporter'

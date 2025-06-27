@@ -1,80 +1,80 @@
 alerting:
   alertmanagers:
-  - static_configs:
-    - targets:
-      - alertmanager:9093
+    - static_configs:
+        - targets:
+            - alertmanager:9093
 global:
   evaluation_interval: 15s
   scrape_interval: 15s
 rule_files:
-- rules/acgs_constitutional_compliance.yml
-- rules/acgs_performance_alerts.yml
-- rules/acgs_security_alerts.yml
+  - rules/acgs_constitutional_compliance.yml
+  - rules/acgs_performance_alerts.yml
+  - rules/acgs_security_alerts.yml
 scrape_configs:
-- job_name: prometheus
-  static_configs:
-  - targets:
-    - localhost:9090
-- job_name: acgs_auth_service
-  metrics_path: /metrics
-  params:
-    constitutional_hash:
-    - cdd01ef066bc6cf2
-  scrape_interval: 10s
-  static_configs:
-  - targets:
-    - localhost:8000
-- job_name: acgs_ac_service
-  metrics_path: /metrics
-  params:
-    constitutional_hash:
-    - cdd01ef066bc6cf2
-  scrape_interval: 10s
-  static_configs:
-  - targets:
-    - localhost:8001
-- job_name: acgs_integrity_service
-  metrics_path: /metrics
-  params:
-    constitutional_hash:
-    - cdd01ef066bc6cf2
-  scrape_interval: 10s
-  static_configs:
-  - targets:
-    - localhost:8002
-- job_name: acgs_fv_service
-  metrics_path: /metrics
-  params:
-    constitutional_hash:
-    - cdd01ef066bc6cf2
-  scrape_interval: 10s
-  static_configs:
-  - targets:
-    - localhost:8003
-- job_name: acgs_gs_service
-  metrics_path: /metrics
-  params:
-    constitutional_hash:
-    - cdd01ef066bc6cf2
-  scrape_interval: 10s
-  static_configs:
-  - targets:
-    - localhost:8004
-- job_name: acgs_pgc_service
-  metrics_path: /metrics
-  params:
-    constitutional_hash:
-    - cdd01ef066bc6cf2
-  scrape_interval: 10s
-  static_configs:
-  - targets:
-    - localhost:8005
-- job_name: acgs_ec_service
-  metrics_path: /metrics
-  params:
-    constitutional_hash:
-    - cdd01ef066bc6cf2
-  scrape_interval: 10s
-  static_configs:
-  - targets:
-    - localhost:8006
+  - job_name: prometheus
+    static_configs:
+      - targets:
+          - localhost:9090
+  - job_name: acgs_auth_service
+    metrics_path: /metrics
+    params:
+      constitutional_hash:
+        - cdd01ef066bc6cf2
+    scrape_interval: 10s
+    static_configs:
+      - targets:
+          - localhost:8000
+  - job_name: acgs_ac_service
+    metrics_path: /metrics
+    params:
+      constitutional_hash:
+        - cdd01ef066bc6cf2
+    scrape_interval: 10s
+    static_configs:
+      - targets:
+          - localhost:8001
+  - job_name: acgs_integrity_service
+    metrics_path: /metrics
+    params:
+      constitutional_hash:
+        - cdd01ef066bc6cf2
+    scrape_interval: 10s
+    static_configs:
+      - targets:
+          - localhost:8002
+  - job_name: acgs_fv_service
+    metrics_path: /metrics
+    params:
+      constitutional_hash:
+        - cdd01ef066bc6cf2
+    scrape_interval: 10s
+    static_configs:
+      - targets:
+          - localhost:8003
+  - job_name: acgs_gs_service
+    metrics_path: /metrics
+    params:
+      constitutional_hash:
+        - cdd01ef066bc6cf2
+    scrape_interval: 10s
+    static_configs:
+      - targets:
+          - localhost:8004
+  - job_name: acgs_pgc_service
+    metrics_path: /metrics
+    params:
+      constitutional_hash:
+        - cdd01ef066bc6cf2
+    scrape_interval: 10s
+    static_configs:
+      - targets:
+          - localhost:8005
+  - job_name: acgs_ec_service
+    metrics_path: /metrics
+    params:
+      constitutional_hash:
+        - cdd01ef066bc6cf2
+    scrape_interval: 10s
+    static_configs:
+      - targets:
+          - localhost:8006

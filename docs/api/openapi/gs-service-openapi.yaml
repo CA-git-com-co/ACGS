@@ -5,7 +5,7 @@ info:
     Enterprise-grade AI-powered policy generation platform that synthesizes enforceable
     governance policies from constitutional principles using advanced multi-model LLM
     ensembles and constitutional compliance validation.
-    
+
     Constitutional Hash: cdd01ef066bc6cf2
   version: 3.0.0
   contact:
@@ -236,10 +236,10 @@ components:
           example: gs_service_production
         version:
           type: string
-          example: "3.0.0"
+          example: '3.0.0'
         phase:
           type: string
-          example: "Phase A3 - Production Implementation"
+          example: 'Phase A3 - Production Implementation'
         synthesis_capabilities:
           type: object
           properties:
@@ -270,7 +270,7 @@ components:
         synthesis_goal:
           type: string
           description: Goal for policy synthesis
-          example: "Create privacy protection policy for citizen data"
+          example: 'Create privacy protection policy for citizen data'
         constitutional_principles:
           type: array
           items:
@@ -340,7 +340,7 @@ components:
               type: object
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
         generation_time_ms:
           type: number
 
@@ -391,7 +391,7 @@ components:
               type: object
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
         timestamp:
           type: string
           format: date-time

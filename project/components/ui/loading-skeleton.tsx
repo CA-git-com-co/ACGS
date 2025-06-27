@@ -12,11 +12,7 @@ export function LoadingSkeleton({ className, count = 1, height }: LoadingSkeleto
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className={cn(
-            'animate-pulse rounded-md bg-muted',
-            height ? '' : 'h-4',
-            className
-          )}
+          className={cn('animate-pulse rounded-md bg-muted', height ? '' : 'h-4', className)}
           style={height ? { height } : undefined}
         />
       ))}

@@ -4,7 +4,7 @@ import { Gavel, Clock } from 'lucide-react';
 export async function AmendmentSummary() {
   // Simulate data fetching
   await new Promise(resolve => setTimeout(resolve, 150));
-  
+
   const amendmentStats = {
     inProgress: 7,
     pending: 3,
@@ -14,9 +14,7 @@ export async function AmendmentSummary() {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">
-          Amendments in Progress
-        </CardTitle>
+        <CardTitle className="text-sm font-medium">Amendments in Progress</CardTitle>
         <Gavel className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>

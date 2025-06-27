@@ -15,9 +15,9 @@ groups:
           component: constitutional-ai
           service: nano-vllm
         annotations:
-          summary: "Constitutional compliance score dropped below threshold"
-          description: "Constitutional compliance score is {{ $value }}, which is below the required threshold of 0.75"
-          runbook_url: "https://docs.acgs.ai/runbooks/constitutional-compliance"
+          summary: 'Constitutional compliance score dropped below threshold'
+          description: 'Constitutional compliance score is {{ $value }}, which is below the required threshold of 0.75'
+          runbook_url: 'https://docs.acgs.ai/runbooks/constitutional-compliance'
 
       - alert: ConstitutionalReasoningFailure
         expr: rate(constitutional_reasoning_failures_total[5m]) > 0.1
@@ -27,20 +27,20 @@ groups:
           component: constitutional-ai
           service: nano-vllm
         annotations:
-          summary: "High rate of constitutional reasoning failures"
-          description: "Constitutional reasoning failure rate is {{ $value }} per second over the last 5 minutes"
+          summary: 'High rate of constitutional reasoning failures'
+          description: 'Constitutional reasoning failure rate is {{ $value }} per second over the last 5 minutes'
 
       - alert: ConstitutionalPrincipleViolation
         expr: constitutional_principle_violations_total > 0
-        for: 0s  # Immediate alert
+        for: 0s # Immediate alert
         labels:
           severity: critical
           component: constitutional-ai
           service: nano-vllm
         annotations:
-          summary: "Constitutional principle violation detected"
-          description: "{{ $value }} constitutional principle violations detected"
-          runbook_url: "https://docs.acgs.ai/runbooks/principle-violations"
+          summary: 'Constitutional principle violation detected'
+          description: '{{ $value }} constitutional principle violations detected'
+          runbook_url: 'https://docs.acgs.ai/runbooks/principle-violations'
 
   # =============================================================================
   # Performance and Response Time Alerts
@@ -55,8 +55,8 @@ groups:
           component: performance
           service: nano-vllm
         annotations:
-          summary: "High response time detected"
-          description: "95th percentile response time is {{ $value }}s, exceeding 2s threshold"
+          summary: 'High response time detected'
+          description: '95th percentile response time is {{ $value }}s, exceeding 2s threshold'
 
       - alert: VeryHighResponseTime
         expr: histogram_quantile(0.95, rate(nano_vllm_request_duration_seconds_bucket[5m])) > 5
@@ -66,8 +66,8 @@ groups:
           component: performance
           service: nano-vllm
         annotations:
-          summary: "Very high response time detected"
-          description: "95th percentile response time is {{ $value }}s, exceeding 5s critical threshold"
+          summary: 'Very high response time detected'
+          description: '95th percentile response time is {{ $value }}s, exceeding 5s critical threshold'
 
       - alert: HighConcurrentRequests
         expr: nano_vllm_concurrent_requests > 25
@@ -77,8 +77,8 @@ groups:
           component: performance
           service: nano-vllm
         annotations:
-          summary: "High number of concurrent requests"
-          description: "{{ $value }} concurrent requests, approaching capacity limits"
+          summary: 'High number of concurrent requests'
+          description: '{{ $value }} concurrent requests, approaching capacity limits'
 
   # =============================================================================
   # Service Health and Availability Alerts
@@ -93,9 +93,9 @@ groups:
           component: availability
           service: nano-vllm
         annotations:
-          summary: "Nano-vLLM service is down"
-          description: "Nano-vLLM constitutional AI service has been down for more than 1 minute"
-          runbook_url: "https://docs.acgs.ai/runbooks/service-recovery"
+          summary: 'Nano-vLLM service is down'
+          description: 'Nano-vLLM constitutional AI service has been down for more than 1 minute'
+          runbook_url: 'https://docs.acgs.ai/runbooks/service-recovery'
 
       - alert: HealthCheckFailing
         expr: nano_vllm_health_check_status != 1
@@ -105,8 +105,8 @@ groups:
           component: health
           service: nano-vllm
         annotations:
-          summary: "Health check failing"
-          description: "Nano-vLLM health check has been failing for more than 2 minutes"
+          summary: 'Health check failing'
+          description: 'Nano-vLLM health check has been failing for more than 2 minutes'
 
       - alert: ModelLoadingFailure
         expr: nano_vllm_model_loading_failures_total > 0
@@ -116,8 +116,8 @@ groups:
           component: model-loading
           service: nano-vllm
         annotations:
-          summary: "Model loading failure detected"
-          description: "{{ $value }} model loading failures detected"
+          summary: 'Model loading failure detected'
+          description: '{{ $value }} model loading failures detected'
 
   # =============================================================================
   # Resource Utilization Alerts
@@ -132,8 +132,8 @@ groups:
           component: resources
           service: nano-vllm
         annotations:
-          summary: "High memory usage"
-          description: "Memory usage is {{ $value | humanizePercentage }}, approaching limits"
+          summary: 'High memory usage'
+          description: 'Memory usage is {{ $value | humanizePercentage }}, approaching limits'
 
       - alert: HighCPUUsage
         expr: rate(nano_vllm_cpu_usage_seconds_total[5m]) > 0.8
@@ -143,8 +143,8 @@ groups:
           component: resources
           service: nano-vllm
         annotations:
-          summary: "High CPU usage"
-          description: "CPU usage is {{ $value | humanizePercentage }} over the last 5 minutes"
+          summary: 'High CPU usage'
+          description: 'CPU usage is {{ $value | humanizePercentage }} over the last 5 minutes'
 
       - alert: GPUMemoryHigh
         expr: (nano_vllm_gpu_memory_used_bytes / nano_vllm_gpu_memory_total_bytes) > 0.95
@@ -154,8 +154,8 @@ groups:
           component: gpu
           service: nano-vllm
         annotations:
-          summary: "High GPU memory usage"
-          description: "GPU memory usage is {{ $value | humanizePercentage }}"
+          summary: 'High GPU memory usage'
+          description: 'GPU memory usage is {{ $value | humanizePercentage }}'
 
   # =============================================================================
   # Error Rate and Quality Alerts
@@ -170,8 +170,8 @@ groups:
           component: errors
           service: nano-vllm
         annotations:
-          summary: "High error rate"
-          description: "Error rate is {{ $value | humanizePercentage }} over the last 5 minutes"
+          summary: 'High error rate'
+          description: 'Error rate is {{ $value | humanizePercentage }} over the last 5 minutes'
 
       - alert: CriticalErrorRate
         expr: rate(nano_vllm_requests_total{status=~"5.."}[5m]) / rate(nano_vllm_requests_total[5m]) > 0.1
@@ -181,8 +181,8 @@ groups:
           component: errors
           service: nano-vllm
         annotations:
-          summary: "Critical error rate"
-          description: "Error rate is {{ $value | humanizePercentage }}, exceeding critical threshold"
+          summary: 'Critical error rate'
+          description: 'Error rate is {{ $value | humanizePercentage }}, exceeding critical threshold'
 
       - alert: ReasoningQualityDegraded
         expr: avg_over_time(nano_vllm_reasoning_quality_score[10m]) < 0.8
@@ -192,8 +192,8 @@ groups:
           component: quality
           service: nano-vllm
         annotations:
-          summary: "Reasoning quality degraded"
-          description: "Average reasoning quality score is {{ $value }}, below acceptable threshold"
+          summary: 'Reasoning quality degraded'
+          description: 'Average reasoning quality score is {{ $value }}, below acceptable threshold'
 
   # =============================================================================
   # Load Testing Alerts
@@ -208,8 +208,8 @@ groups:
           component: load-testing
           service: nano-vllm
         annotations:
-          summary: "High load test failure rate"
-          description: "Load test failure rate is {{ $value }} per second"
+          summary: 'High load test failure rate'
+          description: 'Load test failure rate is {{ $value }} per second'
 
       - alert: LoadTestResponseTimeDegraded
         expr: histogram_quantile(0.95, rate(load_test_request_duration_seconds_bucket[5m])) > 3
@@ -219,5 +219,5 @@ groups:
           component: load-testing
           service: nano-vllm
         annotations:
-          summary: "Load test response time degraded"
-          description: "95th percentile load test response time is {{ $value }}s"
+          summary: 'Load test response time degraded'
+          description: '95th percentile load test response time is {{ $value }}s'

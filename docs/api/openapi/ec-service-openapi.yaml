@@ -5,7 +5,7 @@ info:
     Enterprise-grade WINA-optimized oversight and governance platform providing
     advanced evolutionary computation algorithms, constitutional compliance verification,
     and intelligent performance optimization.
-    
+
     Constitutional Hash: cdd01ef066bc6cf2
   version: 3.0.0
   contact:
@@ -226,10 +226,10 @@ components:
           example: ec_service_production
         version:
           type: string
-          example: "3.0.0"
+          example: '3.0.0'
         phase:
           type: string
-          example: "Phase 3 - Production Implementation"
+          example: 'Phase 3 - Production Implementation'
         components:
           type: object
           properties:
@@ -252,10 +252,10 @@ components:
               type: number
             target_response_time:
               type: string
-              example: "<300ms"
+              example: '<300ms'
             availability_target:
               type: string
-              example: ">99.9%"
+              example: '>99.9%'
 
     OversightCoordinationRequest:
       type: object
@@ -266,7 +266,7 @@ components:
         target_system:
           type: string
           description: Target system for oversight
-          example: "governance_optimization"
+          example: 'governance_optimization'
         oversight_type:
           type: string
           enum: [constitutional_compliance, performance_optimization, resource_allocation]
@@ -327,7 +327,7 @@ components:
             type: object
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
         processing_time_ms:
           type: number
 
@@ -339,7 +339,13 @@ components:
       properties:
         algorithm_type:
           type: string
-          enum: [resource_allocation, coordination_efficiency, performance_tuning, governance_compliance]
+          enum:
+            [
+              resource_allocation,
+              coordination_efficiency,
+              performance_tuning,
+              governance_compliance,
+            ]
         optimization_target:
           type: string
           description: Target for optimization
@@ -397,7 +403,7 @@ components:
               type: object
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
         timestamp:
           type: string
           format: date-time

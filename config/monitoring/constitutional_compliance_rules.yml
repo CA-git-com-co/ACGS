@@ -9,8 +9,8 @@ groups:
           severity: critical
           constitutional_hash: cdd01ef066bc6cf2
         annotations:
-          summary: "Constitutional hash mismatch detected"
-          description: "Service {{ $labels.instance }} has invalid constitutional hash. Expected: cdd01ef066bc6cf2"
+          summary: 'Constitutional hash mismatch detected'
+          description: 'Service {{ $labels.instance }} has invalid constitutional hash. Expected: cdd01ef066bc6cf2'
 
       # Compliance threshold alerts
       - alert: ConstitutionalComplianceLow
@@ -19,8 +19,8 @@ groups:
         labels:
           severity: high
         annotations:
-          summary: "Constitutional compliance below threshold"
-          description: "Service {{ $labels.instance }} compliance score {{ $value }} is below 0.8 threshold"
+          summary: 'Constitutional compliance below threshold'
+          description: 'Service {{ $labels.instance }} compliance score {{ $value }} is below 0.8 threshold'
 
       - alert: ConstitutionalComplianceCritical
         expr: acgs_constitutional_compliance_score < 0.5
@@ -28,8 +28,8 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "Critical constitutional compliance violation"
-          description: "Service {{ $labels.instance }} compliance score {{ $value }} is critically low"
+          summary: 'Critical constitutional compliance violation'
+          description: 'Service {{ $labels.instance }} compliance score {{ $value }} is critically low'
 
       # Service availability alerts
       - alert: ACGSServiceDown
@@ -38,8 +38,8 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "ACGS service is down"
-          description: "Service {{ $labels.job }} on {{ $labels.instance }} is down"
+          summary: 'ACGS service is down'
+          description: 'Service {{ $labels.job }} on {{ $labels.instance }} is down'
 
       # Response time alerts
       - alert: ACGSHighResponseTime
@@ -48,8 +48,8 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: "High response time detected"
-          description: "Service {{ $labels.instance }} 95th percentile response time is {{ $value }}s (>2s threshold)"
+          summary: 'High response time detected'
+          description: 'Service {{ $labels.instance }} 95th percentile response time is {{ $value }}s (>2s threshold)'
 
       - alert: ACGSCriticalResponseTime
         expr: acgs_http_request_duration_seconds{quantile="0.95"} > 5.0
@@ -57,8 +57,8 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "Critical response time detected"
-          description: "Service {{ $labels.instance }} 95th percentile response time is {{ $value }}s (>5s threshold)"
+          summary: 'Critical response time detected'
+          description: 'Service {{ $labels.instance }} 95th percentile response time is {{ $value }}s (>5s threshold)'
 
       # OPA policy engine alerts
       - alert: OPAPolicyEngineDown
@@ -67,8 +67,8 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "OPA Policy Engine is down"
-          description: "OPA Policy Engine on port 8181 is not responding"
+          summary: 'OPA Policy Engine is down'
+          description: 'OPA Policy Engine on port 8181 is not responding'
 
       - alert: OPAPolicyEvaluationErrors
         expr: rate(opa_policy_evaluation_errors_total[5m]) > 0.1
@@ -76,8 +76,8 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: "High OPA policy evaluation error rate"
-          description: "OPA policy evaluation error rate is {{ $value }} errors/sec"
+          summary: 'High OPA policy evaluation error rate'
+          description: 'OPA policy evaluation error rate is {{ $value }} errors/sec'
 
       # AI model performance alerts
       - alert: AIModelHighLatency
@@ -86,8 +86,8 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: "AI model high latency"
-          description: "AI model {{ $labels.model }} response time is {{ $value }}s (>30s threshold)"
+          summary: 'AI model high latency'
+          description: 'AI model {{ $labels.model }} response time is {{ $value }}s (>30s threshold)'
 
       - alert: AIModelFailureRate
         expr: rate(acgs_ai_model_failures_total[5m]) > 0.05
@@ -95,8 +95,8 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: "High AI model failure rate"
-          description: "AI model {{ $labels.model }} failure rate is {{ $value }} failures/sec"
+          summary: 'High AI model failure rate'
+          description: 'AI model {{ $labels.model }} failure rate is {{ $value }} failures/sec'
 
       # Resource utilization alerts
       - alert: HighCPUUsage
@@ -105,8 +105,8 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: "High CPU usage"
-          description: "Service {{ $labels.instance }} CPU usage is {{ $value }}%"
+          summary: 'High CPU usage'
+          description: 'Service {{ $labels.instance }} CPU usage is {{ $value }}%'
 
       - alert: HighMemoryUsage
         expr: acgs_memory_usage_percent > 85
@@ -114,8 +114,8 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: "High memory usage"
-          description: "Service {{ $labels.instance }} memory usage is {{ $value }}%"
+          summary: 'High memory usage'
+          description: 'Service {{ $labels.instance }} memory usage is {{ $value }}%'
 
       # Emergency response alerts
       - alert: EmergencyResponseRequired
@@ -124,8 +124,8 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "Emergency response triggered"
-          description: "Emergency response triggered for {{ $labels.emergency_type }} - RTO target: 30 minutes"
+          summary: 'Emergency response triggered'
+          description: 'Emergency response triggered for {{ $labels.emergency_type }} - RTO target: 30 minutes'
 
   - name: constitutional_compliance_recording
     rules:

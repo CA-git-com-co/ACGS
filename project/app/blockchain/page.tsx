@@ -31,9 +31,7 @@ export default function BlockchainPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">12</div>
-            <p className="text-xs text-muted-foreground">
-              +2 from last week
-            </p>
+            <p className="text-xs text-muted-foreground">+2 from last week</p>
           </CardContent>
         </Card>
         <Card>
@@ -43,9 +41,7 @@ export default function BlockchainPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">94.2%</div>
-            <p className="text-xs text-muted-foreground">
-              +1.2% from last month
-            </p>
+            <p className="text-xs text-muted-foreground">+1.2% from last month</p>
           </CardContent>
         </Card>
         <Card>
@@ -55,24 +51,24 @@ export default function BlockchainPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">Online</div>
-            <p className="text-xs text-muted-foreground">
-              All systems operational
-            </p>
+            <p className="text-xs text-muted-foreground">All systems operational</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Main Dashboard */}
-      <Suspense fallback={
-        <Card>
-          <CardContent className="flex items-center justify-center h-96">
-            <div className="flex items-center space-x-2">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span>Loading blockchain dashboard...</span>
-            </div>
-          </CardContent>
-        </Card>
-      }>
+      <Suspense
+        fallback={
+          <Card>
+            <CardContent className="flex items-center justify-center h-96">
+              <div className="flex items-center space-x-2">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span>Loading blockchain dashboard...</span>
+              </div>
+            </CardContent>
+          </Card>
+        }
+      >
         <QuantumagiApp />
       </Suspense>
     </div>

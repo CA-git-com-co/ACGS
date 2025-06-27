@@ -1,71 +1,71 @@
 # Constitutional Principles for AI Governance
 # ACGS-1 Constitutional Governance System
 
-version: "2.0"
-constitutional_hash: "cdd01ef066bc6cf2"
-last_updated: "2025-06-23"
+version: '2.0'
+constitutional_hash: 'cdd01ef066bc6cf2'
+last_updated: '2025-06-23'
 
 # Core Constitutional Principles
 principles:
   transparency:
-    name: "Transparency"
-    description: "All governance decisions must be transparent and auditable"
+    name: 'Transparency'
+    description: 'All governance decisions must be transparent and auditable'
     weight: 0.25
-    keywords: ["transparent", "open", "auditable", "visible", "clear", "disclosure"]
+    keywords: ['transparent', 'open', 'auditable', 'visible', 'clear', 'disclosure']
     requirements:
-      - "Decision processes must be documented"
-      - "Reasoning chains must be accessible"
-      - "Stakeholder impacts must be disclosed"
+      - 'Decision processes must be documented'
+      - 'Reasoning chains must be accessible'
+      - 'Stakeholder impacts must be disclosed'
     violations:
-      - "Hidden decision criteria"
-      - "Undocumented policy changes"
-      - "Lack of audit trails"
-    
+      - 'Hidden decision criteria'
+      - 'Undocumented policy changes'
+      - 'Lack of audit trails'
+
   fairness:
-    name: "Fairness" 
-    description: "Policies must treat all stakeholders fairly and equitably"
+    name: 'Fairness'
+    description: 'Policies must treat all stakeholders fairly and equitably'
     weight: 0.25
-    keywords: ["fair", "equitable", "just", "equal", "unbiased", "impartial"]
+    keywords: ['fair', 'equitable', 'just', 'equal', 'unbiased', 'impartial']
     requirements:
-      - "Equal treatment of similar cases"
-      - "Proportional responses to violations"
-      - "Consideration of all affected parties"
+      - 'Equal treatment of similar cases'
+      - 'Proportional responses to violations'
+      - 'Consideration of all affected parties'
     violations:
-      - "Discriminatory policies"
-      - "Disproportionate penalties"
-      - "Exclusion of stakeholder groups"
-    
+      - 'Discriminatory policies'
+      - 'Disproportionate penalties'
+      - 'Exclusion of stakeholder groups'
+
   privacy:
-    name: "Privacy"
-    description: "User privacy and data rights must be protected"
+    name: 'Privacy'
+    description: 'User privacy and data rights must be protected'
     weight: 0.25
-    keywords: ["privacy", "protect", "consent", "rights", "confidential", "data protection"]
+    keywords: ['privacy', 'protect', 'consent', 'rights', 'confidential', 'data protection']
     requirements:
-      - "Explicit consent for data collection"
-      - "Minimal data collection principle"
-      - "Secure data storage and transmission"
-      - "Right to data deletion"
+      - 'Explicit consent for data collection'
+      - 'Minimal data collection principle'
+      - 'Secure data storage and transmission'
+      - 'Right to data deletion'
     violations:
-      - "Unauthorized data collection"
-      - "Data sharing without consent"
-      - "Inadequate security measures"
-      - "Retention beyond necessity"
-    
+      - 'Unauthorized data collection'
+      - 'Data sharing without consent'
+      - 'Inadequate security measures'
+      - 'Retention beyond necessity'
+
   accountability:
-    name: "Accountability"
-    description: "Decision makers must be accountable for their actions"
+    name: 'Accountability'
+    description: 'Decision makers must be accountable for their actions'
     weight: 0.25
-    keywords: ["accountable", "responsible", "oversight", "liable", "governance"]
+    keywords: ['accountable', 'responsible', 'oversight', 'liable', 'governance']
     requirements:
-      - "Clear responsibility assignment"
-      - "Regular oversight and review"
-      - "Corrective action mechanisms"
-      - "Appeal processes"
+      - 'Clear responsibility assignment'
+      - 'Regular oversight and review'
+      - 'Corrective action mechanisms'
+      - 'Appeal processes'
     violations:
-      - "Unclear responsibility chains"
-      - "Lack of oversight mechanisms"
-      - "No corrective action procedures"
-      - "Absence of appeal processes"
+      - 'Unclear responsibility chains'
+      - 'Lack of oversight mechanisms'
+      - 'No corrective action procedures'
+      - 'Absence of appeal processes'
 
 # Constitutional Compliance Framework
 compliance:
@@ -75,12 +75,12 @@ compliance:
     acceptable: 0.7-0.79
     concerning: 0.6-0.69
     violation: 0.0-0.59
-  
+
   thresholds:
     minimum_compliance: 0.75
     policy_approval: 0.85
     constitutional_amendment: 0.95
-  
+
   enforcement:
     automatic_review: 0.7
     human_review_required: 0.6
@@ -90,25 +90,25 @@ compliance:
 reasoning:
   depth_levels:
     basic:
-      description: "Simple principle application"
+      description: 'Simple principle application'
       steps: 3-5
       time_limit: 30
     standard:
-      description: "Comprehensive analysis with citations"
+      description: 'Comprehensive analysis with citations'
       steps: 5-10
       time_limit: 60
     deep:
-      description: "Multi-perspective analysis with precedent review"
+      description: 'Multi-perspective analysis with precedent review'
       steps: 10-20
       time_limit: 120
-  
+
   required_elements:
     - principle_analysis
     - stakeholder_impact
     - precedent_review
     - risk_assessment
     - recommendation
-  
+
   citation_requirements:
     minimum_sources: 2
     preferred_sources: 5
@@ -121,67 +121,67 @@ reasoning:
 # Domain-Specific Applications
 domains:
   governance:
-    primary_principles: ["accountability", "transparency"]
-    secondary_principles: ["fairness", "privacy"]
+    primary_principles: ['accountability', 'transparency']
+    secondary_principles: ['fairness', 'privacy']
     special_considerations:
-      - "Democratic participation"
-      - "Separation of powers"
-      - "Rule of law"
-  
+      - 'Democratic participation'
+      - 'Separation of powers'
+      - 'Rule of law'
+
   privacy:
-    primary_principles: ["privacy", "transparency"]
-    secondary_principles: ["fairness", "accountability"]
+    primary_principles: ['privacy', 'transparency']
+    secondary_principles: ['fairness', 'accountability']
     special_considerations:
-      - "Data minimization"
-      - "Purpose limitation"
-      - "Consent management"
-  
+      - 'Data minimization'
+      - 'Purpose limitation'
+      - 'Consent management'
+
   ethics:
-    primary_principles: ["fairness", "accountability"]
-    secondary_principles: ["transparency", "privacy"]
+    primary_principles: ['fairness', 'accountability']
+    secondary_principles: ['transparency', 'privacy']
     special_considerations:
-      - "Harm prevention"
-      - "Beneficence"
-      - "Autonomy respect"
+      - 'Harm prevention'
+      - 'Beneficence'
+      - 'Autonomy respect'
 
 # Emergency Procedures
 emergency:
   constitutional_crisis:
     triggers:
-      - "Multiple principle violations"
-      - "System-wide compliance failure"
-      - "Stakeholder safety concerns"
+      - 'Multiple principle violations'
+      - 'System-wide compliance failure'
+      - 'Stakeholder safety concerns'
     procedures:
-      - "Immediate system suspension"
-      - "Emergency review board activation"
-      - "Stakeholder notification"
-      - "Corrective action plan"
-  
+      - 'Immediate system suspension'
+      - 'Emergency review board activation'
+      - 'Stakeholder notification'
+      - 'Corrective action plan'
+
   override_conditions:
-    - "Imminent physical harm"
-    - "Legal compliance requirements"
-    - "Critical system failure"
-  
+    - 'Imminent physical harm'
+    - 'Legal compliance requirements'
+    - 'Critical system failure'
+
   recovery_requirements:
-    - "Full compliance audit"
-    - "Stakeholder consultation"
-    - "System redesign if necessary"
-    - "Gradual reactivation"
+    - 'Full compliance audit'
+    - 'Stakeholder consultation'
+    - 'System redesign if necessary'
+    - 'Gradual reactivation'
 
 # Monitoring and Metrics
 monitoring:
   continuous_metrics:
-    - "Compliance score trends"
-    - "Principle violation frequency"
-    - "Stakeholder satisfaction"
-    - "Appeal success rates"
-  
+    - 'Compliance score trends'
+    - 'Principle violation frequency'
+    - 'Stakeholder satisfaction'
+    - 'Appeal success rates'
+
   periodic_reviews:
-    daily: ["compliance scores", "violation alerts"]
-    weekly: ["trend analysis", "stakeholder feedback"]
-    monthly: ["comprehensive audit", "principle effectiveness"]
-    quarterly: ["constitutional review", "framework updates"]
-  
+    daily: ['compliance scores', 'violation alerts']
+    weekly: ['trend analysis', 'stakeholder feedback']
+    monthly: ['comprehensive audit', 'principle effectiveness']
+    quarterly: ['constitutional review', 'framework updates']
+
   alert_thresholds:
     warning: 0.75
     critical: 0.65
@@ -191,21 +191,21 @@ monitoring:
 nano_vllm_integration:
   model_specialization:
     nvidia_acerreason:
-      primary_domains: ["governance", "accountability"]
-      reasoning_depth: "deep"
-      citation_requirements: "high"
-    
+      primary_domains: ['governance', 'accountability']
+      reasoning_depth: 'deep'
+      citation_requirements: 'high'
+
     microsoft_phi4:
-      primary_domains: ["ethics", "fairness"]
-      reasoning_depth: "standard"
-      citation_requirements: "medium"
-  
+      primary_domains: ['ethics', 'fairness']
+      reasoning_depth: 'standard'
+      citation_requirements: 'medium'
+
   ensemble_requirements:
     minimum_models: 2
     consensus_threshold: 0.8
-    disagreement_resolution: "human_review"
-  
+    disagreement_resolution: 'human_review'
+
   fallback_procedures:
-    - "Single model analysis"
-    - "Simplified reasoning"
-    - "Human oversight required"
+    - 'Single model analysis'
+    - 'Simplified reasoning'
+    - 'Human oversight required'

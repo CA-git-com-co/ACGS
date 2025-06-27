@@ -5,7 +5,7 @@ info:
     Enterprise-grade mathematical proof engine providing comprehensive formal verification
     of policies, constitutional compliance validation, and safety property verification
     using Z3 SMT solver and advanced theorem proving.
-    
+
     Constitutional Hash: cdd01ef066bc6cf2
   version: 2.0.0
   contact:
@@ -236,7 +236,7 @@ components:
           example: enhanced_fv_service
         version:
           type: string
-          example: "2.0.0"
+          example: '2.0.0'
         port:
           type: integer
           example: 8003
@@ -262,13 +262,13 @@ components:
           properties:
             target_response_time:
               type: string
-              example: "<500ms"
+              example: '<500ms'
             availability_target:
               type: string
-              example: ">99.9%"
+              example: '>99.9%'
             concurrent_verification_support:
               type: string
-              example: ">100 tasks"
+              example: '>100 tasks'
 
     VerificationRequest:
       type: object
@@ -336,7 +336,7 @@ components:
           type: number
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
 
     ParallelVerificationRequest:
       type: object
@@ -381,7 +381,7 @@ components:
               type: object
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
         timestamp:
           type: string
           format: date-time

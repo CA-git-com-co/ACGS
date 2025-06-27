@@ -12,6 +12,7 @@ The Authentication Service is a production-grade microservice that provides comp
 ## Core Features
 
 ### Authentication & Authorization
+
 - **User Management**: Registration, login, and profile management
 - **JWT Tokens**: Access and refresh token lifecycle management
 - **Multi-Factor Authentication**: TOTP and SMS-based MFA support
@@ -19,6 +20,7 @@ The Authentication Service is a production-grade microservice that provides comp
 - **Session Management**: Secure session handling with CSRF protection
 
 ### Security Features
+
 - **Password Security**: Bcrypt hashing with salt
 - **Rate Limiting**: Brute force protection
 - **Security Headers**: CORS, CSP, and security middleware
@@ -28,6 +30,7 @@ The Authentication Service is a production-grade microservice that provides comp
 ## API Endpoints
 
 ### Authentication
+
 - `POST /register` - Create new user account with validation
 - `POST /token` - Authenticate and obtain JWT tokens
 - `POST /login` - Alternative login endpoint
@@ -36,12 +39,14 @@ The Authentication Service is a production-grade microservice that provides comp
 - `GET /me` - Retrieve authenticated user profile
 
 ### User Management
+
 - `GET /users` - List users (admin only)
 - `PUT /users/{user_id}` - Update user profile
 - `DELETE /users/{user_id}` - Deactivate user account
 - `POST /users/{user_id}/reset-password` - Password reset flow
 
 ### Multi-Factor Authentication
+
 - `POST /mfa/setup` - Initialize MFA for user
 - `POST /mfa/verify` - Verify MFA token
 - `DELETE /mfa/disable` - Disable MFA (requires verification)
@@ -95,6 +100,7 @@ resources:
 ## Installation & Deployment
 
 ### Prerequisites
+
 - Python 3.11+
 - PostgreSQL 12+
 - Redis 6+
@@ -138,6 +144,7 @@ sudo systemctl start auth-service
 ## Testing
 
 ### Unit Tests
+
 ```bash
 # Run all tests
 uv run pytest app/tests/ -v
@@ -147,6 +154,7 @@ uv run pytest app/tests/ --cov=app --cov-report=html
 ```
 
 ### Integration Tests
+
 ```bash
 # Test authentication flow
 uv run pytest app/tests/test_auth_integration.py -v
@@ -156,6 +164,7 @@ uv run pytest app/tests/test_mfa_integration.py -v
 ```
 
 ### Load Testing
+
 ```bash
 # Test authentication endpoints
 python scripts/test_authentication_workflow.py --concurrent 10
@@ -229,6 +238,7 @@ async def setup_mfa():
 ## Monitoring & Observability
 
 ### Health Checks
+
 ```bash
 # Service health
 curl http://localhost:8000/health
@@ -238,6 +248,7 @@ curl http://localhost:8000/health?detailed=true
 ```
 
 ### Metrics
+
 ```bash
 # Prometheus metrics
 curl http://localhost:8000/metrics
@@ -247,6 +258,7 @@ curl http://localhost:8000/api/v1/metrics/auth
 ```
 
 ### Logging
+
 ```bash
 # View service logs
 tail -f /logs/auth_service.log
@@ -258,17 +270,20 @@ grep "AUTH_EVENT" /logs/auth_service.log
 ## Security Considerations
 
 ### Password Policy
+
 - Minimum 8 characters
 - Must contain uppercase, lowercase, number, and special character
 - Password history: Last 5 passwords cannot be reused
 - Password expiration: 90 days (configurable)
 
 ### Rate Limiting
+
 - Login attempts: 5 per 15 minutes per IP
 - Registration: 3 per hour per IP
 - Password reset: 3 per hour per email
 
 ### Session Security
+
 - JWT tokens signed with HS256
 - Refresh tokens stored securely with rotation
 - CSRF protection for state-changing operations
@@ -279,6 +294,7 @@ grep "AUTH_EVENT" /logs/auth_service.log
 ### Common Issues
 
 #### Database Connection Errors
+
 ```bash
 # Check PostgreSQL connectivity
 pg_isready -h localhost -p 5432
@@ -288,6 +304,7 @@ psql -h localhost -U postgres -l | grep acgs_auth
 ```
 
 #### JWT Token Issues
+
 ```bash
 # Verify JWT configuration
 python -c "
@@ -299,6 +316,7 @@ print('Algorithm:', settings.ALGORITHM)
 ```
 
 #### MFA Setup Problems
+
 ```bash
 # Check TOTP library installation
 python -c "import pyotp; print('TOTP library available')"
@@ -310,6 +328,7 @@ ntpdate -s time.nist.gov
 ### Performance Optimization
 
 #### Database Optimization
+
 ```sql
 -- Add indexes for common queries
 CREATE INDEX idx_users_username ON users(username);
@@ -318,6 +337,7 @@ CREATE INDEX idx_auth_events_timestamp ON auth_events(timestamp);
 ```
 
 #### Redis Caching
+
 ```bash
 # Monitor Redis performance
 redis-cli info stats

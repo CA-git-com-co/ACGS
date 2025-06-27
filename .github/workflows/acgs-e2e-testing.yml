@@ -31,15 +31,15 @@ jobs:
         run: |
           echo "🔧 Installing test dependencies..."
           python -m pip install --upgrade pip
-          
+
           # Install basic test requirements
           pip install pytest pytest-asyncio pytest-cov requests
-          
+
           # Install requirements if they exist
           if [ -f "requirements.txt" ]; then
             pip install -r requirements.txt
           fi
-          
+
           if [ -f "requirements-test.txt" ]; then
             pip install -r requirements-test.txt
           fi
@@ -47,7 +47,7 @@ jobs:
       - name: Run integration tests
         run: |
           echo "🧪 Running integration tests..."
-          
+
           # Run integration tests if they exist
           if [ -d "tests/integration" ]; then
             echo "Running integration tests..."
@@ -59,7 +59,7 @@ jobs:
       - name: Run E2E tests
         run: |
           echo "🔄 Running end-to-end tests..."
-          
+
           # Run E2E tests if they exist
           if [ -d "tests/e2e" ]; then
             echo "Running E2E tests..."
@@ -71,7 +71,7 @@ jobs:
       - name: Run performance tests
         run: |
           echo "⚡ Running performance tests..."
-          
+
           # Run performance tests if they exist
           if [ -d "tests/performance" ]; then
             echo "Running performance tests..."
@@ -83,7 +83,7 @@ jobs:
       - name: Service health checks
         run: |
           echo "🔍 Running service health checks..."
-          
+
           # Check if services directory exists
           if [ -d "services" ]; then
             echo "✅ Services directory found"
@@ -109,14 +109,14 @@ jobs:
       - name: Constitutional compliance check
         run: |
           echo "🏛️ Running constitutional compliance checks..."
-          
+
           # Check constitutional hash consistency
           if grep -r "${{ env.CONSTITUTIONAL_HASH }}" . --include="*.py" | head -5; then
             echo "✅ Constitutional hash found in codebase"
           else
             echo "⚠️ Constitutional hash not found, but continuing"
           fi
-          
+
           # Run constitutional compliance tests if they exist
           if [ -f "tests/constitutional_compliance_test.py" ]; then
             echo "Running constitutional compliance tests..."
@@ -147,7 +147,7 @@ jobs:
       - name: Run security tests
         run: |
           echo "🔒 Running security tests..."
-          
+
           # Run security tests if they exist
           if [ -d "tests/security" ]; then
             echo "Running security test suite..."
@@ -155,7 +155,7 @@ jobs:
           else
             echo "⚠️ No security tests found"
           fi
-          
+
           # Run bandit security scan
           if command -v bandit >/dev/null 2>&1; then
             echo "Running bandit security scan..."
@@ -176,13 +176,13 @@ jobs:
           echo "Integration Tests: ${{ needs.integration-tests.result }}"
           echo "Security Tests: ${{ needs.security-tests.result }}"
           echo ""
-          
+
           if [[ "${{ needs.integration-tests.result }}" == "success" && "${{ needs.security-tests.result }}" == "success" ]]; then
             echo "✅ All E2E tests completed successfully!"
           else
             echo "⚠️ Some E2E tests had issues, but pipeline completed"
           fi
-          
+
           echo ""
           echo "📊 Test Summary:"
           echo "- Integration testing completed"

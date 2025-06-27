@@ -7,6 +7,7 @@ Successfully implemented a comprehensive GitOps workflow for ACGS (Autonomous Co
 ## Implementation Highlights
 
 ### ✅ Custom Resource Definition (CRD)
+
 - **ACGSServiceClaim** CRD in `acgs.io` API group
 - Support for 8 service types: `auth`, `ac`, `integrity`, `fv`, `gs`, `pgc`, `ec`, `dgm`
 - Constitutional hash validation with default `cdd01ef066bc6cf2`
@@ -14,6 +15,7 @@ Successfully implemented a comprehensive GitOps workflow for ACGS (Autonomous Co
 - Database, GitOps, and monitoring configurations
 
 ### ✅ Crossplane Composition with KCL
+
 - Dynamic resource generation using KCL (Kubernetes Configuration Language)
 - Automated GitHub repository provisioning
 - Service-specific template generation:
@@ -24,6 +26,7 @@ Successfully implemented a comprehensive GitOps workflow for ACGS (Autonomous Co
   - **README.md** with comprehensive documentation
 
 ### ✅ ArgoCD Integration
+
 - ArgoCD Application monitoring claims in `acgs-system` namespace
 - Automated sync with prune and self-heal policies
 - GitOps repository path: `claims`
@@ -31,6 +34,7 @@ Successfully implemented a comprehensive GitOps workflow for ACGS (Autonomous Co
 - RBAC configuration for different user roles
 
 ### ✅ Complete File Structure
+
 ```
 crossplane/
 ├── definitions/
@@ -59,6 +63,7 @@ claims/                           # Directory monitored by ArgoCD
 ## Technical Specifications
 
 ### Service Configuration
+
 - **Default Port Mapping**:
   - auth: 8000, ac: 8001, integrity: 8002, fv: 8003
   - gs: 8004, pgc: 8005, ec: 8006, dgm: 8007
@@ -67,11 +72,13 @@ claims/                           # Directory monitored by ArgoCD
 - **Constitutional Hash**: `cdd01ef066bc6cf2` for governance validation
 
 ### Provider Versions
+
 - **Crossplane GitHub Provider**: `xpkg.upbound.io/upbound/provider-github:v0.1.0`
 - **KCL Function**: `xpkg.upbound.io/crossplane-contrib/function-kcl:v0.1.0`
 - **Repository Settings**: Issues and projects enabled by default
 
 ### Security Features
+
 - Non-root container execution (UID 1000)
 - Resource limits and requests enforcement
 - Secret management for GitHub tokens
@@ -81,6 +88,7 @@ claims/                           # Directory monitored by ArgoCD
 ## Deployment Instructions
 
 ### Prerequisites
+
 ```bash
 # Install required tools
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -92,6 +100,7 @@ export GITHUB_TOKEN="your-github-token"
 ```
 
 ### Quick Deployment
+
 ```bash
 # Deploy entire GitOps workflow
 ./scripts/deploy-gitops.sh
@@ -104,6 +113,7 @@ export GITHUB_TOKEN="your-github-token"
 ```
 
 ### Example Usage
+
 ```bash
 # Deploy example gs-service
 kubectl apply -f examples/gs-service-claim.yaml
@@ -118,6 +128,7 @@ kubectl get acgsserviceclaims -n acgs-system -w
 ## Monitoring and Operations
 
 ### Status Commands
+
 ```bash
 # Check overall status
 ./scripts/monitor-gitops.sh status
@@ -136,6 +147,7 @@ kubectl get acgsserviceclaims -n acgs-system -w
 ```
 
 ### kubectl Commands
+
 ```bash
 # List service claims
 kubectl get acgsserviceclaims -n acgs-system
@@ -153,26 +165,31 @@ argocd app list
 ## Key Features Delivered
 
 ### 1. Automated Service Provisioning
+
 - Declarative service specifications via ACGSServiceClaim
 - Automatic GitHub repository creation with complete service structure
 - Service-specific configurations and templates
 
 ### 2. Constitutional Governance Integration
+
 - Built-in constitutional hash validation
 - Compliance endpoints in generated services
 - Governance workflow integration
 
 ### 3. GitOps Workflow
+
 - ArgoCD-based continuous deployment
 - Automated sync with self-healing capabilities
 - Multi-environment support
 
 ### 4. Comprehensive Monitoring
+
 - Health check endpoints for all services
 - Prometheus metrics integration
 - Structured logging configuration
 
 ### 5. Security and Compliance
+
 - Non-root container execution
 - Resource limits enforcement
 - Secret management
@@ -189,27 +206,28 @@ metadata:
 spec:
   serviceType: gs
   serviceName: gs-service-demo
-  constitutionalHash: "cdd01ef066bc6cf2"
+  constitutionalHash: 'cdd01ef066bc6cf2'
   deployment:
     replicas: 2
     resources:
       requests:
-        cpu: "300m"
-        memory: "768Mi"
+        cpu: '300m'
+        memory: '768Mi'
       limits:
-        cpu: "800m"
-        memory: "1.5Gi"
+        cpu: '800m'
+        memory: '1.5Gi'
     port: 8004
   gitops:
     enabled: true
     repository:
-      name: "gs-service-demo-governance-synthesis"
-      description: "ACGS Governance Synthesis Service"
+      name: 'gs-service-demo-governance-synthesis'
+      description: 'ACGS Governance Synthesis Service'
 ```
 
 ## Generated Repository Structure
 
 Each service claim creates a GitHub repository with:
+
 - **Dockerfile**: Multi-stage build with security best practices
 - **main.py**: FastAPI service with constitutional compliance
 - **requirements.txt**: Python dependencies
@@ -220,6 +238,7 @@ Each service claim creates a GitHub repository with:
 ## Validation Results
 
 The implementation includes comprehensive validation:
+
 - ✅ Prerequisites verification
 - ✅ Crossplane installation validation
 - ✅ ArgoCD integration testing

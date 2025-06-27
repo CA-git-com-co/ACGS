@@ -33,10 +33,10 @@ jobs:
         id: dockerfile_check
         run: |
           echo "🔍 Checking for Dockerfile in service: ${{ matrix.service }}"
-          
+
           # Check various possible locations for Dockerfiles
           DOCKERFILE_FOUND=false
-          
+
           # Check core services
           if [ -f "services/core/${{ matrix.service }}/Dockerfile" ]; then
             echo "dockerfile_path=services/core/${{ matrix.service }}/Dockerfile" >> $GITHUB_OUTPUT
@@ -58,7 +58,7 @@ jobs:
             echo "context=services/platform/${{ matrix.service }}/${{ matrix.service }}_service" >> $GITHUB_OUTPUT
             DOCKERFILE_FOUND=true
           fi
-          
+
           if [ "$DOCKERFILE_FOUND" = true ]; then
             echo "dockerfile_exists=true" >> $GITHUB_OUTPUT
             echo "✅ Dockerfile found for ${{ matrix.service }}"

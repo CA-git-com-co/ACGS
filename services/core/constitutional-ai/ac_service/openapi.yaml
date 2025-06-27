@@ -3,12 +3,12 @@ info:
   title: ACGS-PGP Constitutional AI Service API
   description: |
     Constitutional AI Service for the ACGS-PGP (Autonomous Constitutional Governance System - Policy Generation Platform).
-    
+
     This service provides advanced constitutional analysis, compliance validation, formal verification integration, 
     and real-time constitutional violation detection with sophisticated governance capabilities.
-    
+
     **Constitutional Hash**: `cdd01ef066bc6cf2`
-    
+
     **Core Features**:
     - Multi-dimensional constitutional fidelity analysis
     - Formal verification integration with mathematical proofs
@@ -16,7 +16,7 @@ info:
     - AI model integration (Google Gemini, DeepSeek-R1, NVIDIA Qwen)
     - Collective Constitutional AI with democratic principle sourcing
     - Comprehensive audit logging and compliance tracking
-    
+
   version: 3.0.0
   contact:
     name: ACGS Constitutional AI Team
@@ -51,16 +51,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/HealthResponse'
               example:
-                status: "healthy"
-                service: "ac_service"
-                version: "3.0.0"
+                status: 'healthy'
+                service: 'ac_service'
+                version: '3.0.0'
                 timestamp: 1750820294.86
-                constitutional_hash: "cdd01ef066bc6cf2"
-                compliance_engine: "operational"
+                constitutional_hash: 'cdd01ef066bc6cf2'
+                compliance_engine: 'operational'
                 ai_models:
-                  gemini: "connected"
-                  deepseek: "connected"
-                  nvidia_qwen: "connected"
+                  gemini: 'connected'
+                  deepseek: 'connected'
+                  nvidia_qwen: 'connected'
 
   /metrics:
     get:
@@ -106,16 +106,16 @@ paths:
               $ref: '#/components/schemas/ConstitutionalComplianceRequest'
             example:
               policy:
-                id: "pol_123"
-                title: "Privacy Protection Policy"
-                content: "Policy content..."
-                category: "privacy"
-                impact_level: "high"
-              validation_mode: "comprehensive"
+                id: 'pol_123'
+                title: 'Privacy Protection Policy'
+                content: 'Policy content...'
+                category: 'privacy'
+                impact_level: 'high'
+              validation_mode: 'comprehensive'
               include_reasoning: true
               principles:
-                - id: "CONST-001"
-                  name: "Democratic Participation"
+                - id: 'CONST-001'
+                  name: 'Democratic Participation'
       responses:
         '200':
           description: Constitutional validation completed

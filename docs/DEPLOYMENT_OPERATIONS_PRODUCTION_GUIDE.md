@@ -2,7 +2,7 @@
 
 **Version**: 3.0.0  
 **Last Updated**: 2025-06-24  
-**Target Audience**: DevOps Engineers, System Administrators, Production Teams  
+**Target Audience**: DevOps Engineers, System Administrators, Production Teams
 
 ## Overview
 
@@ -15,14 +15,14 @@ This guide provides comprehensive deployment and operations procedures for ACGS 
 **Services**: Auth (8000), AC (8001), Integrity (8002)  
 **Deployment Status**: ✅ **Approved for Production**  
 **Monitoring**: Full production monitoring required  
-**SLA**: Production-grade service level agreements apply  
+**SLA**: Production-grade service level agreements apply
 
 ### 🧪 Prototype Services
 
 **Services**: FV (8003), GS (8004), PGC (8005), EC (8006)  
 **Deployment Status**: 🧪 **Development/Testing Only**  
 **Monitoring**: Development monitoring sufficient  
-**SLA**: No production SLA guarantees  
+**SLA**: No production SLA guarantees
 
 ---
 
@@ -31,6 +31,7 @@ This guide provides comprehensive deployment and operations procedures for ACGS 
 ### Infrastructure Requirements
 
 #### Production Services (Auth, AC, Integrity)
+
 ```yaml
 # Minimum production requirements
 resources:
@@ -53,6 +54,7 @@ availability:
 ```
 
 #### Prototype Services (FV, GS, PGC, EC)
+
 ```yaml
 # Development/testing requirements
 resources:
@@ -77,6 +79,7 @@ availability:
 ### Network Architecture
 
 #### Production Network Segmentation
+
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Load Balancer │    │  Production DMZ │    │ Internal Network│
@@ -100,6 +103,7 @@ availability:
 ### ✅ Auth Service (Port 8000) - Production Deployment
 
 #### Pre-deployment Checklist
+
 - [ ] Database migrations completed
 - [ ] Redis cluster configured
 - [ ] SSL certificates installed
@@ -109,6 +113,7 @@ availability:
 - [ ] Monitoring alerts configured
 
 #### Deployment Commands
+
 ```bash
 # Production deployment
 kubectl apply -f k8s/production/auth-service/
@@ -125,6 +130,7 @@ curl -f https://auth.acgs.prod/health
 ```
 
 #### Post-deployment Validation
+
 ```bash
 # Functional testing
 ./tests/production/auth_service_smoke_test.sh
@@ -142,6 +148,7 @@ curl -f https://auth.acgs.prod/health
 ### ✅ AC Service (Port 8001) - Production Deployment
 
 #### Constitutional Compliance Setup
+
 ```bash
 # Initialize constitutional state
 ./scripts/initialize_constitutional_state.sh --hash cdd01ef066bc6cf2
@@ -154,6 +161,7 @@ curl -f https://auth.acgs.prod/health
 ```
 
 #### Deployment and Validation
+
 ```bash
 # Deploy AC service
 kubectl apply -f k8s/production/ac-service/
@@ -170,6 +178,7 @@ curl -X POST https://ac.acgs.prod/api/v1/constitutional/validate \
 ### ✅ Integrity Service (Port 8002) - Production Deployment
 
 #### Cryptographic Setup
+
 ```bash
 # Initialize PGP keys
 ./scripts/initialize_pgp_keys.sh
@@ -188,6 +197,7 @@ curl -X POST https://ac.acgs.prod/api/v1/constitutional/validate \
 ### 🧪 Development/Testing Deployment
 
 #### Prototype Service Warnings
+
 ```bash
 # Display prototype warnings before deployment
 echo "⚠️  WARNING: Deploying prototype services"
@@ -199,6 +209,7 @@ echo "   - Use for development and testing only"
 ```
 
 #### FV Service (Port 8003) - Prototype Deployment
+
 ```bash
 # Deploy with prototype configuration
 kubectl apply -f k8s/development/fv-service/
@@ -211,6 +222,7 @@ curl http://fv.acgs.dev/api/v1/enterprise/status
 ```
 
 #### GS Service (Port 8004) - Prototype Deployment
+
 ```bash
 # Deploy in minimal mode
 kubectl apply -f k8s/development/gs-service/
@@ -229,6 +241,7 @@ curl http://gs.acgs.dev/api/v1/status
 ### Production Configuration
 
 #### Environment Variables (Production Services)
+
 ```bash
 # Auth Service
 export AUTH_DATABASE_URL="postgresql://auth:***@db.prod:5432/auth"
@@ -248,6 +261,7 @@ export INTEGRITY_ENVIRONMENT="production"
 ```
 
 #### Development Configuration (Prototype Services)
+
 ```bash
 # FV Service
 export FV_Z3_MOCK_MODE="true"
@@ -261,6 +275,7 @@ export GS_ENVIRONMENT="development"
 ```
 
 ### Configuration Validation
+
 ```bash
 # Validate production configuration
 ./scripts/validate_production_config.sh
@@ -276,6 +291,7 @@ export GS_ENVIRONMENT="development"
 ### Production Monitoring (Auth, AC, Integrity)
 
 #### Metrics Collection
+
 ```yaml
 # Prometheus metrics
 metrics:
@@ -294,17 +310,18 @@ dashboards:
 ```
 
 #### Alerting Rules
+
 ```yaml
 # Critical alerts
 alerts:
   - name: ServiceDown
     condition: up == 0
     severity: critical
-    
+
   - name: HighErrorRate
     condition: error_rate > 0.05
     severity: warning
-    
+
   - name: ConstitutionalViolation
     condition: constitutional_violations > 0
     severity: critical
@@ -313,6 +330,7 @@ alerts:
 ### Development Monitoring (Prototype Services)
 
 #### Basic Monitoring
+
 ```yaml
 # Development metrics
 metrics:
@@ -335,6 +353,7 @@ alerts:
 ### Production Operations
 
 #### Daily Operations Checklist
+
 - [ ] Check service health status
 - [ ] Review error logs and alerts
 - [ ] Validate constitutional compliance metrics
@@ -344,6 +363,7 @@ alerts:
 - [ ] Check resource utilization
 
 #### Weekly Operations
+
 - [ ] Performance trend analysis
 - [ ] Security vulnerability assessment
 - [ ] Capacity planning review
@@ -353,6 +373,7 @@ alerts:
 ### Prototype Operations
 
 #### Development Operations
+
 - [ ] Check prototype service status
 - [ ] Review mock component functionality
 - [ ] Assess production readiness progress
@@ -366,16 +387,19 @@ alerts:
 ### Production Services Recovery
 
 #### Recovery Time Objectives (RTO)
+
 - **Auth Service**: 15 minutes
 - **AC Service**: 30 minutes (constitutional state critical)
 - **Integrity Service**: 15 minutes (data integrity critical)
 
 #### Recovery Point Objectives (RPO)
+
 - **Database**: 5 minutes (continuous replication)
 - **Configuration**: 1 hour (version controlled)
 - **Audit Logs**: 0 minutes (real-time replication)
 
 #### Recovery Procedures
+
 ```bash
 # Emergency recovery
 ./scripts/emergency_recovery.sh --service auth
@@ -390,6 +414,7 @@ alerts:
 ### Prototype Services Recovery
 
 #### Development Recovery
+
 - **RTO**: Best effort (no SLA)
 - **RPO**: Development data acceptable loss
 - **Procedure**: Redeploy from latest development branch
@@ -401,7 +426,9 @@ alerts:
 ### Production Service Issues
 
 #### Common Issues and Solutions
+
 1. **Service Unavailable**:
+
    ```bash
    kubectl get pods -l app=auth-service
    kubectl describe pod <pod-name>
@@ -409,6 +436,7 @@ alerts:
    ```
 
 2. **Constitutional Compliance Failures**:
+
    ```bash
    ./scripts/diagnose_constitutional_issues.sh
    ./scripts/reset_constitutional_state.sh
@@ -423,6 +451,7 @@ alerts:
 ### Prototype Service Issues
 
 #### Common Prototype Issues
+
 1. **Mock Component Failures**: Expected behavior, check prototype status
 2. **Router Import Issues**: Known limitation, use minimal mode
 3. **Debug Mode Active**: Expected for development, not for production

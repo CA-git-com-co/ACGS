@@ -25,41 +25,48 @@ curl -H "Authorization: Bearer <JWT_TOKEN>" \
 
 ## 🏗️ Service Architecture
 
-| Service | Port | Base URL | Implementation Status | Interactive Docs |
-|---------|------|----------|----------------------|------------------|
-| Authentication | 8000 | `/api/auth/` | ✅ **Production Ready** | `/docs` |
-| Constitutional AI | 8001 | `/api/constitutional-ai/` | ✅ **Production Ready** | `/docs` |
-| Integrity | 8002 | `/api/integrity/` | ✅ **Production Ready** | `/docs` |
-| Formal Verification | 8003 | `/api/formal-verification/` | 🧪 **Prototype** | `/docs` |
-| Governance Synthesis | 8004 | `/api/governance-synthesis/` | 🧪 **Prototype** | `/docs` |
-| Policy Governance | 8005 | `/api/policy-governance/` | 🧪 **Prototype** | `/docs` |
-| Evolutionary Computation | 8006 | `/api/evolutionary-computation/` | 🧪 **Prototype** | `/docs` |
-| Darwin Gödel Machine | 8007 | `/api/dgm/` | 🧪 **Prototype** | `/docs` |
+| Service                  | Port | Base URL                         | Implementation Status   | Interactive Docs |
+| ------------------------ | ---- | -------------------------------- | ----------------------- | ---------------- |
+| Authentication           | 8000 | `/api/auth/`                     | ✅ **Production Ready** | `/docs`          |
+| Constitutional AI        | 8001 | `/api/constitutional-ai/`        | ✅ **Production Ready** | `/docs`          |
+| Integrity                | 8002 | `/api/integrity/`                | ✅ **Production Ready** | `/docs`          |
+| Formal Verification      | 8003 | `/api/formal-verification/`      | 🧪 **Prototype**        | `/docs`          |
+| Governance Synthesis     | 8004 | `/api/governance-synthesis/`     | 🧪 **Prototype**        | `/docs`          |
+| Policy Governance        | 8005 | `/api/policy-governance/`        | 🧪 **Prototype**        | `/docs`          |
+| Evolutionary Computation | 8006 | `/api/evolutionary-computation/` | 🧪 **Prototype**        | `/docs`          |
+| Darwin Gödel Machine     | 8007 | `/api/dgm/`                      | 🧪 **Prototype**        | `/docs`          |
 
 ### Implementation Status Notes
+
 - **✅ Production Ready**: Fully implemented with comprehensive features and production-grade security
 - **🧪 Prototype**: Functional implementation with limitations (mock components, debug modes, disabled features)
 
 ## 📋 Common Response Formats
 
 ### Success Response
+
 ```json
 {
   "success": true,
-  "data": { /* response data */ },
+  "data": {
+    /* response data */
+  },
   "timestamp": "2025-06-23T10:30:00Z",
   "request_id": "req_123456789"
 }
 ```
 
 ### Error Response
+
 ```json
 {
   "success": false,
   "error": {
     "code": "VALIDATION_ERROR",
     "message": "Invalid input parameters",
-    "details": { /* error details */ }
+    "details": {
+      /* error details */
+    }
   },
   "timestamp": "2025-06-23T10:30:00Z",
   "request_id": "req_123456789"
@@ -69,6 +76,7 @@ curl -H "Authorization: Bearer <JWT_TOKEN>" \
 ## 🔑 Authentication Service (Port 8000)
 
 ### Login
+
 ```bash
 POST /api/auth/login
 Content-Type: application/json
@@ -80,12 +88,14 @@ Content-Type: application/json
 ```
 
 ### Refresh Token
+
 ```bash
 POST /api/auth/refresh
 Authorization: Bearer <JWT_TOKEN>
 ```
 
 ### User Profile
+
 ```bash
 GET /api/auth/profile
 Authorization: Bearer <JWT_TOKEN>
@@ -94,6 +104,7 @@ Authorization: Bearer <JWT_TOKEN>
 ## 🏛️ Constitutional AI Service (Port 8001)
 
 ### Get Constitutional Principles
+
 ```bash
 GET /api/constitutional-ai/principles
 Authorization: Bearer <JWT_TOKEN>
@@ -116,6 +127,7 @@ Authorization: Bearer <JWT_TOKEN>
 ```
 
 ### Create Constitutional Principle
+
 ```bash
 POST /api/constitutional-ai/principles
 Authorization: Bearer <JWT_TOKEN>
@@ -130,6 +142,7 @@ Content-Type: application/json
 ```
 
 ### Validate Policy Against Constitution
+
 ```bash
 POST /api/constitutional-ai/validate
 Authorization: Bearer <JWT_TOKEN>
@@ -158,6 +171,7 @@ Content-Type: application/json
 ## 🔍 Integrity Service (Port 8002)
 
 ### Check System Integrity
+
 ```bash
 GET /api/integrity/check
 Authorization: Bearer <JWT_TOKEN>
@@ -178,6 +192,7 @@ Authorization: Bearer <JWT_TOKEN>
 ```
 
 ### Verify Data Integrity
+
 ```bash
 POST /api/integrity/verify
 Authorization: Bearer <JWT_TOKEN>
@@ -193,6 +208,7 @@ Content-Type: application/json
 ## ✅ Formal Verification Service (Port 8003)
 
 ### Verify Policy Formally
+
 ```bash
 POST /api/formal-verification/verify
 Authorization: Bearer <JWT_TOKEN>
@@ -217,6 +233,7 @@ Content-Type: application/json
 ```
 
 ### Get Verification History
+
 ```bash
 GET /api/formal-verification/history?policy_id=<ID>
 Authorization: Bearer <JWT_TOKEN>
@@ -225,6 +242,7 @@ Authorization: Bearer <JWT_TOKEN>
 ## 🧠 Governance Synthesis Service (Port 8004)
 
 ### Synthesize Policy
+
 ```bash
 POST /api/governance-synthesis/synthesize
 Authorization: Bearer <JWT_TOKEN>
@@ -250,6 +268,7 @@ Content-Type: application/json
 ```
 
 ### Multi-Model Validation
+
 ```bash
 POST /api/governance-synthesis/validate-multi-model
 Authorization: Bearer <JWT_TOKEN>
@@ -265,6 +284,7 @@ Content-Type: application/json
 ## 📋 Policy Governance Service (Port 8005)
 
 ### Create Policy Proposal
+
 ```bash
 POST /api/policy-governance/proposals
 Authorization: Bearer <JWT_TOKEN>
@@ -280,6 +300,7 @@ Content-Type: application/json
 ```
 
 ### Vote on Proposal
+
 ```bash
 POST /api/policy-governance/proposals/{proposal_id}/vote
 Authorization: Bearer <JWT_TOKEN>
@@ -293,6 +314,7 @@ Content-Type: application/json
 ```
 
 ### Get Policy Status
+
 ```bash
 GET /api/policy-governance/policies/{policy_id}/status
 Authorization: Bearer <JWT_TOKEN>
@@ -317,6 +339,7 @@ Authorization: Bearer <JWT_TOKEN>
 ## 🧬 Evolutionary Computation Service (Port 8006)
 
 ### Evolve Policy
+
 ```bash
 POST /api/evolutionary-computation/evolve
 Authorization: Bearer <JWT_TOKEN>
@@ -331,6 +354,7 @@ Content-Type: application/json
 ```
 
 ### Get Evolution History
+
 ```bash
 GET /api/evolutionary-computation/evolution/{evolution_id}/history
 Authorization: Bearer <JWT_TOKEN>
@@ -339,6 +363,7 @@ Authorization: Bearer <JWT_TOKEN>
 ## 🤖 Darwin Gödel Machine Service (Port 8007)
 
 ### Submit Learning Task
+
 ```bash
 POST /api/dgm/learn
 Authorization: Bearer <JWT_TOKEN>
@@ -355,6 +380,7 @@ Content-Type: application/json
 ```
 
 ### Get Learning Progress
+
 ```bash
 GET /api/dgm/tasks/{task_id}/progress
 Authorization: Bearer <JWT_TOKEN>
@@ -375,31 +401,34 @@ Authorization: Bearer <JWT_TOKEN>
 ## 📊 Common Query Parameters
 
 ### Pagination
+
 ```bash
 GET /api/service/endpoint?page=1&limit=20&sort=created_at&order=desc
 ```
 
 ### Filtering
+
 ```bash
 GET /api/service/endpoint?status=active&category=governance&created_after=2025-01-01
 ```
 
 ### Response Format
+
 ```bash
 GET /api/service/endpoint?format=json&include=metadata&fields=id,title,status
 ```
 
 ## 🚨 Error Codes
 
-| Code | Description | HTTP Status |
-|------|-------------|-------------|
-| `AUTH_REQUIRED` | Authentication required | 401 |
-| `INSUFFICIENT_PERMISSIONS` | Insufficient permissions | 403 |
-| `RESOURCE_NOT_FOUND` | Resource not found | 404 |
-| `VALIDATION_ERROR` | Input validation failed | 400 |
-| `RATE_LIMIT_EXCEEDED` | Rate limit exceeded | 429 |
-| `INTERNAL_ERROR` | Internal server error | 500 |
-| `SERVICE_UNAVAILABLE` | Service temporarily unavailable | 503 |
+| Code                       | Description                     | HTTP Status |
+| -------------------------- | ------------------------------- | ----------- |
+| `AUTH_REQUIRED`            | Authentication required         | 401         |
+| `INSUFFICIENT_PERMISSIONS` | Insufficient permissions        | 403         |
+| `RESOURCE_NOT_FOUND`       | Resource not found              | 404         |
+| `VALIDATION_ERROR`         | Input validation failed         | 400         |
+| `RATE_LIMIT_EXCEEDED`      | Rate limit exceeded             | 429         |
+| `INTERNAL_ERROR`           | Internal server error           | 500         |
+| `SERVICE_UNAVAILABLE`      | Service temporarily unavailable | 503         |
 
 ## 📞 Support and Resources
 

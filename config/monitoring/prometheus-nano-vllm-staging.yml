@@ -27,7 +27,7 @@ scrape_configs:
     static_configs:
       - targets: ['nano-vllm-reasoning-staging:9090']
     metrics_path: /metrics
-    scrape_interval: 5s  # High frequency for AI governance
+    scrape_interval: 5s # High frequency for AI governance
     scrape_timeout: 4s
     honor_labels: true
     params:
@@ -122,7 +122,6 @@ scrape_configs:
     static_configs:
       - targets: ['nano-vllm-reasoning-staging:9100']
     scrape_interval: 15s
-
 # Remote write configuration for long-term storage (optional)
 # remote_write:
 #   - url: "http://prometheus-remote-storage:9090/api/v1/write"

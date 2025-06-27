@@ -45,6 +45,7 @@ This guide provides comprehensive instructions for deploying the Kimi-Dev-72B mo
 ### Environment Setup
 
 1. **Install NVIDIA Container Toolkit**:
+
    ```bash
    distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
    curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
@@ -117,6 +118,7 @@ For software engineering tasks and SWE-bench evaluation:
 ```
 
 This script will:
+
 - Create a conda environment with Python 3.12
 - Clone the Kimi-Dev repository
 - Download SWE-bench repository structure (~10GB)
@@ -314,6 +316,7 @@ curl -X POST "http://localhost:8007/v1/chat/completions" \
 **Symptoms**: Container exits immediately or fails to start
 
 **Solutions**:
+
 ```bash
 # Check logs
 ./scripts/manage_kimi_service.sh logs
@@ -333,6 +336,7 @@ docker-compose -f infrastructure/docker/docker-compose.kimi.yml config
 **Symptoms**: Service starts but model doesn't load
 
 **Solutions**:
+
 ```bash
 # Check HuggingFace token
 echo $HUGGINGFACE_API_KEY
@@ -350,6 +354,7 @@ nvidia-smi
 **Symptoms**: Out of memory errors or slow performance
 
 **Solutions**:
+
 ```bash
 # Reduce GPU memory utilization
 export KIMI_GPU_MEMORY_UTILIZATION=0.8
@@ -369,6 +374,7 @@ export KIMI_CPU_OFFLOAD_GB=8
 **Symptoms**: Requests timeout or take too long
 
 **Solutions**:
+
 ```bash
 # Check service load
 ./scripts/manage_kimi_service.sh status
@@ -469,6 +475,7 @@ After successful deployment:
 6. **Implement disaster recovery**
 
 For advanced configuration and production deployment, see:
+
 - [ACGS Production Deployment Guide](ACGS_PRODUCTION_DEPLOYMENT.md)
 - [Monitoring and Alerting Guide](MONITORING_GUIDE.md)
 - [Security Configuration Guide](SECURITY_GUIDE.md)

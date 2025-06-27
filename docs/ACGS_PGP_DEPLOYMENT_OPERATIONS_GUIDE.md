@@ -14,6 +14,7 @@ This comprehensive guide provides step-by-step instructions for deploying and op
 ### System Requirements
 
 #### Production Environment
+
 - **Operating System**: Ubuntu 22.04+ LTS or RHEL 9+
 - **Memory**: 32GB RAM (64GB for high-load environments)
 - **CPU**: 16 cores with AVX2 support (Intel Xeon or AMD EPYC)
@@ -22,6 +23,7 @@ This comprehensive guide provides step-by-step instructions for deploying and op
 - **GPU**: Optional NVIDIA A100/H100 for AI acceleration
 
 #### Minimum Development Environment
+
 - **Memory**: 16GB RAM
 - **CPU**: 8 cores (x86_64)
 - **Storage**: 100GB SSD
@@ -30,6 +32,7 @@ This comprehensive guide provides step-by-step instructions for deploying and op
 ### Software Dependencies
 
 #### Core Infrastructure
+
 ```bash
 # Container Runtime
 Docker 24.0+ with BuildKit support
@@ -54,10 +57,11 @@ Grafana 10.0+
 ```
 
 #### AI Model Dependencies
+
 ```bash
 # AI Model APIs (Required)
 Google Gemini API access
-DeepSeek API access  
+DeepSeek API access
 NVIDIA API access
 OpenAI API access (fallback)
 
@@ -73,26 +77,26 @@ Open Policy Agent (OPA) 0.58+
 
 ### Service Overview
 
-| Service | Port | Purpose | CPU Limit | Memory Limit | Health Check |
-|---------|------|---------|-----------|--------------|--------------|
-| **auth-service** | 8000 | Authentication & Authorization | 500m | 1Gi | `/health` |
-| **ac-service** | 8001 | Constitutional AI & Compliance | 500m | 1Gi | `/health` |
-| **integrity-service** | 8002 | Cryptographic Integrity & PGP | 500m | 1Gi | `/health` |
-| **fv-service** | 8003 | Formal Verification & Validation | 500m | 1Gi | `/health` |
-| **gs-service** | 8004 | Governance Synthesis & AI Models | 500m | 1Gi | `/health` |
-| **pgc-service** | 8005 | Policy Governance & Enforcement | 500m | 1Gi | `/health` |
-| **ec-service** | 8006 | Evolutionary Computation & WINA | 500m | 1Gi | `/health` |
+| Service               | Port | Purpose                          | CPU Limit | Memory Limit | Health Check |
+| --------------------- | ---- | -------------------------------- | --------- | ------------ | ------------ |
+| **auth-service**      | 8000 | Authentication & Authorization   | 500m      | 1Gi          | `/health`    |
+| **ac-service**        | 8001 | Constitutional AI & Compliance   | 500m      | 1Gi          | `/health`    |
+| **integrity-service** | 8002 | Cryptographic Integrity & PGP    | 500m      | 1Gi          | `/health`    |
+| **fv-service**        | 8003 | Formal Verification & Validation | 500m      | 1Gi          | `/health`    |
+| **gs-service**        | 8004 | Governance Synthesis & AI Models | 500m      | 1Gi          | `/health`    |
+| **pgc-service**       | 8005 | Policy Governance & Enforcement  | 500m      | 1Gi          | `/health`    |
+| **ec-service**        | 8006 | Evolutionary Computation & WINA  | 500m      | 1Gi          | `/health`    |
 
 ### Infrastructure Components
 
-| Component | Port | Purpose | Configuration |
-|-----------|------|---------|---------------|
-| **PostgreSQL** | 5432 | Primary database | Multi-schema, connection pooling |
-| **Redis** | 6379 | Cache & sessions | Persistence, 6GB memory limit |
-| **OPA** | 8181 | Policy enforcement | Required for PGC service |
-| **Prometheus** | 9090 | Metrics collection | 15-day retention, 2GB storage |
-| **Grafana** | 3000 | Monitoring dashboards | Pre-configured ACGS dashboards |
-| **Nginx** | 80/443 | Load balancer & SSL termination | Rate limiting, SSL/TLS |
+| Component      | Port   | Purpose                         | Configuration                    |
+| -------------- | ------ | ------------------------------- | -------------------------------- |
+| **PostgreSQL** | 5432   | Primary database                | Multi-schema, connection pooling |
+| **Redis**      | 6379   | Cache & sessions                | Persistence, 6GB memory limit    |
+| **OPA**        | 8181   | Policy enforcement              | Required for PGC service         |
+| **Prometheus** | 9090   | Metrics collection              | 15-day retention, 2GB storage    |
+| **Grafana**    | 3000   | Monitoring dashboards           | Pre-configured ACGS dashboards   |
+| **Nginx**      | 80/443 | Load balancer & SSL termination | Rate limiting, SSL/TLS           |
 
 ## Step-by-Step Deployment
 
@@ -253,6 +257,7 @@ docker-compose -f monitoring/docker-compose.yml up -d
 ### Health Monitoring
 
 #### Automated Health Checks
+
 ```bash
 # Comprehensive health check
 ./scripts/health_check.sh
@@ -268,6 +273,7 @@ done
 ```
 
 #### Performance Monitoring
+
 ```bash
 # Check response times
 ./scripts/performance_testing.py --quick
@@ -282,6 +288,7 @@ curl -s http://localhost:8001/api/v1/fidelity/metrics | jq '.compliance_score'
 ### Emergency Procedures
 
 #### Emergency Shutdown (<30min RTO)
+
 ```bash
 # Immediate emergency shutdown
 ./scripts/emergency_rollback.py --immediate --reason "security_incident"
@@ -294,6 +301,7 @@ curl -s http://localhost:8001/api/v1/fidelity/metrics | jq '.compliance_score'
 ```
 
 #### Disaster Recovery
+
 ```bash
 # Create full system backup
 ./scripts/backup_system.py --full --encrypt
@@ -308,6 +316,7 @@ curl -s http://localhost:8001/api/v1/fidelity/metrics | jq '.compliance_score'
 ### Maintenance Procedures
 
 #### Regular Maintenance
+
 ```bash
 # Daily health check (automated via cron)
 0 6 * * * /opt/acgs-pgp/scripts/daily_health_check.sh
@@ -320,6 +329,7 @@ curl -s http://localhost:8001/api/v1/fidelity/metrics | jq '.compliance_score'
 ```
 
 #### Service Updates
+
 ```bash
 # Rolling update with zero downtime
 ./scripts/rolling_update.sh --version 3.1.0 --validate
@@ -334,6 +344,7 @@ curl -s http://localhost:8001/api/v1/fidelity/metrics | jq '.compliance_score'
 ## Security Operations
 
 ### Security Monitoring
+
 ```bash
 # Security audit
 ./scripts/security_audit.py --comprehensive
@@ -346,6 +357,7 @@ curl -s http://localhost:8001/api/v1/compliance/violations | jq '.data.recent_vi
 ```
 
 ### Incident Response
+
 ```bash
 # Security incident response
 ./scripts/incident_response.py --type security --severity high
@@ -362,6 +374,7 @@ curl -s http://localhost:8001/api/v1/compliance/violations | jq '.data.recent_vi
 ### Common Issues
 
 #### PGC Service Degraded
+
 ```bash
 # Check OPA status
 curl http://localhost:8181/health
@@ -374,6 +387,7 @@ curl http://localhost:8005/health
 ```
 
 #### Constitutional Hash Mismatch
+
 ```bash
 # Verify constitutional hash
 ./scripts/verify_constitutional_hash.py
@@ -383,6 +397,7 @@ curl http://localhost:8005/health
 ```
 
 #### AI Model API Failures
+
 ```bash
 # Test AI model connectivity
 ./scripts/test_ai_models.py --all
@@ -397,6 +412,7 @@ curl http://localhost:8005/health
 ## Performance Optimization
 
 ### Database Optimization
+
 ```bash
 # Optimize database performance
 ./scripts/optimize_database.py --analyze --vacuum
@@ -409,6 +425,7 @@ curl http://localhost:8005/health
 ```
 
 ### Caching Optimization
+
 ```bash
 # Monitor cache hit rates
 redis-cli info stats | grep hit_rate
@@ -423,18 +440,21 @@ redis-cli info stats | grep hit_rate
 ## Support and Documentation
 
 ### Documentation Resources
+
 - **API Documentation**: `/docs/api/` - Complete API specifications
 - **Architecture Guide**: `/docs/architecture/` - System design documentation
 - **Security Guide**: `/docs/security/` - Security procedures and policies
 - **Troubleshooting**: `/docs/troubleshooting/` - Common issues and solutions
 
 ### Support Contacts
+
 - **Emergency**: Use emergency procedures above
 - **Technical Issues**: Check service logs in `/logs/`
 - **Configuration**: Review `/config/` directory
 - **Monitoring**: Access Grafana at `https://your-domain.com:3000`
 
 ### Logging and Diagnostics
+
 ```bash
 # View service logs
 tail -f /logs/auth_service.log

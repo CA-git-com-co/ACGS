@@ -2,30 +2,30 @@
 # Production-ready configuration with ACGS integration
 
 service:
-  name: "kimi-dev-72b"
-  version: "1.0.0"
-  environment: "${ENVIRONMENT:-development}"
+  name: 'kimi-dev-72b'
+  version: '1.0.0'
+  environment: '${ENVIRONMENT:-development}'
   port: 8007
-  host: "0.0.0.0"
-  
+  host: '0.0.0.0'
+
   # Service discovery
   discovery:
     enabled: true
-    consul_url: "${CONSUL_URL:-http://localhost:8500}"
-    health_check_interval: "30s"
+    consul_url: '${CONSUL_URL:-http://localhost:8500}'
+    health_check_interval: '30s'
     tags:
-      - "ai-model"
-      - "llm"
-      - "kimi"
-      - "acgs-integrated"
+      - 'ai-model'
+      - 'llm'
+      - 'kimi'
+      - 'acgs-integrated'
 
 # Model configuration
 model:
-  name: "moonshotai/Kimi-Dev-72B"
-  served_model_name: "kimi-dev-72b"
+  name: 'moonshotai/Kimi-Dev-72B'
+  served_model_name: 'kimi-dev-72b'
   trust_remote_code: true
-  revision: "main"
-  
+  revision: 'main'
+
   # Performance settings
   max_model_len: 32768
   max_num_seqs: 256
@@ -33,10 +33,10 @@ model:
   gpu_memory_utilization: 0.9
   swap_space: 4
   cpu_offload_gb: 0
-  
+
   # Quantization (if needed)
-  quantization: null  # Options: "awq", "gptq", "squeezellm", "fp8"
-  
+  quantization: null # Options: "awq", "gptq", "squeezellm", "fp8"
+
   # Engine settings
   engine_use_ray: false
   disable_log_stats: false
@@ -46,16 +46,16 @@ model:
 api:
   # OpenAI compatibility
   openai_compatible: true
-  api_keys: []  # Add API keys if authentication is required
-  
+  api_keys: [] # Add API keys if authentication is required
+
   # Request limits
   max_concurrent_requests: 100
   request_timeout: 300
-  
+
   # Response settings
-  response_role: "assistant"
+  response_role: 'assistant'
   chat_template: null
-  
+
   # Streaming
   enable_streaming: true
   stream_timeout: 60
@@ -63,33 +63,33 @@ api:
 # ACGS Integration
 acgs:
   enabled: true
-  
+
   # Service URLs
-  auth_service_url: "${AUTH_SERVICE_URL:-http://localhost:8000}"
-  ac_service_url: "${AC_SERVICE_URL:-http://localhost:8001}"
-  gs_service_url: "${GS_SERVICE_URL:-http://localhost:8004}"
-  pgc_service_url: "${PGC_SERVICE_URL:-http://localhost:8005}"
-  
+  auth_service_url: '${AUTH_SERVICE_URL:-http://localhost:8000}'
+  ac_service_url: '${AC_SERVICE_URL:-http://localhost:8001}'
+  gs_service_url: '${GS_SERVICE_URL:-http://localhost:8004}'
+  pgc_service_url: '${PGC_SERVICE_URL:-http://localhost:8005}'
+
   # Constitutional compliance
   constitutional_compliance:
     enabled: true
     threshold: 0.95
     check_requests: true
     check_responses: true
-    violation_action: "log"  # Options: "log", "block", "modify"
-  
+    violation_action: 'log' # Options: "log", "block", "modify"
+
   # Governance workflow
   governance_workflow:
     enabled: true
-    validation_endpoint: "/validate"
+    validation_endpoint: '/validate'
     approval_required: false
-    
+
   # Authentication
   authentication:
     enabled: true
-    jwt_secret: "${JWT_SECRET:-your-secret-key}"
+    jwt_secret: '${JWT_SECRET:-your-secret-key}'
     token_expiry: 3600
-    
+
   # Rate limiting
   rate_limiting:
     enabled: true
@@ -102,48 +102,48 @@ monitoring:
   metrics:
     enabled: true
     port: 9090
-    path: "/metrics"
+    path: '/metrics'
     include_model_metrics: true
     include_gpu_metrics: true
-    
+
   # Health checks
   health:
     enabled: true
-    path: "/health"
-    detailed_path: "/health/detailed"
-    
+    path: '/health'
+    detailed_path: '/health/detailed'
+
   # Logging
   logging:
-    level: "${LOG_LEVEL:-INFO}"
-    format: "json"
-    file: "/app/logs/kimi-service.log"
-    max_size: "100MB"
+    level: '${LOG_LEVEL:-INFO}'
+    format: 'json'
+    file: '/app/logs/kimi-service.log'
+    max_size: '100MB'
     max_files: 5
-    
+
   # Tracing
   tracing:
-    enabled: "${TRACING_ENABLED:-false}"
-    jaeger_endpoint: "${JAEGER_ENDPOINT:-http://localhost:14268/api/traces}"
-    service_name: "kimi-dev-72b"
+    enabled: '${TRACING_ENABLED:-false}'
+    jaeger_endpoint: '${JAEGER_ENDPOINT:-http://localhost:14268/api/traces}'
+    service_name: 'kimi-dev-72b'
 
 # Security
 security:
   # TLS/SSL
   tls:
     enabled: false
-    cert_file: "/app/ssl/cert.pem"
-    key_file: "/app/ssl/key.pem"
-    
+    cert_file: '/app/ssl/cert.pem'
+    key_file: '/app/ssl/key.pem'
+
   # CORS
   cors:
     enabled: true
-    allowed_origins: 
-      - "http://localhost:3000"
-      - "http://localhost:8080"
-      - "${FRONTEND_URL:-http://localhost:3000}"
-    allowed_methods: ["GET", "POST", "OPTIONS"]
-    allowed_headers: ["*"]
-    
+    allowed_origins:
+      - 'http://localhost:3000'
+      - 'http://localhost:8080'
+      - '${FRONTEND_URL:-http://localhost:3000}'
+    allowed_methods: ['GET', 'POST', 'OPTIONS']
+    allowed_headers: ['*']
+
   # Security headers
   security_headers:
     enabled: true
@@ -156,15 +156,15 @@ cache:
   # Model cache
   model_cache:
     enabled: true
-    directory: "/root/.cache/huggingface"
-    max_size: "200GB"
+    directory: '/root/.cache/huggingface'
+    max_size: '200GB'
     cleanup_threshold: 0.9
-    
+
   # Response cache
   response_cache:
     enabled: true
-    backend: "redis"
-    redis_url: "${REDIS_URL:-redis://localhost:6379/7}"
+    backend: 'redis'
+    redis_url: '${REDIS_URL:-redis://localhost:6379/7}'
     ttl: 3600
     max_entries: 10000
 
@@ -172,15 +172,15 @@ cache:
 resources:
   # Memory management
   memory:
-    max_heap_size: "24GB"
+    max_heap_size: '24GB'
     gc_threshold: 0.8
-    
+
   # GPU management
   gpu:
-    devices: "all"
+    devices: 'all'
     memory_fraction: 0.9
     allow_growth: true
-    
+
   # CPU management
   cpu:
     workers: 1
@@ -188,7 +188,7 @@ resources:
 
 # Development settings
 development:
-  debug: "${DEBUG:-false}"
+  debug: '${DEBUG:-false}'
   auto_reload: false
   profiling: false
   mock_responses: false

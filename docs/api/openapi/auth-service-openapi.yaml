@@ -262,7 +262,7 @@ components:
           example: auth_service
         version:
           type: string
-          example: "3.0.0"
+          example: '3.0.0'
         timestamp:
           type: string
           format: date-time

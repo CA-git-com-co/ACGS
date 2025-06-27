@@ -14,13 +14,22 @@ export function LandingPage() {
             <span className="text-xl font-bold">ACGS</span>
           </div>
           <nav className="hidden md:flex space-x-6">
-            <Link href="#features" className="text-sm font-medium hover:text-blue-600 transition-colors">
+            <Link
+              href="#features"
+              className="text-sm font-medium hover:text-blue-600 transition-colors"
+            >
               Features
             </Link>
-            <Link href="#about" className="text-sm font-medium hover:text-blue-600 transition-colors">
+            <Link
+              href="#about"
+              className="text-sm font-medium hover:text-blue-600 transition-colors"
+            >
               About
             </Link>
-            <Link href="#contact" className="text-sm font-medium hover:text-blue-600 transition-colors">
+            <Link
+              href="#contact"
+              className="text-sm font-medium hover:text-blue-600 transition-colors"
+            >
               Contact
             </Link>
           </nav>
@@ -38,8 +47,8 @@ export function LandingPage() {
             <span className="block text-blue-600">Governance System</span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            A unified platform for constitutional governance, policy management, and democratic participation
-            powered by blockchain technology.
+            A unified platform for constitutional governance, policy management, and democratic
+            participation powered by blockchain technology.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/login">
@@ -59,11 +68,10 @@ export function LandingPage() {
       <section id="features" className="py-20">
         <div className="container">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Comprehensive Governance Tools
-            </h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Comprehensive Governance Tools</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Everything you need to manage constitutional governance, from policy creation to amendment tracking.
+              Everything you need to manage constitutional governance, from policy creation to
+              amendment tracking.
             </p>
           </div>
 
@@ -77,7 +85,8 @@ export function LandingPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-4">
-                  Create, review, and manage policies with comprehensive version control and approval workflows.
+                  Create, review, and manage policies with comprehensive version control and
+                  approval workflows.
                 </p>
                 <ul className="space-y-2">
                   <li className="flex items-center gap-2 text-sm">
@@ -105,7 +114,8 @@ export function LandingPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-4">
-                  Propose, review, and track constitutional amendments with transparent voting mechanisms.
+                  Propose, review, and track constitutional amendments with transparent voting
+                  mechanisms.
                 </p>
                 <ul className="space-y-2">
                   <li className="flex items-center gap-2 text-sm">
@@ -133,7 +143,8 @@ export function LandingPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-4">
-                  Enable public consultation and feedback collection for transparent democratic processes.
+                  Enable public consultation and feedback collection for transparent democratic
+                  processes.
                 </p>
                 <ul className="space-y-2">
                   <li className="flex items-center gap-2 text-sm">
@@ -165,25 +176,58 @@ export function LandingPage() {
                 <span className="font-bold">ACGS</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Autonomous Constitutional Governance System for transparent and efficient democratic processes.
+                Autonomous Constitutional Governance System for transparent and efficient democratic
+                processes.
               </p>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Platform</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="#" className="hover:text-foreground transition-colors">Dashboard</Link></li>
-                <li><Link href="#" className="hover:text-foreground transition-colors">Policies</Link></li>
-                <li><Link href="#" className="hover:text-foreground transition-colors">Amendments</Link></li>
-                <li><Link href="#" className="hover:text-foreground transition-colors">Reports</Link></li>
+                <li>
+                  <Link href="#" className="hover:text-foreground transition-colors">
+                    Dashboard
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:text-foreground transition-colors">
+                    Policies
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:text-foreground transition-colors">
+                    Amendments
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:text-foreground transition-colors">
+                    Reports
+                  </Link>
+                </li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Resources</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="#" className="hover:text-foreground transition-colors">Documentation</Link></li>
-                <li><Link href="#" className="hover:text-foreground transition-colors">API Reference</Link></li>
-                <li><Link href="#" className="hover:text-foreground transition-colors">Support</Link></li>
-                <li><Link href="#" className="hover:text-foreground transition-colors">Status</Link></li>
+                <li>
+                  <Link href="#" className="hover:text-foreground transition-colors">
+                    Documentation
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:text-foreground transition-colors">
+                    API Reference
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:text-foreground transition-colors">
+                    Support
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:text-foreground transition-colors">
+                    Status
+                  </Link>
+                </li>
               </ul>
             </div>
             <div>

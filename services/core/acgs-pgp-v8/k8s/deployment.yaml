@@ -266,6 +266,7 @@ data:
       rate_limiting_enabled: true
       rate_limit_requests_per_minute: 100
 
+
 # NOTE: Secrets are now managed externally via External Secrets Operator
 # See secrets-management.yaml for secure secret configuration
 

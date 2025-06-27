@@ -15,17 +15,17 @@ spec:
         app: dragonflydb
     spec:
       containers:
-      - name: dragonflydb
-        image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
-        ports:
-        - containerPort: 6379
-        resources:
-          limits:
-            memory: "2Gi"
-            cpu: "1000m"
-          requests:
-            memory: "1Gi"
-            cpu: "500m"
+        - name: dragonflydb
+          image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
+          ports:
+            - containerPort: 6379
+          resources:
+            limits:
+              memory: '2Gi'
+              cpu: '1000m'
+            requests:
+              memory: '1Gi'
+              cpu: '500m'
 ---
 apiVersion: v1
 kind: Service
@@ -37,6 +37,6 @@ spec:
   selector:
     app: dragonflydb
   ports:
-  - protocol: TCP
-    port: 6379
-    targetPort: 6379
+    - protocol: TCP
+      port: 6379
+      targetPort: 6379

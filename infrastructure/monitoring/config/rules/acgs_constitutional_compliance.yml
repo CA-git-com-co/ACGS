@@ -1,42 +1,42 @@
 groups:
-- interval: 30s
-  name: acgs_constitutional_compliance
-  rules:
-  - alert: ConstitutionalComplianceBelow75Percent
-    annotations:
-      description: Service {{ $labels.service }} has constitutional compliance score
-        of {{ $value }} which is below the required 0.75 threshold
-      summary: Constitutional compliance below 75% threshold
-    expr: acgs_constitutional_compliance_score < 0.75
-    for: 1m
-    labels:
-      constitutional_hash: cdd01ef066bc6cf2
-      severity: critical
-  - alert: ConstitutionalHashMismatch
-    annotations:
-      description: Service {{ $labels.service }} has invalid constitutional hash
-      summary: Constitutional hash validation failed
-    expr: acgs_constitutional_hash_valid == 0
-    for: 0s
-    labels:
-      constitutional_hash: cdd01ef066bc6cf2
-      severity: critical
-  - alert: DGMSafetyPatternViolation
-    annotations:
-      description: Service {{ $labels.service }} DGM safety score is {{ $value }}
-      summary: DGM safety pattern violation detected
-    expr: acgs_dgm_safety_score < 0.95
-    for: 2m
-    labels:
-      constitutional_hash: cdd01ef066bc6cf2
-      severity: warning
-  - alert: EmergencyShutdownRequired
-    annotations:
-      description: Service {{ $labels.service }} compliance score {{ $value }} requires
-        immediate emergency shutdown
-      summary: Emergency shutdown required - critical compliance failure
-    expr: acgs_constitutional_compliance_score < 0.5
-    for: 30s
-    labels:
-      constitutional_hash: cdd01ef066bc6cf2
-      severity: critical
+  - interval: 30s
+    name: acgs_constitutional_compliance
+    rules:
+      - alert: ConstitutionalComplianceBelow75Percent
+        annotations:
+          description: Service {{ $labels.service }} has constitutional compliance score
+            of {{ $value }} which is below the required 0.75 threshold
+          summary: Constitutional compliance below 75% threshold
+        expr: acgs_constitutional_compliance_score < 0.75
+        for: 1m
+        labels:
+          constitutional_hash: cdd01ef066bc6cf2
+          severity: critical
+      - alert: ConstitutionalHashMismatch
+        annotations:
+          description: Service {{ $labels.service }} has invalid constitutional hash
+          summary: Constitutional hash validation failed
+        expr: acgs_constitutional_hash_valid == 0
+        for: 0s
+        labels:
+          constitutional_hash: cdd01ef066bc6cf2
+          severity: critical
+      - alert: DGMSafetyPatternViolation
+        annotations:
+          description: Service {{ $labels.service }} DGM safety score is {{ $value }}
+          summary: DGM safety pattern violation detected
+        expr: acgs_dgm_safety_score < 0.95
+        for: 2m
+        labels:
+          constitutional_hash: cdd01ef066bc6cf2
+          severity: warning
+      - alert: EmergencyShutdownRequired
+        annotations:
+          description: Service {{ $labels.service }} compliance score {{ $value }} requires
+            immediate emergency shutdown
+          summary: Emergency shutdown required - critical compliance failure
+        expr: acgs_constitutional_compliance_score < 0.5
+        for: 30s
+        labels:
+          constitutional_hash: cdd01ef066bc6cf2
+          severity: critical

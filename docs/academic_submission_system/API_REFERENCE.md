@@ -26,12 +26,15 @@ class SubmissionValidator:
 ```
 
 **Parameters:**
+
 - `submission_path` (str): Path to the submission directory
 
 **Returns:**
+
 - `SubmissionReport`: Comprehensive validation results
 
 **Example:**
+
 ```python
 validator = SubmissionValidator("/path/to/paper/")
 report = validator.validate_submission()
@@ -56,13 +59,16 @@ class ComplianceChecker:
 ```
 
 **Parameters:**
+
 - `submission_path` (str): Path to the submission directory
 - `venue` (str): Target venue ('arxiv', 'ieee', 'acm')
 
 **Returns:**
+
 - `List[ComplianceResult]`: List of compliance check results
 
 **Example:**
+
 ```python
 checker = ComplianceChecker()
 results = checker.check_compliance("/path/to/paper/", "arxiv")
@@ -123,19 +129,22 @@ Generate markdown validation report.
 
 ```python
 def generate_validation_report(
-    report: SubmissionReport, 
+    report: SubmissionReport,
     output_path: str = None
 ) -> str
 ```
 
 **Parameters:**
+
 - `report` (SubmissionReport): Validation report to format
 - `output_path` (str, optional): Output file path
 
 **Returns:**
+
 - `str`: Path to generated report file
 
 **Example:**
+
 ```python
 from quality_assurance.submission_validator import generate_validation_report
 
@@ -157,11 +166,13 @@ def generate_compliance_report(
 ```
 
 **Parameters:**
+
 - `results` (List[ComplianceResult]): Compliance check results
 - `venue` (str): Target venue name
 - `output_path` (str, optional): Output file path
 
 **Returns:**
+
 - `str`: Path to generated report file
 
 ## Command Line API
@@ -192,11 +203,13 @@ python cli/academic_cli.py validate SUBMISSION_PATH [OPTIONS]
 ```
 
 **Options:**
+
 - `--venue VENUE`: Target venue (default: arxiv)
 - `--output, -o FILE`: Output file for report
 - `--format FORMAT`: Output format (markdown, json, html)
 
 **Examples:**
+
 ```bash
 # Basic validation
 python cli/academic_cli.py validate /path/to/paper/
@@ -209,6 +222,7 @@ python cli/academic_cli.py --verbose validate /path/to/paper/ --venue ieee
 ```
 
 **Exit Codes:**
+
 - `0`: Validation passed (no failures)
 - `1`: Validation failed (one or more failures)
 - `130`: Operation cancelled by user
@@ -222,10 +236,12 @@ python cli/academic_cli.py compliance SUBMISSION_PATH [OPTIONS]
 ```
 
 **Options:**
+
 - `--venue VENUE`: Target venue (arxiv, ieee, acm)
 - `--output, -o FILE`: Output file for report
 
 **Examples:**
+
 ```bash
 # arXiv compliance check
 python cli/academic_cli.py compliance /path/to/paper/ --venue arxiv
@@ -245,11 +261,13 @@ python cli/academic_cli.py status SUBMISSION_PATH
 ```
 
 **Example:**
+
 ```bash
 python cli/academic_cli.py status /path/to/paper/
 ```
 
 **Output:**
+
 ```
 📄 Academic Submission Status
 ==================================================
@@ -277,6 +295,7 @@ python cli/academic_cli.py init SUBMISSION_PATH [OPTIONS]
 ```
 
 **Options:**
+
 - `--template TEMPLATE`: Template type (basic, arxiv, ieee, acm)
 
 #### package
@@ -288,6 +307,7 @@ python cli/academic_cli.py package SUBMISSION_PATH [OPTIONS]
 ```
 
 **Options:**
+
 - `--output, -o FILE`: Output archive file
 - `--venue VENUE`: Target venue for packaging
 
@@ -300,6 +320,7 @@ python cli/academic_cli.py optimize SUBMISSION_PATH [OPTIONS]
 ```
 
 **Options:**
+
 - `--fix-warnings`: Automatically fix common warnings
 - `--backup`: Create backup before optimization
 
@@ -308,6 +329,7 @@ python cli/academic_cli.py optimize SUBMISSION_PATH [OPTIONS]
 ### Base URL
 
 When running the web interface:
+
 ```
 http://localhost:5000
 ```
@@ -323,11 +345,13 @@ Currently no authentication required for local use. For production deployment, i
 Upload and validate academic submission.
 
 **Request:**
+
 - Method: `POST`
 - Content-Type: `multipart/form-data`
 - Body: ZIP file containing submission
 
 **Response:**
+
 ```json
 {
   "submission_id": "20250624_143022",
@@ -340,13 +364,12 @@ Upload and validate academic submission.
       "message": "All required files present"
     }
   ],
-  "recommendations": [
-    "Consider adding more detailed figure captions"
-  ]
+  "recommendations": ["Consider adding more detailed figure captions"]
 }
 ```
 
 **Example:**
+
 ```bash
 curl -X POST -F "file=@submission.zip" http://localhost:5000/api/validate
 ```
@@ -356,9 +379,11 @@ curl -X POST -F "file=@submission.zip" http://localhost:5000/api/validate
 Check compliance for existing submission.
 
 **Request:**
+
 - Method: `POST`
 - Content-Type: `application/json`
 - Body:
+
 ```json
 {
   "submission_id": "20250624_143022",
@@ -367,6 +392,7 @@ Check compliance for existing submission.
 ```
 
 **Response:**
+
 ```json
 {
   "venue": "arxiv",
@@ -381,6 +407,7 @@ Check compliance for existing submission.
 ```
 
 **Example:**
+
 ```bash
 curl -X POST -H "Content-Type: application/json" \
   -d '{"submission_id": "20250624_143022", "venue": "arxiv"}' \
@@ -392,13 +419,16 @@ curl -X POST -H "Content-Type: application/json" \
 Download validation report for submission.
 
 **Parameters:**
+
 - `submission_id`: Unique submission identifier
 
 **Response:**
+
 - Content-Type: `application/octet-stream`
 - Body: Markdown validation report file
 
 **Example:**
+
 ```bash
 curl -O http://localhost:5000/download_report/20250624_143022
 ```
@@ -414,6 +444,7 @@ All API endpoints return appropriate HTTP status codes:
 - `500`: Internal Server Error
 
 Error response format:
+
 ```json
 {
   "error": "Description of the error",
@@ -465,17 +496,20 @@ JSON configuration file with validation settings:
 ### Configuration Options
 
 #### Size Limits
+
 - `size_limits`: Maximum file sizes per venue (bytes)
 - `max_figures`: Maximum number of figures allowed
 - `max_pages`: Maximum page count (if applicable)
 
 #### Content Requirements
+
 - `abstract_limits`: Word count limits for abstracts
 - `required_sections`: Minimum number of sections
 - `require_abstract`: Whether abstract is mandatory
 - `require_keywords`: Whether keywords are required
 
 #### Validation Behavior
+
 - `strict_mode`: Enable stricter validation rules
 - `custom_checks`: Enable/disable optional checks
 - `allowed_formats`: Permitted file formats per venue
@@ -483,6 +517,7 @@ JSON configuration file with validation settings:
 ### Loading Configuration
 
 #### Python API
+
 ```python
 import json
 from pathlib import Path
@@ -497,6 +532,7 @@ validator = SubmissionValidator("/path/to/paper/")
 ```
 
 #### CLI
+
 ```bash
 python cli/academic_cli.py --config custom_config.json validate /path/to/paper/
 ```
@@ -518,6 +554,7 @@ python cli/academic_cli.py validate /path/to/paper/
 ### Exception Classes
 
 #### ValidationError
+
 Raised when validation encounters an error.
 
 ```python
@@ -526,6 +563,7 @@ class ValidationError(Exception):
 ```
 
 #### ComplianceError
+
 Raised when compliance checking fails.
 
 ```python
@@ -534,6 +572,7 @@ class ComplianceError(Exception):
 ```
 
 #### ConfigurationError
+
 Raised when configuration is invalid.
 
 ```python
@@ -606,11 +645,11 @@ def main():
     if len(sys.argv) != 2:
         print("Usage: validate_ci.py <paper_path>")
         sys.exit(1)
-    
+
     paper_path = sys.argv[1]
     validator = SubmissionValidator(paper_path)
     report = validator.validate_submission()
-    
+
     # Output JSON for CI system
     result = {
         "status": report.overall_status,
@@ -618,9 +657,9 @@ def main():
         "passed": len([r for r in report.validation_results if r.status == "PASS"]),
         "failed": len([r for r in report.validation_results if r.status == "FAIL"])
     }
-    
+
     print(json.dumps(result))
-    
+
     # Exit with appropriate code
     sys.exit(0 if result["failed"] == 0 else 1)
 
@@ -641,10 +680,10 @@ class CustomValidator(SubmissionValidator):
         if main_tex.exists():
             with open(main_tex, 'r') as f:
                 content = f.read()
-            
+
             required_keywords = ['machine learning', 'artificial intelligence']
             found_keywords = [kw for kw in required_keywords if kw.lower() in content.lower()]
-            
+
             if len(found_keywords) < len(required_keywords):
                 self.results.append(ValidationResult(
                     check_name="Custom Keywords",
@@ -657,7 +696,7 @@ class CustomValidator(SubmissionValidator):
                     status="PASS",
                     message="All required keywords present"
                 ))
-    
+
     def validate_submission(self):
         """Override to include custom validation."""
         report = super().validate_submission()

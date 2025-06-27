@@ -5,6 +5,7 @@ This guide provides step-by-step instructions for deploying the ACGS GitOps work
 ## Overview
 
 The ACGS GitOps workflow automates service provisioning through:
+
 - **ACGSServiceClaim CRD**: Declarative service specifications
 - **Crossplane Composition**: Automated GitHub repository creation
 - **ArgoCD Integration**: Continuous deployment monitoring
@@ -42,6 +43,7 @@ rm argocd-linux-amd64
 ### GitHub Setup
 
 1. **Create Personal Access Token**:
+
    - Go to GitHub Settings → Developer settings → Personal access tokens
    - Generate token with `repo`, `admin:repo_hook`, `admin:org_hook` permissions
    - Save token securely
@@ -258,18 +260,21 @@ argocd app refresh <app-name>
 ### Common Issues
 
 1. **Provider Not Ready**:
+
    ```bash
    kubectl describe provider provider-github
    kubectl logs -n crossplane-system -l pkg.crossplane.io/provider=github
    ```
 
 2. **GitHub Authentication Errors**:
+
    ```bash
    kubectl get secret github-credentials -n crossplane-system -o yaml
    kubectl describe providerconfig github-provider-config
    ```
 
 3. **Composition Errors**:
+
    ```bash
    kubectl describe composition acgs-service-composition
    kubectl get events --sort-by=.metadata.creationTimestamp
@@ -384,6 +389,7 @@ kubectl delete namespace crossplane-system
 ## Support
 
 For issues and questions:
+
 - Check the troubleshooting section
 - Review Crossplane documentation: https://docs.crossplane.io/
 - Review ArgoCD documentation: https://argo-cd.readthedocs.io/

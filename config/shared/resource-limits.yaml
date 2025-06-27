@@ -6,12 +6,12 @@ metadata:
   name: acgs-resource-limits
   namespace: acgs-system
 data:
-  cpu_request: "200m"
-  cpu_limit: "500m"
-  memory_request: "512Mi"
-  memory_limit: "1Gi"
+  cpu_request: '200m'
+  cpu_limit: '500m'
+  memory_request: '512Mi'
+  memory_limit: '1Gi'
   # Service-specific overrides for high-performance services
-  pgc_service_cpu_limit: "1000m"  # Higher for policy processing
-  pgc_service_memory_limit: "2Gi"  # Higher for OPA integration
-  ac_service_memory_limit: "2Gi"  # Higher for constitutional AI
-  gs_service_memory_limit: "2Gi"  # Higher for multi-model LLM consensus
+  pgc_service_cpu_limit: '1000m' # Higher for policy processing
+  pgc_service_memory_limit: '2Gi' # Higher for OPA integration
+  ac_service_memory_limit: '2Gi' # Higher for constitutional AI
+  gs_service_memory_limit: '2Gi' # Higher for multi-model LLM consensus

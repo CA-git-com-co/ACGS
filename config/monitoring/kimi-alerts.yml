@@ -13,9 +13,9 @@ groups:
           service: kimi-dev-72b
           component: api
         annotations:
-          summary: "Kimi-Dev-72B service is down"
-          description: "The Kimi-Dev-72B service has been down for more than 1 minute"
-          runbook_url: "https://docs.acgs.local/runbooks/kimi-service-down"
+          summary: 'Kimi-Dev-72B service is down'
+          description: 'The Kimi-Dev-72B service has been down for more than 1 minute'
+          runbook_url: 'https://docs.acgs.local/runbooks/kimi-service-down'
 
       # High response time
       - alert: KimiHighResponseTime
@@ -26,9 +26,9 @@ groups:
           service: kimi-dev-72b
           component: api
         annotations:
-          summary: "Kimi service high response time"
-          description: "95th percentile response time is {{ $value }}s for the last 5 minutes"
-          runbook_url: "https://docs.acgs.local/runbooks/kimi-high-latency"
+          summary: 'Kimi service high response time'
+          description: '95th percentile response time is {{ $value }}s for the last 5 minutes'
+          runbook_url: 'https://docs.acgs.local/runbooks/kimi-high-latency'
 
       # High error rate
       - alert: KimiHighErrorRate
@@ -39,9 +39,9 @@ groups:
           service: kimi-dev-72b
           component: api
         annotations:
-          summary: "Kimi service high error rate"
-          description: "Error rate is {{ $value | humanizePercentage }} for the last 5 minutes"
-          runbook_url: "https://docs.acgs.local/runbooks/kimi-high-error-rate"
+          summary: 'Kimi service high error rate'
+          description: 'Error rate is {{ $value | humanizePercentage }} for the last 5 minutes'
+          runbook_url: 'https://docs.acgs.local/runbooks/kimi-high-error-rate'
 
   - name: kimi-resource-usage
     rules:
@@ -54,9 +54,9 @@ groups:
           service: kimi-dev-72b
           component: container
         annotations:
-          summary: "Kimi service high CPU usage"
-          description: "CPU usage is {{ $value }}% for the last 5 minutes"
-          runbook_url: "https://docs.acgs.local/runbooks/kimi-high-cpu"
+          summary: 'Kimi service high CPU usage'
+          description: 'CPU usage is {{ $value }}% for the last 5 minutes'
+          runbook_url: 'https://docs.acgs.local/runbooks/kimi-high-cpu'
 
       # High memory usage
       - alert: KimiHighMemoryUsage
@@ -67,9 +67,9 @@ groups:
           service: kimi-dev-72b
           component: container
         annotations:
-          summary: "Kimi service high memory usage"
-          description: "Memory usage is {{ $value }}% of limit for the last 3 minutes"
-          runbook_url: "https://docs.acgs.local/runbooks/kimi-high-memory"
+          summary: 'Kimi service high memory usage'
+          description: 'Memory usage is {{ $value }}% of limit for the last 3 minutes'
+          runbook_url: 'https://docs.acgs.local/runbooks/kimi-high-memory'
 
       # Container restart
       - alert: KimiContainerRestart
@@ -80,9 +80,9 @@ groups:
           service: kimi-dev-72b
           component: container
         annotations:
-          summary: "Kimi container restarted"
-          description: "Kimi container has restarted {{ $value }} times in the last 10 minutes"
-          runbook_url: "https://docs.acgs.local/runbooks/kimi-container-restart"
+          summary: 'Kimi container restarted'
+          description: 'Kimi container has restarted {{ $value }} times in the last 10 minutes'
+          runbook_url: 'https://docs.acgs.local/runbooks/kimi-container-restart'
 
   - name: kimi-gpu-monitoring
     rules:
@@ -95,9 +95,9 @@ groups:
           service: kimi-dev-72b
           component: gpu
         annotations:
-          summary: "Kimi GPU high memory usage"
-          description: "GPU memory usage is {{ $value }}% for the last 2 minutes"
-          runbook_url: "https://docs.acgs.local/runbooks/kimi-gpu-memory"
+          summary: 'Kimi GPU high memory usage'
+          description: 'GPU memory usage is {{ $value }}% for the last 2 minutes'
+          runbook_url: 'https://docs.acgs.local/runbooks/kimi-gpu-memory'
 
       # GPU utilization
       - alert: KimiGPULowUtilization
@@ -108,9 +108,9 @@ groups:
           service: kimi-dev-72b
           component: gpu
         annotations:
-          summary: "Kimi GPU low utilization"
-          description: "GPU utilization is {{ $value }}% for the last 10 minutes"
-          runbook_url: "https://docs.acgs.local/runbooks/kimi-gpu-utilization"
+          summary: 'Kimi GPU low utilization'
+          description: 'GPU utilization is {{ $value }}% for the last 10 minutes'
+          runbook_url: 'https://docs.acgs.local/runbooks/kimi-gpu-utilization'
 
       # GPU temperature
       - alert: KimiGPUHighTemperature
@@ -121,9 +121,9 @@ groups:
           service: kimi-dev-72b
           component: gpu
         annotations:
-          summary: "Kimi GPU high temperature"
-          description: "GPU temperature is {{ $value }}°C"
-          runbook_url: "https://docs.acgs.local/runbooks/kimi-gpu-temperature"
+          summary: 'Kimi GPU high temperature'
+          description: 'GPU temperature is {{ $value }}°C'
+          runbook_url: 'https://docs.acgs.local/runbooks/kimi-gpu-temperature'
 
   - name: kimi-model-performance
     rules:
@@ -136,9 +136,9 @@ groups:
           service: kimi-dev-72b
           component: model
         annotations:
-          summary: "Kimi model loading is slow"
-          description: "Model loading took {{ $value }}s"
-          runbook_url: "https://docs.acgs.local/runbooks/kimi-slow-loading"
+          summary: 'Kimi model loading is slow'
+          description: 'Model loading took {{ $value }}s'
+          runbook_url: 'https://docs.acgs.local/runbooks/kimi-slow-loading'
 
       # Token generation rate
       - alert: KimiLowTokenGenerationRate
@@ -149,9 +149,9 @@ groups:
           service: kimi-dev-72b
           component: model
         annotations:
-          summary: "Kimi low token generation rate"
-          description: "Token generation rate is {{ $value }} tokens/sec for the last 5 minutes"
-          runbook_url: "https://docs.acgs.local/runbooks/kimi-low-token-rate"
+          summary: 'Kimi low token generation rate'
+          description: 'Token generation rate is {{ $value }} tokens/sec for the last 5 minutes'
+          runbook_url: 'https://docs.acgs.local/runbooks/kimi-low-token-rate'
 
       # Queue length
       - alert: KimiHighQueueLength
@@ -162,9 +162,9 @@ groups:
           service: kimi-dev-72b
           component: queue
         annotations:
-          summary: "Kimi high request queue length"
-          description: "Request queue length is {{ $value }}"
-          runbook_url: "https://docs.acgs.local/runbooks/kimi-high-queue"
+          summary: 'Kimi high request queue length'
+          description: 'Request queue length is {{ $value }}'
+          runbook_url: 'https://docs.acgs.local/runbooks/kimi-high-queue'
 
   - name: kimi-constitutional-compliance
     rules:
@@ -177,9 +177,9 @@ groups:
           service: kimi-dev-72b
           component: governance
         annotations:
-          summary: "Kimi constitutional compliance violation"
-          description: "{{ $value }} constitutional violations detected in the last 5 minutes"
-          runbook_url: "https://docs.acgs.local/runbooks/constitutional-violation"
+          summary: 'Kimi constitutional compliance violation'
+          description: '{{ $value }} constitutional violations detected in the last 5 minutes'
+          runbook_url: 'https://docs.acgs.local/runbooks/constitutional-violation'
 
       # Low compliance score
       - alert: KimiLowComplianceScore
@@ -190,9 +190,9 @@ groups:
           service: kimi-dev-72b
           component: governance
         annotations:
-          summary: "Kimi low constitutional compliance score"
-          description: "Constitutional compliance score is {{ $value }}"
-          runbook_url: "https://docs.acgs.local/runbooks/low-compliance-score"
+          summary: 'Kimi low constitutional compliance score'
+          description: 'Constitutional compliance score is {{ $value }}'
+          runbook_url: 'https://docs.acgs.local/runbooks/low-compliance-score'
 
   - name: kimi-integration-health
     rules:
@@ -205,9 +205,9 @@ groups:
           service: kimi-dev-72b
           component: integration
         annotations:
-          summary: "Kimi ACGS integration failures"
-          description: "{{ $value }} integration failures with ACGS services in the last 5 minutes"
-          runbook_url: "https://docs.acgs.local/runbooks/kimi-integration-failure"
+          summary: 'Kimi ACGS integration failures'
+          description: '{{ $value }} integration failures with ACGS services in the last 5 minutes'
+          runbook_url: 'https://docs.acgs.local/runbooks/kimi-integration-failure'
 
       # Authentication failures
       - alert: KimiAuthenticationFailures
@@ -218,6 +218,6 @@ groups:
           service: kimi-dev-72b
           component: auth
         annotations:
-          summary: "Kimi authentication failures"
-          description: "{{ $value }} authentication failures in the last 5 minutes"
-          runbook_url: "https://docs.acgs.local/runbooks/kimi-auth-failures"
+          summary: 'Kimi authentication failures'
+          description: '{{ $value }} authentication failures in the last 5 minutes'
+          runbook_url: 'https://docs.acgs.local/runbooks/kimi-auth-failures'

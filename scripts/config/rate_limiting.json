@@ -19,11 +19,7 @@
       "policy_submissions": 36000
     }
   },
-  "ip_whitelist": [
-    "127.0.0.1",
-    "localhost",
-    "::1"
-  ],
+  "ip_whitelist": ["127.0.0.1", "localhost", "::1"],
   "blocked_ips": [],
   "performance_optimized": true,
   "target_rps": 1000,

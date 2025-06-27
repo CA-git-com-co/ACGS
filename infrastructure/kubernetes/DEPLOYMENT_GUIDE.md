@@ -1,16 +1,20 @@
 # ACGS-PGP Kubernetes Deployment Guide
 
 ## Overview
+
 This guide provides step-by-step instructions for deploying the ACGS-PGP system to Kubernetes, following the ACGS-1 Lite architecture with constitutional AI constraints and DGM safety patterns.
 
 ## Prerequisites
+
 - Kubernetes cluster (v1.24+) with kubectl configured
 - Minimum 8 CPU cores and 16GB RAM available
 - Persistent storage support (for CockroachDB and monitoring)
 - Network policies support (recommended)
 
 ## Architecture Validation
+
 The deployment includes:
+
 - **7 Core Services**: auth:8000, ac:8001, integrity:8002, fv:8003, gs:8004, pgc:8005, ec:8006
 - **Constitutional Hash**: `cdd01ef066bc6cf2`
 - **Resource Limits**: 200m/500m CPU, 512Mi/1Gi memory per service
@@ -20,6 +24,7 @@ The deployment includes:
 ## Deployment Order
 
 ### Phase 1: Infrastructure Foundation
+
 ```bash
 # 1. Apply Linkerd CRDs (if using service mesh)
 kubectl apply -f infrastructure/linkerd/linkerd-crds.yaml
@@ -38,6 +43,7 @@ kubectl wait --for=condition=ready pod -l app=dragonflydb -n acgs-system --timeo
 ```
 
 ### Phase 2: Policy and Monitoring
+
 ```bash
 # 4. Deploy OPA for policy enforcement
 kubectl apply -f infrastructure/kubernetes/opa.yaml
@@ -52,6 +58,7 @@ kubectl wait --for=condition=ready pod -l app=prometheus -n acgs-system --timeou
 ```
 
 ### Phase 3: Core Services Deployment
+
 ```bash
 # 6. Deploy services in dependency order
 kubectl apply -f infrastructure/kubernetes/services/auth-service.yaml
@@ -70,6 +77,7 @@ kubectl wait --for=condition=ready pod -l app.kubernetes.io/part-of=acgs-system 
 ## Health Validation
 
 ### Service Health Checks
+
 ```bash
 # Check all pods are running
 kubectl get pods -n acgs-system
@@ -82,6 +90,7 @@ kubectl logs -l app=constitutional-ai-service -n acgs-system --tail=50
 ```
 
 ### Performance Validation
+
 ```bash
 # Test response times (requires cluster access)
 kubectl run test-pod --image=curlimages/curl --rm -it --restart=Never -- \
@@ -95,12 +104,15 @@ kubectl port-forward svc/prometheus 9090:9090 -n acgs-system &
 ## Monitoring Setup
 
 ### Prometheus Queries
+
 - Constitutional compliance: `constitutional_compliance_score > 0.95`
 - Response time: `http_request_duration_seconds{quantile="0.95"} < 2.0`
 - Service availability: `up{job=~"acgs-.*"} == 1`
 
 ### Grafana Dashboards
+
 Access Grafana at `http://localhost:3000` (admin/admin) after port-forwarding:
+
 ```bash
 kubectl port-forward svc/grafana 3000:3000 -n acgs-system
 ```
@@ -108,6 +120,7 @@ kubectl port-forward svc/grafana 3000:3000 -n acgs-system
 ## Emergency Procedures
 
 ### Emergency Shutdown (<30min RTO)
+
 ```bash
 # Scale down all services immediately
 kubectl scale deployment --all --replicas=0 -n acgs-system
@@ -117,6 +130,7 @@ kubectl get pods -n acgs-system
 ```
 
 ### Rollback Procedure
+
 ```bash
 # Rollback specific service
 kubectl rollout undo deployment/constitutional-ai-service -n acgs-system
@@ -128,12 +142,14 @@ kubectl rollout status deployment/constitutional-ai-service -n acgs-system
 ## Troubleshooting
 
 ### Common Issues
+
 1. **Pod CrashLoopBackOff**: Check logs with `kubectl logs <pod-name> -n acgs-system`
 2. **Service Unreachable**: Verify service and endpoint with `kubectl describe svc <service-name> -n acgs-system`
 3. **Constitutional Compliance Low**: Check OPA policies and model responses
 4. **High Response Times**: Check resource limits and scaling
 
 ### Debug Commands
+
 ```bash
 # Get detailed pod information
 kubectl describe pod <pod-name> -n acgs-system
@@ -146,6 +162,7 @@ kubectl get events -n acgs-system --sort-by='.lastTimestamp'
 ```
 
 ## Next Steps
+
 1. Configure external access (Ingress/LoadBalancer)
 2. Set up automated backups for CockroachDB
 3. Configure log aggregation
@@ -153,6 +170,7 @@ kubectl get events -n acgs-system --sort-by='.lastTimestamp'
 5. Set up disaster recovery procedures
 
 ## Security Considerations
+
 - All services run as non-root users
 - Network policies restrict inter-service communication
 - Secrets are encrypted at rest

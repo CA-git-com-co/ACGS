@@ -7,48 +7,48 @@ services:
     container_name: acgs-alertmanager
     image: prom/alertmanager:latest
     networks:
-    - acgs-monitoring
+      - acgs-monitoring
     ports:
-    - 9093:9093
+      - 9093:9093
     volumes:
-    - ./config/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ./config/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
   grafana:
     container_name: acgs-grafana
     depends_on:
-    - prometheus
+      - prometheus
     environment:
       CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
       GF_SECURITY_ADMIN_PASSWORD: acgs_admin_2025
       GF_USERS_ALLOW_SIGN_UP: 'false'
     image: grafana/grafana:latest
     networks:
-    - acgs-monitoring
+      - acgs-monitoring
     ports:
-    - 3000:3000
+      - 3000:3000
     volumes:
-    - grafana_data:/var/lib/grafana
-    - ./config/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
-    - ./config/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - grafana_data:/var/lib/grafana
+      - ./config/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./config/grafana/datasources:/etc/grafana/provisioning/datasources:ro
   prometheus:
     command:
-    - --config.file=/etc/prometheus/prometheus.yml
-    - --storage.tsdb.path=/prometheus
-    - --web.console.libraries=/etc/prometheus/console_libraries
-    - --web.console.templates=/etc/prometheus/consoles
-    - --storage.tsdb.retention.time=200h
-    - --web.enable-lifecycle
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.console.libraries=/etc/prometheus/console_libraries
+      - --web.console.templates=/etc/prometheus/consoles
+      - --storage.tsdb.retention.time=200h
+      - --web.enable-lifecycle
     container_name: acgs-prometheus
     environment:
       CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
     image: prom/prometheus:latest
     networks:
-    - acgs-monitoring
+      - acgs-monitoring
     ports:
-    - 9090:9090
+      - 9090:9090
     volumes:
-    - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    - ./config/rules:/etc/prometheus/rules:ro
-    - prometheus_data:/prometheus
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./config/rules:/etc/prometheus/rules:ro
+      - prometheus_data:/prometheus
 version: '3.8'
 volumes:
   grafana_data: {}

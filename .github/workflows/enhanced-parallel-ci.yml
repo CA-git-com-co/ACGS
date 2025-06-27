@@ -36,7 +36,7 @@ jobs:
         id: changes
         run: |
           echo "🔍 Detecting changes..."
-          
+
           # Check for Python changes
           if git diff --name-only HEAD~1 HEAD | grep -E '\.(py)$|requirements.*\.txt$|services/' > /dev/null || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "python_changed=true" >> $GITHUB_OUTPUT
@@ -45,7 +45,7 @@ jobs:
             echo "python_changed=false" >> $GITHUB_OUTPUT
             echo "ℹ️ No Python changes detected"
           fi
-          
+
           echo "should_run=true" >> $GITHUB_OUTPUT
 
   # Python services testing
@@ -78,12 +78,12 @@ jobs:
         run: |
           echo "🔧 Installing dependencies for ${{ matrix.service }} service..."
           python -m pip install --upgrade pip
-          
+
           # Install common requirements if they exist
           if [ -f "requirements.txt" ]; then
             pip install -r requirements.txt
           fi
-          
+
           # Install test requirements if they exist
           if [ -f "requirements-test.txt" ]; then
             pip install -r requirements-test.txt
@@ -91,13 +91,13 @@ jobs:
             # Install basic test dependencies
             pip install pytest pytest-cov pytest-asyncio
           fi
-          
+
           # Install service-specific requirements if they exist
           SERVICE_REQ_FILE="services/core/${{ matrix.service }}/requirements.txt"
           if [ -f "$SERVICE_REQ_FILE" ]; then
             pip install -r "$SERVICE_REQ_FILE"
           fi
-          
+
           # Install platform service requirements if applicable
           PLATFORM_REQ_FILE="services/platform/${{ matrix.service }}/requirements.txt"
           if [ -f "$PLATFORM_REQ_FILE" ]; then
@@ -107,7 +107,7 @@ jobs:
       - name: Run service tests
         run: |
           echo "🧪 Running tests for ${{ matrix.service }} service..."
-          
+
           # Try to find and run tests for the service
           if [ -d "services/core/${{ matrix.service }}/tests" ]; then
             echo "Running core service tests..."
@@ -125,7 +125,7 @@ jobs:
       - name: Check service health
         run: |
           echo "🔍 Checking ${{ matrix.service }} service structure..."
-          
+
           # Check if service directory exists
           if [ -d "services/core/${{ matrix.service }}" ]; then
             echo "✅ Core service directory found"
@@ -156,7 +156,7 @@ jobs:
         run: |
           echo "🔧 Installing security scanning tools..."
           python -m pip install --upgrade pip
-          
+
           # Install security tools with error handling
           for tool in bandit safety; do
             echo "Installing $tool..."
@@ -170,7 +170,7 @@ jobs:
       - name: Run security scans
         run: |
           echo "🔒 Running security scans..."
-          
+
           # Run bandit if available
           if command -v bandit >/dev/null 2>&1; then
             echo "Running bandit security scan..."
@@ -178,7 +178,7 @@ jobs:
           else
             echo "⚠️ Bandit not available"
           fi
-          
+
           # Run safety if available
           if command -v safety >/dev/null 2>&1; then
             echo "Running safety vulnerability scan..."
@@ -211,7 +211,7 @@ jobs:
           echo "Python Services: ${{ needs.python_services.result }}"
           echo "Security Scan: ${{ needs.security_scan.result }}"
           echo ""
-          
+
           if [[ "${{ needs.python_services.result }}" == "success" && "${{ needs.security_scan.result }}" == "success" ]]; then
             echo "✅ All jobs completed successfully!"
             exit 0

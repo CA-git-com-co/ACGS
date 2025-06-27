@@ -28,6 +28,7 @@ python academic_cli.py status /path/to/paper/
 ## Commands
 
 ### validate
+
 Comprehensive validation of academic submissions.
 
 ```bash
@@ -40,6 +41,7 @@ Options:
 ```
 
 **Examples:**
+
 ```bash
 # Basic validation
 python academic_cli.py validate ./my_paper/
@@ -52,6 +54,7 @@ python academic_cli.py validate ./my_paper/ --output validation_report.md
 ```
 
 ### compliance
+
 Check venue-specific compliance requirements.
 
 ```bash
@@ -63,6 +66,7 @@ Options:
 ```
 
 **Examples:**
+
 ```bash
 # Check arXiv compliance
 python academic_cli.py compliance ./my_paper/ --venue arxiv
@@ -72,6 +76,7 @@ python academic_cli.py compliance ./my_paper/ --venue acm --output acm_complianc
 ```
 
 ### status
+
 Quick overview of submission status.
 
 ```bash
@@ -79,11 +84,13 @@ python academic_cli.py status PATH
 ```
 
 **Example:**
+
 ```bash
 python academic_cli.py status ./my_paper/
 ```
 
 **Output:**
+
 ```
 📄 Academic Submission Status
 ==================================================
@@ -103,6 +110,7 @@ Last modified: 2025-06-24 10:30:45
 ```
 
 ### optimize (Coming Soon)
+
 Automatically optimize submissions for better compliance.
 
 ```bash
@@ -114,6 +122,7 @@ Options:
 ```
 
 ### package (Coming Soon)
+
 Package submission for upload to various venues.
 
 ```bash
@@ -125,6 +134,7 @@ Options:
 ```
 
 ### init (Coming Soon)
+
 Initialize new academic submission with templates.
 
 ```bash
@@ -165,6 +175,7 @@ Create a JSON configuration file to customize behavior:
 ```
 
 Use with:
+
 ```bash
 python academic_cli.py --config config.json validate ./my_paper/
 ```
@@ -174,47 +185,55 @@ python academic_cli.py --config config.json validate ./my_paper/
 The tool performs comprehensive validation including:
 
 ### File Structure
+
 - ✅ Required files present (main.tex, README)
 - ✅ Proper directory organization
 - ✅ File naming conventions
 
 ### LaTeX Syntax
+
 - ✅ Balanced braces and environments
 - ✅ Undefined references detection
 - ✅ Missing citations identification
 - ✅ Package compatibility
 
 ### Bibliography
+
 - ✅ Bibliography file completeness
 - ✅ Citation format validation
 - ✅ Missing required fields
 - ✅ URL and DOI validation
 
 ### Figures
+
 - ✅ Figure file existence
 - ✅ Reference consistency
 - ✅ Caption completeness
 - ✅ Format compatibility
 
 ### arXiv Compliance
+
 - ✅ File size limits (50MB)
 - ✅ Prohibited file types
 - ✅ Required document elements
 - ✅ Metadata completeness
 
 ### Content Quality
+
 - ✅ Abstract length and quality
 - ✅ Section structure
 - ✅ Placeholder text detection
 - ✅ Word count analysis
 
 ### Accessibility
+
 - ✅ Figure alt text (captions)
 - ✅ Heading structure
 - ✅ Color-only information detection
 - ✅ Screen reader compatibility
 
 ### Reproducibility
+
 - ✅ README file presence
 - ✅ Code availability
 - ✅ Data availability mentions
@@ -229,17 +248,21 @@ The tool performs comprehensive validation including:
 ## Output Formats
 
 ### Markdown (Default)
+
 Human-readable report with status icons and recommendations.
 
 ### JSON
+
 Machine-readable format for integration with other tools.
 
 ### HTML (Coming Soon)
+
 Web-friendly format with interactive elements.
 
 ## Integration Examples
 
 ### CI/CD Pipeline
+
 ```yaml
 # .github/workflows/validate-paper.yml
 name: Validate Paper
@@ -249,18 +272,19 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.9'
-    - name: Install dependencies
-      run: pip install -r requirements.txt
-    - name: Validate submission
-      run: python academic_cli.py validate ./paper/ --format json
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Validate submission
+        run: python academic_cli.py validate ./paper/ --format json
 ```
 
 ### Pre-commit Hook
+
 ```bash
 #!/bin/sh
 # .git/hooks/pre-commit
@@ -269,6 +293,7 @@ exit $?
 ```
 
 ### Makefile Integration
+
 ```makefile
 .PHONY: validate compliance status
 
@@ -289,18 +314,22 @@ check: validate compliance
 ### Common Issues
 
 **ImportError: No module named 'quality_assurance'**
+
 - Ensure you're running from the correct directory
 - Check that all required files are present
 
 **Permission denied**
+
 - Make the script executable: `chmod +x academic_cli.py`
 - Check file permissions in submission directory
 
 **Validation fails with "main.tex not found"**
+
 - Ensure main.tex exists in the submission directory
 - Check file naming (case-sensitive)
 
 **Large file warnings**
+
 - Compress images to reduce file size
 - Remove unnecessary files from submission
 

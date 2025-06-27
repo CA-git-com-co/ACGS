@@ -5,7 +5,7 @@ info:
     Comprehensive API documentation for ACGE integration with ACGS-PGP system.
     Provides constitutional AI governance with single highly-aligned model architecture,
     edge deployment capabilities, and cross-domain constitutional modules.
-    
+
     **Constitutional Hash**: `cdd01ef066bc6cf2`
     **System Version**: 1.0.0
     **Architecture**: ACGS-1 Lite with ACGE Integration
@@ -247,7 +247,7 @@ components:
           enum: [healthy, degraded, unhealthy]
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
         timestamp:
           type: string
           format: date-time
@@ -320,7 +320,7 @@ components:
       properties:
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
         compliance_score:
           type: number
           format: float

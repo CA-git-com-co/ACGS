@@ -53,7 +53,7 @@ jest.mock('next/navigation', () => ({
 // Mock Next.js Image component
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: (props) => {
+  default: props => {
     // eslint-disable-next-line @next/next/no-img-element
     return <img {...props} />;
   },
@@ -193,8 +193,7 @@ beforeAll(() => {
   console.warn = (...args) => {
     if (
       typeof args[0] === 'string' &&
-      (args[0].includes('componentWillReceiveProps') ||
-        args[0].includes('componentWillUpdate'))
+      (args[0].includes('componentWillReceiveProps') || args[0].includes('componentWillUpdate'))
     ) {
       return;
     }

@@ -10,7 +10,7 @@ interface PolicyHistoryProps {
 export async function PolicyHistory({ policyId }: PolicyHistoryProps) {
   // Simulate data fetching
   await new Promise(resolve => setTimeout(resolve, 200));
-  
+
   const historyItems = [
     {
       id: '1',
@@ -109,9 +109,7 @@ export async function PolicyHistory({ policyId }: PolicyHistoryProps) {
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
                   {getActionIcon(item.type)}
                 </div>
-                {index < historyItems.length - 1 && (
-                  <div className="w-px h-6 bg-border mt-2" />
-                )}
+                {index < historyItems.length - 1 && <div className="w-px h-6 bg-border mt-2" />}
               </div>
               <div className="flex-1 space-y-2 pb-4">
                 <div className="flex items-center justify-between">
@@ -127,7 +125,10 @@ export async function PolicyHistory({ policyId }: PolicyHistoryProps) {
                 <div className="flex items-center gap-2">
                   <Avatar className="h-6 w-6">
                     <AvatarFallback className="text-xs">
-                      {item.user.split(' ').map(n => n[0]).join('')}
+                      {item.user
+                        .split(' ')
+                        .map(n => n[0])
+                        .join('')}
                     </AvatarFallback>
                   </Avatar>
                   <span className="text-xs text-muted-foreground">{item.user}</span>

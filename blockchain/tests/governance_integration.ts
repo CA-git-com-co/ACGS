@@ -83,9 +83,8 @@ describe('ACGS-1 Quantumagi Governance Integration Tests', () => {
           .rpc();
 
         // Verify governance was created
-        const governanceData = await quantumagiProgram.account.governanceState.fetch(
-          governanceAccount
-        );
+        const governanceData =
+          await quantumagiProgram.account.governanceState.fetch(governanceAccount);
         assert.equal((governanceData as any).authority.toString(), authority.publicKey.toString());
         assert.equal((governanceData as any).principles.length, principles.length);
 
@@ -206,9 +205,8 @@ describe('ACGS-1 Quantumagi Governance Integration Tests', () => {
           .rpc();
 
         // Verify proposal finalization (PGC validation)
-        const finalizedProposal = await quantumagiProgram.account.policyProposal.fetch(
-          proposalAccount
-        );
+        const finalizedProposal =
+          await quantumagiProgram.account.policyProposal.fetch(proposalAccount);
 
         console.log('✅ Policy governance compliance (PGC) validation completed');
         console.log(`🔍 Proposal status: ${JSON.stringify((finalizedProposal as any).status)}`);

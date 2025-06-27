@@ -1,32 +1,32 @@
 groups:
-- interval: 15s
-  name: acgs_performance_alerts
-  rules:
-  - alert: ResponseTimeExceeds2Seconds
-    annotations:
-      description: Service {{ $labels.service }} 95th percentile response time is
-        {{ $value }}s
-      summary: Response time exceeds 2 second target
-    expr: acgs_http_request_duration_seconds{quantile="0.95"} > 2
-    for: 1m
-    labels:
-      constitutional_hash: cdd01ef066bc6cf2
-      severity: warning
-  - alert: HighErrorRate
-    annotations:
-      description: Service {{ $labels.service }} error rate is {{ $value }}
-      summary: High error rate detected
-    expr: rate(acgs_http_requests_total{status=~"5.."}[5m]) > 0.05
-    for: 2m
-    labels:
-      constitutional_hash: cdd01ef066bc6cf2
-      severity: critical
-  - alert: ServiceDown
-    annotations:
-      description: Service {{ $labels.job }} is not responding
-      summary: ACGS service is down
-    expr: up{job=~"acgs_.*"} == 0
-    for: 1m
-    labels:
-      constitutional_hash: cdd01ef066bc6cf2
-      severity: critical
+  - interval: 15s
+    name: acgs_performance_alerts
+    rules:
+      - alert: ResponseTimeExceeds2Seconds
+        annotations:
+          description: Service {{ $labels.service }} 95th percentile response time is
+            {{ $value }}s
+          summary: Response time exceeds 2 second target
+        expr: acgs_http_request_duration_seconds{quantile="0.95"} > 2
+        for: 1m
+        labels:
+          constitutional_hash: cdd01ef066bc6cf2
+          severity: warning
+      - alert: HighErrorRate
+        annotations:
+          description: Service {{ $labels.service }} error rate is {{ $value }}
+          summary: High error rate detected
+        expr: rate(acgs_http_requests_total{status=~"5.."}[5m]) > 0.05
+        for: 2m
+        labels:
+          constitutional_hash: cdd01ef066bc6cf2
+          severity: critical
+      - alert: ServiceDown
+        annotations:
+          description: Service {{ $labels.job }} is not responding
+          summary: ACGS service is down
+        expr: up{job=~"acgs_.*"} == 0
+        for: 1m
+        labels:
+          constitutional_hash: cdd01ef066bc6cf2
+          severity: critical

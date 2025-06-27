@@ -12,12 +12,12 @@ export default function PoliciesPage({
   return (
     <div className="space-y-6">
       <PolicyHeader />
-      
+
       <div className="flex gap-6">
         <aside className="w-64 space-y-4">
           <PolicyFilters />
         </aside>
-        
+
         <main className="flex-1">
           <Suspense fallback={<LoadingSkeleton count={6} className="h-24" />}>
             <PolicyList filters={searchParams} />

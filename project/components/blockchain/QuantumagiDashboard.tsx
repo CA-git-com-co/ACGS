@@ -1,10 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import {
-  useConnection,
-  useWallet
-} from '@solana/wallet-adapter-react';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { PublicKey } from '@solana/web3.js';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,15 +9,15 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Shield, 
-  Activity, 
-  CheckCircle, 
-  AlertTriangle, 
+import {
+  Shield,
+  Activity,
+  CheckCircle,
+  AlertTriangle,
   Clock,
   TrendingUp,
   Wallet,
-  Globe
+  Globe,
 } from 'lucide-react';
 
 // Types
@@ -63,12 +60,12 @@ interface DashboardData {
 const PROGRAM_IDS = {
   QUANTUMAGI_CORE: '8eRUCnQsDxqK7vjp5XsYs7C3NGpdhzzaMW8QQGzfTUV4',
   APPEALS: 'CXKCLqyzxqyqTbEgpNbYR5qkC691BdiKMAB1nk6BMoFJ',
-  LOGGING: 'CjZi5hi9qggBzbXDht9YSJhN5cw7Bhz3rHhn63QQcPQo'
+  LOGGING: 'CjZi5hi9qggBzbXDht9YSJhN5cw7Bhz3rHhn63QQcPQo',
 };
 
 /**
  * Quantumagi Dashboard Component
- * 
+ *
  * Main dashboard for Solana-based constitutional governance system.
  * Displays real-time data about proposals, compliance, and system status.
  */
@@ -79,7 +76,7 @@ export const QuantumagiDashboard: React.FC = () => {
     constitution: null,
     policies: [],
     complianceResults: [],
-    systemStatus: 'Loading...'
+    systemStatus: 'Loading...',
   });
   const [loading, setLoading] = useState(true);
   const [programStatuses, setProgramStatuses] = useState<ProgramStatus[]>([]);
@@ -94,7 +91,7 @@ export const QuantumagiDashboard: React.FC = () => {
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      
+
       // Simulate loading dashboard data
       // In a real implementation, this would fetch from Solana programs
       const mockData: DashboardData = {
@@ -102,21 +99,21 @@ export const QuantumagiDashboard: React.FC = () => {
           hash: 'QmX7Y8Z9...',
           version: '2.1.0',
           status: 'Active',
-          lastUpdated: new Date().toISOString()
+          lastUpdated: new Date().toISOString(),
         },
         policies: [
           {
             id: 'POL-001',
             title: 'Data Privacy Protection',
             status: 'Active',
-            votes: { yes: 156, no: 23 }
+            votes: { yes: 156, no: 23 },
           },
           {
-            id: 'POL-002', 
+            id: 'POL-002',
             title: 'AI Ethics Guidelines',
             status: 'Pending',
-            votes: { yes: 89, no: 45 }
-          }
+            votes: { yes: 89, no: 45 },
+          },
         ],
         complianceResults: [
           {
@@ -124,17 +121,17 @@ export const QuantumagiDashboard: React.FC = () => {
             action: 'User data access',
             result: 'PASS',
             confidence: 94,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           },
           {
             id: 'CHK-002',
             action: 'Policy modification',
             result: 'PENDING',
             confidence: 87,
-            timestamp: new Date().toISOString()
-          }
+            timestamp: new Date().toISOString(),
+          },
         ],
-        systemStatus: 'Operational'
+        systemStatus: 'Operational',
       };
 
       setDashboardData(mockData);
@@ -155,13 +152,13 @@ export const QuantumagiDashboard: React.FC = () => {
         statuses.push({
           name: name.replace('_', ' '),
           programId,
-          status: accountInfo ? 'Deployed' : 'Not Found'
+          status: accountInfo ? 'Deployed' : 'Not Found',
         });
       } catch (error) {
         statuses.push({
           name: name.replace('_', ' '),
           programId,
-          status: 'Error'
+          status: 'Error',
         });
       }
     }
@@ -332,7 +329,11 @@ export const QuantumagiDashboard: React.FC = () => {
                     </div>
                     <div className="flex justify-between">
                       <span>Status:</span>
-                      <Badge variant={dashboardData.constitution.status === 'Active' ? 'default' : 'secondary'}>
+                      <Badge
+                        variant={
+                          dashboardData.constitution.status === 'Active' ? 'default' : 'secondary'
+                        }
+                      >
                         {dashboardData.constitution.status}
                       </Badge>
                     </div>
@@ -353,7 +354,7 @@ export const QuantumagiDashboard: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {dashboardData.complianceResults.slice(0, 3).map((result) => (
+                  {dashboardData.complianceResults.slice(0, 3).map(result => (
                     <div key={result.id} className="flex items-center justify-between">
                       <span className="text-sm">{result.action}</span>
                       <Badge variant={result.result === 'PASS' ? 'default' : 'secondary'}>
@@ -374,7 +375,7 @@ export const QuantumagiDashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {dashboardData.policies.map((policy) => (
+                {dashboardData.policies.map(policy => (
                   <div key={policy.id} className="border rounded-lg p-4">
                     <div className="flex justify-between items-start mb-2">
                       <h4 className="font-semibold">{policy.title}</h4>
@@ -401,7 +402,7 @@ export const QuantumagiDashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {dashboardData.complianceResults.map((result) => (
+                {dashboardData.complianceResults.map(result => (
                   <div key={result.id} className="border rounded-lg p-4">
                     <div className="flex justify-between items-start mb-2">
                       <h4 className="font-semibold">{result.action}</h4>
@@ -431,7 +432,7 @@ export const QuantumagiDashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {programStatuses.map((program) => (
+                {programStatuses.map(program => (
                   <div key={program.programId} className="border rounded-lg p-4">
                     <div className="flex justify-between items-start mb-2">
                       <h4 className="font-semibold">{program.name}</h4>

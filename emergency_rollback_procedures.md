@@ -23,9 +23,9 @@ The ACGS platform uses a blue-green deployment strategy, which allows for near-i
 
 The following roles and responsibilities have been defined for the emergency rollback process:
 
-*   **Incident Commander:** The Incident Commander is responsible for overseeing the entire rollback process and making key decisions.
-*   **Technical Lead:** The Technical Lead is responsible for the technical execution of the rollback procedures.
-*   **Communications Lead:** The Communications Lead is responsible for communicating with stakeholders during the rollback process.
+- **Incident Commander:** The Incident Commander is responsible for overseeing the entire rollback process and making key decisions.
+- **Technical Lead:** The Technical Lead is responsible for the technical execution of the rollback procedures.
+- **Communications Lead:** The Communications Lead is responsible for communicating with stakeholders during the rollback process.
 
 ## 4. Conclusion
 

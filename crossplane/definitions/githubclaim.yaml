@@ -14,300 +14,300 @@ spec:
     singular: acgsserviceclaim
   scope: Namespaced
   versions:
-  - additionalPrinterColumns:
-    - jsonPath: .spec.serviceType
-      name: SERVICE_TYPE
-      type: string
-    - jsonPath: .spec.constitutionalHash
-      name: CONSTITUTIONAL_HASH
-      type: string
-    - jsonPath: .status.conditions[?(@.type=='Ready')].status
-      name: READY
-      type: string
-    - jsonPath: .metadata.creationTimestamp
-      name: AGE
-      type: date
-    name: v1alpha1
-    schema:
-      openAPIV3Schema:
-        description: ACGSServiceClaim is the Schema for the ACGS service claims API
-        properties:
-          apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation
-              of an object. Servers should convert recognized schemas to the latest
-              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
-            type: string
-          kind:
-            description: 'Kind is a string value representing the REST resource this
-              object represents. Servers may infer this from the endpoint the client
-              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
-            type: string
-          metadata:
-            type: object
-          spec:
-            description: ACGSServiceClaimSpec defines the desired state of ACGSServiceClaim
-            properties:
-              serviceType:
-                description: ServiceType specifies the type of ACGS service to provision
-                enum:
-                - auth
-                - ac
-                - integrity
-                - fv
-                - gs
-                - pgc
-                - ec
-                - dgm
-                type: string
-              serviceName:
-                description: ServiceName is the name of the service instance
-                type: string
-                pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
-                maxLength: 63
-              constitutionalHash:
-                description: ConstitutionalHash for governance validation
-                type: string
-                default: "cdd01ef066bc6cf2"
-                pattern: '^[a-f0-9]{16}$'
-              deployment:
-                description: Deployment specifications for the service
-                properties:
-                  replicas:
-                    description: Number of replicas for the service
-                    type: integer
-                    minimum: 1
-                    maximum: 10
-                    default: 1
-                  resources:
-                    description: Resource requirements for the service
-                    properties:
-                      requests:
-                        description: Minimum resource requirements
-                        properties:
-                          cpu:
-                            description: CPU request
-                            type: string
-                            default: "200m"
-                            pattern: '^[0-9]+m?$'
-                          memory:
-                            description: Memory request
-                            type: string
-                            default: "512Mi"
-                            pattern: '^[0-9]+[KMGT]i?$'
-                        type: object
-                      limits:
-                        description: Maximum resource limits
-                        properties:
-                          cpu:
-                            description: CPU limit
-                            type: string
-                            default: "500m"
-                            pattern: '^[0-9]+m?$'
-                          memory:
-                            description: Memory limit
-                            type: string
-                            default: "1Gi"
-                            pattern: '^[0-9]+[KMGT]i?$'
-                        type: object
-                    type: object
-                  port:
-                    description: Service port
-                    type: integer
-                    minimum: 1024
-                    maximum: 65535
-                    default: 8000
-                  healthCheck:
-                    description: Health check configuration
-                    properties:
-                      enabled:
-                        description: Enable health checks
-                        type: boolean
-                        default: true
-                      path:
-                        description: Health check endpoint path
-                        type: string
-                        default: "/health"
-                      initialDelaySeconds:
-                        description: Initial delay before health checks start
-                        type: integer
-                        default: 30
-                      periodSeconds:
-                        description: Period between health checks
-                        type: integer
-                        default: 10
-                    type: object
-                type: object
-              database:
-                description: Database configuration
-                properties:
-                  enabled:
-                    description: Enable database for this service
-                    type: boolean
-                    default: true
-                  type:
-                    description: Database type
-                    type: string
-                    enum:
-                    - postgresql
-                    - redis
-                    default: "postgresql"
-                  connectionPoolSize:
-                    description: Database connection pool size
-                    type: integer
-                    minimum: 1
-                    maximum: 100
-                    default: 10
-                type: object
-              gitops:
-                description: GitOps configuration
-                properties:
-                  enabled:
-                    description: Enable GitOps for this service
-                    type: boolean
-                    default: true
-                  repository:
-                    description: Git repository configuration
-                    properties:
-                      name:
-                        description: Repository name
-                        type: string
-                      description:
-                        description: Repository description
-                        type: string
-                      private:
-                        description: Make repository private
-                        type: boolean
-                        default: true
-                      hasIssues:
-                        description: Enable issues
-                        type: boolean
-                        default: true
-                      hasProjects:
-                        description: Enable projects
-                        type: boolean
-                        default: true
-                      hasWiki:
-                        description: Enable wiki
-                        type: boolean
-                        default: false
-                      autoInit:
-                        description: Auto-initialize repository
-                        type: boolean
-                        default: true
-                      defaultBranch:
-                        description: Default branch name
-                        type: string
-                        default: "main"
-                    required:
-                    - name
-                    type: object
-                  sync:
-                    description: Sync configuration
-                    properties:
-                      automated:
-                        description: Enable automated sync
-                        type: boolean
-                        default: true
-                      prune:
-                        description: Enable pruning of resources
-                        type: boolean
-                        default: true
-                      selfHeal:
-                        description: Enable self-healing
-                        type: boolean
-                        default: true
-                    type: object
-                type: object
-              monitoring:
-                description: Monitoring configuration
-                properties:
-                  enabled:
-                    description: Enable monitoring for this service
-                    type: boolean
-                    default: true
-                  prometheus:
-                    description: Prometheus configuration
-                    properties:
-                      enabled:
-                        description: Enable Prometheus metrics
-                        type: boolean
-                        default: true
-                      port:
-                        description: Prometheus metrics port
-                        type: integer
-                        default: 9090
-                      path:
-                        description: Prometheus metrics path
-                        type: string
-                        default: "/metrics"
-                    type: object
-                  logging:
-                    description: Logging configuration
-                    properties:
-                      level:
-                        description: Log level
-                        type: string
-                        enum:
-                        - DEBUG
-                        - INFO
-                        - WARNING
-                        - ERROR
-                        default: "INFO"
-                      structured:
-                        description: Enable structured logging
-                        type: boolean
-                        default: true
-                    type: object
-                type: object
-            required:
-            - serviceType
-            - serviceName
-            type: object
-          status:
-            description: ACGSServiceClaimStatus defines the observed state of ACGSServiceClaim
-            properties:
-              conditions:
-                description: Conditions represent the latest available observations
-                items:
-                  description: Condition contains details for one aspect of the current state
+    - additionalPrinterColumns:
+        - jsonPath: .spec.serviceType
+          name: SERVICE_TYPE
+          type: string
+        - jsonPath: .spec.constitutionalHash
+          name: CONSTITUTIONAL_HASH
+          type: string
+        - jsonPath: .status.conditions[?(@.type=='Ready')].status
+          name: READY
+          type: string
+        - jsonPath: .metadata.creationTimestamp
+          name: AGE
+          type: date
+      name: v1alpha1
+      schema:
+        openAPIV3Schema:
+          description: ACGSServiceClaim is the Schema for the ACGS service claims API
+          properties:
+            apiVersion:
+              description: 'APIVersion defines the versioned schema of this representation
+                of an object. Servers should convert recognized schemas to the latest
+                internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+              type: string
+            kind:
+              description: 'Kind is a string value representing the REST resource this
+                object represents. Servers may infer this from the endpoint the client
+                submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+              type: string
+            metadata:
+              type: object
+            spec:
+              description: ACGSServiceClaimSpec defines the desired state of ACGSServiceClaim
+              properties:
+                serviceType:
+                  description: ServiceType specifies the type of ACGS service to provision
+                  enum:
+                    - auth
+                    - ac
+                    - integrity
+                    - fv
+                    - gs
+                    - pgc
+                    - ec
+                    - dgm
+                  type: string
+                serviceName:
+                  description: ServiceName is the name of the service instance
+                  type: string
+                  pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
+                  maxLength: 63
+                constitutionalHash:
+                  description: ConstitutionalHash for governance validation
+                  type: string
+                  default: 'cdd01ef066bc6cf2'
+                  pattern: '^[a-f0-9]{16}$'
+                deployment:
+                  description: Deployment specifications for the service
                   properties:
-                    lastTransitionTime:
-                      description: LastTransitionTime is the last time the condition transitioned
-                      format: date-time
-                      type: string
-                    message:
-                      description: Message is a human readable message indicating details about the transition
-                      type: string
-                    reason:
-                      description: Reason contains a programmatic identifier indicating the reason for the condition's last transition
-                      type: string
-                    status:
-                      description: Status of the condition, one of True, False, Unknown
-                      type: string
-                    type:
-                      description: Type of condition
-                      type: string
-                  required:
-                  - lastTransitionTime
-                  - message
-                  - reason
-                  - status
-                  - type
+                    replicas:
+                      description: Number of replicas for the service
+                      type: integer
+                      minimum: 1
+                      maximum: 10
+                      default: 1
+                    resources:
+                      description: Resource requirements for the service
+                      properties:
+                        requests:
+                          description: Minimum resource requirements
+                          properties:
+                            cpu:
+                              description: CPU request
+                              type: string
+                              default: '200m'
+                              pattern: '^[0-9]+m?$'
+                            memory:
+                              description: Memory request
+                              type: string
+                              default: '512Mi'
+                              pattern: '^[0-9]+[KMGT]i?$'
+                          type: object
+                        limits:
+                          description: Maximum resource limits
+                          properties:
+                            cpu:
+                              description: CPU limit
+                              type: string
+                              default: '500m'
+                              pattern: '^[0-9]+m?$'
+                            memory:
+                              description: Memory limit
+                              type: string
+                              default: '1Gi'
+                              pattern: '^[0-9]+[KMGT]i?$'
+                          type: object
+                      type: object
+                    port:
+                      description: Service port
+                      type: integer
+                      minimum: 1024
+                      maximum: 65535
+                      default: 8000
+                    healthCheck:
+                      description: Health check configuration
+                      properties:
+                        enabled:
+                          description: Enable health checks
+                          type: boolean
+                          default: true
+                        path:
+                          description: Health check endpoint path
+                          type: string
+                          default: '/health'
+                        initialDelaySeconds:
+                          description: Initial delay before health checks start
+                          type: integer
+                          default: 30
+                        periodSeconds:
+                          description: Period between health checks
+                          type: integer
+                          default: 10
+                      type: object
                   type: object
-                type: array
-              repositoryUrl:
-                description: URL of the created GitHub repository
-                type: string
-              deploymentStatus:
-                description: Status of the deployment
-                type: string
-              lastSyncTime:
-                description: Last time the service was synced
-                format: date-time
-                type: string
-            type: object
-        type: object
-    served: true
-    storage: true
-    subresources:
-      status: {}
+                database:
+                  description: Database configuration
+                  properties:
+                    enabled:
+                      description: Enable database for this service
+                      type: boolean
+                      default: true
+                    type:
+                      description: Database type
+                      type: string
+                      enum:
+                        - postgresql
+                        - redis
+                      default: 'postgresql'
+                    connectionPoolSize:
+                      description: Database connection pool size
+                      type: integer
+                      minimum: 1
+                      maximum: 100
+                      default: 10
+                  type: object
+                gitops:
+                  description: GitOps configuration
+                  properties:
+                    enabled:
+                      description: Enable GitOps for this service
+                      type: boolean
+                      default: true
+                    repository:
+                      description: Git repository configuration
+                      properties:
+                        name:
+                          description: Repository name
+                          type: string
+                        description:
+                          description: Repository description
+                          type: string
+                        private:
+                          description: Make repository private
+                          type: boolean
+                          default: true
+                        hasIssues:
+                          description: Enable issues
+                          type: boolean
+                          default: true
+                        hasProjects:
+                          description: Enable projects
+                          type: boolean
+                          default: true
+                        hasWiki:
+                          description: Enable wiki
+                          type: boolean
+                          default: false
+                        autoInit:
+                          description: Auto-initialize repository
+                          type: boolean
+                          default: true
+                        defaultBranch:
+                          description: Default branch name
+                          type: string
+                          default: 'main'
+                      required:
+                        - name
+                      type: object
+                    sync:
+                      description: Sync configuration
+                      properties:
+                        automated:
+                          description: Enable automated sync
+                          type: boolean
+                          default: true
+                        prune:
+                          description: Enable pruning of resources
+                          type: boolean
+                          default: true
+                        selfHeal:
+                          description: Enable self-healing
+                          type: boolean
+                          default: true
+                      type: object
+                  type: object
+                monitoring:
+                  description: Monitoring configuration
+                  properties:
+                    enabled:
+                      description: Enable monitoring for this service
+                      type: boolean
+                      default: true
+                    prometheus:
+                      description: Prometheus configuration
+                      properties:
+                        enabled:
+                          description: Enable Prometheus metrics
+                          type: boolean
+                          default: true
+                        port:
+                          description: Prometheus metrics port
+                          type: integer
+                          default: 9090
+                        path:
+                          description: Prometheus metrics path
+                          type: string
+                          default: '/metrics'
+                      type: object
+                    logging:
+                      description: Logging configuration
+                      properties:
+                        level:
+                          description: Log level
+                          type: string
+                          enum:
+                            - DEBUG
+                            - INFO
+                            - WARNING
+                            - ERROR
+                          default: 'INFO'
+                        structured:
+                          description: Enable structured logging
+                          type: boolean
+                          default: true
+                      type: object
+                  type: object
+              required:
+                - serviceType
+                - serviceName
+              type: object
+            status:
+              description: ACGSServiceClaimStatus defines the observed state of ACGSServiceClaim
+              properties:
+                conditions:
+                  description: Conditions represent the latest available observations
+                  items:
+                    description: Condition contains details for one aspect of the current state
+                    properties:
+                      lastTransitionTime:
+                        description: LastTransitionTime is the last time the condition transitioned
+                        format: date-time
+                        type: string
+                      message:
+                        description: Message is a human readable message indicating details about the transition
+                        type: string
+                      reason:
+                        description: Reason contains a programmatic identifier indicating the reason for the condition's last transition
+                        type: string
+                      status:
+                        description: Status of the condition, one of True, False, Unknown
+                        type: string
+                      type:
+                        description: Type of condition
+                        type: string
+                    required:
+                      - lastTransitionTime
+                      - message
+                      - reason
+                      - status
+                      - type
+                    type: object
+                  type: array
+                repositoryUrl:
+                  description: URL of the created GitHub repository
+                  type: string
+                deploymentStatus:
+                  description: Status of the deployment
+                  type: string
+                lastSyncTime:
+                  description: Last time the service was synced
+                  format: date-time
+                  type: string
+              type: object
+          type: object
+      served: true
+      storage: true
+      subresources:
+        status: {}

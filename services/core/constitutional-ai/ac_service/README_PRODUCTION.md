@@ -5,6 +5,7 @@
 The Constitutional AI (AC) Service is the core constitutional compliance engine for the ACGS-PGP (Autonomous Constitutional Governance System - Policy Generation Platform). It provides advanced constitutional analysis, compliance validation, formal verification integration, and real-time constitutional violation detection with sophisticated governance capabilities.
 
 **Service Details:**
+
 - **Port**: 8001
 - **Version**: 3.0.0
 - **Constitutional Hash**: `cdd01ef066bc6cf2`
@@ -14,6 +15,7 @@ The Constitutional AI (AC) Service is the core constitutional compliance engine 
 ## Architecture
 
 ### Core Components
+
 - **Constitutional Compliance Engine**: Multi-dimensional constitutional fidelity analysis
 - **Formal Verification Integration**: Mathematical proof validation with FV service
 - **Real-time Violation Detection**: Constitutional violation monitoring and alerting
@@ -22,6 +24,7 @@ The Constitutional AI (AC) Service is the core constitutional compliance engine 
 - **Audit Logging Service**: Comprehensive compliance audit trails
 
 ### Dependencies
+
 - **Formal Verification Service**: Port 8003 (mathematical proof validation)
 - **Authentication Service**: Port 8000 (JWT token validation)
 - **Database**: PostgreSQL (constitutional rules, audit logs)
@@ -32,9 +35,11 @@ The Constitutional AI (AC) Service is the core constitutional compliance engine 
 ### Core Constitutional Validation
 
 #### POST /api/v1/constitutional/validate
+
 Validate constitutional compliance with sophisticated algorithms.
 
 **Request:**
+
 ```json
 {
   "policy": {
@@ -56,6 +61,7 @@ Validate constitutional compliance with sophisticated algorithms.
 ```
 
 **Response:**
+
 ```json
 {
   "validation_id": "VAL-1750820294",
@@ -71,7 +77,7 @@ Validate constitutional compliance with sophisticated algorithms.
       "name": "Democratic Participation",
       "compliant": true,
       "confidence": 0.95,
-      "weight": 0.20,
+      "weight": 0.2,
       "analysis": "Policy demonstrates strong democratic participation mechanisms"
     }
   ],
@@ -85,9 +91,11 @@ Validate constitutional compliance with sophisticated algorithms.
 ```
 
 #### GET /api/v1/constitutional/validate
+
 Get constitutional hash validation information.
 
 **Response:**
+
 ```json
 {
   "constitutional_hash": "cdd01ef066bc6cf2",
@@ -110,9 +118,11 @@ Get constitutional hash validation information.
 ### Advanced Analysis
 
 #### POST /api/v1/constitutional/analyze
+
 Analyze constitutional impact of proposed policy changes.
 
 **Request:**
+
 ```json
 {
   "changes": [
@@ -127,9 +137,11 @@ Analyze constitutional impact of proposed policy changes.
 ```
 
 #### POST /api/v1/constitutional/validate-advanced
+
 Advanced constitutional validation with formal verification.
 
 **Request:**
+
 ```json
 {
   "policy": {...},
@@ -141,20 +153,25 @@ Advanced constitutional validation with formal verification.
 ### Compliance Monitoring
 
 #### GET /api/v1/compliance/status
+
 Overall constitutional compliance status.
 
 #### GET /api/v1/constitutional/violations
+
 Recent constitutional violations and alerts.
 
 #### GET /api/v1/constitutional/audit-log
+
 Comprehensive audit log of constitutional validations.
 
 ### Health & Monitoring
 
 #### GET /health
+
 Service health check with constitutional compliance status.
 
 **Response:**
+
 ```json
 {
   "status": "healthy",
@@ -165,13 +182,14 @@ Service health check with constitutional compliance status.
   "compliance_engine": "operational",
   "ai_models": {
     "gemini": "connected",
-    "deepseek": "connected", 
+    "deepseek": "connected",
     "nvidia_qwen": "connected"
   }
 }
 ```
 
 #### GET /metrics
+
 Prometheus metrics for constitutional compliance monitoring.
 
 ## Configuration
@@ -214,31 +232,35 @@ CACHE_TTL_SECONDS=3600
 ```yaml
 resources:
   requests:
-    memory: "512Mi"
-    cpu: "200m"
+    memory: '512Mi'
+    cpu: '200m'
   limits:
-    memory: "1Gi"
-    cpu: "500m"
+    memory: '1Gi'
+    cpu: '500m'
 ```
 
 ## AI Model Integration
 
 ### Google Gemini 2.5 Pro
+
 - **Use Cases**: Complex constitutional reasoning, impact analysis
 - **Capabilities**: Multi-modal constitutional analysis, natural language reasoning
 - **Performance**: High accuracy for complex constitutional questions
 
 ### DeepSeek-R1
+
 - **Use Cases**: Formal reasoning, logical validation, proof generation
 - **Capabilities**: Mathematical reasoning, formal logic validation
 - **Performance**: Excellent for structured constitutional rule validation
 
 ### NVIDIA Qwen
+
 - **Use Cases**: Multi-model consensus, constitutional compliance scoring
 - **Capabilities**: Ensemble reasoning, conflict resolution
 - **Performance**: Robust consensus building across models
 
 ### Collective Constitutional AI (CCAI)
+
 - **Polis Integration**: Democratic deliberation platform
 - **BBQ Evaluation**: Bias detection across nine social dimensions
 - **Democratic Legitimacy**: Stakeholder engagement scoring
@@ -249,21 +271,25 @@ resources:
 ### Core Constitutional Principles
 
 1. **CONST-001: Democratic Participation** (Weight: 20%)
+
    - Multi-dimensional analysis algorithm
    - Formal verification enabled
    - Stakeholder engagement validation
 
 2. **CONST-002: Transparency Requirement** (Weight: 20%)
+
    - Transparency scoring algorithm
    - Information accessibility validation
    - Public disclosure compliance
 
 3. **CONST-003: Constitutional Compliance** (Weight: 25%)
+
    - Constitutional fidelity analysis
    - Legal framework alignment
    - Precedent consistency validation
 
 4. **CONST-004: Accountability Mechanisms** (Weight: 15%)
+
    - Responsibility assignment validation
    - Oversight mechanism verification
    - Appeal process compliance
@@ -312,36 +338,38 @@ spec:
         app: ac-service
     spec:
       containers:
-      - name: ac-service
-        image: acgs-ac-service:latest
-        ports:
-        - containerPort: 8001
-        env:
-        - name: CONSTITUTIONAL_HASH
-          value: "cdd01ef066bc6cf2"
-        - name: GEMINI_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: ai-model-secrets
-              key: gemini-api-key
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "200m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
+        - name: ac-service
+          image: acgs-ac-service:latest
+          ports:
+            - containerPort: 8001
+          env:
+            - name: CONSTITUTIONAL_HASH
+              value: 'cdd01ef066bc6cf2'
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ai-model-secrets
+                  key: gemini-api-key
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '200m'
+            limits:
+              memory: '1Gi'
+              cpu: '500m'
 ```
 
 ## Security
 
 ### Constitutional Compliance Security
+
 - **Hash Validation**: All requests validated against constitutional hash `cdd01ef066bc6cf2`
 - **Formal Verification**: Mathematical proof validation for critical decisions
 - **Audit Logging**: Comprehensive audit trail for all constitutional validations
 - **Access Control**: JWT-based authentication with role-based permissions
 
 ### AI Model Security
+
 - **API Key Management**: Secure storage and rotation of AI model API keys
 - **Rate Limiting**: Protection against AI model API abuse
 - **Response Validation**: Validation of AI model responses for consistency
@@ -350,18 +378,21 @@ spec:
 ## Monitoring
 
 ### Health Checks
+
 - **Endpoint**: `/health`
 - **Frequency**: Every 30 seconds
 - **Timeout**: 5 seconds
 - **Dependencies**: FV service, database, AI models
 
 ### Metrics
+
 - **Constitutional Compliance Rate**: Percentage of compliant validations
 - **Validation Response Time**: P95/P99 response time tracking
 - **AI Model Performance**: Response time and accuracy metrics
 - **Formal Verification Success**: Mathematical proof validation rate
 
 ### Alerts
+
 - **Critical**: Constitutional compliance <75%, service down, AI model failures
 - **High**: High response time (>2s), formal verification failures
 - **Moderate**: AI model degradation, cache misses, resource usage
@@ -371,6 +402,7 @@ spec:
 ### Common Issues
 
 1. **Constitutional Hash Mismatch**
+
    ```bash
    # Verify constitutional hash
    curl -s http://localhost:8001/api/v1/constitutional/validate | jq '.constitutional_hash'
@@ -378,6 +410,7 @@ spec:
    ```
 
 2. **AI Model Connection Issues**
+
    ```bash
    # Check AI model connectivity
    curl -s http://localhost:8001/health | jq '.ai_models'
@@ -392,10 +425,11 @@ spec:
 ### Emergency Procedures
 
 1. **Constitutional Compliance Violation**
+
    ```bash
    # Immediate isolation
    kubectl scale deployment ac-service --replicas=0
-   
+
    # Restore from backup
    kubectl apply -f constitutional-backup.yaml
    ```

@@ -72,7 +72,7 @@ jobs:
       - name: Check for Node.js projects
         run: |
           echo "🔍 Checking for Node.js projects in the repository..."
-          
+
           # Look for package.json files
           if find . -name "package.json" -not -path "./node_modules/*" | head -5; then
             echo "✅ Found Node.js projects"
@@ -83,7 +83,7 @@ jobs:
       - name: Install Node.js dependencies
         run: |
           echo "🔧 Setting up Node.js dependencies..."
-          
+
           # Check various possible locations for Node.js projects
           for dir in "applications/governance-dashboard" "project" "frontend" "client"; do
             if [ -d "$dir" ] && [ -f "$dir/package.json" ]; then
@@ -97,7 +97,7 @@ jobs:
       - name: Run TypeScript linting
         run: |
           echo "🔍 Running TypeScript linting where available..."
-          
+
           for dir in "applications/governance-dashboard" "project" "frontend" "client"; do
             if [ -d "$dir" ] && [ -f "$dir/package.json" ]; then
               cd "$dir"
@@ -109,7 +109,7 @@ jobs:
       - name: Run TypeScript type checking
         run: |
           echo "🔍 Running TypeScript type checking where available..."
-          
+
           for dir in "applications/governance-dashboard" "project" "frontend" "client"; do
             if [ -d "$dir" ] && [ -f "$dir/package.json" ]; then
               cd "$dir"

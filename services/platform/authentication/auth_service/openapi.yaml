@@ -3,18 +3,18 @@ info:
   title: ACGS-PGP Authentication Service API
   description: |
     Authentication and authorization service for the ACGS-PGP (Autonomous Constitutional Governance System - Policy Generation Platform).
-    
+
     This service provides secure JWT-based authentication with constitutional compliance validation.
-    
+
     **Constitutional Hash**: `cdd01ef066bc6cf2`
-    
+
     **Security Features**:
     - JWT token authentication with HS256 algorithm
     - Role-based access control (RBAC)
     - Rate limiting and CSRF protection
     - Constitutional compliance validation
     - Audit logging for all authentication events
-    
+
   version: 3.0.0
   contact:
     name: ACGS Platform Team
@@ -49,11 +49,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/HealthResponse'
               example:
-                status: "healthy"
-                service: "auth_service"
-                version: "3.0.0"
+                status: 'healthy'
+                service: 'auth_service'
+                version: '3.0.0'
                 timestamp: 1750820294.86
-                constitutional_hash: "cdd01ef066bc6cf2"
+                constitutional_hash: 'cdd01ef066bc6cf2'
 
   /metrics:
     get:
@@ -84,8 +84,8 @@ paths:
             schema:
               $ref: '#/components/schemas/LoginRequest'
             example:
-              username: "admin"
-              password: "secure_password"
+              username: 'admin'
+              password: 'secure_password'
       responses:
         '200':
           description: Authentication successful
@@ -217,12 +217,12 @@ components:
         username:
           type: string
           description: User's username
-          example: "admin"
+          example: 'admin'
         password:
           type: string
           format: password
           description: User's password
-          example: "secure_password"
+          example: 'secure_password'
 
     RefreshRequest:
       type: object
@@ -232,7 +232,7 @@ components:
         refresh_token:
           type: string
           description: Refresh token for JWT renewal
-          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+          example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...'
 
     LoginResponse:
       type: object
@@ -240,11 +240,11 @@ components:
         access_token:
           type: string
           description: JWT access token
-          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+          example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...'
         token_type:
           type: string
           description: Token type
-          example: "bearer"
+          example: 'bearer'
         expires_in:
           type: integer
           description: Token expiration time in seconds
@@ -252,7 +252,7 @@ components:
         refresh_token:
           type: string
           description: Refresh token for token renewal
-          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+          example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...'
 
     ValidationResponse:
       type: object
@@ -264,17 +264,17 @@ components:
         user_id:
           type: string
           description: User identifier
-          example: "user_123"
+          example: 'user_123'
         username:
           type: string
           description: Username
-          example: "admin"
+          example: 'admin'
         roles:
           type: array
           items:
             type: string
           description: User roles
-          example: ["admin", "constitutional_reviewer"]
+          example: ['admin', 'constitutional_reviewer']
         constitutional_compliance:
           type: boolean
           description: Constitutional compliance status
@@ -286,7 +286,7 @@ components:
         message:
           type: string
           description: Logout confirmation message
-          example: "Successfully logged out"
+          example: 'Successfully logged out'
 
     HealthResponse:
       type: object
@@ -294,15 +294,15 @@ components:
         status:
           type: string
           description: Service health status
-          example: "healthy"
+          example: 'healthy'
         service:
           type: string
           description: Service name
-          example: "auth_service"
+          example: 'auth_service'
         version:
           type: string
           description: Service version
-          example: "3.0.0"
+          example: '3.0.0'
         timestamp:
           type: number
           description: Current timestamp
@@ -310,7 +310,7 @@ components:
         constitutional_hash:
           type: string
           description: Constitutional compliance hash
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
 
     ServiceInfoResponse:
       type: object
@@ -318,25 +318,25 @@ components:
         service:
           type: string
           description: Service name
-          example: "auth_service"
+          example: 'auth_service'
         version:
           type: string
           description: Service version
-          example: "3.0.0"
+          example: '3.0.0'
         status:
           type: string
           description: Service status
-          example: "operational"
+          example: 'operational'
         constitutional_hash:
           type: string
           description: Constitutional compliance hash
-          example: "cdd01ef066bc6cf2"
+          example: 'cdd01ef066bc6cf2'
         endpoints:
           type: array
           items:
             type: string
           description: Available endpoints
-          example: ["/health", "/metrics", "/api/v1/auth/validate"]
+          example: ['/health', '/metrics', '/api/v1/auth/validate']
 
     ErrorResponse:
       type: object
@@ -344,16 +344,16 @@ components:
         error:
           type: string
           description: Error message
-          example: "Authentication failed"
+          example: 'Authentication failed'
         detail:
           type: string
           description: Detailed error information
-          example: "Invalid username or password"
+          example: 'Invalid username or password'
         timestamp:
           type: string
           format: date-time
           description: Error timestamp
-          example: "2025-06-25T03:00:00Z"
+          example: '2025-06-25T03:00:00Z'
 
 tags:
   - name: Health

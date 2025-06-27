@@ -12,10 +12,10 @@ This document describes the framework for validating the constitutional complian
 
 The following core principles, derived from `GEMINI.md`, form the basis of the constitutional compliance validation framework:
 
-*   **Constitutional Hash Consistency:** All services and components must validate against the constitutional hash (`cdd01ef066bc6cf2`).
-*   **Democratic Legitimacy:** The system must facilitate democratic oversight and stakeholder participation.
-*   **Formal Verification:** Governance decisions must be backed by mathematical proofs.
-*   **Cryptographic Integrity:** All data and communications must be cryptographically secure.
+- **Constitutional Hash Consistency:** All services and components must validate against the constitutional hash (`cdd01ef066bc6cf2`).
+- **Democratic Legitimacy:** The system must facilitate democratic oversight and stakeholder participation.
+- **Formal Verification:** Governance decisions must be backed by mathematical proofs.
+- **Cryptographic Integrity:** All data and communications must be cryptographically secure.
 
 ## 3. Validation Framework
 
@@ -27,10 +27,10 @@ A comprehensive suite of automated tests will be used to validate the constituti
 
 **Test Categories:**
 
-*   **Constitutional Hash Validation:** Tests that verify that all services are using the correct constitutional hash.
-*   **Democratic Governance Integration:** Tests that validate the integration with democratic governance platforms (Pol.is, Decidim).
-*   **Formal Verification:** Tests that verify the correctness of the formal verification service.
-*   **Cryptographic Integrity:** Tests that validate the implementation of the cryptographic protocols.
+- **Constitutional Hash Validation:** Tests that verify that all services are using the correct constitutional hash.
+- **Democratic Governance Integration:** Tests that validate the integration with democratic governance platforms (Pol.is, Decidim).
+- **Formal Verification:** Tests that verify the correctness of the formal verification service.
+- **Cryptographic Integrity:** Tests that validate the implementation of the cryptographic protocols.
 
 ### 3.2. Manual Audits
 
@@ -38,9 +38,9 @@ In addition to automated testing, regular manual audits will be conducted to ens
 
 **Audit Activities:**
 
-*   **Code Review:** A thorough review of the source code to identify any potential constitutional compliance issues.
-*   **Architecture Review:** A review of the system architecture to ensure that it is aligned with the constitutional principles.
-*   **Governance Process Review:** A review of the governance processes to ensure that they are fair, transparent, and accountable.
+- **Code Review:** A thorough review of the source code to identify any potential constitutional compliance issues.
+- **Architecture Review:** A review of the system architecture to ensure that it is aligned with the constitutional principles.
+- **Governance Process Review:** A review of the governance processes to ensure that they are fair, transparent, and accountable.
 
 ### 3.3. Emergency Rollback
 

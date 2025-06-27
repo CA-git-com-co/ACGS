@@ -114,17 +114,21 @@ services:
   opa:
     image: openpolicyagent/opa:latest-envoy
     container_name: acgs_opa
-    command: [
-      'run',
-      '--server',
-      '--addr', '0.0.0.0:8181',
-      '--log-level', 'info',
-      '--config-file', '/config/opa-config.yaml',
-      '/policies'
-    ]
+    command:
+      [
+        'run',
+        '--server',
+        '--addr',
+        '0.0.0.0:8181',
+        '--log-level',
+        'info',
+        '--config-file',
+        '/config/opa-config.yaml',
+        '/policies',
+      ]
     ports:
-      - '8181:8181'  # OPA API port
-      - '8282:8282'  # OPA diagnostic port
+      - '8181:8181' # OPA API port
+      - '8282:8282' # OPA diagnostic port
     volumes:
       # Policy files
       - ./config/opa/policies:/policies:ro
@@ -145,7 +149,7 @@ services:
       - OPA_STATUS_CONSOLE=true
 
       # Security settings
-      - OPA_AUTHENTICATION_ENABLED=false  # Internal service
+      - OPA_AUTHENTICATION_ENABLED=false # Internal service
       - OPA_AUTHORIZATION_ENABLED=true
 
       # Integration settings

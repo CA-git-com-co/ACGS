@@ -1,10 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import {
-  ConnectionProvider,
-  WalletProvider,
-} from '@solana/wallet-adapter-react';
+import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
@@ -16,7 +13,7 @@ import '@solana/wallet-adapter-react-ui/styles.css';
 
 /**
  * Quantumagi App Wrapper with Solana Wallet Integration
- * 
+ *
  * Provides the necessary providers for Solana wallet connectivity
  * and blockchain interactions in the Next.js environment.
  */
@@ -29,13 +26,7 @@ export const QuantumagiApp: React.FC = () => {
   }, [network]);
 
   // Configure supported wallets
-  const wallets = useMemo(
-    () => [
-      new PhantomWalletAdapter(),
-      new SolflareWalletAdapter(),
-    ],
-    []
-  );
+  const wallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], []);
 
   return (
     <ConnectionProvider endpoint={endpoint}>

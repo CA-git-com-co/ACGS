@@ -2,7 +2,7 @@
 
 **Version**: 3.0.0  
 **Last Updated**: 2025-06-24  
-**Scope**: All ACGS services and components  
+**Scope**: All ACGS services and components
 
 ## Overview
 
@@ -15,6 +15,7 @@ This document provides comprehensive testing instructions, validation frameworks
 **Services**: Auth (8000), AC (8001), Integrity (8002)
 
 **Testing Requirements**:
+
 - ✅ Unit test coverage >90%
 - ✅ Integration test coverage >80%
 - ✅ End-to-end test coverage >70%
@@ -27,6 +28,7 @@ This document provides comprehensive testing instructions, validation frameworks
 **Services**: FV (8003), GS (8004), PGC (8005), EC (8006)
 
 **Testing Requirements**:
+
 - 🎯 Unit test coverage >70% (target)
 - 🎯 Integration test coverage >60% (target)
 - 🧪 Prototype functionality validation
@@ -60,6 +62,7 @@ This document provides comprehensive testing instructions, validation frameworks
 ### ✅ Auth Service (Port 8000) - Production Testing
 
 #### Unit Testing
+
 ```bash
 # Run auth service unit tests
 cd services/platform/authentication/auth_service
@@ -76,6 +79,7 @@ uv run pytest tests/unit/ -v --cov=app --cov-report=html
 ```
 
 #### Integration Testing
+
 ```bash
 # Test auth service integration
 uv run pytest tests/integration/ -v
@@ -89,6 +93,7 @@ uv run pytest tests/integration/ -v
 ```
 
 #### Performance Testing
+
 ```bash
 # Load testing with Apache Bench
 ab -n 10000 -c 100 http://localhost:8000/api/auth/login
@@ -100,6 +105,7 @@ ab -n 10000 -c 100 http://localhost:8000/api/auth/login
 ```
 
 #### Security Testing
+
 ```bash
 # Security vulnerability scan
 uv run pytest tests/security/ -v
@@ -115,6 +121,7 @@ uv run pytest tests/security/ -v
 ### ✅ AC Service (Port 8001) - Production Testing
 
 #### Constitutional Compliance Testing
+
 ```bash
 # Run constitutional compliance test suite
 cd services/core/constitutional-ai/ac_service
@@ -129,6 +136,7 @@ uv run pytest tests/constitutional/ -v
 ```
 
 #### Formal Verification Integration Testing
+
 ```bash
 # Test FV service integration
 uv run pytest tests/integration/test_fv_integration.py -v
@@ -143,6 +151,7 @@ uv run pytest tests/integration/test_fv_integration.py -v
 ### ✅ Integrity Service (Port 8002) - Production Testing
 
 #### Cryptographic Testing
+
 ```bash
 # Run cryptographic validation tests
 cd services/platform/integrity/integrity_service
@@ -163,6 +172,7 @@ uv run pytest tests/crypto/ -v
 ### 🧪 FV Service (Port 8003) - Prototype Testing
 
 #### Mock Component Validation
+
 ```bash
 # Test prototype functionality
 cd services/core/formal-verification/fv_service
@@ -176,6 +186,7 @@ uv run pytest tests/prototype/ -v
 ```
 
 #### Production Readiness Assessment
+
 ```bash
 # Assess production readiness
 ./scripts/assess_production_readiness.py --service fv
@@ -190,6 +201,7 @@ uv run pytest tests/prototype/ -v
 ### 🧪 GS Service (Port 8004) - Prototype Testing
 
 #### Minimal Mode Testing
+
 ```bash
 # Test minimal mode functionality
 cd services/core/governance-synthesis/gs_service
@@ -203,6 +215,7 @@ uv run pytest tests/minimal_mode/ -v
 ```
 
 #### Router Stabilization Testing
+
 ```bash
 # Test router stability
 ./scripts/test_router_stability.py --service gs
@@ -221,6 +234,7 @@ uv run pytest tests/minimal_mode/ -v
 ### Constitutional Compliance Validation
 
 #### Compliance Test Suite
+
 ```python
 # Example constitutional compliance test
 def test_constitutional_compliance():
@@ -229,15 +243,16 @@ def test_constitutional_compliance():
         "subject": "user_123",
         "resource": "sensitive_data"
     }
-    
+
     result = ac_service.validate_compliance(policy)
-    
+
     assert result.compliant == True
     assert result.confidence > 0.95
     assert result.violations == []
 ```
 
 #### Compliance Metrics
+
 - **Accuracy**: >95% correct compliance determinations
 - **Precision**: >90% true positive rate
 - **Recall**: >95% violation detection rate
@@ -246,6 +261,7 @@ def test_constitutional_compliance():
 ### Performance Validation Framework
 
 #### Load Testing Procedures
+
 ```bash
 # System-wide load testing
 ./scripts/load_test_system.py --duration 300 --users 1000
@@ -260,6 +276,7 @@ def test_constitutional_compliance():
 ```
 
 #### Stress Testing
+
 ```bash
 # Stress test to failure point
 ./scripts/stress_test.py --service auth --max-rps 2000
@@ -274,6 +291,7 @@ def test_constitutional_compliance():
 ### Security Validation Framework
 
 #### Penetration Testing
+
 ```bash
 # Automated security testing
 ./scripts/security_scan.py --target localhost:8000-8006
@@ -287,6 +305,7 @@ def test_constitutional_compliance():
 ```
 
 #### Vulnerability Assessment
+
 ```bash
 # Dependency vulnerability scan
 uv run safety check
@@ -305,6 +324,7 @@ docker scan acgs/auth-service:latest
 ### CI/CD Pipeline Testing
 
 #### Pre-commit Testing
+
 ```bash
 # Run before each commit
 ./scripts/pre_commit_tests.py
@@ -317,6 +337,7 @@ docker scan acgs/auth-service:latest
 ```
 
 #### Build Pipeline Testing
+
 ```bash
 # Full CI pipeline
 ./scripts/ci_pipeline.py
@@ -330,6 +351,7 @@ docker scan acgs/auth-service:latest
 ```
 
 #### Deployment Testing
+
 ```bash
 # Staging deployment validation
 ./scripts/staging_deployment_test.py
@@ -351,6 +373,7 @@ docker scan acgs/auth-service:latest
 ### Code Quality Standards
 
 #### Production Services
+
 - **Test Coverage**: >90% unit, >80% integration
 - **Code Quality**: SonarQube score >8.0
 - **Security**: Zero high/critical vulnerabilities
@@ -358,6 +381,7 @@ docker scan acgs/auth-service:latest
 - **Documentation**: Complete API and operational docs
 
 #### Prototype Services
+
 - **Test Coverage**: >70% unit, >60% integration
 - **Code Quality**: SonarQube score >6.0
 - **Security**: Zero critical vulnerabilities
@@ -367,6 +391,7 @@ docker scan acgs/auth-service:latest
 ### Review Procedures
 
 #### Code Review Checklist
+
 - [ ] Functionality correctness
 - [ ] Test coverage adequate
 - [ ] Security considerations addressed
@@ -376,6 +401,7 @@ docker scan acgs/auth-service:latest
 - [ ] Constitutional compliance maintained
 
 #### Production Readiness Review
+
 - [ ] All tests passing
 - [ ] Performance benchmarks met
 - [ ] Security validation complete
@@ -388,6 +414,7 @@ docker scan acgs/auth-service:latest
 ## Testing Tools and Infrastructure
 
 ### Testing Tools
+
 - **Unit Testing**: pytest, unittest
 - **Integration Testing**: pytest, testcontainers
 - **Load Testing**: Apache Bench, Locust, K6
@@ -396,6 +423,7 @@ docker scan acgs/auth-service:latest
 - **Code Quality**: SonarQube, Black, Flake8
 
 ### Test Data Management
+
 - **Test Databases**: Isolated test environments
 - **Mock Services**: Comprehensive mocking for external dependencies
 - **Test Data**: Anonymized production-like data sets

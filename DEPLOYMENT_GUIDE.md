@@ -140,8 +140,8 @@ Refer to `PRODUCTION_READINESS_CHECKLIST.md` for detailed rollback criteria and 
 
 ## 6. Troubleshooting Guidance
 
--   **Pod stuck in Pending**: Check `kubectl describe pod <pod-name>` for events related to scheduling, resource limits, or persistent volume claims.
--   **Pod in CrashLoopBackOff**: Check `kubectl logs <pod-name>` for application errors.
--   **Service Unreachable**: Verify service and ingress/route configurations. Check `kubectl get svc` and `kubectl get ing` (or `kubectl get route` for OpenShift).
--   **Constitutional Hash Mismatch**: Verify `CONSTITUTIONAL_HASH` environment variable in service deployments. Ensure all services are using `cdd01ef066bc6cf2`.
--   **Performance Degradation**: Use Grafana dashboards to identify bottlenecks (CPU, memory, network, database). Run load tests to simulate and diagnose.
+- **Pod stuck in Pending**: Check `kubectl describe pod <pod-name>` for events related to scheduling, resource limits, or persistent volume claims.
+- **Pod in CrashLoopBackOff**: Check `kubectl logs <pod-name>` for application errors.
+- **Service Unreachable**: Verify service and ingress/route configurations. Check `kubectl get svc` and `kubectl get ing` (or `kubectl get route` for OpenShift).
+- **Constitutional Hash Mismatch**: Verify `CONSTITUTIONAL_HASH` environment variable in service deployments. Ensure all services are using `cdd01ef066bc6cf2`.
+- **Performance Degradation**: Use Grafana dashboards to identify bottlenecks (CPU, memory, network, database). Run load tests to simulate and diagnose.

@@ -4,15 +4,13 @@ import { Activity, ArrowUpRight } from 'lucide-react';
 export async function RecentActivity() {
   // Simulate data fetching
   await new Promise(resolve => setTimeout(resolve, 250));
-  
+
   const activityCount = 28;
 
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">
-          Recent Activity
-        </CardTitle>
+        <CardTitle className="text-sm font-medium">Recent Activity</CardTitle>
         <Activity className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
