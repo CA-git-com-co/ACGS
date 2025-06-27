@@ -35,9 +35,12 @@ jobs:
           pip install ruff black mypy
           if [ -f requirements-test.txt ]; then
             pip install -r requirements-test.txt
-          else
-            echo "requirements-test.txt not found, installing basic dependencies"
+          elif [ -f requirements.txt ]; then
+            pip install -r requirements.txt
             pip install pytest pytest-cov pytest-asyncio
+          else
+            echo "No requirements files found, installing basic dependencies"
+            pip install pytest pytest-cov pytest-asyncio fastapi uvicorn pydantic
           fi
 
       - name: Run Python linting (Ruff)

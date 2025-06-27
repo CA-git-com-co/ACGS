@@ -1,0 +1,32 @@
+# ACGS-PGP Testing Requirements
+# Version: 3.0.0
+# Last Updated: 2025-06-27
+
+# Include main requirements
+-r requirements.txt
+
+# Testing Framework
+pytest>=7.4.3
+pytest-asyncio>=0.21.1
+pytest-cov>=4.1.0
+pytest-mock>=3.12.0
+pytest-xdist>=3.5.0
+
+# Code Quality
+ruff>=0.1.6
+black>=23.11.0
+mypy>=1.7.0
+bandit>=1.7.5
+
+# Testing Utilities
+factory-boy>=3.3.0
+faker>=20.1.0
+responses>=0.23.3
+freezegun>=1.2.2
+
+# Performance Testing
+locust>=2.17.0
+memory-profiler>=0.61.0
+
+# Coverage
+coverage[toml]>=7.3.2

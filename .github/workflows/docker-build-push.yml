@@ -37,13 +37,66 @@ jobs:
           # Check various possible locations for Dockerfiles
           DOCKERFILE_FOUND=false
 
-          # Check core services
-          if [ -f "services/core/${{ matrix.service }}/Dockerfile" ]; then
+          # Check core services with proper service name mapping
+          case "${{ matrix.service }}" in
+            "auth")
+              if [ -f "services/platform/authentication/auth_service/Dockerfile" ]; then
+                echo "dockerfile_path=services/platform/authentication/auth_service/Dockerfile" >> $GITHUB_OUTPUT
+                echo "context=services/platform/authentication/auth_service" >> $GITHUB_OUTPUT
+                DOCKERFILE_FOUND=true
+              fi
+              ;;
+            "ac")
+              if [ -f "services/core/constitutional-ai/ac_service/Dockerfile" ]; then
+                echo "dockerfile_path=services/core/constitutional-ai/ac_service/Dockerfile" >> $GITHUB_OUTPUT
+                echo "context=services/core/constitutional-ai/ac_service" >> $GITHUB_OUTPUT
+                DOCKERFILE_FOUND=true
+              fi
+              ;;
+            "integrity")
+              if [ -f "services/platform/integrity/integrity_service/Dockerfile" ]; then
+                echo "dockerfile_path=services/platform/integrity/integrity_service/Dockerfile" >> $GITHUB_OUTPUT
+                echo "context=services/platform/integrity/integrity_service" >> $GITHUB_OUTPUT
+                DOCKERFILE_FOUND=true
+              fi
+              ;;
+            "fv")
+              if [ -f "services/core/formal-verification/fv_service/Dockerfile" ]; then
+                echo "dockerfile_path=services/core/formal-verification/fv_service/Dockerfile" >> $GITHUB_OUTPUT
+                echo "context=services/core/formal-verification/fv_service" >> $GITHUB_OUTPUT
+                DOCKERFILE_FOUND=true
+              fi
+              ;;
+            "gs")
+              if [ -f "services/core/governance-synthesis/gs_service/Dockerfile" ]; then
+                echo "dockerfile_path=services/core/governance-synthesis/gs_service/Dockerfile" >> $GITHUB_OUTPUT
+                echo "context=services/core/governance-synthesis/gs_service" >> $GITHUB_OUTPUT
+                DOCKERFILE_FOUND=true
+              fi
+              ;;
+            "pgc")
+              if [ -f "services/core/policy-governance/pgc_service/Dockerfile" ]; then
+                echo "dockerfile_path=services/core/policy-governance/pgc_service/Dockerfile" >> $GITHUB_OUTPUT
+                echo "context=services/core/policy-governance/pgc_service" >> $GITHUB_OUTPUT
+                DOCKERFILE_FOUND=true
+              fi
+              ;;
+            "ec")
+              if [ -f "services/core/evolutionary-computation/Dockerfile" ]; then
+                echo "dockerfile_path=services/core/evolutionary-computation/Dockerfile" >> $GITHUB_OUTPUT
+                echo "context=services/core/evolutionary-computation" >> $GITHUB_OUTPUT
+                DOCKERFILE_FOUND=true
+              fi
+              ;;
+          esac
+          
+          # Fallback: Check core services
+          if [ "$DOCKERFILE_FOUND" = false ] && [ -f "services/core/${{ matrix.service }}/Dockerfile" ]; then
             echo "dockerfile_path=services/core/${{ matrix.service }}/Dockerfile" >> $GITHUB_OUTPUT
             echo "context=services/core/${{ matrix.service }}" >> $GITHUB_OUTPUT
             DOCKERFILE_FOUND=true
           # Check platform services
-          elif [ -f "services/platform/${{ matrix.service }}/Dockerfile" ]; then
+          elif [ "$DOCKERFILE_FOUND" = false ] && [ -f "services/platform/${{ matrix.service }}/Dockerfile" ]; then
             echo "dockerfile_path=services/platform/${{ matrix.service }}/Dockerfile" >> $GITHUB_OUTPUT
             echo "context=services/platform/${{ matrix.service }}" >> $GITHUB_OUTPUT
             DOCKERFILE_FOUND=true
