@@ -29,11 +29,23 @@ class EnhancedSecurityMiddleware:
             "multipart/form-data",
         ]
 
-    async def __call__(self, request: Request, call_next):
+    async def __call__(self, scope, receive, send):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         """Process request through security middleware."""
+        from starlette.requests import Request
+        from starlette.middleware.base import BaseHTTPMiddleware
+
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        request = Request(scope, receive)
+
+        async def call_next(request):
+            # Create a simple call_next function
+            return await self.app(scope, receive, send)
 
         # 1. HTTP Method Validation
         method_allowed = self.validate_http_method(request)

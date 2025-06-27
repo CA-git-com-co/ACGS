@@ -1,0 +1,30 @@
+{
+  "algorithm_name": "random_forest",
+  "best_parameters": {
+    "n_estimators": 300,
+    "max_depth": 14,
+    "min_samples_split": 10,
+    "min_samples_leaf": 9,
+    "max_features": "sqrt",
+    "bootstrap": true
+  },
+  "best_score": 0.5189888731625666,
+  "baseline_score": -0.09296702972447049,
+  "improvement_percent": 61.195590288703706,
+  "total_trials": 50,
+  "successful_trials": 50,
+  "optimization_time_seconds": 18.606136322021484,
+  "cv_mean_score": 0.5189888731625664,
+  "cv_std_score": 0.22247083002485987,
+  "cv_scores": [
+    0.6991534208547325,
+    0.7872625329620507,
+    0.2392046789324872,
+    0.5936194816951106,
+    0.2757042513684512
+  ],
+  "test_score": 0.2805946438640107,
+  "target_achieved": true,
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "timestamp": "2025-06-27T19:08:50.028968"
+}

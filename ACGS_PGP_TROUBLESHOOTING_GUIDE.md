@@ -2,7 +2,7 @@
 
 **Version**: 1.0.0  
 **Date**: 2025-06-27  
-**Constitutional Hash**: cdd01ef066bc6cf2  
+**Constitutional Hash**: cdd01ef066bc6cf2
 
 ## Overview
 
@@ -11,24 +11,28 @@ This guide provides comprehensive troubleshooting procedures for the ACGS-PGP sy
 ## Priority System
 
 ### Critical (2 hours)
+
 - Constitutional compliance failures
 - Security vulnerabilities
 - System-wide outages
 - Emergency shutdown failures
 
 ### High (24-48 hours)
+
 - Service startup failures
 - Performance degradation
 - AI model integration issues
 - Database connectivity problems
 
 ### Moderate (1 week)
+
 - Package manager issues
 - Configuration inconsistencies
 - Non-critical test failures
 - Documentation gaps
 
 ### Low (2 weeks)
+
 - Optimization opportunities
 - Enhancement requests
 - Minor UI issues
@@ -39,12 +43,14 @@ This guide provides comprehensive troubleshooting procedures for the ACGS-PGP sy
 ### Constitutional Compliance Failures
 
 #### Symptoms
+
 - Compliance score <95%
 - Constitutional hash mismatches
 - DGM safety pattern violations
 - Policy validation failures
 
 #### Diagnostic Commands
+
 ```bash
 # Check constitutional compliance across all services
 for port in {8000..8006}; do
@@ -60,29 +66,33 @@ curl -s http://localhost:8181/v1/policies | jq .
 ```
 
 #### Resolution Steps
+
 1. **Immediate Actions**:
+
    ```bash
    # Stop non-compliant services
    curl -X POST http://localhost:<port>/emergency/shutdown
-   
+
    # Verify constitutional hash
    grep -n "cdd01ef066bc6cf2" infrastructure/docker/docker-compose.acgs.yml
    ```
 
 2. **Root Cause Analysis**:
+
    ```bash
    # Check service logs for compliance errors
    tail -f logs/ac_service.log | grep -i "constitutional\|compliance"
-   
+
    # Validate OPA policies
    curl -s http://localhost:8181/health
    ```
 
 3. **Remediation**:
+
    ```bash
    # Restart services with correct configuration
    ./scripts/start_all_services.sh
-   
+
    # Validate compliance
    ./scripts/test_setup_scripts_comprehensive.sh
    ```
@@ -90,12 +100,14 @@ curl -s http://localhost:8181/v1/policies | jq .
 ### Emergency Shutdown Failures
 
 #### Symptoms
+
 - Emergency endpoints not responding
 - Shutdown time >30 minutes
 - Services not stopping gracefully
 - Constitutional violations during shutdown
 
 #### Diagnostic Commands
+
 ```bash
 # Test emergency shutdown endpoints
 for port in {8000..8006}; do
@@ -108,26 +120,30 @@ ps aux | grep uvicorn
 ```
 
 #### Resolution Steps
+
 1. **Force Shutdown**:
+
    ```bash
    # Kill all uvicorn processes
    pkill -f "uvicorn.*:800[0-6]"
-   
+
    # Verify all processes stopped
    ps aux | grep uvicorn
    ```
 
 2. **Implement Emergency Endpoints**:
+
    ```bash
    # Add emergency endpoints to services missing them
    # Update service code to include /emergency/shutdown
    ```
 
 3. **Test Recovery**:
+
    ```bash
    # Restart services
    ./scripts/start_all_services.sh
-   
+
    # Test emergency shutdown capability
    ./scripts/test_emergency_shutdown.sh
    ```
@@ -137,12 +153,14 @@ ps aux | grep uvicorn
 ### Service Startup Failures
 
 #### Symptoms
+
 - Services fail to start
 - Health checks return errors
 - Port conflicts
 - Dependency issues
 
 #### Diagnostic Commands
+
 ```bash
 # Check service status
 ./scripts/start_all_services.sh
@@ -158,30 +176,34 @@ docker ps | grep -E "(postgres|redis|opa)"
 ```
 
 #### Resolution Steps
+
 1. **Check Dependencies**:
+
    ```bash
    # Start infrastructure services
    docker-compose -f infrastructure/docker/docker-compose.acgs.yml up -d postgres redis opa
-   
+
    # Wait for services to be ready
    sleep 30
    ```
 
 2. **Resolve Port Conflicts**:
+
    ```bash
    # Find processes using ports
    lsof -i :8000-8006
-   
+
    # Kill conflicting processes
    kill -9 <PID>
    ```
 
 3. **Fix Configuration Issues**:
+
    ```bash
    # Verify environment variables
    source config/env/.env
    echo $CONSTITUTIONAL_HASH
-   
+
    # Check service configuration
    grep -n "8000\|8001\|8002\|8003\|8004\|8005\|8006" scripts/start_all_services.sh
    ```
@@ -189,12 +211,14 @@ docker ps | grep -E "(postgres|redis|opa)"
 ### Performance Degradation
 
 #### Symptoms
+
 - Response time >2 seconds
 - Throughput <1000 RPS
 - High CPU/memory usage
 - Database connection issues
 
 #### Diagnostic Commands
+
 ```bash
 # Test performance
 ./scripts/test_performance_validation.sh
@@ -210,21 +234,24 @@ done
 ```
 
 #### Resolution Steps
+
 1. **Resource Optimization**:
+
    ```bash
    # Check resource limits
    grep -A 10 "resources:" infrastructure/docker/docker-compose.acgs.yml
-   
+
    # Increase limits if needed (edit docker-compose.acgs.yml)
    # memory: 1Gi -> 2Gi
    # cpus: '500m' -> '1000m'
    ```
 
 2. **Database Optimization**:
+
    ```bash
    # Check database connections
    docker exec acgs_postgres psql -U acgs_user -d acgs_db -c "SELECT count(*) FROM pg_stat_activity;"
-   
+
    # Optimize queries (check slow query logs)
    ```
 
@@ -237,12 +264,14 @@ done
 ### AI Model Integration Issues
 
 #### Symptoms
+
 - AI model API errors
 - Authentication failures
 - Model response timeouts
 - Constitutional reasoning failures
 
 #### Diagnostic Commands
+
 ```bash
 # Check API keys
 echo $GOOGLE_GEMINI_API_KEY | cut -c1-10
@@ -258,36 +287,40 @@ cat config/ai-models/model-config.yaml
 ```
 
 #### Resolution Steps
+
 1. **Verify API Keys**:
+
    ```bash
    # Test each API key
    # Google Gemini
    curl -H "Authorization: Bearer $GOOGLE_GEMINI_API_KEY" \
      "https://generativelanguage.googleapis.com/v1beta/models"
-   
+
    # DeepSeek R1
    curl -H "Authorization: Bearer $DEEPSEEK_R1_API_KEY" \
      "https://api.deepseek.com/v1/models"
-   
+
    # NVIDIA Qwen
    curl -H "Authorization: Bearer $NVIDIA_QWEN_API_KEY" \
      "https://integrate.api.nvidia.com/v1/models"
    ```
 
 2. **Update Configuration**:
+
    ```bash
    # Update environment variables
    nano config/env/.env
-   
+
    # Restart services to pick up new configuration
    ./scripts/start_all_services.sh
    ```
 
 3. **Test Integration**:
+
    ```bash
    # Test constitutional AI service
    curl -s http://localhost:8001/constitutional/compliance
-   
+
    # Verify AI model responses
    curl -X POST http://localhost:8001/ai/models/test
    ```
@@ -297,12 +330,14 @@ cat config/ai-models/model-config.yaml
 ### Package Manager Issues
 
 #### Symptoms
+
 - npm used instead of pnpm
 - Cargo build failures
 - Dependency conflicts
 - Lock file inconsistencies
 
 #### Resolution Steps
+
 ```bash
 # Install pnpm if missing
 npm install -g pnpm
@@ -325,11 +360,13 @@ which uv
 ### Configuration Inconsistencies
 
 #### Symptoms
+
 - Environment variable mismatches
 - Service configuration drift
 - Resource limit inconsistencies
 
 #### Resolution Steps
+
 ```bash
 # Standardize configuration
 ./scripts/setup/project_setup.sh
@@ -345,6 +382,7 @@ grep -r "cdd01ef066bc6cf2" . --include="*.yml" --include="*.sh" --include="*.py"
 ## Diagnostic Tools
 
 ### Health Check Commands
+
 ```bash
 # Basic health checks
 for port in {8000..8006}; do
@@ -363,6 +401,7 @@ done
 ```
 
 ### Log Analysis
+
 ```bash
 # View all service logs
 tail -f logs/*.log
@@ -378,6 +417,7 @@ grep -i "timeout\|slow\|performance" logs/*.log
 ```
 
 ### Performance Monitoring
+
 ```bash
 # System resource usage
 htop
@@ -393,6 +433,7 @@ docker exec acgs_postgres psql -U acgs_user -d acgs_db -c "SELECT * FROM pg_stat
 ## Recovery Procedures
 
 ### Service Recovery
+
 ```bash
 # Stop all services
 pkill -f "uvicorn.*:800[0-6]"
@@ -411,6 +452,7 @@ docker-compose -f infrastructure/docker/docker-compose.acgs.yml up -d postgres r
 ```
 
 ### Database Recovery
+
 ```bash
 # Backup current state
 docker exec acgs_postgres pg_dump -U acgs_user acgs_db > backup_$(date +%Y%m%d_%H%M%S).sql
@@ -423,6 +465,7 @@ cd services/shared && alembic upgrade head
 ```
 
 ### Configuration Recovery
+
 ```bash
 # Reset to known good configuration
 git checkout HEAD -- config/ infrastructure/
@@ -437,6 +480,7 @@ git checkout HEAD -- config/ infrastructure/
 ## Prevention Strategies
 
 ### Regular Maintenance
+
 ```bash
 # Weekly health checks
 ./scripts/run_all_setup_tests.sh
@@ -449,6 +493,7 @@ git checkout HEAD -- config/ infrastructure/
 ```
 
 ### Monitoring Setup
+
 ```bash
 # Set up monitoring alerts for:
 # - Constitutional compliance <95%
@@ -458,6 +503,7 @@ git checkout HEAD -- config/ infrastructure/
 ```
 
 ### Documentation Maintenance
+
 ```bash
 # Keep troubleshooting procedures updated
 # Document new issues and resolutions
@@ -467,12 +513,14 @@ git checkout HEAD -- config/ infrastructure/
 ## Escalation Procedures
 
 ### When to Escalate
+
 - Constitutional compliance cannot be restored within 2 hours
 - Emergency shutdown procedures fail
 - Security vulnerabilities detected
 - Data integrity compromised
 
 ### Escalation Contacts
+
 - **Technical Lead**: For architectural decisions
 - **Security Team**: For security incidents
 - **Operations Team**: For infrastructure issues

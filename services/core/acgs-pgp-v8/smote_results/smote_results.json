@@ -1,0 +1,25 @@
+{
+  "original_class_distribution": {
+    "0": 102,
+    "1": 1898
+  },
+  "smote_class_distribution": {
+    "0": 1898,
+    "1": 1898
+  },
+  "original_imbalance_ratio": 0.05374077976817703,
+  "smote_imbalance_ratio": 1.0,
+  "original_accuracy": 0.95,
+  "smote_accuracy": 0.9513157894736842,
+  "original_f1_score": 0.9256410256410257,
+  "smote_f1_score": 0.951234654610597,
+  "synthetic_samples_generated": 1796,
+  "quality_score": 0.8140150885766744,
+  "nearest_neighbor_distance_mean": 5.309243873007095,
+  "nearest_neighbor_distance_std": 6.71928073917152,
+  "constitutional_compliance_rate": 0.9634141079611114,
+  "compliance_maintained": true,
+  "processing_time_seconds": 0.520375,
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "timestamp": "2025-06-27T18:55:01.119574"
+}

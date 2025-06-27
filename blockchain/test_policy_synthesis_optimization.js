@@ -392,7 +392,9 @@ async function testPolicySynthesisOptimization() {
     cachedResults.push(result);
 
     console.log(
-      `   Policy ${i + 1}: ${result.fromCache ? '🔄 CACHED' : '🆕 NEW'} (${result.responseTime.toFixed(2)}ms)`
+      `   Policy ${i + 1}: ${
+        result.fromCache ? '🔄 CACHED' : '🆕 NEW'
+      } (${result.responseTime.toFixed(2)}ms)`
     );
   }
 
@@ -412,7 +414,9 @@ async function testPolicySynthesisOptimization() {
   console.log(`   Max Response Time (First Run): ${maxFirstRun.toFixed(2)}ms`);
   console.log(`   Max Response Time (Cached): ${maxSecondRun.toFixed(2)}ms`);
   console.log(
-    `   Performance Improvement: ${(((avgFirstRun - avgSecondRun) / avgFirstRun) * 100).toFixed(1)}%`
+    `   Performance Improvement: ${(((avgFirstRun - avgSecondRun) / avgFirstRun) * 100).toFixed(
+      1
+    )}%`
   );
 
   // Strategy distribution analysis
@@ -447,7 +451,9 @@ async function testPolicySynthesisOptimization() {
   );
   console.log(`   Semantic Coherence: ${(qualityMetrics.avgSemanticCoherence * 100).toFixed(1)}%`);
   console.log(
-    `   Implementation Feasibility: ${(qualityMetrics.avgImplementationFeasibility * 100).toFixed(1)}%`
+    `   Implementation Feasibility: ${(qualityMetrics.avgImplementationFeasibility * 100).toFixed(
+      1
+    )}%`
   );
 
   const overallQuality =

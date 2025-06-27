@@ -37,8 +37,8 @@ start_service() {
                 --workers 4 \
                 --worker-class uvicorn.workers.UvicornWorker \
                 --bind 0.0.0.0:$SERVICE_PORT \
-                --max-requests 10000 \
-                --max-requests-jitter 1000 \
+                --max-requests 100000 \
+                --max-requests-jitter 10000 \
                 --keepalive 5 \
                 --timeout 30 \
                 --graceful-timeout 30 \

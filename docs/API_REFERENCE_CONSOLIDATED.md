@@ -46,6 +46,7 @@ curl -H "Authorization: Bearer <JWT_TOKEN>" \
 All services expose standard monitoring and health endpoints:
 
 ### Health Check
+
 ```bash
 GET /health
 # Returns service health status
@@ -59,6 +60,7 @@ GET /health
 ```
 
 ### Prometheus Metrics
+
 ```bash
 GET /metrics
 # Returns Prometheus-formatted metrics
@@ -68,6 +70,7 @@ http_requests_total{method="GET",status="200"} 1234
 ```
 
 ### Service Info
+
 ```bash
 GET /info
 # Returns detailed service information

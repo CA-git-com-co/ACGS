@@ -2,7 +2,7 @@
 
 **Version**: 1.0.0  
 **Date**: 2025-06-27  
-**Constitutional Hash**: cdd01ef066bc6cf2  
+**Constitutional Hash**: cdd01ef066bc6cf2
 
 ## Overview
 
@@ -12,15 +12,15 @@ This guide provides comprehensive instructions for setting up the ACGS-PGP (Auto
 
 ### 7-Service Architecture
 
-| Service | Port | Description | Constitutional Role |
-|---------|------|-------------|-------------------|
-| auth_service | 8000 | Authentication & Authorization | Identity governance |
-| ac_service | 8001 | Constitutional AI | Core constitutional compliance |
-| integrity_service | 8002 | Data Integrity & Cryptographic Verification | Data governance |
-| fv_service | 8003 | Formal Verification | Policy verification |
-| gs_service | 8004 | Governance Synthesis | Policy synthesis |
-| pgc_service | 8005 | Policy Governance Compliance | Compliance monitoring |
-| ec_service | 8006 | Evolutionary Computation | System evolution |
+| Service           | Port | Description                                 | Constitutional Role            |
+| ----------------- | ---- | ------------------------------------------- | ------------------------------ |
+| auth_service      | 8000 | Authentication & Authorization              | Identity governance            |
+| ac_service        | 8001 | Constitutional AI                           | Core constitutional compliance |
+| integrity_service | 8002 | Data Integrity & Cryptographic Verification | Data governance                |
+| fv_service        | 8003 | Formal Verification                         | Policy verification            |
+| gs_service        | 8004 | Governance Synthesis                        | Policy synthesis               |
+| pgc_service       | 8005 | Policy Governance Compliance                | Compliance monitoring          |
+| ec_service        | 8006 | Evolutionary Computation                    | System evolution               |
 
 ### Constitutional Governance Features
 
@@ -146,26 +146,26 @@ Create `config/ai-models/model-config.yaml`:
 ai_models:
   google_gemini:
     enabled: true
-    model_name: "gemini-1.5-pro"
+    model_name: 'gemini-1.5-pro'
     constitutional_compliance: true
-    
+
   deepseek_r1:
     enabled: true
-    model_name: "deepseek-r1"
+    model_name: 'deepseek-r1'
     reasoning_mode: true
-    
+
   nvidia_qwen:
     enabled: true
-    model_name: "qwen2.5-72b-instruct"
+    model_name: 'qwen2.5-72b-instruct'
     gpu_acceleration: true
-    
+
   nano_vllm:
     enabled: true
     local_deployment: true
-    endpoint: "http://localhost:8080/v1"
+    endpoint: 'http://localhost:8080/v1'
 
 constitutional_governance:
-  hash: "cdd01ef066bc6cf2"
+  hash: 'cdd01ef066bc6cf2'
   compliance_threshold: 0.95
   dgm_safety_patterns:
     sandbox_enabled: true
@@ -246,6 +246,7 @@ done
 **Symptoms**: Services fail to start or health checks fail
 
 **Solutions**:
+
 ```bash
 # Check logs
 tail -f logs/<service_name>.log
@@ -263,6 +264,7 @@ curl http://localhost:8181/health  # Check OPA
 **Symptoms**: Compliance score <95%
 
 **Solutions**:
+
 ```bash
 # Verify constitutional hash
 grep -r "cdd01ef066bc6cf2" config/
@@ -279,6 +281,7 @@ curl http://localhost:8001/constitutional/compliance
 **Symptoms**: Response time >2s or low throughput
 
 **Solutions**:
+
 ```bash
 # Check resource usage
 docker stats
@@ -297,6 +300,7 @@ grep -A 5 "resources:" infrastructure/docker/docker-compose.acgs.yml
 **Symptoms**: AI model endpoints returning errors
 
 **Solutions**:
+
 ```bash
 # Verify API keys
 echo $GOOGLE_GEMINI_API_KEY

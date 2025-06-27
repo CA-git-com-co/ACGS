@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-06-17T11:01:01.797597+00:00",
+  "timestamp": "2025-06-27T14:33:35.684749+00:00",
   "performance_targets": {
     "gsm8k_accuracy": 85.0,
     "concurrent_users": 1000,
@@ -9,52 +9,52 @@
     "availability": 99.0
   },
   "measured_metrics": {
-    "gsm8k_accuracy": 85.0,
-    "concurrent_users": 500,
-    "response_time_ms": 600.0,
-    "security_score": 95.0,
-    "sol_cost": 0.012,
+    "gsm8k_accuracy": 0.0,
+    "concurrent_users": 0,
+    "response_time_ms": 9999.0,
+    "security_score": 0.0,
+    "sol_cost": 999.0,
     "availability": 100.0
   },
   "target_validation": {
-    "gsm8k_accuracy_target": true,
+    "gsm8k_accuracy_target": false,
     "concurrent_users_target": false,
     "response_time_ms_target": false,
-    "security_score_target": true,
+    "security_score_target": false,
     "sol_cost_target": false,
     "availability_target": true
   },
   "overall_assessment": {
-    "targets_passed": 3,
+    "targets_passed": 1,
     "total_targets": 6,
-    "success_rate": 50.0,
+    "success_rate": 16.666666666666664,
     "overall_success": false,
     "status": "NEEDS_IMPROVEMENT"
   },
   "detailed_results": {
     "gsm8k": {
-      "status": "PARTIAL",
-      "accuracy": 85.0
+      "status": "FAIL",
+      "accuracy": 0.0
     },
     "load_test": {
-      "status": "PARTIAL",
-      "concurrent_users": 500,
-      "response_time": 600.0
+      "status": "FAIL",
+      "concurrent_users": 0,
+      "response_time": 9999.0
     },
     "security": {
-      "status": "PASS",
-      "security_score": 95.0,
-      "critical_vulns": 0
+      "status": "FAIL",
+      "security_score": 0.0,
+      "critical_vulns": 999
     },
     "blockchain": {
-      "status": "PARTIAL",
-      "sol_cost": 0.012,
-      "success_rate": 98.0
+      "status": "FAIL",
+      "sol_cost": 999.0,
+      "success_rate": 0.0
     },
     "health": {
       "status": "PASS",
       "availability": 100.0,
-      "avg_response_time": 6.964308874947684
+      "avg_response_time": 2.4802684783935547
     }
   }
 }

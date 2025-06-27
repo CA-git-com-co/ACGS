@@ -1,0 +1,69 @@
+{
+  "performance_analysis": {
+    "overall_hit_rate": 0,
+    "total_requests": 0,
+    "cache_hits": 0,
+    "cache_levels": {
+      "l1": {
+        "hits": 0,
+        "hit_rate": 0
+      },
+      "l2": {
+        "hits": 0,
+        "hit_rate": 0
+      },
+      "l3": {
+        "hits": 0,
+        "hit_rate": 0
+      }
+    },
+    "avg_response_time": 0,
+    "cache_efficiency": "needs_improvement"
+  },
+  "ttl_optimization": {
+    "current_ttls": {
+      "l1_ttl": 300,
+      "l2_ttl": 1800,
+      "l3_ttl": 3600
+    },
+    "optimal_ttls": {
+      "l1_ttl": 360.0,
+      "l2_ttl": 1440.0,
+      "l3_ttl": 5400.0
+    },
+    "improvements": {
+      "l1_change": "+20.0%",
+      "l2_change": "-20.0%",
+      "l3_change": "+50.0%"
+    }
+  },
+  "cache_warming": {
+    "requests_warmed": 5,
+    "total_requests": 5,
+    "success_rate": 100.0,
+    "strategy": "constitutional_validation_common_patterns"
+  },
+  "promotion_optimization": {
+    "current_algorithm": {
+      "l1_to_l2_threshold": 3,
+      "l2_to_l3_threshold": 5,
+      "frequency_weight": 0.6,
+      "recency_weight": 0.4
+    },
+    "optimized_algorithm": {
+      "l1_to_l2_threshold": 2,
+      "l2_to_l3_threshold": 4,
+      "frequency_weight": 0.7,
+      "recency_weight": 0.3,
+      "constitutional_boost": 1.5
+    },
+    "improvements": [
+      "More aggressive L1\u2192L2 promotion (3\u21922 hits)",
+      "Slightly more aggressive L2\u2192L3 promotion (5\u21924 hits)",
+      "Increased frequency weight (0.6\u21920.7)",
+      "Added constitutional content boost (1.5x)"
+    ]
+  },
+  "execution_time": 0.00345611572265625,
+  "constitutional_hash": "cdd01ef066bc6cf2"
+}

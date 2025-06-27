@@ -1,0 +1,85 @@
+{
+  "overall_drift_detected": true,
+  "drift_severity": "high",
+  "drift_score": 0.7061137247730135,
+  "ks_test_results": {
+    "response_time_ms": {
+      "statistic": 0.22933333333333333,
+      "p_value": 5.548169730321647e-35,
+      "drift_detected": true
+    },
+    "cost_estimate": {
+      "statistic": 0.10333333333333333,
+      "p_value": 2.1626112088313309e-07,
+      "drift_detected": true
+    },
+    "quality_score": {
+      "statistic": 0.07933333333333334,
+      "p_value": 0.0001577827799892098,
+      "drift_detected": true
+    },
+    "complexity_score": {
+      "statistic": 0.14266666666666666,
+      "p_value": 1.0019466031495281e-13,
+      "drift_detected": true
+    },
+    "content_length": {
+      "statistic": 0.9986666666666667,
+      "p_value": 0.0,
+      "drift_detected": true
+    },
+    "hour_of_day": {
+      "statistic": 0.07866666666666666,
+      "p_value": 0.00018484104254881504,
+      "drift_detected": true
+    },
+    "is_weekend": {
+      "statistic": 0.02666666666666667,
+      "p_value": 0.6605596710582962,
+      "drift_detected": false
+    },
+    "constitutional_compliance": {
+      "statistic": 0.02666666666666667,
+      "p_value": 0.6605596710582962,
+      "drift_detected": false
+    }
+  },
+  "features_with_ks_drift": [
+    "response_time_ms",
+    "cost_estimate",
+    "quality_score",
+    "complexity_score",
+    "content_length",
+    "hour_of_day"
+  ],
+  "psi_results": {
+    "response_time_ms": 0.2747308478198601,
+    "cost_estimate": 0.06871175820429098,
+    "quality_score": 0.036998959608275116,
+    "complexity_score": 0.08958489323522638,
+    "content_length": 18.919984261422993,
+    "hour_of_day": 0.09145362894624125,
+    "is_weekend": 0.0,
+    "constitutional_compliance": 0.0
+  },
+  "features_with_psi_drift": [
+    "response_time_ms",
+    "content_length"
+  ],
+  "retraining_required": true,
+  "retraining_urgency": "high",
+  "affected_features": [
+    "cost_estimate",
+    "response_time_ms",
+    "hour_of_day",
+    "quality_score",
+    "content_length",
+    "complexity_score"
+  ],
+  "reference_period": "baseline",
+  "current_period": "current",
+  "samples_reference": 1500,
+  "samples_current": 1500,
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "timestamp": "2025-06-27T18:57:12.770356"
+}

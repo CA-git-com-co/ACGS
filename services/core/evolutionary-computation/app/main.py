@@ -30,7 +30,7 @@ from .api.v1.wina_oversight import router as wina_oversight_router
 try:
     import sys
 
-    sys.path.append("/home/ubuntu/ACGS/services/shared")
+    sys.path.append("/home/ubuntu/ACGS")
     from services.shared.security_middleware import (
         apply_production_security_middleware,
         create_security_config,
@@ -47,7 +47,7 @@ except ImportError as e:
 try:
     import sys
 
-    sys.path.append("/home/dislove/ACGS-1/services/shared")
+    sys.path.append("/home/ubuntu/ACGS")
     from services.shared.comprehensive_audit_logger import (
         AuditEventType,
         AuditSeverity,
@@ -362,7 +362,7 @@ async def add_constitutional_headers(request, call_next):
 try:
     import sys
 
-    sys.path.append("/home/dislove/ACGS-1/services/shared")
+    sys.path.append("/home/ubuntu/ACGS")
     from services.shared.prometheus_middleware import (
         add_prometheus_middleware,
         create_enhanced_metrics_endpoint,

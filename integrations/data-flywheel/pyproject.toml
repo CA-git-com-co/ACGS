@@ -62,7 +62,7 @@ dependencies = [
     
     # Constitutional governance specific
     "cryptography>=45.0.4",
-    "python-jose[cryptography]>=3.5.0",
+    "python-jose[cryptography]>=3.3.0",
     "passlib[bcrypt]>=1.7.4",
     
     # Utilities

@@ -1,6 +1,6 @@
 # ACGS-PGP Main Requirements
 # Version: 3.0.0
-# Last Updated: 2025-06-27
+# Last Updated: 2025-06-28
 
 # Core Framework
 fastapi>=0.104.1
@@ -17,9 +17,9 @@ alembic>=1.13.0
 psycopg2-binary>=2.9.7
 
 # Authentication & Security
-cryptography>=41.0.7
+cryptography>=45.0.4
 pyjwt[crypto]>=2.8.0
-python-jose[cryptography]>=3.5.0
+python-jose[cryptography]>=3.3.0
 passlib[bcrypt]>=1.7.4
 python-multipart>=0.0.6
 

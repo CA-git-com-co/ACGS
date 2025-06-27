@@ -1,0 +1,73 @@
+{
+  "model_end_to_end_test_model_1.0.0_1751066820": {
+    "artifact_id": "model_end_to_end_test_model_1.0.0_1751066820",
+    "artifact_type": "model",
+    "name": "end_to_end_test_model",
+    "version": "1.0.0",
+    "storage_path": "mlops/artifacts/model/end_to_end_test_model_1.0.0.gz",
+    "file_size_bytes": 52,
+    "checksum": "aab31da8e9448d3ba28bd816d38e99fca0371c886b0b53ffb41ed90590bf85ef",
+    "compression": true,
+    "parent_artifacts": [],
+    "child_artifacts": [
+      "config_end_to_end_test_model_config_1.0.0_1751066820"
+    ],
+    "dependencies": {},
+    "created_at": "2025-06-27T23:27:00.783232+00:00",
+    "accessed_at": null,
+    "constitutional_hash": "cdd01ef066bc6cf2",
+    "metadata": {
+      "type": "trained_model"
+    }
+  },
+  "config_end_to_end_test_model_config_1.0.0_1751066820": {
+    "artifact_id": "config_end_to_end_test_model_config_1.0.0_1751066820",
+    "artifact_type": "config",
+    "name": "end_to_end_test_model_config",
+    "version": "1.0.0",
+    "storage_path": "mlops/artifacts/config/end_to_end_test_model_config_1.0.0.gz",
+    "file_size_bytes": 1233,
+    "checksum": "43a0229b6c0ac25aa87724d4e07a492a483c52290ae2abc78c2842ea6a0228c2",
+    "compression": true,
+    "parent_artifacts": [
+      "model_end_to_end_test_model_1.0.0_1751066820"
+    ],
+    "child_artifacts": [],
+    "dependencies": {},
+    "created_at": "2025-06-27T23:27:00.783538+00:00",
+    "accessed_at": null,
+    "constitutional_hash": "cdd01ef066bc6cf2",
+    "metadata": {
+      "type": "model_config"
+    }
+  },
+  "metrics_end_to_end_test_model_metrics_1.0.0_1751066820": {
+    "artifact_id": "metrics_end_to_end_test_model_metrics_1.0.0_1751066820",
+    "artifact_type": "metrics",
+    "name": "end_to_end_test_model_metrics",
+    "version": "1.0.0",
+    "storage_path": "mlops/artifacts/metrics/end_to_end_test_model_metrics_1.0.0.gz",
+    "file_size_bytes": 249,
+    "checksum": "337f691f97d5bdd1143323364055f0ad6d811fe4ff21a626cdf6a83241f69ff7",
+    "compression": true,
+    "parent_artifacts": [
+      "model_end_to_end_test_model_1.0.0_1751066820"
+    ],
+    "child_artifacts": [],
+    "dependencies": {},
+    "created_at": "2025-06-27T23:27:00.784030+00:00",
+    "accessed_at": null,
+    "constitutional_hash": "cdd01ef066bc6cf2",
+    "metadata": {
+      "type": "performance_metrics",
+      "metrics": {
+        "accuracy": 0.0,
+        "mae": 0.0,
+        "rmse": 0.0,
+        "constitutional_compliance": 0.0,
+        "response_time_ms": 0.0,
+        "cost_efficiency": 0.0
+      }
+    }
+  }
+}

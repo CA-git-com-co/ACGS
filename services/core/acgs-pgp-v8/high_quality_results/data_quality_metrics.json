@@ -1,0 +1,47 @@
+{
+  "missing_value_rate": 0.0009090909090909091,
+  "missing_patterns": {
+    "response_time_ms": 0.0,
+    "cost_estimate": 0.0,
+    "quality_score": 0.01,
+    "content_length": 0.0,
+    "request_type": 0.0,
+    "content_type": 0.0,
+    "model_type": 0.0,
+    "hour_of_day": 0.0,
+    "day_of_week": 0.0,
+    "constitutional_compliance": 0.0,
+    "timestamp": 0.0
+  },
+  "outlier_rate": 0.043,
+  "outlier_features": [],
+  "imbalance_ratio": 0.7761989342806395,
+  "class_distribution": {
+    "true": 0.563,
+    "false": 0.437
+  },
+  "max_correlation": 0.05811013158297946,
+  "high_correlation_pairs": [],
+  "data_freshness_hours": 0.0066543497222222225,
+  "stale_data_rate": 0.0,
+  "duplicate_rate": 0.005,
+  "inconsistency_rate": 0.0,
+  "completeness_score": 0.9990909090909091,
+  "feature_completeness": {
+    "response_time_ms": 1.0,
+    "cost_estimate": 1.0,
+    "quality_score": 0.99,
+    "content_length": 1.0,
+    "request_type": 1.0,
+    "content_type": 1.0,
+    "model_type": 1.0,
+    "hour_of_day": 1.0,
+    "day_of_week": 1.0,
+    "constitutional_compliance": 1.0,
+    "timestamp": 1.0
+  },
+  "quality_score": 1.0,
+  "assessment_timestamp": "2025-06-27T18:31:05.071108",
+  "sample_size": 1000,
+  "features_analyzed": 11
+}

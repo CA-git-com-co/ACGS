@@ -162,10 +162,10 @@ class DependencyResolver:
                 "opentelemetry-api==1.21.0",
                 "opentelemetry-sdk==1.21.0",
                 "opentelemetry-instrumentation-fastapi==0.42b0",
-                "cryptography>=41.0.7",
+                "cryptography>=45.0.4",
                 "pyjwt[crypto]>=2.8.0",
-                "python-jose[cryptography]>=3.5.0",
-                "python-multipart>=0.0.18"
+                "python-jose[cryptography]>=3.3.0",
+                "python-multipart>=0.0.20"
             ]
             
             # Multi-model LLM dependencies

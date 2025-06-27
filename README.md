@@ -36,12 +36,14 @@ The ACGS-PGP (Autonomous Constitutional Governance System - Policy Generation Pl
 ## Recent Updates (June 2025)
 
 ### Infrastructure Enhancements
+
 - ✅ **Monitoring Infrastructure**: Comprehensive Prometheus/Grafana stack deployed
 - ✅ **GitOps Integration**: ArgoCD deployment configurations for automated deployments
 - ✅ **E2E Testing**: End-to-end testing frameworks with offline validation support
 - ✅ **Security Hardening**: Enhanced security configurations and compliance frameworks
 
 ### New Features
+
 - **Production Monitoring Dashboard**: Real-time metrics and alerting
 - **Constitutional Compliance Monitoring**: Automated compliance validation
 - **Emergency Response Procedures**: Automated shutdown and restore capabilities
@@ -185,6 +187,7 @@ Access Grafana dashboards for real-time monitoring:
 ### Alert Rules
 
 Critical alerts configured for:
+
 - Service availability < 99.5% (production services)
 - Constitutional compliance < 95%
 - Response time > 500ms (sustained)

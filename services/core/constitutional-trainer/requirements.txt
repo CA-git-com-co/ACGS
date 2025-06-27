@@ -5,7 +5,7 @@
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 pydantic==2.5.0
-python-multipart>=0.0.7  # Updated to fix CVE-2024-53981, CVE-2024-53982, CVE-2024-24762
+python-multipart>=0.0.20
 
 # Machine Learning and AI
 torch>=2.6.0  # Updated to fix CVE-2025-32434 (Critical RCE vulnerability)

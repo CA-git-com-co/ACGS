@@ -432,7 +432,9 @@ async function testAdvancedCachingStrategy() {
       const getResult = await cacheManager.get(type, item.key);
       typeResults.getTimes.push(getResult.responseTime);
       console.log(
-        `     GET ${item.key}: ${getResult.hit ? '🔄 HIT' : '❌ MISS'} (${getResult.responseTime}ms)`
+        `     GET ${item.key}: ${getResult.hit ? '🔄 HIT' : '❌ MISS'} (${
+          getResult.responseTime
+        }ms)`
       );
     }
 
@@ -440,7 +442,9 @@ async function testAdvancedCachingStrategy() {
     const missResult = await cacheManager.get(type, 'nonexistent_key');
     typeResults.getTimes.push(missResult.responseTime);
     console.log(
-      `     GET nonexistent: ${missResult.hit ? '🔄 HIT' : '❌ MISS'} (${missResult.responseTime}ms)`
+      `     GET nonexistent: ${missResult.hit ? '🔄 HIT' : '❌ MISS'} (${
+        missResult.responseTime
+      }ms)`
     );
 
     performanceResults[type] = typeResults;

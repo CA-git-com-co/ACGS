@@ -89,7 +89,7 @@ jobs:
               fi
               ;;
           esac
-          
+
           # Fallback: Check core services
           if [ "$DOCKERFILE_FOUND" = false ] && [ -f "services/core/${{ matrix.service }}/Dockerfile" ]; then
             echo "dockerfile_path=services/core/${{ matrix.service }}/Dockerfile" >> $GITHUB_OUTPUT

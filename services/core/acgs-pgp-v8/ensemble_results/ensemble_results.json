@@ -1,0 +1,51 @@
+{
+  "ensemble_mae": 1.7953758593245683,
+  "ensemble_rmse": 7.541037103304988,
+  "ensemble_r2": 0.6729672420313579,
+  "individual_performances": {
+    "random_forest": {
+      "mae": 1.9837606056612207,
+      "rmse": 6.893676017156432,
+      "r2": 0.7267055327487164
+    },
+    "xgboost": {
+      "mae": 1.927282581883686,
+      "rmse": 10.752881196277935,
+      "r2": 0.335065607323187
+    },
+    "lightgbm": {
+      "mae": 2.3361051870974023,
+      "rmse": 11.217869768363371,
+      "r2": 0.276314469406028
+    },
+    "neural_network": {
+      "mae": 1.900705320556271,
+      "rmse": 3.223522986117473,
+      "r2": 0.9402427443212613
+    }
+  },
+  "model_weights": {
+    "random_forest": 0.227161664385674,
+    "xgboost": 0.2858154808408823,
+    "lightgbm": 0.2804725886150327,
+    "neural_network": 0.20655026615841082
+  },
+  "weight_distribution": {
+    "random_forest": 0.227161664385674,
+    "xgboost": 0.2858154808408823,
+    "lightgbm": 0.2804725886150327,
+    "neural_network": 0.20655026615841082
+  },
+  "prediction_variance": 26.535043699183362,
+  "consensus_score": 0.036317356562962644,
+  "fallback_activations": {
+    "random_forest": 0,
+    "xgboost": 0,
+    "lightgbm": 0,
+    "neural_network": 0
+  },
+  "total_predictions": 200,
+  "success_rate": 1.0,
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "timestamp": "2025-06-27T19:22:46.633655"
+}

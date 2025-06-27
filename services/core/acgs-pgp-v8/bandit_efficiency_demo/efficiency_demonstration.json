@@ -1,0 +1,25 @@
+{
+  "naive_approach_time": 82.8403644437786,
+  "bandit_approach_time": 20.521958316386712,
+  "efficiency_gain_percent": 75.22710280890375,
+  "naive_avg_performance": 0.7663455651265323,
+  "bandit_avg_performance": 0.843198893372248,
+  "performance_improvement": 10.028547399896066,
+  "algorithm_usage_naive": {
+    "random_forest": 50,
+    "xgboost": 50,
+    "lightgbm": 50,
+    "neural_network": 50
+  },
+  "algorithm_usage_bandit": {
+    "random_forest": 4,
+    "xgboost": 3,
+    "lightgbm": 188,
+    "neural_network": 5
+  },
+  "best_algorithm_identified": "lightgbm",
+  "worst_algorithm_avoided": "xgboost",
+  "target_achieved": true,
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "timestamp": "2025-06-27T19:04:55.979897"
+}

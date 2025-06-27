@@ -2,7 +2,7 @@
 
 **Version**: 1.0.0  
 **Date**: 2025-06-27  
-**Constitutional Hash**: cdd01ef066bc6cf2  
+**Constitutional Hash**: cdd01ef066bc6cf2
 
 ## Overview
 
@@ -13,6 +13,7 @@ This guide provides comprehensive procedures for deploying, operating, and maint
 ### Infrastructure Requirements
 
 #### Hardware Specifications
+
 - **CPU**: 16 cores minimum, 32 cores recommended
 - **Memory**: 32GB RAM minimum, 64GB recommended
 - **Storage**: 500GB SSD minimum, 1TB recommended
@@ -20,6 +21,7 @@ This guide provides comprehensive procedures for deploying, operating, and maint
 - **Redundancy**: Multi-zone deployment for high availability
 
 #### Software Requirements
+
 - **OS**: Ubuntu 22.04 LTS or RHEL 9+
 - **Container Runtime**: Docker 24.0+ with containerd
 - **Orchestration**: Kubernetes 1.28+ (optional but recommended)
@@ -30,12 +32,14 @@ This guide provides comprehensive procedures for deploying, operating, and maint
 ### Security Requirements
 
 #### Network Security
+
 - **Firewall**: Only required ports open (8000-8006, 8181)
 - **TLS**: SSL/TLS certificates for all external endpoints
 - **VPN**: Secure access for administrative functions
 - **Network Segmentation**: Isolated network for ACGS services
 
 #### Access Control
+
 - **Authentication**: Multi-factor authentication required
 - **Authorization**: Role-based access control (RBAC)
 - **Audit Logging**: All administrative actions logged
@@ -44,6 +48,7 @@ This guide provides comprehensive procedures for deploying, operating, and maint
 ### Constitutional Governance Requirements
 
 #### Compliance Validation
+
 - [ ] Constitutional hash verified: `cdd01ef066bc6cf2`
 - [ ] Compliance threshold configured: >95%
 - [ ] DGM safety patterns implemented
@@ -51,6 +56,7 @@ This guide provides comprehensive procedures for deploying, operating, and maint
 - [ ] OPA policies deployed and validated
 
 #### AI Model Integration
+
 - [ ] Google Gemini API key configured and tested
 - [ ] DeepSeek R1 API key configured and tested
 - [ ] NVIDIA Qwen API key configured and tested
@@ -62,6 +68,7 @@ This guide provides comprehensive procedures for deploying, operating, and maint
 ### Phase 1: Infrastructure Deployment
 
 #### 1.1 Environment Setup
+
 ```bash
 # Create deployment directory
 mkdir -p /opt/acgs-pgp
@@ -75,6 +82,7 @@ cp config/env/.env.production.example config/env/.env
 ```
 
 #### 1.2 Database Setup
+
 ```bash
 # Deploy PostgreSQL with high availability
 docker-compose -f infrastructure/docker/docker-compose.production.yml up -d postgres
@@ -88,6 +96,7 @@ alembic upgrade head
 ```
 
 #### 1.3 Infrastructure Services
+
 ```bash
 # Deploy Redis cluster
 docker-compose -f infrastructure/docker/docker-compose.production.yml up -d redis
@@ -104,6 +113,7 @@ curl http://localhost:8181/health  # OPA
 ### Phase 2: Service Deployment
 
 #### 2.1 Constitutional Governance Services
+
 ```bash
 # Deploy core constitutional services first
 docker-compose -f infrastructure/docker/docker-compose.production.yml up -d \
@@ -119,6 +129,7 @@ done
 ```
 
 #### 2.2 Policy and Governance Services
+
 ```bash
 # Deploy policy services
 docker-compose -f infrastructure/docker/docker-compose.production.yml up -d \
@@ -131,6 +142,7 @@ done
 ```
 
 #### 2.3 Evolution and Computation Services
+
 ```bash
 # Deploy evolution service
 docker-compose -f infrastructure/docker/docker-compose.production.yml up -d ec_service
@@ -142,6 +154,7 @@ docker-compose -f infrastructure/docker/docker-compose.production.yml up -d ec_s
 ### Phase 3: Validation and Testing
 
 #### 3.1 Health Validation
+
 ```bash
 # Comprehensive health check
 ./scripts/run_all_setup_tests.sh
@@ -154,6 +167,7 @@ docker-compose -f infrastructure/docker/docker-compose.production.yml up -d ec_s
 ```
 
 #### 3.2 Load Testing
+
 ```bash
 # Install load testing tools
 npm install -g artillery
@@ -170,6 +184,7 @@ artillery run tests/load/performance-load-test.yml
 ```
 
 #### 3.3 Security Validation
+
 ```bash
 # Run security scans
 docker run --rm -v $(pwd):/app \
@@ -187,6 +202,7 @@ curl -H "Authorization: Bearer invalid_token" http://localhost:8000/protected
 ### Daily Operations
 
 #### Morning Health Check
+
 ```bash
 #!/bin/bash
 # Daily health check script
@@ -233,6 +249,7 @@ done
 ```
 
 #### Resource Monitoring
+
 ```bash
 # Check resource usage
 docker stats --no-stream
@@ -250,6 +267,7 @@ top -bn1 | grep "Cpu(s)"
 ### Weekly Operations
 
 #### Dependency Updates
+
 ```bash
 # Update system packages
 sudo apt update && sudo apt upgrade -y
@@ -267,6 +285,7 @@ uv pip install --upgrade -r requirements.txt
 ```
 
 #### Security Scans
+
 ```bash
 # Scan for vulnerabilities
 docker run --rm -v $(pwd):/app aquasec/trivy fs /app
@@ -283,6 +302,7 @@ curl -X PUT http://localhost:8181/v1/policies/security \
 ### Monthly Operations
 
 #### Performance Review
+
 ```bash
 # Generate performance report
 ./scripts/generate_performance_report.sh
@@ -295,6 +315,7 @@ curl -X PUT http://localhost:8181/v1/policies/security \
 ```
 
 #### Backup and Recovery Testing
+
 ```bash
 # Test database backup
 docker exec acgs_postgres pg_dump -U acgs_user acgs_db > backup_test.sql
@@ -312,18 +333,21 @@ docker exec acgs_postgres pg_dump -U acgs_user acgs_db > backup_test.sql
 ### Key Performance Indicators (KPIs)
 
 #### Constitutional Governance KPIs
+
 - **Constitutional Compliance Score**: >95%
 - **DGM Safety Pattern Availability**: >99%
 - **Policy Validation Success Rate**: >98%
 - **Emergency Shutdown RTO**: <30 minutes
 
 #### Technical KPIs
+
 - **Service Availability**: >99.9%
 - **Response Time P95**: <2000ms
 - **Throughput**: >1000 RPS
 - **Error Rate**: <1%
 
 #### Business KPIs
+
 - **Governance Actions per Hour**: Baseline + growth
 - **Policy Synthesis Success Rate**: >95%
 - **Constitutional Reasoning Accuracy**: >98%
@@ -332,6 +356,7 @@ docker exec acgs_postgres pg_dump -U acgs_user acgs_db > backup_test.sql
 ### Alert Configuration
 
 #### Critical Alerts (Immediate Response)
+
 ```yaml
 # Prometheus alert rules
 groups:
@@ -343,56 +368,60 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "Constitutional compliance below threshold"
-          
+          summary: 'Constitutional compliance below threshold'
+
       - alert: ServiceDown
         expr: up{job="acgs-pgp"} == 0
         for: 2m
         labels:
           severity: critical
         annotations:
-          summary: "ACGS-PGP service is down"
-          
+          summary: 'ACGS-PGP service is down'
+
       - alert: EmergencyShutdownTriggered
         expr: emergency_shutdown_active == 1
         for: 0s
         labels:
           severity: critical
         annotations:
-          summary: "Emergency shutdown has been triggered"
+          summary: 'Emergency shutdown has been triggered'
 ```
 
 #### Warning Alerts (24h Response)
+
 ```yaml
-  - name: acgs-pgp-warning
-    rules:
-      - alert: HighResponseTime
-        expr: http_request_duration_seconds{quantile="0.95"} > 2
-        for: 5m
-        labels:
-          severity: warning
-        annotations:
-          summary: "High response time detected"
-          
-      - alert: LowThroughput
-        expr: rate(http_requests_total[5m]) < 1000
-        for: 10m
-        labels:
-          severity: warning
-        annotations:
-          summary: "Throughput below target"
+- name: acgs-pgp-warning
+  rules:
+    - alert: HighResponseTime
+      expr: http_request_duration_seconds{quantile="0.95"} > 2
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: 'High response time detected'
+
+    - alert: LowThroughput
+      expr: rate(http_requests_total[5m]) < 1000
+      for: 10m
+      labels:
+        severity: warning
+      annotations:
+        summary: 'Throughput below target'
 ```
 
 ### Dashboard Configuration
 
 #### Grafana Dashboards
+
 1. **Constitutional Governance Dashboard**
+
    - Constitutional compliance scores
    - DGM safety pattern status
    - Policy validation metrics
    - Emergency shutdown status
 
 2. **Performance Dashboard**
+
    - Response time percentiles
    - Throughput metrics
    - Error rates
@@ -409,6 +438,7 @@ groups:
 ### Planned Maintenance
 
 #### Service Updates
+
 ```bash
 # 1. Notify stakeholders
 # 2. Enable maintenance mode
@@ -427,6 +457,7 @@ curl -X POST http://localhost:8000/admin/maintenance/disable
 ```
 
 #### Database Maintenance
+
 ```bash
 # 1. Create backup
 docker exec acgs_postgres pg_dump -U acgs_user acgs_db > backup_$(date +%Y%m%d).sql
@@ -441,17 +472,21 @@ docker exec acgs_postgres psql -U acgs_user -d acgs_db -c "ANALYZE;"
 ### Emergency Maintenance
 
 #### Emergency Response Procedures
+
 1. **Assess Situation**
+
    - Determine severity level
    - Identify affected services
    - Estimate impact
 
 2. **Immediate Actions**
+
    - Trigger emergency shutdown if necessary
    - Isolate affected components
    - Notify stakeholders
 
 3. **Resolution**
+
    - Apply emergency fixes
    - Validate constitutional compliance
    - Restore service gradually
@@ -464,18 +499,22 @@ docker exec acgs_postgres psql -U acgs_user -d acgs_db -c "ANALYZE;"
 ## Disaster Recovery
 
 ### Backup Strategy
+
 - **Database**: Daily full backups, hourly incremental
 - **Configuration**: Version controlled in Git
 - **Logs**: Centralized logging with retention
 - **Secrets**: Secure backup of encryption keys
 
 ### Recovery Procedures
+
 1. **Infrastructure Recovery**
+
    - Restore from infrastructure as code
    - Deploy base services
    - Validate network connectivity
 
 2. **Data Recovery**
+
    - Restore database from backup
    - Validate data integrity
    - Apply any missing transactions
@@ -486,6 +525,7 @@ docker exec acgs_postgres psql -U acgs_user -d acgs_db -c "ANALYZE;"
    - Perform comprehensive testing
 
 ### Recovery Time Objectives (RTO)
+
 - **Critical Services**: 4 hours
 - **Full System**: 8 hours
 - **Emergency Shutdown**: 30 minutes

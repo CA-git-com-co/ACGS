@@ -1,0 +1,51 @@
+{
+  "missing_value_rate": 0.005,
+  "missing_patterns": {
+    "feature_1": 0.0,
+    "feature_2": 0.0,
+    "feature_with_missing": 0.05,
+    "feature_with_outliers": 0.0,
+    "category_a": 0.0,
+    "category_b": 0.0,
+    "correlated_1": 0.0,
+    "target": 0.0,
+    "timestamp": 0.0,
+    "correlated_2": 0.0
+  },
+  "outlier_rate": 0.047,
+  "outlier_features": [],
+  "imbalance_ratio": 0.15340253748558247,
+  "class_distribution": {
+    "0": 0.867,
+    "1": 0.133
+  },
+  "max_correlation": 0.9945815233674729,
+  "high_correlation_pairs": [
+    [
+      "correlated_1",
+      "correlated_2",
+      0.9945815233674729
+    ]
+  ],
+  "data_freshness_hours": 5.0474999999999995e-06,
+  "stale_data_rate": 0.664,
+  "duplicate_rate": 0.01,
+  "inconsistency_rate": 0.0,
+  "completeness_score": 0.995,
+  "feature_completeness": {
+    "feature_1": 1.0,
+    "feature_2": 1.0,
+    "feature_with_missing": 0.95,
+    "feature_with_outliers": 1.0,
+    "category_a": 1.0,
+    "category_b": 1.0,
+    "correlated_1": 1.0,
+    "target": 1.0,
+    "timestamp": 1.0,
+    "correlated_2": 1.0
+  },
+  "quality_score": 0.7109657862226914,
+  "assessment_timestamp": "2025-06-27T18:30:08.778097",
+  "sample_size": 1000,
+  "features_analyzed": 10
+}

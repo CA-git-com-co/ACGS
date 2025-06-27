@@ -230,7 +230,9 @@ async function testConstitutionalComplianceOptimization() {
     cachedResults.push(result);
 
     console.log(
-      `   Policy ${i + 1}: ${result.compliant ? '✅' : '❌'} (${result.responseTime.toFixed(2)}ms) ${result.fromCache ? '🔄' : '🆕'}`
+      `   Policy ${i + 1}: ${result.compliant ? '✅' : '❌'} (${result.responseTime.toFixed(
+        2
+      )}ms) ${result.fromCache ? '🔄' : '🆕'}`
     );
   }
 
@@ -250,7 +252,9 @@ async function testConstitutionalComplianceOptimization() {
   console.log(`   Max Response Time (First Run): ${maxFirstRun.toFixed(2)}ms`);
   console.log(`   Max Response Time (Cached): ${maxSecondRun.toFixed(2)}ms`);
   console.log(
-    `   Performance Improvement: ${(((avgFirstRun - avgSecondRun) / avgFirstRun) * 100).toFixed(1)}%`
+    `   Performance Improvement: ${(((avgFirstRun - avgSecondRun) / avgFirstRun) * 100).toFixed(
+      1
+    )}%`
   );
 
   // Cache statistics
@@ -270,7 +274,9 @@ async function testConstitutionalComplianceOptimization() {
   console.log(`   Average Accuracy: ${(avgAccuracy * 100).toFixed(1)}%`);
   console.log(`   Minimum Accuracy: ${(minAccuracy * 100).toFixed(1)}%`);
   console.log(
-    `   Compliant Policies: ${performanceResults.filter((r) => r.compliant).length}/${performanceResults.length}`
+    `   Compliant Policies: ${performanceResults.filter((r) => r.compliant).length}/${
+      performanceResults.length
+    }`
   );
 
   // Target validation

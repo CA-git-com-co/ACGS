@@ -165,7 +165,7 @@ jobs:
       - name: Validate service structure
         run: |
           echo "🔍 Validating service structure for ${{ matrix.service }}"
-          
+
           case "${{ matrix.service }}" in
             "auth")
               SERVICE_DIR="services/platform/authentication/auth_service"

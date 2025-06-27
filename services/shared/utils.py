@@ -480,9 +480,20 @@ class ACGSConfig:
                 "fallback": os.getenv("ACGS_FALLBACK_LLM_MODEL", "claude-3-5-sonnet"),
                 "gemini_2_5_flash": "gemini-2.5-flash-preview-04-17",
                 "deepseek_r1": "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B",
-                "deepseek_r1_openrouter": "deepseek/deepseek-chat-v3-0324",
+                "deepseek_r1_openrouter": "deepseek/deepseek-r1-0528:free",
+                "deepseek_r1_pilot": "deepseek/deepseek-r1-0528:free",  # Pilot configuration
                 "cerebras_llama_scout": "llama-4-scout-17b-16e-instruct",
                 "cerebras_qwen3": "qwen-3-32b",
+            },
+            # DeepSeek R1 Migration Pilot Configuration
+            "deepseek_r1_pilot": {
+                "enabled": bool(os.getenv("DEEPSEEK_R1_PILOT_ENABLED", "false").lower() == "true"),
+                "traffic_percentage": int(os.getenv("DEEPSEEK_R1_TRAFFIC_PERCENTAGE", "10")),
+                "constitutional_compliance_threshold": float(os.getenv("DEEPSEEK_R1_COMPLIANCE_THRESHOLD", "0.95")),
+                "response_time_threshold_ms": int(os.getenv("DEEPSEEK_R1_RESPONSE_TIME_THRESHOLD", "2000")),
+                "cost_tracking_enabled": bool(os.getenv("DEEPSEEK_R1_COST_TRACKING", "true").lower() == "true"),
+                "fallback_on_failure": bool(os.getenv("DEEPSEEK_R1_FALLBACK_ENABLED", "true").lower() == "true"),
+                "constitutional_hash": "cdd01ef066bc6cf2",  # Maintain constitutional integrity
             },
             # Model settings
             "llm_settings": {

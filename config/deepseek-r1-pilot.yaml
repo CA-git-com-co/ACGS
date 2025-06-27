@@ -1,0 +1,244 @@
+# DeepSeek R1 Migration Pilot Configuration
+# ACGS-PGP Phase 1 Implementation - Highest ROI, Lowest Risk
+#
+# Expected Outcomes:
+# - 96.4% cost reduction in AI model expenses ($1.62M annual savings)
+# - Maintained constitutional compliance >95%
+# - Response times ≤2s
+# - Constitutional hash integrity: cdd01ef066bc6cf2
+
+deepseek_r1_pilot:
+  # Pilot Control Settings
+  enabled: true
+  traffic_percentage: 10  # Start with 10% traffic routing
+  
+  # Performance Thresholds (Critical Priority)
+  constitutional_compliance_threshold: 0.95  # >95% compliance required
+  response_time_threshold_ms: 2000          # ≤2s response time target
+  
+  # Safety and Monitoring (High Priority)
+  cost_tracking_enabled: true
+  fallback_on_failure: true                 # Automatic fallback to control models
+  constitutional_hash: "cdd01ef066bc6cf2"   # Maintain constitutional integrity
+  
+  # DGM Safety Patterns
+  dgm_safety:
+    sandbox_execution: true
+    human_review_threshold: 0.90            # Human review if compliance <90%
+    gradual_rollout: true
+    emergency_shutdown_enabled: true
+    rto_minutes: 30                         # <30min Recovery Time Objective
+  
+  # OpenRouter API Configuration
+  openrouter:
+    endpoint: "https://openrouter.ai/api/v1/chat/completions"
+    model: "deepseek/deepseek-r1-0528:free"
+    timeout_seconds: 30
+    retry_attempts: 3
+    
+    # Request Configuration
+    default_temperature: 0.0               # Deterministic for constitutional compliance
+    max_tokens: 8192
+    stream: false
+    
+    # Headers
+    http_referer: "https://acgs-pgp.ai"
+    x_title: "ACGS-PGP Constitutional AI"
+
+# A/B Testing Configuration
+ab_testing:
+  # Test Groups
+  control_group:
+    name: "control"
+    models: ["claude-3-7-sonnet-20250219", "gpt-4"]
+    description: "Current expensive models"
+    
+  treatment_group:
+    name: "treatment"
+    models: ["deepseek/deepseek-r1-0528:free"]
+    description: "DeepSeek R1 cost-optimized model"
+  
+  # Routing Strategy
+  routing:
+    method: "consistent_hash"              # Consistent user experience
+    hash_key: "request_id"
+    traffic_split:
+      control: 90
+      treatment: 10
+  
+  # Success Metrics
+  success_criteria:
+    constitutional_compliance_min: 0.95
+    response_time_max_ms: 2000
+    cost_reduction_target_percent: 90.0
+    success_rate_min: 0.98
+
+# Cost Analysis Configuration
+cost_analysis:
+  # Current Model Costs (per 1M tokens)
+  current_costs:
+    claude_3_7_sonnet: 15.00              # $15.00/1M tokens
+    gpt_4: 30.00                          # $30.00/1M tokens
+    perplexity_sonar: 5.00                # $5.00/1M tokens
+    
+  # DeepSeek R1 Costs
+  deepseek_r1_cost: 0.55                  # $0.55/1M tokens (96.4% reduction)
+  
+  # Projection Settings
+  annual_request_volume: 1000000          # 1M requests/year estimate
+  average_tokens_per_request: 500
+  
+  # Expected Savings
+  projected_annual_savings: 1620000       # $1.62M annually
+  cost_reduction_percentage: 96.4
+
+# Monitoring and Alerting
+monitoring:
+  # Metrics Collection
+  metrics:
+    - constitutional_compliance_rate
+    - response_time_p95
+    - response_time_p99
+    - cost_per_request
+    - success_rate
+    - error_rate
+    - fallback_rate
+  
+  # Alert Thresholds (4-Tier Priority System)
+  alerts:
+    critical:
+      constitutional_compliance_below: 0.75
+      service_unavailable: true
+      response_time_above_ms: 5000
+      
+    high:
+      constitutional_compliance_below: 0.90
+      response_time_above_ms: 2000
+      error_rate_above: 0.05
+      
+    moderate:
+      constitutional_compliance_below: 0.95
+      response_time_above_ms: 1500
+      cost_increase_above_percent: 10
+      
+    low:
+      fallback_rate_above: 0.10
+      cache_miss_rate_above: 0.20
+  
+  # Reporting
+  reporting:
+    interval_minutes: 5
+    dashboard_enabled: true
+    export_metrics: true
+    retention_days: 90
+
+# Blue-Green Deployment Configuration
+deployment:
+  strategy: "blue_green"
+  
+  # Deployment Phases
+  phases:
+    phase_1:
+      name: "Initial Pilot"
+      duration_days: 7
+      traffic_percentage: 10
+      success_criteria:
+        - constitutional_compliance >= 0.95
+        - response_time_p95 <= 2000
+        - error_rate <= 0.01
+    
+    phase_2:
+      name: "Expanded Testing"
+      duration_days: 14
+      traffic_percentage: 25
+      success_criteria:
+        - constitutional_compliance >= 0.95
+        - response_time_p95 <= 1800
+        - cost_reduction >= 80
+    
+    phase_3:
+      name: "Majority Traffic"
+      duration_days: 14
+      traffic_percentage: 50
+      success_criteria:
+        - constitutional_compliance >= 0.95
+        - response_time_p95 <= 1500
+        - cost_reduction >= 90
+    
+    phase_4:
+      name: "Full Migration"
+      duration_days: 7
+      traffic_percentage: 90
+      success_criteria:
+        - constitutional_compliance >= 0.95
+        - response_time_p95 <= 1200
+        - cost_reduction >= 95
+  
+  # Rollback Configuration
+  rollback:
+    automatic_rollback_enabled: true
+    rollback_triggers:
+      - constitutional_compliance < 0.90
+      - response_time_p95 > 3000
+      - error_rate > 0.05
+      - service_unavailable > 60  # seconds
+    
+    rollback_strategy: "immediate"
+    notification_channels: ["slack", "email", "pagerduty"]
+
+# Integration with Existing ACGS-PGP Services
+service_integration:
+  # Constitutional AI Service (ac_service:8001)
+  ac_service:
+    endpoint: "http://localhost:8001"
+    constitutional_validation: true
+    compliance_reporting: true
+  
+  # Policy Governance Service (pgc_service:8005)
+  pgc_service:
+    endpoint: "http://localhost:8005"
+    policy_enforcement: true
+    opa_integration: true
+  
+  # Integrity Service (integrity_service:8002)
+  integrity_service:
+    endpoint: "http://localhost:8002"
+    hash_validation: true
+    audit_logging: true
+
+# Environment-Specific Overrides
+environments:
+  development:
+    traffic_percentage: 5
+    constitutional_compliance_threshold: 0.90
+    cost_tracking_enabled: false
+    
+  staging:
+    traffic_percentage: 20
+    constitutional_compliance_threshold: 0.95
+    load_testing_enabled: true
+    
+  production:
+    traffic_percentage: 10
+    constitutional_compliance_threshold: 0.95
+    monitoring_enhanced: true
+    alerting_enabled: true
+    audit_logging_required: true
+
+# Compliance and Governance
+compliance:
+  constitutional_ai:
+    hash_verification: "cdd01ef066bc6cf2"
+    compliance_logging: true
+    audit_trail: true
+    
+  data_governance:
+    pii_detection: true
+    data_retention_days: 90
+    encryption_at_rest: true
+    encryption_in_transit: true
+    
+  regulatory:
+    gdpr_compliance: true
+    ccpa_compliance: true
+    audit_requirements: true
