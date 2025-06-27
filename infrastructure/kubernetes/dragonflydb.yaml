@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dragonflydb
+  labels:
+    app: dragonflydb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dragonflydb
+  template:
+    metadata:
+      labels:
+        app: dragonflydb
+    spec:
+      containers:
+      - name: dragonflydb
+        image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
+        ports:
+        - containerPort: 6379
+        resources:
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: acgs-redis
+  labels:
+    app: dragonflydb
+spec:
+  selector:
+    app: dragonflydb
+  ports:
+  - protocol: TCP
+    port: 6379
+    targetPort: 6379

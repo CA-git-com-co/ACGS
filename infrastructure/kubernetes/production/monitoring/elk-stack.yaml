@@ -1,0 +1,425 @@
+# ACGE Phase 2 ELK Stack Configuration
+# Centralized logging for constitutional compliance and blue-green deployment
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elasticsearch-config
+  namespace: acgs-shared
+  labels:
+    app: elasticsearch
+    component: logging
+    phase: phase-2
+data:
+  elasticsearch.yml: |
+    cluster.name: acge-logging
+    node.name: ${HOSTNAME}
+    network.host: 0.0.0.0
+    discovery.type: single-node
+    xpack.security.enabled: false
+    xpack.monitoring.collection.enabled: true
+    
+    # Index templates for ACGE logs
+    index.template.constitutional_logs:
+      index_patterns: ["constitutional-*"]
+      settings:
+        number_of_shards: 1
+        number_of_replicas: 1
+      mappings:
+        properties:
+          timestamp:
+            type: date
+          constitutional_hash:
+            type: keyword
+          service:
+            type: keyword
+          environment:
+            type: keyword
+          compliance_score:
+            type: float
+          violation_type:
+            type: keyword
+          message:
+            type: text
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch
+  namespace: acgs-shared
+  labels:
+    app: elasticsearch
+    component: logging
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+        component: logging
+    spec:
+      containers:
+        - name: elasticsearch
+          image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+          ports:
+            - containerPort: 9200
+              name: http
+            - containerPort: 9300
+              name: transport
+          env:
+            - name: discovery.type
+              value: single-node
+            - name: ES_JAVA_OPTS
+              value: "-Xms2g -Xmx2g"
+            - name: xpack.security.enabled
+              value: "false"
+          volumeMounts:
+            - name: elasticsearch-data
+              mountPath: /usr/share/elasticsearch/data
+            - name: elasticsearch-config
+              mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+              subPath: elasticsearch.yml
+          resources:
+            requests:
+              memory: "4Gi"
+              cpu: "1"
+            limits:
+              memory: "8Gi"
+              cpu: "2"
+      volumes:
+        - name: elasticsearch-data
+          persistentVolumeClaim:
+            claimName: elasticsearch-pvc
+        - name: elasticsearch-config
+          configMap:
+            name: elasticsearch-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+  namespace: acgs-shared
+  labels:
+    app: elasticsearch
+spec:
+  selector:
+    app: elasticsearch
+  ports:
+    - port: 9200
+      targetPort: 9200
+      name: http
+    - port: 9300
+      targetPort: 9300
+      name: transport
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: elasticsearch-pvc
+  namespace: acgs-shared
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: acge-fast-ssd
+  resources:
+    requests:
+      storage: 100Gi
+
+---
+# Logstash Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-config
+  namespace: acgs-shared
+  labels:
+    app: logstash
+    component: logging
+data:
+  logstash.yml: |
+    http.host: "0.0.0.0"
+    path.config: /usr/share/logstash/pipeline
+    xpack.monitoring.elasticsearch.hosts: ["http://elasticsearch:9200"]
+    
+  pipeline.conf: |
+    input {
+      beats {
+        port => 5044
+      }
+      
+      # Constitutional compliance logs
+      tcp {
+        port => 5045
+        codec => json
+        tags => ["constitutional"]
+      }
+      
+      # ACGE model logs
+      tcp {
+        port => 5046
+        codec => json
+        tags => ["acge-model"]
+      }
+    }
+    
+    filter {
+      # Parse Kubernetes logs
+      if [kubernetes] {
+        mutate {
+          add_field => {
+            "service" => "%{[kubernetes][labels][service]}"
+            "environment" => "%{[kubernetes][labels][environment]}"
+            "constitutional_hash" => "%{[kubernetes][labels][constitutional_hash]}"
+          }
+        }
+      }
+      
+      # Parse constitutional compliance logs
+      if "constitutional" in [tags] {
+        grok {
+          match => {
+            "message" => "Constitutional compliance: %{NUMBER:compliance_score:float} for %{WORD:service} - %{GREEDYDATA:details}"
+          }
+        }
+        
+        if [compliance_score] {
+          if [compliance_score] < 0.95 {
+            mutate {
+              add_tag => ["compliance_violation"]
+              add_field => {
+                "alert_level" => "critical"
+              }
+            }
+          }
+        }
+      }
+      
+      # Parse ACGE model logs
+      if "acge-model" in [tags] {
+        grok {
+          match => {
+            "message" => "ACGE inference: %{NUMBER:inference_time:float}ms for request %{UUID:request_id}"
+          }
+        }
+        
+        if [inference_time] {
+          if [inference_time] > 2000 {
+            mutate {
+              add_tag => ["performance_issue"]
+              add_field => {
+                "alert_level" => "warning"
+              }
+            }
+          }
+        }
+      }
+      
+      # Add timestamp
+      date {
+        match => ["timestamp", "ISO8601"]
+        target => "@timestamp"
+      }
+    }
+    
+    output {
+      # Constitutional compliance logs
+      if "constitutional" in [tags] {
+        elasticsearch {
+          hosts => ["http://elasticsearch:9200"]
+          index => "constitutional-logs-%{+YYYY.MM.dd}"
+          template_name => "constitutional_logs"
+        }
+      }
+      
+      # ACGE model logs
+      if "acge-model" in [tags] {
+        elasticsearch {
+          hosts => ["http://elasticsearch:9200"]
+          index => "acge-model-logs-%{+YYYY.MM.dd}"
+        }
+      }
+      
+      # General application logs
+      elasticsearch {
+        hosts => ["http://elasticsearch:9200"]
+        index => "acge-logs-%{+YYYY.MM.dd}"
+      }
+      
+      # Debug output
+      stdout {
+        codec => rubydebug
+      }
+    }
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logstash
+  namespace: acgs-shared
+  labels:
+    app: logstash
+    component: logging
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: logstash
+  template:
+    metadata:
+      labels:
+        app: logstash
+        component: logging
+    spec:
+      containers:
+        - name: logstash
+          image: docker.elastic.co/logstash/logstash:8.11.0
+          ports:
+            - containerPort: 5044
+              name: beats
+            - containerPort: 5045
+              name: constitutional
+            - containerPort: 5046
+              name: acge-model
+          volumeMounts:
+            - name: logstash-config
+              mountPath: /usr/share/logstash/config/logstash.yml
+              subPath: logstash.yml
+            - name: logstash-pipeline
+              mountPath: /usr/share/logstash/pipeline/pipeline.conf
+              subPath: pipeline.conf
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "500m"
+            limits:
+              memory: "4Gi"
+              cpu: "1"
+      volumes:
+        - name: logstash-config
+          configMap:
+            name: logstash-config
+        - name: logstash-pipeline
+          configMap:
+            name: logstash-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logstash
+  namespace: acgs-shared
+  labels:
+    app: logstash
+spec:
+  selector:
+    app: logstash
+  ports:
+    - port: 5044
+      targetPort: 5044
+      name: beats
+    - port: 5045
+      targetPort: 5045
+      name: constitutional
+    - port: 5046
+      targetPort: 5046
+      name: acge-model
+  type: ClusterIP
+
+---
+# Kibana Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kibana-config
+  namespace: acgs-shared
+  labels:
+    app: kibana
+    component: logging
+data:
+  kibana.yml: |
+    server.host: "0.0.0.0"
+    elasticsearch.hosts: ["http://elasticsearch:9200"]
+    xpack.security.enabled: false
+    xpack.monitoring.ui.container.elasticsearch.enabled: true
+    
+    # ACGE-specific configurations
+    logging.appenders.constitutional:
+      type: file
+      fileName: /usr/share/kibana/logs/constitutional.log
+      layout:
+        type: json
+    
+    logging.loggers:
+      - name: constitutional
+        appenders: [constitutional]
+        level: info
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana
+  namespace: acgs-shared
+  labels:
+    app: kibana
+    component: logging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kibana
+  template:
+    metadata:
+      labels:
+        app: kibana
+        component: logging
+    spec:
+      containers:
+        - name: kibana
+          image: docker.elastic.co/kibana/kibana:8.11.0
+          ports:
+            - containerPort: 5601
+              name: http
+          env:
+            - name: ELASTICSEARCH_HOSTS
+              value: "http://elasticsearch:9200"
+          volumeMounts:
+            - name: kibana-config
+              mountPath: /usr/share/kibana/config/kibana.yml
+              subPath: kibana.yml
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "1"
+      volumes:
+        - name: kibana-config
+          configMap:
+            name: kibana-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana
+  namespace: acgs-shared
+  labels:
+    app: kibana
+spec:
+  selector:
+    app: kibana
+  ports:
+    - port: 5601
+      targetPort: 5601
+      name: http
+  type: ClusterIP

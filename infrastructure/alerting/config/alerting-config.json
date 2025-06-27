@@ -1,0 +1,90 @@
+{
+  "version": "1.0",
+  "timestamp": "2025-06-25T05:49:33Z",
+  "alerting": {
+    "enabled": true,
+    "defaultChannels": ["console", "browser"],
+    "retentionDays": 30,
+    "maxAlertsPerHour": 100,
+    "suppressDuplicates": true,
+    "duplicateWindow": 300000
+  },
+  "escalationRules": [
+    {
+      "id": "critical-escalation",
+      "severity": "critical",
+      "escalateAfter": 300000,
+      "escalateTo": ["email", "slack"],
+      "maxEscalations": 3
+    },
+    {
+      "id": "high-escalation", 
+      "severity": "high",
+      "escalateAfter": 900000,
+      "escalateTo": ["email"],
+      "maxEscalations": 2
+    }
+  ],
+  "thresholds": {
+    "responseTime": {
+      "warning": 1000,
+      "critical": 2000
+    },
+    "errorRate": {
+      "warning": 2,
+      "critical": 5
+    },
+    "uptime": {
+      "warning": 99.0,
+      "critical": 95.0
+    },
+    "consecutiveFailures": {
+      "warning": 2,
+      "critical": 3
+    }
+  },
+  "services": {
+    "auth": {
+      "critical": true,
+      "responseTimeThreshold": 1000,
+      "errorRateThreshold": 2,
+      "uptimeThreshold": 99.5
+    },
+    "ac": {
+      "critical": true,
+      "responseTimeThreshold": 2000,
+      "errorRateThreshold": 3,
+      "uptimeThreshold": 99.0
+    },
+    "integrity": {
+      "critical": true,
+      "responseTimeThreshold": 1500,
+      "errorRateThreshold": 2,
+      "uptimeThreshold": 99.5
+    },
+    "fv": {
+      "critical": false,
+      "responseTimeThreshold": 5000,
+      "errorRateThreshold": 5,
+      "uptimeThreshold": 95.0
+    },
+    "gs": {
+      "critical": true,
+      "responseTimeThreshold": 3000,
+      "errorRateThreshold": 3,
+      "uptimeThreshold": 99.0
+    },
+    "pgc": {
+      "critical": true,
+      "responseTimeThreshold": 2000,
+      "errorRateThreshold": 2,
+      "uptimeThreshold": 99.5
+    },
+    "ec": {
+      "critical": false,
+      "responseTimeThreshold": 2000,
+      "errorRateThreshold": 5,
+      "uptimeThreshold": 95.0
+    }
+  }
+}

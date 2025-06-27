@@ -1,0 +1,128 @@
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-github
+  labels:
+    provider: github
+    app.kubernetes.io/name: provider-github
+    app.kubernetes.io/part-of: crossplane
+spec:
+  package: xpkg.upbound.io/upbound/provider-github:v0.1.0
+  packagePullPolicy: Always
+  revisionActivationPolicy: Automatic
+  revisionHistoryLimit: 3
+
+---
+apiVersion: pkg.crossplane.io/v1beta1
+kind: Function
+metadata:
+  name: function-kcl
+  labels:
+    function: kcl
+    app.kubernetes.io/name: function-kcl
+    app.kubernetes.io/part-of: crossplane
+spec:
+  package: xpkg.upbound.io/crossplane-contrib/function-kcl:v0.1.0
+  packagePullPolicy: Always
+  revisionActivationPolicy: Automatic
+  revisionHistoryLimit: 3
+
+---
+apiVersion: github.upbound.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: github-provider-config
+  labels:
+    provider: github
+    app.kubernetes.io/name: github-provider-config
+spec:
+  credentials:
+    source: Secret
+    secretRef:
+      namespace: crossplane-system
+      name: github-credentials
+      key: token
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: github-credentials
+  namespace: crossplane-system
+  labels:
+    app.kubernetes.io/name: github-credentials
+    app.kubernetes.io/part-of: crossplane
+type: Opaque
+data:
+  # Base64 encoded GitHub token
+  # Replace with your actual GitHub token: echo -n "your-github-token" | base64
+  token: Z2hwX3lvdXJfZ2l0aHViX3Rva2VuX2hlcmU=
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: crossplane-github-provider
+  labels:
+    app.kubernetes.io/name: crossplane-github-provider
+    app.kubernetes.io/part-of: crossplane
+rules:
+- apiGroups:
+  - github.upbound.io
+  resources:
+  - "*"
+  verbs:
+  - "*"
+- apiGroups:
+  - acgs.io
+  resources:
+  - acgsserviceclaims
+  - acgsserviceclaims/status
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: crossplane-github-provider
+  labels:
+    app.kubernetes.io/name: crossplane-github-provider
+    app.kubernetes.io/part-of: crossplane
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: crossplane-github-provider
+subjects:
+- kind: ServiceAccount
+  name: provider-github
+  namespace: crossplane-system
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: crossplane-config
+  namespace: crossplane-system
+  labels:
+    app.kubernetes.io/name: crossplane-config
+    app.kubernetes.io/part-of: crossplane
+data:
+  constitutional-hash: "cdd01ef066bc6cf2"
+  github-org: "CA-git-com-co"
+  default-branch: "main"
+  service-types: |
+    auth: 8000
+    ac: 8001
+    integrity: 8002
+    fv: 8003
+    gs: 8004
+    pgc: 8005
+    ec: 8006
+    dgm: 8007

@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: integrity-service
+  namespace: acgs-system
+  labels:
+    app: integrity-service
+    app.kubernetes.io/name: integrity-service
+    app.kubernetes.io/part-of: acgs-system
+    app.kubernetes.io/version: "1.0.0"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: integrity-service
+  template:
+    metadata:
+      labels:
+        app: integrity-service
+        app.kubernetes.io/name: integrity-service
+        app.kubernetes.io/part-of: acgs-system
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
+      containers:
+      - name: integrity-service
+        image: acgs/integrity-service:latest
+        ports:
+        - containerPort: 8002
+          name: http
+        env:
+        - name: SERVICE_PORT
+          value: "8002"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: acgs-secrets
+              key: database-url
+        - name: REDIS_URL
+          value: "redis://dragonflydb:6379/2"
+        - name: AUTH_SERVICE_URL
+          value: "http://auth-service:8000"
+        - name: AC_SERVICE_URL
+          value: "http://constitutional-ai-service:8001"
+        - name: CONSTITUTIONAL_HASH
+          value: "cdd01ef066bc6cf2"
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8002
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8002
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: var-run
+          mountPath: /var/run
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: var-run
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: integrity-service
+  namespace: acgs-system
+  labels:
+    app: integrity-service
+    app.kubernetes.io/name: integrity-service
+    app.kubernetes.io/part-of: acgs-system
+spec:
+  selector:
+    app: integrity-service
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8002
+    targetPort: 8002
+  type: ClusterIP

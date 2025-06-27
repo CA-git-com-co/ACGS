@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: governance-synthesis-service
+  namespace: acgs-system
+  labels:
+    app: governance-synthesis-service
+    app.kubernetes.io/name: governance-synthesis-service
+    app.kubernetes.io/part-of: acgs-system
+    app.kubernetes.io/version: "1.0.0"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: governance-synthesis-service
+  template:
+    metadata:
+      labels:
+        app: governance-synthesis-service
+        app.kubernetes.io/name: governance-synthesis-service
+        app.kubernetes.io/part-of: acgs-system
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
+      containers:
+      - name: governance-synthesis-service
+        image: acgs/governance-synthesis-service:latest
+        ports:
+        - containerPort: 8004
+          name: http
+        env:
+        - name: SERVICE_PORT
+          value: "8004"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: acgs-secrets
+              key: database-url
+        - name: REDIS_URL
+          value: "redis://dragonflydb:6379/4"
+        - name: AUTH_SERVICE_URL
+          value: "http://auth-service:8000"
+        - name: AC_SERVICE_URL
+          value: "http://constitutional-ai-service:8001"
+        - name: INTEGRITY_SERVICE_URL
+          value: "http://integrity-service:8002"
+        - name: FV_SERVICE_URL
+          value: "http://formal-verification-service:8003"
+        - name: CONSTITUTIONAL_HASH
+          value: "cdd01ef066bc6cf2"
+        - name: COMPLIANCE_THRESHOLD
+          value: "0.95"
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8004
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8004
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: var-run
+          mountPath: /var/run
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: var-run
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: governance-synthesis-service
+  namespace: acgs-system
+  labels:
+    app: governance-synthesis-service
+    app.kubernetes.io/name: governance-synthesis-service
+    app.kubernetes.io/part-of: acgs-system
+spec:
+  selector:
+    app: governance-synthesis-service
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8004
+    targetPort: 8004
+  type: ClusterIP

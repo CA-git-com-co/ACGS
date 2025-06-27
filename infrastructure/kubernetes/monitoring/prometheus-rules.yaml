@@ -1,0 +1,48 @@
+groups:
+  - name: acgs-alerts
+    rules:
+    - alert: ConstitutionalComplianceLow
+      expr: acgs_constitutional_compliance_score < 0.95
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Constitutional compliance score is below 95%"
+        description: "The overall constitutional compliance score for ACGS-PGP has dropped below 95% for more than 5 minutes. Immediate investigation required."
+
+    - alert: HighResponseTime
+      expr: histogram_quantile(0.95, sum by(le, service, endpoint) (rate(acgs_request_duration_seconds_bucket[5m]))) > 2
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "High response time detected"
+        description: "The 95th percentile response time for {{ $labels.service }} on endpoint {{ $labels.endpoint }} is greater than 2 seconds for more than 5 minutes."
+
+    - alert: LowThroughput
+      expr: sum by(service, endpoint) (rate(acgs_request_duration_seconds_count[5m])) < 1000
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Low throughput detected"
+        description: "The throughput for {{ $labels.service }} on endpoint {{ $labels.endpoint }} has dropped below 1000 RPS for more than 5 minutes."
+
+    - alert: ServiceErrorRateHigh
+      expr: sum by(service, endpoint) (rate(acgs_errors_total[5m])) / sum by(service, endpoint) (rate(acgs_requests_total[5m])) > 0.01
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "High error rate for service"
+        description: "The error rate for {{ $labels.service }} on endpoint {{ $labels.endpoint }} is greater than 1% for more than 5 minutes."
+
+    # Placeholder for security alerts - specific metrics depend on implementation
+    - alert: PotentialSecurityIncident
+      expr: sum(security_alerts_total) > 0
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Potential security incident detected"
+        description: "A security alert has been triggered. Immediate investigation required."

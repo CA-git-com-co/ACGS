@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: evolutionary-computation-service
+  namespace: acgs-system
+  labels:
+    app: evolutionary-computation-service
+    app.kubernetes.io/name: evolutionary-computation-service
+    app.kubernetes.io/part-of: acgs-system
+    app.kubernetes.io/version: "1.0.0"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: evolutionary-computation-service
+  template:
+    metadata:
+      labels:
+        app: evolutionary-computation-service
+        app.kubernetes.io/name: evolutionary-computation-service
+        app.kubernetes.io/part-of: acgs-system
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
+      containers:
+      - name: evolutionary-computation-service
+        image: acgs/evolutionary-computation-service:latest
+        ports:
+        - containerPort: 8006
+          name: http
+        env:
+        - name: SERVICE_PORT
+          value: "8006"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: acgs-secrets
+              key: database-url
+        - name: REDIS_URL
+          value: "redis://dragonflydb:6379/6"
+        - name: AUTH_SERVICE_URL
+          value: "http://auth-service:8000"
+        - name: AC_SERVICE_URL
+          value: "http://constitutional-ai-service:8001"
+        - name: INTEGRITY_SERVICE_URL
+          value: "http://integrity-service:8002"
+        - name: FV_SERVICE_URL
+          value: "http://formal-verification-service:8003"
+        - name: CONSTITUTIONAL_HASH
+          value: "cdd01ef066bc6cf2"
+        - name: COMPLIANCE_THRESHOLD
+          value: "0.95"
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8006
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8006
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: var-run
+          mountPath: /var/run
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: var-run
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: evolutionary-computation-service
+  namespace: acgs-system
+  labels:
+    app: evolutionary-computation-service
+    app.kubernetes.io/name: evolutionary-computation-service
+    app.kubernetes.io/part-of: acgs-system
+spec:
+  selector:
+    app: evolutionary-computation-service
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8006
+    targetPort: 8006
+  type: ClusterIP
