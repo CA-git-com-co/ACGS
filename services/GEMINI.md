@@ -90,14 +90,14 @@ ACGS implements constitutional AI principles through:
 
 **Architectural Strengths**:
 
-- **Domain-Driven Design**: Clear separation of concerns across seven services
+- **Domain-Driven Design**: Clear separation of concerns across eight core services
 - **Independent Scaling**: Services can scale based on computational demands
 - **Technology Diversity**: Different services can use optimal technology stacks
 - **Fault Isolation**: Service failures don't cascade across entire system
 
 **Operational Challenges**:
 
-- **Exponential Complexity**: Seven interdependent services create orchestration overhead
+- **Exponential Complexity**: Eight interdependent services create orchestration overhead
 - **Network Latency**: Inter-service communication may undermine 2-second response target
 - **Service Mesh Requirements**: Sophisticated infrastructure needed for secure communication
 - **Observability Overhead**: Comprehensive monitoring across distributed services
@@ -215,6 +215,44 @@ ACGS has evolved into a comprehensive enterprise-scale constitutional AI governa
 - **Zero-Trust Architecture**: Google BeyondCorp Enterprise integration
 - **Confidential Computing**: Intel TDX for secure model training
 - **Automated Compliance**: Drata/Vanta for AI Act adherence
+
+### Core Services Architecture (Current Implementation)
+
+**ACGS-PGP consists of eight core microservices and supporting platform services:**
+
+#### Platform Services
+• **Authentication Service (8000)**: Identity and JWT token management for all requests
+• **Integrity Service (8002)**: Verifies data integrity and consistent constitutional hashing across services
+
+#### Core Governance Services  
+• **Constitutional AI Service (8001)**: Manages constitutional principles and compliance checks
+• **Formal Verification Service (8003)**: Performs mathematical policy verification and maintains audit trail
+• **Governance Synthesis Service (8004)**: Generates governance policies via multi-LLM consensus and QEC fault tolerance
+• **Policy Governance Service (8005)**: Real-time policy enforcement engine ensuring compliance at runtime
+• **Evolutionary Computation Service (8006)**: Monitors performance and suggests optimizations (WINA framework)
+• **Darwin–Gödel Machine (8007)**: Self-evolving governance module that proposes and validates system improvements
+
+#### Future/Planned Services
+• **Model Orchestrator Service (8070-8079)**: *Planned* - Dedicated service to intelligently route LLM requests to specialized models
+
+### Implementation Status Notes
+
+**Current Implementation vs. Documentation**: This documentation describes both current implementation and planned enhancements. Key distinctions:
+
+**Currently Implemented**:
+- ✅ Eight core microservices with FastAPI and async support
+- ✅ Constitutional hash validation across services (cdd01ef066bc6cf2)  
+- ✅ Multi-model AI integration framework (architectural support)
+- ✅ Quantum-inspired error correction (QEC) for conflict resolution
+- ✅ Security middleware with input validation
+- ✅ Basic audit logging (in-memory, file-based)
+
+**Planned/Architectural (Future Releases)**:
+- 🔄 Linkerd service mesh integration (deployment configuration)
+- 🔄 Hedera Hashgraph blockchain integration (currently basic audit trail)
+- 🔄 Post-quantum cryptography implementation (NIST standards planned)
+- 🔄 Polis/Decidim civic platform integration (framework ready)
+- 🔄 Full distributed blockchain audit trail (currently in-memory lists)
 
 ### Service Evolution Details
 
@@ -746,26 +784,27 @@ LEARNING_RATE: 0.01
 
 ## 🎯 Performance Requirements
 
-### Established Performance Targets
+### Performance Targets and Implementation Status
 
-#### Throughput Requirements
+#### Current Implementation Performance
+- **Basic Operations**: Health checks and simple validations ~100-200ms
+- **Constitutional Validation**: ~1-2s for comprehensive analysis (async processing)
+- **Multi-Service Coordination**: 2-5s for complex workflows involving multiple services
+- **Concurrent Handling**: Tested with moderate loads, scales with FastAPI async patterns
 
-- **≥1000 RPS**: Minimum requests per second across all services
-- **Concurrent Requests**: Stable handling of 200+ concurrent requests
-- **Service-Specific Targets**:
-  - Auth Service: ≥1200 RPS (authentication bottleneck mitigation)
-  - Constitutional AI Service: ≥1000 RPS (core compliance validation)
-  - Policy Governance Service: ≥800 RPS (complex policy processing)
+#### Target Performance Goals (With Optimizations)
 
-#### Response Time Requirements
+**Throughput Goals**:
+- **≥1000 RPS**: Goal for high-load scenarios with caching and optimization
+- **Concurrent Requests**: Target 200+ concurrent requests with proper resource allocation
 
-- **≤2s Response Times**: 95th percentile (p95) response time target
-- **Sub-500ms**: Target for health checks and simple validations
-- **Sub-300ms**: Multimodal analysis response times
-- **Service-Specific Targets**:
-  - Authentication: ≤200ms (p95)
-  - Constitutional Validation: ≤1s (p95)
-  - Policy Synthesis: ≤2s (p95)
+**Response Time Goals**:
+- **≤2s Response Times**: 95th percentile for complex constitutional analysis
+- **Sub-5ms Policy Decisions**: *Goal with caching, hardware acceleration, and optimized policy engines*
+- **Service-Specific Goals**:
+  - Authentication: ≤200ms (achievable with current implementation)
+  - Constitutional Validation: ≤1s (with caching and parallel processing)
+  - Policy Synthesis: ≤2s (requires optimization of conflict detection algorithms)
 
 #### Constitutional Compliance Requirements
 

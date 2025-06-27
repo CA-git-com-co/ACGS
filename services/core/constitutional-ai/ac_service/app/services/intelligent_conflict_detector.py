@@ -13,6 +13,7 @@ Key Features:
 - Dynamic priority adjustment based on context
 """
 
+import asyncio
 import logging
 from dataclasses import dataclass
 from enum import Enum
@@ -108,12 +109,19 @@ class IntelligentConflictDetector:
         # Conflict pattern database
         self.conflict_patterns = self._load_conflict_patterns()
 
+        # Performance optimization: caching for repeated computations
+        self._similarity_cache = {}  # Cache for semantic similarity calculations
+        self._analysis_cache = {}    # Cache for principle analysis results
+        self._cache_max_size = 1000  # Maximum cache size to prevent memory issues
+
         # Performance metrics
         self.detection_stats = {
             "total_scans": 0,
             "conflicts_detected": 0,
             "false_positives": 0,
             "accuracy_rate": 0.0,
+            "cache_hits": 0,
+            "cache_misses": 0,
         }
 
     def _initialize_semantic_analyzer(self):
@@ -378,53 +386,78 @@ class IntelligentConflictDetector:
     async def _detect_semantic_conflicts(
         self, analyses: list[PrincipleAnalysis]
     ) -> list[ConflictDetectionResult]:
-        """Detect conflicts using semantic analysis."""
+        """Detect conflicts using semantic analysis with parallel processing."""
         conflicts = []
 
         if not self.semantic_analyzer_available:
             return conflicts
 
-        # Compare all pairs of principles
+        # Create tasks for parallel processing of principle pairs
+        comparison_tasks = []
         for i in range(len(analyses)):
             for j in range(i + 1, len(analyses)):
                 analysis_a, analysis_b = analyses[i], analyses[j]
-
+                
                 if analysis_a.semantic_embedding is None or analysis_b.semantic_embedding is None:
                     continue
-
-                # Calculate semantic similarity
-                similarity = self._calculate_semantic_similarity(
-                    analysis_a.semantic_embedding, analysis_b.semantic_embedding
+                    
+                task = asyncio.create_task(
+                    self._analyze_semantic_conflict_pair(analysis_a, analysis_b)
                 )
+                comparison_tasks.append(task)
 
-                # Check for semantic conflicts (high similarity but contradictory statements)
-                if similarity > 0.7:  # High semantic similarity
-                    contradiction_score = self._detect_contradiction(
-                        analysis_a.normative_statements, analysis_b.normative_statements
-                    )
-
-                    if contradiction_score > 0.6:  # Likely contradiction
-                        conflict = ConflictDetectionResult(
-                            conflict_type=ConflictType.SEMANTIC_INCONSISTENCY,
-                            severity=self._determine_severity(contradiction_score),
-                            principle_ids=[
-                                analysis_a.principle_id,
-                                analysis_b.principle_id,
-                            ],
-                            confidence_score=contradiction_score,
-                            description=f"Semantic inconsistency detected between principles with {similarity:.2f} similarity but contradictory statements",
-                            context="semantic_analysis",
-                            priority_score=0.0,  # Will be calculated later
-                            detection_metadata={
-                                "semantic_similarity": similarity,
-                                "contradiction_score": contradiction_score,
-                                "method": "semantic_embedding_analysis",
-                            },
-                            recommended_strategy="semantic_reconciliation",
-                        )
-                        conflicts.append(conflict)
+        # Process all comparisons in parallel
+        if comparison_tasks:
+            conflict_results = await asyncio.gather(*comparison_tasks, return_exceptions=True)
+            
+            # Filter out exceptions and None results
+            for result in conflict_results:
+                if isinstance(result, ConflictDetectionResult):
+                    conflicts.append(result)
+                elif isinstance(result, Exception):
+                    logger.warning(f"Semantic conflict analysis failed: {result}")
 
         return conflicts
+
+    async def _analyze_semantic_conflict_pair(
+        self, analysis_a: PrincipleAnalysis, analysis_b: PrincipleAnalysis
+    ) -> ConflictDetectionResult | None:
+        """Analyze a single pair of principles for semantic conflicts."""
+        try:
+            # Calculate semantic similarity
+            similarity = self._calculate_semantic_similarity(
+                analysis_a.semantic_embedding, analysis_b.semantic_embedding
+            )
+
+            # Check for semantic conflicts (high similarity but contradictory statements)
+            if similarity > 0.7:  # High semantic similarity
+                contradiction_score = self._detect_contradiction(
+                    analysis_a.normative_statements, analysis_b.normative_statements
+                )
+
+                if contradiction_score > 0.6:  # Likely contradiction
+                    return ConflictDetectionResult(
+                        conflict_type=ConflictType.SEMANTIC_INCONSISTENCY,
+                        severity=self._determine_severity(contradiction_score),
+                        principle_ids=[
+                            analysis_a.principle_id,
+                            analysis_b.principle_id,
+                        ],
+                        confidence_score=contradiction_score,
+                        description=f"Semantic inconsistency detected between principles with {similarity:.2f} similarity but contradictory statements",
+                        context="semantic_analysis",
+                        priority_score=0.0,  # Will be calculated later
+                        detection_metadata={
+                            "semantic_similarity": similarity,
+                            "contradiction_score": contradiction_score,
+                            "method": "semantic_embedding_analysis",
+                        },
+                        recommended_strategy="semantic_reconciliation",
+                    )
+            return None
+        except Exception as e:
+            logger.warning(f"Error analyzing semantic conflict pair: {e}")
+            return None
 
     async def _detect_pattern_conflicts(
         self, analyses: list[PrincipleAnalysis]
@@ -481,118 +514,190 @@ class IntelligentConflictDetector:
     async def _detect_priority_conflicts(
         self, analyses: list[PrincipleAnalysis]
     ) -> list[ConflictDetectionResult]:
-        """Detect conflicts based on priority weights and precedence."""
+        """Detect conflicts based on priority weights and precedence with parallel processing."""
         conflicts = []
 
-        # Find principles with overlapping scope but different priorities
+        # Create tasks for parallel processing of priority analysis
+        priority_tasks = []
         for i in range(len(analyses)):
             for j in range(i + 1, len(analyses)):
                 analysis_a, analysis_b = analyses[i], analyses[j]
+                
+                task = asyncio.create_task(
+                    self._analyze_priority_conflict_pair(analysis_a, analysis_b)
+                )
+                priority_tasks.append(task)
 
-                # Check for scope overlap
-                scope_overlap = len(
-                    analysis_a.scope_keywords.intersection(analysis_b.scope_keywords)
-                ) / max(len(analysis_a.scope_keywords), len(analysis_b.scope_keywords), 1)
-
-                if scope_overlap > 0.3:  # Significant scope overlap
-                    priority_diff = abs(analysis_a.priority_weight - analysis_b.priority_weight)
-
-                    if priority_diff > 0.5:  # Significant priority difference
-                        confidence = min(scope_overlap + (priority_diff / 2), 1.0)
-
-                        if confidence >= self.detection_threshold:
-                            conflict = ConflictDetectionResult(
-                                conflict_type=ConflictType.PRIORITY_CONFLICT,
-                                severity=self._determine_severity(confidence),
-                                principle_ids=[
-                                    analysis_a.principle_id,
-                                    analysis_b.principle_id,
-                                ],
-                                confidence_score=confidence,
-                                description=f"Priority conflict: overlapping scope with different priority weights ({analysis_a.priority_weight:.2f} vs {analysis_b.priority_weight:.2f})",
-                                context="priority_analysis",
-                                priority_score=0.0,
-                                detection_metadata={
-                                    "scope_overlap": scope_overlap,
-                                    "priority_difference": priority_diff,
-                                    "method": "priority_weight_analysis",
-                                },
-                                recommended_strategy="weighted_priority",
-                            )
-                            conflicts.append(conflict)
+        # Process all priority comparisons in parallel
+        if priority_tasks:
+            conflict_results = await asyncio.gather(*priority_tasks, return_exceptions=True)
+            
+            # Filter out exceptions and None results
+            for result in conflict_results:
+                if isinstance(result, ConflictDetectionResult):
+                    conflicts.append(result)
+                elif isinstance(result, Exception):
+                    logger.warning(f"Priority conflict analysis failed: {result}")
 
         return conflicts
+
+    async def _analyze_priority_conflict_pair(
+        self, analysis_a: PrincipleAnalysis, analysis_b: PrincipleAnalysis
+    ) -> ConflictDetectionResult | None:
+        """Analyze a single pair of principles for priority conflicts."""
+        try:
+            # Check for scope overlap
+            scope_overlap = len(
+                analysis_a.scope_keywords.intersection(analysis_b.scope_keywords)
+            ) / max(len(analysis_a.scope_keywords), len(analysis_b.scope_keywords), 1)
+
+            if scope_overlap > 0.3:  # Significant scope overlap
+                priority_diff = abs(analysis_a.priority_weight - analysis_b.priority_weight)
+
+                if priority_diff > 0.5:  # Significant priority difference
+                    confidence = min(scope_overlap + (priority_diff / 2), 1.0)
+
+                    if confidence >= self.detection_threshold:
+                        return ConflictDetectionResult(
+                            conflict_type=ConflictType.PRIORITY_CONFLICT,
+                            severity=self._determine_severity(confidence),
+                            principle_ids=[
+                                analysis_a.principle_id,
+                                analysis_b.principle_id,
+                            ],
+                            confidence_score=confidence,
+                            description=f"Priority conflict: overlapping scope with different priority weights ({analysis_a.priority_weight:.2f} vs {analysis_b.priority_weight:.2f})",
+                            context="priority_analysis",
+                            priority_score=0.0,
+                            detection_metadata={
+                                "scope_overlap": scope_overlap,
+                                "priority_difference": priority_diff,
+                                "method": "priority_weight_analysis",
+                            },
+                            recommended_strategy="weighted_priority",
+                        )
+            return None
+        except Exception as e:
+            logger.warning(f"Error analyzing priority conflict pair: {e}")
+            return None
 
     async def _detect_scope_conflicts(
         self, analyses: list[PrincipleAnalysis]
     ) -> list[ConflictDetectionResult]:
-        """Detect conflicts based on scope overlap and incompatibility."""
+        """Detect conflicts based on scope overlap and incompatibility with parallel processing."""
         conflicts = []
 
-        # Check for scope overlaps that might cause conflicts
+        # Create tasks for parallel processing of scope analysis
+        scope_tasks = []
         for i in range(len(analyses)):
             for j in range(i + 1, len(analyses)):
                 analysis_a, analysis_b = analyses[i], analyses[j]
+                
+                task = asyncio.create_task(
+                    self._analyze_scope_conflict_pair(analysis_a, analysis_b)
+                )
+                scope_tasks.append(task)
 
-                # Calculate scope overlap
-                common_keywords = analysis_a.scope_keywords.intersection(analysis_b.scope_keywords)
-                total_keywords = analysis_a.scope_keywords.union(analysis_b.scope_keywords)
-
-                if len(total_keywords) == 0:
-                    continue
-
-                overlap_ratio = len(common_keywords) / len(total_keywords)
-
-                if overlap_ratio > 0.6:  # High scope overlap
-                    # Check for conflicting stakeholder impacts
-                    stakeholder_conflict = self._detect_stakeholder_conflicts(
-                        analysis_a.stakeholder_impact, analysis_b.stakeholder_impact
-                    )
-
-                    if stakeholder_conflict > 0.5:
-                        confidence = (overlap_ratio + stakeholder_conflict) / 2
-
-                        if confidence >= self.detection_threshold:
-                            conflict = ConflictDetectionResult(
-                                conflict_type=ConflictType.SCOPE_OVERLAP,
-                                severity=self._determine_severity(confidence),
-                                principle_ids=[
-                                    analysis_a.principle_id,
-                                    analysis_b.principle_id,
-                                ],
-                                confidence_score=confidence,
-                                description=f"Scope overlap conflict: {overlap_ratio:.2f} overlap with conflicting stakeholder impacts",
-                                context="scope_analysis",
-                                priority_score=0.0,
-                                detection_metadata={
-                                    "scope_overlap_ratio": overlap_ratio,
-                                    "stakeholder_conflict_score": stakeholder_conflict,
-                                    "common_keywords": list(common_keywords),
-                                    "method": "scope_overlap_analysis",
-                                },
-                                recommended_strategy="scope_partitioning",
-                            )
-                            conflicts.append(conflict)
+        # Process all scope comparisons in parallel
+        if scope_tasks:
+            conflict_results = await asyncio.gather(*scope_tasks, return_exceptions=True)
+            
+            # Filter out exceptions and None results
+            for result in conflict_results:
+                if isinstance(result, ConflictDetectionResult):
+                    conflicts.append(result)
+                elif isinstance(result, Exception):
+                    logger.warning(f"Scope conflict analysis failed: {result}")
 
         return conflicts
+
+    async def _analyze_scope_conflict_pair(
+        self, analysis_a: PrincipleAnalysis, analysis_b: PrincipleAnalysis
+    ) -> ConflictDetectionResult | None:
+        """Analyze a single pair of principles for scope conflicts."""
+        try:
+            # Calculate scope overlap
+            common_keywords = analysis_a.scope_keywords.intersection(analysis_b.scope_keywords)
+            total_keywords = analysis_a.scope_keywords.union(analysis_b.scope_keywords)
+
+            if len(total_keywords) == 0:
+                return None
+
+            overlap_ratio = len(common_keywords) / len(total_keywords)
+
+            if overlap_ratio > 0.6:  # High scope overlap
+                # Check for conflicting stakeholder impacts
+                stakeholder_conflict = self._detect_stakeholder_conflicts(
+                    analysis_a.stakeholder_impact, analysis_b.stakeholder_impact
+                )
+
+                if stakeholder_conflict > 0.5:
+                    confidence = (overlap_ratio + stakeholder_conflict) / 2
+
+                    if confidence >= self.detection_threshold:
+                        return ConflictDetectionResult(
+                            conflict_type=ConflictType.SCOPE_OVERLAP,
+                            severity=self._determine_severity(confidence),
+                            principle_ids=[
+                                analysis_a.principle_id,
+                                analysis_b.principle_id,
+                            ],
+                            confidence_score=confidence,
+                            description=f"Scope overlap conflict: {overlap_ratio:.2f} overlap with conflicting stakeholder impacts",
+                            context="scope_analysis",
+                            priority_score=0.0,
+                            detection_metadata={
+                                "scope_overlap_ratio": overlap_ratio,
+                                "stakeholder_conflict_score": stakeholder_conflict,
+                                "common_keywords": list(common_keywords),
+                                "method": "scope_overlap_analysis",
+                            },
+                            recommended_strategy="scope_partitioning",
+                        )
+            return None
+        except Exception as e:
+            logger.warning(f"Error analyzing scope conflict pair: {e}")
+            return None
 
     # Helper methods for conflict detection
 
     def _calculate_semantic_similarity(
         self, embedding_a: np.ndarray, embedding_b: np.ndarray
     ) -> float:
-        """Calculate semantic similarity between two embeddings."""
+        """Calculate semantic similarity between two embeddings with caching."""
         try:
-            # Cosine similarity
+            # Create cache key from embeddings (use hash of concatenated embeddings)
+            cache_key = hash((embedding_a.tobytes(), embedding_b.tobytes()))
+            
+            # Check cache first
+            if cache_key in self._similarity_cache:
+                self.detection_stats["cache_hits"] += 1
+                return self._similarity_cache[cache_key]
+            
+            self.detection_stats["cache_misses"] += 1
+            
+            # Cosine similarity calculation
             dot_product = np.dot(embedding_a, embedding_b)
             norm_a = np.linalg.norm(embedding_a)
             norm_b = np.linalg.norm(embedding_b)
 
             if norm_a == 0 or norm_b == 0:
-                return 0.0
-
-            similarity = dot_product / (norm_a * norm_b)
-            return max(0.0, min(1.0, similarity))  # Clamp to [0, 1]
+                similarity = 0.0
+            else:
+                similarity = dot_product / (norm_a * norm_b)
+                similarity = max(0.0, min(1.0, similarity))  # Clamp to [0, 1]
+            
+            # Cache the result if cache isn't full
+            if len(self._similarity_cache) < self._cache_max_size:
+                self._similarity_cache[cache_key] = similarity
+            elif len(self._similarity_cache) >= self._cache_max_size:
+                # Simple cache eviction: clear half the cache when full
+                keys_to_remove = list(self._similarity_cache.keys())[:len(self._similarity_cache)//2]
+                for key in keys_to_remove:
+                    del self._similarity_cache[key]
+                self._similarity_cache[cache_key] = similarity
+            
+            return similarity
         except Exception as e:
             logger.warning(f"Failed to calculate semantic similarity: {e}")
             return 0.0

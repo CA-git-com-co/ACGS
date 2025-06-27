@@ -279,6 +279,14 @@ try:
 except ImportError as e:
     logger.warning(f"⚠️ Security middleware not available: {e}")
 
+# Add our enhanced security middleware for input validation
+try:
+    from .middleware.enhanced_security import EnhancedSecurityMiddleware
+    app.add_middleware(EnhancedSecurityMiddleware)
+    logger.info("✅ Enhanced input validation middleware applied to AC service")
+except ImportError as e:
+    logger.warning(f"⚠️ Enhanced input validation middleware not available: {e}")
+
 # Add fallback security middleware with restricted hosts
 allowed_hosts = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,acgs.local").split(",")
 allowed_hosts = [host.strip() for host in allowed_hosts if host.strip()]
