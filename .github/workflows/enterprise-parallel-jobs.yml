@@ -324,7 +324,7 @@ jobs:
           else
             echo "⚠️ Solana CLI installation failed, marking as unavailable"
             echo "SOLANA_AVAILABLE=false" >> $GITHUB_ENV
-          done
+          fi
 
       - name: Enterprise Anchor build with optimization
         working-directory: blockchain
@@ -413,7 +413,7 @@ jobs:
           else
             echo "⚠️ Solana CLI installation failed, marking as unavailable"
             echo "SOLANA_AVAILABLE=false" >> $GITHUB_ENV
-          done
+          fi
 
       - name: Enterprise Solana test environment setup
         run: |

@@ -105,8 +105,12 @@ jobs:
             if [ -d "blockchain" ] && [ -f "blockchain/Cargo.toml" ]; then
               cd blockchain
               # Install Solana CLI if needed for build dependencies
-              timeout 120 curl -sSfL https://release.solana.com/stable/install | sh || echo "Solana install failed, continuing..."
-              export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+              if timeout 120 curl -sSfL https://release.solana.com/stable/install | sh; then
+                echo "✅ Solana CLI installed successfully"
+                export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+              else
+                echo "⚠️ Solana CLI installation failed, continuing without..."
+              fi
               
               # Build with fallback options
               cargo build --release || cargo build || echo "Build failed but continuing for analysis..."

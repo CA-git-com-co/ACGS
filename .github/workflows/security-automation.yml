@@ -240,13 +240,13 @@ jobs:
 
           # Build images for services that have Dockerfiles
           declare -A SERVICES=(
-            ["ac"]="services/core/constitutional-ai/ac_service"
+            ["ac"]="services/core/constitutional-ai"
             ["dgm-service"]="services/core/dgm-service"
             ["constitutional-trainer"]="services/core/constitutional-trainer"
             ["ec"]="services/core/evolutionary-computation"
-            ["fv"]="services/core/formal-verification/fv_service"
-            ["gs"]="services/core/governance-synthesis/gs_service"
-            ["pgc"]="services/core/policy-governance/pgc_service"
+            ["fv"]="services/core/formal-verification"
+            ["gs"]="services/core/governance-synthesis"
+            ["pgc"]="services/core/policy-governance"
             ["auth"]="services/platform/authentication/auth_service"
             ["integrity"]="services/platform/integrity/integrity_service"
           )

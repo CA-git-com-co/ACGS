@@ -48,10 +48,12 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install UV
-        uses: astral-sh/setup-uv@v3
-        with:
-          enable-cache: true
-          cache-dependency-glob: 'uv.lock'
+        run: |
+          echo "🔧 Installing UV package manager..."
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          export PATH="$HOME/.cargo/bin:$PATH"
+          uv --version
 
       - name: Set up UV cache
         uses: actions/cache@v4
