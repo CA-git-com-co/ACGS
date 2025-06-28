@@ -1,10 +1,10 @@
-name: Robust Connectivity Check
+name: Robust Connectivity Check (Disabled - Use Fixed Connectivity Check)
 
+# This workflow is disabled in favor of the simpler fixed-connectivity-check.yml
+# which provides the same functionality with better reliability
 on:
-  push:
-    branches: [main, master]
-  pull_request:
-    branches: [main, master]
+  # Disabled to prevent duplicate connectivity checks
+  workflow_dispatch:
 
 jobs:
   connectivity-check:
