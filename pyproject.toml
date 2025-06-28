@@ -54,7 +54,7 @@ dependencies = [
     "psycopg2-binary>=2.9.7",
 
     # Authentication & Security
-    "cryptography>=41.0.0,<43.0.0",  # Compatible with NeMo-Skills
+    "cryptography>=44.0.1",  # Security fix: updated to address OpenSSL vulnerabilities
     "pyjwt>=2.10.0",
     "python-jose[cryptography]>=3.3.0",
     "passlib[bcrypt]>=1.7.4",
@@ -70,7 +70,7 @@ dependencies = [
     "anthropic>=0.3.11",
     "openai>=1.3.0",
     "google-generativeai>=0.3.0",
-    "torch>=2.0.0",
+    "torch>=2.4.0,<2.6.0",  # Security fix: use stable version without known vulnerabilities
     "transformers>=4.30.0",
     "numpy>=1.24.0,<=1.26.4",
     "scipy>=1.10.0",
@@ -145,10 +145,10 @@ ml = [
     "tensorboard>=2.14.0",
 ]
 
-# NVIDIA NeMo-Skills (separate due to dependency conflicts)
-nemo = [
-    "nemo-skills @ git+https://github.com/NVIDIA/NeMo-Skills.git",
-]
+# NVIDIA NeMo-Skills (disabled temporarily due to dependency conflicts)
+# nemo = [
+#     "nemo-skills @ git+https://github.com/NVIDIA/NeMo-Skills.git",
+# ]
 
 # Blockchain dependencies
 blockchain = [
@@ -213,9 +213,9 @@ dev-dependencies = [
     "ruff>=0.1.0",
 ]
 
-# UV sources for Git dependencies
-[tool.uv.sources]
-nemo-skills = { git = "https://github.com/NVIDIA/NeMo-Skills.git" }
+# UV sources for Git dependencies (disabled temporarily)
+# [tool.uv.sources]
+# nemo-skills = { git = "https://github.com/NVIDIA/NeMo-Skills.git" }
 
 [tool.black]
 line-length = 88
