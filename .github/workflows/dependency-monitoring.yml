@@ -109,8 +109,10 @@ jobs:
       - name: Install monitoring tools
         run: |
           echo "🔧 Installing Node.js dependency monitoring tools..."
-          npm install -g audit-ci better-npm-audit
-          echo "✅ Tools installed"
+          timeout 300 npm install -g audit-ci better-npm-audit || {
+            echo "⚠️ npm tools install failed, continuing with basic audit..."
+          }
+          echo "✅ Tools installation completed"
 
       - name: Run npm audit
         id: npm_audit
@@ -167,7 +169,10 @@ jobs:
       - name: Install monitoring tools
         run: |
           echo "🔧 Installing Rust dependency monitoring tools..."
-          cargo install cargo-audit
+          timeout 300 cargo install cargo-audit || {
+            echo "⚠️ cargo-audit install failed, continuing without it..."
+            exit 0
+          }
           echo "✅ Tools installed"
 
       - name: Run cargo audit

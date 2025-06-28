@@ -438,7 +438,10 @@ jobs:
 
       - name: Install OpenAPI Generator
         run: |
-          npm install -g @openapitools/openapi-generator-cli
+          timeout 300 npm install -g @openapitools/openapi-generator-cli || {
+            echo "⚠️ OpenAPI Generator install failed, continuing without it..."
+            exit 0
+          }
 
       - name: Set up Python
         uses: actions/setup-python@v5

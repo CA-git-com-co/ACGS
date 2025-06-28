@@ -60,14 +60,14 @@ jobs:
           echo "🔧 Installing security scanning tools..."
 
           # Python security tools with specific versions to prevent conflicts
-          pip install 'safety>=2.3.0,<3.0' 'bandit>=1.7.5,<2.0' || echo "Failed to install Python security tools"
+          timeout 300 pip install 'safety>=2.3.0,<3.0' 'bandit>=1.7.5,<2.0' || echo "Failed to install Python security tools"
 
           # Node.js security tools (optional)
-          npm install -g audit-ci retire 2>/dev/null || echo "Node.js security tools not available"
+          timeout 300 npm install -g audit-ci retire 2>/dev/null || echo "Node.js security tools not available"
 
           # Rust security tools (optional)
           if command -v cargo >/dev/null 2>&1; then
-            cargo install cargo-audit cargo-deny || echo "Failed to install Rust security tools"
+            timeout 300 cargo install cargo-audit cargo-deny || echo "Failed to install Rust security tools"
           else
             echo "Cargo not available, skipping Rust security tools"
           fi
@@ -172,7 +172,7 @@ jobs:
           echo "🔧 Installing static analysis tools..."
 
           # Install with specific versions to prevent conflicts
-          pip install 'bandit>=1.7.5,<2.0' 'semgrep>=1.45.0,<2.0' 'pylint>=2.17.0,<3.0' 'mypy>=1.5.0,<2.0' || echo "Failed to install some static analysis tools, continuing..."
+          timeout 300 pip install 'bandit>=1.7.5,<2.0' 'semgrep>=1.45.0,<2.0' 'pylint>=2.17.0,<3.0' 'mypy>=1.5.0,<2.0' || echo "Failed to install some static analysis tools, continuing..."
 
           echo "✅ Static analysis tools installed"
 
@@ -329,7 +329,7 @@ jobs:
           echo "🔧 Installing infrastructure security tools..."
 
           # Install checkov for infrastructure as code scanning
-          pip install checkov || echo "Failed to install checkov"
+          timeout 300 pip install checkov || echo "Failed to install checkov"
 
           # Install tfsec for Terraform scanning (simplified)
           echo "Installing tfsec..."

@@ -62,7 +62,7 @@ jobs:
         run: |
           echo "📦 Installing Python documentation dependencies..."
           python -m pip install --upgrade pip
-          
+
           # Install with timeout and fallback handling
           timeout 300 pip install sphinx sphinx-rtd-theme sphinxcontrib-openapi pydantic fastapi || {
             echo "⚠️ Full dependency install failed, trying minimal install..."
@@ -95,25 +95,25 @@ jobs:
 
             # Configure Sphinx with error handling
             cat >> docs/api/python/conf.py << 'EOF' || echo "⚠️ Config update failed"
-          import os
-          import sys
-          sys.path.insert(0, os.path.abspath('../../../'))
+            import os
+            import sys
+            sys.path.insert(0, os.path.abspath('../../../'))
 
-          try:
-              extensions.extend([
-                  'sphinx.ext.autodoc',
-                  'sphinx.ext.viewcode',
-                  'sphinx.ext.napoleon'
-              ])
-          except:
-              extensions = [
-                  'sphinx.ext.autodoc',
-                  'sphinx.ext.viewcode',
-                  'sphinx.ext.napoleon'
-              ]
+            try:
+                extensions.extend([
+                    'sphinx.ext.autodoc',
+                    'sphinx.ext.viewcode',
+                    'sphinx.ext.napoleon'
+                ])
+            except:
+                extensions = [
+                    'sphinx.ext.autodoc',
+                    'sphinx.ext.viewcode',
+                    'sphinx.ext.napoleon'
+                ]
 
-          html_theme = 'sphinx_rtd_theme'
-          EOF
+            html_theme = 'sphinx_rtd_theme'
+            EOF
 
             # Generate API docs with fallback
             cd docs/api/python

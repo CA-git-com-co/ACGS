@@ -31,7 +31,7 @@ jobs:
           echo "🔍 Testing DNS resolution..."
           dns_success=0
           dns_total=0
-          
+
           for domain in github.com api.github.com raw.githubusercontent.com; do
             echo "Testing $domain..."
             ((dns_total++))
@@ -42,7 +42,7 @@ jobs:
               echo "⚠️ Failed to resolve $domain (continuing)"
             fi
           done
-          
+
           echo "📊 DNS Resolution Results: $dns_success/$dns_total domains resolved"
           # Continue regardless of DNS resolution issues
 
@@ -159,7 +159,7 @@ jobs:
               echo "⚠️ DNS resolution failed with $dns (continuing)"
             fi
           done
-          
+
           echo "📊 Alternative DNS Results: $dns_alt_success/2 servers working"
 
       - name: Final Status Report

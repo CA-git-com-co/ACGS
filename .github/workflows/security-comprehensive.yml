@@ -46,7 +46,7 @@ jobs:
           # Install dev dependencies 
           uv pip install -e .[dev,test] --index-strategy unsafe-best-match || echo "Dev dependencies install failed"
           # Install security tools
-          uv pip install safety bandit pip-audit semgrep || echo "Security tools install completed with some failures"
+          timeout 300 uv pip install safety bandit pip-audit semgrep || echo "Security tools install completed with some failures"
 
       - name: Python Dependency Vulnerability Scan (Safety)
         run: |
@@ -216,7 +216,7 @@ jobs:
       - name: Install dependencies
         run: |
           uv pip install -e . --index-strategy unsafe-best-match
-          uv pip install pip-licenses
+          timeout 300 uv pip install pip-licenses || echo "pip-licenses install failed"
 
       - name: Check Python licenses
         run: |

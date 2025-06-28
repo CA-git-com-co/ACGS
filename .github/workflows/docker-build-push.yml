@@ -24,36 +24,36 @@ jobs:
     strategy:
       matrix:
         include:
-          - service: "acgs-pgp-v8"
-            context: "services/core/acgs-pgp-v8"
-            dockerfile: "services/core/acgs-pgp-v8/Dockerfile"
-          - service: "ac"
-            context: "services/core/constitutional-ai/ac_service"
-            dockerfile: "services/core/constitutional-ai/ac_service/Dockerfile"
-          - service: "constitutional-trainer"
-            context: "services/core/constitutional-trainer"
-            dockerfile: "services/core/constitutional-trainer/Dockerfile"
-          - service: "dgm-service"
-            context: "services/core/dgm-service"
-            dockerfile: "services/core/dgm-service/Dockerfile"
-          - service: "ec"
-            context: "services/core/evolutionary-computation"
-            dockerfile: "services/core/evolutionary-computation/Dockerfile"
-          - service: "fv"
-            context: "services/core/formal-verification/fv_service"
-            dockerfile: "services/core/formal-verification/fv_service/Dockerfile"
-          - service: "gs"
-            context: "services/core/governance-synthesis/gs_service"
-            dockerfile: "services/core/governance-synthesis/gs_service/Dockerfile"
-          - service: "pgc"
-            context: "services/core/policy-governance/pgc_service"
-            dockerfile: "services/core/policy-governance/pgc_service/Dockerfile"
-          - service: "auth"
-            context: "services/platform/authentication/auth_service"
-            dockerfile: "services/platform/authentication/auth_service/Dockerfile"
-          - service: "integrity"
-            context: "services/platform/integrity/integrity_service"
-            dockerfile: "services/platform/integrity/integrity_service/Dockerfile"
+          - service: 'acgs-pgp-v8'
+            context: 'services/core/acgs-pgp-v8'
+            dockerfile: 'services/core/acgs-pgp-v8/Dockerfile'
+          - service: 'ac'
+            context: 'services/core/constitutional-ai/ac_service'
+            dockerfile: 'services/core/constitutional-ai/ac_service/Dockerfile'
+          - service: 'constitutional-trainer'
+            context: 'services/core/constitutional-trainer'
+            dockerfile: 'services/core/constitutional-trainer/Dockerfile'
+          - service: 'dgm-service'
+            context: 'services/core/dgm-service'
+            dockerfile: 'services/core/dgm-service/Dockerfile'
+          - service: 'ec'
+            context: 'services/core/evolutionary-computation'
+            dockerfile: 'services/core/evolutionary-computation/Dockerfile'
+          - service: 'fv'
+            context: 'services/core/formal-verification/fv_service'
+            dockerfile: 'services/core/formal-verification/fv_service/Dockerfile'
+          - service: 'gs'
+            context: 'services/core/governance-synthesis/gs_service'
+            dockerfile: 'services/core/governance-synthesis/gs_service/Dockerfile'
+          - service: 'pgc'
+            context: 'services/core/policy-governance/pgc_service'
+            dockerfile: 'services/core/policy-governance/pgc_service/Dockerfile'
+          - service: 'auth'
+            context: 'services/platform/authentication/auth_service'
+            dockerfile: 'services/platform/authentication/auth_service/Dockerfile'
+          - service: 'integrity'
+            context: 'services/platform/integrity/integrity_service'
+            dockerfile: 'services/platform/integrity/integrity_service/Dockerfile'
       fail-fast: false
     steps:
       - name: Check out repository

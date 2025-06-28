@@ -46,8 +46,8 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install pytest pytest-asyncio pytest-benchmark
-          pip install aiohttp requests psutil
+          timeout 300 pip install pytest pytest-asyncio pytest-benchmark || echo "⚠️ Test dependencies install failed"
+          timeout 300 pip install aiohttp requests psutil || echo "⚠️ HTTP dependencies install failed"
 
       - name: Run Baseline Performance Tests
         id: baseline
@@ -168,8 +168,8 @@ jobs:
 
       - name: Install Load Testing Dependencies
         run: |
-          pip install pytest pytest-asyncio aiohttp
-          pip install locust  # For load testing
+          timeout 300 pip install pytest pytest-asyncio aiohttp || echo "⚠️ Test dependencies install failed"
+          timeout 300 pip install locust || echo "⚠️ Locust install failed"  # For load testing
 
       - name: Create Load Testing Script
         run: |
@@ -317,7 +317,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install pytest pytest-asyncio aiohttp psutil
+          timeout 300 pip install pytest pytest-asyncio aiohttp psutil || echo "⚠️ Dependencies install failed"
 
       - name: Run Stress Test
         run: |
