@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [constitutional-ai, governance-synthesis, policy-governance]
+        service: [constitutional-ai, governance-synthesis, policy-governance, formal-verification, integrity]
 
     steps:
       - name: Checkout code
@@ -77,13 +77,22 @@ jobs:
           fi
 
           # Check if service directory exists and has Python files
-          if [ -d "services/core/${{ matrix.service }}" ] && find services/core/${{ matrix.service }} -name "*.py" | grep -q .; then
-            echo "Linting services/core/${{ matrix.service }}"
-            uv run black --check services/core/${{ matrix.service }} 2>/dev/null || echo "Black check failed for ${{ matrix.service }}"
-            uv run isort --check-only services/core/${{ matrix.service }} 2>/dev/null || echo "isort check failed for ${{ matrix.service }}"
-            uv run mypy services/core/${{ matrix.service }} 2>/dev/null || echo "mypy check failed for ${{ matrix.service }}"
+          SERVICE_DIR=""
+          if [ -d "services/core/${{ matrix.service }}" ]; then
+            SERVICE_DIR="services/core/${{ matrix.service }}"
+          elif [ -d "services/platform/${{ matrix.service }}" ]; then
+            SERVICE_DIR="services/platform/${{ matrix.service }}"
+          elif [ -d "services/core/${{ matrix.service }}-service" ]; then
+            SERVICE_DIR="services/core/${{ matrix.service }}-service"
+          fi
+          
+          if [ -n "$SERVICE_DIR" ] && find "$SERVICE_DIR" -name "*.py" | grep -q .; then
+            echo "Linting $SERVICE_DIR"
+            uv run black --check "$SERVICE_DIR" 2>/dev/null || echo "Black check failed for ${{ matrix.service }}"
+            uv run isort --check-only "$SERVICE_DIR" 2>/dev/null || echo "isort check failed for ${{ matrix.service }}"
+            uv run mypy "$SERVICE_DIR" 2>/dev/null || echo "mypy check failed for ${{ matrix.service }}"
           else
-            echo "No Python files found in services/core/${{ matrix.service }}, skipping linting"
+            echo "No Python files found for ${{ matrix.service }}, skipping linting"
           fi
 
       - name: Test with UV

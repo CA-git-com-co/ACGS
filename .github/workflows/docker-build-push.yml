@@ -23,7 +23,7 @@ jobs:
     name: Docker Build
     strategy:
       matrix:
-        service: [auth, ac, integrity, fv, gs, pgc, ec]
+        service: [auth, ac, integrity, fv, gs, pgc, ec, constitutional-trainer, dgm-service]
       fail-fast: false
     steps:
       - name: Check out repository
@@ -85,6 +85,20 @@ jobs:
               if [ -f "services/core/evolutionary-computation/Dockerfile" ]; then
                 echo "dockerfile_path=services/core/evolutionary-computation/Dockerfile" >> $GITHUB_OUTPUT
                 echo "context=services/core/evolutionary-computation" >> $GITHUB_OUTPUT
+                DOCKERFILE_FOUND=true
+              fi
+              ;;
+            "constitutional-trainer")
+              if [ -f "services/core/constitutional-trainer/Dockerfile" ]; then
+                echo "dockerfile_path=services/core/constitutional-trainer/Dockerfile" >> $GITHUB_OUTPUT
+                echo "context=services/core/constitutional-trainer" >> $GITHUB_OUTPUT
+                DOCKERFILE_FOUND=true
+              fi
+              ;;
+            "dgm-service")
+              if [ -f "services/core/dgm-service/Dockerfile" ]; then
+                echo "dockerfile_path=services/core/dgm-service/Dockerfile" >> $GITHUB_OUTPUT
+                echo "context=services/core/dgm-service" >> $GITHUB_OUTPUT
                 DOCKERFILE_FOUND=true
               fi
               ;;
