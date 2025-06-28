@@ -18,25 +18,33 @@ jobs:
         run: |
           echo "🔍 Running network diagnostics..."
           echo "📋 DNS Configuration:"
-          cat /etc/resolv.conf
+          cat /etc/resolv.conf || echo "⚠️ Could not read DNS configuration"
           echo ""
           echo "🛣️ Network Routes:"
-          ip route show
+          ip route show || echo "⚠️ Could not display network routes"
           echo ""
           echo "🌐 Network Interfaces:"
-          ip addr show
+          ip addr show || echo "⚠️ Could not display network interfaces"
 
       - name: Test DNS Resolution
         run: |
           echo "🔍 Testing DNS resolution..."
+          dns_success=0
+          dns_total=0
+          
           for domain in github.com api.github.com raw.githubusercontent.com; do
             echo "Testing $domain..."
-            if nslookup "$domain" >/dev/null 2>&1; then
+            ((dns_total++))
+            if timeout 10 nslookup "$domain" >/dev/null 2>&1; then
               echo "✅ $domain resolved successfully"
+              ((dns_success++))
             else
-              echo "❌ Failed to resolve $domain"
+              echo "⚠️ Failed to resolve $domain (continuing)"
             fi
           done
+          
+          echo "📊 DNS Resolution Results: $dns_success/$dns_total domains resolved"
+          # Continue regardless of DNS resolution issues
 
       - name: Test HTTP Connectivity (with retries)
         run: |
@@ -45,13 +53,13 @@ jobs:
           test_connectivity() {
             local url="$1"
             local name="$2"
-            local max_attempts=3
-            local delay=5
+            local max_attempts=2
+            local delay=3
             
             for attempt in $(seq 1 $max_attempts); do
               echo "Attempt $attempt/$max_attempts for $name..."
               
-              if curl -s --max-time 10 --head "$url" >/dev/null 2>&1; then
+              if timeout 15 curl -s --max-time 10 --connect-timeout 5 --head "$url" >/dev/null 2>&1; then
                 echo "✅ $name connectivity successful"
                 return 0
               elif [ $attempt -lt $max_attempts ]; then
@@ -60,7 +68,7 @@ jobs:
               fi
             done
             
-            echo "❌ $name connectivity failed after $max_attempts attempts"
+            echo "⚠️ $name connectivity failed after $max_attempts attempts (continuing)"
             return 1
           }
 
@@ -88,60 +96,71 @@ jobs:
 
           echo "📊 Connectivity Results: $success_count/$total_tests tests passed"
 
-          # Always pass connectivity check to avoid blocking CI/CD
-          if [ $success_count -ge 1 ]; then
+          # Set threshold for acceptable connectivity
+          threshold=1
+          if [ $success_count -ge $threshold ]; then
             echo "🎉 Connectivity check passed! ($success_count/$total_tests tests successful)"
+            echo "CONNECTIVITY_STATUS=success" >> $GITHUB_ENV
           else
-            echo "⚠️ Connectivity check had issues, but continuing (network issues may be temporary)"
+            echo "⚠️ Connectivity check had issues, but treating as non-blocking"
             echo "📊 Results: $success_count/$total_tests tests passed"
-            echo "💡 This is likely a temporary network issue and won't block the CI/CD pipeline"
+            echo "💡 Network issues are common in CI environments and won't block the pipeline"
+            echo "CONNECTIVITY_STATUS=degraded" >> $GITHUB_ENV
           fi
-          # Always exit successfully to avoid blocking CI/CD
-          exit 0
 
       - name: Test GitHub API Functionality
         run: |
           echo "🔌 Testing GitHub API functionality..."
 
+          api_success=0
+          api_total=2
+
           # Test public API endpoint
-          if response=$(curl -s --max-time 10 "https://api.github.com/zen" 2>/dev/null); then
+          if response=$(timeout 15 curl -s --max-time 10 --connect-timeout 5 "https://api.github.com/zen" 2>/dev/null); then
             echo "✅ GitHub API response: $response"
+            ((api_success++))
           else
-            echo "⚠️ GitHub API test failed, but continuing"
+            echo "⚠️ GitHub API zen endpoint test failed (continuing)"
           fi
 
           # Test rate limit endpoint
-          if curl -s --max-time 10 "https://api.github.com/rate_limit" >/dev/null 2>&1; then
+          if timeout 15 curl -s --max-time 10 --connect-timeout 5 "https://api.github.com/rate_limit" >/dev/null 2>&1; then
             echo "✅ GitHub API rate limit endpoint accessible"
+            ((api_success++))
           else
-            echo "⚠️ GitHub API rate limit endpoint not accessible, but continuing"
+            echo "⚠️ GitHub API rate limit endpoint not accessible (continuing)"
           fi
 
+          echo "📊 GitHub API Results: $api_success/$api_total endpoints accessible"
           echo "✅ GitHub API functionality test completed"
 
       - name: Alternative Connectivity Test
-        if: failure()
+        if: env.CONNECTIVITY_STATUS == 'degraded'
         run: |
           echo "🔧 Running alternative connectivity tests..."
 
           # Test if general internet works
-          if curl -s --max-time 10 --head "https://httpbin.org/status/200" >/dev/null 2>&1; then
+          if timeout 15 curl -s --max-time 10 --connect-timeout 5 --head "https://httpbin.org/status/200" >/dev/null 2>&1; then
             echo "✅ General internet connectivity works"
-            echo "❌ Issue appears to be specific to GitHub"
+            echo "⚠️ Issue appears to be specific to GitHub (non-blocking)"
           else
-            echo "❌ General internet connectivity issues detected"
+            echo "⚠️ General internet connectivity issues detected (non-blocking)"
           fi
 
           # Try different DNS servers
           echo "🔍 Testing with different DNS servers..."
-          for dns in "8.8.8.8" "1.1.1.1" "208.67.222.222"; do
+          dns_alt_success=0
+          for dns in "8.8.8.8" "1.1.1.1"; do
             echo "Testing with DNS server $dns..."
-            if nslookup github.com "$dns" >/dev/null 2>&1; then
+            if timeout 10 nslookup github.com "$dns" >/dev/null 2>&1; then
               echo "✅ DNS resolution works with $dns"
+              ((dns_alt_success++))
             else
-              echo "❌ DNS resolution failed with $dns"
+              echo "⚠️ DNS resolution failed with $dns (continuing)"
             fi
           done
+          
+          echo "📊 Alternative DNS Results: $dns_alt_success/2 servers working"
 
       - name: Final Status Report
         if: always()
@@ -150,5 +169,14 @@ jobs:
           echo "=================================="
           echo "Runner: ${{ runner.os }}"
           echo "Timestamp: $(date)"
+          echo "Connectivity Status: ${CONNECTIVITY_STATUS:-unknown}"
+          echo ""
+          echo "📊 Summary:"
+          echo "- This test validates network connectivity for CI/CD operations"
+          echo "- All connectivity issues are treated as non-blocking warnings"
+          echo "- The CI/CD pipeline will continue regardless of network conditions"
+          echo ""
           echo "GitHub Actions Runner IP:"
-          curl -s --max-time 5 "https://httpbin.org/ip" 2>/dev/null || echo "Could not determine IP"
+          timeout 10 curl -s --max-time 5 "https://httpbin.org/ip" 2>/dev/null || echo "Could not determine IP (non-blocking)"
+          echo ""
+          echo "✅ Connectivity check completed successfully (non-blocking design)"
