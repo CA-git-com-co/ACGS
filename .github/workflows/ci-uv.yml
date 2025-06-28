@@ -21,14 +21,21 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service:
-          [
-            constitutional-ai,
-            governance-synthesis,
-            policy-governance,
-            formal-verification,
-            integrity,
-          ]
+        include:
+          - service: "constitutional-ai"
+            path: "services/core/constitutional-ai"
+          - service: "governance-synthesis" 
+            path: "services/core/governance-synthesis"
+          - service: "policy-governance"
+            path: "services/core/policy-governance"
+          - service: "formal-verification"
+            path: "services/core/formal-verification"
+          - service: "integrity"
+            path: "services/platform/integrity"
+          - service: "dgm-service"
+            path: "services/core/dgm-service"
+          - service: "evolutionary-computation"
+            path: "services/core/evolutionary-computation"
       fail-fast: false
 
     steps:
@@ -84,29 +91,19 @@ jobs:
             exit 0
           fi
 
-          # Check if service directory exists and has Python files
-          SERVICE_DIR=""
-          echo "🔍 Looking for service: ${{ matrix.service }}"
+          # Use explicit service path from matrix
+          SERVICE_DIR="${{ matrix.path }}"
+          echo "🔍 Checking service: ${{ matrix.service }} at path: $SERVICE_DIR"
 
-          # Check multiple possible locations
-          POSSIBLE_DIRS=(
-            "services/core/${{ matrix.service }}"
-            "services/platform/${{ matrix.service }}"
-            "services/core/${{ matrix.service }}_service"
-            "services/platform/${{ matrix.service }}_service"
-            "services/shared"
-          )
-
-          for dir in "${POSSIBLE_DIRS[@]}"; do
-            if [ -d "$dir" ] && find "$dir" -name "*.py" | grep -q .; then
-              SERVICE_DIR="$dir"
-              echo "✅ Found service directory: $SERVICE_DIR"
-              break
-            fi
-          done
+          if [ -d "$SERVICE_DIR" ] && find "$SERVICE_DIR" -name "*.py" | grep -q .; then
+            echo "✅ Found service directory: $SERVICE_DIR"
+          else
+            echo "⚠️ Service directory not found or no Python files: $SERVICE_DIR"
+            SERVICE_DIR=""
+          fi
 
           if [ -z "$SERVICE_DIR" ]; then
-            echo "⚠️ No service directory found for ${{ matrix.service }}, checking if we can lint shared services instead"
+            echo "ℹ️ Checking shared services as fallback..."
             if [ -d "services/shared" ] && find "services/shared" -name "*.py" | grep -q .; then
               SERVICE_DIR="services/shared"
               echo "📁 Using shared services directory as fallback"

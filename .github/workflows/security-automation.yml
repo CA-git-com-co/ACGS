@@ -238,17 +238,30 @@ jobs:
         run: |
           echo "🏗️ Building test images for security scanning..."
 
-          # Build images for each service
-          SERVICES=("auth" "ac" "integrity" "fv" "gs" "pgc" "ec")
+          # Build images for services that have Dockerfiles
+          declare -A SERVICES=(
+            ["ac"]="services/core/constitutional-ai/ac_service"
+            ["dgm-service"]="services/core/dgm-service"
+            ["constitutional-trainer"]="services/core/constitutional-trainer"
+            ["ec"]="services/core/evolutionary-computation"
+            ["fv"]="services/core/formal-verification/fv_service"
+            ["gs"]="services/core/governance-synthesis/gs_service"
+            ["pgc"]="services/core/policy-governance/pgc_service"
+            ["auth"]="services/platform/authentication/auth_service"
+            ["integrity"]="services/platform/integrity/integrity_service"
+          )
 
-          for service in "${SERVICES[@]}"; do
-            if [ -d "services/${service}_service" ]; then
-              echo "Building $service service image..."
-              docker build -t "acgs-${service}:test" "services/${service}_service/" || true
+          for service in "${!SERVICES[@]}"; do
+            service_path="${SERVICES[$service]}"
+            if [ -d "$service_path" ] && [ -f "$service_path/Dockerfile" ]; then
+              echo "Building $service service image from $service_path..."
+              docker build -t "acgs-${service}:test" "$service_path/" || echo "⚠️ Build failed for $service (continuing)"
+            else
+              echo "⚠️ Skipping $service - no Dockerfile found at $service_path"
             fi
           done
 
-          echo "✅ Test images built"
+          echo "✅ Available test images built"
 
       - name: Run Trivy container scans
         run: |
