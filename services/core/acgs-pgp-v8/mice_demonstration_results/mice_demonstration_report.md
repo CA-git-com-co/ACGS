@@ -13,11 +13,13 @@
 ## 📊 Detailed Results
 
 ### Mean Absolute Error (MAE)
+
 - **Baseline (Mean Imputation):** 50.11
 - **MICE Imputation:** 40.84
 - **Improvement:** 18.5%
 
 ### R² Score
+
 - **Baseline (Mean Imputation):** 0.985
 - **MICE Imputation:** 1.167
 - **Improvement:** 18.5%

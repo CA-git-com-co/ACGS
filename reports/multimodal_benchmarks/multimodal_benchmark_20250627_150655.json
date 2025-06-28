@@ -7,4 +7,8 @@
   },
   "model_results": {
     "gemini_flash_full": {
-      "model_type": 
+      "model_type": "gemini-flash",
+      "status": "incomplete"
+    }
+  }
+}

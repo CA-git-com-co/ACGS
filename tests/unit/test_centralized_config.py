@@ -55,7 +55,7 @@ class TestACGSConfig:
             "ENVIRONMENT": "production",
             "DEBUG": "true",
             "AUTH_SERVICE_URL": "https://auth.example.com",
-            "JWT_SECRET_KEY": "test-secret-key",
+            "JWT_SECRET_KEY": "test-secret-key-32-characters-minimum-length-required",
             "TEST_MODE": "true",
         },
     )
@@ -66,7 +66,7 @@ class TestACGSConfig:
         assert config.get("environment") == "production"
         assert config.get("debug") is True
         assert config.get_service_url("auth") == "https://auth.example.com"
-        assert config.get("jwt_secret_key") == "test-secret-key"
+        assert config.get("jwt_secret_key") == "test-secret-key-32-characters-minimum-length-required"
         assert config.is_test_mode() is True
         assert config.is_production() is True
 
@@ -102,7 +102,7 @@ class TestACGSConfig:
         """Test configuration validation."""
         # Test missing required configuration
         with patch.dict(os.environ, {"JWT_SECRET_KEY": ""}, clear=True):
-            with pytest.raises(ValueError, match="Missing required configuration"):
+            with pytest.raises(ValueError, match="Invalid configuration"):
                 ACGSConfig()
 
     def test_invalid_service_name(self):
@@ -145,21 +145,23 @@ class TestACGSConfig:
         env_content = """
 ENVIRONMENT=testing
 AUTH_SERVICE_URL=http://test.example.com:8000
-JWT_SECRET_KEY=test-file-secret
+JWT_SECRET_KEY=test-file-secret-32-characters-minimum-length-required
 """
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".env", delete=False) as f:
             f.write(env_content)
             f.flush()
 
-            try:
-                config = ACGSConfig(env_file=f.name)
+            # Temporarily clear environment variables to test env file loading
+            with patch.dict(os.environ, {}, clear=True):
+                try:
+                    config = ACGSConfig(env_file=f.name)
 
-                assert config.get("environment") == "testing"
-                assert config.get_service_url("auth") == "http://test.example.com:8000"
-                assert config.get("jwt_secret_key") == "test-file-secret"
-            finally:
-                os.unlink(f.name)
+                    assert config.get("environment") == "testing"
+                    assert config.get_service_url("auth") == "http://test.example.com:8000"
+                    assert config.get("jwt_secret_key") == "test-file-secret-32-characters-minimum-length-required"
+                finally:
+                    os.unlink(f.name)
 
     def test_nested_config_access(self):
         """Test nested configuration access using dot notation."""

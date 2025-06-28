@@ -44,36 +44,12 @@
   "performance_improvement": -0.14332632247738608,
   "max_correlation": 0.9985642249310372,
   "high_correlation_pairs": [
-    [
-      "response_time_ms",
-      "response_time_ms quality_score",
-      0.9500474716101589
-    ],
-    [
-      "response_time_ms",
-      "response_time_ms content_length",
-      0.99760884025995
-    ],
-    [
-      "complexity_score",
-      "quality_score complexity_score",
-      0.9654183018367014
-    ],
-    [
-      "complexity_score",
-      "complexity_score content_length",
-      0.9985642249310372
-    ],
-    [
-      "response_time_ms quality_score",
-      "response_time_ms content_length",
-      0.9471197141527862
-    ],
-    [
-      "quality_score complexity_score",
-      "complexity_score content_length",
-      0.9633990939337055
-    ]
+    ["response_time_ms", "response_time_ms quality_score", 0.9500474716101589],
+    ["response_time_ms", "response_time_ms content_length", 0.99760884025995],
+    ["complexity_score", "quality_score complexity_score", 0.9654183018367014],
+    ["complexity_score", "complexity_score content_length", 0.9985642249310372],
+    ["response_time_ms quality_score", "response_time_ms content_length", 0.9471197141527862],
+    ["quality_score complexity_score", "complexity_score content_length", 0.9633990939337055]
   ],
   "processing_time_seconds": 2.089577,
   "constitutional_hash": "cdd01ef066bc6cf2",

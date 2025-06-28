@@ -288,7 +288,7 @@ class MLOpsManager:
         logger.info(f"Starting deployment for {model_name} v{model_version}")
         
         # Get model version
-        model_version_obj = self.version_manager.get_version(model_version)
+        model_version_obj = self.version_manager.get_version_by_model_and_version(model_name, model_version)
         if not model_version_obj:
             raise MLOpsError(f"Model version not found: {model_name} v{model_version}")
         

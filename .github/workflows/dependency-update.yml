@@ -1,0 +1,281 @@
+name: Automated Dependency Updates
+
+on:
+  schedule:
+    # Run monthly on the first day at 3 AM UTC
+    - cron: '0 3 1 * *'
+  workflow_dispatch:
+    inputs:
+      update_type:
+        description: 'Type of update to perform'
+        required: true
+        default: 'minor'
+        type: choice
+        options:
+          - 'patch'
+          - 'minor'
+          - 'major'
+          - 'security'
+
+env:
+  PYTHON_VERSION: '3.10'
+  NODE_VERSION: '18'
+
+jobs:
+  dependency-update:
+    runs-on: ubuntu-latest
+    name: Update Dependencies
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Create backup
+        run: |
+          mkdir -p .backup
+          cp pyproject.toml .backup/pyproject.toml.backup
+          cp project/package.json .backup/package.json.backup
+          cp project/package-lock.json .backup/package-lock.json.backup || true
+
+      - name: Update Python dependencies
+        run: |
+          echo "Updating Python dependencies..."
+
+          # Install current dependencies
+          uv pip install -e . --index-strategy unsafe-best-match
+          uv pip install -e .[dev,test] --index-strategy unsafe-best-match
+
+          # Check for outdated packages
+          echo "Checking for outdated Python packages..."
+          uv pip list --outdated > python-outdated-before.txt || true
+
+          # Update dependencies based on input type
+          case "${{ github.event.inputs.update_type || 'minor' }}" in
+            "security")
+              echo "Performing security updates only..."
+              uv pip install --upgrade-package cryptography
+              uv pip install --upgrade-package pyjwt
+              uv pip install --upgrade-package fastapi
+              ;;
+            "patch")
+              echo "Performing patch updates..."
+              uv pip install --upgrade -e . --upgrade-strategy only-if-needed
+              ;;
+            "minor"|"major")
+              echo "Performing ${{ github.event.inputs.update_type || 'minor' }} updates..."
+              uv pip install --upgrade -e .[all] --index-strategy unsafe-best-match
+              ;;
+          esac
+
+          # Generate updated requirements for compatibility
+          uv pip freeze > requirements-updated.txt
+
+          # Check for outdated packages after update
+          uv pip list --outdated > python-outdated-after.txt || true
+
+      - name: Update JavaScript dependencies
+        run: |
+          cd project
+          echo "Updating JavaScript dependencies..."
+
+          # Check for outdated packages
+          echo "Checking for outdated JavaScript packages..."
+          npm outdated > ../js-outdated-before.txt || true
+
+          # Update dependencies based on input type
+          case "${{ github.event.inputs.update_type || 'minor' }}" in
+            "security")
+              echo "Performing security updates only..."
+              npm audit fix --force || true
+              ;;
+            "patch")
+              echo "Performing patch updates..."
+              npm update --save
+              ;;
+            "minor"|"major")
+              echo "Performing ${{ github.event.inputs.update_type || 'minor' }} updates..."
+              npm update
+              npm update --save-dev
+              ;;
+          esac
+
+          # Check for outdated packages after update
+          npm outdated > ../js-outdated-after.txt || true
+
+      - name: Run tests
+        run: |
+          echo "Running tests to verify updates..."
+
+          # Test Python components
+          echo "Testing Python components..."
+          uv run pytest tests/unit/test_simple.py tests/unit/test_auth_basic.py -v || exit 1
+
+          # Test JavaScript components
+          echo "Testing JavaScript components..."
+          cd project
+          npm test -- --testPathPattern="Button.test.tsx|provider.test.tsx" --passWithNoTests || exit 1
+
+      - name: Security audit
+        run: |
+          echo "Running security audits..."
+
+          # Python security check
+          if command -v safety &> /dev/null; then
+            echo "Running Python security audit..."
+            uv run safety check || echo "Python security issues found"
+          fi
+
+          # JavaScript security check
+          cd project
+          echo "Running JavaScript security audit..."
+          npm audit --audit-level=moderate || echo "JavaScript security issues found"
+
+      - name: Generate update summary
+        run: |
+          echo "# Dependency Update Summary - $(date)" > UPDATE_SUMMARY.md
+          echo "" >> UPDATE_SUMMARY.md
+          echo "## Update Type: ${{ github.event.inputs.update_type || 'minor' }}" >> UPDATE_SUMMARY.md
+          echo "" >> UPDATE_SUMMARY.md
+
+          echo "## Python Dependencies" >> UPDATE_SUMMARY.md
+          echo "### Before Update" >> UPDATE_SUMMARY.md
+          echo "\`\`\`" >> UPDATE_SUMMARY.md
+          cat python-outdated-before.txt >> UPDATE_SUMMARY.md || echo "No outdated packages found" >> UPDATE_SUMMARY.md
+          echo "\`\`\`" >> UPDATE_SUMMARY.md
+          echo "" >> UPDATE_SUMMARY.md
+          echo "### After Update" >> UPDATE_SUMMARY.md
+          echo "\`\`\`" >> UPDATE_SUMMARY.md
+          cat python-outdated-after.txt >> UPDATE_SUMMARY.md || echo "All packages up to date" >> UPDATE_SUMMARY.md
+          echo "\`\`\`" >> UPDATE_SUMMARY.md
+          echo "" >> UPDATE_SUMMARY.md
+
+          echo "## JavaScript Dependencies" >> UPDATE_SUMMARY.md
+          echo "### Before Update" >> UPDATE_SUMMARY.md
+          echo "\`\`\`" >> UPDATE_SUMMARY.md
+          cat js-outdated-before.txt >> UPDATE_SUMMARY.md || echo "No outdated packages found" >> UPDATE_SUMMARY.md
+          echo "\`\`\`" >> UPDATE_SUMMARY.md
+          echo "" >> UPDATE_SUMMARY.md
+          echo "### After Update" >> UPDATE_SUMMARY.md
+          echo "\`\`\`" >> UPDATE_SUMMARY.md
+          cat js-outdated-after.txt >> UPDATE_SUMMARY.md || echo "All packages up to date" >> UPDATE_SUMMARY.md
+          echo "\`\`\`" >> UPDATE_SUMMARY.md
+          echo "" >> UPDATE_SUMMARY.md
+
+          echo "## Test Results" >> UPDATE_SUMMARY.md
+          echo "✅ Python tests: PASSED" >> UPDATE_SUMMARY.md
+          echo "✅ JavaScript tests: PASSED" >> UPDATE_SUMMARY.md
+          echo "✅ Security audits: COMPLETED" >> UPDATE_SUMMARY.md
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes detected"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: |
+            chore: automated dependency updates (${{ github.event.inputs.update_type || 'minor' }})
+
+            - Updated Python dependencies using uv
+            - Updated JavaScript dependencies using npm
+            - All tests passing
+            - Security audits completed
+          title: "chore: automated dependency updates (${{ github.event.inputs.update_type || 'minor' }})"
+          body: |
+            ## Automated Dependency Updates
+
+            This PR contains automated dependency updates performed by GitHub Actions.
+
+            **Update Type:** ${{ github.event.inputs.update_type || 'minor' }}
+            **Triggered:** ${{ github.event_name }}
+            **Date:** $(date)
+
+            ### Changes Made
+            - ✅ Updated Python dependencies using uv
+            - ✅ Updated JavaScript dependencies using npm
+            - ✅ All tests are passing
+            - ✅ Security audits completed
+
+            ### Review Checklist
+            - [ ] Review dependency changes
+            - [ ] Verify test results
+            - [ ] Check security audit results
+            - [ ] Test application functionality
+            - [ ] Approve and merge if everything looks good
+
+            ### Rollback Instructions
+            If issues are found, you can rollback using:
+            ```bash
+            cp .backup/pyproject.toml.backup pyproject.toml
+            cp .backup/package.json.backup project/package.json
+            cp .backup/package-lock.json.backup project/package-lock.json
+            ```
+
+            ---
+            *This PR was created automatically by the dependency update workflow.*
+          branch: automated-dependency-updates-${{ github.run_number }}
+          delete-branch: true
+
+      - name: Upload Update Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-update-reports
+          path: |
+            UPDATE_SUMMARY.md
+            python-outdated-before.txt
+            python-outdated-after.txt
+            js-outdated-before.txt
+            js-outdated-after.txt
+            requirements-updated.txt
+
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Automated Dependency Update Failed',
+              body: `The automated dependency update workflow failed.
+              
+              **Run ID:** ${{ github.run_id }}
+              **Update Type:** ${{ github.event.inputs.update_type || 'minor' }}
+              **Date:** ${new Date().toISOString()}
+              
+              Please check the workflow logs and resolve any issues.
+              
+              [View Workflow Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`
+            })

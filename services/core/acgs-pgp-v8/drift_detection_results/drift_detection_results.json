@@ -10,7 +10,7 @@
     },
     "cost_estimate": {
       "statistic": 0.10333333333333333,
-      "p_value": 2.1626112088313309e-07,
+      "p_value": 2.1626112088313309e-7,
       "drift_detected": true
     },
     "quality_score": {
@@ -62,10 +62,7 @@
     "is_weekend": 0.0,
     "constitutional_compliance": 0.0
   },
-  "features_with_psi_drift": [
-    "response_time_ms",
-    "content_length"
-  ],
+  "features_with_psi_drift": ["response_time_ms", "content_length"],
   "retraining_required": true,
   "retraining_urgency": "high",
   "affected_features": [

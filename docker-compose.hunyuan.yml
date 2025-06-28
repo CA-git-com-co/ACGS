@@ -1,0 +1,166 @@
+# Docker Compose configuration for Hunyuan-A13B-Instruct model
+# Requires CUDA 12.8+ and significant GPU resources
+
+version: '3.8'
+
+services:
+  hunyuan-a13b:
+    image: hunyuaninfer/hunyuan-a13b:hunyuan-moe-A13B-vllm
+    container_name: acgs-hunyuan-a13b
+    restart: unless-stopped
+
+    # GPU and system resources
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+    # Network configuration
+    network_mode: host
+    ipc: host
+    privileged: true
+    user: root
+
+    # Volume mounts for model caching
+    volumes:
+      - hunyuan_cache:/root/.cache/
+      - ./config/models/hunyuan-a13b.yaml:/app/config/model.yaml:ro
+      - ./logs/hunyuan:/app/logs
+
+    # Environment variables
+    environment:
+      - CUDA_VISIBLE_DEVICES=all
+      - PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
+      - VLLM_LOGGING_LEVEL=INFO
+      - MODEL_NAME=tencent/Hunyuan-A13B-Instruct
+      - TENSOR_PARALLEL_SIZE=4
+      - HOST=0.0.0.0
+      - PORT=8000
+      - TRUST_REMOTE_CODE=true
+
+    # Command to start the vLLM server
+    entrypoint: python
+    command: >
+      -m vllm.entrypoints.openai.api_server 
+      --host 0.0.0.0 
+      --port 8000 
+      --tensor-parallel-size 4 
+      --model tencent/Hunyuan-A13B-Instruct 
+      --trust-remote-code
+      --max-model-len 4096
+      --gpu-memory-utilization 0.9
+      --enforce-eager
+
+    # Health check
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+    # Logging configuration
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '100m'
+        max-file: '3'
+
+    # Labels for service identification
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.hunyuan.rule=PathPrefix(`/v1/`)'
+      - 'traefik.http.services.hunyuan.loadbalancer.server.port=8000'
+      - 'acgs.service=hunyuan-a13b'
+      - 'acgs.model=tencent/Hunyuan-A13B-Instruct'
+
+  # Alternative configuration for ModelScope download
+  hunyuan-a13b-modelscope:
+    image: hunyuaninfer/hunyuan-a13b:hunyuan-moe-A13B-vllm
+    container_name: acgs-hunyuan-a13b-modelscope
+    restart: unless-stopped
+    profiles: ['modelscope']
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+    network_mode: host
+    ipc: host
+    privileged: true
+    user: root
+
+    volumes:
+      - modelscope_cache:/root/.cache/modelscope
+      - ./config/models/hunyuan-a13b.yaml:/app/config/model.yaml:ro
+      - ./logs/hunyuan:/app/logs
+
+    environment:
+      - CUDA_VISIBLE_DEVICES=all
+      - PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
+      - VLLM_LOGGING_LEVEL=INFO
+      - TENSOR_PARALLEL_SIZE=4
+      - HOST=0.0.0.0
+      - PORT=8000
+      - TRUST_REMOTE_CODE=true
+
+    entrypoint: python
+    command: >
+      -m vllm.entrypoints.openai.api_server 
+      --host 0.0.0.0 
+      --port 8000 
+      --tensor-parallel-size 4 
+      --model /root/.cache/modelscope/hub/models/Tencent-Hunyuan/Hunyuan-A13B-Instruct/ 
+      --trust_remote_code
+      --max-model-len 4096
+      --gpu-memory-utilization 0.9
+      --enforce-eager
+
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+  # Monitoring service for Hunyuan model
+  hunyuan-monitor:
+    image: prom/prometheus:latest
+    container_name: acgs-hunyuan-monitor
+    restart: unless-stopped
+    ports:
+      - '9090:9090'
+
+    volumes:
+      - ./config/monitoring/prometheus-hunyuan.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+
+    depends_on:
+      - hunyuan-a13b
+
+volumes:
+  hunyuan_cache:
+    driver: local
+  modelscope_cache:
+    driver: local
+  prometheus_data:
+    driver: local
+
+networks:
+  default:
+    name: acgs-hunyuan-network

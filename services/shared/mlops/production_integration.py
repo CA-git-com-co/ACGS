@@ -39,26 +39,31 @@ class MLOpsProductionIntegration:
     """
     
     def __init__(self, constitutional_hash: str = "cdd01ef066bc6cf2",
-                 mlops_storage_root: str = "./mlops_production"):
+                 mlops_storage_root: str = "./mlops_production",
+                 existing_mlops_manager=None):
         self.constitutional_hash = constitutional_hash
-        
+
         # Initialize existing production ML optimizer
         self.production_optimizer = ProductionMLOptimizer(constitutional_hash)
-        
+
         # Initialize new MLOps framework
-        mlops_config = MLOpsConfig(
-            storage_root=mlops_storage_root,
-            constitutional_hash=constitutional_hash,
-            performance_targets={
-                'response_time_ms': 2000,  # Sub-2s response times
-                'constitutional_compliance': 0.95,  # >95% compliance
-                'cost_savings': 0.74,  # 74% cost savings
-                'availability': 0.999,  # 99.9% availability
-                'model_accuracy': 0.90  # >90% prediction accuracy
-            }
-        )
-        
-        self.mlops_manager = MLOpsManager(mlops_config)
+        if existing_mlops_manager:
+            self.mlops_manager = existing_mlops_manager
+            logger.info("Using existing MLOps manager")
+        else:
+            mlops_config = MLOpsConfig(
+                storage_root=mlops_storage_root,
+                constitutional_hash=constitutional_hash,
+                performance_targets={
+                    'response_time_ms': 2000,  # Sub-2s response times
+                    'constitutional_compliance': 0.95,  # >95% compliance
+                    'cost_savings': 0.74,  # 74% cost savings
+                    'availability': 0.999,  # 99.9% availability
+                    'model_accuracy': 0.90  # >90% prediction accuracy
+                }
+            )
+
+            self.mlops_manager = MLOpsManager(mlops_config)
         
         # Integration state
         self.integration_enabled = True
@@ -412,23 +417,26 @@ class MLOpsProductionIntegration:
 
 # Factory function for easy initialization
 def create_production_mlops_integration(constitutional_hash: str = "cdd01ef066bc6cf2",
-                                      storage_root: str = "./mlops_production") -> MLOpsProductionIntegration:
+                                      storage_root: str = "./mlops_production",
+                                      existing_mlops_manager=None) -> MLOpsProductionIntegration:
     """
     Create and configure production MLOps integration.
-    
+
     Args:
         constitutional_hash: Constitutional hash for compliance
         storage_root: Root directory for MLOps storage
-    
+        existing_mlops_manager: Optional existing MLOps manager to reuse
+
     Returns:
         MLOpsProductionIntegration: Configured integration instance
     """
-    
+
     integration = MLOpsProductionIntegration(
         constitutional_hash=constitutional_hash,
-        mlops_storage_root=storage_root
+        mlops_storage_root=storage_root,
+        existing_mlops_manager=existing_mlops_manager
     )
-    
+
     logger.info("Production MLOps integration created and configured")
-    
+
     return integration

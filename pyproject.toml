@@ -2,15 +2,19 @@
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.metadata]
+allow-direct-references = true
+
 [project]
-name = "acgs-monorepo"
-version = "1.0.0"
-description = "ACGS-1 Constitutional Governance System - Unified Python Workspace"
+name = "acgs-pgp"
+version = "3.0.0"
+description = "ACGS-PGP: Advanced Constitutional Governance System with Pragmatic Governance Protocol"
 readme = "README.md"
 license = "Apache-2.0"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 authors = [
-    { name = "ACGS-1 Team", email = "info@soln.ai" },
+    { name = "ACGS Team", email = "info@soln.ai" },
+    { name = "Martin Lyu", email = "info@soln.ai" },
 ]
 keywords = [
     "acgs",
@@ -35,78 +39,143 @@ classifiers = [
 ]
 
 dependencies = [
-    # Core FastAPI and web framework
-    "fastapi>=0.104.0",
-    "uvicorn[standard]>=0.24.0",
-    "pydantic>=2.5.0",
-    "pydantic-settings>=2.1.0",
-    # HTTP client and async support
-    "httpx>=0.25.0",
-    "aiofiles>=23.2.0",
-    "asyncio-mqtt>=0.16.0",
-    # Database and storage
-    "pymongo>=4.6.0",
-    "motor>=3.3.0",
-    "redis>=5.0.0",
-    "elasticsearch>=8.11.0",
-    # Task queue and background processing
-    "celery>=5.3.0",
-    "kombu>=5.3.0",
-    # Configuration and environment
-    "python-dotenv>=1.0.0",
-    "pyyaml>=6.0.1",
-    "toml>=0.10.2",
-    # Logging and monitoring
-    "structlog>=23.2.0",
-    "prometheus-client>=0.19.0",
-    # Data processing and validation
-    "pandas>=2.1.0",
-    "numpy>=1.24.0",
-    "jsonschema>=4.20.0",
-    # NVIDIA and AI/ML dependencies
-    "openai>=1.3.0",
-    "transformers>=4.36.0",
-    "torch>=2.1.0",
-    # Nano-vLLM for lightweight inference (temporarily disabled due to flash-attn build issues)
-    # "nano-vllm @ git+https://github.com/GeeeekExplorer/nano-vllm.git",
-    # Constitutional governance specific
-    "cryptography>=45.0.4",
+    # Core Framework
+    "fastapi>=0.115.6",
+    "uvicorn[standard]>=0.34.0",
+    "pydantic>=2.10.5",
+    "pydantic-settings>=2.7.1",
+    "httpx>=0.28.1",
+
+    # Database & Storage
+    "redis>=5.0.1",
+    "asyncpg>=0.29.0",
+    "sqlalchemy[asyncio]>=2.0.23",
+    "alembic>=1.13.0",
+    "psycopg2-binary>=2.9.7",
+
+    # Authentication & Security
+    "cryptography>=41.0.0,<43.0.0",  # Compatible with NeMo-Skills
+    "pyjwt>=2.10.0",
     "python-jose[cryptography]>=3.3.0",
     "passlib[bcrypt]>=1.7.4",
-    # Utilities
-    "click>=8.1.0",
-    "rich>=13.7.0",
+    "python-multipart>=0.0.10",
+
+    # Monitoring & Observability
+    "prometheus-client>=0.19.0",
+    "opentelemetry-api==1.21.0",
+    "opentelemetry-sdk==1.21.0",
+    "opentelemetry-instrumentation-fastapi==0.42b0",
+
+    # AI/ML Models & Frameworks
+    "anthropic>=0.3.11",
+    "openai>=1.3.0",
+    "google-generativeai>=0.3.0",
+    "torch>=2.0.0",
+    "transformers>=4.30.0",
+    "numpy>=1.24.0,<=1.26.4",
+    "scipy>=1.10.0",
+
+    # NeMo-Skills moved to optional dependencies due to conflicts
+
+    # Utilities & CLI
+    "python-dotenv>=1.0.0",
+    "pyyaml>=6.0.1",
+    "click>=8.1.7",
+    "rich>=13.6.0",
     "typer>=0.9.0",
-    "prometheus-fastapi-instrumentator>=7.1.0",
-    "psutil>=7.0.0",
+    "jinja2>=3.1.0",
+    "aiofiles>=23.0.0",
+
+    # Data Processing
+    "pandas>=2.0.0",
+    "polars>=0.20.0",
+    "pyarrow>=12.0.0",
+
+    # Networking & Communication
+    "websockets>=11.0.0",
+    "aioredis>=2.0.0",
+    "celery>=5.3.0",
+
+    # Configuration & Validation
+    "jsonschema>=4.17.0",
+    "marshmallow>=3.19.0",
+    "cerberus>=1.3.4",
 ]
 
 [project.optional-dependencies]
+# Development dependencies
 dev = [
-    "pytest>=7.4.0",
-    "pytest-asyncio>=0.21.0",
+    "pytest>=7.4.3",
+    "pytest-asyncio>=0.21.1",
     "pytest-cov>=4.1.0",
-    "pytest-mock>=3.12.0",
-    "black>=23.11.0",
+    "pytest-mock>=3.14.1",
+    "pytest-xdist>=3.7.0",
+    "pytest-faker>=2.0.0",
+    "coverage>=7.3.0",
+    "black>=23.0.0",
     "isort>=5.12.0",
-    "flake8>=6.1.0",
-    "mypy>=1.7.0",
-    "pre-commit>=3.6.0",
+    "flake8>=6.0.0",
+    "mypy>=1.5.0",
+    "pre-commit>=3.4.0",
+    "bandit>=1.7.5",
+    "safety>=2.3.0",
+    "ruff>=0.1.0",
 ]
 
+# Testing dependencies
 test = [
-    "pytest>=7.4.0",
-    "pytest-asyncio>=0.21.0",
+    "pytest>=7.4.3",
+    "pytest-asyncio>=0.21.1",
     "pytest-cov>=4.1.0",
-    "pytest-mock>=3.12.0",
-    "httpx>=0.25.0",
-    "faker>=20.1.0",
+    "pytest-mock>=3.14.1",
+    "pytest-xdist>=3.7.0",
+    "pytest-faker>=2.0.0",
+    "httpx>=0.28.1",
+    "faker>=19.0.0",
 ]
 
+# ML/AI specific dependencies
+ml = [
+    "scikit-learn>=1.3.0",
+    "xgboost>=1.7.0",
+    "lightgbm>=4.0.0",
+    "optuna>=3.3.0",
+    "mlflow>=2.6.0",
+    "wandb>=0.15.0",
+    "tensorboard>=2.14.0",
+]
+
+# NVIDIA NeMo-Skills (separate due to dependency conflicts)
+nemo = [
+    "nemo-skills @ git+https://github.com/NVIDIA/NeMo-Skills.git",
+]
+
+# Blockchain dependencies
+blockchain = [
+    "web3>=6.9.0",
+    "eth-account>=0.9.0",
+    "solana>=0.30.0",
+    "solders>=0.18.0",
+]
+
+# Documentation dependencies
 docs = [
-    "mkdocs>=1.5.0",
-    "mkdocs-material>=9.4.0",
-    "mkdocstrings[python]>=0.24.0",
+    "sphinx>=7.1.0",
+    "sphinx-rtd-theme>=1.3.0",
+    "myst-parser>=2.0.0",
+    "sphinx-autodoc-typehints>=1.24.0",
+    "sphinx-copybutton>=0.5.2",
+]
+
+# Production dependencies
+prod = [
+    "gunicorn>=21.2.0",
+    "supervisor>=4.2.5",
+]
+
+# All dependencies for complete development environment
+all = [
+    "acgs-pgp[dev,test,ml,blockchain,docs,prod]"
 ]
 
 [project.urls]
@@ -116,7 +185,10 @@ Repository = "https://github.com/CA-git-com-co/ACGS.git"
 Issues = "https://github.com/CA-git-com-co/ACGS/issues"
 
 [project.scripts]
-acgs-cli = "scripts.cli:main"
+acgs = "services.cli.main:app"
+acgs-server = "services.main:main"
+acgs-worker = "services.worker.main:main"
+acgs-migrate = "services.database.migrate:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["services", "scripts", "tools"]
@@ -124,17 +196,30 @@ packages = ["services", "scripts", "tools"]
 # UV configuration
 [tool.uv]
 dev-dependencies = [
-    "pytest>=7.4.0",
-    "pytest-asyncio>=0.21.0",
+    "pytest>=7.4.3",
+    "pytest-asyncio>=0.21.1",
     "pytest-cov>=4.1.0",
-    "black>=23.11.0",
+    "pytest-mock>=3.14.1",
+    "pytest-xdist>=3.7.0",
+    "pytest-faker>=2.0.0",
+    "coverage>=7.3.0",
+    "black>=23.0.0",
     "isort>=5.12.0",
-    "mypy>=1.7.0"
+    "flake8>=6.0.0",
+    "mypy>=1.5.0",
+    "pre-commit>=3.4.0",
+    "bandit>=1.7.5",
+    "safety>=2.3.0",
+    "ruff>=0.1.0",
 ]
 
+# UV sources for Git dependencies
+[tool.uv.sources]
+nemo-skills = { git = "https://github.com/NVIDIA/NeMo-Skills.git" }
+
 [tool.black]
-line-length = 100
-target-version = ["py311"]
+line-length = 88
+target-version = ["py310", "py311", "py312"]
 include = '\.pyi?$'
 extend-exclude = '''
 /(
@@ -152,7 +237,7 @@ extend-exclude = '''
 
 [tool.isort]
 profile = "black"
-line_length = 100
+line_length = 88
 multi_line_output = 3
 include_trailing_comma = true
 force_grid_wrap = 0
@@ -160,7 +245,7 @@ use_parentheses = true
 ensure_newline_before_comments = true
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
@@ -224,8 +309,8 @@ exclude_lines = [
 ]
 
 [tool.ruff]
-target-version = "py311"
-line-length = 100
+target-version = "py310"
+line-length = 88
 select = [
     "E",  # pycodestyle errors
     "W",  # pycodestyle warnings

@@ -20,14 +20,8 @@
     "1": 0.133
   },
   "max_correlation": 0.9945815233674729,
-  "high_correlation_pairs": [
-    [
-      "correlated_1",
-      "correlated_2",
-      0.9945815233674729
-    ]
-  ],
-  "data_freshness_hours": 5.0474999999999995e-06,
+  "high_correlation_pairs": [["correlated_1", "correlated_2", 0.9945815233674729]],
+  "data_freshness_hours": 5.0474999999999995e-6,
   "stale_data_rate": 0.664,
   "duplicate_rate": 0.01,
   "inconsistency_rate": 0.0,

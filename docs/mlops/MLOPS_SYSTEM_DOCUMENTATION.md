@@ -9,36 +9,42 @@ The ACGS-PGP MLOps System provides comprehensive machine learning operations cap
 ### Core Components
 
 1. **Model Versioning** (`model_versioning.py`)
+
    - Semantic versioning (MAJOR.MINOR.PATCH)
    - Git integration for traceability
    - Constitutional compliance verification
    - Model lineage tracking
 
 2. **Git Integration** (`git_integration.py`)
+
    - Automated Git tagging for model versions
    - Repository health validation
    - Deployment readiness checks
    - Commit tracking and metadata
 
 3. **Artifact Storage** (`artifact_storage.py`)
+
    - Compressed artifact storage
    - Full lineage tracking
    - Checksum verification
    - Retention management
 
 4. **Deployment Pipeline** (`deployment_pipeline.py`)
+
    - Staging validation workflows
    - Production promotion with blue-green deployment
    - Rollback capabilities
    - Constitutional compliance validation
 
 5. **MLOps Manager** (`mlops_manager.py`)
+
    - Unified orchestration interface
    - End-to-end workflow management
    - Integration with existing ACGS-PGP services
    - Performance monitoring
 
 6. **Monitoring Dashboard** (`monitoring_dashboard.py`)
+
    - Real-time performance metrics
    - Sub-40ms update performance
    - WebSocket-based live updates
@@ -62,16 +68,18 @@ The ACGS-PGP MLOps System provides comprehensive machine learning operations cap
 ### Installation
 
 1. **Install Dependencies**
+
    ```bash
    pip install -r requirements.txt
    pip install scikit-learn>=1.3.2 gitpython>=3.1.0 pydantic>=2.0.0
    ```
 
 2. **Deploy MLOps System**
+
    ```bash
    # Deploy to staging
    ./scripts/deploy_mlops_system.sh staging
-   
+
    # Deploy to production
    ./scripts/deploy_mlops_system.sh production
    ```
@@ -202,14 +210,14 @@ asyncio.run(main())
 
 The MLOps system maintains the following performance targets:
 
-| Metric | Target | Current |
-|--------|--------|---------|
-| Response Time | ≤2000ms | ~450ms |
-| Constitutional Compliance | ≥95% | ~97% |
-| Cost Savings | ≥74% | ~76% |
-| Availability | ≥99.9% | ~99.95% |
-| Model Accuracy | ≥90% | ~92% |
-| Dashboard Updates | ≤40ms | ~25ms |
+| Metric                    | Target  | Current |
+| ------------------------- | ------- | ------- |
+| Response Time             | ≤2000ms | ~450ms  |
+| Constitutional Compliance | ≥95%    | ~97%    |
+| Cost Savings              | ≥74%    | ~76%    |
+| Availability              | ≥99.9%  | ~99.95% |
+| Model Accuracy            | ≥90%    | ~92%    |
+| Dashboard Updates         | ≤40ms   | ~25ms   |
 
 ## Constitutional Compliance
 
@@ -274,12 +282,14 @@ All MLOps components maintain constitutional hash integrity (`cdd01ef066bc6cf2`)
 ### Common Issues
 
 1. **Constitutional Hash Mismatch**
+
    ```bash
    # Verify hash in all components
    grep -r "cdd01ef066bc6cf2" services/shared/mlops/
    ```
 
 2. **Performance Degradation**
+
    ```bash
    # Check dashboard performance stats
    curl http://localhost:8080/api/health
@@ -338,6 +348,7 @@ print(health)
 ## Support
 
 For issues and questions:
+
 - Check logs in `/tmp/mlops_deployment_*.log`
 - Review constitutional compliance status
 - Validate performance metrics

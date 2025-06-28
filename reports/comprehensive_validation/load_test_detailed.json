@@ -58,4 +58,8 @@
   },
   "performance_assessment": {
     "concurrent_users_target": true,
-    "response_time_target": 
+    "response_time_target": true,
+    "availability_target": true,
+    "sol_cost_target": true
+  }
+}

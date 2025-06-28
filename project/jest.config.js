@@ -26,6 +26,13 @@ const customJestConfig = {
     // Mock static assets
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
       '<rootDir>/__mocks__/fileMock.js',
+    // Mock problematic ES modules
+    '^uuid$': '<rootDir>/__mocks__/uuid.js',
+    '^@solana/wallet-adapter-base$': '<rootDir>/__mocks__/solana-wallet-adapter-base.js',
+    '^@solana/wallet-adapter-react$': '<rootDir>/__mocks__/solana-wallet-adapter-react.js',
+    '^@solana/wallet-adapter-react-ui$': '<rootDir>/__mocks__/solana-wallet-adapter-react-ui.js',
+    '^@solana/wallet-adapter-wallets$': '<rootDir>/__mocks__/solana-wallet-adapter-wallets.js',
+    '^@solana/web3.js$': '<rootDir>/__mocks__/solana-web3.js',
   },
 
   // Test file patterns
@@ -79,7 +86,7 @@ const customJestConfig = {
 
   // Transform ignore patterns for ES modules
   transformIgnorePatterns: [
-    'node_modules/(?!(uuid|@solana|@coral-xyz|@noble|bs58|borsh|jayson|rpc-websockets|@wallet-standard|@walletconnect|@ledgerhq|@keystonehq)/)',
+    'node_modules/(?!(uuid|@solana|@coral-xyz|@noble|bs58|borsh|jayson|rpc-websockets|@wallet-standard|@walletconnect|@ledgerhq|@keystonehq|@metaplex-foundation|@project-serum|@solana/wallet-adapter|@solana/web3.js)/)',
   ],
 
   // Module file extensions

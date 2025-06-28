@@ -158,11 +158,12 @@ class TestEndToEndMLOpsIntegration(unittest.TestCase):
         
         # Initialize MLOps manager
         cls.mlops_manager = MLOpsManager(cls.mlops_config)
-        
-        # Initialize production integration
+
+        # Initialize production integration using the same MLOps manager
         cls.production_integration = create_production_mlops_integration(
             constitutional_hash=cls.constitutional_hash,
-            storage_root=str(cls.test_path / "mlops_production")
+            storage_root=str(cls.test_path / "mlops"),
+            existing_mlops_manager=cls.mlops_manager  # Share the same MLOps manager
         )
         
         # Initialize monitoring dashboard

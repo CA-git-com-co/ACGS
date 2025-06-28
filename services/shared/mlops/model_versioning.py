@@ -379,6 +379,9 @@ class ModelVersionManager:
         logger.info(f"  Git commit: {git_commit_hash}")
         logger.info(
             f"  Constitutional compliance: {constitutional_compliance:.3f}")
+        logger.debug(f"  Stored in versions dict with key: {version_key}")
+        logger.debug(f"  Model name in version object: {model_version.model_name}")
+        logger.debug(f"  Total versions stored: {len(self.versions)}")
 
         return model_version
 
@@ -387,6 +390,30 @@ class ModelVersionManager:
         """Get specific model version."""
         version_str = str(version)
         return self.versions.get(version_str)
+
+    def get_version_by_model_and_version(self, model_name: str, version: Union[str, SemanticVersion]
+                                       ) -> Optional[MLOpsModelVersion]:
+        """Get specific model version by model name and version."""
+        version_str = str(version)
+
+        logger.debug(f"Looking for model: {model_name}, version: {version_str}")
+        logger.debug(f"Available versions: {list(self.versions.keys())}")
+
+        # First try direct lookup
+        model_version = self.versions.get(version_str)
+        if model_version and model_version.model_name == model_name:
+            logger.debug(f"Found via direct lookup: {model_version.model_name} v{model_version.version}")
+            return model_version
+
+        # If not found, search through all versions
+        for k, v in self.versions.items():
+            logger.debug(f"Checking stored version: key={k}, model_name={v.model_name}, version={v.version}")
+            if v.model_name == model_name and str(v.version) == version_str:
+                logger.debug(f"Found via search: {v.model_name} v{v.version}")
+                return v
+
+        logger.debug(f"Version not found: {model_name} v{version_str}")
+        return None
 
     def get_latest_version(self, model_name: Optional[str] = None
                            ) -> Optional[MLOpsModelVersion]:

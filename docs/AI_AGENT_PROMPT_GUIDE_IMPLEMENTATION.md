@@ -32,6 +32,7 @@ class ModelIdentity:
 ```
 
 **Features**:
+
 - Structured identity definition for AI agents
 - Constitutional hash validation
 - Role-based identity management
@@ -52,6 +53,7 @@ class DiscourseMode(Enum):
 ```
 
 **Features**:
+
 - Adaptive discourse register based on query complexity
 - Constitutional emphasis configuration
 - Context-aware response formatting
@@ -64,6 +66,7 @@ class DiscourseMode(Enum):
 **Implementation**: `ConstitutionalSafetyValidator` and `ConstitutionalEthicsFramework`
 
 **Threat Categories**:
+
 - Constitutional bypass attempts
 - Governance nullification
 - Democratic subversion
@@ -74,6 +77,7 @@ class DiscourseMode(Enum):
 - Malicious content
 
 **Ethical Principles**:
+
 - Beneficence (acting in best interests of democratic governance)
 - Non-maleficence (do no harm to democratic institutions)
 - Autonomy (respect for human agency and democratic participation)
@@ -82,6 +86,7 @@ class DiscourseMode(Enum):
 - Accountability (clear responsibility and oversight)
 
 **Features**:
+
 - Pattern-based threat detection
 - Risk level assessment (Low, Medium, High, Critical)
 - Constitutional principle impact analysis
@@ -95,6 +100,7 @@ class DiscourseMode(Enum):
 **Implementation**: `ConstitutionalToolOrchestrator` with intelligent query planning
 
 **Tool Types**:
+
 - Web search with constitutional context
 - Document retrieval from constitutional archives
 - Database queries with compliance validation
@@ -105,12 +111,14 @@ class DiscourseMode(Enum):
 - Compliance checking frameworks
 
 **Query Complexity Levels**:
+
 - **Simple**: 1-2 tool calls for basic queries
 - **Moderate**: 3-4 tool calls for comparative analysis
 - **Complex**: 5+ tool calls for synthesis operations
 - **Comprehensive**: Multi-faceted analysis with full validation
 
 **Features**:
+
 - Automatic query complexity assessment
 - Parallel and sequential execution strategies
 - Constitutional compliance validation for all tool results
@@ -124,6 +132,7 @@ class DiscourseMode(Enum):
 **Implementation**: Built into `ConstitutionalPromptSchema` compilation
 
 **Features**:
+
 - Maximum 15 lexemes per direct quotation
 - Mandatory citation for all quoted material
 - Paraphrastic summary generation
@@ -136,6 +145,7 @@ class DiscourseMode(Enum):
 **Implementation**: `ConstitutionalPromptSchema` with customizable instructions
 
 **Features**:
+
 - User-specific style directives support
 - Constitutional principle override protection
 - Latest instruction prioritization
@@ -148,6 +158,7 @@ class DiscourseMode(Enum):
 **Implementation**: Version control and validation in all framework components
 
 **Features**:
+
 - Modular prompt architecture for surgical modifications
 - Constitutional hash integrity verification
 - Schema validation with constitutional compliance checks
@@ -161,18 +172,22 @@ class DiscourseMode(Enum):
 ### New Constitutional Framework Endpoints
 
 1. **GET** `/api/v1/prompt-framework/schemas`
+
    - Returns available constitutional prompt schemas
    - Includes role definitions and schema metadata
 
 2. **POST** `/api/v1/prompt-framework/validate`
+
    - Validates content using structured constitutional prompting
    - Returns detailed compliance analysis with recommendations
 
 3. **POST** `/api/v1/constitutional/safety-validation`
+
    - Comprehensive safety and ethics validation
    - Threat detection and mitigation strategy generation
 
 4. **POST** `/api/v1/constitutional/orchestrated-analysis`
+
    - Multi-tool orchestrated constitutional analysis
    - Parallel execution with constitutional compliance validation
 
@@ -203,6 +218,7 @@ async def generate_text(
 ### Constitutional AI Service Integration
 
 The main constitutional AI service now includes:
+
 - Prompt framework schema management
 - Safety validation endpoints
 - Tool orchestration capabilities
@@ -271,18 +287,21 @@ result = await orchestrate_constitutional_query(
 ## Performance Characteristics
 
 ### Response Time Targets
+
 - Simple constitutional validation: <100ms
 - Complex orchestrated analysis: <5 seconds
 - Safety validation: <50ms
 - Prompt compilation: <10ms
 
 ### Accuracy Targets
+
 - Constitutional compliance detection: >99%
 - Threat pattern recognition: >95%
 - Tool orchestration success rate: >98%
 - Citation accuracy: 100%
 
 ### Availability Targets
+
 - Framework availability: >99.9%
 - Constitutional hash validation: 100%
 - Safety validation: >99.95%

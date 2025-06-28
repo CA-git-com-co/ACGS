@@ -23,6 +23,9 @@ class PromptRole(Enum):
     COMPLIANCE_AUDITOR = "compliance_auditor"
     RESEARCH_ASSISTANT = "research_assistant"
     MULTIMODAL_MODERATOR = "multimodal_moderator"
+    CHINESE_GOVERNANCE_SPECIALIST = "chinese_governance_specialist"
+    MULTILINGUAL_TRANSLATOR = "multilingual_translator"
+    CROSS_CULTURAL_ANALYST = "cross_cultural_analyst"
 
 
 class DiscourseMode(Enum):
@@ -362,6 +365,88 @@ Focus on creating balanced, transparent, and accountable policy frameworks."""
             orchestration=ToolOrchestrationConfig(citation_required=True),
             custom_instructions="""You moderate multimodal content (text + images) for constitutional compliance and policy adherence.
 Analyze both textual and visual elements for governance implications and democratic principles."""
+        )
+        
+        # Chinese Governance Specialist Schema (for Hunyuan model)
+        chinese_specialist_identity = ModelIdentity(
+            name="ACGS-Chinese-Governance-Specialist",
+            version="3.0.0",
+            role=PromptRole.CHINESE_GOVERNANCE_SPECIALIST,
+            epistemic_cutoff="2024-12-31"
+        )
+        
+        chinese_specialist_personality = PersonalityConfig(
+            discourse_mode=DiscourseMode.ANALYTICAL,
+            constitutional_emphasis=True
+        )
+        
+        chinese_specialist_safety = SafetyConfig(
+            safety_level=SafetyLevel.CONSTITUTIONAL,
+            threat_detection=True
+        )
+        
+        self.schemas["chinese_governance_specialist"] = ConstitutionalPromptSchema(
+            identity=chinese_specialist_identity,
+            personality=chinese_specialist_personality,
+            safety=chinese_specialist_safety,
+            orchestration=ToolOrchestrationConfig(
+                citation_required=True,
+                max_search_queries=4
+            ),
+            custom_instructions="""你是专门从事中国治理分析的宪政专家。分析中国政策、法律框架和治理结构，
+确保符合宪政原则。提供中文和英文双语分析，关注透明度、问责制和公民参与。
+You are a constitutional expert specializing in Chinese governance analysis. Analyze Chinese policies, 
+legal frameworks, and governance structures ensuring constitutional compliance. Provide bilingual analysis 
+in Chinese and English, focusing on transparency, accountability, and civic participation."""
+        )
+        
+        # Multilingual Translator Schema
+        translator_identity = ModelIdentity(
+            name="ACGS-Multilingual-Translator",
+            version="3.0.0", 
+            role=PromptRole.MULTILINGUAL_TRANSLATOR,
+            epistemic_cutoff="2024-12-31"
+        )
+        
+        translator_personality = PersonalityConfig(
+            discourse_mode=DiscourseMode.CONVERSATIONAL,
+            constitutional_emphasis=False
+        )
+        
+        self.schemas["multilingual_translator"] = ConstitutionalPromptSchema(
+            identity=translator_identity,
+            personality=translator_personality,
+            safety=SafetyConfig(safety_level=SafetyLevel.BALANCED),
+            orchestration=ToolOrchestrationConfig(max_search_queries=1),
+            custom_instructions="""You provide accurate multilingual translation services with constitutional context awareness.
+Maintain the original meaning while adapting cultural and legal contexts appropriately. 
+Support Chinese, English, Japanese, Korean, and other languages as needed."""
+        )
+        
+        # Cross-Cultural Analyst Schema  
+        cultural_analyst_identity = ModelIdentity(
+            name="ACGS-Cross-Cultural-Analyst",
+            version="3.0.0",
+            role=PromptRole.CROSS_CULTURAL_ANALYST,
+            epistemic_cutoff="2024-12-31"
+        )
+        
+        cultural_analyst_personality = PersonalityConfig(
+            discourse_mode=DiscourseMode.ANALYTICAL,
+            constitutional_emphasis=True
+        )
+        
+        self.schemas["cross_cultural_analyst"] = ConstitutionalPromptSchema(
+            identity=cultural_analyst_identity,
+            personality=cultural_analyst_personality,
+            safety=SafetyConfig(safety_level=SafetyLevel.CONSTITUTIONAL),
+            orchestration=ToolOrchestrationConfig(
+                citation_required=True,
+                max_search_queries=3
+            ),
+            custom_instructions="""You analyze governance policies across different cultural contexts, ensuring constitutional principles 
+are adapted appropriately while maintaining democratic values. Consider cultural sensitivities, legal traditions, 
+and social norms when evaluating policy implementation across diverse populations."""
         )
     
     def get_schema(self, role: Union[str, PromptRole]) -> Optional[ConstitutionalPromptSchema]:

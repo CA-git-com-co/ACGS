@@ -1,0 +1,23 @@
+# UV Configuration for ACGS-PGP
+# This file configures uv behavior for the project
+
+# Index configuration
+index-url = "https://pypi.org/simple"
+extra-index-url = [
+    "https://download.pytorch.org/whl/cpu",  # PyTorch CPU-only wheels
+]
+
+# Dependency resolution strategy
+resolution = "highest"  # Use highest compatible versions
+
+# Cache configuration
+cache-dir = ".uv-cache"
+no-cache = false
+
+# Build configuration
+no-build = false
+
+# Installation configuration
+upgrade = false
+
+# Git dependencies are configured in pyproject.toml [tool.uv.sources] section

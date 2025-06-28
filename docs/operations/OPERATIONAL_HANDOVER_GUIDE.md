@@ -6,7 +6,7 @@ This document provides comprehensive operational guidance for the ACGS-PGP MLOps
 
 **Constitutional Hash**: `cdd01ef066bc6cf2`  
 **System Version**: Production v1.0  
-**Last Updated**: 2025-06-27  
+**Last Updated**: 2025-06-27
 
 ## System Architecture Overview
 
@@ -44,13 +44,13 @@ This document provides comprehensive operational guidance for the ACGS-PGP MLOps
 
 ### Key Performance Targets
 
-| Metric | Target | Current Performance |
-|--------|--------|-------------------|
-| Response Time | <2000ms | ~450ms |
-| Constitutional Compliance | >95% | ~97% |
-| Cost Savings | >74% | ~76% |
-| Model Accuracy | >90% | ~92% |
-| System Availability | >99.9% | ~99.95% |
+| Metric                    | Target  | Current Performance |
+| ------------------------- | ------- | ------------------- |
+| Response Time             | <2000ms | ~450ms              |
+| Constitutional Compliance | >95%    | ~97%                |
+| Cost Savings              | >74%    | ~76%                |
+| Model Accuracy            | >90%    | ~92%                |
+| System Availability       | >99.9%  | ~99.95%             |
 
 ## Daily Operations
 
@@ -70,12 +70,14 @@ This document provides comprehensive operational guidance for the ACGS-PGP MLOps
 ### Key Metrics to Monitor
 
 1. **System Health**
+
    - Service availability (all services should be "Running")
    - Response times (<2000ms)
    - Error rates (<1%)
    - Resource utilization (CPU <80%, Memory <85%)
 
 2. **Constitutional Compliance**
+
    - Compliance score (>95%)
    - Hash integrity verification
    - DGM safety pattern status
@@ -128,11 +130,13 @@ tail -f /var/log/acgs/alerts_$(date +%Y%m%d).log
 ### Weekly Maintenance Tasks
 
 1. **Artifact Cleanup**
+
    - Remove artifacts older than 90 days
    - Verify backup integrity
    - Update retention policies if needed
 
 2. **Performance Analysis**
+
    - Review response time trends
    - Analyze constitutional compliance patterns
    - Check for performance degradation
@@ -146,16 +150,17 @@ tail -f /var/log/acgs/alerts_$(date +%Y%m%d).log
 
 ### Alert Levels
 
-| Level | Response Time | Description |
-|-------|---------------|-------------|
-| **INFO** | No action required | Normal operational events |
-| **WARNING** | 30 minutes | Performance degradation, investigate |
-| **CRITICAL** | 15 minutes | Service failure, immediate action required |
-| **EMERGENCY** | 5 minutes | System-wide failure, all hands on deck |
+| Level         | Response Time      | Description                                |
+| ------------- | ------------------ | ------------------------------------------ |
+| **INFO**      | No action required | Normal operational events                  |
+| **WARNING**   | 30 minutes         | Performance degradation, investigate       |
+| **CRITICAL**  | 15 minutes         | Service failure, immediate action required |
+| **EMERGENCY** | 5 minutes          | System-wide failure, all hands on deck     |
 
 ### Key Alerts to Watch
 
 1. **Critical Alerts**
+
    - Service down (any core service)
    - Constitutional compliance <90%
    - Response time >2500ms
@@ -171,6 +176,7 @@ tail -f /var/log/acgs/alerts_$(date +%Y%m%d).log
 ### Alert Response Procedures
 
 #### Service Down Alert
+
 ```bash
 # 1. Check service status
 kubectl get pods -n acgs-production | grep <service-name>
@@ -189,6 +195,7 @@ kubectl rollout status deployment/<service-name> -n acgs-production
 ```
 
 #### Constitutional Compliance Alert
+
 ```bash
 # 1. Run immediate compliance check
 ./scripts/run_constitutional_compliance_validation.py --emergency
@@ -204,6 +211,7 @@ tail -f /var/log/acgs/compliance_$(date +%Y%m%d).log
 ```
 
 #### Performance Degradation Alert
+
 ```bash
 # 1. Check current performance metrics
 ./scripts/check_current_performance.sh
@@ -228,6 +236,7 @@ kubectl scale deployment/<service-name> --replicas=<new-count> -n acgs-productio
 **Symptoms**: Response times >1500ms consistently
 
 **Investigation Steps**:
+
 ```bash
 # Check database performance
 ./scripts/check_database_performance.sh
@@ -243,6 +252,7 @@ kubectl top pods -n acgs-production
 ```
 
 **Common Solutions**:
+
 - Scale up services: `kubectl scale deployment/<service> --replicas=<count>`
 - Clear cache: `./scripts/clear_redis_cache.sh`
 - Restart database connections: `./scripts/restart_db_connections.sh`
@@ -252,6 +262,7 @@ kubectl top pods -n acgs-production
 **Symptoms**: Compliance score <95%
 
 **Investigation Steps**:
+
 ```bash
 # Check hash integrity
 ./scripts/verify_constitutional_hash.sh
@@ -264,6 +275,7 @@ grep "compliance_violation" /var/log/acgs/compliance_*.log
 ```
 
 **Common Solutions**:
+
 - Verify hash integrity across all components
 - Restart constitutional AI service
 - Review and update compliance policies
@@ -273,6 +285,7 @@ grep "compliance_violation" /var/log/acgs/compliance_*.log
 **Symptoms**: Model accuracy <90%
 
 **Investigation Steps**:
+
 ```bash
 # Check model version status
 ./scripts/check_model_versions.sh
@@ -285,6 +298,7 @@ grep "compliance_violation" /var/log/acgs/compliance_*.log
 ```
 
 **Common Solutions**:
+
 - Retrain model with recent data
 - Rollback to previous model version
 - Update feature engineering pipeline
@@ -334,12 +348,12 @@ grep "compliance_violation" /var/log/acgs/compliance_*.log
 
 ### Backup Schedule
 
-| Component | Frequency | Retention | Location |
-|-----------|-----------|-----------|----------|
-| Database | Daily | 30 days | `/opt/backups/db/` |
-| Artifacts | Daily | 90 days | `/opt/backups/artifacts/` |
-| Configurations | Weekly | 12 weeks | `/opt/backups/config/` |
-| Logs | Daily | 7 days | `/opt/backups/logs/` |
+| Component      | Frequency | Retention | Location                  |
+| -------------- | --------- | --------- | ------------------------- |
+| Database       | Daily     | 30 days   | `/opt/backups/db/`        |
+| Artifacts      | Daily     | 90 days   | `/opt/backups/artifacts/` |
+| Configurations | Weekly    | 12 weeks  | `/opt/backups/config/`    |
+| Logs           | Daily     | 7 days    | `/opt/backups/logs/`      |
 
 ### Backup Commands
 
@@ -360,6 +374,7 @@ grep "compliance_violation" /var/log/acgs/compliance_*.log
 ### Recovery Procedures
 
 #### Database Recovery
+
 ```bash
 # Restore from latest backup
 ./scripts/restore_database.sh --backup-date YYYY-MM-DD
@@ -372,6 +387,7 @@ grep "compliance_violation" /var/log/acgs/compliance_*.log
 ```
 
 #### Service Recovery
+
 ```bash
 # Restore service configuration
 ./scripts/restore_service_config.sh <service-name>
@@ -388,11 +404,13 @@ kubectl rollout restart deployment/<service-name> -n acgs-production
 ### Monthly Maintenance (First Saturday of each month, 2:00 AM)
 
 1. **System Updates**
+
    - Apply security patches
    - Update dependencies
    - Review and update configurations
 
 2. **Performance Optimization**
+
    - Analyze performance trends
    - Optimize database queries
    - Update caching strategies
@@ -405,11 +423,13 @@ kubectl rollout restart deployment/<service-name> -n acgs-production
 ### Quarterly Maintenance (First Saturday of quarter, 2:00 AM)
 
 1. **Major Updates**
+
    - Kubernetes cluster updates
    - Database version updates
    - Major dependency updates
 
 2. **Capacity Planning**
+
    - Review resource usage trends
    - Plan for capacity expansion
    - Update resource limits
@@ -423,22 +443,22 @@ kubectl rollout restart deployment/<service-name> -n acgs-production
 
 ### Primary Contacts
 
-| Role | Name | Phone | Email | Escalation |
-|------|------|-------|-------|------------|
-| **Operations Lead** | [Name] | [Phone] | [Email] | Primary |
-| **MLOps Engineer** | [Name] | [Phone] | [Email] | Technical |
-| **Database Admin** | [Name] | [Phone] | [Email] | Database Issues |
-| **Security Officer** | [Name] | [Phone] | [Email] | Security Issues |
+| Role                                  | Name   | Phone   | Email   | Escalation        |
+| ------------------------------------- | ------ | ------- | ------- | ----------------- |
+| **Operations Lead**                   | [Name] | [Phone] | [Email] | Primary           |
+| **MLOps Engineer**                    | [Name] | [Phone] | [Email] | Technical         |
+| **Database Admin**                    | [Name] | [Phone] | [Email] | Database Issues   |
+| **Security Officer**                  | [Name] | [Phone] | [Email] | Security Issues   |
 | **Constitutional Compliance Officer** | [Name] | [Phone] | [Email] | Compliance Issues |
 
 ### Escalation Matrix
 
-| Severity | Response Time | Escalation Path |
-|----------|---------------|-----------------|
-| **P1 (Critical)** | 15 minutes | Operations Lead → CTO → CEO |
-| **P2 (High)** | 1 hour | Operations Lead → Engineering Manager |
-| **P3 (Medium)** | 4 hours | Assigned Engineer → Operations Lead |
-| **P4 (Low)** | 24 hours | Assigned Engineer |
+| Severity          | Response Time | Escalation Path                       |
+| ----------------- | ------------- | ------------------------------------- |
+| **P1 (Critical)** | 15 minutes    | Operations Lead → CTO → CEO           |
+| **P2 (High)**     | 1 hour        | Operations Lead → Engineering Manager |
+| **P3 (Medium)**   | 4 hours       | Assigned Engineer → Operations Lead   |
+| **P4 (Low)**      | 24 hours      | Assigned Engineer                     |
 
 ### Emergency Contacts
 

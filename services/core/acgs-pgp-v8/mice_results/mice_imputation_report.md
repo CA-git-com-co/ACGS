@@ -15,22 +15,24 @@
 ## 📊 Method Comparison
 
 | Method | Quality Score | MAE Improvement | RMSE Improvement | R² Improvement | Accuracy Improvement | Time (s) |
-|--------|---------------|-----------------|------------------|----------------|---------------------|----------|
-| MICE | 87.5% | +0.0% | +0.0% | +0.0% | +5.3% | 2.34 |
-| MEAN | 88.9% | +0.0% | +0.0% | +0.0% | +0.0% | 0.00 |
-| MEDIAN | 89.1% | +0.0% | +0.0% | +0.0% | +0.0% | 0.00 |
-| MODE | 72.9% | +0.0% | +0.0% | +0.0% | +0.0% | 0.00 |
-| KNN | 88.2% | +0.0% | +0.0% | +0.0% | +0.0% | 0.02 |
+| ------ | ------------- | --------------- | ---------------- | -------------- | -------------------- | -------- |
+| MICE   | 87.5%         | +0.0%           | +0.0%            | +0.0%          | +5.3%                | 2.34     |
+| MEAN   | 88.9%         | +0.0%           | +0.0%            | +0.0%          | +0.0%                | 0.00     |
+| MEDIAN | 89.1%         | +0.0%           | +0.0%            | +0.0%          | +0.0%                | 0.00     |
+| MODE   | 72.9%         | +0.0%           | +0.0%            | +0.0%          | +0.0%                | 0.00     |
+| KNN    | 88.2%         | +0.0%           | +0.0%            | +0.0%          | +0.0%                | 0.02     |
 
 ## 🔧 Implementation Details
 
 ### MICE Configuration
+
 - **Algorithm:** IterativeImputer with RandomForestRegressor
 - **Max Iterations:** 10
 - **Random State:** 42
 - **Estimator:** RandomForest (n_estimators=10)
 
 ### Key Benefits
+
 - Handles complex missing data patterns
 - Preserves feature relationships
 - Provides uncertainty estimates
@@ -42,6 +44,7 @@
 ⚠️ **Further optimization needed**
 
 **Suggested improvements:**
+
 - Increase max_iter parameter
 - Try different estimators (XGBoost, LightGBM)
 - Implement ensemble imputation

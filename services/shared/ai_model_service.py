@@ -44,6 +44,8 @@ class ModelProvider(Enum):
     MISTRAL = "mistral"
     XAI = "xai"
     CEREBRAS = "cerebras"
+    TENCENT = "tencent"  # Hunyuan models
+    VLLM = "vllm"       # vLLM self-hosted models
 
 
 class ModelRole(Enum):
@@ -57,6 +59,8 @@ class ModelRole(Enum):
     CONSTITUTIONAL = "constitutional"  # Constitutional analysis
     POLICY_SYNTHESIS = "policy_synthesis"  # Policy synthesis and generation
     REASONING = "reasoning"  # Reasoning and validation
+    MULTILINGUAL = "multilingual"  # Multilingual and cross-cultural analysis
+    CHINESE_GOVERNANCE = "chinese_governance"  # Chinese governance specialization
 
 
 @dataclass
@@ -238,6 +242,32 @@ class AIModelService:
                 api_key=self.config.get_ai_api_key("cerebras"),
                 endpoint=self.config.get_ai_endpoint("cerebras"),
                 role=ModelRole.CONSTITUTIONAL,
+                enabled=True,
+            )
+
+        # Tencent Hunyuan models for Chinese governance and multilingual support
+        if self.config.is_model_enabled("enable_hunyuan"):
+            # Hunyuan-A13B-Instruct for Chinese constitutional analysis
+            models["hunyuan_a13b"] = ModelConfig(
+                provider=ModelProvider.TENCENT,
+                model_id="tencent/Hunyuan-A13B-Instruct",
+                max_tokens=2048,
+                temperature=0.1,
+                api_key=None,  # Local vLLM deployment
+                endpoint="http://localhost:8000/v1",
+                role=ModelRole.CONSTITUTIONAL,
+                enabled=True,
+            )
+            
+            # Alternative vLLM endpoint configuration
+            models["hunyuan_a13b_vllm"] = ModelConfig(
+                provider=ModelProvider.VLLM,
+                model_id="tencent/Hunyuan-A13B-Instruct",
+                max_tokens=2048,
+                temperature=0.2,
+                api_key=None,
+                endpoint=self.config.get_ai_endpoint("vllm", "http://localhost:8000/v1"),
+                role=ModelRole.MULTILINGUAL,
                 enabled=True,
             )
 

@@ -6,11 +6,12 @@ This checklist ensures operations team members are properly trained on the ACGS-
 
 **Constitutional Hash**: `cdd01ef066bc6cf2`  
 **Training Version**: 1.0  
-**Required Completion**: 100% before production handover  
+**Required Completion**: 100% before production handover
 
 ## Pre-Training Requirements
 
 ### Prerequisites
+
 - [ ] Linux/Unix command line proficiency
 - [ ] Kubernetes basic knowledge
 - [ ] Docker containerization understanding
@@ -18,6 +19,7 @@ This checklist ensures operations team members are properly trained on the ACGS-
 - [ ] Familiarity with monitoring and alerting systems
 
 ### Access Requirements
+
 - [ ] Production system access granted
 - [ ] Kubernetes cluster access configured
 - [ ] Monitoring dashboard access provided
@@ -31,6 +33,7 @@ This checklist ensures operations team members are properly trained on the ACGS-
 **Learning Objectives**: Understand the complete ACGS-PGP system architecture
 
 **Training Tasks**:
+
 - [ ] Review system architecture documentation
 - [ ] Identify all core services and their purposes
 - [ ] Understand MLOps system integration
@@ -38,6 +41,7 @@ This checklist ensures operations team members are properly trained on the ACGS-
 - [ ] Understand constitutional compliance requirements
 
 **Practical Exercise**:
+
 ```bash
 # Exercise 1: System Discovery
 kubectl get pods -n acgs-production
@@ -49,6 +53,7 @@ kubectl describe deployment mlops-manager -n acgs-production
 ```
 
 **Validation**:
+
 - [ ] Can identify all core services
 - [ ] Understands service dependencies
 - [ ] Can explain constitutional compliance role
@@ -59,6 +64,7 @@ kubectl describe deployment mlops-manager -n acgs-production
 **Learning Objectives**: Understand constitutional compliance requirements and monitoring
 
 **Training Tasks**:
+
 - [ ] Study constitutional hash concept (cdd01ef066bc6cf2)
 - [ ] Learn DGM safety patterns
 - [ ] Understand compliance scoring mechanisms
@@ -66,6 +72,7 @@ kubectl describe deployment mlops-manager -n acgs-production
 - [ ] Practice compliance validation procedures
 
 **Practical Exercise**:
+
 ```bash
 # Exercise 1: Compliance Validation
 ./scripts/run_constitutional_compliance_validation.py
@@ -78,6 +85,7 @@ tail -f /var/log/acgs/compliance_$(date +%Y%m%d).log
 ```
 
 **Validation**:
+
 - [ ] Can explain constitutional hash importance
 - [ ] Understands compliance scoring (>95% target)
 - [ ] Can run compliance validation tools
@@ -89,6 +97,7 @@ tail -f /var/log/acgs/compliance_$(date +%Y%m%d).log
 **Learning Objectives**: Monitor system performance and identify issues
 
 **Training Tasks**:
+
 - [ ] Learn key performance metrics
 - [ ] Understand performance targets
 - [ ] Practice using monitoring dashboards
@@ -96,6 +105,7 @@ tail -f /var/log/acgs/compliance_$(date +%Y%m%d).log
 - [ ] Understand alerting thresholds
 
 **Practical Exercise**:
+
 ```bash
 # Exercise 1: Performance Metrics Collection
 ./scripts/get_current_performance_metrics.sh
@@ -109,6 +119,7 @@ kubectl top pods -n acgs-production
 ```
 
 **Performance Targets to Memorize**:
+
 - Response Time: <2000ms
 - Constitutional Compliance: >95%
 - Cost Savings: >74%
@@ -116,6 +127,7 @@ kubectl top pods -n acgs-production
 - System Availability: >99.9%
 
 **Validation**:
+
 - [ ] Can identify performance degradation
 - [ ] Knows all performance targets
 - [ ] Can use monitoring tools effectively
@@ -129,6 +141,7 @@ kubectl top pods -n acgs-production
 **Learning Objectives**: Perform daily operational health checks
 
 **Training Tasks**:
+
 - [ ] Learn morning health check routine
 - [ ] Practice using health check scripts
 - [ ] Understand what constitutes healthy system
@@ -136,6 +149,7 @@ kubectl top pods -n acgs-production
 - [ ] Practice documenting health check results
 
 **Practical Exercise**:
+
 ```bash
 # Exercise 1: Morning Health Check
 ./scripts/daily_mlops_health_check.sh
@@ -148,6 +162,7 @@ tail -f /var/log/acgs/system_$(date +%Y%m%d).log
 ```
 
 **Daily Checklist to Master**:
+
 - [ ] All services running (green status)
 - [ ] Response times within targets
 - [ ] No critical alerts
@@ -155,6 +170,7 @@ tail -f /var/log/acgs/system_$(date +%Y%m%d).log
 - [ ] Resource usage within limits
 
 **Validation**:
+
 - [ ] Can complete daily health check in <15 minutes
 - [ ] Identifies all potential issues
 - [ ] Documents findings properly
@@ -166,6 +182,7 @@ tail -f /var/log/acgs/system_$(date +%Y%m%d).log
 **Learning Objectives**: Respond to system alerts effectively
 
 **Training Tasks**:
+
 - [ ] Learn alert severity levels
 - [ ] Understand response time requirements
 - [ ] Practice alert investigation procedures
@@ -173,11 +190,13 @@ tail -f /var/log/acgs/system_$(date +%Y%m%d).log
 - [ ] Practice using troubleshooting guides
 
 **Alert Response Times**:
+
 - **CRITICAL**: 15 minutes
 - **WARNING**: 30 minutes
 - **INFO**: No immediate action required
 
 **Practical Exercise**:
+
 ```bash
 # Exercise 1: Simulated Service Down Alert
 kubectl delete pod <test-pod> -n acgs-production
@@ -191,6 +210,7 @@ kubectl delete pod <test-pod> -n acgs-production
 ```
 
 **Validation**:
+
 - [ ] Responds to alerts within required timeframes
 - [ ] Follows proper investigation procedures
 - [ ] Escalates appropriately when needed
@@ -204,6 +224,7 @@ kubectl delete pod <test-pod> -n acgs-production
 **Learning Objectives**: Diagnose and resolve complex system issues
 
 **Training Tasks**:
+
 - [ ] Learn systematic troubleshooting approach
 - [ ] Practice log analysis techniques
 - [ ] Understand common failure patterns
@@ -211,13 +232,16 @@ kubectl delete pod <test-pod> -n acgs-production
 - [ ] Practice using debugging tools
 
 **Common Issues to Practice**:
+
 1. **High Response Times**
+
    - Database performance issues
    - Cache misses
    - Network latency
    - Resource constraints
 
 2. **Constitutional Compliance Violations**
+
    - Hash integrity failures
    - DGM safety pattern issues
    - Audit trail gaps
@@ -229,6 +253,7 @@ kubectl delete pod <test-pod> -n acgs-production
    - Network connectivity issues
 
 **Practical Exercise**:
+
 ```bash
 # Exercise 1: Database Performance Issue
 ./scripts/simulate_db_performance_issue.sh
@@ -244,6 +269,7 @@ kubectl delete pod <test-pod> -n acgs-production
 ```
 
 **Validation**:
+
 - [ ] Resolves 80% of simulated issues independently
 - [ ] Uses systematic troubleshooting approach
 - [ ] Properly documents root causes
@@ -255,6 +281,7 @@ kubectl delete pod <test-pod> -n acgs-production
 **Learning Objectives**: Perform backup and recovery operations
 
 **Training Tasks**:
+
 - [ ] Learn backup schedules and procedures
 - [ ] Practice manual backup operations
 - [ ] Understand recovery procedures
@@ -262,6 +289,7 @@ kubectl delete pod <test-pod> -n acgs-production
 - [ ] Practice disaster recovery scenarios
 
 **Practical Exercise**:
+
 ```bash
 # Exercise 1: Manual Database Backup
 ./scripts/backup_database.sh
@@ -275,6 +303,7 @@ kubectl delete pod <test-pod> -n acgs-production
 ```
 
 **Validation**:
+
 - [ ] Can perform all backup operations
 - [ ] Successfully completes recovery procedures
 - [ ] Verifies backup integrity properly
@@ -286,6 +315,7 @@ kubectl delete pod <test-pod> -n acgs-production
 **Learning Objectives**: Handle emergency situations effectively
 
 **Training Tasks**:
+
 - [ ] Learn emergency escalation procedures
 - [ ] Practice emergency shutdown procedures
 - [ ] Understand rollback procedures
@@ -293,6 +323,7 @@ kubectl delete pod <test-pod> -n acgs-production
 - [ ] Practice emergency decision making
 
 **Emergency Scenarios to Practice**:
+
 1. **System-wide Failure**
 2. **Security Breach**
 3. **Constitutional Compliance Emergency**
@@ -300,6 +331,7 @@ kubectl delete pod <test-pod> -n acgs-production
 5. **Network Outage**
 
 **Practical Exercise**:
+
 ```bash
 # Exercise 1: Emergency Shutdown
 ./scripts/emergency_shutdown.sh --simulation
@@ -312,6 +344,7 @@ kubectl delete pod <test-pod> -n acgs-production
 ```
 
 **Validation**:
+
 - [ ] Responds appropriately to all emergency scenarios
 - [ ] Follows proper escalation procedures
 - [ ] Communicates effectively during crisis
@@ -323,6 +356,7 @@ kubectl delete pod <test-pod> -n acgs-production
 ### Comprehensive Assessment
 
 **Written Exam** (90% minimum to pass):
+
 - [ ] System architecture (20 questions)
 - [ ] Constitutional compliance (15 questions)
 - [ ] Performance monitoring (15 questions)
@@ -330,6 +364,7 @@ kubectl delete pod <test-pod> -n acgs-production
 - [ ] Emergency procedures (10 questions)
 
 **Practical Assessment** (100% completion required):
+
 - [ ] Complete daily health check routine
 - [ ] Respond to simulated critical alert
 - [ ] Perform system troubleshooting
@@ -337,6 +372,7 @@ kubectl delete pod <test-pod> -n acgs-production
 - [ ] Handle emergency scenario
 
 **Shadow Operations** (40 hours minimum):
+
 - [ ] Shadow experienced operator for 1 week
 - [ ] Perform operations under supervision
 - [ ] Demonstrate competency in all areas
@@ -345,6 +381,7 @@ kubectl delete pod <test-pod> -n acgs-production
 ### Certification Requirements
 
 **Prerequisites for Production Access**:
+
 - [ ] Completed all training modules
 - [ ] Passed written exam (90% minimum)
 - [ ] Passed practical assessment (100%)
@@ -353,6 +390,7 @@ kubectl delete pod <test-pod> -n acgs-production
 - [ ] Acknowledged responsibility for constitutional compliance
 
 **Ongoing Requirements**:
+
 - [ ] Monthly refresher training
 - [ ] Quarterly emergency drill participation
 - [ ] Annual recertification
@@ -361,18 +399,21 @@ kubectl delete pod <test-pod> -n acgs-production
 ## Training Resources
 
 ### Documentation
+
 - [Operational Handover Guide](./OPERATIONAL_HANDOVER_GUIDE.md)
 - [System Architecture Documentation](./SYSTEM_ARCHITECTURE.md)
 - [Troubleshooting Guide](./TROUBLESHOOTING_GUIDE.md)
 - [Emergency Procedures Manual](./EMERGENCY_PROCEDURES.md)
 
 ### Training Scripts
+
 - `./scripts/training_environment_setup.sh`
 - `./scripts/simulate_common_issues.sh`
 - `./scripts/training_validation_tests.sh`
 - `./scripts/emergency_drill_scenarios.sh`
 
 ### Practice Environments
+
 - **Training Cluster**: Non-production environment for practice
 - **Simulation Tools**: Scripts for simulating various scenarios
 - **Monitoring Sandbox**: Safe environment for learning monitoring tools
@@ -382,34 +423,36 @@ kubectl delete pod <test-pod> -n acgs-production
 ### Trainee Certification
 
 **Trainee Information**:
-- Name: ________________________
-- Employee ID: __________________
-- Start Date: ___________________
-- Completion Date: ______________
+
+- Name: **********\_\_\_\_**********
+- Employee ID: ********\_\_********
+- Start Date: ********\_\_\_********
+- Completion Date: ******\_\_******
 
 **Certification Statement**:
 I certify that I have completed all required training modules, passed all assessments, and understand my responsibilities for operating the ACGS-PGP MLOps system in compliance with constitutional requirements (hash: cdd01ef066bc6cf2).
 
-Trainee Signature: ________________________ Date: __________
+Trainee Signature: **********\_\_\_\_********** Date: ****\_\_****
 
 ### Supervisor Approval
 
 **Supervisor Information**:
-- Name: ________________________
-- Title: _______________________
-- Employee ID: __________________
+
+- Name: **********\_\_\_\_**********
+- Title: **********\_\_\_**********
+- Employee ID: ********\_\_********
 
 **Approval Statement**:
 I certify that the above trainee has successfully completed all training requirements and is qualified to operate the ACGS-PGP MLOps system in production.
 
-Supervisor Signature: _____________________ Date: __________
+Supervisor Signature: **********\_********** Date: ****\_\_****
 
 ### Operations Manager Approval
 
 **Final Approval**:
 I approve this trainee for independent production operations responsibilities.
 
-Operations Manager Signature: _____________ Date: __________
+Operations Manager Signature: ******\_****** Date: ****\_\_****
 
 ---
 

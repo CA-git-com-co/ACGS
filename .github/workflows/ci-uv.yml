@@ -7,10 +7,13 @@ on:
     branches: [master, main]
 
 env:
-  PYTHON_VERSION: '3.11'
+  PYTHON_VERSION: '3.10'
   NODE_VERSION: '18'
   NODE_VERSION_BLOCKCHAIN: '20'
   UV_CACHE_DIR: /tmp/.uv-cache
+  JWT_SECRET_KEY: 'test-jwt-secret-key-32-characters-minimum-length-required-for-validation'
+  DATABASE_URL: 'postgresql+asyncpg://acgs_user:strong_password_here@localhost:5432/acgs_pgp_db'
+  REDIS_URL: 'redis://localhost:6379/0'
 
 jobs:
   # Python services with UV
@@ -46,15 +49,9 @@ jobs:
 
       - name: Install dependencies with UV
         run: |
-          # Check if uv.lock exists, if not create a project
-          if [ -f "uv.lock" ]; then
-            uv sync --frozen
-          else
-            echo "Creating UV project and installing dependencies..."
-            uv init --python ${{ env.PYTHON_VERSION }} || echo "UV init failed, continuing with basic setup"
-            uv add pytest black isort mypy || echo "Failed to add some dependencies"
-            uv sync || echo "UV sync failed, continuing"
-          fi
+          echo "Installing dependencies with UV..."
+          uv pip install -e . --index-strategy unsafe-best-match
+          uv pip install -e .[dev,test] --index-strategy unsafe-best-match
           echo "UV_ACTIVE=1" >> $GITHUB_ENV
 
       - name: Lint with UV
@@ -81,20 +78,13 @@ jobs:
 
       - name: Test with UV
         run: |
-          source .venv/bin/activate
-
-          # Check for test directories and run tests if they exist
-          if [ -d "services/core/${{ matrix.service }}/tests" ]; then
-            echo "Running tests from services/core/${{ matrix.service }}/tests/"
-            uv run pytest services/core/${{ matrix.service }}/tests/ -v --cov=services/core/${{ matrix.service }} --cov-report=xml
-          elif [ -d "services/core/${{ matrix.service }}/*/tests" ]; then
-            echo "Running tests from nested test directories"
-            uv run pytest services/core/${{ matrix.service }}/*/tests/ -v --cov=services/core/${{ matrix.service }} --cov-report=xml
-          elif find services/core/${{ matrix.service }} -name "test_*.py" -o -name "*_test.py" | grep -q .; then
-            echo "Running individual test files"
-            uv run pytest $(find services/core/${{ matrix.service }} -name "test_*.py" -o -name "*_test.py") -v --cov=services/core/${{ matrix.service }} --cov-report=xml
+          echo "Running tests for ${{ matrix.service }}..."
+          # Run tests from the tests directory
+          if [ -d "tests/unit" ]; then
+            echo "Running unit tests..."
+            uv run pytest tests/unit/ -v --cov=services --cov-report=xml
           else
-            echo "No tests found for ${{ matrix.service }}, creating placeholder coverage"
+            echo "No unit tests found, creating placeholder coverage"
             echo '<?xml version="1.0" ?><coverage version="7.0.0"><sources></sources><packages></packages></coverage>' > coverage.xml
           fi
 

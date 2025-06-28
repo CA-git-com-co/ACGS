@@ -13,38 +13,42 @@
 
 ## 📊 Approach Comparison
 
-| Metric | Naive Approach | Bandit Approach | Improvement |
-|--------|----------------|-----------------|-------------|
-| Total Time | 82.84s | 20.52s | +75.2% |
-| Avg Performance | 0.766 | 0.843 | +10.0% |
+| Metric          | Naive Approach | Bandit Approach | Improvement |
+| --------------- | -------------- | --------------- | ----------- |
+| Total Time      | 82.84s         | 20.52s          | +75.2%      |
+| Avg Performance | 0.766          | 0.843           | +10.0%      |
 
 ## 🔄 Algorithm Usage Analysis
 
 ### Naive Approach (Equal Usage)
-| Algorithm | Usage Count | Usage % |
-|-----------|-------------|----------|
-| Random Forest | 50 | 25.0% |
-| Xgboost | 50 | 25.0% |
-| Lightgbm | 50 | 25.0% |
-| Neural Network | 50 | 25.0% |
+
+| Algorithm      | Usage Count | Usage % |
+| -------------- | ----------- | ------- |
+| Random Forest  | 50          | 25.0%   |
+| Xgboost        | 50          | 25.0%   |
+| Lightgbm       | 50          | 25.0%   |
+| Neural Network | 50          | 25.0%   |
 
 ### Bandit Approach (Optimized Usage)
-| Algorithm | Usage Count | Usage % |
-|-----------|-------------|----------|
-| Random Forest | 4 | 2.0% |
-| Xgboost | 3 | 1.5% |
-| Lightgbm | 188 | 94.0% |
-| Neural Network | 5 | 2.5% |
+
+| Algorithm      | Usage Count | Usage % |
+| -------------- | ----------- | ------- |
+| Random Forest  | 4           | 2.0%    |
+| Xgboost        | 3           | 1.5%    |
+| Lightgbm       | 188         | 94.0%   |
+| Neural Network | 5           | 2.5%    |
 
 ## 💡 Key Insights
 
 ### Bandit Learning Benefits
+
 1. **Intelligent Selection:** Bandit learns to prefer high-efficiency algorithms
 2. **Reduced Waste:** Avoids repeatedly using poor-performing algorithms
 3. **Adaptive Strategy:** Balances exploration and exploitation optimally
 4. **Performance Gains:** Achieves better results with less computational cost
 
 ### Production Advantages
+
 - **Cost Reduction:** 60-70% efficiency gains translate to significant cost savings
 - **Faster Response:** Reduced training time improves user experience
 - **Better Quality:** Focus on best algorithms improves prediction accuracy
@@ -60,6 +64,7 @@
 **🎉 ALL SUCCESS CRITERIA MET**
 
 The multi-armed bandit algorithm selection system successfully demonstrates:
+
 - Significant efficiency improvements through intelligent algorithm selection
 - Adaptive learning that improves over time
 - Practical benefits for production ML systems

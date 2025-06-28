@@ -15,19 +15,21 @@
 ## 📊 Class Distribution Analysis
 
 ### Original Dataset
+
 - **Class 0:** 102 samples (5.1%)
 - **Class 1:** 1,898 samples (94.9%)
 
 ### After SMOTE
+
 - **Class 0:** 1,898 samples (50.0%)
 - **Class 1:** 1,898 samples (50.0%)
 
 ## 📈 Model Performance Comparison
 
-| Metric | Original Data | SMOTE Data | Improvement |
-|--------|---------------|------------|-------------|
-| Accuracy | 0.950 | 0.951 | +0.1% |
-| F1-Score | 0.926 | 0.951 | +2.8% |
+| Metric   | Original Data | SMOTE Data | Improvement |
+| -------- | ------------- | ---------- | ----------- |
+| Accuracy | 0.950         | 0.951      | +0.1%       |
+| F1-Score | 0.926         | 0.951      | +2.8%       |
 
 ## 🔍 Synthetic Sample Quality Assessment
 
@@ -47,6 +49,7 @@
 ## ✅ Success Criteria Validation
 
 ### Implementation Criteria
+
 - ✅ SMOTE implementation complete
 - ✅ Imbalanced data handling improved
 - ✅ Sample quality validated (≥60%)
@@ -59,6 +62,7 @@
 ✅ **Deploy SMOTE implementation** - All success criteria met
 
 **Next Steps:**
+
 1. Integrate SMOTE into production ML pipeline
 2. Monitor synthetic sample quality in real-time
 3. Implement automated imbalance detection

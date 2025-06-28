@@ -3,6 +3,7 @@
 ## 📊 Current State vs Enhanced Implementation
 
 ### Current Implementation Issues
+
 - **Basic Features**: Only 9 simple features
 - **Default Parameters**: No hyperparameter optimization
 - **Single Model**: RandomForest only
@@ -10,6 +11,7 @@
 - **Limited Evaluation**: Only R² score
 
 ### Enhanced Implementation Benefits
+
 - **Advanced Features**: 19+ sophisticated features including text complexity
 - **Hyperparameter Optimization**: Optuna-based automatic tuning
 - **Ensemble Methods**: XGBoost, LightGBM, Neural Networks
@@ -23,6 +25,7 @@
 ### 1. **Feature Engineering Enhancements**
 
 #### **Text Complexity Features**
+
 ```python
 # Current: Basic content length
 content_length = len(request.text_content or "")
@@ -34,6 +37,7 @@ word_complexity = np.mean([len(word) for word in content.split()])
 ```
 
 #### **Temporal Features**
+
 ```python
 # Enhanced time-based features
 hour_sin = np.sin(2 * np.pi * hour / 24)
@@ -43,6 +47,7 @@ day_cos = np.cos(2 * np.pi * day_of_week / 7)
 ```
 
 #### **Historical Performance Windows**
+
 ```python
 # Moving averages with exponential decay
 recent_performance = exponential_weighted_average(
@@ -53,6 +58,7 @@ recent_performance = exponential_weighted_average(
 ### 2. **Advanced Model Architectures**
 
 #### **Gradient Boosting Models**
+
 ```python
 # XGBoost with optimized parameters
 xgb_model = xgb.XGBRegressor(
@@ -73,6 +79,7 @@ lgb_model = lgb.LGBMRegressor(
 ```
 
 #### **Neural Network Architecture**
+
 ```python
 # Multi-layer perceptron for complex patterns
 nn_model = MLPRegressor(
@@ -86,6 +93,7 @@ nn_model = MLPRegressor(
 ### 3. **Hyperparameter Optimization**
 
 #### **Optuna Integration**
+
 ```python
 def optimize_hyperparameters(X, y, model_type):
     def objective(trial):
@@ -96,12 +104,12 @@ def optimize_hyperparameters(X, y, model_type):
                 'learning_rate': trial.suggest_float('learning_rate', 0.01, 0.3),
             }
             model = xgb.XGBRegressor(**params)
-        
+
         # Time series cross-validation
         tscv = TimeSeriesSplit(n_splits=5)
         scores = cross_val_score(model, X, y, cv=tscv, scoring='neg_mean_absolute_error')
         return -scores.mean()
-    
+
     study = optuna.create_study(direction='minimize')
     study.optimize(objective, n_trials=100)
     return study.best_params
@@ -110,6 +118,7 @@ def optimize_hyperparameters(X, y, model_type):
 ### 4. **Ensemble Methods**
 
 #### **Weighted Ensemble**
+
 ```python
 def ensemble_predict(models, weights, X):
     predictions = []
@@ -120,6 +129,7 @@ def ensemble_predict(models, weights, X):
 ```
 
 #### **Stacking Ensemble**
+
 ```python
 from sklearn.ensemble import StackingRegressor
 
@@ -136,19 +146,21 @@ stacking_model = StackingRegressor(
 ### 5. **Advanced Validation Techniques**
 
 #### **Time Series Cross-Validation**
+
 ```python
 # Proper time-aware validation
 tscv = TimeSeriesSplit(n_splits=5, test_size=100)
 for train_idx, test_idx in tscv.split(X):
     X_train, X_test = X[train_idx], X[test_idx]
     y_train, y_test = y[train_idx], y[test_idx]
-    
+
     model.fit(X_train, y_train)
     predictions = model.predict(X_test)
     scores.append(evaluate_model(y_test, predictions))
 ```
 
 #### **Walk-Forward Validation**
+
 ```python
 def walk_forward_validation(X, y, model, window_size=100):
     scores = []
@@ -156,21 +168,22 @@ def walk_forward_validation(X, y, model, window_size=100):
         # Train on historical data
         X_train = X[max(0, i-window_size):i]
         y_train = y[max(0, i-window_size):i]
-        
+
         # Test on next point
         X_test = X[i:i+1]
         y_test = y[i:i+1]
-        
+
         model.fit(X_train, y_train)
         pred = model.predict(X_test)
         scores.append(abs(y_test[0] - pred[0]))
-    
+
     return np.mean(scores)
 ```
 
 ### 6. **Data Quality Improvements**
 
 #### **Outlier Detection and Handling**
+
 ```python
 from sklearn.ensemble import IsolationForest
 
@@ -184,30 +197,32 @@ y_clean = y[outliers == 1]
 ```
 
 #### **Data Augmentation**
+
 ```python
 def augment_training_data(X, y, noise_level=0.01):
     """Add noise to create more training samples."""
     X_augmented = []
     y_augmented = []
-    
+
     for i in range(len(X)):
         # Original sample
         X_augmented.append(X[i])
         y_augmented.append(y[i])
-        
+
         # Augmented samples with noise
         for _ in range(3):
             noise = np.random.normal(0, noise_level, X[i].shape)
             X_noisy = X[i] + noise
             X_augmented.append(X_noisy)
             y_augmented.append(y[i])
-    
+
     return np.array(X_augmented), np.array(y_augmented)
 ```
 
 ### 7. **Online Learning Implementation**
 
 #### **Incremental Learning**
+
 ```python
 from sklearn.linear_model import SGDRegressor
 
@@ -215,14 +230,14 @@ class OnlineLearningOptimizer:
     def __init__(self):
         self.online_model = SGDRegressor(learning_rate='adaptive')
         self.is_fitted = False
-    
+
     def partial_fit(self, X, y):
         if not self.is_fitted:
             self.online_model.fit(X, y)
             self.is_fitted = True
         else:
             self.online_model.partial_fit(X, y)
-    
+
     def predict(self, X):
         return self.online_model.predict(X)
 ```
@@ -230,11 +245,12 @@ class OnlineLearningOptimizer:
 ### 8. **Model Monitoring and Drift Detection**
 
 #### **Performance Monitoring**
+
 ```python
 def monitor_model_performance(model, X_new, y_new, baseline_score):
     current_score = model.score(X_new, y_new)
     performance_drop = baseline_score - current_score
-    
+
     if performance_drop > 0.1:  # 10% performance drop
         logger.warning("Model performance degradation detected")
         return True  # Trigger retraining
@@ -242,6 +258,7 @@ def monitor_model_performance(model, X_new, y_new, baseline_score):
 ```
 
 #### **Data Drift Detection**
+
 ```python
 from scipy.stats import ks_2samp
 
@@ -260,24 +277,28 @@ def detect_feature_drift(X_train, X_new, threshold=0.05):
 ## 🚀 Implementation Roadmap
 
 ### **Phase 1: Quick Wins (1-2 weeks)**
+
 1. ✅ Hyperparameter optimization for existing RandomForest
 2. ✅ Add advanced text features (readability, sentiment)
 3. ✅ Implement cross-validation
 4. ✅ Add comprehensive evaluation metrics
 
 ### **Phase 2: Advanced Models (2-4 weeks)**
+
 1. ✅ Implement XGBoost and LightGBM
 2. ✅ Add ensemble methods
 3. ✅ Feature selection and importance analysis
 4. ✅ Time-aware validation
 
 ### **Phase 3: Production Optimization (4-6 weeks)**
+
 1. 🔄 Online learning implementation
 2. 🔄 Model monitoring and drift detection
 3. 🔄 A/B testing framework
 4. 🔄 Automated retraining pipeline
 
 ### **Phase 4: Advanced Research (6+ weeks)**
+
 1. 🔄 Deep learning architectures
 2. 🔄 Reinforcement learning for routing
 3. 🔄 Multi-objective optimization
@@ -287,13 +308,13 @@ def detect_feature_drift(X_train, X_new, threshold=0.05):
 
 ## 📈 Expected Performance Improvements
 
-| Metric | Current | Enhanced | Improvement |
-|--------|---------|----------|-------------|
-| **Prediction Accuracy** | ~75% | ~90%+ | +20% |
-| **Response Time Prediction** | ±500ms | ±100ms | 80% better |
-| **Cost Prediction** | ±30% | ±10% | 67% better |
-| **Model Training Time** | 5s | 30s | Acceptable trade-off |
-| **Feature Importance** | None | Full analysis | New capability |
+| Metric                       | Current | Enhanced      | Improvement          |
+| ---------------------------- | ------- | ------------- | -------------------- |
+| **Prediction Accuracy**      | ~75%    | ~90%+         | +20%                 |
+| **Response Time Prediction** | ±500ms  | ±100ms        | 80% better           |
+| **Cost Prediction**          | ±30%    | ±10%          | 67% better           |
+| **Model Training Time**      | 5s      | 30s           | Acceptable trade-off |
+| **Feature Importance**       | None    | Full analysis | New capability       |
 
 ---
 
@@ -310,16 +331,19 @@ def detect_feature_drift(X_train, X_new, threshold=0.05):
 ## 🔧 Next Steps
 
 1. **Install Dependencies**:
+
    ```bash
    pip install optuna xgboost lightgbm textstat textblob
    ```
 
 2. **Replace Current Optimizer**:
+
    ```python
    from services.shared.enhanced_ml_routing_optimizer import EnhancedMLRoutingOptimizer
    ```
 
 3. **Run Enhanced Training**:
+
    ```python
    optimizer = EnhancedMLRoutingOptimizer()
    optimizer.train_ensemble_models()
