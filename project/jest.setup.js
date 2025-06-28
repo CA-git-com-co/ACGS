@@ -1,5 +1,6 @@
 // Jest setup file for ACGS Next.js application
 import '@testing-library/jest-dom';
+import 'jest-axe/extend-expect';
 
 // Mock Next.js router
 jest.mock('next/router', () => ({
