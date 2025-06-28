@@ -27,7 +27,7 @@ thiserror = "1.0"
 
 # Cryptography
 bs58 = "0.5"
-solana-program = "1.18"
+solana-program = "2.3"
 
 # Logging
 log = "0.4"

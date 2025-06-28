@@ -62,4 +62,4 @@ shellexpand = "3.1"
 toml = "0.8"
 
 # Solana program utilities
-solana-program = "1.18"
+solana-program = "2.3"
