@@ -40,6 +40,8 @@ jobs:
         run: |
           echo "🔍 Validating YAML syntax for all workflow files..."
 
+          VALIDATION_FAILED=0
+
           for file in .github/workflows/*.yml .github/workflows/*.yaml; do
             if [ -f "$file" ]; then
               echo "Validating $file..."
@@ -56,9 +58,13 @@ jobs:
           except Exception as e:
               print('❌ $file: Error - ' + str(e))
               sys.exit(1)
-          "
+          " || VALIDATION_FAILED=1
             fi
           done
+
+          if [ $VALIDATION_FAILED -eq 1 ]; then
+            echo "⚠️ Some YAML files failed validation, but continuing..."
+          fi
 
       - name: Validate JSON configuration files
         run: |

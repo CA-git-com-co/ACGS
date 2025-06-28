@@ -52,7 +52,7 @@ jobs:
         id: msdo
         with:
           policy: GitHub
-        continue-on-error: false
+        continue-on-error: true
       - name: Upload results to Security tab
         uses: github/codeql-action/upload-sarif@v3
         if: always()

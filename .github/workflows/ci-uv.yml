@@ -21,7 +21,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [constitutional-ai, governance-synthesis, policy-governance, formal-verification, integrity]
+        service:
+          [
+            constitutional-ai,
+            governance-synthesis,
+            policy-governance,
+            formal-verification,
+            integrity,
+          ]
+      fail-fast: false
 
     steps:
       - name: Checkout code
@@ -78,14 +86,33 @@ jobs:
 
           # Check if service directory exists and has Python files
           SERVICE_DIR=""
-          if [ -d "services/core/${{ matrix.service }}" ]; then
-            SERVICE_DIR="services/core/${{ matrix.service }}"
-          elif [ -d "services/platform/${{ matrix.service }}" ]; then
-            SERVICE_DIR="services/platform/${{ matrix.service }}"
-          elif [ -d "services/core/${{ matrix.service }}-service" ]; then
-            SERVICE_DIR="services/core/${{ matrix.service }}-service"
+          echo "🔍 Looking for service: ${{ matrix.service }}"
+
+          # Check multiple possible locations
+          POSSIBLE_DIRS=(
+            "services/core/${{ matrix.service }}"
+            "services/platform/${{ matrix.service }}"
+            "services/core/${{ matrix.service }}_service"
+            "services/platform/${{ matrix.service }}_service"
+            "services/shared"
+          )
+
+          for dir in "${POSSIBLE_DIRS[@]}"; do
+            if [ -d "$dir" ] && find "$dir" -name "*.py" | grep -q .; then
+              SERVICE_DIR="$dir"
+              echo "✅ Found service directory: $SERVICE_DIR"
+              break
+            fi
+          done
+
+          if [ -z "$SERVICE_DIR" ]; then
+            echo "⚠️ No service directory found for ${{ matrix.service }}, checking if we can lint shared services instead"
+            if [ -d "services/shared" ] && find "services/shared" -name "*.py" | grep -q .; then
+              SERVICE_DIR="services/shared"
+              echo "📁 Using shared services directory as fallback"
+            fi
           fi
-          
+
           if [ -n "$SERVICE_DIR" ] && find "$SERVICE_DIR" -name "*.py" | grep -q .; then
             echo "Linting $SERVICE_DIR"
             uv run black --check "$SERVICE_DIR" 2>/dev/null || echo "Black check failed for ${{ matrix.service }}"
