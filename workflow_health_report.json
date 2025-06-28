@@ -1,0 +1,36 @@
+{
+  "timestamp": "2025-06-28T06:46:08.886615",
+  "success_workflows": [
+    "pip in /. for cryptography, torch, torch - Update #1042595119",
+    "pip in  for black, orjson, python-jose, python-jose, scikit-learn - Update #1042595120",
+    "ACGS-1 End-to-End Testing Pipeline",
+    "ACGS-1 Enhanced Parallel CI/CD Pipeline",
+    "Fixed Connectivity Check",
+    "ACGS-1 Deployment Automation",
+    "Microsoft Defender For Devops",
+    "Secret Scanning and Security Validation"
+  ],
+  "running_workflows": [],
+  "failed_workflows": [
+    "Solana Anchor Programs CI",
+    "ACGS-1 Dependency Vulnerability Monitoring",
+    "ACGS-1 Quality Assurance Automation",
+    "Workflow Configuration Validation",
+    "Robust Connectivity Check",
+    "ACGS-1 Quality Assurance Automation",
+    "Comprehensive Security Scanning",
+    "ACGS-1 Enterprise CI/CD Pipeline",
+    "ACGS-1 Enterprise Multi-Environment CI/CD Pipeline",
+    "ACGS-1 Documentation Automation",
+    "ACGS-1 Docker Build and Push",
+    "ACGS CI/CD with UV",
+    "ACGS-1 Security Automation",
+    "ACGS-1 Enterprise Parallel Jobs Matrix",
+    "CodeQL Advanced",
+    "ACGS-1 Enterprise CI/CD Pipeline",
+    "ACGS-1 Comprehensive Security Scanning",
+    "ACGS-1 Comprehensive Testing Pipeline"
+  ],
+  "total_workflows": 26,
+  "success_rate": 30.76923076923077
+}
