@@ -29,18 +29,27 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Install UV
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install ruff black mypy
-          if [ -f requirements-test.txt ]; then
-            pip install -r requirements-test.txt
-          elif [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-            pip install pytest pytest-cov pytest-asyncio
+          echo "Installing dependencies with UV..."
+          # Create virtual environment
+          uv venv
+          # Install basic development tools
+          uv pip install ruff black mypy || echo "Dev tools install failed"
+          # Install project dependencies
+          if [ -f "requirements-test.txt" ]; then
+            uv pip install -r requirements-test.txt || echo "Test requirements install failed"
+          elif [ -f "requirements.txt" ]; then
+            uv pip install -r requirements.txt || echo "Requirements install failed"
+            uv pip install pytest pytest-cov pytest-asyncio || echo "Test tools install failed"
           else
             echo "No requirements files found, installing basic dependencies"
-            pip install pytest pytest-cov pytest-asyncio fastapi uvicorn pydantic
+            uv pip install pytest pytest-cov pytest-asyncio fastapi uvicorn pydantic || echo "Basic dependencies install failed"
           fi
 
       - name: Run Python linting (Ruff)
