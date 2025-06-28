@@ -67,6 +67,10 @@ jobs:
           echo "Installing dependencies with UV..."
           # Create virtual environment first
           uv venv
+          
+          # Install core tools first
+          uv pip install pytest black isort mypy fastapi httpx || echo "⚠️ Core tools install failed"
+          
           # Install dependencies with error handling
           uv pip install -e . --index-strategy unsafe-best-match || {
             echo "Initial install failed, trying alternative approach..."
@@ -112,11 +116,17 @@ jobs:
 
           if [ -n "$SERVICE_DIR" ] && find "$SERVICE_DIR" -name "*.py" | grep -q .; then
             echo "Linting $SERVICE_DIR"
-            uv run black --check "$SERVICE_DIR" 2>/dev/null || echo "Black check failed for ${{ matrix.service }}"
-            uv run isort --check-only "$SERVICE_DIR" 2>/dev/null || echo "isort check failed for ${{ matrix.service }}"
-            uv run mypy "$SERVICE_DIR" 2>/dev/null || echo "mypy check failed for ${{ matrix.service }}"
+            
+            # Check if tools are available and run linting
+            if command -v uv >/dev/null 2>&1; then
+              uv run black --check "$SERVICE_DIR" 2>/dev/null || echo "⚠️ Black check failed for ${{ matrix.service }}, continuing..."
+              uv run isort --check-only "$SERVICE_DIR" 2>/dev/null || echo "⚠️ isort check failed for ${{ matrix.service }}, continuing..."
+              uv run mypy "$SERVICE_DIR" 2>/dev/null || echo "⚠️ mypy check failed for ${{ matrix.service }}, continuing..."
+            else
+              echo "⚠️ UV not available, skipping linting for ${{ matrix.service }}"
+            fi
           else
-            echo "No Python files found for ${{ matrix.service }}, skipping linting"
+            echo "ℹ️ No Python files found for ${{ matrix.service }}, skipping linting"
           fi
 
       - name: Test with UV
