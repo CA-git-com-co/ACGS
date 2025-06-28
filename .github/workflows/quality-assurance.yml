@@ -212,10 +212,30 @@ jobs:
         run: |
           python -m pip install --upgrade pip
 
-          # Install service-specific dependencies
-          if [ -f "services/${{ matrix.service }}_service/requirements.txt" ]; then
-            pip install -r "services/${{ matrix.service }}_service/requirements.txt"
-          fi
+          # Install service-specific dependencies based on correct paths
+          case "${{ matrix.service }}" in
+            "auth")
+              [ -f "services/platform/authentication/auth_service/requirements.txt" ] && pip install -r "services/platform/authentication/auth_service/requirements.txt"
+              ;;
+            "ac")
+              [ -f "services/core/constitutional-ai/ac_service/requirements.txt" ] && pip install -r "services/core/constitutional-ai/ac_service/requirements.txt"
+              ;;
+            "integrity")
+              [ -f "services/platform/integrity/integrity_service/requirements.txt" ] && pip install -r "services/platform/integrity/integrity_service/requirements.txt"
+              ;;
+            "fv")
+              [ -f "services/core/formal-verification/fv_service/requirements.txt" ] && pip install -r "services/core/formal-verification/fv_service/requirements.txt"
+              ;;
+            "gs")
+              [ -f "services/core/governance-synthesis/gs_service/requirements.txt" ] && pip install -r "services/core/governance-synthesis/gs_service/requirements.txt"
+              ;;
+            "pgc")
+              [ -f "services/core/policy-governance/pgc_service/requirements.txt" ] && pip install -r "services/core/policy-governance/pgc_service/requirements.txt"
+              ;;
+            "ec")
+              [ -f "services/core/evolutionary-computation/requirements.txt" ] && pip install -r "services/core/evolutionary-computation/requirements.txt"
+              ;;
+          esac
 
           # Install test dependencies
           pip install pytest pytest-cov pytest-asyncio pytest-mock
@@ -224,7 +244,34 @@ jobs:
         run: |
           echo "🧪 Running unit tests for ${{ matrix.service }} service..."
 
-          SERVICE_DIR="services/${{ matrix.service }}_service"
+          # Set correct service directory based on service name
+          case "${{ matrix.service }}" in
+            "auth")
+              SERVICE_DIR="services/platform/authentication/auth_service"
+              ;;
+            "ac")
+              SERVICE_DIR="services/core/constitutional-ai/ac_service"
+              ;;
+            "integrity")
+              SERVICE_DIR="services/platform/integrity/integrity_service"
+              ;;
+            "fv")
+              SERVICE_DIR="services/core/formal-verification/fv_service"
+              ;;
+            "gs")
+              SERVICE_DIR="services/core/governance-synthesis/gs_service"
+              ;;
+            "pgc")
+              SERVICE_DIR="services/core/policy-governance/pgc_service"
+              ;;
+            "ec")
+              SERVICE_DIR="services/core/evolutionary-computation"
+              ;;
+            *)
+              echo "⚠️ Unknown service: ${{ matrix.service }}"
+              SERVICE_DIR=""
+              ;;
+          esac
 
           if [ -d "$SERVICE_DIR" ]; then
             cd "$SERVICE_DIR"

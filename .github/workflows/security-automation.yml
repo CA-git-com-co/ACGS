@@ -126,7 +126,7 @@ jobs:
         run: |
           # Install npm tools with timeout
           timeout 120 npm install -g npm-audit-resolver || echo "⚠️ npm-audit-resolver install failed"
-          
+
           # Install Python audit tools
           python -m pip install --upgrade pip
           timeout 120 pip install pip-audit || echo "⚠️ pip-audit install failed, continuing..."

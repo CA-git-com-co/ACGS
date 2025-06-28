@@ -393,8 +393,10 @@ jobs:
         run: |
           echo "🏗️ Building Anchor programs with enterprise optimizations..."
 
-          # Start performance monitoring
-          ../scripts/enterprise/performance-monitor.sh start-stage "anchor_build"
+          # Start performance monitoring if available
+          if [ -f "../scripts/enterprise/performance-monitor.sh" ]; then
+            ../scripts/enterprise/performance-monitor.sh start-stage "anchor_build" || echo "⚠️ Performance monitor start failed"
+          fi
 
           # Configure Solana for local development
           solana config set --url localhost
@@ -402,8 +404,10 @@ jobs:
           # Build with optimizations for faster subsequent builds
           RUST_LOG=error anchor build --skip-lint
 
-          # End performance monitoring
-          ../scripts/enterprise/performance-monitor.sh end-stage "anchor_build" "success"
+          # End performance monitoring if available
+          if [ -f "../scripts/enterprise/performance-monitor.sh" ]; then
+            ../scripts/enterprise/performance-monitor.sh end-stage "anchor_build" "success" || echo "⚠️ Performance monitor end failed"
+          fi
 
           echo "✅ Anchor build completed successfully"
 
@@ -455,8 +459,12 @@ jobs:
 
       - name: Initialize failure analysis
         run: |
-          chmod +x scripts/enterprise/failure-analysis.sh
-          scripts/enterprise/failure-analysis.sh init "${{ needs.performance_monitoring.outputs.pipeline_id }}"
+          if [ -f "scripts/enterprise/failure-analysis.sh" ]; then
+            chmod +x scripts/enterprise/failure-analysis.sh
+            scripts/enterprise/failure-analysis.sh init "${{ needs.performance_monitoring.outputs.pipeline_id }}" || echo "⚠️ Failure analysis init failed, continuing..."
+          else
+            echo "ℹ️ Failure analysis script not found, skipping initialization"
+          fi
 
       - name: Install enterprise security tools with parallel execution
         run: |
@@ -504,11 +512,11 @@ jobs:
 
           # Record any installation failures
           if [ $AUDIT_RESULT -ne 0 ]; then
-            scripts/enterprise/failure-analysis.sh record "security_tool_installation" "cargo-audit installation failed" "security_scanning" "tool_installation"
+            [ -f "scripts/enterprise/failure-analysis.sh" ] && scripts/enterprise/failure-analysis.sh record "security_tool_installation" "cargo-audit installation failed" "security_scanning" "tool_installation" || echo "⚠️ Could not record failure (script missing)"
           fi
 
           if [ $DENY_RESULT -ne 0 ]; then
-            scripts/enterprise/failure-analysis.sh record "security_tool_installation" "cargo-deny installation failed" "security_scanning" "tool_installation"
+            [ -f "scripts/enterprise/failure-analysis.sh" ] && scripts/enterprise/failure-analysis.sh record "security_tool_installation" "cargo-deny installation failed" "security_scanning" "tool_installation" || echo "⚠️ Could not record failure (script missing)"
           fi
 
           # Verify installations
@@ -563,13 +571,13 @@ jobs:
               echo "✅ Enterprise security audit passed with zero-tolerance policy"
             else
               echo "❌ Enterprise security audit failed - zero-tolerance policy violated"
-              ../scripts/enterprise/failure-analysis.sh record "security_audit" "cargo audit with ignores --deny warnings failed" "zero_tolerance_security" "security_scanning"
+              [ -f "../scripts/enterprise/failure-analysis.sh" ] && ../scripts/enterprise/failure-analysis.sh record "security_audit" "cargo audit with ignores --deny warnings failed" "zero_tolerance_security" "security_scanning" || echo "⚠️ Could not record failure (script missing)"
               exit 1
             fi
             cd ..
           else
             echo "⚠️ cargo-audit not available or no blockchain directory found"
-            scripts/enterprise/failure-analysis.sh record "security_audit" "cargo-audit not available or blockchain directory missing" "security_scanning" "security_scanning"
+            [ -f "scripts/enterprise/failure-analysis.sh" ] && scripts/enterprise/failure-analysis.sh record "security_audit" "cargo-audit not available or blockchain directory missing" "security_scanning" "security_scanning" || echo "⚠️ Could not record failure (script missing)"
           fi
 
           # Run cargo deny for enhanced security validation
@@ -579,7 +587,7 @@ jobs:
             if [ -f "deny.toml" ]; then
               if ! cargo deny check; then
                 echo "⚠️ cargo deny found policy violations"
-                ../scripts/enterprise/failure-analysis.sh record "security_policy" "cargo deny check failed" "security_scanning" "security_scanning"
+                [ -f "../scripts/enterprise/failure-analysis.sh" ] && ../scripts/enterprise/failure-analysis.sh record "security_policy" "cargo deny check failed" "security_scanning" "security_scanning" || echo "⚠️ Could not record failure (script missing)"
               fi
             else
               echo "⚠️ No deny.toml configuration found"
@@ -785,9 +793,9 @@ jobs:
 
       - name: Setup enterprise reporting tools
         run: |
-          # Make scripts executable
-          chmod +x scripts/enterprise/performance-monitor.sh
-          chmod +x scripts/enterprise/failure-analysis.sh
+          # Make scripts executable if they exist
+          [ -f "scripts/enterprise/performance-monitor.sh" ] && chmod +x scripts/enterprise/performance-monitor.sh || echo "ℹ️ Performance monitor script not found"
+          [ -f "scripts/enterprise/failure-analysis.sh" ] && chmod +x scripts/enterprise/failure-analysis.sh || echo "ℹ️ Failure analysis script not found"
 
           # Install required tools
           sudo apt-get update
@@ -798,10 +806,14 @@ jobs:
           echo "📊 Generating comprehensive enterprise performance report..."
 
           # Initialize performance monitoring for final report
-          scripts/enterprise/performance-monitor.sh init
-
-          # Calculate overall pipeline performance
-          scripts/enterprise/performance-monitor.sh generate-report
+          if [ -f "scripts/enterprise/performance-monitor.sh" ]; then
+            scripts/enterprise/performance-monitor.sh init || echo "⚠️ Performance monitor init failed"
+            
+            # Calculate overall pipeline performance
+            scripts/enterprise/performance-monitor.sh generate-report || echo "⚠️ Performance report generation failed"
+          else
+            echo "ℹ️ Performance monitoring script not found, skipping report generation"
+          fi
 
           echo "✅ Performance report generated"
 
@@ -810,35 +822,43 @@ jobs:
           echo "🔍 Analyzing enterprise compliance status..."
 
           # Initialize failure analysis
-          scripts/enterprise/failure-analysis.sh init "${{ needs.performance_monitoring.outputs.pipeline_id }}"
+          if [ -f "scripts/enterprise/failure-analysis.sh" ]; then
+            scripts/enterprise/failure-analysis.sh init "${{ needs.performance_monitoring.outputs.pipeline_id }}" || echo "⚠️ Failure analysis init failed"
+          else
+            echo "ℹ️ Failure analysis script not found, skipping"
+          fi
 
           # Check for any job failures and record them (24 Enterprise Checks)
           if [ "${{ needs.rust_quality_build.result }}" != "success" ] && [ "${{ needs.rust_quality_build.result }}" != "skipped" ]; then
-            scripts/enterprise/failure-analysis.sh record "rust_build_failure" "Rust quality and build job failed" "ci_cd_pipeline" "rust_quality_build"
+            [ -f "scripts/enterprise/failure-analysis.sh" ] && scripts/enterprise/failure-analysis.sh record "rust_build_failure" "Rust quality and build job failed" "ci_cd_pipeline" "rust_quality_build" || echo "⚠️ Could not record failure"
           fi
 
           if [ "${{ needs.enterprise_security_scan.result }}" != "success" ] && [ "${{ needs.enterprise_security_scan.result }}" != "skipped" ]; then
-            scripts/enterprise/failure-analysis.sh record "security_scan_failure" "Enterprise security scanning failed" "ci_cd_pipeline" "enterprise_security_scan"
+            [ -f "scripts/enterprise/failure-analysis.sh" ] && scripts/enterprise/failure-analysis.sh record "security_scan_failure" "Enterprise security scanning failed" "ci_cd_pipeline" "enterprise_security_scan" || echo "⚠️ Could not record failure"
           fi
 
           if [ "${{ needs.msdo_security_scan.result }}" != "success" ] && [ "${{ needs.msdo_security_scan.result }}" != "skipped" ]; then
-            scripts/enterprise/failure-analysis.sh record "msdo_scan_failure" "MSDO security scanning failed" "ci_cd_pipeline" "msdo_security_scan"
+            [ -f "scripts/enterprise/failure-analysis.sh" ] && scripts/enterprise/failure-analysis.sh record "msdo_scan_failure" "MSDO security scanning failed" "ci_cd_pipeline" "msdo_security_scan" || echo "⚠️ Could not record failure"
           fi
 
           if [ "${{ needs.codeql_analysis.result }}" != "success" ] && [ "${{ needs.codeql_analysis.result }}" != "skipped" ]; then
-            scripts/enterprise/failure-analysis.sh record "codeql_failure" "CodeQL analysis failed" "ci_cd_pipeline" "codeql_analysis"
+            [ -f "scripts/enterprise/failure-analysis.sh" ] && scripts/enterprise/failure-analysis.sh record "codeql_failure" "CodeQL analysis failed" "ci_cd_pipeline" "codeql_analysis" || echo "⚠️ Could not record failure"
           fi
 
           if [ "${{ needs.secret_detection.result }}" != "success" ] && [ "${{ needs.secret_detection.result }}" != "skipped" ]; then
-            scripts/enterprise/failure-analysis.sh record "secret_detection_failure" "Secret detection failed" "ci_cd_pipeline" "secret_detection"
+            [ -f "scripts/enterprise/failure-analysis.sh" ] && scripts/enterprise/failure-analysis.sh record "secret_detection_failure" "Secret detection failed" "ci_cd_pipeline" "secret_detection" || echo "⚠️ Could not record failure"
           fi
 
           if [ "${{ needs.container_security.result }}" != "success" ] && [ "${{ needs.container_security.result }}" != "skipped" ]; then
-            scripts/enterprise/failure-analysis.sh record "container_security_failure" "Container security scanning failed" "ci_cd_pipeline" "container_security"
+            [ -f "scripts/enterprise/failure-analysis.sh" ] && scripts/enterprise/failure-analysis.sh record "container_security_failure" "Container security scanning failed" "ci_cd_pipeline" "container_security" || echo "⚠️ Could not record failure"
           fi
 
           # Generate final failure analysis report
-          scripts/enterprise/failure-analysis.sh generate-report
+          if [ -f "scripts/enterprise/failure-analysis.sh" ]; then
+            scripts/enterprise/failure-analysis.sh generate-report || echo "⚠️ Report generation failed"
+          else
+            echo "ℹ️ Failure analysis script not found, skipping report generation"
+          fi
 
           echo "✅ Compliance analysis completed"
 
