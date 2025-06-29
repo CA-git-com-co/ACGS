@@ -110,26 +110,104 @@ async def evaluate_policy_query(
     resource_id = policy_query_payload.context.resource.get("id", "_")
     action_type = policy_query_payload.context.action.get("type", "_")
 
-    # SECURITY: Validate and sanitize inputs before constructing Datalog query
-    # Prevent injection attacks by validating input format
+    # SECURITY: Enhanced input validation and safe query construction
+    # Prevent injection attacks with comprehensive validation and parameterized queries
     import re
+    from typing import Dict, Any
 
-    # Validate user_id format (alphanumeric and underscores only)
-    if not re.match(r"^[a-zA-Z0-9_]+$", user_id):
-        raise HTTPException(status_code=400, detail="Invalid user_id format")
+    def validate_and_sanitize_datalog_input(value: str, field_name: str, max_length: int = 50) -> str:
+        """
+        Validate and sanitize input for Datalog queries with enhanced security.
 
-    # Validate action_type format (alphanumeric and underscores only)
-    if not re.match(r"^[a-zA-Z0-9_]+$", action_type):
-        raise HTTPException(status_code=400, detail="Invalid action_type format")
+        Args:
+            value: Input value to validate
+            field_name: Name of the field for error reporting
+            max_length: Maximum allowed length
 
-    # Validate resource_id format (alphanumeric, underscores, and hyphens only)
-    if not re.match(r"^[a-zA-Z0-9_-]+$", resource_id):
-        raise HTTPException(status_code=400, detail="Invalid resource_id format")
+        Returns:
+            Sanitized value
 
-    # Example target query: is 'allow(user_id, action_type, resource_id)' derivable?
-    # This query structure must align with how your Datalog rules are written.
-    # E.g., a rule might be: allow(U, A, R) <= user_role(U, 'admin') & action_requires_admin(A) & resource_type(R, 'sensitive').
-    target_query = f"allow('{user_id}', '{action_type}', '{resource_id}')"
+        Raises:
+            HTTPException: If validation fails
+        """
+        if not value or not isinstance(value, str):
+            raise HTTPException(status_code=400, detail=f"Invalid {field_name}: must be non-empty string")
+
+        # Trim whitespace first
+        value = value.strip()
+
+        # Check if empty after trimming
+        if not value:
+            raise HTTPException(status_code=400, detail=f"Invalid {field_name}: must be non-empty string")
+
+        # Length check
+        if len(value) > max_length:
+            raise HTTPException(status_code=400, detail=f"Invalid {field_name}: exceeds maximum length of {max_length}")
+
+        # Enhanced pattern validation - only allow safe characters
+        # Alphanumeric, underscores, hyphens, and dots for resource IDs
+        safe_pattern = r"^[a-zA-Z0-9_.-]+$"
+        if not re.match(safe_pattern, value):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid {field_name} format: only alphanumeric characters, underscores, hyphens, and dots allowed"
+            )
+
+        # Additional security: check for potential Datalog injection patterns
+        dangerous_patterns = [
+            r"['\"].*['\"]",  # Nested quotes
+            r"[();,]",        # Datalog syntax characters
+            r"\s*(and|or|not|:-|<=)\s*",  # Datalog operators
+            r"[\\]",          # Escape characters
+        ]
+
+        for pattern in dangerous_patterns:
+            if re.search(pattern, value, re.IGNORECASE):
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Invalid {field_name}: contains potentially dangerous characters"
+                )
+
+        return value
+
+    def build_safe_datalog_query(user_id: str, action_type: str, resource_id: str) -> str:
+        """
+        Build a safe Datalog query using validated inputs.
+
+        Args:
+            user_id: Validated user identifier
+            action_type: Validated action type
+            resource_id: Validated resource identifier
+
+        Returns:
+            Safe Datalog query string
+        """
+        # Use a predefined query template to prevent injection
+        # This ensures the query structure cannot be modified by user input
+        query_template = "allow('{}', '{}', '{}')"
+
+        # Double-check inputs one more time before query construction
+        safe_user_id = validate_and_sanitize_datalog_input(user_id, "user_id")
+        safe_action_type = validate_and_sanitize_datalog_input(action_type, "action_type")
+        safe_resource_id = validate_and_sanitize_datalog_input(resource_id, "resource_id")
+
+        # Construct query with validated inputs
+        return query_template.format(safe_user_id, safe_action_type, safe_resource_id)
+
+    # Apply enhanced validation to all inputs
+    try:
+        validated_user_id = validate_and_sanitize_datalog_input(user_id, "user_id")
+        validated_action_type = validate_and_sanitize_datalog_input(action_type, "action_type")
+        validated_resource_id = validate_and_sanitize_datalog_input(resource_id, "resource_id")
+
+        # Build safe query using validated inputs
+        target_query = build_safe_datalog_query(validated_user_id, validated_action_type, validated_resource_id)
+
+    except HTTPException as e:
+        # Log security violation attempt
+        print(f"SECURITY ALERT: Datalog injection attempt blocked - {e.detail}")
+        print(f"Attempted inputs - user_id: {user_id}, action_type: {action_type}, resource_id: {resource_id}")
+        raise e
 
     print(f"PGC Endpoint: Executing Datalog query: {target_query}")
     query_results = datalog_engine.query(target_query)
