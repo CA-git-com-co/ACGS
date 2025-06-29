@@ -41,6 +41,7 @@ The ACGS-PGP (Autonomous Constitutional Governance System - Policy Generation Pl
 - ✅ **GitOps Integration**: ArgoCD deployment configurations for automated deployments
 - ✅ **E2E Testing**: End-to-end testing frameworks with offline validation support
 - ✅ **Security Hardening**: Enhanced security configurations and compliance frameworks
+- ✅ **Temporary WAF**: ModSecurity rules and AWS WAF module for SQL injection mitigation
 
 ### New Features
 
