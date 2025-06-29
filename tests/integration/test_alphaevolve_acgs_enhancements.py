@@ -24,7 +24,7 @@ try:
         DemocraticLegitimacyLevel,
         get_collective_constitutional_ai,
     )
-    from services.core.governance_synthesis.app.services.enhanced_multi_model_validation import (
+    from services.core.governance_synthesis.gs_service.app.services.enhanced_multi_model_validation import (
         ModelCluster,
         ValidationContext,
         ValidationStrategy,

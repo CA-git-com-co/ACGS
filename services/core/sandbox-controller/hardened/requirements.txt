@@ -1,0 +1,32 @@
+# Hardened Sandbox Controller Dependencies
+
+# FastAPI and web framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+
+# Kubernetes integration
+kubernetes_asyncio==24.2.0
+kubernetes==28.1.0
+
+# Async HTTP and Redis
+aiohttp==3.9.1
+aioredis==2.0.1
+
+# File operations
+aiofiles==23.2.1
+
+# Logging and monitoring
+structlog==23.2.0
+prometheus-client==0.19.0
+
+# System utilities
+psutil==5.9.6
+
+# YAML processing
+PyYAML==6.0.1
+
+# Development and testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+httpx==0.25.2

@@ -269,7 +269,7 @@ class TestLLMReliabilityEnhancements:
         bias_detector = framework.bias_detector
 
         try:
-            from services.core.governance_synthesis.app.schemas import (
+            from services.core.governance_synthesis.gs_service.app.schemas import (
                 LLMStructuredOutput,
             )
 

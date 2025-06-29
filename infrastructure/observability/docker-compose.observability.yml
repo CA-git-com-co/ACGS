@@ -1,0 +1,336 @@
+version: '3.8'
+
+# ACGS Advanced Observability Stack
+# Constitutional Hash: cdd01ef066bc6cf2
+
+services:
+  # Jaeger - Distributed Tracing
+  jaeger:
+    image: jaegertracing/all-in-one:1.50
+    container_name: acgs-jaeger
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "14268:14268"  # HTTP collector
+      - "6831:6831/udp"  # UDP agent
+      - "6832:6832/udp"  # UDP agent
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - SPAN_STORAGE_TYPE=elasticsearch
+      - ES_SERVER_URLS=http://elasticsearch:9200
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    networks:
+      - acgs-observability
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+    labels:
+      - "acgs.service=jaeger"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Elasticsearch for Jaeger storage
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0
+    container_name: acgs-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - acgs-observability
+    restart: unless-stopped
+    labels:
+      - "acgs.service=elasticsearch"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Prometheus - Metrics Collection
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: acgs-prometheus-observability
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus-observability.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus-rules:/etc/prometheus/rules
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    networks:
+      - acgs-observability
+      - acgs-network
+    restart: unless-stopped
+    labels:
+      - "acgs.service=prometheus-observability"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Grafana - Visualization
+  grafana:
+    image: grafana/grafana:10.1.0
+    container_name: acgs-grafana-observability
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/plugins:/var/lib/grafana/plugins
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=acgs_observability_admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel,grafana-clock-panel
+      - GF_FEATURE_TOGGLES_ENABLE=tracing
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    networks:
+      - acgs-observability
+    depends_on:
+      - prometheus
+      - jaeger
+    restart: unless-stopped
+    labels:
+      - "acgs.service=grafana-observability"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # OpenTelemetry Collector
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.87.0
+    container_name: acgs-otel-collector
+    ports:
+      - "4317:4317"   # OTLP gRPC receiver
+      - "4318:4318"   # OTLP HTTP receiver
+      - "8888:8888"   # Prometheus metrics
+      - "8889:8889"   # Prometheus exporter metrics
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+    command: ["--config=/etc/otel-collector-config.yml"]
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    networks:
+      - acgs-observability
+    depends_on:
+      - jaeger
+      - prometheus
+    restart: unless-stopped
+    labels:
+      - "acgs.service=otel-collector"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Loki - Log Aggregation
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: acgs-loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki-config.yml:/etc/loki/local-config.yaml
+      - loki-data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    networks:
+      - acgs-observability
+    restart: unless-stopped
+    labels:
+      - "acgs.service=loki"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Promtail - Log Collection
+  promtail:
+    image: grafana/promtail:2.9.0
+    container_name: acgs-promtail
+    volumes:
+      - ./promtail-config.yml:/etc/promtail/config.yml
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    command: -config.file=/etc/promtail/config.yml
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    networks:
+      - acgs-observability
+    depends_on:
+      - loki
+    restart: unless-stopped
+    labels:
+      - "acgs.service=promtail"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # AlertManager - Alert Management
+  alertmanager:
+    image: prom/alertmanager:v0.26.0
+    container_name: acgs-alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager-config.yml:/etc/alertmanager/alertmanager.yml
+      - alertmanager-data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=http://localhost:9093'
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    networks:
+      - acgs-observability
+    restart: unless-stopped
+    labels:
+      - "acgs.service=alertmanager"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Node Exporter - System Metrics
+  node-exporter:
+    image: prom/node-exporter:v1.6.1
+    container_name: acgs-node-exporter
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    networks:
+      - acgs-observability
+    restart: unless-stopped
+    labels:
+      - "acgs.service=node-exporter"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # cAdvisor - Container Metrics
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.0
+    container_name: acgs-cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    privileged: true
+    devices:
+      - /dev/kmsg
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    networks:
+      - acgs-observability
+    restart: unless-stopped
+    labels:
+      - "acgs.service=cadvisor"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Constitutional Compliance Monitor
+  constitutional-monitor:
+    build:
+      context: ../../
+      dockerfile: infrastructure/observability/Dockerfile.constitutional
+    container_name: acgs-constitutional-monitor
+    ports:
+      - "8111:8111"
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - MONITOR_PORT=8111
+      - PROMETHEUS_URL=http://prometheus:9090
+      - JAEGER_URL=http://jaeger:16686
+    volumes:
+      - ../../logs:/app/logs
+      - ../../reports:/app/reports
+    networks:
+      - acgs-observability
+      - acgs-network
+    depends_on:
+      - prometheus
+      - jaeger
+    restart: unless-stopped
+    labels:
+      - "acgs.service=constitutional-monitor"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Observability Dashboard
+  observability-dashboard:
+    build:
+      context: ../../
+      dockerfile: infrastructure/observability/Dockerfile.dashboard
+    container_name: acgs-observability-dashboard
+    ports:
+      - "8112:8112"
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - DASHBOARD_PORT=8112
+      - PROMETHEUS_URL=http://prometheus:9090
+      - GRAFANA_URL=http://grafana:3000
+      - JAEGER_URL=http://jaeger:16686
+    networks:
+      - acgs-observability
+    depends_on:
+      - prometheus
+      - grafana
+      - jaeger
+    restart: unless-stopped
+    labels:
+      - "acgs.service=observability-dashboard"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+networks:
+  acgs-observability:
+    driver: bridge
+    labels:
+      - "acgs.network=observability"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+  
+  acgs-network:
+    external: true
+
+volumes:
+  elasticsearch-data:
+    labels:
+      - "acgs.volume=elasticsearch-data"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+  
+  prometheus-data:
+    labels:
+      - "acgs.volume=prometheus-data"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+  
+  grafana-data:
+    labels:
+      - "acgs.volume=grafana-data"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+  
+  loki-data:
+    labels:
+      - "acgs.volume=loki-data"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+  
+  alertmanager-data:
+    labels:
+      - "acgs.volume=alertmanager-data"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+# Health checks
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 40s
+
+# Common environment variables
+x-common-env: &common-env
+  CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+  TZ: UTC

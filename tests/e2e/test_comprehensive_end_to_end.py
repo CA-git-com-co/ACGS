@@ -39,7 +39,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 @dataclass
-class TestMetrics:
+class E2ETestMetrics:
     """Comprehensive test metrics for performance and compliance validation."""
     start_time: float
     end_time: float
@@ -74,7 +74,7 @@ class ACGSEndToEndTestSuite:
 
     def __init__(self):
         self.test_start_time = time.time()
-        self.metrics = TestMetrics(
+        self.metrics = E2ETestMetrics(
             start_time=self.test_start_time,
             end_time=0,
             total_duration=0,

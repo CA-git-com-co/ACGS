@@ -1,23 +1,34 @@
 #!/usr/bin/env python3
 """
-Evolutionary Computation Service for ACGS-1
+Complete Evolutionary Computation Service for ACGS-1
 
-Provides advanced evolutionary computation algorithms, constitutional compliance
-verification, and intelligent performance optimization for the ACGS-PGP system.
+Provides human-controlled evolution framework with 4-layer security architecture,
+constitutional compliance verification, and comprehensive oversight mechanisms.
 """
 
 import asyncio
 import logging
 import time
+import uuid
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request, status
+from datetime import datetime, timezone
+from typing import Dict, List, Optional
+
+from fastapi import FastAPI, HTTPException, Request, status, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 import sys
 import os
 
 # Add path for shared services
 sys.path.append('/home/ubuntu/ACGS/services/shared')
 from leader_election import create_leader_election_service, leader_required
+
+# Import our evolution components
+from .evolution_engine import evolution_engine, EvolutionRequest, EvolutionType, RiskLevel
+from .human_approval_workflow import human_approval_workflow, ReviewDecision, ReviewPriority
+from .security_architecture import security_architecture, SecurityLevel, AuthenticationMethod
 
 # Configure logging
 logging.basicConfig(
@@ -38,6 +49,28 @@ ENABLE_LEADER_ELECTION = os.getenv("ENABLE_LEADER_ELECTION", "true").lower() == 
 
 # Global leader election service
 leader_election_service = None
+
+# Pydantic models for API
+class EvolutionRequestModel(BaseModel):
+    """Evolution request model for API."""
+    evolution_type: str = Field(..., description="Type of evolution")
+    description: str = Field(..., description="Description of evolution")
+    proposed_changes: Dict = Field(..., description="Proposed changes")
+    target_service: str = Field(..., description="Target service")
+    priority: int = Field(default=3, description="Priority level")
+
+class ReviewDecisionModel(BaseModel):
+    """Review decision model for API."""
+    decision: str = Field(..., description="Review decision")
+    justification: str = Field(..., description="Justification for decision")
+    recommendations: List[str] = Field(default=[], description="Recommendations")
+
+class SecurityCredentials(BaseModel):
+    """Security credentials for authentication."""
+    method: str = Field(default="jwt_token", description="Authentication method")
+    token: Optional[str] = Field(None, description="JWT token")
+    api_key: Optional[str] = Field(None, description="API key")
+    source_ip: Optional[str] = Field(None, description="Source IP address")
 
 
 # Leader election callbacks
@@ -403,7 +436,7 @@ async def get_monitoring_dashboard():
     return {"dashboard": {}}
 
 @app.get("/api/v1/status")
-async def get_service_.status():
+async def get_service_status():
     """Detailed service status and capabilities"""
     return {
         "api_version": "v1",
@@ -423,6 +456,96 @@ async def get_metrics():
     """Prometheus metrics for monitoring"""
     # Placeholder for Prometheus metrics
     return {}
+
+# Evolution API Endpoints
+
+@app.post("/api/v1/evolution/submit")
+async def submit_evolution_request(request: EvolutionRequestModel):
+    """Submit a new evolution request."""
+    try:
+        # Create evolution request
+        evolution_request = EvolutionRequest(
+            evolution_id=str(uuid.uuid4()),
+            evolution_type=EvolutionType(request.evolution_type),
+            description=request.description,
+            proposed_changes=request.proposed_changes,
+            requester_id="api_user",
+            target_service=request.target_service,
+            priority=request.priority
+        )
+
+        # Submit through evolution engine
+        evolution_id = await evolution_engine.submit_evolution_request(evolution_request)
+
+        return {
+            "success": True,
+            "evolution_id": evolution_id,
+            "message": "Evolution request submitted successfully",
+            "status": "pending_evaluation"
+        }
+
+    except Exception as e:
+        logger.error(f"Failed to submit evolution request: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/v1/evolution/{evolution_id}/status")
+async def get_evolution_status(evolution_id: str):
+    """Get status of an evolution request."""
+    try:
+        status_info = evolution_engine.get_evolution_status(evolution_id)
+
+        if not status_info:
+            raise HTTPException(status_code=404, detail="Evolution request not found")
+
+        return status_info
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to get evolution status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/v1/reviews/pending")
+async def get_pending_reviews():
+    """Get list of pending human review tasks."""
+    try:
+        pending_reviews = evolution_engine.get_pending_reviews()
+        return {
+            "pending_reviews": pending_reviews,
+            "count": len(pending_reviews)
+        }
+
+    except Exception as e:
+        logger.error(f"Failed to get pending reviews: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/v1/reviews/{task_id}/decision")
+async def submit_review_decision(task_id: str, decision: ReviewDecisionModel):
+    """Submit a review decision for a task."""
+    try:
+        # Submit decision through human approval workflow
+        success = await human_approval_workflow.submit_review_decision(
+            task_id=task_id,
+            reviewer_id="human_reviewer",
+            decision=ReviewDecision(decision.decision),
+            justification=decision.justification,
+            recommendations=decision.recommendations
+        )
+
+        if success:
+            return {
+                "success": True,
+                "message": "Review decision submitted successfully",
+                "task_id": task_id
+            }
+        else:
+            raise HTTPException(status_code=400, detail="Failed to submit review decision")
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to submit review decision: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

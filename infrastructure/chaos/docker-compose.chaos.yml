@@ -1,0 +1,235 @@
+version: '3.8'
+
+# ACGS Chaos Engineering Infrastructure
+# Constitutional Hash: cdd01ef066bc6cf2
+
+services:
+  # Chaos Engineering Framework
+  acgs-chaos-framework:
+    build:
+      context: ../../
+      dockerfile: infrastructure/chaos/Dockerfile.chaos
+    container_name: acgs-chaos-framework
+    ports:
+      - "8100:8100"  # Chaos metrics
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../../reports/chaos_experiments:/app/reports/chaos_experiments
+      - ../../logs:/app/logs
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - CHAOS_FRAMEWORK_PORT=8100
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - PYTHONPATH=/app
+    networks:
+      - acgs-chaos-network
+    depends_on:
+      - prometheus-chaos
+      - grafana-chaos
+    restart: unless-stopped
+    labels:
+      - "acgs.service=chaos-framework"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Prometheus for Chaos Metrics
+  prometheus-chaos:
+    image: prom/prometheus:v2.45.0
+    container_name: acgs-prometheus-chaos
+    ports:
+      - "9091:9090"  # Different port to avoid conflicts
+    volumes:
+      - ./prometheus-chaos.yml:/etc/prometheus/prometheus.yml
+      - prometheus-chaos-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+    networks:
+      - acgs-chaos-network
+    restart: unless-stopped
+    labels:
+      - "acgs.service=prometheus-chaos"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Grafana for Chaos Dashboards
+  grafana-chaos:
+    image: grafana/grafana:10.0.0
+    container_name: acgs-grafana-chaos
+    ports:
+      - "3001:3000"  # Different port to avoid conflicts
+    volumes:
+      - grafana-chaos-data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=acgs_chaos_admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/chaos-overview.json
+    networks:
+      - acgs-chaos-network
+    restart: unless-stopped
+    labels:
+      - "acgs.service=grafana-chaos"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Chaos Monkey (Simplified Implementation)
+  chaos-monkey:
+    image: alpine:3.18
+    container_name: acgs-chaos-monkey
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./chaos-monkey.sh:/chaos-monkey.sh
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - CHAOS_INTERVAL=300  # 5 minutes
+      - CHAOS_PROBABILITY=0.1  # 10% chance
+    command: ["/bin/sh", "/chaos-monkey.sh"]
+    networks:
+      - acgs-chaos-network
+    restart: unless-stopped
+    labels:
+      - "acgs.service=chaos-monkey"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Network Chaos Tool (tc-based)
+  network-chaos:
+    image: alpine:3.18
+    container_name: acgs-network-chaos
+    privileged: true
+    network_mode: host
+    volumes:
+      - ./network-chaos.sh:/network-chaos.sh
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    command: ["/bin/sh", "-c", "apk add --no-cache iproute2 && /network-chaos.sh"]
+    restart: unless-stopped
+    labels:
+      - "acgs.service=network-chaos"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Resource Stress Tool
+  stress-chaos:
+    image: progrium/stress:latest
+    container_name: acgs-stress-chaos
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    command: ["stress", "--cpu", "1", "--timeout", "60s"]
+    networks:
+      - acgs-chaos-network
+    restart: "no"
+    labels:
+      - "acgs.service=stress-chaos"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Chaos Dashboard
+  chaos-dashboard:
+    build:
+      context: ../../
+      dockerfile: infrastructure/chaos/Dockerfile.dashboard
+    container_name: acgs-chaos-dashboard
+    ports:
+      - "8101:8101"
+    volumes:
+      - ../../reports/chaos_experiments:/app/reports/chaos_experiments
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - DASHBOARD_PORT=8101
+      - PROMETHEUS_URL=http://prometheus-chaos:9090
+      - GRAFANA_URL=http://grafana-chaos:3000
+    networks:
+      - acgs-chaos-network
+    depends_on:
+      - prometheus-chaos
+      - grafana-chaos
+    restart: unless-stopped
+    labels:
+      - "acgs.service=chaos-dashboard"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Chaos Experiment Scheduler
+  chaos-scheduler:
+    build:
+      context: ../../
+      dockerfile: infrastructure/chaos/Dockerfile.scheduler
+    container_name: acgs-chaos-scheduler
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../../reports/chaos_experiments:/app/reports/chaos_experiments
+      - ./chaos-schedules.json:/app/chaos-schedules.json
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SCHEDULER_INTERVAL=3600  # 1 hour
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    networks:
+      - acgs-chaos-network
+    restart: unless-stopped
+    labels:
+      - "acgs.service=chaos-scheduler"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Constitutional Compliance Monitor for Chaos
+  constitutional-chaos-monitor:
+    build:
+      context: ../../
+      dockerfile: infrastructure/chaos/Dockerfile.constitutional
+    container_name: acgs-constitutional-chaos-monitor
+    ports:
+      - "8102:8102"
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - MONITOR_PORT=8102
+      - ACGS_SERVICES=auth-service:8000,ac-service:8001,integrity-service:8002,fv-service:8003,gs-service:8004,pgc-service:8005,ec-service:8006
+    networks:
+      - acgs-chaos-network
+      - acgs-network  # Connect to main ACGS network
+    restart: unless-stopped
+    labels:
+      - "acgs.service=constitutional-chaos-monitor"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+networks:
+  acgs-chaos-network:
+    driver: bridge
+    labels:
+      - "acgs.network=chaos"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+  
+  acgs-network:
+    external: true  # Connect to main ACGS network
+
+volumes:
+  prometheus-chaos-data:
+    labels:
+      - "acgs.volume=prometheus-chaos-data"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+  
+  grafana-chaos-data:
+    labels:
+      - "acgs.volume=grafana-chaos-data"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+# Health checks and monitoring
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 40s
+
+# Common environment variables
+x-common-env: &common-env
+  CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+  TZ: UTC
+  PYTHONUNBUFFERED: 1
+
+# Chaos experiment configurations
+x-chaos-config: &chaos-config
+  CHAOS_ENABLED: true
+  CHAOS_SAFETY_ENABLED: true
+  CHAOS_MAX_CONCURRENT_EXPERIMENTS: 2
+  CHAOS_EMERGENCY_STOP_CONDITIONS: "constitutional_compliance_below_95_percent,critical_service_unavailable,error_rate_above_10_percent"
+  CHAOS_BLAST_RADIUS_LIMIT: "service_group"
+  CHAOS_MAX_IMPACT_THRESHOLD: 0.1

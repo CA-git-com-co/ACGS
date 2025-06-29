@@ -1,0 +1,85 @@
+# ACGS-1 Lite Policy Engine Optimization Service
+# Constitutional Hash: cdd01ef066bc6cf2
+
+version: '3.8'
+
+services:
+  policy-engine:
+    build: .
+    container_name: acgs-policy-engine-optimization
+    ports:
+      - "8004:8004"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - POLICY_BUNDLE_PATH=/app/policies/acgs-constitutional-policies-1.0.0.tar.gz
+      - PORT=8004
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - redis
+    volumes:
+      - ./logs:/app/logs
+      - ./cache:/app/cache
+    restart: unless-stopped
+    networks:
+      - acgs-network
+    labels:
+      - "constitutional_hash=cdd01ef066bc6cf2"
+      - "service=policy-engine-optimization"
+      - "version=1.0.0"
+
+  redis:
+    image: redis:7-alpine
+    container_name: acgs-redis-cache
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+    networks:
+      - acgs-network
+    restart: unless-stopped
+
+  # Performance monitoring service
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: acgs-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - acgs-network
+    restart: unless-stopped
+
+  # Metrics visualization
+  grafana:
+    image: grafana/grafana:10.1.0
+    container_name: acgs-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=acgs-admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana:/etc/grafana/provisioning
+    networks:
+      - acgs-network
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  acgs-network:
+    driver: bridge

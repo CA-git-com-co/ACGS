@@ -1,0 +1,323 @@
+# ACGS Chaos Engineering Prometheus Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    constitutional_hash: 'cdd01ef066bc6cf2'
+    environment: 'chaos-testing'
+    cluster: 'acgs-chaos'
+
+rule_files:
+  - "chaos_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # ACGS Chaos Framework Metrics
+  - job_name: 'acgs-chaos-framework'
+    static_configs:
+      - targets: ['acgs-chaos-framework:8100']
+    scrape_interval: 10s
+    metrics_path: /metrics
+    labels:
+      service: 'chaos-framework'
+      constitutional_hash: 'cdd01ef066bc6cf2'
+
+  # ACGS Services (for monitoring during chaos)
+  - job_name: 'acgs-auth-service'
+    static_configs:
+      - targets: ['host.docker.internal:8000']
+    scrape_interval: 5s
+    metrics_path: /metrics
+    labels:
+      service: 'auth-service'
+      critical: 'true'
+      constitutional_hash: 'cdd01ef066bc6cf2'
+
+  - job_name: 'acgs-ac-service'
+    static_configs:
+      - targets: ['host.docker.internal:8001']
+    scrape_interval: 5s
+    metrics_path: /metrics
+    labels:
+      service: 'ac-service'
+      critical: 'true'
+      constitutional_hash: 'cdd01ef066bc6cf2'
+
+  - job_name: 'acgs-integrity-service'
+    static_configs:
+      - targets: ['host.docker.internal:8002']
+    scrape_interval: 5s
+    metrics_path: /metrics
+    labels:
+      service: 'integrity-service'
+      critical: 'false'
+      constitutional_hash: 'cdd01ef066bc6cf2'
+
+  - job_name: 'acgs-fv-service'
+    static_configs:
+      - targets: ['host.docker.internal:8003']
+    scrape_interval: 5s
+    metrics_path: /metrics
+    labels:
+      service: 'fv-service'
+      critical: 'false'
+      constitutional_hash: 'cdd01ef066bc6cf2'
+
+  - job_name: 'acgs-gs-service'
+    static_configs:
+      - targets: ['host.docker.internal:8004']
+    scrape_interval: 5s
+    metrics_path: /metrics
+    labels:
+      service: 'gs-service'
+      critical: 'false'
+      constitutional_hash: 'cdd01ef066bc6cf2'
+
+  - job_name: 'acgs-pgc-service'
+    static_configs:
+      - targets: ['host.docker.internal:8005']
+    scrape_interval: 5s
+    metrics_path: /metrics
+    labels:
+      service: 'pgc-service'
+      critical: 'true'
+      constitutional_hash: 'cdd01ef066bc6cf2'
+
+  - job_name: 'acgs-ec-service'
+    static_configs:
+      - targets: ['host.docker.internal:8006']
+    scrape_interval: 5s
+    metrics_path: /metrics
+    labels:
+      service: 'ec-service'
+      critical: 'true'
+      constitutional_hash: 'cdd01ef066bc6cf2'
+
+  # Constitutional Compliance Monitor
+  - job_name: 'constitutional-chaos-monitor'
+    static_configs:
+      - targets: ['constitutional-chaos-monitor:8102']
+    scrape_interval: 10s
+    metrics_path: /metrics
+    labels:
+      service: 'constitutional-monitor'
+      constitutional_hash: 'cdd01ef066bc6cf2'
+
+  # Chaos Dashboard
+  - job_name: 'chaos-dashboard'
+    static_configs:
+      - targets: ['chaos-dashboard:8101']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    labels:
+      service: 'chaos-dashboard'
+      constitutional_hash: 'cdd01ef066bc6cf2'
+
+  # Infrastructure Services
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['host.docker.internal:5432']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    labels:
+      service: 'postgres'
+      critical: 'true'
+      constitutional_hash: 'cdd01ef066bc6cf2'
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['host.docker.internal:6379']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    labels:
+      service: 'redis'
+      critical: 'false'
+      constitutional_hash: 'cdd01ef066bc6cf2'
+
+  - job_name: 'nats'
+    static_configs:
+      - targets: ['host.docker.internal:8222']  # NATS monitoring port
+    scrape_interval: 10s
+    metrics_path: /metrics
+    labels:
+      service: 'nats'
+      critical: 'true'
+      constitutional_hash: 'cdd01ef066bc6cf2'
+
+  # System Metrics (Node Exporter)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['host.docker.internal:9100']
+    scrape_interval: 15s
+    labels:
+      service: 'node-exporter'
+      constitutional_hash: 'cdd01ef066bc6cf2'
+
+  # Docker Metrics (cAdvisor)
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['host.docker.internal:8080']
+    scrape_interval: 15s
+    labels:
+      service: 'cadvisor'
+      constitutional_hash: 'cdd01ef066bc6cf2'
+
+  # Prometheus Self-Monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+    labels:
+      service: 'prometheus-chaos'
+      constitutional_hash: 'cdd01ef066bc6cf2'
+
+# Recording rules for chaos engineering metrics
+recording_rules:
+  - name: chaos_engineering_rules
+    interval: 30s
+    rules:
+      # Service availability during chaos
+      - record: acgs:service_availability_during_chaos
+        expr: up{job=~"acgs-.*"}
+        labels:
+          constitutional_hash: 'cdd01ef066bc6cf2'
+
+      # Average response time during chaos
+      - record: acgs:avg_response_time_during_chaos
+        expr: avg(http_request_duration_seconds{job=~"acgs-.*"}) by (service)
+        labels:
+          constitutional_hash: 'cdd01ef066bc6cf2'
+
+      # Error rate during chaos
+      - record: acgs:error_rate_during_chaos
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m])
+        labels:
+          constitutional_hash: 'cdd01ef066bc6cf2'
+
+      # Constitutional compliance rate
+      - record: acgs:constitutional_compliance_rate
+        expr: avg(acgs_constitutional_compliance_score) by (service)
+        labels:
+          constitutional_hash: 'cdd01ef066bc6cf2'
+
+      # System recovery time
+      - record: acgs:system_recovery_time
+        expr: acgs_chaos_recovery_time_seconds
+        labels:
+          constitutional_hash: 'cdd01ef066bc6cf2'
+
+      # Chaos experiment success rate
+      - record: acgs:chaos_experiment_success_rate
+        expr: rate(acgs_chaos_experiments_total{status="completed"}[1h]) / rate(acgs_chaos_experiments_total[1h])
+        labels:
+          constitutional_hash: 'cdd01ef066bc6cf2'
+
+# Alerting rules for chaos engineering
+alerting_rules:
+  - name: chaos_engineering_alerts
+    rules:
+      # Critical service down during chaos
+      - alert: CriticalServiceDownDuringChaos
+        expr: up{critical="true"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          constitutional_hash: 'cdd01ef066bc6cf2'
+        annotations:
+          summary: "Critical ACGS service {{ $labels.service }} is down during chaos experiment"
+          description: "Service {{ $labels.service }} has been down for more than 30 seconds during chaos testing"
+
+      # High error rate during chaos
+      - alert: HighErrorRateDuringChaos
+        expr: acgs:error_rate_during_chaos > 0.1
+        for: 1m
+        labels:
+          severity: warning
+          constitutional_hash: 'cdd01ef066bc6cf2'
+        annotations:
+          summary: "High error rate detected during chaos experiment"
+          description: "Error rate for {{ $labels.service }} is {{ $value | humanizePercentage }} during chaos testing"
+
+      # Constitutional compliance failure
+      - alert: ConstitutionalComplianceFailure
+        expr: acgs:constitutional_compliance_rate < 0.95
+        for: 2m
+        labels:
+          severity: critical
+          constitutional_hash: 'cdd01ef066bc6cf2'
+        annotations:
+          summary: "Constitutional compliance failure during chaos experiment"
+          description: "Constitutional compliance for {{ $labels.service }} is {{ $value | humanizePercentage }}, below 95% threshold"
+
+      # Slow recovery time
+      - alert: SlowRecoveryTime
+        expr: acgs:system_recovery_time > 300
+        for: 0s
+        labels:
+          severity: warning
+          constitutional_hash: 'cdd01ef066bc6cf2'
+        annotations:
+          summary: "Slow system recovery detected"
+          description: "System recovery time is {{ $value }} seconds, exceeding 5-minute threshold"
+
+      # Chaos experiment failure
+      - alert: ChaosExperimentFailure
+        expr: increase(acgs_chaos_experiments_total{status="failed"}[5m]) > 0
+        for: 0s
+        labels:
+          severity: warning
+          constitutional_hash: 'cdd01ef066bc6cf2'
+        annotations:
+          summary: "Chaos experiment failed"
+          description: "Chaos experiment {{ $labels.chaos_type }} failed on {{ $labels.target_service }}"
+
+      # System impact threshold exceeded
+      - alert: SystemImpactThresholdExceeded
+        expr: acgs_chaos_system_impact > 0.15
+        for: 1m
+        labels:
+          severity: critical
+          constitutional_hash: 'cdd01ef066bc6cf2'
+        annotations:
+          summary: "System impact threshold exceeded during chaos experiment"
+          description: "System impact is {{ $value | humanizePercentage }}, exceeding 15% threshold"
+
+      # Multiple services down
+      - alert: MultipleServicesDown
+        expr: count(up{job=~"acgs-.*"} == 0) > 2
+        for: 1m
+        labels:
+          severity: critical
+          constitutional_hash: 'cdd01ef066bc6cf2'
+        annotations:
+          summary: "Multiple ACGS services are down"
+          description: "{{ $value }} ACGS services are currently down during chaos testing"
+
+      # NATS message broker down
+      - alert: NATSBrokerDown
+        expr: up{service="nats"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          constitutional_hash: 'cdd01ef066bc6cf2'
+        annotations:
+          summary: "NATS message broker is down"
+          description: "NATS message broker has been down for more than 30 seconds during chaos testing"
+
+      # Database connectivity issues
+      - alert: DatabaseConnectivityIssues
+        expr: up{service="postgres"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          constitutional_hash: 'cdd01ef066bc6cf2'
+        annotations:
+          summary: "PostgreSQL database connectivity issues"
+          description: "PostgreSQL database has been unreachable for more than 1 minute during chaos testing"

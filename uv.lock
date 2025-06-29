@@ -171,25 +171,6 @@ test = [
     { name = "pytest-xdist" },
 ]
 
-[package.dev-dependencies]
-dev = [
-    { name = "bandit" },
-    { name = "black" },
-    { name = "coverage" },
-    { name = "flake8" },
-    { name = "isort" },
-    { name = "mypy" },
-    { name = "pre-commit" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "pytest-cov" },
-    { name = "pytest-faker" },
-    { name = "pytest-mock" },
-    { name = "pytest-xdist" },
-    { name = "ruff" },
-    { name = "safety" },
-]
-
 [package.metadata]
 requires-dist = [
     { name = "acgs-pgp", extras = ["dev", "test", "ml", "blockchain", "docs", "prod"], marker = "extra == 'all'" },
@@ -278,25 +259,6 @@ requires-dist = [
     { name = "xgboost", marker = "extra == 'ml'", specifier = ">=1.7.0" },
 ]
 provides-extras = ["dev", "test", "ml", "blockchain", "docs", "prod", "all"]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "bandit", specifier = ">=1.7.5" },
-    { name = "black", specifier = ">=23.0.0" },
-    { name = "coverage", specifier = ">=7.3.0" },
-    { name = "flake8", specifier = ">=6.0.0" },
-    { name = "isort", specifier = ">=5.12.0" },
-    { name = "mypy", specifier = ">=1.5.0" },
-    { name = "pre-commit", specifier = ">=3.4.0" },
-    { name = "pytest", specifier = ">=7.4.3" },
-    { name = "pytest-asyncio", specifier = ">=0.21.1" },
-    { name = "pytest-cov", specifier = ">=4.1.0" },
-    { name = "pytest-faker", specifier = ">=2.0.0" },
-    { name = "pytest-mock", specifier = ">=3.14.1" },
-    { name = "pytest-xdist", specifier = ">=3.7.0" },
-    { name = "ruff", specifier = ">=0.1.0" },
-    { name = "safety", specifier = ">=2.3.0" },
-]
 
 [[package]]
 name = "aiofiles"

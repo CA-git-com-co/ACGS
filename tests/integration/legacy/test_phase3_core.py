@@ -59,7 +59,7 @@ def test_performance_profiler():
     print("\n⚡ Testing Performance Profiler...")
 
     try:
-        from services.core.governance_synthesis.app.services.performance_monitor import (
+        from services.core.governance_synthesis.gs_service.app.services.performance_monitor import (
             PerformanceProfiler,
         )
 
@@ -99,7 +99,7 @@ def test_lru_cache():
     print("\n💾 Testing LRU Cache...")
 
     try:
-        from services.core.governance_synthesis.app.services.advanced_cache import (
+        from services.core.governance_synthesis.gs_service.app.services.advanced_cache import (
             LRUCache,
         )
 
@@ -139,7 +139,7 @@ def test_input_validator():
     print("\n🔒 Testing Input Validator...")
 
     try:
-        from services.core.governance_synthesis.app.services.security_compliance import (
+        from services.core.governance_synthesis.gs_service.app.services.security_compliance import (
             InputValidator,
         )
 
@@ -187,7 +187,7 @@ def test_rate_limiter():
     print("\n🚦 Testing Rate Limiter...")
 
     try:
-        from services.core.governance_synthesis.app.services.security_compliance import (
+        from services.core.governance_synthesis.gs_service.app.services.security_compliance import (
             RateLimiter,
         )
 
@@ -224,7 +224,7 @@ async def test_performance_monitor():
     print("\n📊 Testing Performance Monitor...")
 
     try:
-        from services.core.governance_synthesis.app.services.performance_monitor import (
+        from services.core.governance_synthesis.gs_service.app.services.performance_monitor import (
             PerformanceMonitor,
         )
 

@@ -193,29 +193,7 @@ acgs-migrate = "services.database.migrate:main"
 [tool.hatch.build.targets.wheel]
 packages = ["services", "scripts", "tools"]
 
-# UV configuration
-[tool.uv]
-dev-dependencies = [
-    "pytest>=7.4.3",
-    "pytest-asyncio>=0.21.1",
-    "pytest-cov>=4.1.0",
-    "pytest-mock>=3.14.1",
-    "pytest-xdist>=3.7.0",
-    "pytest-faker>=2.0.0",
-    "coverage>=7.3.0",
-    "black>=23.0.0",
-    "isort>=5.12.0",
-    "flake8>=6.0.0",
-    "mypy>=1.5.0",
-    "pre-commit>=3.4.0",
-    "bandit>=1.7.5",
-    "safety>=2.3.0",
-    "ruff>=0.1.0",
-]
 
-# UV sources for Git dependencies (disabled temporarily)
-# [tool.uv.sources]
-# nemo-skills = { git = "https://github.com/NVIDIA/NeMo-Skills.git" }
 
 [tool.black]
 line-length = 88
@@ -272,27 +250,41 @@ module = [
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
-minversion = "7.0"
-addopts = "-ra -q --strict-markers --strict-config"
-testpaths = ["tests"]
-python_files = ["test_*.py", "*_test.py"]
+minversion = "6.0"
+addopts = "-ra -q --strict-markers --strict-config --tb=short"
+testpaths = [
+    "tests",
+    "services",
+]
+python_files = [
+    "test_*.py",
+    "*_test.py",
+]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "integration: marks tests as integration tests",
     "unit: marks tests as unit tests",
+    "e2e: marks tests as end-to-end tests",
+    "benchmark: marks tests as benchmark tests",
     "constitutional: marks tests related to constitutional governance",
+    "timeout: set a timeout for a test",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
 ]
 
 [tool.coverage.run]
-source = ["src"]
+source = ["services"]
 omit = [
     "*/tests/*",
     "*/test_*",
     "*/__pycache__/*",
     "*/migrations/*",
 ]
+
 
 [tool.coverage.report]
 exclude_lines = [

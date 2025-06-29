@@ -1,0 +1,922 @@
+# ACGS-1 Lite Performance Validation CI/CD Pipeline
+# Constitutional Hash: cdd01ef066bc6cf2
+
+name: Performance Validation
+
+on:
+  pull_request:
+    paths:
+      - 'services/core/opa-policies/**'
+      - 'services/core/audit-engine/**'
+      - 'services/core/sandbox-controller/**'
+      - 'services/core/evolutionary-computation/**'
+      - '.github/workflows/performance-validation.yml'
+  push:
+    branches: [main, master]
+    paths:
+      - 'services/core/opa-policies/**'
+      - 'services/core/audit-engine/**'
+      - 'services/core/sandbox-controller/**'
+      - 'services/core/evolutionary-computation/**'
+  schedule:
+    # Daily performance regression check at 6 AM UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      baseline_comparison:
+        description: 'Compare against specific baseline commit'
+        required: false
+        default: ''
+      performance_target:
+        description: 'Override P99 latency target (ms)'
+        required: false
+        default: '5.0'
+
+env:
+  CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+  POLICY_ENGINE_PORT: 8004
+  PERFORMANCE_TARGET_P99_MS: ${{ github.event.inputs.performance_target || '5.0' }}
+  REGRESSION_THRESHOLD_PERCENT: 10
+  S3_BUCKET: acgs-performance-data
+  AWS_REGION: us-west-2
+
+jobs:
+  setup-test-environment:
+    name: Setup Test Environment
+    runs-on: ubuntu-latest
+    outputs:
+      test-env-ready: ${{ steps.health-check.outputs.ready }}
+      baseline-hash: ${{ steps.baseline.outputs.hash }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 100  # Need history for baseline comparison
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+
+      - name: Install dependencies
+        working-directory: services/core/opa-policies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest-benchmark locust
+
+      - name: Start test environment
+        working-directory: services/core/opa-policies
+        run: |
+          # Start services in background
+          docker-compose up -d
+          
+          # Wait for services to be ready
+          timeout 120 bash -c 'until curl -s -f http://localhost:${{ env.POLICY_ENGINE_PORT }}/v1/data/acgs/main/health; do sleep 2; done'
+
+      - name: Health check
+        id: health-check
+        working-directory: services/core/opa-policies
+        run: |
+          # Verify all services are healthy
+          health_response=$(curl -s http://localhost:${{ env.POLICY_ENGINE_PORT }}/v1/data/acgs/main/health)
+          
+          if echo "$health_response" | jq -r '.status' | grep -q "healthy"; then
+            echo "✅ Policy engine is healthy"
+            echo "ready=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Policy engine health check failed"
+            echo "Response: $health_response"
+            echo "ready=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+          
+          # Verify constitutional hash
+          hash=$(echo "$health_response" | jq -r '.constitutional_hash')
+          if [ "$hash" != "${{ env.CONSTITUTIONAL_HASH }}" ]; then
+            echo "❌ Constitutional hash mismatch: expected ${{ env.CONSTITUTIONAL_HASH }}, got $hash"
+            exit 1
+          fi
+
+      - name: Determine baseline
+        id: baseline
+        run: |
+          if [ -n "${{ github.event.inputs.baseline_comparison }}" ]; then
+            echo "hash=${{ github.event.inputs.baseline_comparison }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "hash=${{ github.event.pull_request.base.sha }}" >> $GITHUB_OUTPUT
+          else
+            # Use the commit from 7 days ago for trend analysis
+            baseline_hash=$(git log --before="7 days ago" --format="%H" -n 1)
+            echo "hash=${baseline_hash}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Warm up services
+        working-directory: services/core/opa-policies
+        run: |
+          echo "🔥 Warming up policy engine..."
+          curl -s -f http://localhost:${{ env.POLICY_ENGINE_PORT }}/v1/cache/warm
+          
+          # Run 100 warm-up requests
+          python3 -c "
+          import asyncio
+          import httpx
+          import json
+          
+          async def warmup():
+              request = {
+                  'type': 'constitutional_evaluation',
+                  'constitutional_hash': '${{ env.CONSTITUTIONAL_HASH }}',
+                  'action': 'data.read_public',
+                  'context': {
+                      'environment': {'sandbox_enabled': True, 'audit_enabled': True},
+                      'agent': {'trust_level': 0.9, 'requested_resources': {'cpu_cores': 1}},
+                      'responsible_party': 'warmup',
+                      'explanation': 'CI warmup request'
+                  }
+              }
+              
+              async with httpx.AsyncClient(timeout=30.0) as client:
+                  for i in range(100):
+                      await client.post('http://localhost:${{ env.POLICY_ENGINE_PORT }}/v1/data/acgs/main/decision', json=request)
+              print('Warmup completed')
+          
+          asyncio.run(warmup())
+          "
+
+  pytest-benchmark:
+    name: Pytest Benchmark Tests
+    needs: setup-test-environment
+    runs-on: ubuntu-latest
+    if: needs.setup-test-environment.outputs.test-env-ready == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        working-directory: services/core/opa-policies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest-benchmark
+
+      - name: Start test environment
+        working-directory: services/core/opa-policies
+        run: |
+          docker-compose up -d
+          timeout 120 bash -c 'until curl -s -f http://localhost:${{ env.POLICY_ENGINE_PORT }}/v1/data/acgs/main/health; do sleep 2; done'
+
+      - name: Run pytest benchmarks
+        working-directory: services/core/opa-policies
+        run: |
+          # Run benchmarks with specific performance targets
+          pytest test_performance.py::test_policy_evaluation_latency \
+            --benchmark-only \
+            --benchmark-min-rounds=100 \
+            --benchmark-max-time=30 \
+            --benchmark-warmup=on \
+            --benchmark-disable-gc \
+            --benchmark-sort=mean \
+            --benchmark-json=benchmark-results.json \
+            --benchmark-compare-fail=mean:5% \
+            -v
+
+      - name: Validate benchmark results
+        working-directory: services/core/opa-policies
+        run: |
+          python3 -c "
+          import json
+          import sys
+          
+          with open('benchmark-results.json', 'r') as f:
+              results = json.load(f)
+          
+          # Extract performance metrics
+          benchmarks = results['benchmarks']
+          for benchmark in benchmarks:
+              stats = benchmark['stats']
+              mean_ms = stats['mean'] * 1000  # Convert to milliseconds
+              max_ms = stats['max'] * 1000
+              
+              print(f'Benchmark: {benchmark[\"name\"]}')
+              print(f'  Mean: {mean_ms:.3f} ms')
+              print(f'  Max:  {max_ms:.3f} ms')
+              
+              # Validate against SLO
+              if mean_ms > ${{ env.PERFORMANCE_TARGET_P99_MS }}:
+                  print(f'❌ FAILED: Mean latency {mean_ms:.3f}ms exceeds target ${{ env.PERFORMANCE_TARGET_P99_MS }}ms')
+                  sys.exit(1)
+              
+              if max_ms > ${{ env.PERFORMANCE_TARGET_P99_MS }} * 2:
+                  print(f'❌ FAILED: Max latency {max_ms:.3f}ms exceeds 2x target')
+                  sys.exit(1)
+          
+          print('✅ All benchmark SLOs met')
+          "
+
+      - name: Run concurrent performance test
+        working-directory: services/core/opa-policies
+        run: |
+          python3 -c "
+          import asyncio
+          import httpx
+          import json
+          import time
+          import statistics
+          
+          async def concurrent_test():
+              test_request = {
+                  'type': 'constitutional_evaluation',
+                  'constitutional_hash': '${{ env.CONSTITUTIONAL_HASH }}',
+                  'action': 'data.read_public',
+                  'context': {
+                      'environment': {'sandbox_enabled': True, 'audit_enabled': True},
+                      'agent': {'trust_level': 0.9, 'requested_resources': {'cpu_cores': 1}},
+                      'responsible_party': 'concurrent_test',
+                      'explanation': 'Concurrent performance test'
+                  }
+              }
+              
+              for concurrency in [10, 50, 100]:
+                  print(f'Testing {concurrency} concurrent requests...')
+                  
+                  async def single_request():
+                      async with httpx.AsyncClient(timeout=30.0) as client:
+                          start = time.perf_counter()
+                          response = await client.post('http://localhost:${{ env.POLICY_ENGINE_PORT }}/v1/data/acgs/main/decision', json=test_request)
+                          end = time.perf_counter()
+                          return (end - start) * 1000, response.status_code == 200
+                  
+                  start_time = time.perf_counter()
+                  tasks = [single_request() for _ in range(concurrency)]
+                  results = await asyncio.gather(*tasks)
+                  total_time = time.perf_counter() - start_time
+                  
+                  latencies = [r[0] for r in results if r[1]]
+                  success_rate = len(latencies) / concurrency
+                  
+                  if latencies:
+                      latencies.sort()
+                      n = len(latencies)
+                      p99 = latencies[int(0.99 * n)] if n >= 100 else latencies[-1]
+                      mean_latency = statistics.mean(latencies)
+                      rps = concurrency / total_time
+                      
+                      print(f'  Success rate: {success_rate:.1%}')
+                      print(f'  Mean latency: {mean_latency:.3f} ms')
+                      print(f'  P99 latency: {p99:.3f} ms')
+                      print(f'  Throughput: {rps:.0f} RPS')
+                      
+                      # Validate performance
+                      if p99 > ${{ env.PERFORMANCE_TARGET_P99_MS }}:
+                          print(f'❌ FAILED: P99 latency {p99:.3f}ms exceeds target ${{ env.PERFORMANCE_TARGET_P99_MS }}ms at {concurrency} concurrency')
+                          return False
+                      
+                      if success_rate < 0.99:
+                          print(f'❌ FAILED: Success rate {success_rate:.1%} below 99% at {concurrency} concurrency')
+                          return False
+                  else:
+                      print(f'❌ FAILED: No successful requests at {concurrency} concurrency')
+                      return False
+              
+              print('✅ All concurrent performance tests passed')
+              return True
+          
+          if not asyncio.run(concurrent_test()):
+              exit(1)
+          "
+
+      - name: Upload benchmark artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: pytest-benchmark-results
+          path: services/core/opa-policies/benchmark-results.json
+
+  locust-load-test:
+    name: Locust Load Testing
+    needs: setup-test-environment
+    runs-on: ubuntu-latest
+    if: needs.setup-test-environment.outputs.test-env-ready == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        working-directory: services/core/opa-policies
+        run: |
+          pip install -r requirements.txt
+          pip install locust
+
+      - name: Start test environment
+        working-directory: services/core/opa-policies
+        run: |
+          docker-compose up -d
+          timeout 120 bash -c 'until curl -s -f http://localhost:${{ env.POLICY_ENGINE_PORT }}/v1/data/acgs/main/health; do sleep 2; done'
+
+      - name: Create locust test file
+        working-directory: services/core/opa-policies
+        run: |
+          cat > locust_ci_test.py << 'EOF'
+          import json
+          import time
+          from locust import HttpUser, task, between, events
+          
+          # Global variables for metrics collection
+          latencies = []
+          errors = []
+          
+          @events.request.add_listener
+          def request_handler(request_type, name, response_time, response_length, response, context, exception, start_time, url, **kwargs):
+              if exception:
+                  errors.append({"time": start_time, "error": str(exception)})
+              else:
+                  latencies.append(response_time)
+          
+          class PolicyEngineUser(HttpUser):
+              wait_time = between(0.01, 0.1)  # High load simulation
+              host = "http://localhost:${{ env.POLICY_ENGINE_PORT }}"
+              
+              def on_start(self):
+                  self.constitutional_hash = "${{ env.CONSTITUTIONAL_HASH }}"
+              
+              @task(70)  # 70% safe actions
+              def evaluate_safe_action(self):
+                  request = {
+                      "type": "constitutional_evaluation",
+                      "constitutional_hash": self.constitutional_hash,
+                      "action": "data.read_public",
+                      "context": {
+                          "environment": {"sandbox_enabled": True, "audit_enabled": True},
+                          "agent": {"trust_level": 0.9, "requested_resources": {"cpu_cores": 1}},
+                          "responsible_party": "locust_test",
+                          "explanation": "Safe action load test"
+                      }
+                  }
+                  
+                  with self.client.post("/v1/data/acgs/main/decision", json=request, catch_response=True, name="safe_action") as response:
+                      if response.status_code == 200:
+                          data = response.json()
+                          if data.get("allow"):
+                              response.success()
+                          else:
+                              response.failure("Action was denied unexpectedly")
+                      else:
+                          response.failure(f"HTTP {response.status_code}")
+              
+              @task(20)  # 20% complex actions
+              def evaluate_complex_action(self):
+                  request = {
+                      "type": "evolution_approval",
+                      "constitutional_hash": self.constitutional_hash,
+                      "evolution_request": {
+                          "type": "minor_update",
+                          "constitutional_hash": self.constitutional_hash,
+                          "changes": {
+                              "code_changes": ["Performance optimization"],
+                              "external_dependencies": [],
+                              "privilege_escalation": False,
+                              "experimental_features": False
+                          },
+                          "performance_analysis": {
+                              "complexity_delta": 0.05,
+                              "memory_delta": 0.02,
+                              "latency_delta": -0.01,
+                              "resource_delta": 0.01
+                          },
+                          "rollback_plan": {
+                              "procedure": "Automated rollback",
+                              "verification": "Unit tests",
+                              "timeline": "2 minutes",
+                              "dependencies": "None",
+                              "tested": True,
+                              "automated": True
+                          }
+                      }
+                  }
+                  
+                  with self.client.post("/v1/data/acgs/main/decision", json=request, catch_response=True, name="complex_action") as response:
+                      if response.status_code == 200:
+                          data = response.json()
+                          if "allow" in data:
+                              response.success()
+                          else:
+                              response.failure("Invalid response format")
+                      else:
+                          response.failure(f"HTTP {response.status_code}")
+              
+              @task(10)  # 10% denied actions
+              def evaluate_denied_action(self):
+                  request = {
+                      "type": "constitutional_evaluation",
+                      "constitutional_hash": self.constitutional_hash,
+                      "action": "system.execute_shell",
+                      "context": {
+                          "environment": {"sandbox_enabled": False},
+                          "agent": {"trust_level": 0.3}
+                      }
+                  }
+                  
+                  with self.client.post("/v1/data/acgs/main/decision", json=request, catch_response=True, name="denied_action") as response:
+                      if response.status_code == 200:
+                          data = response.json()
+                          if not data.get("allow"):
+                              response.success()
+                          else:
+                              response.failure("Dangerous action was allowed")
+                      else:
+                          response.failure(f"HTTP {response.status_code}")
+          EOF
+
+      - name: Run Locust load test
+        working-directory: services/core/opa-policies
+        run: |
+          # Run Locust in headless mode
+          locust -f locust_ci_test.py \
+            --headless \
+            --users 50 \
+            --spawn-rate 10 \
+            --run-time 2m \
+            --host http://localhost:${{ env.POLICY_ENGINE_PORT }} \
+            --html locust-report.html \
+            --csv locust-results
+
+      - name: Analyze Locust results
+        working-directory: services/core/opa-policies
+        run: |
+          python3 -c "
+          import csv
+          import sys
+          
+          # Read statistics
+          with open('locust-results_stats.csv', 'r') as f:
+              reader = csv.DictReader(f)
+              stats = list(reader)
+          
+          # Calculate overall metrics
+          total_requests = 0
+          total_failures = 0
+          max_response_time = 0
+          weighted_avg_response_time = 0
+          
+          for row in stats:
+              if row['Type'] == 'GET' or row['Type'] == 'POST':
+                  requests = int(row['Request Count'])
+                  failures = int(row['Failure Count'])
+                  avg_response = float(row['Average Response Time'])
+                  max_response = float(row['Max Response Time'])
+                  
+                  total_requests += requests
+                  total_failures += failures
+                  weighted_avg_response_time += avg_response * requests
+                  max_response_time = max(max_response_time, max_response)
+          
+          if total_requests > 0:
+              weighted_avg_response_time /= total_requests
+              failure_rate = total_failures / total_requests
+              
+              print(f'Total requests: {total_requests}')
+              print(f'Failure rate: {failure_rate:.1%}')
+              print(f'Average response time: {weighted_avg_response_time:.1f} ms')
+              print(f'Max response time: {max_response_time:.1f} ms')
+              
+              # Validate SLOs
+              if max_response_time > ${{ env.PERFORMANCE_TARGET_P99_MS }}:
+                  print(f'❌ FAILED: Max response time {max_response_time:.1f}ms exceeds target ${{ env.PERFORMANCE_TARGET_P99_MS }}ms')
+                  sys.exit(1)
+              
+              if failure_rate > 0.01:  # 1% failure threshold
+                  print(f'❌ FAILED: Failure rate {failure_rate:.1%} exceeds 1% threshold')
+                  sys.exit(1)
+              
+              print('✅ All Locust SLOs met')
+          else:
+              print('❌ FAILED: No requests recorded')
+              sys.exit(1)
+          "
+
+      - name: Upload Locust artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: locust-load-test-results
+          path: |
+            services/core/opa-policies/locust-report.html
+            services/core/opa-policies/locust-results*.csv
+
+  prometheus-validation:
+    name: Prometheus Metrics Validation
+    needs: setup-test-environment
+    runs-on: ubuntu-latest
+    if: needs.setup-test-environment.outputs.test-env-ready == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        working-directory: services/core/opa-policies
+        run: |
+          pip install -r requirements.txt
+          pip install prometheus-client requests
+
+      - name: Start test environment
+        working-directory: services/core/opa-policies
+        run: |
+          docker-compose up -d
+          timeout 120 bash -c 'until curl -s -f http://localhost:${{ env.POLICY_ENGINE_PORT }}/v1/data/acgs/main/health; do sleep 2; done'
+          timeout 60 bash -c 'until curl -s -f http://localhost:9090/-/ready; do sleep 2; done'
+
+      - name: Generate load for metrics collection
+        working-directory: services/core/opa-policies
+        run: |
+          python3 -c "
+          import asyncio
+          import httpx
+          import json
+          import time
+          
+          async def generate_load():
+              requests = [
+                  {
+                      'type': 'constitutional_evaluation',
+                      'constitutional_hash': '${{ env.CONSTITUTIONAL_HASH }}',
+                      'action': 'data.read_public',
+                      'context': {
+                          'environment': {'sandbox_enabled': True, 'audit_enabled': True},
+                          'agent': {'trust_level': 0.9, 'requested_resources': {'cpu_cores': 1}},
+                          'responsible_party': 'metrics_test',
+                          'explanation': 'Metrics generation load'
+                      }
+                  },
+                  {
+                      'type': 'data_access',
+                      'constitutional_hash': '${{ env.CONSTITUTIONAL_HASH }}',
+                      'data_request': {
+                          'data_fields': [{'name': 'public_metrics', 'classification_level': 0}],
+                          'requester_clearance_level': 1,
+                          'purpose': 'display',
+                          'allowed_purposes': ['display'],
+                          'justified_fields': ['public_metrics'],
+                          'timestamp': 1704067200,
+                          'retention_policy': {'public': 86400},
+                          'encryption_config': {'public_metrics': {'encrypted': False}}
+                      }
+                  }
+              ]
+              
+              async with httpx.AsyncClient(timeout=30.0) as client:
+                  # Generate 1000 requests over 30 seconds
+                  for i in range(1000):
+                      request = requests[i % len(requests)]
+                      await client.post('http://localhost:${{ env.POLICY_ENGINE_PORT }}/v1/data/acgs/main/decision', json=request)
+                      
+                      if i % 100 == 0:
+                          print(f'Generated {i}/1000 requests')
+                      
+                      await asyncio.sleep(0.03)  # 30ms between requests
+          
+          asyncio.run(generate_load())
+          print('Load generation completed')
+          "
+
+      - name: Collect and validate metrics
+        working-directory: services/core/opa-policies
+        run: |
+          # Wait for metrics to be processed
+          sleep 10
+          
+          python3 -c "
+          import requests
+          import json
+          import sys
+          import time
+          
+          # Get policy engine metrics
+          try:
+              response = requests.get('http://localhost:${{ env.POLICY_ENGINE_PORT }}/v1/metrics', timeout=10)
+              metrics = response.json()
+              
+              print('Policy Engine Metrics:')
+              print(f'  Request count: {metrics[\"request_count\"]}')
+              print(f'  Average latency: {metrics[\"avg_latency_ms\"]:.3f} ms')
+              print(f'  Cache hit rate: {metrics[\"cache_hit_rate\"]:.1%}')
+              print(f'  Partial eval rate: {metrics[\"partial_eval_rate\"]:.1%}')
+              
+              percentiles = metrics['percentiles']
+              print(f'  P50: {percentiles[\"p50\"]:.3f} ms')
+              print(f'  P95: {percentiles[\"p95\"]:.3f} ms')
+              print(f'  P99: {percentiles[\"p99\"]:.3f} ms')
+              
+              # Validate metrics against targets
+              validation_errors = []
+              
+              if metrics['avg_latency_ms'] > 2.0:
+                  validation_errors.append(f'Average latency {metrics[\"avg_latency_ms\"]:.3f}ms exceeds 2ms target')
+              
+              if metrics['cache_hit_rate'] < 0.9:
+                  validation_errors.append(f'Cache hit rate {metrics[\"cache_hit_rate\"]:.1%} below 90% target')
+              
+              if percentiles['p99'] > ${{ env.PERFORMANCE_TARGET_P99_MS }}:
+                  validation_errors.append(f'P99 latency {percentiles[\"p99\"]:.3f}ms exceeds {${{ env.PERFORMANCE_TARGET_P99_MS }}}ms target')
+              
+              targets_met = metrics.get('targets_met', {})
+              if not targets_met.get('cache_hit_rate_over_95', False):
+                  print('⚠️  Cache hit rate target not met (may be acceptable during CI)')
+              
+              if validation_errors:
+                  print('❌ Metrics validation failures:')
+                  for error in validation_errors:
+                      print(f'   - {error}')
+                  sys.exit(1)
+              else:
+                  print('✅ All metrics targets met')
+                  
+          except Exception as e:
+              print(f'❌ Failed to collect metrics: {e}')
+              sys.exit(1)
+          "
+
+      - name: Query Prometheus metrics
+        run: |
+          # Wait for Prometheus to scrape metrics
+          sleep 15
+          
+          python3 -c "
+          import requests
+          import json
+          import sys
+          
+          prometheus_url = 'http://localhost:9090'
+          
+          try:
+              # Check if Prometheus is ready
+              ready_response = requests.get(f'{prometheus_url}/-/ready', timeout=10)
+              if ready_response.status_code != 200:
+                  print(f'❌ Prometheus not ready: {ready_response.status_code}')
+                  sys.exit(1)
+              
+              # Query for policy engine metrics
+              query_response = requests.get(
+                  f'{prometheus_url}/api/v1/query',
+                  params={'query': 'up{job=\"acgs-policy-engine\"}'},
+                  timeout=10
+              )
+              
+              if query_response.status_code == 200:
+                  query_data = query_response.json()
+                  if query_data['status'] == 'success' and query_data['data']['result']:
+                      print('✅ Prometheus successfully scraping policy engine metrics')
+                  else:
+                      print('⚠️  No policy engine metrics found in Prometheus (may be expected in CI)')
+              else:
+                  print(f'⚠️  Prometheus query failed: {query_response.status_code}')
+                  
+          except Exception as e:
+              print(f'⚠️  Prometheus validation warning: {e}')
+              # Don't fail the build for Prometheus issues in CI
+          "
+
+  regression-detection:
+    name: Performance Regression Detection
+    needs: [setup-test-environment, pytest-benchmark, locust-load-test]
+    runs-on: ubuntu-latest
+    if: always() && needs.setup-test-environment.outputs.test-env-ready == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 100
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+        continue-on-error: true
+
+      - name: Download benchmark artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: pytest-benchmark-results
+          path: current-results/
+        continue-on-error: true
+
+      - name: Install dependencies
+        run: |
+          pip install boto3 requests
+
+      - name: Run regression analysis
+        run: |
+          python3 -c "
+          import json
+          import sys
+          import os
+          from datetime import datetime, timedelta
+          
+          try:
+              import boto3
+              s3_available = True
+          except ImportError:
+              s3_available = False
+          
+          # Current performance data
+          current_results = {}
+          
+          # Try to load current benchmark results
+          try:
+              with open('current-results/benchmark-results.json', 'r') as f:
+                  benchmark_data = json.load(f)
+                  
+              # Extract key metrics
+              for benchmark in benchmark_data['benchmarks']:
+                  name = benchmark['name']
+                  stats = benchmark['stats']
+                  current_results[name] = {
+                      'mean_ms': stats['mean'] * 1000,
+                      'max_ms': stats['max'] * 1000,
+                      'timestamp': datetime.now().isoformat()
+                  }
+                  
+              print(f'Loaded current results for {len(current_results)} benchmarks')
+              
+          except FileNotFoundError:
+              print('⚠️  No current benchmark results found')
+              current_results = {}
+          
+          # Historical comparison
+          baseline_hash = '${{ needs.setup-test-environment.outputs.baseline-hash }}'
+          regression_threshold = ${{ env.REGRESSION_THRESHOLD_PERCENT }} / 100.0
+          
+          # Mock historical data for CI (in production, this would come from S3)
+          historical_results = {}
+          if baseline_hash and current_results:
+              print(f'Comparing against baseline: {baseline_hash}')
+              
+              # For CI demonstration, assume baseline is 10% better
+              for name, current in current_results.items():
+                  historical_results[name] = {
+                      'mean_ms': current['mean_ms'] * 0.9,  # 10% better baseline
+                      'max_ms': current['max_ms'] * 0.9,
+                      'timestamp': (datetime.now() - timedelta(days=7)).isoformat()
+                  }
+          
+          # Regression analysis
+          regressions = []
+          improvements = []
+          
+          for name in current_results:
+              if name in historical_results:
+                  current_mean = current_results[name]['mean_ms']
+                  baseline_mean = historical_results[name]['mean_ms']
+                  
+                  change_ratio = (current_mean - baseline_mean) / baseline_mean
+                  change_percent = change_ratio * 100
+                  
+                  print(f'{name}:')
+                  print(f'  Current: {current_mean:.3f} ms')
+                  print(f'  Baseline: {baseline_mean:.3f} ms')
+                  print(f'  Change: {change_percent:+.1f}%')
+                  
+                  if change_ratio > regression_threshold:
+                      regressions.append({
+                          'benchmark': name,
+                          'current_ms': current_mean,
+                          'baseline_ms': baseline_mean,
+                          'change_percent': change_percent
+                      })
+                  elif change_ratio < -0.05:  # 5% improvement
+                      improvements.append({
+                          'benchmark': name,
+                          'improvement_percent': -change_percent
+                      })
+          
+          # Report results
+          if regressions:
+              print(f'❌ Performance regressions detected:')
+              for reg in regressions:
+                  print(f'   {reg[\"benchmark\"]}: {reg[\"change_percent\"]:+.1f}% slower')
+              
+              if '${{ github.event_name }}' == 'pull_request':
+                  print(f'❌ Blocking PR due to performance regression > {${{ env.REGRESSION_THRESHOLD_PERCENT }}}%')
+                  sys.exit(1)
+          else:
+              print('✅ No significant performance regressions detected')
+          
+          if improvements:
+              print(f'🎉 Performance improvements detected:')
+              for imp in improvements:
+                  print(f'   {imp[\"benchmark\"]}: {imp[\"improvement_percent\"]:.1f}% faster')
+          
+          # Store results (mock S3 storage for CI)
+          if s3_available and os.getenv('AWS_ACCESS_KEY_ID'):
+              try:
+                  s3 = boto3.client('s3')
+                  
+                  # Store current results
+                  key = f'performance-results/{datetime.now().strftime(\"%Y/%m/%d\")}/{os.getenv(\"GITHUB_SHA\", \"unknown\")}.json'
+                  
+                  result_data = {
+                      'commit_hash': os.getenv('GITHUB_SHA'),
+                      'timestamp': datetime.now().isoformat(),
+                      'constitutional_hash': '${{ env.CONSTITUTIONAL_HASH }}',
+                      'results': current_results,
+                      'regressions': regressions,
+                      'improvements': improvements
+                  }
+                  
+                  s3.put_object(
+                      Bucket='${{ env.S3_BUCKET }}',
+                      Key=key,
+                      Body=json.dumps(result_data, indent=2),
+                      ContentType='application/json'
+                  )
+                  
+                  print(f'✅ Results stored to S3: s3://${{ env.S3_BUCKET }}/{key}')
+                  
+              except Exception as e:
+                  print(f'⚠️  Failed to store results to S3: {e}')
+          "
+
+  report-results:
+    name: Report Performance Results
+    needs: [pytest-benchmark, locust-load-test, prometheus-validation, regression-detection]
+    runs-on: ubuntu-latest
+    if: always() && github.event_name == 'pull_request'
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+        continue-on-error: true
+
+      - name: Create performance report
+        run: |
+          cat > performance-report.md << 'EOF'
+          ## 🚀 ACGS-1 Lite Performance Validation Results
+          
+          **Constitutional Hash:** `${{ env.CONSTITUTIONAL_HASH }}`  
+          **Target P99 Latency:** ${{ env.PERFORMANCE_TARGET_P99_MS }}ms  
+          **Regression Threshold:** ${{ env.REGRESSION_THRESHOLD_PERCENT }}%
+          
+          ### Test Results Summary
+          
+          | Test Suite | Status | Details |
+          |------------|--------|---------|
+          | Pytest Benchmark | ${{ needs.pytest-benchmark.result == 'success' && '✅ PASSED' || '❌ FAILED' }} | Single request latency validation |
+          | Locust Load Test | ${{ needs.locust-load-test.result == 'success' && '✅ PASSED' || '❌ FAILED' }} | Realistic traffic simulation |
+          | Prometheus Validation | ${{ needs.prometheus-validation.result == 'success' && '✅ PASSED' || '⚠️ WARNING' }} | Metrics collection verification |
+          | Regression Detection | ${{ needs.regression-detection.result == 'success' && '✅ NO REGRESSIONS' || '❌ REGRESSIONS DETECTED' }} | Historical performance comparison |
+          
+          ### Performance Targets
+          
+          - **P99 Latency:** < ${{ env.PERFORMANCE_TARGET_P99_MS }}ms
+          - **Average Latency:** < 2ms  
+          - **Cache Hit Rate:** > 90%
+          - **Success Rate:** > 99%
+          - **Constitutional Compliance:** > 95%
+          
+          ${{ needs.regression-detection.result != 'success' && '### ⚠️ Performance Regression Detected\n\nThis PR introduces performance regressions that exceed the ' || '' }}${{ needs.regression-detection.result != 'success' && env.REGRESSION_THRESHOLD_PERCENT || '' }}${{ needs.regression-detection.result != 'success' && '% threshold. Please review and optimize before merging.' || '' }}
+          
+          ### Next Steps
+          
+          ${{ needs.pytest-benchmark.result == 'success' && needs.locust-load-test.result == 'success' && needs.regression-detection.result == 'success' && '✅ **All performance tests passed!** This PR is ready for merge from a performance perspective.' || '❌ **Performance validation failed.** Please address the issues above before merging.' }}
+          
+          ---
+          *Automated performance validation by ACGS-1 Lite CI/CD Pipeline*
+          EOF
+
+      - name: Comment PR
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('performance-report.md', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
+            });

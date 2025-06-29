@@ -1,0 +1,124 @@
+# ACGS Real-Time Analytics Dashboard Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+
+# Dashboard settings
+dashboard:
+  title: "ACGS Real-Time Analytics Dashboard"
+  constitutional_hash: "cdd01ef066bc6cf2"
+  version: "v8.0.0"
+  refresh_interval_seconds: 10
+  auto_refresh_default: true
+
+# ACGS Services Configuration
+services:
+  auth:
+    port: 8000
+    name: "Authentication Service"
+    critical: true
+    health_endpoint: "/health"
+    metrics_endpoint: "/metrics"
+  
+  ac:
+    port: 8001
+    name: "Constitutional AI Service"
+    critical: true
+    health_endpoint: "/health"
+    metrics_endpoint: "/metrics"
+  
+  integrity:
+    port: 8002
+    name: "Integrity Service"
+    critical: true
+    health_endpoint: "/health"
+    metrics_endpoint: "/metrics"
+  
+  fv:
+    port: 8003
+    name: "Formal Verification Service"
+    critical: false
+    health_endpoint: "/health"
+    metrics_endpoint: "/metrics"
+  
+  gs:
+    port: 8004
+    name: "Governance Synthesis Service"
+    critical: false
+    health_endpoint: "/health"
+    metrics_endpoint: "/metrics"
+  
+  pgc:
+    port: 8005
+    name: "Policy Governance Service"
+    critical: true
+    health_endpoint: "/health"
+    metrics_endpoint: "/metrics"
+  
+  ec:
+    port: 8006
+    name: "Evolutionary Computation Service"
+    critical: false
+    health_endpoint: "/health"
+    metrics_endpoint: "/metrics"
+
+# Performance targets and thresholds
+targets:
+  response_time_ms: 500
+  availability_percent: 99.5
+  quality_score: 0.8
+  compliance_score: 0.95
+  error_rate_percent: 1.0
+
+# Alert thresholds
+alerts:
+  response_time:
+    warning: 400
+    critical: 800
+  
+  quality_score:
+    warning: 0.7
+    critical: 0.6
+  
+  compliance_score:
+    warning: 0.9
+    critical: 0.85
+  
+  availability:
+    warning: 99.0
+    critical: 98.0
+
+# NATS configuration for real-time events
+nats:
+  url: "nats://localhost:4222"
+  cluster_name: "acgs-cluster"
+  subjects:
+    quality_alerts: "acgs.quality.alert.*"
+    drift_events: "acgs.drift.*"
+    compliance_events: "acgs.compliance.*"
+    performance_events: "acgs.performance.*"
+    service_health: "acgs.service.health.*"
+
+# Dashboard layout configuration
+layout:
+  sidebar_width: 300
+  chart_height: 400
+  metric_columns: 4
+  refresh_button: true
+  export_data: true
+
+# Security settings
+security:
+  enable_authentication: false  # Set to true in production
+  session_timeout_minutes: 60
+  allowed_origins: ["*"]  # Restrict in production
+
+# Logging configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "/var/log/acgs/dashboard.log"
+
+# Data retention
+data_retention:
+  metrics_history_hours: 24
+  alert_history_days: 7
+  performance_data_days: 30

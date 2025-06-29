@@ -1,0 +1,487 @@
+# ACGS Istio Service Mesh Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: acgs-system
+  labels:
+    istio-injection: enabled
+    constitutional-hash: "cdd01ef066bc6cf2"
+    security-level: "critical"
+
+---
+# Virtual Service for ACGS Services
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: acgs-services
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+spec:
+  hosts:
+  - acgs.local
+  - "*.acgs.local"
+  gateways:
+  - acgs-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /auth/
+    route:
+    - destination:
+        host: auth-service
+        port:
+          number: 8000
+    headers:
+      request:
+        set:
+          constitutional-hash: "cdd01ef066bc6cf2"
+  - match:
+    - uri:
+        prefix: /constitutional/
+    route:
+    - destination:
+        host: ac-service
+        port:
+          number: 8001
+    headers:
+      request:
+        set:
+          constitutional-hash: "cdd01ef066bc6cf2"
+  - match:
+    - uri:
+        prefix: /integrity/
+    route:
+    - destination:
+        host: integrity-service
+        port:
+          number: 8002
+  - match:
+    - uri:
+        prefix: /verification/
+    route:
+    - destination:
+        host: fv-service
+        port:
+          number: 8003
+  - match:
+    - uri:
+        prefix: /governance/
+    route:
+    - destination:
+        host: gs-service
+        port:
+          number: 8004
+  - match:
+    - uri:
+        prefix: /policy/
+    route:
+    - destination:
+        host: pgc-service
+        port:
+          number: 8005
+    headers:
+      request:
+        set:
+          constitutional-hash: "cdd01ef066bc6cf2"
+  - match:
+    - uri:
+        prefix: /evolution/
+    route:
+    - destination:
+        host: ec-service
+        port:
+          number: 8006
+    headers:
+      request:
+        set:
+          constitutional-hash: "cdd01ef066bc6cf2"
+
+---
+# Gateway for ACGS Services
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: acgs-gateway
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: MUTUAL
+      credentialName: acgs-tls-secret
+    hosts:
+    - acgs.local
+    - "*.acgs.local"
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - acgs.local
+    - "*.acgs.local"
+    tls:
+      httpsRedirect: true
+
+---
+# Destination Rules for mTLS
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: acgs-services-mtls
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+spec:
+  host: "*.acgs.local"
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+  exportTo:
+  - "."
+
+---
+# Specific Destination Rules for Critical Services
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: critical-services-mtls
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    security-level: "critical"
+spec:
+  host: "*.critical.acgs.local"
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+    connectionPool:
+      tcp:
+        maxConnections: 100
+      http:
+        http1MaxPendingRequests: 50
+        maxRequestsPerConnection: 10
+    circuitBreaker:
+      consecutiveErrors: 3
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+  portLevelSettings:
+  - port:
+      number: 8001  # AC Service
+    connectionPool:
+      tcp:
+        maxConnections: 50
+      http:
+        http1MaxPendingRequests: 25
+        maxRequestsPerConnection: 5
+  - port:
+      number: 8005  # PGC Service
+    connectionPool:
+      tcp:
+        maxConnections: 50
+      http:
+        http1MaxPendingRequests: 25
+        maxRequestsPerConnection: 5
+  - port:
+      number: 8006  # EC Service
+    connectionPool:
+      tcp:
+        maxConnections: 50
+      http:
+        http1MaxPendingRequests: 25
+        maxRequestsPerConnection: 5
+
+---
+# Authorization Policy for Constitutional Services
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: constitutional-services-authz
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    security-level: "critical"
+spec:
+  selector:
+    matchLabels:
+      app: ac-service
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/acgs-system/sa/auth-service"]
+    - source:
+        principals: ["cluster.local/ns/acgs-system/sa/pgc-service"]
+    - source:
+        principals: ["cluster.local/ns/acgs-system/sa/ec-service"]
+  - to:
+    - operation:
+        methods: ["GET", "POST"]
+        paths: ["/api/v1/constitutional/*"]
+  - when:
+    - key: request.headers[constitutional-hash]
+      values: ["cdd01ef066bc6cf2"]
+
+---
+# Authorization Policy for Evolution Service
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: evolution-service-authz
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    security-level: "critical"
+spec:
+  selector:
+    matchLabels:
+      app: ec-service
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/acgs-system/sa/auth-service"]
+    - source:
+        principals: ["cluster.local/ns/acgs-system/sa/ac-service"]
+    - source:
+        principals: ["cluster.local/ns/acgs-system/sa/pgc-service"]
+  - to:
+    - operation:
+        methods: ["GET", "POST", "PUT"]
+        paths: ["/api/v1/evolution/*"]
+  - when:
+    - key: request.headers[constitutional-hash]
+      values: ["cdd01ef066bc6cf2"]
+
+---
+# Authorization Policy for Policy Generation Service
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: policy-generation-authz
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    security-level: "critical"
+spec:
+  selector:
+    matchLabels:
+      app: pgc-service
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/acgs-system/sa/auth-service"]
+    - source:
+        principals: ["cluster.local/ns/acgs-system/sa/ac-service"]
+    - source:
+        principals: ["cluster.local/ns/acgs-system/sa/ec-service"]
+  - to:
+    - operation:
+        methods: ["GET", "POST"]
+        paths: ["/api/v1/policy/*"]
+  - when:
+    - key: request.headers[constitutional-hash]
+      values: ["cdd01ef066bc6cf2"]
+
+---
+# Network Policy for Critical Services
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: critical-services-network-policy
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    security-level: "critical"
+spec:
+  podSelector:
+    matchLabels:
+      security-level: "critical"
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: auth-service
+    - podSelector:
+        matchLabels:
+          app: ac-service
+    - podSelector:
+        matchLabels:
+          app: pgc-service
+    - podSelector:
+        matchLabels:
+          app: ec-service
+    ports:
+    - protocol: TCP
+      port: 8001
+    - protocol: TCP
+      port: 8005
+    - protocol: TCP
+      port: 8006
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgres
+    ports:
+    - protocol: TCP
+      port: 5432
+  - to:
+    - podSelector:
+        matchLabels:
+          app: nats
+    ports:
+    - protocol: TCP
+      port: 4222
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379
+
+---
+# Network Policy for Auth Service
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: auth-service-network-policy
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+spec:
+  podSelector:
+    matchLabels:
+      app: auth-service
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from: []  # Allow from anywhere (auth service needs to be accessible)
+    ports:
+    - protocol: TCP
+      port: 8000
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgres
+    ports:
+    - protocol: TCP
+      port: 5432
+  - to:
+    - podSelector:
+        matchLabels:
+          app: ac-service
+    ports:
+    - protocol: TCP
+      port: 8001
+
+---
+# Security Policy for Rate Limiting
+apiVersion: security.istio.io/v1beta1
+kind: EnvoyFilter
+metadata:
+  name: rate-limit-filter
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+spec:
+  configPatches:
+  - applyTo: HTTP_FILTER
+    match:
+      context: SIDECAR_INBOUND
+      listener:
+        filterChain:
+          filter:
+            name: "envoy.filters.network.http_connection_manager"
+    patch:
+      operation: INSERT_BEFORE
+      value:
+        name: envoy.filters.http.local_ratelimit
+        typed_config:
+          "@type": type.googleapis.com/udpa.type.v1.TypedStruct
+          type_url: type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+          value:
+            stat_prefix: rate_limiter
+            token_bucket:
+              max_tokens: 1000
+              tokens_per_fill: 1000
+              fill_interval: 60s
+            filter_enabled:
+              runtime_key: rate_limit_enabled
+              default_value:
+                numerator: 100
+                denominator: HUNDRED
+            filter_enforced:
+              runtime_key: rate_limit_enforced
+              default_value:
+                numerator: 100
+                denominator: HUNDRED
+
+---
+# Peer Authentication for mTLS
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: acgs-mtls
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+spec:
+  mtls:
+    mode: STRICT
+
+---
+# Request Authentication for JWT
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+  name: acgs-jwt
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+spec:
+  selector:
+    matchLabels:
+      security-level: "critical"
+  jwtRules:
+  - issuer: "acgs-auth-service"
+    jwksUri: "http://auth-service.acgs-system.svc.cluster.local:8000/.well-known/jwks.json"
+    audiences:
+    - "acgs-services"
+    forwardOriginalToken: true
+
+---
+# Service Monitor for Prometheus
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: acgs-services-monitor
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+spec:
+  selector:
+    matchLabels:
+      monitoring: "enabled"
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+    honorLabels: true
+  namespaceSelector:
+    matchNames:
+    - acgs-system

@@ -12,12 +12,12 @@ import time
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from services.core.governance_synthesis.app.core.opa_integration import (
+from services.core.governance_synthesis.gs_service.app.core.opa_integration import (
     OPAIntegrationError,
     PolicyDecisionResponse,
     PolicyValidationResult,
 )
-from services.core.governance_synthesis.app.services.policy_validator import (
+from services.core.governance_synthesis.gs_service.app.services.policy_validator import (
     ComplianceCheckResult,
     ConflictDetectionResult,
     ConstitutionalValidationResult,

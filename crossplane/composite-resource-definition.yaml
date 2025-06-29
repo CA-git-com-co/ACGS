@@ -1,0 +1,87 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xacgsinfrastructures.acgs.io
+spec:
+  group: acgs.io
+  names:
+    kind: XACGSInfrastructure
+    plural: xacgsinfrastructures
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  region:
+                    type: string
+                    description: AWS region for infrastructure
+                    default: us-east-1
+                  environment:
+                    type: string
+                    description: Environment name
+                    default: production
+                  constitutionalHash:
+                    type: string
+                    description: Constitutional compliance hash
+                    default: cdd01ef066bc6cf2
+                  nodeInstanceType:
+                    type: string
+                    description: EKS node instance type
+                    default: t3.medium
+                  minNodes:
+                    type: integer
+                    description: Minimum number of nodes
+                    default: 1
+                  maxNodes:
+                    type: integer
+                    description: Maximum number of nodes
+                    default: 10
+                  desiredNodes:
+                    type: integer
+                    description: Desired number of nodes
+                    default: 3
+                  dbInstanceClass:
+                    type: string
+                    description: RDS instance class
+                    default: db.t3.micro
+                  dbAllocatedStorage:
+                    type: integer
+                    description: RDS allocated storage in GB
+                    default: 100
+                required:
+                - region
+                - environment
+            required:
+            - parameters
+          status:
+            type: object
+            properties:
+              clusterEndpoint:
+                type: string
+                description: EKS cluster endpoint
+              clusterName:
+                type: string
+                description: EKS cluster name
+              vpcId:
+                type: string
+                description: VPC ID
+              subnetIds:
+                type: array
+                items:
+                  type: string
+                description: Subnet IDs
+              rdsEndpoint:
+                type: string
+                description: RDS endpoint
+  claimNames:
+    kind: ACGSInfrastructure
+    plural: acgsinfrastructures

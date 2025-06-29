@@ -1,0 +1,43 @@
+{
+  "hosts": ["tcp://0.0.0.0:2376", "unix:///var/run/docker.sock"],
+  "tls": true,
+  "tlscert": "/certs/server/cert.pem",
+  "tlskey": "/certs/server/key.pem",
+  "tlsverify": true,
+  "tlscacert": "/certs/ca/cert.pem",
+  "storage-driver": "overlay2",
+  "storage-opts": [
+    "overlay2.override_kernel_check=true"
+  ],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  },
+  "default-runtime": "runc",
+  "runtimes": {
+    "runc": {
+      "path": "runc"
+    }
+  },
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "live-restore": true,
+  "userland-proxy": false,
+  "experimental": false,
+  "metrics-addr": "0.0.0.0:9323",
+  "features": {
+    "buildkit": true
+  },
+  "builder": {
+    "gc": {
+      "enabled": true,
+      "defaultKeepStorage": "20GB"
+    }
+  },
+  "registry-mirrors": [],
+  "insecure-registries": [],
+  "debug": false,
+  "max-concurrent-downloads": 3,
+  "max-concurrent-uploads": 5,
+  "shutdown-timeout": 15
+}

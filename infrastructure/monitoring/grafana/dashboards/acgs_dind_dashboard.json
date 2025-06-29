@@ -1,0 +1,304 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "ACGS Docker-in-Docker Monitoring",
+    "tags": ["acgs", "docker", "dind", "monitoring"],
+    "style": "dark",
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Container Health Overview",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "count(up{job=~\"acgs.*\"} == 1)",
+            "legendFormat": "Healthy Services"
+          },
+          {
+            "expr": "count(up{job=~\"acgs.*\"} == 0)",
+            "legendFormat": "Unhealthy Services"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 5},
+                {"color": "green", "value": 7}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Constitutional Compliance Score",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "avg(acgs_constitutional_compliance_score)",
+            "legendFormat": "Compliance Score"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 1,
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 0.9},
+                {"color": "green", "value": 0.95}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Container Resource Usage",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(container_cpu_usage_seconds_total{name=~\"acgs.*\"}[5m]) * 100",
+            "legendFormat": "{{name}} CPU %"
+          },
+          {
+            "expr": "container_memory_usage_bytes{name=~\"acgs.*\"} / container_spec_memory_limit_bytes{name=~\"acgs.*\"} * 100",
+            "legendFormat": "{{name}} Memory %"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          }
+        },
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Service Response Times",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=~\"acgs.*\"}[5m]))",
+            "legendFormat": "{{job}} P95"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket{job=~\"acgs.*\"}[5m]))",
+            "legendFormat": "{{job}} P50"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s",
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 0.5},
+                {"color": "red", "value": 1.0}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 5,
+        "title": "Error Rates",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total{job=~\"acgs.*\", status=~\"5..\"}[5m]) / rate(http_requests_total{job=~\"acgs.*\"}[5m]) * 100",
+            "legendFormat": "{{job}} Error Rate %"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 1},
+                {"color": "red", "value": 5}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      },
+      {
+        "id": 6,
+        "title": "Docker-in-Docker Metrics",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "docker_containers_running",
+            "legendFormat": "Running Containers"
+          },
+          {
+            "expr": "docker_images",
+            "legendFormat": "Total Images"
+          },
+          {
+            "expr": "docker_containers_stopped",
+            "legendFormat": "Stopped Containers"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+      },
+      {
+        "id": 7,
+        "title": "Network Traffic",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(container_network_receive_bytes_total{name=~\"acgs.*\"}[5m])",
+            "legendFormat": "{{name}} RX"
+          },
+          {
+            "expr": "rate(container_network_transmit_bytes_total{name=~\"acgs.*\"}[5m])",
+            "legendFormat": "{{name}} TX"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "Bps"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+      },
+      {
+        "id": 8,
+        "title": "Evolution Engine Metrics",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "evolution_requests_total",
+            "legendFormat": "Total Evolution Requests"
+          },
+          {
+            "expr": "human_review_tasks_total",
+            "legendFormat": "Human Review Tasks"
+          },
+          {
+            "expr": "ec_sandbox_executions_total",
+            "legendFormat": "Sandbox Executions"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 32}
+      },
+      {
+        "id": 9,
+        "title": "Security Architecture Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs_ec_health_status{component_type=\"security_layer\"}",
+            "legendFormat": "Security Layer {{component_id}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {"options": {"0": {"text": "Critical"}}, "type": "value"},
+              {"options": {"1": {"text": "Unhealthy"}}, "type": "value"},
+              {"options": {"2": {"text": "Degraded"}}, "type": "value"},
+              {"options": {"3": {"text": "Healthy"}}, "type": "value"}
+            ],
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "orange", "value": 1},
+                {"color": "yellow", "value": 2},
+                {"color": "green", "value": 3}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 32}
+      },
+      {
+        "id": 10,
+        "title": "Database Connections",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "pg_stat_database_numbackends{datname=\"acgs\"}",
+            "legendFormat": "PostgreSQL Connections"
+          },
+          {
+            "expr": "redis_connected_clients",
+            "legendFormat": "Redis Connections"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 40}
+      },
+      {
+        "id": 11,
+        "title": "NATS JetStream Metrics",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "nats_jetstream_streams",
+            "legendFormat": "JetStream Streams"
+          },
+          {
+            "expr": "nats_jetstream_messages",
+            "legendFormat": "Total Messages"
+          },
+          {
+            "expr": "rate(nats_jetstream_messages[5m])",
+            "legendFormat": "Message Rate"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 40}
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "30s",
+    "schemaVersion": 30,
+    "version": 1,
+    "links": [
+      {
+        "title": "ACGS Documentation",
+        "url": "https://github.com/CA-git-com-co/ACGS",
+        "type": "link"
+      }
+    ]
+  },
+  "meta": {
+    "type": "db",
+    "canSave": true,
+    "canEdit": true,
+    "canAdmin": true,
+    "canStar": true,
+    "slug": "acgs-docker-in-docker-monitoring",
+    "url": "/d/acgs-dind/acgs-docker-in-docker-monitoring",
+    "expires": "0001-01-01T00:00:00Z",
+    "created": "2024-01-01T00:00:00Z",
+    "updated": "2024-01-01T00:00:00Z",
+    "updatedBy": "admin",
+    "createdBy": "admin",
+    "version": 1,
+    "hasAcl": false,
+    "isFolder": false,
+    "folderId": 0,
+    "folderTitle": "General",
+    "folderUrl": "",
+    "provisioned": true,
+    "provisionedExternalId": "acgs-dind-dashboard"
+  }
+}

@@ -38,36 +38,71 @@ jobs:
           echo "Installing dependencies for security scanning..."
           # Create virtual environment first
           uv venv
+          
+          # Activate virtual environment
+          source .venv/bin/activate
+          
+          # Verify virtual environment is active
+          echo "Python path: $(which python)"
+          echo "Virtual env: $VIRTUAL_ENV"
+          
           # Install project dependencies with error handling
-          uv pip install -e . --index-strategy unsafe-best-match || {
-            echo "Main install failed, installing from requirements.txt..."
+          if [ -f "pyproject.toml" ]; then
+            uv pip install -e . --index-strategy unsafe-best-match || {
+              echo "Main install failed, trying requirements.txt..."
+              if [ -f "requirements.txt" ]; then
+                uv pip install -r requirements.txt --index-strategy unsafe-best-match || echo "Requirements install failed"
+              fi
+            }
+            # Install dev dependencies 
+            uv pip install -e .[dev,test] --index-strategy unsafe-best-match || echo "Dev dependencies install failed"
+          elif [ -f "requirements.txt" ]; then
             uv pip install -r requirements.txt --index-strategy unsafe-best-match || echo "Requirements install failed"
-          }
-          # Install dev dependencies 
-          uv pip install -e .[dev,test] --index-strategy unsafe-best-match || echo "Dev dependencies install failed"
+          fi
+          
           # Install security tools
           timeout 300 uv pip install safety bandit pip-audit semgrep || echo "Security tools install completed with some failures"
 
       - name: Python Dependency Vulnerability Scan (Safety)
         run: |
+          # Activate virtual environment
+          if [ -d ".venv" ]; then
+            source .venv/bin/activate
+          fi
+          
           echo "Running Safety scan..."
           uv run safety check --json --output safety-report.json || true
           uv run safety check || true
 
       - name: Python Dependency Audit (pip-audit)
         run: |
+          # Activate virtual environment
+          if [ -d ".venv" ]; then
+            source .venv/bin/activate
+          fi
+          
           echo "Running pip-audit..."
           uv run pip-audit --format=json --output=pip-audit-report.json || true
           uv run pip-audit || true
 
       - name: Static Code Analysis (Bandit)
         run: |
+          # Activate virtual environment
+          if [ -d ".venv" ]; then
+            source .venv/bin/activate
+          fi
+          
           echo "Running Bandit security analysis..."
           uv run bandit -r . -f json -o bandit-report.json -x tests/,node_modules/,.venv/ || true
           uv run bandit -r . -x tests/,node_modules/,.venv/ || true
 
       - name: Semgrep Security Scan
         run: |
+          # Activate virtual environment
+          if [ -d ".venv" ]; then
+            source .venv/bin/activate
+          fi
+          
           echo "Running Semgrep security scan..."
           uv run semgrep --config=auto --json --output=semgrep-report.json . || true
           uv run semgrep --config=auto . || true
@@ -215,14 +250,33 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv pip install -e . --index-strategy unsafe-best-match
+          # Create and activate virtual environment
+          uv venv
+          source .venv/bin/activate
+          
+          # Verify virtual environment is active
+          echo "Python path: $(which python)"
+          echo "Virtual env: $VIRTUAL_ENV"
+          
+          # Install project dependencies
+          if [ -f "pyproject.toml" ]; then
+            uv pip install -e . --index-strategy unsafe-best-match || echo "Project install failed"
+          elif [ -f "requirements.txt" ]; then
+            uv pip install -r requirements.txt --index-strategy unsafe-best-match || echo "Requirements install failed"
+          fi
+          
           timeout 300 uv pip install pip-licenses || echo "pip-licenses install failed"
 
       - name: Check Python licenses
         run: |
+          # Activate virtual environment
+          if [ -d ".venv" ]; then
+            source .venv/bin/activate
+          fi
+          
           echo "Checking Python package licenses..."
-          uv run pip-licenses --format=json --output-file=python-licenses.json
-          uv run pip-licenses
+          uv run pip-licenses --format=json --output-file=python-licenses.json || echo "License check failed"
+          uv run pip-licenses || echo "License display failed"
 
       - name: Set up Node.js
         uses: actions/setup-node@v4

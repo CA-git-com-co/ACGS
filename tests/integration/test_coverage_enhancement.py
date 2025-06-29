@@ -35,13 +35,13 @@ except ImportError:
 
 # Import components to test (only those that work)
 try:
-    from services.core.governance_synthesis.app.core.constitutional_prompting import (
+    from services.core.governance_synthesis.gs_service.app.core.constitutional_prompting import (
         ConstitutionalPromptBuilder,
     )
-    from services.core.governance_synthesis.app.core.llm_integration import (
+    from services.core.governance_synthesis.gs_service.app.core.llm_integration import (
         MockLLMClient,
     )
-    from services.core.governance_synthesis.app.services.lipschitz_estimator import (
+    from services.core.governance_synthesis.gs_service.app.services.lipschitz_estimator import (
         LipschitzEstimator,
     )
 
@@ -165,7 +165,7 @@ class TestCoverageEnhancement:
                 )
 
                 # Mock LLM response with reliability scoring
-                from services.core.governance_synthesis.app.schemas import (
+                from services.core.governance_synthesis.gs_service.app.schemas import (
                     LLMInterpretationInput,
                 )
 
@@ -214,7 +214,7 @@ class TestCoverageEnhancement:
             {"config": lipschitz_config, "expected_bound": expected_bound},
         )
 
-        from services.core.governance_synthesis.app.services.lipschitz_estimator import (
+        from services.core.governance_synthesis.gs_service.app.services.lipschitz_estimator import (
             LipschitzEstimationConfig,
         )
 

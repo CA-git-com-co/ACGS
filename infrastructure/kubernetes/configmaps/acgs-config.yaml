@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-config
+  namespace: acgs-production
+  labels:
+    app: acgs
+    tier: config
+data:
+  ENVIRONMENT: "production"
+  CONSTITUTIONAL_HASH: "cdd01ef066bc6cf2"
+  DATABASE_HOST: "postgresql.acgs-production.svc.cluster.local"
+  DATABASE_PORT: "5432"
+  REDIS_HOST: "redis.acgs-production.svc.cluster.local"
+  REDIS_PORT: "6379"
+  NATS_URL: "nats://nats.acgs-production.svc.cluster.local:4222"
+  OPA_URL: "http://opa.acgs-production.svc.cluster.local:8181"
+  LOG_LEVEL: "INFO"
+  METRICS_ENABLED: "true"
+  TRACING_ENABLED: "true"
+  PROMETHEUS_URL: "http://prometheus.monitoring.svc.cluster.local:9090"
+  GRAFANA_URL: "http://grafana.monitoring.svc.cluster.local:3000"
+  ALERTMANAGER_URL: "http://alertmanager.monitoring.svc.cluster.local:9093"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-monitoring-config
+  namespace: monitoring
+  labels:
+    app: monitoring
+    tier: config
+data:
+  SCRAPE_INTERVAL: "15s"
+  EVALUATION_INTERVAL: "15s"
+  RETENTION: "30d"
+  STORAGE_RETENTION: "30d"
+  ALERT_EVALUATION_INTERVAL: "60s"
+  HEALTH_CHECK_INTERVAL: "30s"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-backup-config
+  namespace: acgs-production
+  labels:
+    app: backup
+    tier: config
+data:
+  BACKUP_SCHEDULE: "0 */6 * * *"
+  BACKUP_RETENTION: "30d"
+  BACKUP_COMPRESSION: "true"
+  BACKUP_ENCRYPTION: "true"
+  BACKUP_VERIFICATION: "true"
+  RTO_TARGET: "1800"
+  RPO_TARGET: "300"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-security-config
+  namespace: acgs-production
+  labels:
+    app: security
+    tier: config
+data:
+  SECURITY_SCAN_INTERVAL: "86400"
+  VULNERABILITY_SCAN_ENABLED: "true"
+  COMPLIANCE_CHECK_INTERVAL: "3600"
+  AUDIT_LOG_ENABLED: "true"
+  ENCRYPTION_ENABLED: "true"
+  TLS_ENABLED: "true"

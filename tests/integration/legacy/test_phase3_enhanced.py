@@ -21,18 +21,18 @@ from typing import Any
 
 # Test imports
 try:
-    from services.core.governance_synthesis.app.services.advanced_cache import (
+    from services.core.governance_synthesis.gs_service.app.services.advanced_cache import (
         CACHE_TTL_POLICIES,
     )
-    from services.core.governance_synthesis.app.services.cache_manager import (
+    from services.core.governance_synthesis.gs_service.app.services.cache_manager import (
         get_cache_manager,
         shutdown_cache_manager,
     )
-    from services.core.governance_synthesis.app.services.monitoring_service import (
+    from services.core.governance_synthesis.gs_service.app.services.monitoring_service import (
         get_monitoring_service,
         shutdown_monitoring_service,
     )
-    from services.core.governance_synthesis.app.services.security_compliance import (
+    from services.core.governance_synthesis.gs_service.app.services.security_compliance import (
         get_security_service,
     )
 

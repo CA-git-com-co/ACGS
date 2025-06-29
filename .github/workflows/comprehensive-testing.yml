@@ -39,6 +39,14 @@ jobs:
           echo "Installing dependencies with UV..."
           # Create virtual environment
           uv venv
+          
+          # Activate virtual environment
+          source .venv/bin/activate
+          
+          # Verify virtual environment is active
+          echo "Python path: $(which python)"
+          echo "Virtual env: $VIRTUAL_ENV"
+          
           # Install basic development tools
           uv pip install ruff black mypy || echo "Dev tools install failed"
           # Install project dependencies
@@ -54,24 +62,45 @@ jobs:
 
       - name: Run Python linting (Ruff)
         run: |
+          # Activate virtual environment if it exists
+          if [ -d ".venv" ]; then
+            source .venv/bin/activate
+          fi
+          
           if command -v ruff >/dev/null 2>&1; then
             ruff check . --output-format=github || echo "Ruff check completed with warnings"
+          elif [ -d ".venv" ]; then
+            uv run ruff check . --output-format=github || echo "Ruff check completed with warnings"
           else
             echo "Ruff not available, skipping linting"
           fi
 
       - name: Run Python formatting check (Black)
         run: |
+          # Activate virtual environment if it exists
+          if [ -d ".venv" ]; then
+            source .venv/bin/activate
+          fi
+          
           if command -v black >/dev/null 2>&1; then
             black --check --diff . || echo "Black formatting check completed with warnings"
+          elif [ -d ".venv" ]; then
+            uv run black --check --diff . || echo "Black formatting check completed with warnings"
           else
             echo "Black not available, skipping formatting check"
           fi
 
       - name: Run Python type checking (MyPy)
         run: |
+          # Activate virtual environment if it exists
+          if [ -d ".venv" ]; then
+            source .venv/bin/activate
+          fi
+          
           if command -v mypy >/dev/null 2>&1; then
             mypy . --ignore-missing-imports || echo "MyPy type checking completed with warnings"
+          elif [ -d ".venv" ]; then
+            uv run mypy . --ignore-missing-imports || echo "MyPy type checking completed with warnings"
           else
             echo "MyPy not available, skipping type checking"
           fi

@@ -14,11 +14,11 @@ import time
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from services.core.governance_synthesis.app.core.opa_integration import (
+from services.core.governance_synthesis.gs_service.app.core.opa_integration import (
     PolicyDecisionRequest,
     PolicyDecisionResponse,
 )
-from services.core.governance_synthesis.app.services.policy_validator import (
+from services.core.governance_synthesis.gs_service.app.services.policy_validator import (
     PolicyType,
     PolicyValidationEngine,
     PolicyValidationRequest,
@@ -461,7 +461,7 @@ class TestMemoryAndResourceUsage:
         # ensures: Correct function execution
         # sha256: func_hash
         """Test performance impact of caching."""
-        from services.core.governance_synthesis.app.core.opa_integration import (
+        from services.core.governance_synthesis.gs_service.app.core.opa_integration import (
             PolicyDecisionCache,
         )
 

@@ -30,7 +30,7 @@ def test_performance_monitoring_endpoints():
 
     try:
         # Create a minimal FastAPI app with Phase 3 endpoints
-        from services.core.governance_synthesis.app.api.v1.performance_monitoring import (
+        from services.core.governance_synthesis.gs_service.app.api.v1.performance_monitoring import (
             router as performance_router,
         )
 
@@ -84,7 +84,7 @@ def test_security_compliance_direct():
     print("=" * 50)
 
     try:
-        from services.core.governance_synthesis.app.services.security_compliance import (
+        from services.core.governance_synthesis.gs_service.app.services.security_compliance import (
             JWTManager,
             SecurityComplianceService,
         )
@@ -157,7 +157,7 @@ def test_advanced_cache_performance():
     print("=" * 45)
 
     try:
-        from services.core.governance_synthesis.app.services.advanced_cache import (
+        from services.core.governance_synthesis.gs_service.app.services.advanced_cache import (
             LRUCache,
         )
 
@@ -229,7 +229,7 @@ async def test_performance_monitor_async():
     print("=" * 55)
 
     try:
-        from services.core.governance_synthesis.app.services.performance_monitor import (
+        from services.core.governance_synthesis.gs_service.app.services.performance_monitor import (
             PerformanceMonitor,
         )
 

@@ -1,0 +1,289 @@
+# ACGS Enterprise Operational Excellence Configuration
+# Defines operational parameters for 98+/100 production readiness
+
+# Monitoring Configuration
+monitoring:
+  prometheus:
+    port: 9090
+    scrape_interval: 15s
+    evaluation_interval: 15s
+    retention: 30d
+    external_labels:
+      cluster: 'acgs-production'
+      environment: 'production'
+  
+  grafana:
+    port: 3000
+    admin_user: admin
+    admin_password_file: /run/secrets/grafana_admin_password
+    provisioning_enabled: true
+    dashboards_path: /etc/grafana/provisioning/dashboards
+    datasources_path: /etc/grafana/provisioning/datasources
+  
+  alertmanager:
+    port: 9093
+    smtp_smarthost: 'localhost:587'
+    smtp_from: 'alerts@acgs.local'
+    webhook_url: 'http://localhost:9094/webhook'
+    
+  health_checks:
+    interval: 30
+    timeout: 10
+    retries: 3
+    endpoints:
+      - name: auth-service
+        url: http://localhost:8000/health
+        critical: true
+      - name: ac-service
+        url: http://localhost:8001/health
+        critical: true
+      - name: integrity-service
+        url: http://localhost:8002/health
+        critical: true
+      - name: fv-service
+        url: http://localhost:8003/health
+        critical: true
+      - name: gs-service
+        url: http://localhost:8004/health
+        critical: true
+      - name: pgc-service
+        url: http://localhost:8005/health
+        critical: true
+      - name: ec-service
+        url: http://localhost:8006/health
+        critical: true
+
+# Deployment Configuration
+deployment:
+  strategy: blue_green
+  blue_green:
+    enabled: true
+    health_check_grace_period: 60
+    traffic_switch_delay: 30
+    rollback_timeout: 300
+  
+  canary:
+    enabled: true
+    initial_percentage: 10
+    increment_percentage: 25
+    increment_interval: 300
+    success_threshold: 95
+  
+  validation:
+    pre_deployment_checks:
+      - database_connectivity
+      - redis_connectivity
+      - external_dependencies
+      - constitutional_compliance
+    
+    post_deployment_checks:
+      - service_health
+      - api_endpoints
+      - performance_benchmarks
+      - security_validation
+    
+    rollback_triggers:
+      - error_rate_threshold: 5.0  # 5% error rate
+      - response_time_threshold: 1000  # 1000ms
+      - availability_threshold: 95.0  # 95% availability
+
+# Disaster Recovery Configuration
+disaster_recovery:
+  backup:
+    schedule: "0 */6 * * *"  # Every 6 hours
+    retention_days: 30
+    compression: true
+    encryption: true
+    verification: true
+    
+    databases:
+      - name: acgs_main
+        type: postgresql
+        connection_string_env: DATABASE_URL
+        backup_path: /backups/postgresql
+      
+      - name: acgs_cache
+        type: redis
+        connection_string_env: REDIS_URL
+        backup_path: /backups/redis
+    
+    files:
+      - path: /app/config
+        destination: /backups/config
+      - path: /app/logs
+        destination: /backups/logs
+        retention_days: 7
+  
+  recovery:
+    rto_target: 1800  # 30 minutes
+    rpo_target: 300   # 5 minutes
+    
+    procedures:
+      - name: database_restore
+        script: /scripts/restore_database.sh
+        timeout: 900
+      
+      - name: service_restart
+        script: /scripts/restart_services.sh
+        timeout: 300
+      
+      - name: traffic_reroute
+        script: /scripts/reroute_traffic.sh
+        timeout: 60
+
+# Security Configuration
+security:
+  vulnerability_scanning:
+    enabled: true
+    schedule: "0 2 * * *"  # Daily at 2 AM
+    tools:
+      - trivy
+      - safety
+      - bandit
+    
+    thresholds:
+      critical: 0
+      high: 5
+      medium: 20
+  
+  compliance:
+    constitutional_hash: "cdd01ef066bc6cf2"
+    validation_interval: 3600  # 1 hour
+    
+    checks:
+      - name: constitutional_compliance
+        endpoint: /api/v1/compliance/status
+        expected_hash: "cdd01ef066bc6cf2"
+      
+      - name: security_headers
+        checks:
+          - X-Content-Type-Options
+          - X-Frame-Options
+          - X-XSS-Protection
+          - Strict-Transport-Security
+      
+      - name: authentication
+        checks:
+          - jwt_validation
+          - rbac_enforcement
+          - session_management
+
+# Performance Configuration
+performance:
+  sla_targets:
+    response_time_p95: 500  # 500ms
+    response_time_p99: 1000  # 1000ms
+    uptime: 99.9  # 99.9%
+    error_rate: 1.0  # <1%
+    throughput: 1000  # requests per second
+  
+  monitoring:
+    metrics_collection_interval: 15
+    performance_test_schedule: "0 3 * * 0"  # Weekly on Sunday at 3 AM
+    
+    load_testing:
+      concurrent_users: 100
+      ramp_up_time: 60
+      test_duration: 300
+      scenarios:
+        - name: api_endpoints
+          weight: 70
+        - name: authentication
+          weight: 20
+        - name: constitutional_validation
+          weight: 10
+
+# Infrastructure Configuration
+infrastructure:
+  kubernetes:
+    namespace: acgs-production
+    resource_limits:
+      cpu: "2000m"
+      memory: "4Gi"
+    resource_requests:
+      cpu: "500m"
+      memory: "1Gi"
+    
+    scaling:
+      min_replicas: 2
+      max_replicas: 10
+      target_cpu_utilization: 70
+      target_memory_utilization: 80
+  
+  networking:
+    service_mesh: istio
+    ingress_controller: nginx
+    load_balancer: haproxy
+    
+    security:
+      mtls_enabled: true
+      network_policies_enabled: true
+      pod_security_standards: restricted
+
+# Operational Procedures
+operations:
+  maintenance_windows:
+    - day: sunday
+      start_time: "02:00"
+      duration: 120  # minutes
+      timezone: UTC
+  
+  escalation:
+    levels:
+      - name: level1
+        response_time: 15  # minutes
+        contacts:
+          - ops-team@acgs.local
+      
+      - name: level2
+        response_time: 30  # minutes
+        contacts:
+          - senior-ops@acgs.local
+          - engineering-lead@acgs.local
+      
+      - name: level3
+        response_time: 60  # minutes
+        contacts:
+          - cto@acgs.local
+          - emergency-response@acgs.local
+  
+  runbooks:
+    - name: service_restart
+      path: /runbooks/service_restart.md
+      automation_script: /scripts/restart_services.sh
+    
+    - name: database_failover
+      path: /runbooks/database_failover.md
+      automation_script: /scripts/database_failover.sh
+    
+    - name: security_incident
+      path: /runbooks/security_incident.md
+      automation_script: /scripts/security_incident_response.sh
+
+# Documentation Requirements
+documentation:
+  required_documents:
+    - operational_runbooks
+    - deployment_guides
+    - disaster_recovery_procedures
+    - security_incident_response
+    - performance_tuning_guide
+    - troubleshooting_guide
+  
+  update_frequency: monthly
+  review_process: peer_review
+  approval_required: true
+
+# Quality Gates
+quality_gates:
+  deployment:
+    test_coverage_threshold: 80
+    security_scan_pass: true
+    performance_benchmark_pass: true
+    constitutional_compliance: true
+  
+  production:
+    uptime_threshold: 99.9
+    error_rate_threshold: 1.0
+    response_time_threshold: 500
+    security_compliance_score: 95

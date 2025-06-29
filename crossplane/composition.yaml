@@ -1,0 +1,203 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: acgs-infrastructure
+  labels:
+    provider: aws
+    service: acgs
+spec:
+  writeConnectionSecretsToNamespace: crossplane-system
+  compositeTypeRef:
+    apiVersion: acgs.io/v1alpha1
+    kind: XACGSInfrastructure
+  
+  resources:
+  - name: acgs-vpc
+    base:
+      apiVersion: ec2.aws.crossplane.io/v1beta1
+      kind: VPC
+      spec:
+        forProvider:
+          region: us-east-1
+          cidrBlock: 10.0.0.0/16
+          enableDnsHostnames: true
+          enableDnsSupport: true
+          tags:
+            Name: acgs-vpc
+            Environment: production
+            ManagedBy: crossplane
+    patches:
+    - type: PatchSet
+      patchSetName: common-fields
+
+  - name: acgs-subnet-public-1
+    base:
+      apiVersion: ec2.aws.crossplane.io/v1beta1
+      kind: Subnet
+      spec:
+        forProvider:
+          region: us-east-1
+          availabilityZone: us-east-1a
+          cidrBlock: 10.0.1.0/24
+          mapPublicIpOnLaunch: true
+          tags:
+            Name: acgs-subnet-public-1
+            Type: public
+            Environment: production
+    patches:
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.vpcId
+      toFieldPath: spec.forProvider.vpcIdRef.name
+
+  - name: acgs-subnet-private-1
+    base:
+      apiVersion: ec2.aws.crossplane.io/v1beta1
+      kind: Subnet
+      spec:
+        forProvider:
+          region: us-east-1
+          availabilityZone: us-east-1a
+          cidrBlock: 10.0.10.0/24
+          tags:
+            Name: acgs-subnet-private-1
+            Type: private
+            Environment: production
+    patches:
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.vpcId
+      toFieldPath: spec.forProvider.vpcIdRef.name
+
+  - name: acgs-internet-gateway
+    base:
+      apiVersion: ec2.aws.crossplane.io/v1beta1
+      kind: InternetGateway
+      spec:
+        forProvider:
+          region: us-east-1
+          tags:
+            Name: acgs-igw
+            Environment: production
+    patches:
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.vpcId
+      toFieldPath: spec.forProvider.vpcIdRef.name
+
+  - name: acgs-route-table-public
+    base:
+      apiVersion: ec2.aws.crossplane.io/v1beta1
+      kind: RouteTable
+      spec:
+        forProvider:
+          region: us-east-1
+          routes:
+          - destinationCidrBlock: 0.0.0.0/0
+            gatewayIdRef:
+              name: acgs-internet-gateway
+          tags:
+            Name: acgs-rt-public
+            Type: public
+            Environment: production
+    patches:
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.vpcId
+      toFieldPath: spec.forProvider.vpcIdRef.name
+
+  - name: acgs-eks-cluster
+    base:
+      apiVersion: eks.aws.crossplane.io/v1beta1
+      kind: Cluster
+      spec:
+        forProvider:
+          region: us-east-1
+          version: "1.24"
+          roleArnRef:
+            name: acgs-eks-cluster-role
+          resourcesVpcConfig:
+          - subnetIdRefs:
+            - name: acgs-subnet-public-1
+            - name: acgs-subnet-private-1
+            endpointConfigPrivateAccess: true
+            endpointConfigPublicAccess: true
+          tags:
+            Name: acgs-eks-cluster
+            Environment: production
+            ManagedBy: crossplane
+    patches:
+    - type: PatchSet
+      patchSetName: common-fields
+
+  - name: acgs-eks-nodegroup
+    base:
+      apiVersion: eks.aws.crossplane.io/v1alpha1
+      kind: NodeGroup
+      spec:
+        forProvider:
+          region: us-east-1
+          clusterNameRef:
+            name: acgs-eks-cluster
+          nodeRoleRef:
+            name: acgs-eks-node-role
+          subnetIdRefs:
+          - name: acgs-subnet-private-1
+          scalingConfig:
+          - desiredSize: 3
+            maxSize: 10
+            minSize: 1
+          instanceTypes:
+          - t3.medium
+          amiType: AL2_x86_64
+          capacityType: ON_DEMAND
+          tags:
+            Name: acgs-eks-nodegroup
+            Environment: production
+
+  - name: acgs-rds-subnet-group
+    base:
+      apiVersion: rds.aws.crossplane.io/v1alpha1
+      kind: SubnetGroup
+      spec:
+        forProvider:
+          region: us-east-1
+          description: ACGS RDS subnet group
+          subnetIdRefs:
+          - name: acgs-subnet-private-1
+          tags:
+            Name: acgs-rds-subnet-group
+            Environment: production
+
+  - name: acgs-rds-instance
+    base:
+      apiVersion: rds.aws.crossplane.io/v1alpha1
+      kind: RDSInstance
+      spec:
+        forProvider:
+          region: us-east-1
+          dbInstanceClass: db.t3.micro
+          engine: postgres
+          engineVersion: "15.3"
+          allocatedStorage: 100
+          storageType: gp2
+          storageEncrypted: true
+          dbSubnetGroupNameRef:
+            name: acgs-rds-subnet-group
+          vpcSecurityGroupIdRefs:
+          - name: acgs-rds-security-group
+          dbName: acgs
+          username: acgs
+          autoGeneratePassword: true
+          tags:
+            Name: acgs-rds-instance
+            Environment: production
+        writeConnectionSecretToRef:
+          namespace: acgs-production
+          name: acgs-rds-connection
+
+  patchSets:
+  - name: common-fields
+    patches:
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.region
+      toFieldPath: spec.forProvider.region
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.forProvider.tags.Environment

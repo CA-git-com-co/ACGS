@@ -69,6 +69,13 @@ jobs:
           echo "Installing dependencies with UV..."
           # Create virtual environment first
           uv venv
+          
+          # Activate virtual environment
+          source .venv/bin/activate
+          
+          # Verify virtual environment is active
+          echo "Python path: $(which python)"
+          echo "Virtual env: $VIRTUAL_ENV"
 
           # Install core tools first
           uv pip install pytest black isort mypy fastapi httpx pandas numpy || echo "⚠️ Core tools install failed"
@@ -299,11 +306,20 @@ jobs:
           echo "Installing dependencies for integration tests..."
           # Create virtual environment
           uv venv
+          
+          # Activate virtual environment
+          source .venv/bin/activate
+          
+          # Verify virtual environment is active
+          echo "Python path: $(which python)"
+          echo "Virtual env: $VIRTUAL_ENV"
+          
           # Try to install from existing configuration
           if [ -f "uv.lock" ]; then
             echo "Installing from uv.lock..."
             uv sync --frozen || {
               echo "Sync failed, trying alternative installation..."
+              source .venv/bin/activate
               uv pip install pytest fastapi httpx requests psycopg2-binary redis
             }
           elif [ -f "requirements.txt" ]; then
@@ -365,12 +381,14 @@ jobs:
         run: |
           # Check if uv.lock exists
           if [ -f "uv.lock" ]; then
+            echo "Found uv.lock, installing with sync..."
             uv sync --frozen
           else
-            echo "No uv.lock found, creating basic UV project..."
-            uv init --python ${{ env.PYTHON_VERSION }} || echo "UV init failed"
-            uv add pytest safety bandit pip-audit || echo "Failed to add security dependencies"
-            uv sync || echo "UV sync failed"
+            echo "No uv.lock found, creating virtual environment and installing dependencies..."
+            uv venv
+            source .venv/bin/activate
+            echo "Python path: $(which python)"
+            uv pip install pytest safety bandit pip-audit || echo "Failed to install security dependencies"
           fi
 
       - name: Security audit with UV
@@ -415,8 +433,25 @@ jobs:
 
       - name: Build with UV
         run: |
-          uv sync --frozen
-          uv build
+          # Check if uv.lock exists before syncing
+          if [ -f "uv.lock" ]; then
+            echo "Found uv.lock, syncing dependencies..."
+            uv sync --frozen
+          else
+            echo "No uv.lock found, creating virtual environment..."
+            uv venv
+            source .venv/bin/activate
+            if [ -f "requirements.txt" ]; then
+              uv pip install -r requirements.txt
+            fi
+          fi
+          
+          # Build if pyproject.toml exists
+          if [ -f "pyproject.toml" ]; then
+            uv build
+          else
+            echo "No pyproject.toml found, skipping build"
+          fi
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -470,7 +505,21 @@ jobs:
         uses: astral-sh/setup-uv@v6
 
       - name: Install dependencies
-        run: uv sync --frozen
+        run: |
+          # Check if uv.lock exists
+          if [ -f "uv.lock" ]; then
+            echo "Found uv.lock, syncing dependencies..."
+            uv sync --frozen
+          else
+            echo "No uv.lock found, creating virtual environment..."
+            uv venv
+            source .venv/bin/activate
+            if [ -f "requirements.txt" ]; then
+              uv pip install -r requirements.txt
+            else
+              uv pip install pytest pytest-benchmark
+            fi
+          fi
 
       - name: Run performance tests
         run: |

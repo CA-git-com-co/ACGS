@@ -1,0 +1,290 @@
+# ACGS OpenTelemetry Collector Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+
+receivers:
+  # OTLP receiver for traces, metrics, and logs
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+  # Prometheus receiver for scraping metrics
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'acgs-services'
+          scrape_interval: 15s
+          static_configs:
+            - targets: 
+              - 'host.docker.internal:8000'  # auth-service
+              - 'host.docker.internal:8001'  # ac-service
+              - 'host.docker.internal:8002'  # integrity-service
+              - 'host.docker.internal:8003'  # fv-service
+              - 'host.docker.internal:8004'  # gs-service
+              - 'host.docker.internal:8005'  # pgc-service
+              - 'host.docker.internal:8006'  # ec-service
+          metric_relabel_configs:
+            - source_labels: [__name__]
+              regex: 'acgs_.*'
+              action: keep
+
+        - job_name: 'acgs-constitutional-compliance'
+          scrape_interval: 10s
+          static_configs:
+            - targets:
+              - 'constitutional-monitor:8111'
+          metric_relabel_configs:
+            - source_labels: [constitutional_hash]
+              regex: 'cdd01ef066bc6cf2'
+              action: keep
+
+        - job_name: 'acgs-observability-stack'
+          scrape_interval: 30s
+          static_configs:
+            - targets:
+              - 'host.docker.internal:8110'  # observability stack metrics
+
+  # Jaeger receiver for legacy Jaeger traces
+  jaeger:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:14250
+      thrift_http:
+        endpoint: 0.0.0.0:14268
+      thrift_compact:
+        endpoint: 0.0.0.0:6831
+      thrift_binary:
+        endpoint: 0.0.0.0:6832
+
+  # Host metrics receiver
+  hostmetrics:
+    collection_interval: 30s
+    scrapers:
+      cpu:
+        metrics:
+          system.cpu.utilization:
+            enabled: true
+      memory:
+        metrics:
+          system.memory.utilization:
+            enabled: true
+      disk:
+        metrics:
+          system.disk.io:
+            enabled: true
+      network:
+        metrics:
+          system.network.io:
+            enabled: true
+      filesystem:
+        metrics:
+          system.filesystem.utilization:
+            enabled: true
+
+processors:
+  # Batch processor for performance
+  batch:
+    timeout: 1s
+    send_batch_size: 1024
+    send_batch_max_size: 2048
+
+  # Memory limiter to prevent OOM
+  memory_limiter:
+    limit_mib: 512
+    spike_limit_mib: 128
+    check_interval: 5s
+
+  # Resource processor to add constitutional compliance attributes
+  resource:
+    attributes:
+      - key: constitutional.hash
+        value: "cdd01ef066bc6cf2"
+        action: upsert
+      - key: service.environment
+        value: "production"
+        action: upsert
+      - key: service.platform
+        value: "acgs"
+        action: upsert
+
+  # Attributes processor for constitutional compliance
+  attributes/constitutional:
+    actions:
+      - key: constitutional.compliance.required
+        value: true
+        action: upsert
+      - key: constitutional.validation.enabled
+        value: true
+        action: upsert
+
+  # Filter processor to remove sensitive data
+  filter/sensitive:
+    traces:
+      span:
+        - 'attributes["password"] != nil'
+        - 'attributes["secret"] != nil'
+        - 'attributes["token"] != nil'
+    metrics:
+      metric:
+        - 'name == "sensitive_metric"'
+
+  # Transform processor for constitutional compliance metrics
+  transform/constitutional:
+    metric_statements:
+      - context: metric
+        statements:
+          - set(description, "Constitutional compliance metric") where name == "acgs_constitutional_compliance_score"
+          - set(unit, "percent") where name == "acgs_constitutional_compliance_score"
+
+  # Probabilistic sampler for traces
+  probabilistic_sampler:
+    sampling_percentage: 100  # Sample all traces for constitutional compliance
+
+  # Span processor for constitutional operations
+  span/constitutional:
+    name:
+      to_attributes:
+        rules:
+          - ^constitutional\.(.*)$
+          - ^compliance\.(.*)$
+
+exporters:
+  # Jaeger exporter for traces
+  jaeger:
+    endpoint: jaeger:14250
+    tls:
+      insecure: true
+
+  # Prometheus exporter for metrics
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+    const_labels:
+      constitutional_hash: "cdd01ef066bc6cf2"
+      platform: "acgs"
+
+  # Prometheus remote write for long-term storage
+  prometheusremotewrite:
+    endpoint: "http://prometheus:9090/api/v1/write"
+    headers:
+      X-Constitutional-Hash: "cdd01ef066bc6cf2"
+
+  # Loki exporter for logs
+  loki:
+    endpoint: "http://loki:3100/loki/api/v1/push"
+    labels:
+      attributes:
+        constitutional_hash: "cdd01ef066bc6cf2"
+        service_name: "service.name"
+        service_version: "service.version"
+
+  # Logging exporter for debugging
+  logging:
+    loglevel: info
+    sampling_initial: 5
+    sampling_thereafter: 200
+
+  # File exporter for constitutional compliance audit
+  file/constitutional:
+    path: /tmp/constitutional-traces.json
+    format: json
+
+extensions:
+  # Health check extension
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+  # pprof extension for performance profiling
+  pprof:
+    endpoint: 0.0.0.0:1777
+
+  # zpages extension for debugging
+  zpages:
+    endpoint: 0.0.0.0:55679
+
+service:
+  extensions: [health_check, pprof, zpages]
+  
+  pipelines:
+    # Traces pipeline
+    traces:
+      receivers: [otlp, jaeger]
+      processors: [
+        memory_limiter,
+        resource,
+        attributes/constitutional,
+        filter/sensitive,
+        span/constitutional,
+        probabilistic_sampler,
+        batch
+      ]
+      exporters: [jaeger, logging, file/constitutional]
+
+    # Metrics pipeline
+    metrics:
+      receivers: [otlp, prometheus, hostmetrics]
+      processors: [
+        memory_limiter,
+        resource,
+        attributes/constitutional,
+        filter/sensitive,
+        transform/constitutional,
+        batch
+      ]
+      exporters: [prometheus, prometheusremotewrite, logging]
+
+    # Logs pipeline
+    logs:
+      receivers: [otlp]
+      processors: [
+        memory_limiter,
+        resource,
+        attributes/constitutional,
+        filter/sensitive,
+        batch
+      ]
+      exporters: [loki, logging]
+
+    # Constitutional compliance pipeline
+    traces/constitutional:
+      receivers: [otlp]
+      processors: [
+        memory_limiter,
+        resource,
+        attributes/constitutional,
+        span/constitutional,
+        batch
+      ]
+      exporters: [file/constitutional, jaeger]
+
+# Telemetry configuration
+telemetry:
+  logs:
+    level: "info"
+    development: false
+    sampling:
+      enabled: true
+      tick: 10s
+      initial: 5
+      thereafter: 200
+    encoding: "json"
+    output_paths: ["stdout"]
+    error_output_paths: ["stderr"]
+    initial_fields:
+      constitutional_hash: "cdd01ef066bc6cf2"
+      service: "otel-collector"
+
+  metrics:
+    level: "detailed"
+    address: "0.0.0.0:8888"
+    readers:
+      - periodic:
+          interval: 30s
+          timeout: 5s
+
+  traces:
+    processors:
+      - batch:
+          timeout: 1s
+          send_batch_size: 1024

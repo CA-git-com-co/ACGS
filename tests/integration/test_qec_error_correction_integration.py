@@ -69,7 +69,7 @@ except ImportError:
 
 # Import QEC error correction services
 try:
-    from services.core.governance_synthesis.app.services.qec_error_correction_service import (
+    from services.core.governance_synthesis.gs_service.app.services.qec_error_correction_service import (
         AutomaticResolutionWorkflow,
         ConflictComplexityScorer,
         ConflictDetectionEngine,

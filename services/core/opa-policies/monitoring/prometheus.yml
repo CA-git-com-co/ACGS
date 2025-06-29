@@ -1,0 +1,33 @@
+# ACGS-1 Lite Prometheus Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "acgs_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'acgs-policy-engine'
+    static_configs:
+      - targets: ['policy-engine:8004']
+    metrics_path: '/v1/metrics'
+    scrape_interval: 5s
+    scrape_timeout: 3s
+    honor_labels: true
+    params:
+      format: ['prometheus']
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']

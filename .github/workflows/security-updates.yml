@@ -43,11 +43,24 @@ jobs:
         run: |
           echo "Installing security tools with UV..."
           uv venv
+          
+          # Activate virtual environment
+          source .venv/bin/activate
+          
+          # Verify virtual environment is active
+          echo "Python path: $(which python)"
+          echo "Virtual env: $VIRTUAL_ENV"
+          
           uv pip install safety bandit pip-audit || echo "Security tools install completed with some failures"
 
       - name: Run pip-audit
         continue-on-error: true
         run: |
+          # Activate virtual environment
+          if [ -d ".venv" ]; then
+            source .venv/bin/activate
+          fi
+          
           echo "🔍 Running pip-audit for vulnerability scanning..."
           uv run pip-audit --desc --fix --dry-run > pip-audit-report.txt || true
           cat pip-audit-report.txt || echo "No pip-audit report generated"
@@ -55,6 +68,11 @@ jobs:
       - name: Run safety check
         continue-on-error: true
         run: |
+          # Activate virtual environment
+          if [ -d ".venv" ]; then
+            source .venv/bin/activate
+          fi
+          
           echo "🔍 Running safety check..."
           uv run safety check --json > safety-report.json || true
           uv run safety check || true
@@ -62,6 +80,11 @@ jobs:
       - name: Run bandit security scan
         continue-on-error: true
         run: |
+          # Activate virtual environment
+          if [ -d ".venv" ]; then
+            source .venv/bin/activate
+          fi
+          
           echo "🔍 Running bandit security scan..."
           if [ -d "services/" ]; then
             uv run bandit -r services/ -f json -o bandit-report.json || true

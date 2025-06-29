@@ -1,0 +1,269 @@
+# ACGS Test Coverage CI/CD Pipeline
+# Constitutional Hash: cdd01ef066bc6cf2
+
+name: Test Coverage Analysis
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+
+env:
+  CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '18'
+
+jobs:
+  test-coverage-analysis:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        service: [
+          'auth-service',
+          'ac-service', 
+          'integrity-service',
+          'fv-service',
+          'gs-service',
+          'pgc-service',
+          'ec-service'
+        ]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov pytest-json-report coverage
+        pip install -r requirements.txt
+    
+    - name: Run tests with coverage for ${{ matrix.service }}
+      run: |
+        cd services/${{ matrix.service }}
+        python -m pytest \
+          --cov=. \
+          --cov-report=xml \
+          --cov-report=json \
+          --cov-report=html \
+          --cov-report=term-missing \
+          --json-report \
+          --json-report-file=test_report.json \
+          tests/
+      continue-on-error: true
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: services/${{ matrix.service }}/coverage.xml
+        flags: ${{ matrix.service }}
+        name: ${{ matrix.service }}-coverage
+        fail_ci_if_error: false
+    
+    - name: Generate coverage badge
+      run: |
+        cd services/${{ matrix.service }}
+        coverage-badge -o coverage.svg
+    
+    - name: Constitutional compliance validation
+      run: |
+        python scripts/testing/validate_constitutional_compliance.py \
+          --service ${{ matrix.service }} \
+          --coverage-file services/${{ matrix.service }}/coverage.json \
+          --constitutional-hash ${{ env.CONSTITUTIONAL_HASH }}
+    
+    - name: Upload coverage artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.service }}-coverage
+        path: |
+          services/${{ matrix.service }}/coverage.xml
+          services/${{ matrix.service }}/coverage.json
+          services/${{ matrix.service }}/htmlcov/
+          services/${{ matrix.service }}/test_report.json
+          services/${{ matrix.service }}/coverage.svg
+    
+    - name: Comment coverage on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          try {
+            const coverageFile = path.join('services', '${{ matrix.service }}', 'coverage.json');
+            const coverage = JSON.parse(fs.readFileSync(coverageFile, 'utf8'));
+            
+            const lineCoverage = coverage.totals.percent_covered.toFixed(1);
+            const branchCoverage = coverage.totals.percent_covered_display || 'N/A';
+            
+            const comment = `## 📊 Coverage Report for ${{ matrix.service }}
+            
+            | Metric | Coverage |
+            |--------|----------|
+            | Lines | ${lineCoverage}% |
+            | Branches | ${branchCoverage}% |
+            | Constitutional Hash | ${{ env.CONSTITUTIONAL_HASH }} |
+            
+            ${lineCoverage >= 90 ? '✅' : '❌'} Coverage threshold: ${lineCoverage >= 90 ? 'PASSED' : 'FAILED'}
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+          } catch (error) {
+            console.log('Could not post coverage comment:', error);
+          }
+
+  aggregate-coverage:
+    needs: test-coverage-analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Download all coverage artifacts
+      uses: actions/download-artifact@v3
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install coverage pytest-json-report
+    
+    - name: Aggregate coverage reports
+      run: |
+        python scripts/testing/aggregate_coverage.py \
+          --constitutional-hash ${{ env.CONSTITUTIONAL_HASH }} \
+          --output-file aggregated_coverage.json
+    
+    - name: Generate overall coverage report
+      run: |
+        python scripts/testing/generate_coverage_dashboard.py \
+          --input-file aggregated_coverage.json \
+          --constitutional-hash ${{ env.CONSTITUTIONAL_HASH }} \
+          --output-dir coverage_dashboard
+    
+    - name: Upload aggregated coverage
+      uses: actions/upload-artifact@v3
+      with:
+        name: aggregated-coverage
+        path: |
+          aggregated_coverage.json
+          coverage_dashboard/
+    
+    - name: Update coverage dashboard
+      run: |
+        python infrastructure/testing/test_coverage_dashboard.py \
+          --update-from-ci \
+          --coverage-data aggregated_coverage.json \
+          --constitutional-hash ${{ env.CONSTITUTIONAL_HASH }}
+    
+    - name: Check coverage thresholds
+      run: |
+        python scripts/testing/check_coverage_thresholds.py \
+          --coverage-file aggregated_coverage.json \
+          --constitutional-hash ${{ env.CONSTITUTIONAL_HASH }} \
+          --fail-on-threshold-violation
+    
+    - name: Post coverage summary
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          
+          try {
+            const aggregatedCoverage = JSON.parse(fs.readFileSync('aggregated_coverage.json', 'utf8'));
+            
+            let summaryTable = '## 📈 Overall Coverage Summary\n\n';
+            summaryTable += '| Service | Line Coverage | Branch Coverage | Quality Score |\n';
+            summaryTable += '|---------|---------------|-----------------|---------------|\n';
+            
+            for (const [service, data] of Object.entries(aggregatedCoverage.services)) {
+              const lineIcon = data.line_coverage >= 90 ? '✅' : '❌';
+              summaryTable += `| ${service} | ${lineIcon} ${data.line_coverage.toFixed(1)}% | ${data.branch_coverage.toFixed(1)}% | ${data.quality_score.toFixed(1)} |\n`;
+            }
+            
+            summaryTable += `\n**Overall Average:** ${aggregatedCoverage.overall.average_coverage.toFixed(1)}%\n`;
+            summaryTable += `**Constitutional Hash:** ${aggregatedCoverage.constitutional_hash}\n`;
+            summaryTable += `**Threshold Compliance:** ${aggregatedCoverage.overall.services_above_threshold}/${aggregatedCoverage.overall.total_services} services\n`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: summaryTable
+            });
+          } catch (error) {
+            console.log('Could not post coverage summary:', error);
+          }
+
+  coverage-quality-gate:
+    needs: aggregate-coverage
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Download aggregated coverage
+      uses: actions/download-artifact@v3
+      with:
+        name: aggregated-coverage
+    
+    - name: Quality gate check
+      run: |
+        python scripts/testing/coverage_quality_gate.py \
+          --coverage-file aggregated_coverage.json \
+          --constitutional-hash ${{ env.CONSTITUTIONAL_HASH }} \
+          --min-coverage 90 \
+          --min-constitutional-coverage 95 \
+          --fail-on-violation
+    
+    - name: Update status checks
+      if: always()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          
+          try {
+            const aggregatedCoverage = JSON.parse(fs.readFileSync('aggregated_coverage.json', 'utf8'));
+            const overallCoverage = aggregatedCoverage.overall.average_coverage;
+            
+            const state = overallCoverage >= 90 ? 'success' : 'failure';
+            const description = `Overall coverage: ${overallCoverage.toFixed(1)}%`;
+            
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: state,
+              target_url: `${context.payload.repository.html_url}/actions/runs/${context.runId}`,
+              description: description,
+              context: 'coverage/overall'
+            });
+          } catch (error) {
+            console.log('Could not update status check:', error);
+          }

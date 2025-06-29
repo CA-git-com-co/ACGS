@@ -1,0 +1,32 @@
+# ACGS-1 Lite Audit Engine Service Dependencies
+
+# FastAPI and web framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+
+# Database and caching
+asyncpg==0.29.0
+aioredis==2.0.1
+
+# Kafka integration
+aiokafka==0.8.11
+
+# AWS S3 integration
+aioboto3==12.0.0
+boto3==1.34.0
+
+# Cryptography
+cryptography==41.0.8
+
+# Logging and monitoring
+structlog==23.2.0
+prometheus-client==0.19.0
+
+# Async utilities
+aiofiles==23.2.1
+
+# Development and testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+httpx==0.25.2
