@@ -340,6 +340,13 @@ module "monitoring" {
   tags = local.common_tags
 }
 
+# Temporary WAF Module - Sprint 0
+module "waf" {
+  source = "./modules/waf"
+
+  enable_waf = var.enable_waf
+}
+
 # Kubernetes Namespaces for ACGS-1 Lite
 resource "kubernetes_namespace" "acgs_lite_namespaces" {
   for_each = toset([
@@ -425,4 +432,10 @@ output "vpc_id" {
 output "constitutional_hash" {
   description = "Constitutional hash for governance validation"
   value       = var.constitutional_hash
+}
+
+output "waf_web_acl_arn" {
+  description = "Temporary WAF Web ACL ARN"
+  value       = module.waf.waf_web_acl_arn
+  condition   = var.enable_waf
 }
