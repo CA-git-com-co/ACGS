@@ -1,0 +1,35 @@
+{
+  "backup_strategy": {
+    "database": {
+      "type": "postgresql",
+      "frequency": "daily",
+      "time": "02:00",
+      "retention_days": 30,
+      "compression": true,
+      "encryption": true
+    },
+    "application_data": {
+      "type": "file_system",
+      "frequency": "daily",
+      "time": "03:00",
+      "retention_days": 7,
+      "compression": true
+    },
+    "configuration": {
+      "type": "git_repository",
+      "frequency": "on_change",
+      "retention_days": 90
+    }
+  },
+  "disaster_recovery": {
+    "rto_hours": 4,
+    "rpo_hours": 1,
+    "backup_locations": [
+      "primary",
+      "secondary",
+      "offsite"
+    ],
+    "automated_failover": true,
+    "health_checks": true
+  }
+}

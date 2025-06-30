@@ -16,6 +16,13 @@ from .core.mab_integration import MABIntegratedGSService
 from .core.mab_prompt_optimizer import MABAlgorithm, MABConfig, PromptTemplate
 from .schemas import ConstitutionalSynthesisInput
 
+# Security validation imports
+from services.shared.security_validation import (
+    validate_user_input,
+    validate_policy_input,
+    validate_governance_input
+)
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
@@ -131,6 +138,7 @@ async def get_best_templates(top_k: int = Query(5, ge=1, le=20)):
         )
 
 
+@validate_policy_input
 @router.post("/templates/register")
 async def register_prompt_template(
     template_request: PromptTemplateRequest,
@@ -170,6 +178,7 @@ async def register_prompt_template(
         )
 
 
+@validate_policy_input
 @router.post("/synthesize")
 async def synthesize_with_mab(
     synthesis_request: SynthesisRequest,

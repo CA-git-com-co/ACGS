@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: acgs-policy-governance
+    tier: application
+  name: acgs-policy-governance
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: acgs-policy-governance
+  template:
+    metadata:
+      labels:
+        app: acgs-policy-governance
+    spec:
+      containers:
+      - env:
+        - name: SERVICE_NAME
+          value: policy-governance
+        - name: REPLICA_MODE
+          value: 'true'
+        image: acgs/policy-governance:latest
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8004
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        name: acgs-policy-governance
+        ports:
+        - containerPort: 8004
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8004
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 4Gi
+          requests:
+            cpu: 500m
+            memory: 1Gi

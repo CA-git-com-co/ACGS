@@ -1,0 +1,19 @@
+jobs:
+  security-review:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Generate security metrics report
+      run: python scripts/security/generate_security_metrics_report.py
+    - name: Run comprehensive security assessment
+      run: python scripts/security/comprehensive_security_assessment.py
+    - name: Create security review issue
+      run: python scripts/security/create_security_review_issue.py
+    - name: Notify security team
+      run: python scripts/security/notify_security_review.py
+name: ACGS-2 Quarterly Security Review
+'on':
+  schedule:
+  - cron: 0 9 15 1,4,7,10 *
+  workflow_dispatch: {}

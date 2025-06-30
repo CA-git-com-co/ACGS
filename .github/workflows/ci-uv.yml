@@ -55,13 +55,17 @@ jobs:
           export PATH="$HOME/.cargo/bin:$PATH"
           uv --version
 
-      - name: Set up UV cache
+      - name: Set up UV cache (improved)
         uses: actions/cache@v4
         continue-on-error: true
         with:
-          path: ${{ env.UV_CACHE_DIR }}
-          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          path: |
+            ${{ env.UV_CACHE_DIR }}
+            ~/.cache/pip
+            ~/.cache/uv
+          key: uv-${{ runner.os }}-${{ matrix.service }}-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml', 'uv.lock') }}
           restore-keys: |
+            uv-${{ runner.os }}-${{ matrix.service }}-
             uv-${{ runner.os }}-
 
       - name: Install dependencies with UV

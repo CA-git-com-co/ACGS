@@ -139,6 +139,14 @@ class PolicySynthesisEngine:
             "constitutional_alignment_threshold": 0.95,
         }
 
+        # Pre-computed strategy lookup table for O(1) access
+        self._strategy_handlers = {
+            RiskStrategy.STANDARD: self._enhanced_standard_synthesis,
+            RiskStrategy.ENHANCED_VALIDATION: self._enhanced_validation_synthesis_impl,
+            RiskStrategy.MULTI_MODEL_CONSENSUS: self._enhanced_multi_model_consensus_synthesis_impl,
+            RiskStrategy.HUMAN_REVIEW: self._enhanced_human_review_synthesis_impl,
+        }
+
     async def initialize(self):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -477,16 +485,12 @@ class PolicySynthesisEngine:
             "request": request,
         }
 
-        if risk_strategy == RiskStrategy.STANDARD:
-            return await self._enhanced_standard_synthesis(enhanced_context)
-        elif risk_strategy == RiskStrategy.ENHANCED_VALIDATION:
-            return await self._enhanced_validation_synthesis_impl(enhanced_context)
-        elif risk_strategy == RiskStrategy.MULTI_MODEL_CONSENSUS:
-            return await self._enhanced_multi_model_consensus_synthesis_impl(enhanced_context)
-        elif risk_strategy == RiskStrategy.HUMAN_REVIEW:
-            return await self._enhanced_human_review_synthesis_impl(enhanced_context)
-        else:
+        # Use O(1) lookup table instead of nested conditionals
+        handler = self._strategy_handlers.get(risk_strategy)
+        if handler is None:
             raise ValueError(f"Unknown risk strategy: {risk_strategy}")
+
+        return await handler(enhanced_context)
 
     async def _enhanced_standard_synthesis(self, context: dict[str, Any]) -> dict[str, Any]:
         """Enhanced standard synthesis with constitutional awareness."""

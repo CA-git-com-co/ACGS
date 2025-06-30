@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: acgs-constitutional-ai
+    tier: application
+  name: acgs-constitutional-ai
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: acgs-constitutional-ai
+  template:
+    metadata:
+      labels:
+        app: acgs-constitutional-ai
+    spec:
+      containers:
+      - env:
+        - name: SERVICE_NAME
+          value: constitutional-ai
+        - name: REPLICA_MODE
+          value: 'true'
+        image: acgs/constitutional-ai:latest
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8006
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        name: acgs-constitutional-ai
+        ports:
+        - containerPort: 8006
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8006
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 4Gi
+          requests:
+            cpu: 500m
+            memory: 1Gi

@@ -1,0 +1,1034 @@
+{
+  "total_issues": 11,
+  "severity_breakdown": {
+    "critical": 8,
+    "major": 2,
+    "minor": 1,
+    "info": 0
+  },
+  "category_breakdown": {
+    "security": 1,
+    "performance": 1,
+    "functionality": 1,
+    "reliability": 8,
+    "maintainability": 0,
+    "usability": 0
+  },
+  "prioritized_issues": [
+    {
+      "id": "SEC-CRIT-001",
+      "title": "Security vulnerabilities found: input_validation_security",
+      "description": "Found 8 security vulnerabilities in input_validation_security",
+      "severity": "CRITICAL",
+      "category": "SECURITY",
+      "source_test": "security_validation",
+      "impact_score": 10.0,
+      "effort_estimate": "HIGH",
+      "affected_components": [
+        "input_validation_security"
+      ],
+      "risk_level": "CRITICAL",
+      "recommendations": [
+        "Implement comprehensive input sanitization",
+        "Use parameterized queries to prevent SQL injection",
+        "Implement proper output encoding for XSS prevention",
+        "Add input length limits and character restrictions"
+      ],
+      "details": {
+        "test_name": "input_validation_security",
+        "status": "FAIL",
+        "execution_time": 0.00032806396484375,
+        "vulnerabilities_found": 8,
+        "security_checks_passed": 10,
+        "total_security_checks": 18,
+        "risk_level": "CRITICAL",
+        "security_details": {
+          "vulnerable_inputs": [
+            {
+              "input": "admin'--",
+              "type": "Unknown"
+            },
+            {
+              "input": "' UNION SELECT * FROM users --",
+              "type": "SQL_Injection"
+            },
+            {
+              "input": "<img src=x onerror=alert('XSS')>",
+              "type": "XSS"
+            },
+            {
+              "input": "&& whoami",
+              "type": "Command_Injection"
+            },
+            {
+              "input": "{\"test\": \"value\", \"admin\": true}",
+              "type": "Unknown"
+            },
+            {
+              "input": "{\"$ne\": null}",
+              "type": "Unknown"
+            },
+            {
+              "input": "admin)(&(password=*))",
+              "type": "Unknown"
+            },
+            {
+              "input": "*)(uid=*))(|(uid=*",
+              "type": "Unknown"
+            }
+          ],
+          "attack_types_tested": [
+            "sql_injection",
+            "xss",
+            "command_injection",
+            "path_traversal",
+            "buffer_overflow"
+          ]
+        },
+        "recommendations": [
+          "Implement comprehensive input sanitization",
+          "Use parameterized queries to prevent SQL injection",
+          "Implement proper output encoding for XSS prevention",
+          "Add input length limits and character restrictions"
+        ],
+        "error_message": null
+      }
+    },
+    {
+      "id": "COV-CRIT-001",
+      "title": "Critical component lacks test coverage: policy-engine",
+      "description": "Critical component policy-engine has no test coverage with 1 Python files",
+      "severity": "CRITICAL",
+      "category": "RELIABILITY",
+      "source_test": "test_coverage_analysis",
+      "impact_score": 9.0,
+      "effort_estimate": "HIGH",
+      "affected_components": [
+        "policy-engine"
+      ],
+      "risk_level": "HIGH",
+      "recommendations": [
+        "Create comprehensive test suite for policy-engine",
+        "Implement unit tests for all public methods",
+        "Add integration tests for component interactions"
+      ],
+      "details": {
+        "name": "policy-engine",
+        "path": "/home/dislove/ACGS-2/services/core/policy-engine",
+        "python_files": 1,
+        "files": [
+          "services/core/policy-engine/main.py"
+        ]
+      }
+    },
+    {
+      "id": "COV-CRIT-002",
+      "title": "Critical component lacks test coverage: policy_governance",
+      "description": "Critical component policy_governance has no test coverage with 57 Python files",
+      "severity": "CRITICAL",
+      "category": "RELIABILITY",
+      "source_test": "test_coverage_analysis",
+      "impact_score": 9.0,
+      "effort_estimate": "HIGH",
+      "affected_components": [
+        "policy_governance"
+      ],
+      "risk_level": "HIGH",
+      "recommendations": [
+        "Create comprehensive test suite for policy_governance",
+        "Implement unit tests for all public methods",
+        "Add integration tests for component interactions"
+      ],
+      "details": {
+        "name": "policy_governance",
+        "path": "/home/dislove/ACGS-2/services/core/policy_governance",
+        "python_files": 57,
+        "files": [
+          "services/core/policy_governance/simple_pgc_main.py",
+          "services/core/policy_governance/__init__.py",
+          "services/core/policy_governance/pgc_service/models.py",
+          "services/core/policy_governance/pgc_service/main.py",
+          "services/core/policy_governance/pgc_service/start_with_tracing.py",
+          "services/core/policy_governance/pgc_service/__init__.py",
+          "services/core/policy_governance/pgc_service/optimized_governance_engine.py",
+          "services/core/policy_governance/app/cache_manager.py",
+          "services/core/policy_governance/app/exceptions.py",
+          "services/core/policy_governance/src/__init__.py",
+          "services/core/policy_governance/pgc_service/app/schemas.py",
+          "services/core/policy_governance/pgc_service/app/telemetry.py",
+          "services/core/policy_governance/pgc_service/app/main.py",
+          "services/core/policy_governance/pgc_service/app/__init__.py",
+          "services/core/policy_governance/pgc_service/app/main_enhanced.py",
+          "services/core/policy_governance/pgc_service/tests/test_wina_enforcement_optimizer.py",
+          "services/core/policy_governance/pgc_service/tests/test_constitutional_hash_validation.py",
+          "services/core/policy_governance/pgc_service/tests/test_wina_enforcement_integration.py",
+          "services/core/policy_governance/pgc_service/app/core/constitutional_hash_validator.py",
+          "services/core/policy_governance/pgc_service/app/core/database.py",
+          "services/core/policy_governance/pgc_service/app/core/auth.py",
+          "services/core/policy_governance/pgc_service/app/core/__init__.py",
+          "services/core/policy_governance/pgc_service/app/core/policy_synthesis_engine.py",
+          "services/core/policy_governance/pgc_service/app/core/limiter.py",
+          "services/core/policy_governance/pgc_service/app/core/ultra_low_latency_optimizer.py",
+          "services/core/policy_governance/pgc_service/app/core/datalog_engine.py",
+          "services/core/policy_governance/pgc_service/app/core/redis_cache_manager.py",
+          "services/core/policy_governance/pgc_service/app/core/hardware_acceleration_manager.py",
+          "services/core/policy_governance/pgc_service/app/core/realtime_compliance_engine.py",
+          "services/core/policy_governance/pgc_service/app/core/manifest_manager.py",
+          "services/core/policy_governance/pgc_service/app/core/proactive_fairness_generator.py",
+          "services/core/policy_governance/pgc_service/app/core/wina_enforcement_optimizer.py",
+          "services/core/policy_governance/pgc_service/app/core/policy_manager.py",
+          "services/core/policy_governance/pgc_service/app/core/opa_client.py",
+          "services/core/policy_governance/pgc_service/app/core/metrics.py",
+          "services/core/policy_governance/pgc_service/app/core/incremental_compiler.py",
+          "services/core/policy_governance/pgc_service/app/core/wina_policy_compiler.py",
+          "services/core/policy_governance/pgc_service/app/core/policy_format_router.py",
+          "services/core/policy_governance/pgc_service/app/core/secure_execution.py",
+          "services/core/policy_governance/pgc_service/app/middleware/constitutional_validation.py",
+          "services/core/policy_governance/pgc_service/app/middleware/__init__.py",
+          "services/core/policy_governance/pgc_service/app/middleware/enhanced_security.py",
+          "services/core/policy_governance/pgc_service/app/config/service_config.py",
+          "services/core/policy_governance/pgc_service/app/monitoring/acgs_pgp_metrics.py",
+          "services/core/policy_governance/pgc_service/app/services/fv_client.py",
+          "services/core/policy_governance/pgc_service/app/services/qpe_client.py",
+          "services/core/policy_governance/pgc_service/app/services/__init__.py",
+          "services/core/policy_governance/pgc_service/app/services/integrity_client.py",
+          "services/core/policy_governance/pgc_service/app/services/advanced_cache.py",
+          "services/core/policy_governance/pgc_service/app/api/__init__.py",
+          "services/core/policy_governance/pgc_service/app/api/v1/ultra_low_latency.py",
+          "services/core/policy_governance/pgc_service/app/api/v1/quantum_enforcement.py",
+          "services/core/policy_governance/pgc_service/app/api/v1/alphaevolve_enforcement.py",
+          "services/core/policy_governance/pgc_service/app/api/v1/__init__.py",
+          "services/core/policy_governance/pgc_service/app/api/v1/enforcement.py",
+          "services/core/policy_governance/pgc_service/app/api/v1/governance_workflows.py",
+          "services/core/policy_governance/pgc_service/app/api/v1/incremental_compilation.py"
+        ]
+      }
+    },
+    {
+      "id": "COV-CRIT-003",
+      "title": "Critical component lacks test coverage: constitutional-ai",
+      "description": "Critical component constitutional-ai has no test coverage with 68 Python files",
+      "severity": "CRITICAL",
+      "category": "RELIABILITY",
+      "source_test": "test_coverage_analysis",
+      "impact_score": 9.0,
+      "effort_estimate": "HIGH",
+      "affected_components": [
+        "constitutional-ai"
+      ],
+      "risk_level": "HIGH",
+      "recommendations": [
+        "Create comprehensive test suite for constitutional-ai",
+        "Implement unit tests for all public methods",
+        "Add integration tests for component interactions"
+      ],
+      "details": {
+        "name": "constitutional-ai",
+        "path": "/home/dislove/ACGS-2/services/core/constitutional-ai",
+        "python_files": 68,
+        "files": [
+          "services/core/constitutional-ai/__init__.py",
+          "services/core/constitutional-ai/src/__init__.py",
+          "services/core/constitutional-ai/ac_service/validate_stakeholder_system.py",
+          "services/core/constitutional-ai/ac_service/test_stakeholder_simple.py",
+          "services/core/constitutional-ai/ac_service/models.py",
+          "services/core/constitutional-ai/ac_service/test_stakeholder_engagement.py",
+          "services/core/constitutional-ai/ac_service/main.py",
+          "services/core/constitutional-ai/ac_service/__init__.py",
+          "services/core/constitutional-ai/ac_service/acge_single_model_service.py",
+          "services/core/constitutional-ai/ac_service/tests/test_human_in_the_loop_sampling.py",
+          "services/core/constitutional-ai/ac_service/tests/test_hitl_api_integration.py",
+          "services/core/constitutional-ai/ac_service/tests/test_intelligent_conflict_resolution.py",
+          "services/core/constitutional-ai/ac_service/app/schemas.py",
+          "services/core/constitutional-ai/ac_service/app/main.py",
+          "services/core/constitutional-ai/ac_service/app/cache_manager.py",
+          "services/core/constitutional-ai/ac_service/app/crud.py",
+          "services/core/constitutional-ai/ac_service/app/models.py",
+          "services/core/constitutional-ai/ac_service/app/__init__.py",
+          "services/core/constitutional-ai/ac_service/alembic/versions/005_add_qec_conflict_resolution_fields.py",
+          "services/core/constitutional-ai/ac_service/app/integrations/polis_integration.py",
+          "services/core/constitutional-ai/ac_service/app/middleware/enhanced_security.py",
+          "services/core/constitutional-ai/ac_service/app/middleware/__init__.py",
+          "services/core/constitutional-ai/ac_service/app/core/constitutional_council_scalability.py",
+          "services/core/constitutional-ai/ac_service/app/core/auth.py",
+          "services/core/constitutional-ai/ac_service/app/core/__init__.py",
+          "services/core/constitutional-ai/ac_service/app/core/domain_context_manager.py",
+          "services/core/constitutional-ai/ac_service/app/core/amendment_state_machine.py",
+          "services/core/constitutional-ai/ac_service/app/core/cryptographic_signing.py",
+          "services/core/constitutional-ai/ac_service/app/api/hitl_sampling.py",
+          "services/core/constitutional-ai/ac_service/app/api/public_consultation.py",
+          "services/core/constitutional-ai/ac_service/app/api/__init__.py",
+          "services/core/constitutional-ai/ac_service/app/services/collective_constitutional_ai.py",
+          "services/core/constitutional-ai/ac_service/app/services/human_escalation_system.py",
+          "services/core/constitutional-ai/ac_service/app/services/constitutional_council_dashboard.py",
+          "services/core/constitutional-ai/ac_service/app/services/public_consultation_service.py",
+          "services/core/constitutional-ai/ac_service/app/services/conflict_resolution_orchestrator.py",
+          "services/core/constitutional-ai/ac_service/app/services/constitutional_validation_service.py",
+          "services/core/constitutional-ai/ac_service/app/services/enhanced_constitutional_reward.py",
+          "services/core/constitutional-ai/ac_service/app/services/llm_as_judge_framework.py",
+          "services/core/constitutional-ai/ac_service/app/services/intelligent_conflict_detector.py",
+          "services/core/constitutional-ai/ac_service/app/services/conflict_audit_system.py",
+          "services/core/constitutional-ai/ac_service/app/services/advanced_democratic_participation.py",
+          "services/core/constitutional-ai/ac_service/app/services/qec_conflict_resolver.py",
+          "services/core/constitutional-ai/ac_service/app/services/voting_mechanism.py",
+          "services/core/constitutional-ai/ac_service/app/services/stakeholder_engagement.py",
+          "services/core/constitutional-ai/ac_service/app/services/automated_resolution_engine.py",
+          "services/core/constitutional-ai/ac_service/app/services/hitl_cross_service_integration.py",
+          "services/core/constitutional-ai/ac_service/app/services/voting_client.py",
+          "services/core/constitutional-ai/ac_service/app/services/democratic_governance.py",
+          "services/core/constitutional-ai/ac_service/app/services/human_in_the_loop_sampler.py",
+          "services/core/constitutional-ai/ac_service/app/workflows/workflow_manager.py",
+          "services/core/constitutional-ai/ac_service/app/workflows/constitutional_council_graph.py",
+          "services/core/constitutional-ai/ac_service/app/workflows/democratic_governance.py",
+          "services/core/constitutional-ai/ac_service/app/workflows/__init__.py",
+          "services/core/constitutional-ai/ac_service/app/monitoring/scalability_metrics.py",
+          "services/core/constitutional-ai/ac_service/app/api/v1/collective_constitutional_ai.py",
+          "services/core/constitutional-ai/ac_service/app/api/v1/conflict_resolution.py",
+          "services/core/constitutional-ai/ac_service/app/api/v1/dashboard_websocket.py",
+          "services/core/constitutional-ai/ac_service/app/api/v1/__init__.py",
+          "services/core/constitutional-ai/ac_service/app/api/v1/democratic_governance.py",
+          "services/core/constitutional-ai/ac_service/app/api/v1/principles.py",
+          "services/core/constitutional-ai/ac_service/app/api/v1/wina_constitutional_updates.py",
+          "services/core/constitutional-ai/ac_service/app/api/v1/constitutional_council.py",
+          "services/core/constitutional-ai/ac_service/app/api/v1/workflows.py",
+          "services/core/constitutional-ai/ac_service/app/api/v1/fidelity_monitor.py",
+          "services/core/constitutional-ai/ac_service/app/api/v1/voting.py",
+          "services/core/constitutional-ai/ac_service/app/api/v1/stakeholder_engagement.py",
+          "services/core/constitutional-ai/ac_service/app/api/v1/constitutional_validation.py"
+        ]
+      }
+    },
+    {
+      "id": "COV-CRIT-004",
+      "title": "Critical component lacks test coverage: governance_workflows",
+      "description": "Critical component governance_workflows has no test coverage with 6 Python files",
+      "severity": "CRITICAL",
+      "category": "RELIABILITY",
+      "source_test": "test_coverage_analysis",
+      "impact_score": 9.0,
+      "effort_estimate": "HIGH",
+      "affected_components": [
+        "governance_workflows"
+      ],
+      "risk_level": "HIGH",
+      "recommendations": [
+        "Create comprehensive test suite for governance_workflows",
+        "Implement unit tests for all public methods",
+        "Add integration tests for component interactions"
+      ],
+      "details": {
+        "name": "governance_workflows",
+        "path": "/home/dislove/ACGS-2/services/core/governance_workflows",
+        "python_files": 6,
+        "files": [
+          "services/core/governance_workflows/app/main.py",
+          "services/core/governance_workflows/app/config.py",
+          "services/core/governance_workflows/app/core/service_integrator.py",
+          "services/core/governance_workflows/app/core/workflow_orchestrator.py",
+          "services/core/governance_workflows/app/core/metrics_collector.py",
+          "services/core/governance_workflows/app/core/performance_monitor.py"
+        ]
+      }
+    },
+    {
+      "id": "COV-CRIT-005",
+      "title": "Critical component lacks test coverage: policy-governance",
+      "description": "Critical component policy-governance has no test coverage with 57 Python files",
+      "severity": "CRITICAL",
+      "category": "RELIABILITY",
+      "source_test": "test_coverage_analysis",
+      "impact_score": 9.0,
+      "effort_estimate": "HIGH",
+      "affected_components": [
+        "policy-governance"
+      ],
+      "risk_level": "HIGH",
+      "recommendations": [
+        "Create comprehensive test suite for policy-governance",
+        "Implement unit tests for all public methods",
+        "Add integration tests for component interactions"
+      ],
+      "details": {
+        "name": "policy-governance",
+        "path": "/home/dislove/ACGS-2/services/core/policy-governance",
+        "python_files": 57,
+        "files": [
+          "services/core/policy-governance/simple_pgc_main.py",
+          "services/core/policy-governance/__init__.py",
+          "services/core/policy-governance/pgc_service/models.py",
+          "services/core/policy-governance/pgc_service/main.py",
+          "services/core/policy-governance/pgc_service/start_with_tracing.py",
+          "services/core/policy-governance/pgc_service/__init__.py",
+          "services/core/policy-governance/pgc_service/optimized_governance_engine.py",
+          "services/core/policy-governance/app/cache_manager.py",
+          "services/core/policy-governance/app/exceptions.py",
+          "services/core/policy-governance/src/__init__.py",
+          "services/core/policy-governance/pgc_service/app/schemas.py",
+          "services/core/policy-governance/pgc_service/app/telemetry.py",
+          "services/core/policy-governance/pgc_service/app/main.py",
+          "services/core/policy-governance/pgc_service/app/__init__.py",
+          "services/core/policy-governance/pgc_service/app/main_enhanced.py",
+          "services/core/policy-governance/pgc_service/tests/test_wina_enforcement_optimizer.py",
+          "services/core/policy-governance/pgc_service/tests/test_constitutional_hash_validation.py",
+          "services/core/policy-governance/pgc_service/tests/test_wina_enforcement_integration.py",
+          "services/core/policy-governance/pgc_service/app/core/constitutional_hash_validator.py",
+          "services/core/policy-governance/pgc_service/app/core/database.py",
+          "services/core/policy-governance/pgc_service/app/core/auth.py",
+          "services/core/policy-governance/pgc_service/app/core/__init__.py",
+          "services/core/policy-governance/pgc_service/app/core/policy_synthesis_engine.py",
+          "services/core/policy-governance/pgc_service/app/core/limiter.py",
+          "services/core/policy-governance/pgc_service/app/core/ultra_low_latency_optimizer.py",
+          "services/core/policy-governance/pgc_service/app/core/datalog_engine.py",
+          "services/core/policy-governance/pgc_service/app/core/redis_cache_manager.py",
+          "services/core/policy-governance/pgc_service/app/core/hardware_acceleration_manager.py",
+          "services/core/policy-governance/pgc_service/app/core/realtime_compliance_engine.py",
+          "services/core/policy-governance/pgc_service/app/core/manifest_manager.py",
+          "services/core/policy-governance/pgc_service/app/core/proactive_fairness_generator.py",
+          "services/core/policy-governance/pgc_service/app/core/wina_enforcement_optimizer.py",
+          "services/core/policy-governance/pgc_service/app/core/policy_manager.py",
+          "services/core/policy-governance/pgc_service/app/core/opa_client.py",
+          "services/core/policy-governance/pgc_service/app/core/metrics.py",
+          "services/core/policy-governance/pgc_service/app/core/incremental_compiler.py",
+          "services/core/policy-governance/pgc_service/app/core/wina_policy_compiler.py",
+          "services/core/policy-governance/pgc_service/app/core/policy_format_router.py",
+          "services/core/policy-governance/pgc_service/app/core/secure_execution.py",
+          "services/core/policy-governance/pgc_service/app/middleware/constitutional_validation.py",
+          "services/core/policy-governance/pgc_service/app/middleware/__init__.py",
+          "services/core/policy-governance/pgc_service/app/middleware/enhanced_security.py",
+          "services/core/policy-governance/pgc_service/app/config/service_config.py",
+          "services/core/policy-governance/pgc_service/app/monitoring/acgs_pgp_metrics.py",
+          "services/core/policy-governance/pgc_service/app/services/fv_client.py",
+          "services/core/policy-governance/pgc_service/app/services/qpe_client.py",
+          "services/core/policy-governance/pgc_service/app/services/__init__.py",
+          "services/core/policy-governance/pgc_service/app/services/integrity_client.py",
+          "services/core/policy-governance/pgc_service/app/services/advanced_cache.py",
+          "services/core/policy-governance/pgc_service/app/api/__init__.py",
+          "services/core/policy-governance/pgc_service/app/api/v1/ultra_low_latency.py",
+          "services/core/policy-governance/pgc_service/app/api/v1/quantum_enforcement.py",
+          "services/core/policy-governance/pgc_service/app/api/v1/alphaevolve_enforcement.py",
+          "services/core/policy-governance/pgc_service/app/api/v1/__init__.py",
+          "services/core/policy-governance/pgc_service/app/api/v1/enforcement.py",
+          "services/core/policy-governance/pgc_service/app/api/v1/governance_workflows.py",
+          "services/core/policy-governance/pgc_service/app/api/v1/incremental_compilation.py"
+        ]
+      }
+    },
+    {
+      "id": "COV-CRIT-006",
+      "title": "Critical component lacks test coverage: constitutional_ai",
+      "description": "Critical component constitutional_ai has no test coverage with 68 Python files",
+      "severity": "CRITICAL",
+      "category": "RELIABILITY",
+      "source_test": "test_coverage_analysis",
+      "impact_score": 9.0,
+      "effort_estimate": "HIGH",
+      "affected_components": [
+        "constitutional_ai"
+      ],
+      "risk_level": "HIGH",
+      "recommendations": [
+        "Create comprehensive test suite for constitutional_ai",
+        "Implement unit tests for all public methods",
+        "Add integration tests for component interactions"
+      ],
+      "details": {
+        "name": "constitutional_ai",
+        "path": "/home/dislove/ACGS-2/services/core/constitutional_ai",
+        "python_files": 68,
+        "files": [
+          "services/core/constitutional_ai/__init__.py",
+          "services/core/constitutional_ai/src/__init__.py",
+          "services/core/constitutional_ai/ac_service/validate_stakeholder_system.py",
+          "services/core/constitutional_ai/ac_service/test_stakeholder_simple.py",
+          "services/core/constitutional_ai/ac_service/models.py",
+          "services/core/constitutional_ai/ac_service/test_stakeholder_engagement.py",
+          "services/core/constitutional_ai/ac_service/main.py",
+          "services/core/constitutional_ai/ac_service/__init__.py",
+          "services/core/constitutional_ai/ac_service/acge_single_model_service.py",
+          "services/core/constitutional_ai/ac_service/tests/test_human_in_the_loop_sampling.py",
+          "services/core/constitutional_ai/ac_service/tests/test_hitl_api_integration.py",
+          "services/core/constitutional_ai/ac_service/tests/test_intelligent_conflict_resolution.py",
+          "services/core/constitutional_ai/ac_service/app/schemas.py",
+          "services/core/constitutional_ai/ac_service/app/main.py",
+          "services/core/constitutional_ai/ac_service/app/cache_manager.py",
+          "services/core/constitutional_ai/ac_service/app/crud.py",
+          "services/core/constitutional_ai/ac_service/app/models.py",
+          "services/core/constitutional_ai/ac_service/app/__init__.py",
+          "services/core/constitutional_ai/ac_service/alembic/versions/005_add_qec_conflict_resolution_fields.py",
+          "services/core/constitutional_ai/ac_service/app/integrations/polis_integration.py",
+          "services/core/constitutional_ai/ac_service/app/middleware/enhanced_security.py",
+          "services/core/constitutional_ai/ac_service/app/middleware/__init__.py",
+          "services/core/constitutional_ai/ac_service/app/core/constitutional_council_scalability.py",
+          "services/core/constitutional_ai/ac_service/app/core/auth.py",
+          "services/core/constitutional_ai/ac_service/app/core/__init__.py",
+          "services/core/constitutional_ai/ac_service/app/core/domain_context_manager.py",
+          "services/core/constitutional_ai/ac_service/app/core/amendment_state_machine.py",
+          "services/core/constitutional_ai/ac_service/app/core/cryptographic_signing.py",
+          "services/core/constitutional_ai/ac_service/app/api/hitl_sampling.py",
+          "services/core/constitutional_ai/ac_service/app/api/public_consultation.py",
+          "services/core/constitutional_ai/ac_service/app/api/__init__.py",
+          "services/core/constitutional_ai/ac_service/app/services/collective_constitutional_ai.py",
+          "services/core/constitutional_ai/ac_service/app/services/human_escalation_system.py",
+          "services/core/constitutional_ai/ac_service/app/services/constitutional_council_dashboard.py",
+          "services/core/constitutional_ai/ac_service/app/services/public_consultation_service.py",
+          "services/core/constitutional_ai/ac_service/app/services/conflict_resolution_orchestrator.py",
+          "services/core/constitutional_ai/ac_service/app/services/constitutional_validation_service.py",
+          "services/core/constitutional_ai/ac_service/app/services/enhanced_constitutional_reward.py",
+          "services/core/constitutional_ai/ac_service/app/services/llm_as_judge_framework.py",
+          "services/core/constitutional_ai/ac_service/app/services/intelligent_conflict_detector.py",
+          "services/core/constitutional_ai/ac_service/app/services/conflict_audit_system.py",
+          "services/core/constitutional_ai/ac_service/app/services/advanced_democratic_participation.py",
+          "services/core/constitutional_ai/ac_service/app/services/qec_conflict_resolver.py",
+          "services/core/constitutional_ai/ac_service/app/services/voting_mechanism.py",
+          "services/core/constitutional_ai/ac_service/app/services/stakeholder_engagement.py",
+          "services/core/constitutional_ai/ac_service/app/services/automated_resolution_engine.py",
+          "services/core/constitutional_ai/ac_service/app/services/hitl_cross_service_integration.py",
+          "services/core/constitutional_ai/ac_service/app/services/voting_client.py",
+          "services/core/constitutional_ai/ac_service/app/services/democratic_governance.py",
+          "services/core/constitutional_ai/ac_service/app/services/human_in_the_loop_sampler.py",
+          "services/core/constitutional_ai/ac_service/app/workflows/workflow_manager.py",
+          "services/core/constitutional_ai/ac_service/app/workflows/constitutional_council_graph.py",
+          "services/core/constitutional_ai/ac_service/app/workflows/democratic_governance.py",
+          "services/core/constitutional_ai/ac_service/app/workflows/__init__.py",
+          "services/core/constitutional_ai/ac_service/app/monitoring/scalability_metrics.py",
+          "services/core/constitutional_ai/ac_service/app/api/v1/collective_constitutional_ai.py",
+          "services/core/constitutional_ai/ac_service/app/api/v1/conflict_resolution.py",
+          "services/core/constitutional_ai/ac_service/app/api/v1/dashboard_websocket.py",
+          "services/core/constitutional_ai/ac_service/app/api/v1/__init__.py",
+          "services/core/constitutional_ai/ac_service/app/api/v1/democratic_governance.py",
+          "services/core/constitutional_ai/ac_service/app/api/v1/principles.py",
+          "services/core/constitutional_ai/ac_service/app/api/v1/wina_constitutional_updates.py",
+          "services/core/constitutional_ai/ac_service/app/api/v1/constitutional_council.py",
+          "services/core/constitutional_ai/ac_service/app/api/v1/workflows.py",
+          "services/core/constitutional_ai/ac_service/app/api/v1/fidelity_monitor.py",
+          "services/core/constitutional_ai/ac_service/app/api/v1/voting.py",
+          "services/core/constitutional_ai/ac_service/app/api/v1/stakeholder_engagement.py",
+          "services/core/constitutional_ai/ac_service/app/api/v1/constitutional_validation.py"
+        ]
+      }
+    },
+    {
+      "id": "COV-CRIT-007",
+      "title": "Critical component lacks test coverage: governance_synthesis",
+      "description": "Critical component governance_synthesis has no test coverage with 113 Python files",
+      "severity": "CRITICAL",
+      "category": "RELIABILITY",
+      "source_test": "test_coverage_analysis",
+      "impact_score": 9.0,
+      "effort_estimate": "HIGH",
+      "affected_components": [
+        "governance_synthesis"
+      ],
+      "risk_level": "HIGH",
+      "recommendations": [
+        "Create comprehensive test suite for governance_synthesis",
+        "Implement unit tests for all public methods",
+        "Add integration tests for component interactions"
+      ],
+      "details": {
+        "name": "governance_synthesis",
+        "path": "/home/dislove/ACGS-2/services/core/governance_synthesis",
+        "python_files": 113,
+        "files": [
+          "services/core/governance_synthesis/__init__.py",
+          "services/core/governance_synthesis/gs_service/models.py",
+          "services/core/governance_synthesis/gs_service/main.py",
+          "services/core/governance_synthesis/gs_service/start_minimal.py",
+          "services/core/governance_synthesis/gs_service/__init__.py",
+          "services/core/governance_synthesis/src/__init__.py",
+          "services/core/governance_synthesis/gs_service/app/__init__.py",
+          "services/core/governance_synthesis/gs_service/app/crud_gs.py",
+          "services/core/governance_synthesis/gs_service/app/cache_manager.py",
+          "services/core/governance_synthesis/gs_service/app/main.py",
+          "services/core/governance_synthesis/gs_service/app/schemas.py",
+          "services/core/governance_synthesis/gs_service/tests/test_gemini_validators.py",
+          "services/core/governance_synthesis/gs_service/tests/test_wina_rego_synthesis.py",
+          "services/core/governance_synthesis/gs_service/tests/test_wina_rego_integration.py",
+          "services/core/governance_synthesis/gs_service/tests/test_evolutionary_tensor_integration.py",
+          "services/core/governance_synthesis/gs_service/tests/test_policy_synthesis_enhancement.py",
+          "services/core/governance_synthesis/gs_service/tests/test_groq_tensor_service.py",
+          "services/core/governance_synthesis/gs_service/tests/test_router_optimization.py",
+          "services/core/governance_synthesis/gs_service/app/validators/gemini_validators.py",
+          "services/core/governance_synthesis/gs_service/app/validators/__init__.py",
+          "services/core/governance_synthesis/gs_service/app/core/rule_generator.py",
+          "services/core/governance_synthesis/gs_service/app/core/constitutional_prompting.py",
+          "services/core/governance_synthesis/gs_service/app/core/llm_reliability_framework.py",
+          "services/core/governance_synthesis/gs_service/app/core/constitutional_council_scalability.py",
+          "services/core/governance_synthesis/gs_service/app/core/sliding_window_ucb.py",
+          "services/core/governance_synthesis/gs_service/app/core/distributed_policy_cache.py",
+          "services/core/governance_synthesis/gs_service/app/core/datalog_templates.py",
+          "services/core/governance_synthesis/gs_service/app/core/conservative_linucb.py",
+          "services/core/governance_synthesis/gs_service/app/core/mab_integration.py",
+          "services/core/governance_synthesis/gs_service/app/core/contextual_analyzer.py",
+          "services/core/governance_synthesis/gs_service/app/core/wina_llm_integration.py",
+          "services/core/governance_synthesis/gs_service/app/core/ab_testing_framework.py",
+          "services/core/governance_synthesis/gs_service/app/core/__init__.py",
+          "services/core/governance_synthesis/gs_service/app/core/auth.py",
+          "services/core/governance_synthesis/gs_service/app/core/qec_enhanced_synthesizer.py",
+          "services/core/governance_synthesis/gs_service/app/core/ollama_client.py",
+          "services/core/governance_synthesis/gs_service/app/core/heterogeneous_validator.py",
+          "services/core/governance_synthesis/gs_service/app/core/opa_integration.py",
+          "services/core/governance_synthesis/gs_service/app/core/mab_prompt_optimizer.py",
+          "services/core/governance_synthesis/gs_service/app/core/wina_rego_synthesis.py",
+          "services/core/governance_synthesis/gs_service/app/core/llm_circuit_breaker.py",
+          "services/core/governance_synthesis/gs_service/app/core/performance_optimizer.py",
+          "services/core/governance_synthesis/gs_service/app/core/violation_config.py",
+          "services/core/governance_synthesis/gs_service/app/core/llm_integration.py",
+          "services/core/governance_synthesis/gs_service/app/core/phase_a3_multi_model_consensus.py",
+          "services/core/governance_synthesis/gs_service/app/core/performance_validation.py",
+          "services/core/governance_synthesis/gs_service/app/core/multi_model_coordinator.py",
+          "services/core/governance_synthesis/gs_service/app/core/enhanced_constitutional_analyzer.py",
+          "services/core/governance_synthesis/gs_service/app/core/nvidia_qwen_client.py",
+          "services/core/governance_synthesis/gs_service/app/security/adversarial_defenses.py",
+          "services/core/governance_synthesis/gs_service/app/services/performance_monitor.py",
+          "services/core/governance_synthesis/gs_service/app/services/security_compliance.py",
+          "services/core/governance_synthesis/gs_service/app/services/advanced_cache.py",
+          "services/core/governance_synthesis/gs_service/app/services/integrity_client.py",
+          "services/core/governance_synthesis/gs_service/app/services/groq_tensor_service.py",
+          "services/core/governance_synthesis/gs_service/app/services/violation_escalation_service.py",
+          "services/core/governance_synthesis/gs_service/app/services/qec_error_correction_service.py",
+          "services/core/governance_synthesis/gs_service/app/services/ac_client.py",
+          "services/core/governance_synthesis/gs_service/app/services/policy_validator.py",
+          "services/core/governance_synthesis/gs_service/app/services/monitoring_service.py",
+          "services/core/governance_synthesis/gs_service/app/services/stakeholder_engagement.py",
+          "services/core/governance_synthesis/gs_service/app/services/fairness_evaluation_framework.py",
+          "services/core/governance_synthesis/gs_service/app/services/alphaevolve_bridge.py",
+          "services/core/governance_synthesis/gs_service/app/services/enhanced_governance_synthesis.py",
+          "services/core/governance_synthesis/gs_service/app/services/enhanced_multi_model_validation.py",
+          "services/core/governance_synthesis/gs_service/app/services/lipschitz_estimator.py",
+          "services/core/governance_synthesis/gs_service/app/services/cache_manager.py",
+          "services/core/governance_synthesis/gs_service/app/services/violation_audit_service.py",
+          "services/core/governance_synthesis/gs_service/app/services/fv_client.py",
+          "services/core/governance_synthesis/gs_service/app/services/__init__.py",
+          "services/core/governance_synthesis/gs_service/app/services/federated_learning_orchestrator.py",
+          "services/core/governance_synthesis/gs_service/app/services/constitutional_reporting_service.py",
+          "services/core/governance_synthesis/gs_service/app/services/violation_detection_service.py",
+          "services/core/governance_synthesis/gs_service/app/models/mab_models.py",
+          "services/core/governance_synthesis/gs_service/app/models/reliability_models.py",
+          "services/core/governance_synthesis/gs_service/app/wina/gating.py",
+          "services/core/governance_synthesis/gs_service/app/wina/models.py",
+          "services/core/governance_synthesis/gs_service/app/wina/core.py",
+          "services/core/governance_synthesis/gs_service/app/wina/svd_utils.py",
+          "services/core/governance_synthesis/gs_service/app/wina/__init__.py",
+          "services/core/governance_synthesis/gs_service/app/shared/metrics.py",
+          "services/core/governance_synthesis/gs_service/app/api/__init__.py",
+          "services/core/governance_synthesis/gs_service/app/middleware/__init__.py",
+          "services/core/governance_synthesis/gs_service/app/middleware/enhanced_security.py",
+          "services/core/governance_synthesis/gs_service/app/config/opa_config.py",
+          "services/core/governance_synthesis/gs_service/app/workflows/structured_output_models.py",
+          "services/core/governance_synthesis/gs_service/app/workflows/multi_model_manager.py",
+          "services/core/governance_synthesis/gs_service/app/workflows/policy_synthesis_workflow.py",
+          "services/core/governance_synthesis/gs_service/app/workflows/__init__.py",
+          "services/core/governance_synthesis/gs_service/app/workflows/phase_a3_governance_orchestrator.py",
+          "services/core/governance_synthesis/gs_service/app/api/v1/synthesize.py",
+          "services/core/governance_synthesis/gs_service/app/api/v1/__init__.py",
+          "services/core/governance_synthesis/gs_service/app/api/v1/mab_optimization.py",
+          "services/core/governance_synthesis/gs_service/app/api/v1/qec_error_correction.py",
+          "services/core/governance_synthesis/gs_service/app/api/v1/constitutional_synthesis.py",
+          "services/core/governance_synthesis/gs_service/app/api/v1/governance_workflows.py",
+          "services/core/governance_synthesis/gs_service/app/api/v1/fidelity_monitoring_websocket.py",
+          "services/core/governance_synthesis/gs_service/app/api/v1/wina_rego_synthesis.py",
+          "services/core/governance_synthesis/gs_service/app/api/v1/phase2_synthesis.py",
+          "services/core/governance_synthesis/gs_service/app/api/v1/enhanced_synthesis.py",
+          "services/core/governance_synthesis/gs_service/app/api/v1/policy_management.py",
+          "services/core/governance_synthesis/gs_service/app/api/v1/violation_management.py",
+          "services/core/governance_synthesis/gs_service/app/api/v1/constitutional_reports.py",
+          "services/core/governance_synthesis/gs_service/app/api/v1/reliability_metrics.py",
+          "services/core/governance_synthesis/gs_service/app/api/v1/phase_a3_synthesis.py",
+          "services/core/governance_synthesis/gs_service/app/api/v1/multi_model_synthesis.py",
+          "services/core/governance_synthesis/gs_service/app/api/v1/enhanced_multi_model.py",
+          "services/core/governance_synthesis/gs_service/app/api/v1/alphaevolve_integration.py",
+          "services/core/governance_synthesis/gs_service/app/api/v1/performance_monitoring.py",
+          "services/core/governance_synthesis/gs_service/tests/integration/test_opa_integration.py",
+          "services/core/governance_synthesis/gs_service/tests/security/test_security_compliance.py",
+          "services/core/governance_synthesis/gs_service/tests/performance/test_governance_synthesis_performance.py",
+          "services/core/governance_synthesis/gs_service/tests/unit/services/test_policy_validator.py"
+        ]
+      }
+    },
+    {
+      "id": "COV-MAJ-008",
+      "title": "Overall test coverage below target: 26.9%",
+      "description": "Current test coverage is 26.9%, below the 80% target",
+      "severity": "MAJOR",
+      "category": "RELIABILITY",
+      "source_test": "test_coverage_analysis",
+      "impact_score": 7.0,
+      "effort_estimate": "HIGH",
+      "affected_components": [
+        "entire_system"
+      ],
+      "risk_level": "MEDIUM",
+      "recommendations": [
+        "Increase test coverage to meet 80% target",
+        "Focus on untested critical paths",
+        "Implement automated coverage reporting"
+      ],
+      "details": {
+        "current_coverage": 26.923076923076923,
+        "target_coverage": 80
+      }
+    },
+    {
+      "id": "FUNC-MAJO-001",
+      "title": "Business rule validation failures",
+      "description": "Business rule tests failed with 33.3% edge case success rate",
+      "severity": "MAJOR",
+      "category": "FUNCTIONALITY",
+      "source_test": "business_rules_testing",
+      "impact_score": 7.0,
+      "effort_estimate": "MEDIUM",
+      "affected_components": [
+        "business_rules",
+        "policy_governance"
+      ],
+      "risk_level": "MEDIUM",
+      "recommendations": [
+        "Improve edge case handling in business rules",
+        "Review policy validation logic",
+        "Enhance error handling patterns"
+      ],
+      "details": {
+        "total_tests": 4,
+        "passed": 3,
+        "failed": 1,
+        "errors": 0,
+        "success_rate": 75.0,
+        "edge_case_summary": {
+          "total_edge_cases": 57,
+          "passed_edge_cases": 19,
+          "edge_case_success_rate": 33.33333333333333
+        },
+        "results": [
+          {
+            "test_name": "governance_workflow_rules",
+            "status": "PASS",
+            "execution_time": 1.7881393432617188e-05,
+            "rule_validations": 4,
+            "edge_cases_tested": 20,
+            "edge_cases_passed": 5,
+            "details": {
+              "total_validations": 28,
+              "passed_validations": 23,
+              "success_rate": 0.8214285714285714,
+              "test_proposals": 7
+            },
+            "error_message": null
+          },
+          {
+            "test_name": "policy_synthesis_rules",
+            "status": "PASS",
+            "execution_time": 6.031990051269531e-05,
+            "rule_validations": 4,
+            "edge_cases_tested": 16,
+            "edge_cases_passed": 4,
+            "details": {
+              "total_validations": 24,
+              "passed_validations": 20,
+              "success_rate": 0.8333333333333334,
+              "test_policies": 6
+            },
+            "error_message": null
+          },
+          {
+            "test_name": "constitutional_compliance_rules",
+            "status": "PASS",
+            "execution_time": 5.7220458984375e-05,
+            "rule_validations": 4,
+            "edge_cases_tested": 16,
+            "edge_cases_passed": 6,
+            "details": {
+              "total_validations": 24,
+              "passed_validations": 18,
+              "success_rate": 0.75,
+              "test_documents": 6
+            },
+            "error_message": null
+          },
+          {
+            "test_name": "error_handling_patterns",
+            "status": "FAIL",
+            "execution_time": 0.0004572868347167969,
+            "rule_validations": 1,
+            "edge_cases_tested": 5,
+            "edge_cases_passed": 4,
+            "details": {
+              "error_scenarios": [
+                {
+                  "name": "null_input_handling",
+                  "status": "passed",
+                  "expected_error": true,
+                  "actual_error": true,
+                  "result": {
+                    "error": true,
+                    "message": "Null input not allowed"
+                  }
+                },
+                {
+                  "name": "empty_string_handling",
+                  "status": "passed",
+                  "expected_error": true,
+                  "actual_error": true,
+                  "result": {
+                    "error": true,
+                    "message": "Empty string not allowed"
+                  }
+                },
+                {
+                  "name": "invalid_json_handling",
+                  "status": "passed",
+                  "expected_error": true,
+                  "actual_error": true,
+                  "result": {
+                    "error": true,
+                    "message": "Invalid JSON format"
+                  }
+                },
+                {
+                  "name": "large_input_handling",
+                  "status": "failed",
+                  "expected_error": false,
+                  "actual_error": true,
+                  "result": {
+                    "error": true,
+                    "message": "Input too large"
+                  }
+                },
+                {
+                  "name": "unicode_handling",
+                  "status": "passed",
+                  "expected_error": false,
+                  "actual_error": false,
+                  "result": {
+                    "error": false,
+                    "original": "\ud83d\ude80 Unicode test \u4e2d\u6587",
+                    "processed": "\ud83d\ude80 Unicode test \u4e2d\u6587"
+                  }
+                }
+              ],
+              "total_scenarios": 5
+            },
+            "error_message": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "PERF-MINO-001",
+      "title": "Performance target not met: cache_effectiveness",
+      "description": "Performance benchmark cache_effectiveness failed to meet targets",
+      "severity": "MINOR",
+      "category": "PERFORMANCE",
+      "source_test": "performance_benchmark",
+      "impact_score": 5.0,
+      "effort_estimate": "MEDIUM",
+      "affected_components": [
+        "cache_effectiveness"
+      ],
+      "risk_level": "MEDIUM",
+      "recommendations": [
+        "Optimize performance-critical code paths",
+        "Review algorithm complexity",
+        "Consider caching strategies",
+        "Profile and identify bottlenecks"
+      ],
+      "details": {
+        "test_name": "cache_effectiveness",
+        "status": "FAIL",
+        "execution_time": 0.10497832298278809,
+        "target_metrics": {
+          "cache_hit_rate_percent": 80.0,
+          "p99_latency_ms": 5.0,
+          "throughput_ops_per_sec": 1000
+        },
+        "actual_metrics": {
+          "cache_hit_rate_percent": 66.64999999999999,
+          "p99_latency_ms": 0.15926361083984375,
+          "throughput_ops_per_sec": 19414.119346059135
+        },
+        "meets_targets": false,
+        "load_conditions": {
+          "test_operations": 2000,
+          "cache_size": 100
+        },
+        "performance_details": {
+          "cache_hits": 1333,
+          "cache_misses": 667,
+          "latency_stats": {
+            "min_ms": 0.0,
+            "max_ms": 0.4303455352783203,
+            "mean_ms": 0.05150890350341797,
+            "median_ms": 0.0002384185791015625,
+            "p95_latency_ms": 0.15546083450317383,
+            "p99_latency_ms": 0.15926361083984375,
+            "std_dev_ms": 0.07325232115708513
+          }
+        },
+        "error_message": null
+      }
+    }
+  ],
+  "remediation_plan": {
+    "immediate_action_required": [
+      {
+        "issue_id": "SEC-CRIT-001",
+        "title": "Security vulnerabilities found: input_validation_security",
+        "effort": "HIGH",
+        "components": [
+          "input_validation_security"
+        ],
+        "recommendations": [
+          "Implement comprehensive input sanitization",
+          "Use parameterized queries to prevent SQL injection",
+          "Implement proper output encoding for XSS prevention"
+        ]
+      },
+      {
+        "issue_id": "COV-CRIT-001",
+        "title": "Critical component lacks test coverage: policy-engine",
+        "effort": "HIGH",
+        "components": [
+          "policy-engine"
+        ],
+        "recommendations": [
+          "Create comprehensive test suite for policy-engine",
+          "Implement unit tests for all public methods",
+          "Add integration tests for component interactions"
+        ]
+      },
+      {
+        "issue_id": "COV-CRIT-002",
+        "title": "Critical component lacks test coverage: policy_governance",
+        "effort": "HIGH",
+        "components": [
+          "policy_governance"
+        ],
+        "recommendations": [
+          "Create comprehensive test suite for policy_governance",
+          "Implement unit tests for all public methods",
+          "Add integration tests for component interactions"
+        ]
+      },
+      {
+        "issue_id": "COV-CRIT-003",
+        "title": "Critical component lacks test coverage: constitutional-ai",
+        "effort": "HIGH",
+        "components": [
+          "constitutional-ai"
+        ],
+        "recommendations": [
+          "Create comprehensive test suite for constitutional-ai",
+          "Implement unit tests for all public methods",
+          "Add integration tests for component interactions"
+        ]
+      },
+      {
+        "issue_id": "COV-CRIT-004",
+        "title": "Critical component lacks test coverage: governance_workflows",
+        "effort": "HIGH",
+        "components": [
+          "governance_workflows"
+        ],
+        "recommendations": [
+          "Create comprehensive test suite for governance_workflows",
+          "Implement unit tests for all public methods",
+          "Add integration tests for component interactions"
+        ]
+      },
+      {
+        "issue_id": "COV-CRIT-005",
+        "title": "Critical component lacks test coverage: policy-governance",
+        "effort": "HIGH",
+        "components": [
+          "policy-governance"
+        ],
+        "recommendations": [
+          "Create comprehensive test suite for policy-governance",
+          "Implement unit tests for all public methods",
+          "Add integration tests for component interactions"
+        ]
+      },
+      {
+        "issue_id": "COV-CRIT-006",
+        "title": "Critical component lacks test coverage: constitutional_ai",
+        "effort": "HIGH",
+        "components": [
+          "constitutional_ai"
+        ],
+        "recommendations": [
+          "Create comprehensive test suite for constitutional_ai",
+          "Implement unit tests for all public methods",
+          "Add integration tests for component interactions"
+        ]
+      },
+      {
+        "issue_id": "COV-CRIT-007",
+        "title": "Critical component lacks test coverage: governance_synthesis",
+        "effort": "HIGH",
+        "components": [
+          "governance_synthesis"
+        ],
+        "recommendations": [
+          "Create comprehensive test suite for governance_synthesis",
+          "Implement unit tests for all public methods",
+          "Add integration tests for component interactions"
+        ]
+      }
+    ],
+    "short_term_fixes": [],
+    "medium_term_improvements": [
+      {
+        "issue_id": "COV-MAJ-008",
+        "title": "Overall test coverage below target: 26.9%",
+        "effort": "HIGH",
+        "components": [
+          "entire_system"
+        ],
+        "recommendations": [
+          "Increase test coverage to meet 80% target",
+          "Focus on untested critical paths"
+        ]
+      },
+      {
+        "issue_id": "FUNC-MAJO-001",
+        "title": "Business rule validation failures",
+        "effort": "MEDIUM",
+        "components": [
+          "business_rules",
+          "policy_governance"
+        ],
+        "recommendations": [
+          "Improve edge case handling in business rules",
+          "Review policy validation logic"
+        ]
+      }
+    ],
+    "long_term_enhancements": [
+      {
+        "issue_id": "PERF-MINO-001",
+        "title": "Performance target not met: cache_effectiveness",
+        "effort": "MEDIUM",
+        "components": [
+          "cache_effectiveness"
+        ],
+        "recommendations": [
+          "Optimize performance-critical code paths"
+        ]
+      }
+    ]
+  },
+  "analysis_metadata": {
+    "analysis_timestamp": 1751215878.9329143,
+    "test_results_analyzed": [
+      "test_coverage_analysis.json",
+      "core_algorithm_test_results.json",
+      "wina_performance_test_results.json",
+      "business_rules_test_results.json",
+      "integration_test_results.json",
+      "e2e_workflow_test_results.json",
+      "performance_benchmark_results.json",
+      "security_validation_results.json"
+    ],
+    "total_test_phases": 8
+  }
+}

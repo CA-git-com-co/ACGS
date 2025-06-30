@@ -4,6 +4,7 @@ Integrates bias detection algorithms from AlphaEvolve system
 """
 
 import logging
+import re
 import secrets
 import time
 from typing import Any
@@ -51,6 +52,21 @@ class BiasDetector:
         # sha256: func_hash
         self.bias_cache = {}
         self.fairness_cache = {}
+
+        # Pre-compiled patterns for efficient bias detection
+        self._bias_patterns = {
+            "protected_attributes": re.compile(r'\b(age|gender|race|religion|disability|sexual orientation)\b', re.IGNORECASE),
+            "conditional_logic": re.compile(r'\b(if|when|where|unless|provided)\b', re.IGNORECASE),
+            "exclusionary_terms": re.compile(r'\b(exclude|deny|reject|prohibit|ban)\b', re.IGNORECASE),
+        }
+
+        # Shared computation cache for bias detection
+        self._computation_cache = {}
+        self._metrics = {
+            "total_detections": 0,
+            "bias_detected_count": 0,
+            "average_detection_time_ms": 0.0,
+        }
 
     async def detect_bias(
         self, request: BiasDetectionRequest, policy_rules: list[PolicyRule]

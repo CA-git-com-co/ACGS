@@ -1,0 +1,54 @@
+jobs:
+  container-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Build Docker images
+      run: docker build -t acgs-security-scan .
+    - name: Run Trivy container scan
+      run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy
+        image --format json --output trivy-report.json acgs-security-scan
+    - name: Upload container scan results
+      uses: actions/upload-artifact@v3
+      with:
+        name: container-security-reports
+        path: trivy-report.json
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    - name: Install security tools
+      run: pip install bandit safety semgrep pip-audit
+    - name: Run Bandit security scan
+      run: bandit -r services/ scripts/ -f json -o bandit-report.json
+    - name: Run Safety dependency scan
+      run: safety check --json --output safety-report.json
+    - name: Run Semgrep SAST scan
+      run: semgrep --config=auto --json --output=semgrep-report.json services/ scripts/
+    - name: Run pip-audit
+      run: pip-audit --format=json --output=pip-audit-report.json
+    - name: Upload security reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-reports
+        path: '*-report.json'
+    - name: Security gate check
+      run: python scripts/security/evaluate_security_reports.py
+name: ACGS-2 Continuous Security Scanning
+'on':
+  pull_request:
+    branches:
+    - main
+    - develop
+  push:
+    branches:
+    - main
+    - develop
+  schedule:
+  - cron: 0 2 * * *

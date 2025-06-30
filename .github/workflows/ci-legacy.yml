@@ -1,12 +1,14 @@
 name: ACGS-1 Enterprise CI/CD Pipeline
 
+# DISABLED: Replaced by unified-ci.yml to reduce GitHub Actions costs
 on:
-  push:
-    branches: [main, master]
-  pull_request:
-    branches: [main, master]
-  schedule:
-    - cron: '0 2 * * *' # Daily at 2 AM for comprehensive testing
+  workflow_dispatch: # Manual execution only
+  # push:
+  #   branches: [main, master]
+  # pull_request:
+  #   branches: [main, master]
+  # schedule:
+  #   - cron: '0 2 * * *' # Daily at 2 AM for comprehensive testing
 
 permissions:
   contents: read

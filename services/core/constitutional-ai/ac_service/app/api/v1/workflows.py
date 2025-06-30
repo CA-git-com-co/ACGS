@@ -91,6 +91,7 @@ async def get_workflow_capabilities():
         )
 
 
+@validate_policy_input
 @router.post("/initialize", response_model=dict[str, str])
 async def initialize_workflow(
     request: WorkflowInitRequest, current_user: User = Depends(get_current_user)
@@ -332,6 +333,7 @@ class ConstitutionalCouncilWorkflowResponse(BaseModel):
     messages: list[dict[str, Any]] = []
 
 
+@validate_policy_input
 @router.post(
     "/constitutional-council/execute",
     response_model=ConstitutionalCouncilWorkflowResponse,
@@ -435,6 +437,13 @@ async def get_constitutional_council_workflow_state(
     """
     try:
         from .workflows.constitutional_council_graph import (
+
+# Security validation imports
+from services.shared.security_validation import (
+    validate_user_input,
+    validate_policy_input,
+    validate_governance_input
+)
             create_constitutional_council_graph,
         )
 

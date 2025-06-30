@@ -22,6 +22,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from services.shared.database import get_async_db as get_db_session
 
 from ...services.democratic_governance import (
+
+# Security validation imports
+from services.shared.security_validation import (
+    validate_user_input,
+    validate_policy_input,
+    validate_governance_input
+)
     ApprovalLevel,
     GovernanceDecisionType,
     GovernanceStage,
@@ -83,6 +90,7 @@ class FinalizationRequest(BaseModel):
 # API Endpoints
 
 
+@validate_policy_input
 @router.post("/proposals")
 async def create_proposal(
     proposal_data: ProposalCreateRequest,
@@ -229,6 +237,7 @@ async def get_proposal(proposal_id: str):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
+@validate_policy_input
 @router.post("/proposals/{proposal_id}/advance")
 async def advance_proposal_stage(
     proposal_id: str,
@@ -271,6 +280,7 @@ async def advance_proposal_stage(
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
+@validate_policy_input
 @router.post("/proposals/{proposal_id}/approvals")
 async def record_approval(
     proposal_id: str,
@@ -311,6 +321,7 @@ async def record_approval(
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
+@validate_policy_input
 @router.post("/proposals/{proposal_id}/finalize")
 async def finalize_proposal(
     proposal_id: str,

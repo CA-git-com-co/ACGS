@@ -76,6 +76,7 @@ class FeedbackResponse(BaseModel):
     reviewed_at: str | None = None
 
 
+@validate_policy_input
 @router.post("/initiate", response_model=StakeholderEngagementStatus)
 async def initiate_stakeholder_engagement(
     engagement_input: StakeholderEngagementInput,
@@ -150,6 +151,7 @@ async def get_engagement_status(
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
+@validate_policy_input
 @router.post("/feedback", response_model=FeedbackResponse)
 async def submit_stakeholder_feedback(
     feedback_request: FeedbackSubmissionRequest,
@@ -323,6 +325,13 @@ async def websocket_engagement_updates(websocket: WebSocket, amendment_id: int):
 
         # Create engagement service (simplified for WebSocket)
         from services.shared.database import get_async_db
+
+# Security validation imports
+from services.shared.security_validation import (
+    validate_user_input,
+    validate_policy_input,
+    validate_governance_input
+)
 
         async for db in get_async_db():
             config = ConstitutionalCouncilConfig()

@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
+@validate_governance_input
 @router.post("/synthesize", response_model=ConstitutionalSynthesisOutput)
 async def constitutional_synthesis_endpoint(
     synthesis_request: ConstitutionalSynthesisInput,
@@ -65,6 +66,7 @@ async def constitutional_synthesis_endpoint(
         )
 
 
+@validate_governance_input
 @router.post("/analyze-context")
 async def analyze_constitutional_context_endpoint(
     context: str, category: str | None = None, auth_token: str | None = None
@@ -81,6 +83,13 @@ async def analyze_constitutional_context_endpoint(
 
     try:
         from ...core.constitutional_prompting import constitutional_prompt_builder
+
+# Security validation imports
+from services.shared.security_validation import (
+    validate_user_input,
+    validate_policy_input,
+    validate_governance_input
+)
 
         constitutional_context = await constitutional_prompt_builder.build_constitutional_context(
             context=context, category=category, auth_token=auth_token
@@ -138,6 +147,7 @@ async def get_constitutional_context_endpoint(context: str, category: str | None
         )
 
 
+@validate_governance_input
 @router.post("/environmental-factors")
 async def add_environmental_factor_endpoint(
     factor_id: str,

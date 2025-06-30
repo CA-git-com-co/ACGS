@@ -1,4 +1,5 @@
 import numpy as np  # Added for type hinting and example matrix
+from typing import Any
 
 from .models import AnalyzedNeuronActivation, NeuronActivationInput, WINAWeightOutput
 from .svd_utils import apply_svd_transformation  # Added SVD import
@@ -50,51 +51,37 @@ async def analyze_neuron_activations(
 
 async def calculate_wina_weights(
     analyzed_activations: list[AnalyzedNeuronActivation],
+    weight_matrices: dict[str, Any] | None = None,
     # Alternatively, could take NeuronActivationInput directly
     # activation_input: NeuronActivationInput
 ) -> WINAWeightOutput:
     """
     Calculates WINA (Weight Informed Neuron Activation) weights based on
-    analyzed neuron activations.
+    analyzed neuron activations and weight matrices.
+
+    Implements the true WINA algorithm: weight = |x_i * ||W_:,i||_2|
+    where x_i is the hidden state and ||W_:,i||_2 is the column-wise L2 norm.
 
     Args:
         analyzed_activations: A list of analyzed neuron activation objects.
+        weight_matrices: Optional weight matrices for column norm calculation.
 
     Returns:
-        A WINAWeightOutput object containing the calculated weights for each neuron.
-
-    Note:
-        The current WINA weight calculation is a placeholder.
-        It assigns weights proportional to the mean activation.
-        This should be replaced with the actual WINA algorithm logic.
+        A WINAWeightOutput object containing the calculated WINA weights.
     """
     weights: dict[str, float] = {}
 
-    # Placeholder WINA calculation: weight is proportional to mean activation.
-    # This is a simplified assumption and should be replaced with the actual WINA formula.
-    # For example, it could involve normalization or more complex relationships
-    # with variance, activation frequency, etc.
-
-    # Sum of all mean activations for normalization (optional, depends on WINA formula)
-    # total_mean_activation = sum(ana.mean_activation for ana in analyzed_activations if ana.mean_activation > 0)
+    # Pre-compute column norms for efficiency (cache for reuse)
+    column_norms = await _compute_column_norms(weight_matrices) if weight_matrices else {}
 
     for analysis in analyzed_activations:
-        # Basic placeholder: weight = mean_activation
-        # A more refined placeholder might involve normalization or scaling.
-        # Example: if total_mean_activation > 0:
-        #     weights[analysis.neuron_id] = analysis.mean_activation / total_mean_activation
-        # else:
-        #     weights[analysis.neuron_id] = 0.0
+        # True WINA algorithm: |x_i * ||W_:,i||_2|
+        activation_value = analysis.mean_activation
+        column_norm = column_norms.get(analysis.neuron_id, 1.0)  # Default to 1.0 if no weight matrix
 
-        # For now, a direct assignment or a simple scaling factor.
-        # Let's assume WINA weights are directly related to their positive mean activation.
-        # Negative or zero activations might imply less importance in some contexts.
-        if analysis.mean_activation > 0:
-            weights[analysis.neuron_id] = analysis.mean_activation
-        else:
-            weights[analysis.neuron_id] = (
-                0.0  # Assign zero weight if mean activation is not positive
-            )
+        # WINA weight calculation with absolute value for magnitude
+        wina_weight = abs(activation_value * column_norm)
+        weights[analysis.neuron_id] = wina_weight
 
         # Further considerations for a real WINA algorithm:
         # - How does variance play a role? Higher variance might mean less stable/reliable.
@@ -104,8 +91,48 @@ async def calculate_wina_weights(
 
     return WINAWeightOutput(
         weights=weights,
-        metadata={"calculation_method": "placeholder_mean_proportional"},
+        metadata={"calculation_method": "true_wina_algorithm"},
     )
+
+
+async def _compute_column_norms(weight_matrices: dict[str, Any]) -> dict[str, float]:
+    """
+    Compute column-wise L2 norms for weight matrices.
+
+    Args:
+        weight_matrices: Dictionary of weight matrices by layer/neuron ID
+
+    Returns:
+        Dictionary of column norms by neuron ID
+    """
+    column_norms = {}
+
+    for layer_id, weight_matrix in weight_matrices.items():
+        try:
+            # Compute column-wise L2 norms
+            if hasattr(weight_matrix, 'norm'):
+                # PyTorch tensor
+                norms = weight_matrix.norm(dim=0, p=2).cpu().numpy()
+            elif hasattr(weight_matrix, 'shape'):
+                # NumPy array
+                norms = np.linalg.norm(weight_matrix, axis=0)
+            else:
+                # Fallback for other types
+                continue
+
+            # Map norms to neuron IDs
+            for i, norm_value in enumerate(norms):
+                neuron_id = f"{layer_id}_{i}"
+                column_norms[neuron_id] = float(norm_value)
+
+        except Exception as e:
+            # Log error but continue processing
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(f"Failed to compute column norms for layer {layer_id}: {e}")
+            continue
+
+    return column_norms
 
 
 # Example usage (for testing or integration later)

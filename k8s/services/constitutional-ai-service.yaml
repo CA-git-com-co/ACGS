@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: acgs-constitutional-ai
+  name: acgs-constitutional-ai-service
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8006
+  selector:
+    app: acgs-constitutional-ai
+  sessionAffinity: None
+  type: LoadBalancer

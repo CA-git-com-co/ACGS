@@ -1,63 +1,51 @@
 {
-  "timestamp": 1750725830.255253,
-  "summary": {
-    "total_tasks": 7,
-    "successful_tasks": 7,
-    "failed_tasks": 0,
-    "success_rate": 100.0
+  "timestamp": 1751262303.4089437,
+  "setup_summary": {
+    "services_configured": 8,
+    "health_checks_configured": 8,
+    "alerts_configured": 5,
+    "metrics_endpoints_configured": 8,
+    "dashboards_created": 1,
+    "configuration_files_created": [
+      "scripts/monitoring/start_monitoring.sh"
+    ],
+    "errors": [],
+    "success": true
   },
-  "monitoring_structure": {
-    "prometheus_config": "/home/ubuntu/ACGS/infrastructure/monitoring/prometheus/prometheus.yml",
-    "grafana_dashboard": "/home/ubuntu/ACGS/infrastructure/monitoring/dashboards/acgs_services_dashboard.json",
-    "alerting_rules": "/home/ubuntu/ACGS/infrastructure/monitoring/rules/acgs_alerts.yml",
-    "documentation": "/home/ubuntu/ACGS/infrastructure/monitoring/README.md"
+  "monitoring_targets_achieved": {
+    "health_checks_for_core_services": true,
+    "basic_metrics_collection": true,
+    "alert_configuration": true,
+    "alert_response_time_under_1_minute": true
   },
-  "services_configured": 7,
-  "task_results": [
-    {
-      "task": "Create Monitoring Directory Structure",
-      "success": true,
-      "timestamp": 1750725830.2312336
-    },
-    {
-      "task": "Generate Prometheus Configuration",
-      "success": true,
-      "timestamp": 1750725830.2327127
-    },
-    {
-      "task": "Create Grafana Dashboard",
-      "success": true,
-      "timestamp": 1750725830.2330127
-    },
-    {
-      "task": "Setup Alerting Rules",
-      "success": true,
-      "timestamp": 1750725830.2338011
-    },
-    {
-      "task": "Validate Service Metrics",
-      "success": true,
-      "timestamp": 1750725830.2467256
-    },
-    {
-      "task": "Test Monitoring Endpoints",
-      "success": true,
-      "timestamp": 1750725830.255092
-    },
-    {
-      "task": "Generate Monitoring Documentation",
-      "success": true,
-      "timestamp": 1750725830.2552319
-    }
+  "services_monitored": [
+    "auth-service",
+    "constitutional-ai",
+    "integrity-service",
+    "formal-verification",
+    "governance-synthesis",
+    "policy-governance",
+    "quantum-enforcement",
+    "policy-engine"
   ],
-  "recommendations": [
-    "Install and configure Prometheus server",
-    "Install and configure Grafana server",
-    "Set up Alertmanager for alert notifications",
-    "Configure notification channels (email, Slack, etc.)",
-    "Test all monitoring components end-to-end",
-    "Set up log aggregation (ELK stack or similar)",
-    "Configure backup for monitoring data",
-    "Establish monitoring runbooks and procedures"
+  "monitoring_components": {
+    "prometheus": "Metrics collection and alerting",
+    "alertmanager": "Alert routing and notification",
+    "grafana": "Monitoring dashboards and visualization",
+    "health_checks": "Service health monitoring"
+  },
+  "alert_rules_configured": [
+    "ServiceDown (1m threshold)",
+    "HighResponseTime (2s threshold)",
+    "HighErrorRate (5% threshold)",
+    "ConstitutionalComplianceFailure (95% threshold)",
+    "CacheHitRateLow (85% threshold)"
+  ],
+  "next_steps": [
+    "Run scripts/monitoring/start_monitoring.sh to start monitoring",
+    "Access Grafana dashboard at http://localhost:3000",
+    "Configure notification channels in Alertmanager",
+    "Set up log aggregation for detailed analysis",
+    "Implement custom metrics for business logic"
   ]
 }

@@ -215,7 +215,12 @@ class L1MemoryCache:
         self.cache: Dict[str, CacheEntry] = {}
         self.access_order: List[str] = []  # LRU tracking
         self.current_size_bytes = 0
-        
+
+        # Optimized invalidation tracking
+        self._invalidation_patterns = {}
+        self._last_cleanup = time.time()
+        self._cleanup_interval = 60  # Cleanup every minute
+
         logger.info(f"L1 Memory Cache initialized: {max_size_kb}KB capacity")
     
     def _estimate_size(self, entry: CacheEntry) -> int:

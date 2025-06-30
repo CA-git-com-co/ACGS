@@ -1,0 +1,95 @@
+networks:
+  acgs-network:
+    external: true
+services:
+  constitutional-ai-1:
+    build: ./services/core/constitutional-ai
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+    environment:
+    - SERVICE_NAME=constitutional-ai
+    - REPLICA_ID=1
+    networks:
+    - acgs-network
+  constitutional-ai-2:
+    build: ./services/core/constitutional-ai
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+    environment:
+    - SERVICE_NAME=constitutional-ai
+    - REPLICA_ID=2
+    networks:
+    - acgs-network
+  governance-synthesis-1:
+    build: ./services/core/governance-synthesis
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+    environment:
+    - SERVICE_NAME=governance-synthesis
+    - REPLICA_ID=1
+    networks:
+    - acgs-network
+  governance-synthesis-2:
+    build: ./services/core/governance-synthesis
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+    environment:
+    - SERVICE_NAME=governance-synthesis
+    - REPLICA_ID=2
+    networks:
+    - acgs-network
+  policy-governance-1:
+    build: ./services/core/policy-governance
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+    environment:
+    - SERVICE_NAME=policy-governance
+    - REPLICA_ID=1
+    networks:
+    - acgs-network
+  policy-governance-2:
+    build: ./services/core/policy-governance
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+    environment:
+    - SERVICE_NAME=policy-governance
+    - REPLICA_ID=2
+    networks:
+    - acgs-network
+version: '3.8'

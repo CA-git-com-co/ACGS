@@ -186,6 +186,7 @@ async def metrics():
     return PlainTextResponse(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 # Optimized policy compliance validation endpoint (target: <5ms)
+@validate_policy_input
 @app.post("/api/v1/validate")
 async def validate_policy_compliance(request: Request):
     """High-performance policy compliance validation endpoint (target: <5ms)"""
@@ -245,6 +246,7 @@ async def validate_policy_compliance(request: Request):
         }
 
 # Policy governance endpoint
+@validate_policy_input
 @app.post("/api/v1/govern")
 async def govern_policy(request: Request):
     """Policy governance endpoint"""
@@ -293,6 +295,7 @@ async def service_info():
     }
 
 # High-performance batch validation endpoint
+@validate_policy_input
 @app.post("/api/v1/validate/batch")
 async def validate_policies_batch(request: Request):
     """Batch policy validation with parallel processing (target: <5ms per policy)"""
@@ -415,6 +418,13 @@ async def get_performance_health():
 
 if __name__ == "__main__":
     import uvicorn
+
+# Security validation imports
+from services.shared.security_validation import (
+    validate_user_input,
+    validate_policy_input,
+    validate_governance_input
+)
     
     config = {
         "host": "0.0.0.0",

@@ -1,0 +1,165 @@
+{
+  "total_benchmarks": 4,
+  "passed": 3,
+  "failed": 1,
+  "errors": 0,
+  "skipped": 0,
+  "targets_met": 3,
+  "success_rate": 75.0,
+  "performance_summary": {
+    "targets": {
+      "p99_latency_ms": 5.0,
+      "p95_latency_ms": 3.0,
+      "mean_latency_ms": 1.0,
+      "throughput_ops_per_sec": 1000,
+      "cache_hit_rate_percent": 80.0,
+      "memory_usage_mb": 100.0,
+      "cpu_utilization_percent": 50.0
+    },
+    "average_p99_latency_ms": 0.05348523457845052,
+    "max_throughput_ops_per_sec": 82402829.07662083,
+    "all_targets_met": false
+  },
+  "results": [
+    {
+      "test_name": "o1_lookup_performance",
+      "status": "PASS",
+      "execution_time": 0.027334928512573242,
+      "target_metrics": {
+        "p99_latency_ms": 5.0,
+        "p95_latency_ms": 3.0,
+        "mean_latency_ms": 1.0,
+        "throughput_ops_per_sec": 1000
+      },
+      "actual_metrics": {
+        "p99_latency_ms": 0.000476837158203125,
+        "p95_latency_ms": 0.0002384185791015625,
+        "mean_latency_ms": 6.588300069173177e-05,
+        "throughput_ops_per_sec": 5198721.283944179
+      },
+      "meets_targets": true,
+      "load_conditions": {
+        "test_sizes": [
+          1000,
+          10000,
+          100000
+        ],
+        "lookups_per_size": 1000
+      },
+      "performance_details": {
+        "latency_stats": {
+          "min_ms": 0.0,
+          "max_ms": 0.00095367431640625,
+          "mean_ms": 6.588300069173177e-05,
+          "median_ms": 0.0,
+          "p95_latency_ms": 0.0002384185791015625,
+          "p99_latency_ms": 0.000476837158203125,
+          "std_dev_ms": 0.00011648875641507856
+        },
+        "throughput_by_size": {
+          "1000": 4987281.807372176,
+          "10000": 5405030.927835052,
+          "100000": 5203851.11662531
+        },
+        "total_operations": 3000
+      },
+      "error_message": null
+    },
+    {
+      "test_name": "cache_effectiveness",
+      "status": "FAIL",
+      "execution_time": 0.10561823844909668,
+      "target_metrics": {
+        "cache_hit_rate_percent": 80.0,
+        "p99_latency_ms": 5.0,
+        "throughput_ops_per_sec": 1000
+      },
+      "actual_metrics": {
+        "cache_hit_rate_percent": 66.64999999999999,
+        "p99_latency_ms": 0.1595020294189453,
+        "throughput_ops_per_sec": 19324.626977417072
+      },
+      "meets_targets": false,
+      "load_conditions": {
+        "test_operations": 2000,
+        "cache_size": 100
+      },
+      "performance_details": {
+        "cache_hits": 1333,
+        "cache_misses": 667,
+        "latency_stats": {
+          "min_ms": 0.0,
+          "max_ms": 0.9016990661621094,
+          "mean_ms": 0.05174744129180908,
+          "median_ms": 0.0002384185791015625,
+          "p95_latency_ms": 0.15544891357421875,
+          "p99_latency_ms": 0.1595020294189453,
+          "std_dev_ms": 0.07508215380882907
+        }
+      },
+      "error_message": null
+    },
+    {
+      "test_name": "concurrent_load",
+      "status": "PASS",
+      "execution_time": 0.019509553909301758,
+      "target_metrics": {
+        "p99_latency_ms": 5.0,
+        "throughput_ops_per_sec": 1000
+      },
+      "actual_metrics": {
+        "p99_latency_ms": 0.000476837158203125,
+        "throughput_ops_per_sec": 82402829.07662083
+      },
+      "meets_targets": true,
+      "load_conditions": {
+        "concurrency_levels": [
+          1,
+          5,
+          10,
+          20
+        ],
+        "operations_per_worker": 500,
+        "max_workers": 20
+      },
+      "performance_details": {
+        "latency_stats": {
+          "min_ms": 0.0,
+          "max_ms": 0.009298324584960938,
+          "mean_ms": 8.336702982584636e-05,
+          "median_ms": 0.0,
+          "p95_latency_ms": 0.0002384185791015625,
+          "p99_latency_ms": 0.000476837158203125,
+          "std_dev_ms": 0.0001431345522085643
+        },
+        "best_throughput": 82402829.07662083,
+        "total_operations": 18000
+      },
+      "error_message": null
+    },
+    {
+      "test_name": "memory_efficiency",
+      "status": "PASS",
+      "execution_time": 0.020829439163208008,
+      "target_metrics": {
+        "memory_usage_mb": 100.0
+      },
+      "actual_metrics": {
+        "memory_usage_mb": 13.875
+      },
+      "meets_targets": true,
+      "load_conditions": {
+        "iterations": 10,
+        "data_per_iteration": "2000 items"
+      },
+      "performance_details": {
+        "initial_memory_mb": 17.71484375,
+        "peak_memory_mb": 31.58984375,
+        "final_memory_mb": 29.625,
+        "memory_growth_mb": 13.875,
+        "memory_efficiency": 0.8583896396396397
+      },
+      "error_message": null
+    }
+  ]
+}

@@ -1,11 +1,12 @@
 name: ACGS-1 Enhanced Parallel CI/CD Pipeline
 
+# DISABLED: Replaced by unified-ci.yml to reduce GitHub Actions costs
 on:
-  push:
-    branches: [main, master]
-  pull_request:
-    branches: [main, master]
-  workflow_dispatch:
+  workflow_dispatch: # Manual execution only
+  # push:
+  #   branches: [main, master]
+  # pull_request:
+  #   branches: [main, master]
 
 permissions:
   contents: read

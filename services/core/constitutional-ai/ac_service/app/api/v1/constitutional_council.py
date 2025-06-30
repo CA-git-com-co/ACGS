@@ -52,6 +52,7 @@ metrics_collector = get_metrics_collector()
 
 
 # AC Meta-Rules endpoints
+@validate_governance_input
 @router.post(
     "/meta-rules",
     response_model=schemas.ACMetaRule,
@@ -112,6 +113,7 @@ async def update_meta_rule_endpoint(
 
 
 # AC Amendments endpoints
+@validate_governance_input
 @router.post(
     "/amendments",
     response_model=schemas.ACAmendment,
@@ -175,6 +177,7 @@ async def update_amendment_endpoint(
 
 
 # AC Amendment Voting endpoints
+@validate_governance_input
 @router.post(
     "/amendments/{amendment_id}/votes",
     response_model=schemas.ACAmendmentVote,
@@ -209,6 +212,7 @@ async def get_amendment_votes_endpoint(
 
 
 # AC Amendment Comments endpoints
+@validate_governance_input
 @router.post(
     "/amendments/{amendment_id}/comments",
     response_model=schemas.ACAmendmentComment,
@@ -247,6 +251,7 @@ async def get_amendment_comments_endpoint(
 
 
 # AC Conflict Resolution endpoints
+@validate_governance_input
 @router.post(
     "/conflict-resolutions",
     response_model=schemas.ACConflictResolution,
@@ -346,6 +351,7 @@ async def get_scalability_metrics_endpoint(
 
 
 # Amendment State Transition endpoint
+@validate_governance_input
 @router.post("/amendments/{amendment_id}/transition", response_model=dict[str, Any])
 async def transition_amendment_state_endpoint(
     amendment_id: int,
@@ -362,6 +368,13 @@ async def transition_amendment_state_endpoint(
 
         # Initialize state machine and trigger transition
         from .core.amendment_state_machine import (
+
+# Security validation imports
+from services.shared.security_validation import (
+    validate_user_input,
+    validate_policy_input,
+    validate_governance_input
+)
             AmendmentEvent,
             AmendmentState,
             WorkflowContext,
@@ -404,6 +417,7 @@ async def transition_amendment_state_endpoint(
 
 
 # Enhanced Amendment Processing Pipeline endpoints
+@validate_governance_input
 @router.post("/amendments/{amendment_id}/process-finalization", response_model=dict[str, Any])
 async def process_amendment_finalization_endpoint(
     amendment_id: int,
@@ -459,6 +473,7 @@ async def process_amendment_finalization_endpoint(
         )
 
 
+@validate_governance_input
 @router.post("/amendments/process-parallel", response_model=dict[str, Any])
 async def process_amendments_parallel_endpoint(
     amendment_ids: list[int],
@@ -502,6 +517,7 @@ async def process_amendments_parallel_endpoint(
         )
 
 
+@validate_governance_input
 @router.post("/amendments/{amendment_id}/automated-transition", response_model=dict[str, Any])
 async def automated_status_transition_endpoint(
     amendment_id: int,
@@ -627,6 +643,7 @@ async def get_amendment_processing_status_endpoint(
 
 
 # Democratic Governance Workflow endpoints
+@validate_governance_input
 @router.post("/amendments/{amendment_id}/democratic-process", response_model=dict[str, Any])
 async def initiate_democratic_process_endpoint(
     amendment_id: int,
@@ -691,6 +708,7 @@ async def initiate_democratic_process_endpoint(
         )
 
 
+@validate_governance_input
 @router.post("/amendments/{amendment_id}/consultation", response_model=dict[str, Any])
 async def start_consultation_phase_endpoint(
     amendment_id: int,
@@ -753,6 +771,7 @@ async def start_consultation_phase_endpoint(
         raise HTTPException(status_code=500, detail=f"Failed to start consultation phase: {str(e)}")
 
 
+@validate_governance_input
 @router.post("/amendments/{amendment_id}/democratic-voting", response_model=dict[str, Any])
 async def conduct_democratic_voting_endpoint(
     amendment_id: int,

@@ -19,6 +19,11 @@ from services.shared.auth import (
 )
 from services.shared.database import get_async_db as get_db
 from services.shared.models import User
+from services.shared.security_validation import (
+    validate_user_input,
+    validate_policy_input,
+    validate_governance_input
+)
 
 from ..schemas import (
     HITLFeedbackRequest,
@@ -43,6 +48,7 @@ hitl_sampler = HumanInTheLoopSampler()
 cross_service_integrator = HITLCrossServiceIntegrator(hitl_sampler)
 
 
+@validate_policy_input
 @router.post("/assess", response_model=HITLSamplingResult)
 async def assess_uncertainty(
     request: HITLSamplingRequest,
@@ -136,6 +142,7 @@ async def assess_uncertainty(
         )
 
 
+@validate_policy_input
 @router.post("/trigger-oversight")
 async def trigger_human_oversight(
     request: HITLSamplingRequest,
@@ -195,6 +202,7 @@ async def trigger_human_oversight(
         )
 
 
+@validate_policy_input
 @router.post("/feedback")
 async def submit_human_feedback(
     feedback: HITLFeedbackRequest,
@@ -377,6 +385,7 @@ async def update_hitl_config(
         )
 
 
+@validate_policy_input
 @router.post("/assess-cross-service", response_model=HITLSamplingResult)
 async def assess_cross_service_uncertainty(
     request: HITLSamplingRequest,
@@ -472,6 +481,7 @@ async def assess_cross_service_uncertainty(
         )
 
 
+@validate_policy_input
 @router.post("/coordinate-oversight")
 async def coordinate_cross_service_oversight(
     request: HITLSamplingRequest,

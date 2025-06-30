@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: acgs-governance-synthesis
+  name: acgs-governance-synthesis-service
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8008
+  selector:
+    app: acgs-governance-synthesis
+  sessionAffinity: None
+  type: LoadBalancer

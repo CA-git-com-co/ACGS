@@ -65,6 +65,13 @@ try:
     sys.path.insert(0, str(shared_path))
 
     from enhanced_constitutional_analyzer import (
+
+# Security validation imports
+from services.shared.security_validation import (
+    validate_user_input,
+    validate_policy_input,
+    validate_governance_input
+)
         AnalysisType,
         get_enhanced_constitutional_analyzer,
         integrate_with_pgc_service,
@@ -189,6 +196,7 @@ class EnhancedAnalysisResponse(BaseModel):
 # Governance Workflow Endpoints
 
 
+@validate_policy_input
 @router.post("/policy-creation", response_model=WorkflowResponse)
 async def initiate_policy_creation(
     request: PolicyCreationRequest,
@@ -246,6 +254,7 @@ async def initiate_policy_creation(
     )
 
 
+@validate_policy_input
 @router.post("/constitutional-compliance", response_model=ComplianceValidationResponse)
 async def validate_constitutional_compliance(
     request: ComplianceValidationRequest,
@@ -276,6 +285,7 @@ async def validate_constitutional_compliance(
     )
 
 
+@validate_policy_input
 @router.post("/policy-enforcement")
 async def initiate_policy_enforcement(
     policy_id: str,
@@ -316,6 +326,7 @@ async def initiate_policy_enforcement(
     )
 
 
+@validate_policy_input
 @router.post("/wina-oversight")
 async def initiate_wina_oversight(
     oversight_type: str = "performance_monitoring",
@@ -355,6 +366,7 @@ async def initiate_wina_oversight(
     )
 
 
+@validate_policy_input
 @router.post("/audit-transparency")
 async def initiate_audit_transparency(
     audit_scope: str = "full_system",
@@ -398,6 +410,7 @@ async def initiate_audit_transparency(
 # Enhanced Constitutional Analysis Endpoints
 
 
+@validate_policy_input
 @router.post("/enhanced-constitutional-analysis", response_model=EnhancedAnalysisResponse)
 async def perform_enhanced_constitutional_analysis(request: EnhancedAnalysisRequest):
     # requires: Valid input parameters
@@ -502,6 +515,7 @@ async def perform_enhanced_constitutional_analysis(request: EnhancedAnalysisRequ
         )
 
 
+@validate_policy_input
 @router.post("/pgc-enforcement-integration")
 async def pgc_enforcement_integration(
     policy_id: str,
@@ -547,6 +561,7 @@ async def pgc_enforcement_integration(
 # Policy Creation Workflow Stage Endpoints
 
 
+@validate_policy_input
 @router.post("/policy-creation/{workflow_id}/advance-stage")
 async def advance_policy_creation_stage(
     workflow_id: str,

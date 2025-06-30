@@ -24,6 +24,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from services.shared.database import get_async_db as get_db_session
 
 from ...services.voting_mechanism import (
+
+# Security validation imports
+from services.shared.security_validation import (
+    validate_user_input,
+    validate_policy_input,
+    validate_governance_input
+)
     ConsensusAlgorithm,
     VoteType,
     VotingStatus,
@@ -166,6 +173,7 @@ websocket_manager = VotingWebSocketManager()
 # API Endpoints
 
 
+@validate_governance_input
 @router.post("/sessions", response_model=VotingSessionResponse)
 async def create_voting_session(
     request: CreateVotingSessionRequest,
@@ -212,6 +220,7 @@ async def create_voting_session(
         raise HTTPException(status_code=400, detail=str(e))
 
 
+@validate_governance_input
 @router.post("/sessions/{session_id}/votes")
 async def cast_vote(
     session_id: str,
@@ -303,6 +312,7 @@ async def get_voting_status(
         raise HTTPException(status_code=404, detail=str(e))
 
 
+@validate_governance_input
 @router.post("/sessions/{session_id}/finalize", response_model=VotingResultResponse)
 async def finalize_voting_session(
     session_id: str, db: AsyncSession = Depends(get_db_session)

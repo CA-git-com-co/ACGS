@@ -1,0 +1,108 @@
+{
+  "health_monitoring": {
+    "enabled": true,
+    "check_interval_seconds": 30,
+    "timeout_seconds": 10,
+    "failure_threshold": 3,
+    "recovery_threshold": 2,
+    "alert_on_failure": true
+  },
+  "services": {
+    "auth-service": {
+      "name": "auth-service",
+      "port": 8000,
+      "health_endpoint": "/health",
+      "expected_status_code": 200,
+      "timeout_seconds": 5,
+      "critical": true,
+      "tags": [
+        "core",
+        "acgs"
+      ]
+    },
+    "constitutional-ai": {
+      "name": "constitutional-ai",
+      "port": 8001,
+      "health_endpoint": "/health",
+      "expected_status_code": 200,
+      "timeout_seconds": 5,
+      "critical": true,
+      "tags": [
+        "core",
+        "acgs"
+      ]
+    },
+    "integrity-service": {
+      "name": "integrity-service",
+      "port": 8002,
+      "health_endpoint": "/health",
+      "expected_status_code": 200,
+      "timeout_seconds": 5,
+      "critical": true,
+      "tags": [
+        "core",
+        "acgs"
+      ]
+    },
+    "formal-verification": {
+      "name": "formal-verification",
+      "port": 8003,
+      "health_endpoint": "/health",
+      "expected_status_code": 200,
+      "timeout_seconds": 5,
+      "critical": true,
+      "tags": [
+        "core",
+        "acgs"
+      ]
+    },
+    "governance-synthesis": {
+      "name": "governance-synthesis",
+      "port": 8004,
+      "health_endpoint": "/health",
+      "expected_status_code": 200,
+      "timeout_seconds": 5,
+      "critical": true,
+      "tags": [
+        "core",
+        "acgs"
+      ]
+    },
+    "policy-governance": {
+      "name": "policy-governance",
+      "port": 8005,
+      "health_endpoint": "/health",
+      "expected_status_code": 200,
+      "timeout_seconds": 5,
+      "critical": true,
+      "tags": [
+        "core",
+        "acgs"
+      ]
+    },
+    "quantum-enforcement": {
+      "name": "quantum-enforcement",
+      "port": 8006,
+      "health_endpoint": "/health",
+      "expected_status_code": 200,
+      "timeout_seconds": 5,
+      "critical": true,
+      "tags": [
+        "core",
+        "acgs"
+      ]
+    },
+    "policy-engine": {
+      "name": "policy-engine",
+      "port": 8181,
+      "health_endpoint": "/health",
+      "expected_status_code": 200,
+      "timeout_seconds": 5,
+      "critical": true,
+      "tags": [
+        "core",
+        "acgs"
+      ]
+    }
+  }
+}

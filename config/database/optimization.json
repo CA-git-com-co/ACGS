@@ -1,0 +1,44 @@
+{
+  "primary_database": {
+    "host": "postgres-primary",
+    "port": 5432,
+    "max_connections": 200,
+    "shared_buffers": "256MB",
+    "effective_cache_size": "1GB",
+    "work_mem": "4MB",
+    "maintenance_work_mem": "64MB",
+    "checkpoint_completion_target": 0.9,
+    "wal_buffers": "16MB",
+    "default_statistics_target": 100
+  },
+  "read_replicas": [
+    {
+      "host": "postgres-replica-1",
+      "port": 5432,
+      "lag_threshold_ms": 100
+    },
+    {
+      "host": "postgres-replica-2",
+      "port": 5432,
+      "lag_threshold_ms": 100
+    },
+    {
+      "host": "postgres-replica-3",
+      "port": 5432,
+      "lag_threshold_ms": 100
+    }
+  ],
+  "connection_pooling": {
+    "enabled": true,
+    "pool_size": 20,
+    "max_overflow": 30,
+    "pool_timeout": 30,
+    "pool_recycle": 3600
+  },
+  "query_optimization": {
+    "enable_indexing": true,
+    "enable_query_cache": true,
+    "enable_prepared_statements": true,
+    "enable_connection_pooling": true
+  }
+}

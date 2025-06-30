@@ -1,0 +1,48 @@
+{
+  "governance_metrics": {
+    "constitutional_compliance_score": {
+      "query": "avg(constitutional_compliance_score)",
+      "target": 0.95,
+      "alert_threshold": 0.9
+    },
+    "policy_evaluation_success_rate": {
+      "query": "rate(policy_evaluations_successful_total[5m])",
+      "target": 0.99,
+      "alert_threshold": 0.95
+    },
+    "governance_decision_latency": {
+      "query": "histogram_quantile(0.95, governance_decision_duration_seconds)",
+      "target": 2.0,
+      "alert_threshold": 5.0
+    }
+  },
+  "performance_metrics": {
+    "request_rate": {
+      "query": "rate(http_requests_total[5m])",
+      "target": 1000,
+      "alert_threshold": 1500
+    },
+    "response_time_p95": {
+      "query": "histogram_quantile(0.95, http_request_duration_seconds_bucket)",
+      "target": 2.0,
+      "alert_threshold": 5.0
+    },
+    "error_rate": {
+      "query": "rate(http_requests_total{status=~\"5..\"}[5m])",
+      "target": 0.01,
+      "alert_threshold": 0.05
+    }
+  },
+  "user_metrics": {
+    "active_users": {
+      "query": "count(increase(user_sessions_total[1h]))",
+      "target": 100,
+      "alert_threshold": 50
+    },
+    "user_satisfaction_score": {
+      "query": "avg(user_satisfaction_rating)",
+      "target": 4.0,
+      "alert_threshold": 3.5
+    }
+  }
+}

@@ -272,6 +272,7 @@ async def get_leader_election_health():
         }
 
 # Leader-only governance synthesis operations
+@validate_policy_input
 @app.post("/api/v1/synthesize/leader")
 async def synthesize_governance_as_leader(request: Request):
     """Governance synthesis operations (leader-only)."""
@@ -310,6 +311,7 @@ async def synthesize_governance_as_leader(request: Request):
         return {"error": str(e), "status": "failed"}
 
 # Simple governance synthesis endpoint
+@validate_policy_input
 @app.post("/api/v1/synthesize")
 async def synthesize_governance(request: Request):
     """Simple governance synthesis endpoint"""
@@ -360,6 +362,13 @@ async def service_info():
 
 if __name__ == "__main__":
     import uvicorn
+
+# Security validation imports
+from services.shared.security_validation import (
+    validate_user_input,
+    validate_policy_input,
+    validate_governance_input
+)
     
     config = {
         "host": "0.0.0.0",

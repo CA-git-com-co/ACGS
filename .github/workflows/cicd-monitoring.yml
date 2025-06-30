@@ -1,0 +1,16 @@
+jobs:
+  monitor-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check pipeline health
+      run: python scripts/cicd/monitor_pipeline_health.py
+    - name: Generate pipeline metrics
+      run: python scripts/cicd/generate_pipeline_metrics.py
+    - if: failure()
+      name: Alert on pipeline failures
+      run: python scripts/cicd/alert_pipeline_failure.py
+name: ACGS-2 CI/CD Monitoring
+'on':
+  schedule:
+  - cron: 0 */6 * * *
+  workflow_dispatch: {}

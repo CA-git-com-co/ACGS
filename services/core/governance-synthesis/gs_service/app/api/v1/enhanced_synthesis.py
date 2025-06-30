@@ -126,6 +126,7 @@ class HealthCheckResponseAPI(BaseModel):
     timestamp: str
 
 
+@validate_policy_input
 @router.post("/synthesize", response_model=EnhancedSynthesisResponseAPI)
 async def synthesize_policy(
     request: EnhancedSynthesisRequestAPI, background_tasks: BackgroundTasks
@@ -228,6 +229,7 @@ async def synthesize_policy(
         )
 
 
+@validate_policy_input
 @router.post("/batch-synthesize", response_model=list[EnhancedSynthesisResponseAPI])
 async def batch_synthesize_policies(
     request: BatchSynthesisRequestAPI, background_tasks: BackgroundTasks
@@ -397,6 +399,7 @@ async def health_check() -> HealthCheckResponseAPI:
         )
 
 
+@validate_policy_input
 @router.post("/multi-model-consensus", response_model=dict[str, Any])
 async def multi_model_consensus_synthesis(
     request: EnhancedSynthesisRequestAPI, background_tasks: BackgroundTasks
@@ -415,6 +418,13 @@ async def multi_model_consensus_synthesis(
     import uuid
 
     from ..core.phase_a3_multi_model_consensus import (
+
+# Security validation imports
+from services.shared.security_validation import (
+    validate_user_input,
+    validate_policy_input,
+    validate_governance_input
+)
         ConsensusStrategy,
         PhaseA3MultiModelConsensusEngine,
     )

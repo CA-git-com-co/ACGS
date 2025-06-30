@@ -100,10 +100,52 @@ class WINACore:
         self._layer_configs: dict[str, dict[str, Any]] = {}
         self._optimization_history: list[WINAOptimizationResult] = []
 
+        # Request-scoped caching for performance optimization
+        self._wina_weight_cache: dict[str, Any] = {}
+        self._column_norm_cache: dict[str, torch.Tensor] = {}
+        self._gating_decision_cache: dict[str, Any] = {}
+        self._cache_ttl = 300  # 5 minutes
+        self._last_cache_cleanup = time.time()
+
         logger.info(
             f"Initialized WINA core with target sparsity: {config.target_sparsity}, "
             f"GFLOPs reduction target: {config.gflops_reduction_target}"
         )
+
+    def _cleanup_wina_cache(self, current_time: float) -> None:
+        """Clean up expired entries from WINA caches."""
+        # Cleanup WINA weight cache
+        expired_keys = [
+            key for key, entry in self._wina_weight_cache.items()
+            if current_time - entry.get("timestamp", 0) > self._cache_ttl
+        ]
+        for key in expired_keys:
+            del self._wina_weight_cache[key]
+
+        # Cleanup gating decision cache
+        expired_gating_keys = [
+            key for key, entry in self._gating_decision_cache.items()
+            if current_time - entry.get("timestamp", 0) > self._cache_ttl
+        ]
+        for key in expired_gating_keys:
+            del self._gating_decision_cache[key]
+
+        if expired_keys or expired_gating_keys:
+            logger.debug(f"Cleaned up {len(expired_keys + expired_gating_keys)} expired WINA cache entries")
+
+    async def _get_cached_column_norms(self, layer_name: str) -> torch.Tensor | None:
+        """Get column norms for a layer with caching."""
+        if layer_name in self._column_norm_cache:
+            return self._column_norm_cache[layer_name]
+
+        # Compute and cache column norms
+        if layer_name in self._transformed_weights:
+            weights = self._transformed_weights[layer_name]
+            column_norms = torch.norm(weights, dim=0, p=2)
+            self._column_norm_cache[layer_name] = column_norms
+            return column_norms
+
+        return None
 
     async def initialize_model_transformation(self, model: Any, layer_names: list[str]) -> bool:
         """

@@ -21,6 +21,13 @@ from ...services import (  # Goes up 3 levels for services
 )
 from ...services.qec_error_correction_service import QECErrorCorrectionService
 
+# Security validation imports
+from services.shared.security_validation import (
+    validate_user_input,
+    validate_policy_input,
+    validate_governance_input
+)
+
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
@@ -60,6 +67,7 @@ async def perform_actual_synthesis(
     return generated_rules
 
 
+@validate_policy_input
 @router.post(
     "/",
     response_model=gs_schemas.SynthesisResponse,
@@ -202,6 +210,7 @@ async def synthesize_rules(
 # Ensure ACPrinciple from ac_client and other models are V2 compatible if so.
 
 
+@validate_policy_input
 @router.post(
     "/multi_model",
     response_model=gs_schemas.SynthesisResponse,

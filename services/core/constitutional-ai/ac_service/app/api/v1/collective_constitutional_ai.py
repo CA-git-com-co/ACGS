@@ -16,6 +16,13 @@ from services.shared.auth import get_current_user_id
 from services.shared.database import get_async_db as get_db
 
 from ...services.collective_constitutional_ai import (
+
+# Security validation imports
+from services.shared.security_validation import (
+    validate_user_input,
+    validate_policy_input,
+    validate_governance_input
+)
     BiasCategory,
     get_collective_constitutional_ai,
 )
@@ -87,6 +94,7 @@ class DemocraticPrincipleResponse(BaseModel):
     created_at: str
 
 
+@validate_governance_input
 @router.post("/conversations", response_model=PolisConversationResponse)
 async def create_polis_conversation(
     request: CreatePolisConversationRequest,
@@ -126,6 +134,7 @@ async def create_polis_conversation(
         )
 
 
+@validate_governance_input
 @router.post("/bias-evaluation", response_model=list[BiasEvaluationResponse])
 async def evaluate_bias(
     request: BiasEvaluationRequest,
@@ -165,6 +174,7 @@ async def evaluate_bias(
         )
 
 
+@validate_governance_input
 @router.post("/synthesize-principle", response_model=DemocraticPrincipleResponse)
 async def synthesize_democratic_principle(
     request: SynthesizePrincipleRequest,

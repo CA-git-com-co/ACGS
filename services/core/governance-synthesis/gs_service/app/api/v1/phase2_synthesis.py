@@ -21,6 +21,13 @@ from pydantic import BaseModel, Field
 
 from ...core.performance_optimizer import OptimizationStrategy
 from ...services.enhanced_governance_synthesis import (
+
+# Security validation imports
+from services.shared.security_validation import (
+    validate_user_input,
+    validate_policy_input,
+    validate_governance_input
+)
     EnhancedGovernanceSynthesis,
     EnhancedSynthesisRequest,
 )
@@ -131,6 +138,7 @@ class PerformanceTargetsRequest(BaseModel):
     optimization_strategy: str | None = Field(default=None)
 
 
+@validate_policy_input
 @router.post("/synthesize", response_model=Phase2SynthesisResponse)
 async def synthesize_policy_phase2(
     request: Phase2SynthesisRequest,
@@ -298,6 +306,7 @@ async def health_check_phase2(
         raise HTTPException(status_code=500, detail=f"Health check failed: {str(e)}")
 
 
+@validate_policy_input
 @router.post("/update-performance-targets")
 async def update_performance_targets(
     request: PerformanceTargetsRequest,

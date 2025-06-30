@@ -1,0 +1,50 @@
+{
+  "total_issues": 2,
+  "resolved": 1,
+  "partial": 0,
+  "failed": 0,
+  "skipped": 1,
+  "resolution_rate": 50.0,
+  "results": [
+    {
+      "issue_id": "COV-MAJ-008",
+      "status": "SKIPPED",
+      "resolution_time": 0.0,
+      "actions_taken": [
+        "Issue type not yet supported by automated resolution"
+      ],
+      "verification_passed": false,
+      "remaining_work": [
+        "Manual resolution required"
+      ],
+      "details": {
+        "issue_type": "RELIABILITY"
+      }
+    },
+    {
+      "issue_id": "FUNC-MAJO-001",
+      "status": "RESOLVED",
+      "resolution_time": 0.0018358230590820312,
+      "actions_taken": [
+        "Created enhanced business rule validation",
+        "Verified business rule enhancements"
+      ],
+      "verification_passed": true,
+      "remaining_work": [
+        "Integrate enhanced validation into existing workflows",
+        "Add comprehensive logging for validation failures",
+        "Implement validation result caching",
+        "Create validation metrics and monitoring"
+      ],
+      "details": {
+        "rules_module_created": "/home/dislove/ACGS-2/services/shared/enhanced_business_rules.py",
+        "validation_improvements": [
+          "edge_case_handling",
+          "sanitization",
+          "warnings",
+          "compliance_scoring"
+        ]
+      }
+    }
+  ]
+}

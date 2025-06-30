@@ -1,0 +1,295 @@
+name: GitHub Actions Cost Monitoring
+
+on:
+  schedule:
+    - cron: '0 8 * * 1' # Weekly on Monday at 8 AM
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+
+jobs:
+  cost-monitoring:
+    runs-on: ubuntu-latest
+    name: Monitor GitHub Actions Usage & Costs
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get workflow usage statistics
+        id: usage_stats
+        run: |
+          echo "📊 Gathering GitHub Actions usage statistics..."
+          
+          # Get recent workflow runs (last 30 days)
+          RUNS=$(gh api repos/${{ github.repository }}/actions/runs \
+            --paginate \
+            --jq '.workflow_runs[] | select(.created_at >= (now - 30*24*3600 | strftime("%Y-%m-%dT%H:%M:%SZ"))) | {name: .name, status: .status, conclusion: .conclusion, created_at: .created_at, run_attempt: .run_attempt}' \
+            | jq -s '.')
+
+          TOTAL_RUNS=$(echo "$RUNS" | jq 'length')
+          SUCCESSFUL_RUNS=$(echo "$RUNS" | jq 'map(select(.conclusion == "success")) | length')
+          FAILED_RUNS=$(echo "$RUNS" | jq 'map(select(.conclusion == "failure")) | length')
+          CANCELLED_RUNS=$(echo "$RUNS" | jq 'map(select(.conclusion == "cancelled")) | length')
+
+          echo "total_runs=$TOTAL_RUNS" >> $GITHUB_OUTPUT
+          echo "successful_runs=$SUCCESSFUL_RUNS" >> $GITHUB_OUTPUT  
+          echo "failed_runs=$FAILED_RUNS" >> $GITHUB_OUTPUT
+          echo "cancelled_runs=$CANCELLED_RUNS" >> $GITHUB_OUTPUT
+
+          # Calculate failure rate
+          if [ $TOTAL_RUNS -gt 0 ]; then
+            FAILURE_RATE=$(echo "scale=2; $FAILED_RUNS * 100 / $TOTAL_RUNS" | bc)
+          else
+            FAILURE_RATE=0
+          fi
+          echo "failure_rate=$FAILURE_RATE" >> $GITHUB_OUTPUT
+
+          echo "📈 Usage Statistics (Last 30 days):"
+          echo "- Total runs: $TOTAL_RUNS"
+          echo "- Successful: $SUCCESSFUL_RUNS"
+          echo "- Failed: $FAILED_RUNS"
+          echo "- Cancelled: $CANCELLED_RUNS"
+          echo "- Failure rate: ${FAILURE_RATE}%"
+
+      - name: Analyze workflow efficiency
+        id: efficiency
+        run: |
+          echo "🔍 Analyzing workflow efficiency..."
+          
+          # Get active workflows
+          WORKFLOWS=$(gh api repos/${{ github.repository }}/actions/workflows --jq '.workflows[] | select(.state == "active") | {name: .name, id: .id}')
+          ACTIVE_COUNT=$(echo "$WORKFLOWS" | jq -s 'length')
+          
+          echo "active_workflows=$ACTIVE_COUNT" >> $GITHUB_OUTPUT
+          echo "📋 Active workflows: $ACTIVE_COUNT"
+          
+          # Check for cost optimization opportunities
+          COST_ISSUES=""
+          
+          # Check for daily schedules (expensive)
+          DAILY_WORKFLOWS=$(find .github/workflows -name "*.yml" -exec grep -l "cron.*\*.*\*.*\*" {} \; | wc -l)
+          if [ $DAILY_WORKFLOWS -gt 3 ]; then
+            COST_ISSUES="${COST_ISSUES}- $DAILY_WORKFLOWS workflows with frequent schedules\n"
+          fi
+          
+          # Check for large matrices
+          MATRIX_WORKFLOWS=$(find .github/workflows -name "*.yml" -exec grep -l "matrix:" {} \; | wc -l)
+          if [ $MATRIX_WORKFLOWS -gt 5 ]; then
+            COST_ISSUES="${COST_ISSUES}- $MATRIX_WORKFLOWS workflows using matrix strategies\n"
+          fi
+          
+          echo -e "cost_issues=$COST_ISSUES" >> $GITHUB_OUTPUT
+
+      - name: Calculate estimated costs
+        id: costs
+        run: |
+          echo "💰 Calculating estimated GitHub Actions costs..."
+          
+          # Rough cost estimation based on usage patterns
+          # GitHub Actions pricing: $0.008/minute for ubuntu-latest
+          PRICE_PER_MINUTE=0.008
+          
+          # Estimate average runtime based on workflow complexity
+          AVG_RUNTIME_MINUTES=20
+          TOTAL_RUNS=${{ steps.usage_stats.outputs.total_runs }}
+          
+          # Calculate monthly cost (last 30 days)
+          MONTHLY_COST=$(echo "scale=2; $TOTAL_RUNS * $AVG_RUNTIME_MINUTES * $PRICE_PER_MINUTE" | bc)
+          
+          # Project annual cost
+          ANNUAL_COST=$(echo "scale=2; $MONTHLY_COST * 12" | bc)
+          
+          echo "monthly_cost=$MONTHLY_COST" >> $GITHUB_OUTPUT
+          echo "annual_cost=$ANNUAL_COST" >> $GITHUB_OUTPUT
+          
+          echo "💵 Estimated costs:"
+          echo "- Monthly (last 30 days): \$${MONTHLY_COST}"
+          echo "- Projected annual: \$${ANNUAL_COST}"
+
+      - name: Generate cost optimization recommendations
+        id: recommendations
+        run: |
+          echo "💡 Generating cost optimization recommendations..."
+          
+          RECOMMENDATIONS=""
+          PRIORITY="low"
+          
+          # High cost scenarios
+          if (( $(echo "${{ steps.costs.outputs.monthly_cost }} > 500" | bc -l) )); then
+            PRIORITY="high"
+            RECOMMENDATIONS="${RECOMMENDATIONS}- URGENT: Monthly costs exceed \$500\n"
+            RECOMMENDATIONS="${RECOMMENDATIONS}- Implement immediate workflow consolidation\n"
+            RECOMMENDATIONS="${RECOMMENDATIONS}- Reduce scheduled workflow frequency\n"
+          elif (( $(echo "${{ steps.costs.outputs.monthly_cost }} > 200" | bc -l) )); then
+            PRIORITY="medium"
+            RECOMMENDATIONS="${RECOMMENDATIONS}- WARNING: Monthly costs exceed \$200\n"
+            RECOMMENDATIONS="${RECOMMENDATIONS}- Consider workflow optimization\n"
+          fi
+          
+          # High failure rate
+          if (( $(echo "${{ steps.usage_stats.outputs.failure_rate }} > 20" | bc -l) )); then
+            PRIORITY="high"
+            RECOMMENDATIONS="${RECOMMENDATIONS}- HIGH: Failure rate is ${{ steps.usage_stats.outputs.failure_rate }}% (wasted compute)\n"
+            RECOMMENDATIONS="${RECOMMENDATIONS}- Investigate and fix failing workflows\n"
+          fi
+          
+          # Too many active workflows
+          if [ ${{ steps.efficiency.outputs.active_workflows }} -gt 30 ]; then
+            RECOMMENDATIONS="${RECOMMENDATIONS}- Consider consolidating ${{ steps.efficiency.outputs.active_workflows }} active workflows\n"
+            RECOMMENDATIONS="${RECOMMENDATIONS}- Look for redundant or overlapping functionality\n"
+          fi
+          
+          # Cost optimization opportunities
+          if [ -n "${{ steps.efficiency.outputs.cost_issues }}" ]; then
+            RECOMMENDATIONS="${RECOMMENDATIONS}- Address identified cost issues:\n${{ steps.efficiency.outputs.cost_issues }}"
+          fi
+          
+          # Always include general recommendations
+          RECOMMENDATIONS="${RECOMMENDATIONS}- Use path-based filtering to skip unnecessary runs\n"
+          RECOMMENDATIONS="${RECOMMENDATIONS}- Implement smart caching strategies\n"
+          RECOMMENDATIONS="${RECOMMENDATIONS}- Consider using larger runners for parallel jobs\n"
+          
+          echo -e "recommendations=$RECOMMENDATIONS" >> $GITHUB_OUTPUT
+          echo "priority=$PRIORITY" >> $GITHUB_OUTPUT
+
+      - name: Create cost monitoring report
+        run: |
+          echo "📋 Creating comprehensive cost monitoring report..."
+          
+          cat > cost-monitoring-report.md << EOF
+          # GitHub Actions Cost Monitoring Report
+          
+          **Generated:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Repository:** ${{ github.repository }}
+          **Monitoring Period:** Last 30 days
+          
+          ## 📊 Usage Statistics
+          
+          | Metric | Value |
+          |--------|-------|
+          | Total Runs | ${{ steps.usage_stats.outputs.total_runs }} |
+          | Successful | ${{ steps.usage_stats.outputs.successful_runs }} |
+          | Failed | ${{ steps.usage_stats.outputs.failed_runs }} |
+          | Cancelled | ${{ steps.usage_stats.outputs.cancelled_runs }} |
+          | Failure Rate | ${{ steps.usage_stats.outputs.failure_rate }}% |
+          | Active Workflows | ${{ steps.efficiency.outputs.active_workflows }} |
+          
+          ## 💰 Cost Analysis
+          
+          | Period | Estimated Cost |
+          |--------|----------------|
+          | Monthly | \$${{ steps.costs.outputs.monthly_cost }} |
+          | Annual (Projected) | \$${{ steps.costs.outputs.annual_cost }} |
+          
+          **Note:** Estimates based on ubuntu-latest runners at \$0.008/minute
+          
+          ## 🚨 Priority Level: ${{ steps.recommendations.outputs.priority }}
+          
+          ## 💡 Optimization Recommendations
+          
+          ${{ steps.recommendations.outputs.recommendations }}
+          
+          ## 🔧 Quick Wins
+          
+          1. **Consolidate workflows:** Merge similar CI/CD workflows
+          2. **Optimize schedules:** Change daily to weekly for non-critical workflows  
+          3. **Smart triggers:** Use path filtering to skip unnecessary runs
+          4. **Enhanced caching:** Implement workspace-level dependency caching
+          5. **Matrix optimization:** Use conditional matrices based on changes
+          
+          ## 📈 Monitoring
+          
+          This report is generated weekly. For real-time monitoring:
+          - Check the Actions tab for recent failures
+          - Review workflow run times for optimization opportunities
+          - Monitor the organization billing dashboard
+          
+          ---
+          *This report was automatically generated by the cost monitoring workflow*
+          EOF
+          
+          echo "✅ Cost monitoring report generated"
+
+      - name: Create issue for high costs
+        if: steps.recommendations.outputs.priority == 'high'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('cost-monitoring-report.md', 'utf8');
+            
+            const title = `🚨 HIGH PRIORITY: GitHub Actions Cost Alert - ${{ steps.costs.outputs.monthly_cost }}/month`;
+            const body = `${report}
+            
+            ## Immediate Action Required
+            
+            The GitHub Actions usage has reached a high-cost threshold. Please review and implement the recommendations above to reduce costs.
+            
+            **Current Issues:**
+            - Monthly cost: \$${{ steps.costs.outputs.monthly_cost }}
+            - Failure rate: ${{ steps.usage_stats.outputs.failure_rate }}%
+            - Active workflows: ${{ steps.efficiency.outputs.active_workflows }}
+            
+            **Recommended Actions:**
+            1. Review and consolidate redundant workflows
+            2. Optimize workflow schedules and triggers
+            3. Fix failing workflows to reduce wasted compute
+            4. Implement cost-optimized-ci.yml workflow
+            
+            ---
+            *Auto-generated by cost monitoring workflow*`;
+
+            // Check for existing cost alert issues
+            const existingIssues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'cost-alert,github-actions'
+            });
+
+            if (existingIssues.data.length === 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['cost-alert', 'github-actions', 'high-priority']
+              });
+              console.log('✅ Created high-priority cost alert issue');
+            } else {
+              console.log('ℹ️ Cost alert issue already exists');
+            }
+
+      - name: Upload cost monitoring artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cost-monitoring-report-${{ github.run_id }}
+          path: |
+            cost-monitoring-report.md
+          retention-days: 30
+
+      - name: Cost monitoring summary
+        run: |
+          echo "📊 Cost Monitoring Summary"
+          echo "=========================="
+          echo "Monthly Cost: \$${{ steps.costs.outputs.monthly_cost }}"
+          echo "Priority Level: ${{ steps.recommendations.outputs.priority }}"
+          echo "Total Runs (30d): ${{ steps.usage_stats.outputs.total_runs }}"
+          echo "Failure Rate: ${{ steps.usage_stats.outputs.failure_rate }}%"
+          echo "Active Workflows: ${{ steps.efficiency.outputs.active_workflows }}"
+          echo ""
+          
+          if [ "${{ steps.recommendations.outputs.priority }}" = "high" ]; then
+            echo "🚨 HIGH COST ALERT: Immediate optimization required!"
+            echo "📋 Cost alert issue created automatically"
+          elif [ "${{ steps.recommendations.outputs.priority }}" = "medium" ]; then
+            echo "⚠️ MODERATE COSTS: Consider optimization opportunities"
+          else
+            echo "✅ COSTS UNDER CONTROL: Continue monitoring"
+          fi
+          
+          echo ""
+          echo "📋 Full report available in workflow artifacts"

@@ -159,7 +159,33 @@ class WINAEnforcementOptimizer:
         self.constitutional_compliance_threshold = 0.85
         self.performance_improvement_threshold = 0.1
 
+        # WINA strategy lookup table for O(1) access (following optimization patterns)
+        self._wina_strategy_handlers = {
+            EnforcementStrategy.CONSTITUTIONAL_PRIORITY: self._apply_constitutional_priority_strategy,
+            EnforcementStrategy.PERFORMANCE_FOCUSED: self._apply_performance_focused_strategy,
+            EnforcementStrategy.WINA_OPTIMIZED: self._apply_wina_optimized_strategy,
+            EnforcementStrategy.ADAPTIVE: self._apply_adaptive_strategy,
+            EnforcementStrategy.STANDARD: self._apply_standard_strategy,
+        }
+
+        # Request-scoped WINA cache for performance optimization
+        self._wina_enforcement_cache = {}
+        self._wina_cache_ttl = 300  # 5 minutes
+        self._last_wina_cache_cleanup = time.time()
+
         logger.info("WINA Enforcement Optimizer initialized")
+
+    def _cleanup_wina_enforcement_cache(self, current_time: float) -> None:
+        """Clean up expired entries from WINA enforcement cache."""
+        expired_keys = [
+            key for key, entry in self._wina_enforcement_cache.items()
+            if current_time - entry.get("timestamp", 0) > self._wina_cache_ttl
+        ]
+        for key in expired_keys:
+            del self._wina_enforcement_cache[key]
+
+        if expired_keys:
+            logger.debug(f"Cleaned up {len(expired_keys)} expired WINA enforcement cache entries")
 
     async def initialize(self, opa_client: OPAClient, wina_policy_compiler: WINAPolicyCompiler):
         # requires: Valid input parameters
@@ -574,15 +600,14 @@ class WINAEnforcementOptimizer:
         """Execute OPA evaluation with strategy-specific optimizations."""
 
         try:
-            # Apply strategy-specific request modifications
-            if strategy == EnforcementStrategy.PERFORMANCE_FOCUSED:
-                # Disable detailed explanations for better performance
-                request.explain = "off"
-                request.metrics = False
-            elif strategy == EnforcementStrategy.CONSTITUTIONAL_PRIORITY:
-                # Enable full explanations for constitutional compliance
-                request.explain = "full"
-                request.metrics = True
+            # Use O(1) lookup table for strategy-specific optimizations
+            strategy_handler = self._wina_strategy_handlers.get(strategy)
+            if strategy_handler:
+                # Apply strategy-specific request modifications
+                request = await strategy_handler(request, policies)
+            else:
+                # Fallback to standard strategy
+                request = await self._apply_standard_strategy(request, policies)
 
             # Execute OPA evaluation
             response = await self.opa_client.evaluate_policy(request)
@@ -592,6 +617,51 @@ class WINAEnforcementOptimizer:
         except Exception as e:
             logger.error(f"OPA evaluation with strategy failed: {e}")
             raise
+
+    async def _apply_constitutional_priority_strategy(
+        self, request: PolicyEvaluationRequest, policies: list[IntegrityPolicyRule]
+    ) -> PolicyEvaluationRequest:
+        """Apply constitutional priority strategy optimizations."""
+        request.explain = "full"
+        request.metrics = True
+        return request
+
+    async def _apply_performance_focused_strategy(
+        self, request: PolicyEvaluationRequest, policies: list[IntegrityPolicyRule]
+    ) -> PolicyEvaluationRequest:
+        """Apply performance focused strategy optimizations."""
+        request.explain = "off"
+        request.metrics = False
+        return request
+
+    async def _apply_wina_optimized_strategy(
+        self, request: PolicyEvaluationRequest, policies: list[IntegrityPolicyRule]
+    ) -> PolicyEvaluationRequest:
+        """Apply WINA optimized strategy."""
+        request.explain = "notes"
+        request.metrics = True
+        # Add WINA-specific optimizations here
+        return request
+
+    async def _apply_adaptive_strategy(
+        self, request: PolicyEvaluationRequest, policies: list[IntegrityPolicyRule]
+    ) -> PolicyEvaluationRequest:
+        """Apply adaptive strategy based on context."""
+        # Adaptive logic based on policies and context
+        if len(policies) > 10:
+            request.explain = "off"  # Performance mode for many policies
+        else:
+            request.explain = "notes"  # Balanced mode
+        request.metrics = True
+        return request
+
+    async def _apply_standard_strategy(
+        self, request: PolicyEvaluationRequest, policies: list[IntegrityPolicyRule]
+    ) -> PolicyEvaluationRequest:
+        """Apply standard strategy."""
+        request.explain = "notes"
+        request.metrics = True
+        return request
 
     async def _process_opa_response(
         self,

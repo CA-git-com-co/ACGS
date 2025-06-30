@@ -1,0 +1,31 @@
+{
+  "chaos_experiments": {
+    "service_failure": {
+      "description": "Randomly terminate service instances",
+      "frequency": "weekly",
+      "duration_minutes": 10,
+      "blast_radius": "single_service"
+    },
+    "network_partition": {
+      "description": "Simulate network partitions between services",
+      "frequency": "bi_weekly",
+      "duration_minutes": 5,
+      "blast_radius": "service_pair"
+    },
+    "resource_exhaustion": {
+      "description": "Exhaust CPU/memory resources",
+      "frequency": "monthly",
+      "duration_minutes": 15,
+      "blast_radius": "single_instance"
+    }
+  },
+  "safety_measures": {
+    "abort_conditions": [
+      "error_rate > 10%",
+      "response_time_p99 > 10s",
+      "constitutional_compliance < 0.8"
+    ],
+    "monitoring_required": true,
+    "rollback_enabled": true
+  }
+}

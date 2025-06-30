@@ -1,0 +1,32 @@
+jobs:
+  quality-gates:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    - name: Install dependencies
+      run: pip install -r requirements.txt && pip install -r requirements-test.txt
+    - name: Check test coverage threshold
+      run: python -m pytest --cov=services --cov-fail-under=80 --cov-report=term-missing
+    - name: Security quality gate
+      run: python scripts/security/external_security_audit.py && test $? -eq 0
+    - name: Performance quality gate
+      run: python -m pytest tests/performance/ -v --tb=short -m performance
+    - name: Code quality gate
+      run: flake8 services/ scripts/ tests/ --max-line-length=88 --extend-ignore=E203,W503
+    - name: Type checking quality gate
+      run: mypy services/ scripts/ --ignore-missing-imports
+    - name: Dependency vulnerability check
+      run: pip-audit --requirement requirements.txt --format=json --output=audit-report.json
+    - name: Generate quality report
+      run: python scripts/cicd/generate_quality_report.py
+name: ACGS-2 Quality Gates
+'on':
+  pull_request:
+    branches:
+    - main
+    - develop

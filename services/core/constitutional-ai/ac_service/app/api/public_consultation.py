@@ -34,6 +34,13 @@ from ..schemas import (
 )
 from ..services.human_in_the_loop_sampler import HumanInTheLoopSampler
 from ..services.public_consultation_service import (
+
+# Security validation imports
+from services.shared.security_validation import (
+    validate_user_input,
+    validate_policy_input,
+    validate_governance_input
+)
     FeedbackType,
     PublicConsultationService,
     PublicFeedback,
@@ -50,6 +57,7 @@ hitl_sampler = HumanInTheLoopSampler()
 consultation_service = PublicConsultationService(hitl_sampler)
 
 
+@validate_policy_input
 @router.post("/proposals", response_model=PublicProposalResponse)
 async def submit_public_proposal(
     proposal_data: PublicProposalCreate,
@@ -114,6 +122,7 @@ async def submit_public_proposal(
         )
 
 
+@validate_policy_input
 @router.post("/feedback", response_model=PublicFeedbackResponse)
 async def submit_public_feedback(
     feedback_data: PublicFeedbackCreate,
@@ -369,6 +378,7 @@ async def get_consultation_metrics(
         )
 
 
+@validate_policy_input
 @router.post("/proposals/{proposal_id}/advance")
 async def advance_proposal_to_council(
     proposal_id: int,

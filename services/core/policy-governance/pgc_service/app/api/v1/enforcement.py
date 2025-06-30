@@ -27,6 +27,7 @@ from ...core.wina_policy_compiler import WINAPolicyCompiler
 router = APIRouter()
 
 
+@validate_policy_input
 @router.post(
     "/evaluate",
     response_model=schemas.PolicyQueryResponse,
@@ -114,6 +115,13 @@ async def evaluate_policy_query(
     # Prevent injection attacks with comprehensive validation and parameterized queries
     import re
     from typing import Dict, Any
+
+# Security validation imports
+from services.shared.security_validation import (
+    validate_user_input,
+    validate_policy_input,
+    validate_governance_input
+)
 
     def validate_and_sanitize_datalog_input(value: str, field_name: str, max_length: int = 50) -> str:
         """
@@ -232,6 +240,7 @@ async def evaluate_policy_query(
     )
 
 
+@validate_policy_input
 @router.post(
     "/evaluate-wina",
     response_model=schemas.PolicyQueryResponse,
@@ -374,6 +383,7 @@ async def get_wina_performance_metrics(
         )
 
 
+@validate_policy_input
 @router.post("/realtime-compliance", status_code=status.HTTP_200_OK)
 @limiter.limit("100/minute")  # Higher rate limit for real-time operations
 async def realtime_compliance_check(
@@ -501,6 +511,7 @@ async def realtime_compliance_check(
         )
 
 
+@validate_policy_input
 @router.post("/intercept-action", status_code=status.HTTP_200_OK)
 @limiter.limit("200/minute")  # High rate limit for action interception
 async def intercept_and_validate_action(

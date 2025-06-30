@@ -84,7 +84,24 @@ class ConstitutionalSecurityValidator:
         # Audit trail
         self.audit_trail: list[dict[str, Any]] = []
 
+        # Request-scoped validation cache for performance optimization
+        self._request_validation_cache = {}
+        self._cache_ttl = 300  # 5 minutes
+        self._last_cache_cleanup = time.time()
+
         logger.info("Constitutional Security Validator initialized")
+
+    def _cleanup_validation_cache(self, current_time: float) -> None:
+        """Clean up expired entries from validation cache."""
+        expired_keys = [
+            key for key, entry in self._request_validation_cache.items()
+            if current_time - entry["timestamp"] > self._cache_ttl
+        ]
+        for key in expired_keys:
+            del self._request_validation_cache[key]
+
+        if expired_keys:
+            logger.debug(f"Cleaned up {len(expired_keys)} expired validation cache entries")
 
     async def validate_constitutional_integrity(
         self,
@@ -177,33 +194,63 @@ class ConstitutionalSecurityValidator:
             }
 
     async def _validate_constitution_hash(self, operation_data: dict[str, Any]) -> dict[str, Any]:
-        """Validate Constitution Hash integrity."""
+        """Validate Constitution Hash integrity with request-scoped caching."""
         try:
-            # Check if operation includes constitutional hash
+            # Generate cache key for this validation
             provided_hash = operation_data.get("constitutional_hash")
+            has_signature = "constitutional_signature" in operation_data
+            cache_key = f"{provided_hash}:{has_signature}"
 
+            # Check cache first (cleanup if needed)
+            current_time = time.time()
+            if current_time - self._last_cache_cleanup > 60:  # Cleanup every minute
+                self._cleanup_validation_cache(current_time)
+                self._last_cache_cleanup = current_time
+
+            if cache_key in self._request_validation_cache:
+                cache_entry = self._request_validation_cache[cache_key]
+                if current_time - cache_entry["timestamp"] < self._cache_ttl:
+                    return cache_entry["result"]
+                else:
+                    del self._request_validation_cache[cache_key]
+
+            # Perform validation
             if provided_hash and provided_hash != self.constitutional_hash:
-                return {
+                result = {
                     "valid": False,
                     "reason": f"Hash mismatch: expected {self.constitutional_hash}, got {provided_hash}",
                 }
-
-            # Verify HMAC-SHA256 integrity if signature provided
-            if "constitutional_signature" in operation_data:
-                signature_valid = await self._verify_constitutional_signature(
-                    operation_data, operation_data["constitutional_signature"]
-                )
-                if not signature_valid:
-                    return {
-                        "valid": False,
-                        "reason": "Constitutional signature verification failed",
+            else:
+                # Verify HMAC-SHA256 integrity if signature provided
+                if has_signature:
+                    signature_valid = await self._verify_constitutional_signature(
+                        operation_data, operation_data["constitutional_signature"]
+                    )
+                    if not signature_valid:
+                        result = {
+                            "valid": False,
+                            "reason": "Constitutional signature verification failed",
+                        }
+                    else:
+                        result = {
+                            "valid": True,
+                            "constitutional_hash": self.constitutional_hash,
+                            "verification_method": "HMAC-SHA256",
+                        }
+                else:
+                    result = {
+                        "valid": True,
+                        "constitutional_hash": self.constitutional_hash,
+                        "verification_method": "HMAC-SHA256",
                     }
 
-            return {
-                "valid": True,
-                "constitutional_hash": self.constitutional_hash,
-                "verification_method": "HMAC-SHA256",
+            # Cache the result
+            self._request_validation_cache[cache_key] = {
+                "result": result,
+                "timestamp": current_time
             }
+
+            return result
 
         except Exception as e:
             return {

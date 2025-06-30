@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: acgs-governance-synthesis
+    tier: application
+  name: acgs-governance-synthesis
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: acgs-governance-synthesis
+  template:
+    metadata:
+      labels:
+        app: acgs-governance-synthesis
+    spec:
+      containers:
+      - env:
+        - name: SERVICE_NAME
+          value: governance-synthesis
+        - name: REPLICA_MODE
+          value: 'true'
+        image: acgs/governance-synthesis:latest
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8008
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        name: acgs-governance-synthesis
+        ports:
+        - containerPort: 8008
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8008
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 4Gi
+          requests:
+            cpu: 500m
+            memory: 1Gi

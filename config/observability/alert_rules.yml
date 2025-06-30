@@ -1,0 +1,35 @@
+groups:
+- name: acgs-observability-alerts
+  rules:
+  - alert: HighResponseTime
+    annotations:
+      description: 95th percentile response time is above 5 seconds
+      summary: High response time detected
+    expr: histogram_quantile(0.95, http_request_duration_seconds_bucket) > 5
+    for: 2m
+    labels:
+      severity: warning
+  - alert: ConstitutionalComplianceFailure
+    annotations:
+      description: Constitutional compliance score dropped below 90%
+      summary: Constitutional compliance failure
+    expr: constitutional_compliance_score < 0.9
+    for: 1m
+    labels:
+      severity: critical
+  - alert: PolicyEvaluationFailureRate
+    annotations:
+      description: Policy evaluation failure rate is above 5%
+      summary: High policy evaluation failure rate
+    expr: rate(policy_evaluations_failed_total[5m]) > 0.05
+    for: 3m
+    labels:
+      severity: warning
+  - alert: TracingDataLoss
+    annotations:
+      description: No tracing spans received in the last 5 minutes
+      summary: Tracing data loss detected
+    expr: rate(jaeger_spans_received_total[5m]) == 0
+    for: 5m
+    labels:
+      severity: warning

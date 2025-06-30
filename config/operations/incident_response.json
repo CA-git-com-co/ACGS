@@ -1,0 +1,54 @@
+{
+  "mttr_target_minutes": 60,
+  "response_playbooks": {
+    "service_down": {
+      "severity": "critical",
+      "actions": [
+        "restart_service",
+        "check_dependencies",
+        "escalate_if_needed"
+      ]
+    },
+    "high_error_rate": {
+      "severity": "high",
+      "actions": [
+        "analyze_logs",
+        "rollback_if_recent_deploy",
+        "notify_team"
+      ]
+    },
+    "performance_degradation": {
+      "severity": "medium",
+      "actions": [
+        "check_resources",
+        "scale_if_needed",
+        "monitor_closely"
+      ]
+    }
+  },
+  "escalation_levels": [
+    {
+      "level": 1,
+      "timeout_minutes": 15,
+      "contacts": [
+        "on_call_engineer"
+      ]
+    },
+    {
+      "level": 2,
+      "timeout_minutes": 30,
+      "contacts": [
+        "team_lead",
+        "on_call_engineer"
+      ]
+    },
+    {
+      "level": 3,
+      "timeout_minutes": 60,
+      "contacts": [
+        "engineering_manager",
+        "team_lead"
+      ]
+    }
+  ]
+}

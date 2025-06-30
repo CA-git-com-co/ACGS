@@ -1,12 +1,9 @@
 name: ACGS-1 Comprehensive Security Scanning
 
 on:
-  push:
-    branches: [main, master, develop]
-  pull_request:
-    branches: [main, master, develop]
+  # Reduced triggers to avoid redundancy with unified-ci.yml
   schedule:
-    - cron: '0 3 * * 1' # Weekly on Monday at 3 AM
+    - cron: '0 3 * * 1' # Weekly on Monday at 3 AM  
   workflow_dispatch:
     inputs:
       scan_type:

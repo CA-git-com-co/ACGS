@@ -18,6 +18,13 @@ from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
 
 from ...core.wina_rego_synthesis import (
+
+# Security validation imports
+from services.shared.security_validation import (
+    validate_user_input,
+    validate_policy_input,
+    validate_governance_input
+)
     batch_synthesize_rego_policies_with_wina,
     clear_wina_rego_synthesis_cache,
     get_wina_rego_synthesis_performance_summary,
@@ -103,6 +110,7 @@ class PerformanceSummaryResponse(BaseModel):
     target_performance: dict[str, str]
 
 
+@validate_policy_input
 @router.post("/synthesize", response_model=WINARegoSynthesisResponse)
 async def synthesize_rego_policy(request: WINARegoSynthesisRequest):
     # requires: Valid input parameters
@@ -175,6 +183,7 @@ async def synthesize_rego_policy(request: WINARegoSynthesisRequest):
         )
 
 
+@validate_policy_input
 @router.post("/batch", response_model=list[WINARegoSynthesisResponse])
 async def batch_synthesize_rego_policies(request: BatchWINARegoSynthesisRequest):
     # requires: Valid input parameters
