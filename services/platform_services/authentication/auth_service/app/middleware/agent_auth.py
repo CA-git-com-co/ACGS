@@ -17,6 +17,7 @@ from sqlalchemy.future import select
 
 from ..models.agent import Agent
 from ..services.agent_service import AgentService
+from services.shared.redis_client import ACGSRedisClient, get_redis_client
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +38,7 @@ class AgentAuthenticationMiddleware:
         self.agent_service = AgentService()
         self.http_client = httpx.AsyncClient(timeout=10.0)
         self.security = HTTPBearer(auto_error=False)
+        self.redis_client: ACGSRedisClient | None = None
     
     async def authenticate_agent(
         self, 
@@ -229,15 +231,34 @@ class AgentAuthenticationMiddleware:
         
         # Fall back to direct connection IP
         return request.client.host if request.client else None
+
+    async def _get_redis_client(self) -> ACGSRedisClient:
+        """Get or initialize Redis client for rate limiting."""
+        if not self.redis_client:
+            self.redis_client = await get_redis_client("auth_service")
+        return self.redis_client
     
     async def _check_rate_limits(self, agent: Agent, request: Request) -> bool:
-        """Check if agent is within rate limits."""
-        # Simplified rate limiting - in production use Redis or similar
-        # This would track requests per minute per agent
-        
+        """Check if agent is within rate limits using Redis."""
+
         max_requests = agent.max_requests_per_minute or 100
-        # TODO: Implement actual rate limiting logic with Redis
-        # For now, always return True
+        window_seconds = 60
+
+        redis_client = await self._get_redis_client()
+        key = redis_client.generate_key("agent_rate", agent.agent_id)
+
+        # Increment counter atomically
+        current_count = await redis_client.increment(key)
+        if current_count == 1:
+            await redis_client.redis_client.expire(key, window_seconds)
+
+        if current_count > max_requests:
+            ttl = await redis_client.redis_client.ttl(key)
+            request.state.rate_limit_reset = datetime.utcnow().timestamp() + (
+                ttl if ttl > 0 else window_seconds
+            )
+            return False
+
         return True
     
     def _is_high_risk_operation(
