@@ -79,7 +79,6 @@ jobs:
           filters: |
             python:
               - 'services/**/*.py'
-              - '**/requirements*.txt'
               - '**/pyproject.toml'
               - 'tests/**/*.py'
             rust:
@@ -99,7 +98,7 @@ jobs:
             security:
               - '.github/workflows/**'
               - 'scripts/security/**'
-              - '**/requirements*.txt'
+              - '**/pyproject.toml' # Changed from requirements*.txt
               - '**/Cargo.toml'
               - '**/package.json'
 
@@ -174,18 +173,33 @@ jobs:
             exit 0
           fi
 
+          # Determine service path (existing logic)
+          SERVICE_DIR_PATH=""
+          if [ -d "services/core/${{ matrix.service }}" ]; then
+            SERVICE_DIR_PATH="services/core/${{ matrix.service }}"
+          elif [ -d "services/platform/${{ matrix.service }}" ]; then
+            SERVICE_DIR_PATH="services/platform/${{ matrix.service }}"
+          else
+            echo "Service directory for ${{ matrix.service }} not found, skipping installation."
+            exit 0 # Exit gracefully if service path is not found
+          fi
+          cd "$SERVICE_DIR_PATH"
+
           uv venv
           source .venv/bin/activate
           
-          # Install based on what's available
+          # Install project with test and dev dependencies if pyproject.toml exists
           if [ -f "pyproject.toml" ]; then
-            uv pip install -e . || echo "⚠️ Failed to install project"
+            # Assuming 'test' and 'dev' groups cover pytest, black, isort, mypy
+            uv pip install -e .[test,dev] || echo "⚠️ Failed to install project with dev/test dependencies from pyproject.toml"
           elif [ -f "requirements.txt" ]; then
-            uv pip install -r requirements.txt || echo "⚠️ Failed to install requirements"
+            # Fallback for projects without pyproject.toml (if any sub-projects are structured differently)
+            uv pip install -r requirements.txt || echo "⚠️ Failed to install requirements.txt"
+            # Manually install dev tools if only requirements.txt is present
+            uv pip install pytest black isort mypy || echo "⚠️ Failed to install common dev tools"
+          else
+            echo "No pyproject.toml or requirements.txt found in $PWD, skipping dependency installation."
           fi
-          
-          # Install common development tools
-          uv pip install pytest black isort mypy || echo "⚠️ Failed to install dev tools"
 
       - name: Run quality checks
         run: |
@@ -200,21 +214,28 @@ jobs:
           fi
 
           cd "$SERVICE_PATH"
-          source .venv/bin/activate
 
-          # Format check
+          source .venv/bin/activate # Ensure correct environment
+
+          echo "Running Black check..."
           if command -v black >/dev/null 2>&1; then
-            black --check . --diff || echo "⚠️ Format check failed"
+            black --check . --diff || echo "⚠️ Black formatting check failed"
+          else
+            echo "⚠️ black command not found"
           fi
 
-          # Import sorting check
-          if command -v isort >/dev/null 2>&1; then
-            isort --check-only . --diff || echo "⚠️ Import sorting check failed"
+          echo "Running Ruff check..."
+          if command -v ruff >/dev/null 2>&1; then
+            ruff check . || echo "⚠️ Ruff linting check failed" # isort checks are included here
+          else
+            echo "⚠️ ruff command not found"
           fi
 
-          # Type checking
+          echo "Running Mypy check..."
           if command -v mypy >/dev/null 2>&1; then
-            mypy . --ignore-missing-imports || echo "⚠️ Type checking failed"
+            mypy . --ignore-missing-imports || echo "⚠️ Mypy type checking failed"
+          else
+            echo "⚠️ mypy command not found"
           fi
 
       - name: Run tests

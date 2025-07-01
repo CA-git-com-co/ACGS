@@ -11,15 +11,21 @@ ACGS-2 is a comprehensive governance system implementing constitutional AI proce
 ## Getting Started
 
 ### Prerequisites
-- Python 3.9+
-- Required dependencies (see requirements.txt)
+- Python 3.9+ (see `pyproject.toml` for exact version, e.g., >=3.10)
+- Poetry or a recent version of pip that supports `pyproject.toml`
 
 ### Installation
+Clone the repository and navigate into the project directory:
 ```bash
-git clone <repository-url>
+git clone <repository-url> # Replace <repository-url> with the actual URL
 cd ACGS-2
-pip install -r requirements-test.txt
 ```
+
+Install the project in editable mode along with its test and development dependencies:
+```bash
+pip install -e .[test,dev]
+```
+This command installs all necessary packages for running the application, tests, linters, and other development tools, as defined in `pyproject.toml`.
 
 ### Environment Configuration
 Copy `config/services/backups/.env` as a template and set the required API keys
@@ -38,9 +44,11 @@ python -m pytest --cov=services --cov-report=html
 ## Development
 
 ### Code Quality
-- Follow the code quality guidelines in `docs/code_quality_guidelines.md`
-- Use pre-commit hooks: `pre-commit install`
-- Run tests before committing
+- This project uses **Black** for code formatting, **Ruff** for linting (including import sorting), and **Mypy** for type checking.
+- Configurations for these tools are in `pyproject.toml`.
+- Follow the code quality guidelines in `docs/code_quality_guidelines.md`.
+- Use pre-commit hooks to automatically format and lint your code before committing: `pre-commit install`.
+- Run tests before committing.
 
 ### Testing
 - Maintain 80% test coverage
