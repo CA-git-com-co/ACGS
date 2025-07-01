@@ -22,7 +22,7 @@ import os
 import time
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 from uuid import uuid4
 
 # Handle compatibility issues with optional dependencies
@@ -135,39 +135,39 @@ class AuditLogEntry(BaseModel):
     component: str
 
     # Actor information
-    user_id: Optional[str] = None
-    session_id: Optional[str] = None
-    ip_address: Optional[str] = None
-    user_agent: Optional[str] = None
+    user_id: str | None = None
+    session_id: str | None = None
+    ip_address: str | None = None
+    user_agent: str | None = None
 
     # Resource information
-    resource_type: Optional[str] = None
-    resource_id: Optional[str] = None
-    resource_name: Optional[str] = None
+    resource_type: str | None = None
+    resource_id: str | None = None
+    resource_name: str | None = None
 
     # Operation details
     operation: str
-    operation_data: Dict[str, Any] = Field(default_factory=dict)
+    operation_data: dict[str, Any] = Field(default_factory=dict)
     result_status: str  # success, failure, error
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
     # Constitutional governance
     constitutional_hash: str = "cdd01ef066bc6cf2"
     compliance_validated: bool = False
-    compliance_frameworks: List[ComplianceFramework] = Field(default_factory=list)
+    compliance_frameworks: list[ComplianceFramework] = Field(default_factory=list)
 
     # Security context
-    security_context: Dict[str, Any] = Field(default_factory=dict)
+    security_context: dict[str, Any] = Field(default_factory=dict)
     risk_score: float = 0.0
 
     # Integrity protection
-    content_hash: Optional[str] = None
-    signature: Optional[str] = None
+    content_hash: str | None = None
+    signature: str | None = None
 
     # Performance metrics
-    response_time_ms: Optional[float] = None
-    cpu_usage: Optional[float] = None
-    memory_usage: Optional[float] = None
+    response_time_ms: float | None = None
+    cpu_usage: float | None = None
+    memory_usage: float | None = None
 
 
 class ComprehensiveAuditLogger:
@@ -178,8 +178,8 @@ class ComprehensiveAuditLogger:
         service_name: str,
         redis_url: str = "redis://localhost:6379",
         log_directory: str = "/home/ubuntu/ACGS/logs/audit",
-        encryption_key: Optional[str] = None,
-        integrity_key: Optional[str] = None,
+        encryption_key: str | None = None,
+        integrity_key: str | None = None,
     ):
         self.service_name = service_name
         self.redis_url = redis_url
@@ -216,7 +216,7 @@ class ComprehensiveAuditLogger:
                 logger.info(f"✅ Audit logger initialized for {self.service_name}")
             else:
                 logger.warning(
-                    f"⚠️ Redis disabled for compatibility - audit logger using file-only mode"
+                    "⚠️ Redis disabled for compatibility - audit logger using file-only mode"
                 )
                 self.redis_client = None
         except Exception as e:
@@ -229,12 +229,12 @@ class ComprehensiveAuditLogger:
         operation: str,
         result_status: str = "success",
         severity: AuditSeverity = AuditSeverity.INFO,
-        user_id: Optional[str] = None,
-        resource_type: Optional[str] = None,
-        resource_id: Optional[str] = None,
-        operation_data: Optional[Dict[str, Any]] = None,
-        security_context: Optional[Dict[str, Any]] = None,
-        compliance_frameworks: Optional[List[ComplianceFramework]] = None,
+        user_id: str | None = None,
+        resource_type: str | None = None,
+        resource_id: str | None = None,
+        operation_data: dict[str, Any] | None = None,
+        security_context: dict[str, Any] | None = None,
+        compliance_frameworks: list[ComplianceFramework] | None = None,
         **kwargs,
     ) -> str:
         """Log an audit event with comprehensive tracking."""
@@ -280,10 +280,10 @@ class ComprehensiveAuditLogger:
     async def log_constitutional_event(
         self,
         operation: str,
-        policy_content: Optional[str] = None,
-        compliance_result: Optional[Dict[str, Any]] = None,
-        confidence_score: Optional[float] = None,
-        user_id: Optional[str] = None,
+        policy_content: str | None = None,
+        compliance_result: dict[str, Any] | None = None,
+        confidence_score: float | None = None,
+        user_id: str | None = None,
         **kwargs,
     ) -> str:
         """Log constitutional governance events."""
@@ -312,7 +312,7 @@ class ComprehensiveAuditLogger:
         threat_type: str,
         threat_level: str = "medium",
         blocked: bool = False,
-        ip_address: Optional[str] = None,
+        ip_address: str | None = None,
         **kwargs,
     ) -> str:
         """Log security events with threat analysis."""
@@ -465,13 +465,13 @@ class ComprehensiveAuditLogger:
 
     async def get_audit_logs(
         self,
-        start_time: Optional[datetime] = None,
-        end_time: Optional[datetime] = None,
-        event_types: Optional[List[AuditEventType]] = None,
-        user_id: Optional[str] = None,
-        severity: Optional[AuditSeverity] = None,
+        start_time: datetime | None = None,
+        end_time: datetime | None = None,
+        event_types: list[AuditEventType] | None = None,
+        user_id: str | None = None,
+        severity: AuditSeverity | None = None,
         limit: int = 100,
-    ) -> List[AuditLogEntry]:
+    ) -> list[AuditLogEntry]:
         """Retrieve audit logs with filtering."""
 
         # This is a simplified implementation
@@ -514,7 +514,7 @@ class ComprehensiveAuditLogger:
 
         return logs
 
-    async def get_audit_statistics(self) -> Dict[str, Any]:
+    async def get_audit_statistics(self) -> dict[str, Any]:
         """Get audit logging statistics."""
 
         uptime = time.time() - self.start_time
@@ -541,7 +541,7 @@ class ComprehensiveAuditLogger:
 
 
 # Global audit logger instances
-_audit_loggers: Dict[str, ComprehensiveAuditLogger] = {}
+_audit_loggers: dict[str, ComprehensiveAuditLogger] = {}
 
 
 async def get_audit_logger(service_name: str) -> ComprehensiveAuditLogger:
@@ -580,9 +580,9 @@ async def log_user_login(
 async def log_constitutional_validation(
     service_name: str,
     policy_content: str,
-    compliance_result: Dict[str, Any],
+    compliance_result: dict[str, Any],
     confidence_score: float,
-    user_id: Optional[str] = None,
+    user_id: str | None = None,
     **kwargs,
 ):
     """Log constitutional validation event."""

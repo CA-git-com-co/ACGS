@@ -402,12 +402,11 @@ class PolicySynthesisEngine:
 
         if "safety" in scopes:
             return "safety-critical"
-        elif "governance" in scopes:
+        if "governance" in scopes:
             return "governance-wide"
-        elif "fairness" in scopes:
+        if "fairness" in scopes:
             return "fairness-sensitive"
-        else:
-            return "general"
+        return "general"
 
     def _assess_severity(
         self, request: EnhancedSynthesisRequest, principles: list[dict[str, Any]]
@@ -417,12 +416,11 @@ class PolicySynthesisEngine:
 
         if "critical" in severities:
             return "critical"
-        elif "high" in severities:
+        if "high" in severities:
             return "high"
-        elif any(s == "medium" for s in severities):
+        if any(s == "medium" for s in severities):
             return "medium"
-        else:
-            return "low"
+        return "low"
 
     def _extract_invariants(
         self, principles: list[dict[str, Any]], request: EnhancedSynthesisRequest
@@ -1037,14 +1035,13 @@ class PolicySynthesisEngine:
                         issues.append("Incomplete formal proof")
 
                 except Exception as e:
-                    issues.append(f"SMT solver error: {str(e)}")
+                    issues.append(f"SMT solver error: {e!s}")
+            # Fallback: basic logical consistency check
+            elif len(policy_rules) > 0 and len(proof_obligations) > 0:
+                score += 0.8
+                issues.append("Using fallback consistency check")
             else:
-                # Fallback: basic logical consistency check
-                if len(policy_rules) > 0 and len(proof_obligations) > 0:
-                    score += 0.8
-                    issues.append("Using fallback consistency check")
-                else:
-                    issues.append("Insufficient rules for consistency check")
+                issues.append("Insufficient rules for consistency check")
 
             passed = score >= 0.7 and len(issues) <= 1
 

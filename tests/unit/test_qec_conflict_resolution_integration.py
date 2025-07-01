@@ -19,10 +19,11 @@ from fastapi.testclient import TestClient
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend', 'shared'))  # Removed during reorganization
 
 try:
+    from models import ACConflictResolution, ACPrinciple
+
     from .api.v1.conflict_resolution import router
     from .main import app
     from .services.qec_conflict_resolver import QECConflictResolver
-    from models import ACConflictResolution, ACPrinciple
 except ImportError:
     # Fallback for testing without full service setup
     from unittest.mock import Mock
@@ -120,7 +121,6 @@ class TestQECConflictResolutionIntegration:
                 "ac_service.app.api.v1.conflict_resolution.require_roles"
             ) as mock_roles,
         ):
-
             # Setup mocks
             mock_conflict = Mock()
             mock_conflict.id = 1
@@ -162,7 +162,6 @@ class TestQECConflictResolutionIntegration:
                 "ac_service.app.api.v1.conflict_resolution.get_current_user"
             ) as mock_user,
         ):
-
             # Setup mock conflicts with different QEC analysis
             mock_conflicts = [
                 Mock(
@@ -207,7 +206,6 @@ class TestQECConflictResolutionIntegration:
                 "ac_service.app.api.v1.conflict_resolution.require_roles"
             ) as mock_roles,
         ):
-
             # Setup mocks
             mock_conflict = Mock()
             mock_conflict.id = 1
@@ -257,7 +255,6 @@ class TestQECConflictResolutionIntegration:
                 "ac_service.app.api.v1.conflict_resolution.get_current_user"
             ) as mock_user,
         ):
-
             # Setup mock conflict with QEC analysis
             mock_conflict = Mock()
             mock_conflict.id = 1
@@ -313,7 +310,6 @@ class TestQECConflictResolutionIntegration:
                 "ac_service.app.api.v1.fidelity_monitor.get_current_user"
             ) as mock_user,
         ):
-
             mock_principles = [
                 Mock(**p)
                 for p in [
@@ -396,7 +392,6 @@ class TestQECConflictResolutionIntegration:
                 "ac_service.app.api.v1.conflict_resolution.get_current_user"
             ) as mock_user,
         ):
-
             # Test 404 for non-existent conflict
             mock_get_conflict.return_value = None
             mock_user.return_value = Mock(id=1)

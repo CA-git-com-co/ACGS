@@ -73,13 +73,13 @@ async def submit_federated_evaluation(
         logger.error(f"Invalid evaluation request: {e}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid evaluation request: {str(e)}",
+            detail=f"Invalid evaluation request: {e!s}",
         )
     except Exception as e:
         logger.error(f"Failed to submit federated evaluation: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to submit evaluation: {str(e)}",
+            detail=f"Failed to submit evaluation: {e!s}",
         )
 
 
@@ -105,7 +105,7 @@ async def get_evaluation_status(
         logger.error(f"Failed to get evaluation status: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get evaluation status: {str(e)}",
+            detail=f"Failed to get evaluation status: {e!s}",
         )
 
 
@@ -139,7 +139,7 @@ async def register_federated_node(
         logger.error(f"Failed to register federated node: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to register node: {str(e)}",
+            detail=f"Failed to register node: {e!s}",
         )
 
 
@@ -172,7 +172,7 @@ async def list_federated_nodes(
         logger.error(f"Failed to list federated nodes: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to list nodes: {str(e)}",
+            detail=f"Failed to list nodes: {e!s}",
         )
 
 
@@ -198,7 +198,7 @@ async def get_node_status(
         logger.error(f"Failed to get node status: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get node status: {str(e)}",
+            detail=f"Failed to get node status: {e!s}",
         )
 
 
@@ -235,7 +235,7 @@ async def unregister_federated_node(
         logger.error(f"Failed to unregister federated node: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to unregister node: {str(e)}",
+            detail=f"Failed to unregister node: {e!s}",
         )
 
 
@@ -285,7 +285,7 @@ async def get_federated_metrics(current_user: dict = Depends(get_current_active_
         logger.error(f"Error getting federated metrics: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve federated metrics: {str(e)}",
+            detail=f"Failed to retrieve federated metrics: {e!s}",
         )
 
 
@@ -312,7 +312,7 @@ async def get_nodes_health_status(
         logger.error(f"Error getting node health status: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve node health status: {str(e)}",
+            detail=f"Failed to retrieve node health status: {e!s}",
         )
 
 
@@ -340,11 +340,10 @@ async def quarantine_node(
                 "message": f"Node {node_id} quarantined successfully",
                 "reason": reason,
             }
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Node {node_id} not found",
-            )
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Node {node_id} not found",
+        )
 
     except HTTPException:
         raise
@@ -352,7 +351,7 @@ async def quarantine_node(
         logger.error(f"Error quarantining node {node_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to quarantine node: {str(e)}",
+            detail=f"Failed to quarantine node: {e!s}",
         )
 
 
@@ -375,11 +374,10 @@ async def restore_quarantined_node(
 
         if success:
             return {"message": f"Node {node_id} restored successfully"}
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Node {node_id} not found or not quarantined",
-            )
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Node {node_id} not found or not quarantined",
+        )
 
     except HTTPException:
         raise
@@ -387,7 +385,7 @@ async def restore_quarantined_node(
         logger.error(f"Error restoring node {node_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to restore node: {str(e)}",
+            detail=f"Failed to restore node: {e!s}",
         )
 
 
@@ -417,13 +415,12 @@ async def _estimate_completion_time(
         # Convert to human-readable format
         if estimated_seconds < 60:
             return f"{estimated_seconds} seconds"
-        elif estimated_seconds < 3600:
+        if estimated_seconds < 3600:
             minutes = estimated_seconds // 60
             return f"{minutes} minutes"
-        else:
-            hours = estimated_seconds // 3600
-            minutes = (estimated_seconds % 3600) // 60
-            return f"{hours}h {minutes}m"
+        hours = estimated_seconds // 3600
+        minutes = (estimated_seconds % 3600) // 60
+        return f"{hours}h {minutes}m"
 
     except Exception as e:
         logger.error(f"Error estimating completion time: {e}")

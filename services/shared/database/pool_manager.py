@@ -197,7 +197,7 @@ class ConnectionPool:
 
         except Exception as e:
             raise DatabaseError(
-                f"Failed to initialize database pool: {str(e)}",
+                f"Failed to initialize database pool: {e!s}",
                 operation="initialize_pool",
             )
 
@@ -233,7 +233,7 @@ class ConnectionPool:
         except Exception as e:
             self.metrics.connection_errors += 1
             raise DatabaseError(
-                f"Database connection error: {str(e)}", operation="get_connection"
+                f"Database connection error: {e!s}", operation="get_connection"
             )
 
         finally:
@@ -268,7 +268,7 @@ class ConnectionPool:
                 await session.rollback()
             self.metrics.connection_errors += 1
             raise DatabaseError(
-                f"Database session error: {str(e)}", operation="get_session"
+                f"Database session error: {e!s}", operation="get_session"
             )
 
         finally:

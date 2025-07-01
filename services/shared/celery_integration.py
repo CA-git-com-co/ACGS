@@ -423,9 +423,8 @@ async def initialize_celery_integration():
         if stats:
             logger.info(f"Celery workers available: {len(stats)}")
             return True
-        else:
-            logger.warning("No Celery workers available")
-            return False
+        logger.warning("No Celery workers available")
+        return False
 
     except Exception as e:
         logger.error(f"Failed to initialize Celery integration: {e}")

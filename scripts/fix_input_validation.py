@@ -72,7 +72,7 @@ class InputValidationFixer:
                         "error": str(e),
                         "validation_working": False,
                     }
-                    print(f"  ❌ {service_name}: ERROR - {str(e)}")
+                    print(f"  ❌ {service_name}: ERROR - {e!s}")
 
         return validation_results
 

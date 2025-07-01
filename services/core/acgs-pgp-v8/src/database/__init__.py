@@ -17,15 +17,15 @@ from .models import (
 )
 
 __all__ = [
+    "AuditLog",
     "Base",
+    "ConfigurationSetting",
+    "DatabaseManager",
+    "LSURecord",
     "PolicyGeneration",
     "StabilizerExecution",
     "SystemDiagnostic",
-    "LSURecord",
-    "ConfigurationSetting",
-    "AuditLog",
-    "DatabaseManager",
+    "create_tables",
     "get_database_session",
     "run_migrations",
-    "create_tables",
 ]

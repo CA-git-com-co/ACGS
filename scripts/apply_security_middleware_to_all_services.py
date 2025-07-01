@@ -29,7 +29,6 @@ import logging
 import sys
 import time
 from pathlib import Path
-from typing import Dict
 
 import httpx
 
@@ -103,7 +102,7 @@ class SecurityMiddlewareDeployer:
         self.failed_services = []
         self.successful_services = []
 
-    async def deploy_to_all_services(self) -> Dict:
+    async def deploy_to_all_services(self) -> dict:
         """Deploy security middleware to all services."""
         logger.info("🔒 Starting security middleware deployment to all ACGS-1 services")
 
@@ -130,7 +129,7 @@ class SecurityMiddlewareDeployer:
                     )
 
             except Exception as e:
-                error_msg = f"Deployment error for {service_config['name']}: {str(e)}"
+                error_msg = f"Deployment error for {service_config['name']}: {e!s}"
                 logger.error(error_msg)
                 self.deployment_results[service_id] = {
                     "success": False,
@@ -149,7 +148,7 @@ class SecurityMiddlewareDeployer:
 
         return summary
 
-    async def _deploy_to_service(self, service_id: str, service_config: Dict) -> Dict:
+    async def _deploy_to_service(self, service_id: str, service_config: dict) -> dict:
         """Deploy security middleware to a specific service."""
         try:
             # Check if service file exists
@@ -186,12 +185,11 @@ class SecurityMiddlewareDeployer:
                     "health_check": health_check,
                     "timestamp": time.time(),
                 }
-            else:
-                return {
-                    "success": False,
-                    "error": "Failed to apply security middleware to service file",
-                    "timestamp": time.time(),
-                }
+            return {
+                "success": False,
+                "error": "Failed to apply security middleware to service file",
+                "timestamp": time.time(),
+            }
 
         except Exception as e:
             return {"success": False, "error": str(e), "timestamp": time.time()}
@@ -202,7 +200,7 @@ class SecurityMiddlewareDeployer:
         """Apply security middleware to service file."""
         try:
             # Read current service file
-            with open(service_path, "r") as f:
+            with open(service_path) as f:
                 content = f.read()
 
             # Check if security middleware is already applied
@@ -267,15 +265,14 @@ else:
 
                 logger.info(f"Security middleware applied to {service_path}")
                 return True
-            else:
-                logger.warning(f"Could not find FastAPI app creation in {service_path}")
-                return False
+            logger.warning(f"Could not find FastAPI app creation in {service_path}")
+            return False
 
         except Exception as e:
             logger.error(f"Error applying security middleware to {service_path}: {e}")
             return False
 
-    async def _test_service_health(self, port: int) -> Dict:
+    async def _test_service_health(self, port: int) -> dict:
         """Test service health after security middleware deployment."""
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
@@ -292,7 +289,7 @@ else:
         except Exception as e:
             return {"status": "unreachable", "error": str(e)}
 
-    def _generate_deployment_summary(self, deployment_time: float) -> Dict:
+    def _generate_deployment_summary(self, deployment_time: float) -> dict:
         """Generate deployment summary."""
         total_services = len(SERVICES)
         successful_count = len(self.successful_services)
@@ -324,7 +321,7 @@ else:
             ],
         }
 
-    async def _save_deployment_report(self, summary: Dict):
+    async def _save_deployment_report(self, summary: dict):
         """Save deployment report to file."""
         report_path = Path("security_middleware_deployment_report.json")
 

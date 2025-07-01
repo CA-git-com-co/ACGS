@@ -18,7 +18,7 @@ import logging
 import statistics
 import time
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional
+from typing import Any
 
 import httpx
 from pydantic import BaseModel
@@ -45,7 +45,7 @@ class ConcurrentLoadResult(BaseModel):
     p95_response_time_ms: float
     p99_response_time_ms: float
     success_rate: float
-    meets_targets: Dict[str, bool]
+    meets_targets: dict[str, bool]
     timestamp: datetime
 
 
@@ -71,7 +71,7 @@ class ACGSConcurrentLoadTester:
             "max_response_time_ms": 2000,
         }
 
-    def calculate_percentiles(self, response_times: List[float]) -> Dict[str, float]:
+    def calculate_percentiles(self, response_times: list[float]) -> dict[str, float]:
         """Calculate response time percentiles"""
         if not response_times:
             return {"p95": 0, "p99": 0}
@@ -128,7 +128,7 @@ class ACGSConcurrentLoadTester:
                 else:
                     failed_requests += 1
 
-            except Exception as e:
+            except Exception:
                 request_time = (time.time() - request_start) * 1000
                 response_times.append(request_time)
                 failed_requests += 1
@@ -191,7 +191,7 @@ class ACGSConcurrentLoadTester:
             timestamp=datetime.now(timezone.utc),
         )
 
-    async def escalating_load_test(self, service_key: str) -> Dict[str, Any]:
+    async def escalating_load_test(self, service_key: str) -> dict[str, Any]:
         """Run escalating load test with increasing concurrent requests"""
         service = self.services[service_key]
         logger.info(f"📈 Running escalating load test for {service['name']}...")
@@ -235,7 +235,7 @@ class ACGSConcurrentLoadTester:
 
     async def throughput_stress_test(
         self, service_key: str, target_rps: int = 500
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Run throughput stress test targeting specific RPS"""
         service = self.services[service_key]
         logger.info(
@@ -273,7 +273,7 @@ class ACGSConcurrentLoadTester:
                 else:
                     failed_requests += 1
 
-            except Exception as e:
+            except Exception:
                 request_time = (time.time() - request_start) * 1000
                 response_times.append(request_time)
                 failed_requests += 1
@@ -329,7 +329,7 @@ class ACGSConcurrentLoadTester:
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-    async def run_comprehensive_concurrent_load_tests(self) -> Dict[str, Any]:
+    async def run_comprehensive_concurrent_load_tests(self) -> dict[str, Any]:
         """Run comprehensive concurrent load testing for all services"""
         logger.info("🚀 Starting ACGS-PGP Comprehensive Concurrent Load Testing...")
 
@@ -460,9 +460,8 @@ async def main():
         if results["summary"]["concurrent_load_status"] == "passed":
             print("✅ Concurrent load testing passed all targets!")
             return 0
-        else:
-            print("❌ Some concurrent load targets not met. Check detailed results.")
-            return 1
+        print("❌ Some concurrent load targets not met. Check detailed results.")
+        return 1
 
     except Exception as e:
         logger.error(f"Concurrent load testing failed: {e}")

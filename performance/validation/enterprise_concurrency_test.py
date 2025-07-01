@@ -5,15 +5,16 @@ Tests system performance under realistic enterprise concurrency loads
 """
 
 import asyncio
-import aiohttp
-import time
-import psutil
-import statistics
 import json
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone
 import logging
+import statistics
+import time
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from typing import Any
+
+import aiohttp
+import psutil
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +36,7 @@ class ConcurrencyTestResult:
     max_latency_ms: float
     error_rate_percentage: float
     constitutional_compliance_rate: float
-    resource_utilization: Dict[str, float]
+    resource_utilization: dict[str, float]
     timestamp: str
 
 
@@ -65,7 +66,7 @@ class EnterpriseConcurrencyTester:
         }
         self.test_results = []
 
-    async def conduct_enterprise_concurrency_testing(self) -> Dict[str, Any]:
+    async def conduct_enterprise_concurrency_testing(self) -> dict[str, Any]:
         """Conduct comprehensive enterprise concurrency testing"""
         print("🏢 ACGS Enterprise Concurrency Testing Suite")
         print("=" * 50)
@@ -94,7 +95,7 @@ class EnterpriseConcurrencyTester:
             test_results[scenario["name"]] = result
 
             # Display key metrics
-            print(f"   📊 Results:")
+            print("   📊 Results:")
             print(f"     Requests/sec: {result.requests_per_second:.1f}")
             print(f"     P99 Latency: {result.p99_latency_ms:.2f}ms")
             print(f"     Error Rate: {result.error_rate_percentage:.2f}%")
@@ -111,7 +112,7 @@ class EnterpriseConcurrencyTester:
         # Generate comprehensive analysis
         analysis = self.analyze_concurrency_results(test_results)
 
-        print(f"\n📊 Enterprise Concurrency Analysis:")
+        print("\n📊 Enterprise Concurrency Analysis:")
         print(f"  Maximum Concurrent Users Tested: {analysis['max_concurrent_users']}")
         print(f"  Peak Requests/Second: {analysis['peak_rps']:.1f}")
         print(f"  Average P99 Latency: {analysis['avg_p99_latency']:.2f}ms")
@@ -149,7 +150,7 @@ class EnterpriseConcurrencyTester:
 
         async def make_request(
             session: aiohttp.ClientSession,
-        ) -> Tuple[bool, float, bool]:
+        ) -> tuple[bool, float, bool]:
             """Make a single request and return success, latency, and compliance status"""
             async with semaphore:
                 try:
@@ -181,7 +182,7 @@ class EnterpriseConcurrencyTester:
 
                         return success, latency_ms, constitutional_validated
 
-                except Exception as e:
+                except Exception:
                     return (
                         False,
                         30000.0,
@@ -337,8 +338,8 @@ class EnterpriseConcurrencyTester:
             return ResourceMetrics(0, 0, 0, 0, 0, 0, 0, 0)
 
     def analyze_concurrency_results(
-        self, test_results: Dict[str, ConcurrencyTestResult]
-    ) -> Dict[str, Any]:
+        self, test_results: dict[str, ConcurrencyTestResult]
+    ) -> dict[str, Any]:
         """Analyze concurrency test results and generate recommendations"""
 
         if not test_results:
@@ -403,8 +404,8 @@ class EnterpriseConcurrencyTester:
         }
 
     def generate_performance_recommendations(
-        self, test_results: Dict[str, ConcurrencyTestResult]
-    ) -> List[str]:
+        self, test_results: dict[str, ConcurrencyTestResult]
+    ) -> list[str]:
         """Generate performance optimization recommendations"""
         recommendations = []
 
@@ -469,7 +470,7 @@ async def test_enterprise_concurrency():
     print(
         f"\n📄 Detailed results saved: enterprise_concurrency_results_{timestamp}.json"
     )
-    print(f"\n✅ Enterprise Concurrency Testing: COMPLETE")
+    print("\n✅ Enterprise Concurrency Testing: COMPLETE")
 
 
 if __name__ == "__main__":

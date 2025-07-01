@@ -4,9 +4,8 @@ API Documentation Generator for ACGS-1 Services
 Generates comprehensive API documentation for all services.
 """
 
-import os
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 
 def create_service_api_doc(service_name, port, description, endpoints):
@@ -23,7 +22,7 @@ def create_service_api_doc(service_name, port, description, endpoints):
 **Base URL**: `http://localhost:{port}`
 **Interactive Docs**: `http://localhost:{port}/docs`
 **Service Version**: 2.1.0
-**Last Updated**: {datetime.now().strftime('%Y-%m-%d')}
+**Last Updated**: {datetime.now().strftime("%Y-%m-%d")}
 
 ## Authentication
 
@@ -61,20 +60,20 @@ Returns the current health status of the {service_name}.
 
     # Add endpoint documentation
     for endpoint in endpoints:
-        content += f"""### {endpoint['name']}
+        content += f"""### {endpoint["name"]}
 
-#### {endpoint['method']} {endpoint['path']}
+#### {endpoint["method"]} {endpoint["path"]}
 
-{endpoint['description']}
+{endpoint["description"]}
 
-**Authentication**: {'Required' if endpoint.get('auth', True) else 'Not required'}
+**Authentication**: {"Required" if endpoint.get("auth", True) else "Not required"}
 
 """
 
         if "request" in endpoint:
             content += f"""**Request Body**:
 ```json
-{endpoint['request']}
+{endpoint["request"]}
 ```
 
 """
@@ -82,7 +81,7 @@ Returns the current health status of the {service_name}.
         if "response" in endpoint:
             content += f"""**Response (200 OK)**:
 ```json
-{endpoint['response']}
+{endpoint["response"]}
 ```
 
 """
@@ -140,7 +139,7 @@ curl -X POST http://localhost:{port}/api/v1/example \\
 import httpx
 import asyncio
 
-class {service_name.replace(' ', '').replace('-', '')}Client:
+class {service_name.replace(" ", "").replace("-", "")}Client:
     def __init__(self, base_url="http://localhost:{port}", token=None):
         self.base_url = base_url
         self.headers = {{"Authorization": f"Bearer {{token}}"}} if token else {{}}
@@ -152,7 +151,7 @@ class {service_name.replace(' ', '').replace('-', '')}Client:
 
 # Usage
 async def main():
-    client = {service_name.replace(' ', '').replace('-', '')}Client(token="your_jwt_token")
+    client = {service_name.replace(" ", "").replace("-", "")}Client(token="your_jwt_token")
     result = await client.health_check()
     print(result)
 
@@ -359,7 +358,7 @@ def main():
 
         print(f"✅ Generated API documentation: {filepath}")
 
-    print(f"\n🎉 API documentation generation complete!")
+    print("\n🎉 API documentation generation complete!")
     print(f"📁 Documentation files created in: {docs_dir}")
 
 

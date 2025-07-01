@@ -5,14 +5,13 @@ Tests connection pooling, query optimization, indexing, and response times
 """
 
 import asyncio
-import asyncpg
-import time
-import statistics
 import json
-from typing import List, Dict, Any
-from dataclasses import dataclass
-from concurrent.futures import ThreadPoolExecutor
 import logging
+import statistics
+import time
+from dataclasses import dataclass
+
+import asyncpg
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -37,12 +36,12 @@ class PerformanceMetrics:
     """Performance metrics for database operations."""
 
     operation: str
-    response_times: List[float]
+    response_times: list[float]
     avg_response_time: float
     p95_response_time: float
     p99_response_time: float
     success_rate: float
-    errors: List[str]
+    errors: list[str]
 
 
 class DatabasePerformanceOptimizer:
@@ -178,7 +177,7 @@ class DatabasePerformanceOptimizer:
                 except Exception as e:
                     response_time = (time.time() - start_time) * 1000
                     response_times.append(response_time)
-                    errors.append(f"Query error: {str(e)}")
+                    errors.append(f"Query error: {e!s}")
 
         return self._calculate_metrics("query_optimization", response_times, errors)
 
@@ -306,7 +305,7 @@ class DatabasePerformanceOptimizer:
             except Exception as e:
                 response_time = (time.time() - start_time) * 1000
                 response_times.append(response_time)
-                errors.append(f"{query_name} error: {str(e)}")
+                errors.append(f"{query_name} error: {e!s}")
 
         return self._calculate_metrics("index_performance", response_times, errors)
 
@@ -342,7 +341,7 @@ class DatabasePerformanceOptimizer:
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
             response_times.append(response_time)
-            errors.append(f"Bulk insert error: {str(e)}")
+            errors.append(f"Bulk insert error: {e!s}")
 
         # Test bulk update
         start_time = time.time()
@@ -362,12 +361,12 @@ class DatabasePerformanceOptimizer:
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
             response_times.append(response_time)
-            errors.append(f"Bulk update error: {str(e)}")
+            errors.append(f"Bulk update error: {e!s}")
 
         return self._calculate_metrics("bulk_operations", response_times, errors)
 
     def _calculate_metrics(
-        self, operation: str, response_times: List[float], errors: List[str]
+        self, operation: str, response_times: list[float], errors: list[str]
     ) -> PerformanceMetrics:
         """Calculate performance metrics from response times."""
         if not response_times:
@@ -437,35 +436,35 @@ async def test_database_performance_optimization():
 
         # Test connection pooling
         pooling_metrics = await optimizer.test_connection_pooling()
-        print(f"\n📊 Connection Pooling Results:")
+        print("\n📊 Connection Pooling Results:")
         print(f"   Average Response Time: {pooling_metrics.avg_response_time:.2f}ms")
         print(f"   95th Percentile: {pooling_metrics.p95_response_time:.2f}ms")
         print(f"   Success Rate: {pooling_metrics.success_rate:.1f}%")
 
         # Test query optimization
         query_metrics = await optimizer.test_query_optimization()
-        print(f"\n📊 Query Optimization Results:")
+        print("\n📊 Query Optimization Results:")
         print(f"   Average Response Time: {query_metrics.avg_response_time:.2f}ms")
         print(f"   95th Percentile: {query_metrics.p95_response_time:.2f}ms")
         print(f"   Success Rate: {query_metrics.success_rate:.1f}%")
 
         # Test concurrent operations
         concurrent_metrics = await optimizer.test_concurrent_operations()
-        print(f"\n📊 Concurrent Operations Results:")
+        print("\n📊 Concurrent Operations Results:")
         print(f"   Average Response Time: {concurrent_metrics.avg_response_time:.2f}ms")
         print(f"   95th Percentile: {concurrent_metrics.p95_response_time:.2f}ms")
         print(f"   Success Rate: {concurrent_metrics.success_rate:.1f}%")
 
         # Test index performance
         index_metrics = await optimizer.test_index_performance()
-        print(f"\n📊 Index Performance Results:")
+        print("\n📊 Index Performance Results:")
         print(f"   Average Response Time: {index_metrics.avg_response_time:.2f}ms")
         print(f"   95th Percentile: {index_metrics.p95_response_time:.2f}ms")
         print(f"   Success Rate: {index_metrics.success_rate:.1f}%")
 
         # Test bulk operations
         bulk_metrics = await optimizer.test_bulk_operations()
-        print(f"\n📊 Bulk Operations Results:")
+        print("\n📊 Bulk Operations Results:")
         print(f"   Average Response Time: {bulk_metrics.avg_response_time:.2f}ms")
         print(f"   95th Percentile: {bulk_metrics.p95_response_time:.2f}ms")
         print(f"   Success Rate: {bulk_metrics.success_rate:.1f}%")
@@ -482,7 +481,7 @@ async def test_database_performance_optimization():
         overall_p95 = statistics.mean([m.p95_response_time for m in all_metrics])
         overall_success = statistics.mean([m.success_rate for m in all_metrics])
 
-        print(f"\n📈 Overall Performance Summary:")
+        print("\n📈 Overall Performance Summary:")
         print(f"   Overall Average Response Time: {overall_avg:.2f}ms")
         print(f"   Overall 95th Percentile: {overall_p95:.2f}ms")
         print(f"   Overall Success Rate: {overall_success:.1f}%")
@@ -494,7 +493,7 @@ async def test_database_performance_optimization():
         meets_response_target = overall_p95 <= target_response_time
         meets_success_target = overall_success >= target_success_rate
 
-        print(f"\n🎯 Target Validation:")
+        print("\n🎯 Target Validation:")
         print(f"   Target Response Time (95th percentile): ≤{target_response_time}ms")
         print(f"   Achieved Response Time: {overall_p95:.2f}ms")
         print(

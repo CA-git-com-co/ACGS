@@ -17,7 +17,6 @@ import os
 from pathlib import Path
 
 import pytest
-
 from nemo_skills.evaluation.metrics import ComputeMetrics
 from nemo_skills.pipeline.cli import (
     eval,
@@ -27,6 +26,7 @@ from nemo_skills.pipeline.cli import (
     train,
     wrap_arguments,
 )
+
 from tests.conftest import docker_rm
 
 
@@ -368,7 +368,7 @@ def test_rm_aligner(test_mode):
     if model_type in seeds_supported_models:
         generate(
             ctx=wrap_arguments(
-                f"++prompt_config=generic/math-base " f"++prompt_template=llama3-base "
+                "++prompt_config=generic/math-base ++prompt_template=llama3-base "
             ),
             cluster="test-local",
             config_dir=Path(__file__).absolute().parent,

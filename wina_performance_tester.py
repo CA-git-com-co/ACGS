@@ -5,16 +5,14 @@ Tests WINA components against sub-5ms P99 latency requirements.
 Validates O(1) lookups, request-scoped caching, and performance consistency.
 """
 
-import os
-import sys
 import json
-import time
 import statistics
-import threading
-from pathlib import Path
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass
+import sys
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
 # Add project paths
 project_root = Path(__file__).parent
@@ -27,11 +25,11 @@ sys.path.insert(0, str(project_root / "services/shared"))
 class PerformanceResult:
     test_name: str
     status: str
-    latency_stats: Dict[str, float]
+    latency_stats: dict[str, float]
     throughput: float
     meets_requirements: bool
-    details: Dict[str, Any]
-    error_message: Optional[str] = None
+    details: dict[str, Any]
+    error_message: str | None = None
 
 
 class WINAPerformanceTester:
@@ -54,7 +52,7 @@ class WINAPerformanceTester:
         if result.error_message:
             print(f"  Error: {result.error_message}")
 
-    def measure_latency_stats(self, latencies: List[float]) -> Dict[str, float]:
+    def measure_latency_stats(self, latencies: list[float]) -> dict[str, float]:
         """Calculate latency statistics from a list of latencies in seconds."""
         if not latencies:
             return {}
@@ -72,7 +70,7 @@ class WINAPerformanceTester:
             "std_dev": statistics.stdev(latencies_ms) if len(latencies_ms) > 1 else 0,
         }
 
-    def percentile(self, data: List[float], percentile: float) -> float:
+    def percentile(self, data: list[float], percentile: float) -> float:
         """Calculate percentile of data."""
         if not data:
             return 0.0
@@ -80,10 +78,9 @@ class WINAPerformanceTester:
         index = (percentile / 100) * (len(sorted_data) - 1)
         if index.is_integer():
             return sorted_data[int(index)]
-        else:
-            lower = sorted_data[int(index)]
-            upper = sorted_data[int(index) + 1]
-            return lower + (upper - lower) * (index - int(index))
+        lower = sorted_data[int(index)]
+        upper = sorted_data[int(index) + 1]
+        return lower + (upper - lower) * (index - int(index))
 
     def test_o1_lookup_performance(self) -> PerformanceResult:
         """Test O(1) lookup performance with hash tables."""
@@ -147,9 +144,8 @@ class WINAPerformanceTester:
                     if key in self.cache:
                         self.hits += 1
                         return self.cache[key]
-                    else:
-                        self.misses += 1
-                        return None
+                    self.misses += 1
+                    return None
 
                 def set(self, key, value):
                     self.cache[key] = value
@@ -286,7 +282,7 @@ class WINAPerformanceTester:
         start_time = time.time()
         try:
 
-            def worker_task(worker_id: int, num_operations: int) -> List[float]:
+            def worker_task(worker_id: int, num_operations: int) -> list[float]:
                 """Worker function for concurrent testing."""
                 latencies = []
                 lookup_table = {f"key_{i}": f"value_{i}" for i in range(1000)}
@@ -385,7 +381,7 @@ class WINAPerformanceTester:
                 "wina_component_discovery", "ERROR", {}, 0.0, False, {}, str(e)
             )
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Run all WINA performance tests."""
         print("Starting WINA Performance Testing...")
         print(f"Target P99 Latency: < {self.target_p99_latency_ms}ms")
@@ -413,7 +409,7 @@ class WINAPerformanceTester:
                     0.0,
                     False,
                     {},
-                    f"Test execution failed: {str(e)}",
+                    f"Test execution failed: {e!s}",
                 )
                 self.log_result(error_result)
 

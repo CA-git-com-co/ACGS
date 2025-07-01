@@ -9,7 +9,6 @@ import json
 import logging
 import time
 from datetime import datetime
-from typing import Dict, List
 
 import aiohttp
 import psutil
@@ -338,8 +337,8 @@ class AdvancedPerformanceOptimizer:
         return self.optimization_results
 
     def _generate_optimization_summary(
-        self, service_metrics: Dict, recommendations: List
-    ) -> Dict:
+        self, service_metrics: dict, recommendations: list
+    ) -> dict:
         """Generate optimization summary."""
         healthy_services = len(
             [s for s in service_metrics.values() if s.get("status") == "healthy"]
@@ -407,7 +406,7 @@ class AdvancedPerformanceOptimizer:
 
         summary = self.optimization_results["summary"]
 
-        print(f"\n📊 Optimization Summary:")
+        print("\n📊 Optimization Summary:")
         print(
             f"Service Availability: {summary['healthy_services']}/{summary['total_services']} ({summary['service_availability_percent']}%)"
         )
@@ -416,7 +415,7 @@ class AdvancedPerformanceOptimizer:
         print(f"Optimization Score: {summary['optimization_score']}/100")
 
         # Service metrics
-        print(f"\n🎯 Service Performance Metrics:")
+        print("\n🎯 Service Performance Metrics:")
         print("-" * 50)
         for service, metrics in self.optimization_results["service_metrics"].items():
             if metrics.get("status") == "healthy":
@@ -435,7 +434,7 @@ class AdvancedPerformanceOptimizer:
             if r["priority"] == "high"
         ]
         if high_priority:
-            print(f"\n🚨 High Priority Recommendations:")
+            print("\n🚨 High Priority Recommendations:")
             print("-" * 50)
             for rec in high_priority:
                 print(f"• {rec['title']}")
@@ -445,7 +444,7 @@ class AdvancedPerformanceOptimizer:
         system_metrics = self.optimization_results["system_optimization"][
             "system_metrics"
         ]
-        print(f"\n💻 System Resource Utilization:")
+        print("\n💻 System Resource Utilization:")
         print(
             f"CPU: {system_metrics['cpu_percent']}% | Memory: {system_metrics['memory_percent']}% | Disk: {system_metrics['disk_percent']}%"
         )

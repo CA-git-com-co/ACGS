@@ -751,8 +751,7 @@ class HumanInTheLoopSampler:
             if SamplingTrigger.STAKEHOLDER_CONFLICT in triggers_activated:
                 if overall_uncertainty > 0.8:
                     return EscalationLevel.CONSTITUTIONAL_COUNCIL
-                else:
-                    return EscalationLevel.POLICY_MANAGER
+                return EscalationLevel.POLICY_MANAGER
 
             # Technical or novel scenarios
             if (
@@ -761,8 +760,7 @@ class HumanInTheLoopSampler:
             ):
                 if overall_uncertainty > 0.8 or confidence_score < 0.5:
                     return EscalationLevel.POLICY_MANAGER
-                else:
-                    return EscalationLevel.TECHNICAL_REVIEW
+                return EscalationLevel.TECHNICAL_REVIEW
 
             # Low confidence scenarios
             if SamplingTrigger.LOW_CONFIDENCE in triggers_activated:
@@ -826,12 +824,11 @@ class HumanInTheLoopSampler:
             if human_agreed:
                 # Correct assessment
                 pass
+            # Incorrect assessment - update false positive/negative counts
+            elif feedback_record["metadata"].get("was_oversight_triggered", False):
+                self.sampling_stats["false_positives"] += 1
             else:
-                # Incorrect assessment - update false positive/negative counts
-                if feedback_record["metadata"].get("was_oversight_triggered", False):
-                    self.sampling_stats["false_positives"] += 1
-                else:
-                    self.sampling_stats["false_negatives"] += 1
+                self.sampling_stats["false_negatives"] += 1
 
             # Trigger adaptive learning if enough samples
             if len(self.learning_history) >= self.config.min_feedback_samples:

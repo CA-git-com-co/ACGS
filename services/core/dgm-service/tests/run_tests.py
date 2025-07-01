@@ -7,17 +7,16 @@ performance benchmarking, and detailed result analysis.
 """
 
 import argparse
-import asyncio
 import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import pytest
 
 
-def run_command(cmd: List[str], cwd: str = None) -> Dict[str, Any]:
+def run_command(cmd: list[str], cwd: str = None) -> dict[str, Any]:
     """Run a command and return the result."""
     try:
         result = subprocess.run(
@@ -49,7 +48,7 @@ def setup_test_environment():
     return True
 
 
-def run_unit_tests(args) -> Dict[str, Any]:
+def run_unit_tests(args) -> dict[str, Any]:
     """Run unit tests with coverage."""
     print("\n" + "=" * 60)
     print("RUNNING UNIT TESTS")
@@ -100,7 +99,7 @@ def run_unit_tests(args) -> Dict[str, Any]:
     }
 
 
-def run_integration_tests(args) -> Dict[str, Any]:
+def run_integration_tests(args) -> dict[str, Any]:
     """Run integration tests."""
     print("\n" + "=" * 60)
     print("RUNNING INTEGRATION TESTS")
@@ -125,7 +124,7 @@ def run_integration_tests(args) -> Dict[str, Any]:
     }
 
 
-def run_constitutional_tests(args) -> Dict[str, Any]:
+def run_constitutional_tests(args) -> dict[str, Any]:
     """Run constitutional compliance tests."""
     print("\n" + "=" * 60)
     print("RUNNING CONSTITUTIONAL COMPLIANCE TESTS")
@@ -147,7 +146,7 @@ def run_constitutional_tests(args) -> Dict[str, Any]:
     }
 
 
-def run_performance_tests(args) -> Dict[str, Any]:
+def run_performance_tests(args) -> dict[str, Any]:
     """Run performance tests."""
     print("\n" + "=" * 60)
     print("RUNNING PERFORMANCE TESTS")
@@ -167,7 +166,7 @@ def run_performance_tests(args) -> Dict[str, Any]:
             if args.no_load:
                 cmd.append("--no-load")
 
-            result = subprocess.run(cmd, capture_output=True, text=True)
+            result = subprocess.run(cmd, check=False, capture_output=True, text=True)
 
             print(result.stdout)
             if result.stderr:
@@ -212,7 +211,7 @@ def run_performance_tests(args) -> Dict[str, Any]:
         }
 
 
-def run_security_tests(args) -> Dict[str, Any]:
+def run_security_tests(args) -> dict[str, Any]:
     """Run security tests."""
     print("\n" + "=" * 60)
     print("RUNNING SECURITY TESTS")
@@ -259,7 +258,7 @@ def run_security_tests(args) -> Dict[str, Any]:
     }
 
 
-def run_code_quality_checks(args) -> Dict[str, Any]:
+def run_code_quality_checks(args) -> dict[str, Any]:
     """Run code quality checks."""
     print("\n" + "=" * 60)
     print("RUNNING CODE QUALITY CHECKS")
@@ -292,7 +291,7 @@ def run_code_quality_checks(args) -> Dict[str, Any]:
     return {"success": all_passed, "results": results, "test_type": "code_quality"}
 
 
-def generate_test_report(results: List[Dict[str, Any]]):
+def generate_test_report(results: list[dict[str, Any]]):
     """Generate comprehensive test report."""
     print("\n" + "=" * 60)
     print("TEST EXECUTION SUMMARY")
@@ -305,7 +304,7 @@ def generate_test_report(results: List[Dict[str, Any]]):
     print(f"Total test suites: {total_tests}")
     print(f"Passed: {passed_tests}")
     print(f"Failed: {failed_tests}")
-    print(f"Success rate: {(passed_tests/total_tests)*100:.1f}%")
+    print(f"Success rate: {(passed_tests / total_tests) * 100:.1f}%")
 
     print("\nDetailed Results:")
     print("-" * 40)
@@ -320,14 +319,14 @@ def generate_test_report(results: List[Dict[str, Any]]):
 
     # Coverage information
     if os.path.exists("htmlcov/index.html"):
-        print(f"\n📊 Coverage report available at: htmlcov/index.html")
+        print("\n📊 Coverage report available at: htmlcov/index.html")
 
     # Security reports
     if os.path.exists("bandit-report.json"):
-        print(f"🔒 Security report available at: bandit-report.json")
+        print("🔒 Security report available at: bandit-report.json")
 
     if os.path.exists("safety-report.json"):
-        print(f"🛡️  Dependency security report available at: safety-report.json")
+        print("🛡️  Dependency security report available at: safety-report.json")
 
     return passed_tests == total_tests
 

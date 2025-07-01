@@ -10,12 +10,12 @@ ensuring 100% constitutional compliance and <5ms validation latency.
 """
 
 import asyncio
-import time
-import sys
 import os
+import sys
+import time
 
 import pytest
-from prometheus_client import CollectorRegistry, REGISTRY
+from prometheus_client import REGISTRY
 
 # Add the service path to sys.path for imports
 service_path = os.path.join(

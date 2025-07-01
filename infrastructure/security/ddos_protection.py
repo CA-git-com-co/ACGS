@@ -11,15 +11,11 @@ import time
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Optional, Set, Tuple
 
-import aiohttp
-import ipaddress
 from prometheus_client import (
     CollectorRegistry,
     Counter,
     Gauge,
-    Histogram,
     start_http_server,
 )
 
@@ -63,7 +59,7 @@ class ThreatIntelligence:
     last_seen: datetime
 
     # Additional context
-    attack_vectors: List[str] = field(default_factory=list)
+    attack_vectors: list[str] = field(default_factory=list)
     geographic_origin: str = ""
 
     # Constitutional compliance
@@ -79,17 +75,17 @@ class DDoSProtectionSystem:
         self.setup_metrics()
 
         # Traffic monitoring
-        self.traffic_patterns: Dict[str, deque] = defaultdict(
+        self.traffic_patterns: dict[str, deque] = defaultdict(
             lambda: deque(maxlen=1000)
         )
-        self.request_rates: Dict[str, Dict[str, int]] = defaultdict(
+        self.request_rates: dict[str, dict[str, int]] = defaultdict(
             lambda: defaultdict(int)
         )
-        self.blocked_ips: Set[str] = set()
+        self.blocked_ips: set[str] = set()
 
         # Threat intelligence
-        self.threat_intelligence: Dict[str, ThreatIntelligence] = {}
-        self.suspicious_patterns: List[TrafficPattern] = []
+        self.threat_intelligence: dict[str, ThreatIntelligence] = {}
+        self.suspicious_patterns: list[TrafficPattern] = []
 
         # DDoS detection thresholds
         self.ddos_thresholds = {
@@ -198,7 +194,7 @@ class DDoSProtectionSystem:
         logger.info("DDoS Protection System started")
 
     async def analyze_request(
-        self, source_ip: str, target_service: str, request_data: Dict
+        self, source_ip: str, target_service: str, request_data: dict
     ) -> bool:
         """Analyze incoming request for threats."""
         try:
@@ -284,7 +280,7 @@ class DDoSProtectionSystem:
         return True
 
     async def detect_intrusion_attempt(
-        self, request_data: Dict, target_service: str
+        self, request_data: dict, target_service: str
     ) -> bool:
         """Detect intrusion attempts in request data."""
         try:
@@ -330,7 +326,7 @@ class DDoSProtectionSystem:
             return False
 
     async def validate_constitutional_compliance(
-        self, request_data: Dict, target_service: str
+        self, request_data: dict, target_service: str
     ) -> bool:
         """Validate constitutional compliance for request."""
         try:
@@ -355,7 +351,7 @@ class DDoSProtectionSystem:
             return False
 
     async def record_traffic_pattern(
-        self, source_ip: str, target_service: str, request_data: Dict
+        self, source_ip: str, target_service: str, request_data: dict
     ):
         """Record traffic pattern for analysis."""
         try:
@@ -615,7 +611,7 @@ class DDoSProtectionSystem:
                 await asyncio.sleep(120)
 
     async def analyze_suspicious_behavior(
-        self, ip: str, patterns: List[TrafficPattern]
+        self, ip: str, patterns: list[TrafficPattern]
     ):
         """Analyze patterns for suspicious behavior."""
         try:
@@ -713,7 +709,7 @@ class DDoSProtectionSystem:
                 logger.error(f"Error in cleanup loop: {e}")
                 await asyncio.sleep(1200)
 
-    def get_protection_status(self) -> Dict[str, Any]:
+    def get_protection_status(self) -> dict[str, Any]:
         """Get DDoS protection system status."""
         return {
             "active_traffic_patterns": len(self.traffic_patterns),

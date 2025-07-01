@@ -659,10 +659,9 @@ async def main():
             # Return appropriate exit code
             if report.overall_status == ServiceStatus.HEALTHY:
                 return 0
-            elif report.overall_status == ServiceStatus.DEGRADED:
+            if report.overall_status == ServiceStatus.DEGRADED:
                 return 1
-            else:
-                return 2
+            return 2
 
     except Exception as e:
         logger.error(f"❌ Health check failed: {e}")

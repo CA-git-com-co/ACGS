@@ -16,26 +16,23 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio
+import json
 import logging
+import statistics
 import sys
 import time
-import json
-import statistics
 from pathlib import Path
-from typing import Dict, List, Any, Tuple
-from concurrent.futures import ThreadPoolExecutor
-import aiohttp
+from typing import Any
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.shared.multimodal_ai_service import get_multimodal_service
 from services.shared.ai_types import (
+    ContentType,
     MultimodalRequest,
     RequestType,
-    ContentType,
-    ModelType,
 )
+from services.shared.multimodal_ai_service import get_multimodal_service
 
 # Configure logging
 logging.basicConfig(
@@ -64,7 +61,7 @@ class ComprehensiveLoadTester:
         self.service = await get_multimodal_service()
         logger.info("✅ Load tester initialized")
 
-    async def generate_test_requests(self, count: int) -> List[MultimodalRequest]:
+    async def generate_test_requests(self, count: int) -> list[MultimodalRequest]:
         """Generate test requests for load testing."""
 
         test_contents = [
@@ -105,7 +102,7 @@ class ComprehensiveLoadTester:
 
     async def execute_single_request(
         self, request: MultimodalRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute a single request and measure performance."""
         start_time = time.time()
 
@@ -138,8 +135,8 @@ class ComprehensiveLoadTester:
             }
 
     async def execute_concurrent_batch(
-        self, requests: List[MultimodalRequest]
-    ) -> List[Dict[str, Any]]:
+        self, requests: list[MultimodalRequest]
+    ) -> list[dict[str, Any]]:
         """Execute a batch of requests concurrently."""
 
         # Create semaphore to limit concurrent requests
@@ -174,7 +171,7 @@ class ComprehensiveLoadTester:
 
         return processed_results
 
-    def analyze_results(self, results: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def analyze_results(self, results: list[dict[str, Any]]) -> dict[str, Any]:
         """Analyze load test results."""
 
         total_requests = len(results)
@@ -283,7 +280,7 @@ class ComprehensiveLoadTester:
 
         return analysis
 
-    async def run_load_test(self, concurrent_requests: int = 1000) -> Dict[str, Any]:
+    async def run_load_test(self, concurrent_requests: int = 1000) -> dict[str, Any]:
         """Run comprehensive load test."""
         logger.info(
             f"🚀 Starting load test with {concurrent_requests} concurrent requests..."
@@ -416,9 +413,8 @@ async def main():
         if all_passed:
             logger.info("\n🎉 ALL LOAD TESTS PASSED - PRODUCTION READY!")
             return 0
-        else:
-            logger.info("\n⚠️ SOME LOAD TESTS FAILED - NEEDS OPTIMIZATION")
-            return 1
+        logger.info("\n⚠️ SOME LOAD TESTS FAILED - NEEDS OPTIMIZATION")
+        return 1
 
     except Exception as e:
         logger.error(f"❌ Load testing failed: {e}")

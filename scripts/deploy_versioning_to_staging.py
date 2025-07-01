@@ -6,15 +6,14 @@ Deploys the API versioning system to staging environment with feature flags,
 monitoring, and gradual rollout capabilities.
 """
 
-import os
-import sys
+import asyncio
 import json
 import logging
-import asyncio
+import sys
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -33,7 +32,7 @@ class DeploymentResult:
     step: str
     success: bool
     message: str
-    details: Optional[Dict[str, Any]] = None
+    details: dict[str, Any] | None = None
 
 
 class StagingDeploymentManager:
@@ -49,7 +48,7 @@ class StagingDeploymentManager:
 
     def __init__(self, staging_config_path: str = "config/environments/staging.env"):
         self.staging_config_path = staging_config_path
-        self.deployment_results: List[DeploymentResult] = []
+        self.deployment_results: list[DeploymentResult] = []
         self.feature_flags = {
             "api_versioning_enabled": True,
             "version_routing_middleware": True,
@@ -58,7 +57,7 @@ class StagingDeploymentManager:
             "monitoring_enabled": True,
         }
 
-    async def deploy_to_staging(self) -> Dict[str, Any]:
+    async def deploy_to_staging(self) -> dict[str, Any]:
         """Execute complete staging deployment."""
         logger.info("🚀 Starting API Versioning Staging Deployment...")
 
@@ -366,10 +365,10 @@ class StagingDeploymentManager:
 
             # Test versioning components
             try:
-                from services.shared.versioning.version_manager import VersionManager
                 from services.shared.versioning.response_transformers import (
                     VersionedResponseBuilder,
                 )
+                from services.shared.versioning.version_manager import VersionManager
 
                 # Test basic functionality
                 manager = VersionManager("staging-test", "v2.0.0")
@@ -378,7 +377,7 @@ class StagingDeploymentManager:
                 health_checks["versioning_components_available"] = True
                 health_checks["middleware_loadable"] = True
 
-            except Exception as e:
+            except Exception:
                 health_checks["versioning_components_available"] = False
                 health_checks["middleware_loadable"] = False
 
@@ -427,14 +426,14 @@ async def main():
     print(f"📈 Success Rate: {summary['success_rate']}%")
     print(f"⏱️  Duration: {summary['duration_seconds']}s")
 
-    print(f"\n🎯 SUCCESS CRITERIA:")
+    print("\n🎯 SUCCESS CRITERIA:")
     criteria = report["success_criteria"]
     for criterion, passed in criteria.items():
         status = "PASS" if passed else "FAIL"
         print(f"   {criterion}: {status}")
 
     if summary["failed_steps"] > 0:
-        print(f"\n⚠️  FAILED STEPS:")
+        print("\n⚠️  FAILED STEPS:")
         for step in report["deployment_steps"]:
             if not step["success"]:
                 print(f"   - {step['step']}: {step['message']}")

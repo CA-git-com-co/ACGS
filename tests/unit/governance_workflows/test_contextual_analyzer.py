@@ -2,11 +2,9 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.core.contextual_analyzer
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.governance_synthesis.gs_service.app.core.contextual_analyzer import (
-    EnvironmentalFactor,
     ContextualAnalyzer,
+    EnvironmentalFactor,
 )
 
 

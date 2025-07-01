@@ -7,15 +7,12 @@ Comprehensive dependency audit, security scanning, and update management
 for all package managers (npm, pip, cargo) across the ACGS-1 system.
 """
 
-import os
-import sys
 import json
-import subprocess
 import logging
-from pathlib import Path
+import subprocess
+import sys
 from datetime import datetime
-from typing import Dict, List, Set, Tuple
-import re
+from pathlib import Path
 
 # Configure logging
 logging.basicConfig(
@@ -50,6 +47,7 @@ class DependencyManager:
         try:
             result = subprocess.run(
                 [sys.executable, "-m", "pip", "install", "pip-audit"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=120,
@@ -59,6 +57,7 @@ class DependencyManager:
                 # Run security audit
                 audit_result = subprocess.run(
                     [sys.executable, "-m", "pip_audit", "--format=json", "--desc"],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=180,
@@ -83,6 +82,7 @@ class DependencyManager:
         try:
             outdated_result = subprocess.run(
                 [sys.executable, "-m", "pip", "list", "--outdated", "--format=json"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=120,
@@ -122,6 +122,7 @@ class DependencyManager:
                 # Run npm audit
                 audit_result = subprocess.run(
                     ["npm", "audit", "--json"],
+                    check=False,
                     cwd=package_dir,
                     capture_output=True,
                     text=True,
@@ -155,6 +156,7 @@ class DependencyManager:
                 # Check for outdated packages
                 outdated_result = subprocess.run(
                     ["npm", "outdated", "--json"],
+                    check=False,
                     cwd=package_dir,
                     capture_output=True,
                     text=True,
@@ -191,12 +193,16 @@ class DependencyManager:
         try:
             # Install cargo-audit if not present
             subprocess.run(
-                ["cargo", "install", "cargo-audit"], capture_output=True, timeout=300
+                ["cargo", "install", "cargo-audit"],
+                check=False,
+                capture_output=True,
+                timeout=300,
             )
 
             # Run cargo audit
             audit_result = subprocess.run(
                 ["cargo", "audit", "--format", "json"],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -266,6 +272,7 @@ class DependencyManager:
                                 "--upgrade",
                                 package,
                             ],
+                            check=False,
                             capture_output=True,
                             text=True,
                             timeout=120,
@@ -294,6 +301,7 @@ class DependencyManager:
                 try:
                     result = subprocess.run(
                         ["npm", "audit", "fix", "--force"],
+                        check=False,
                         cwd=location,
                         capture_output=True,
                         text=True,

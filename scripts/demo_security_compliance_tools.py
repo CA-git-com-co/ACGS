@@ -319,6 +319,7 @@ class SecurityComplianceDemo:
             try:
                 result = subprocess.run(
                     [sys.executable, str(validation_script)],
+                    check=False,
                     capture_output=True,
                     text=True,
                     cwd=self.project_root,

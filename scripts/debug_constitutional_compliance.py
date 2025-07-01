@@ -14,10 +14,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from services.shared.multimodal_ai_service import (
-    get_multimodal_service,
+    ContentType,
     MultimodalRequest,
     RequestType,
-    ContentType,
+    get_multimodal_service,
 )
 
 
@@ -40,7 +40,7 @@ async def debug_constitutional_compliance():
     print("🧪 Testing internal compliance analysis...")
     compliance_analysis = service._analyze_constitutional_compliance(test_content)
 
-    print(f"Compliance Analysis Result:")
+    print("Compliance Analysis Result:")
     print(f"  Compliant: {compliance_analysis['compliant']}")
     print(f"  Confidence: {compliance_analysis['confidence']:.3f}")
     print(f"  Violations: {compliance_analysis.get('violations', [])}")
@@ -61,7 +61,7 @@ async def debug_constitutional_compliance():
 
     response = await service.process_request(request)
 
-    print(f"Full Request Result:")
+    print("Full Request Result:")
     print(f"  Constitutional Compliance: {response.constitutional_compliance}")
     print(f"  Confidence Score: {response.confidence_score:.3f}")
     print(f"  Model Used: {response.model_used.value}")

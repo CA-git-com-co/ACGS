@@ -18,7 +18,7 @@ import logging
 import os
 import subprocess
 import sys
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 import psutil
 
@@ -124,7 +124,11 @@ class ACGSProductionInfrastructure:
         # Check Docker availability
         try:
             result = subprocess.run(
-                ["docker", "--version"], capture_output=True, text=True, timeout=10
+                ["docker", "--version"],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
             docker_passed = result.returncode == 0
             checks["docker"] = {
@@ -198,7 +202,7 @@ class ACGSProductionInfrastructure:
                             "static_configs": [
                                 {
                                     "targets": [
-                                        f'localhost:{self.monitoring_config["alertmanager_port"]}'
+                                        f"localhost:{self.monitoring_config['alertmanager_port']}"
                                     ]
                                 }
                             ]
@@ -340,7 +344,7 @@ class ACGSProductionInfrastructure:
                     "prometheus": {
                         "image": "prom/prometheus:latest",
                         "container_name": "acgs-prometheus-prod",
-                        "ports": [f'{self.monitoring_config["prometheus_port"]}:9090'],
+                        "ports": [f"{self.monitoring_config['prometheus_port']}:9090"],
                         "volumes": [
                             "./monitoring/prometheus:/etc/prometheus",
                             "prometheus_data:/prometheus",
@@ -358,7 +362,7 @@ class ACGSProductionInfrastructure:
                     "grafana": {
                         "image": "grafana/grafana:latest",
                         "container_name": "acgs-grafana-prod",
-                        "ports": [f'{self.monitoring_config["grafana_port"]}:3000'],
+                        "ports": [f"{self.monitoring_config['grafana_port']}:3000"],
                         "volumes": [
                             "grafana_data:/var/lib/grafana",
                             "./monitoring/grafana:/etc/grafana/provisioning",
@@ -373,7 +377,7 @@ class ACGSProductionInfrastructure:
                         "image": "prom/alertmanager:latest",
                         "container_name": "acgs-alertmanager-prod",
                         "ports": [
-                            f'{self.monitoring_config["alertmanager_port"]}:9093'
+                            f"{self.monitoring_config['alertmanager_port']}:9093"
                         ],
                         "volumes": ["./monitoring/alertmanager:/etc/alertmanager"],
                         "command": [
@@ -469,10 +473,10 @@ class ACGSProductionInfrastructure:
         all_passed &= cpu_passed and memory_passed
 
         logger.info(
-            f"CPU Usage: {cpu_percent:.1f}% (Target: <{self.production_requirements['max_cpu_usage']*100:.0f}%) - {'✅ PASSED' if cpu_passed else '❌ FAILED'}"
+            f"CPU Usage: {cpu_percent:.1f}% (Target: <{self.production_requirements['max_cpu_usage'] * 100:.0f}%) - {'✅ PASSED' if cpu_passed else '❌ FAILED'}"
         )
         logger.info(
-            f"Memory Usage: {memory_percent:.1f}% (Target: <{self.production_requirements['max_memory_usage']*100:.0f}%) - {'✅ PASSED' if memory_passed else '❌ FAILED'}"
+            f"Memory Usage: {memory_percent:.1f}% (Target: <{self.production_requirements['max_memory_usage'] * 100:.0f}%) - {'✅ PASSED' if memory_passed else '❌ FAILED'}"
         )
 
         self.results["deployment_validation"] = validation_results
@@ -606,7 +610,7 @@ class ACGSProductionInfrastructure:
             return production_ready
 
         except Exception as e:
-            logger.error(f"❌ Production infrastructure setup failed: {str(e)}")
+            logger.error(f"❌ Production infrastructure setup failed: {e!s}")
             self.results["overall_status"] = "ERROR"
             self.results["error_message"] = str(e)
             return False

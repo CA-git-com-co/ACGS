@@ -12,13 +12,11 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Optional, Tuple
 
 import aiohttp
 import numpy as np
 from prometheus_client import (
     CollectorRegistry,
-    Counter,
     Gauge,
     Histogram,
     start_http_server,
@@ -82,7 +80,7 @@ class PerformanceBaseline:
     version: str = "1.0.0"
 
     # Service metrics
-    services: Dict[str, ServiceMetrics] = field(default_factory=dict)
+    services: dict[str, ServiceMetrics] = field(default_factory=dict)
 
     # System-wide metrics
     overall_avg_response_time: float = 0.0
@@ -91,8 +89,8 @@ class PerformanceBaseline:
     overall_constitutional_compliance: float = 1.0
 
     # Infrastructure metrics
-    database_performance: Dict[str, float] = field(default_factory=dict)
-    message_broker_performance: Dict[str, float] = field(default_factory=dict)
+    database_performance: dict[str, float] = field(default_factory=dict)
+    message_broker_performance: dict[str, float] = field(default_factory=dict)
 
     # Baseline metadata
     measurement_duration_hours: int = 24
@@ -129,8 +127,8 @@ class PerformanceBaselineCollector:
         }
 
         # Baseline data
-        self.current_baseline: Optional[PerformanceBaseline] = None
-        self.measurement_data: Dict[str, List[Dict]] = {}
+        self.current_baseline: PerformanceBaseline | None = None
+        self.measurement_data: dict[str, list[dict]] = {}
 
         logger.info("Performance Baseline Collector initialized")
 
@@ -239,7 +237,7 @@ class PerformanceBaselineCollector:
                 f"Collected {self.current_baseline.sample_count} baseline samples"
             )
 
-    async def measure_service_performance(self, service_name: str, port: int) -> Dict:
+    async def measure_service_performance(self, service_name: str, port: int) -> dict:
         """Measure performance metrics for a specific service."""
         metrics = {}
 
@@ -542,8 +540,8 @@ class PerformanceBaselineCollector:
         logger.info(f"Baseline saved: {baseline_file}")
 
     async def load_baseline(
-        self, baseline_id: Optional[str] = None
-    ) -> Optional[PerformanceBaseline]:
+        self, baseline_id: str | None = None
+    ) -> PerformanceBaseline | None:
         """Load baseline from file."""
         baseline_file = (
             "infrastructure/monitoring/performance/baselines/latest_baseline.json"
@@ -604,7 +602,7 @@ class PerformanceBaselineCollector:
             logger.error(f"Failed to load baseline: {e}")
             return None
 
-    def get_baseline_summary(self) -> Dict:
+    def get_baseline_summary(self) -> dict:
         """Get baseline summary for reporting."""
         if not self.current_baseline:
             return {}

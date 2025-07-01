@@ -5,14 +5,13 @@ Analyzes all discovered issues from testing phases, classifies by severity,
 and creates a prioritized remediation plan.
 """
 
-import os
-import sys
 import json
+import sys
 import time
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+from typing import Any
 
 # Add project paths
 project_root = Path(__file__).parent
@@ -45,10 +44,10 @@ class Issue:
     source_test: str
     impact_score: float  # 0-10 scale
     effort_estimate: str  # LOW, MEDIUM, HIGH
-    affected_components: List[str]
+    affected_components: list[str]
     risk_level: str
-    recommendations: List[str]
-    details: Dict[str, Any]
+    recommendations: list[str]
+    details: dict[str, Any]
 
 
 class IssueAnalyzer:
@@ -75,7 +74,7 @@ class IssueAnalyzer:
             file_path = self.project_root / result_file
             if file_path.exists():
                 try:
-                    with open(file_path, "r") as f:
+                    with open(file_path) as f:
                         data = json.load(f)
                         all_results[result_file] = data
                         print(f"✓ Loaded {result_file}")
@@ -86,7 +85,7 @@ class IssueAnalyzer:
 
         return all_results
 
-    def analyze_coverage_issues(self, coverage_data: Dict[str, Any]) -> List[Issue]:
+    def analyze_coverage_issues(self, coverage_data: dict[str, Any]) -> list[Issue]:
         """Analyze test coverage issues."""
         issues = []
 
@@ -98,7 +97,7 @@ class IssueAnalyzer:
                 for critical_gap in gaps["critical_gaps"]:
                     issues.append(
                         Issue(
-                            id=f"COV-CRIT-{len(issues)+1:03d}",
+                            id=f"COV-CRIT-{len(issues) + 1:03d}",
                             title=f"Critical component lacks test coverage: {critical_gap['name']}",
                             description=f"Critical component {critical_gap['name']} has no test coverage with {critical_gap['python_files']} Python files",
                             severity=IssueSeverity.CRITICAL,
@@ -122,7 +121,7 @@ class IssueAnalyzer:
             if coverage_percentage < 80:
                 issues.append(
                     Issue(
-                        id=f"COV-MAJ-{len(issues)+1:03d}",
+                        id=f"COV-MAJ-{len(issues) + 1:03d}",
                         title=f"Overall test coverage below target: {coverage_percentage:.1f}%",
                         description=f"Current test coverage is {coverage_percentage:.1f}%, below the 80% target",
                         severity=IssueSeverity.MAJOR,
@@ -147,8 +146,8 @@ class IssueAnalyzer:
         return issues
 
     def analyze_performance_issues(
-        self, performance_data: Dict[str, Any]
-    ) -> List[Issue]:
+        self, performance_data: dict[str, Any]
+    ) -> list[Issue]:
         """Analyze performance benchmark issues."""
         issues = []
 
@@ -185,7 +184,7 @@ class IssueAnalyzer:
 
                     issues.append(
                         Issue(
-                            id=f"PERF-{severity.value[:4]}-{len(issues)+1:03d}",
+                            id=f"PERF-{severity.value[:4]}-{len(issues) + 1:03d}",
                             title=f"Performance target not met: {result['test_name']}",
                             description=f"Performance benchmark {result['test_name']} failed to meet targets",
                             severity=severity,
@@ -213,7 +212,7 @@ class IssueAnalyzer:
 
         return issues
 
-    def analyze_security_issues(self, security_data: Dict[str, Any]) -> List[Issue]:
+    def analyze_security_issues(self, security_data: dict[str, Any]) -> list[Issue]:
         """Analyze security validation issues."""
         issues = []
 
@@ -239,7 +238,7 @@ class IssueAnalyzer:
 
                     issues.append(
                         Issue(
-                            id=f"SEC-{severity.value[:4]}-{len(issues)+1:03d}",
+                            id=f"SEC-{severity.value[:4]}-{len(issues) + 1:03d}",
                             title=f"Security vulnerabilities found: {result['test_name']}",
                             description=f"Found {vulnerabilities} security vulnerabilities in {result['test_name']}",
                             severity=severity,
@@ -260,7 +259,7 @@ class IssueAnalyzer:
 
         return issues
 
-    def analyze_functionality_issues(self, test_results: Dict[str, Any]) -> List[Issue]:
+    def analyze_functionality_issues(self, test_results: dict[str, Any]) -> list[Issue]:
         """Analyze functionality test issues."""
         issues = []
 
@@ -278,7 +277,7 @@ class IssueAnalyzer:
 
                 issues.append(
                     Issue(
-                        id=f"FUNC-{severity.value[:4]}-{len(issues)+1:03d}",
+                        id=f"FUNC-{severity.value[:4]}-{len(issues) + 1:03d}",
                         title="Business rule validation failures",
                         description=f"Business rule tests failed with {edge_case_rate:.1f}% edge case success rate",
                         severity=severity,
@@ -299,7 +298,7 @@ class IssueAnalyzer:
 
         return issues
 
-    def prioritize_issues(self, issues: List[Issue]) -> List[Issue]:
+    def prioritize_issues(self, issues: list[Issue]) -> list[Issue]:
         """Prioritize issues based on severity, impact, and risk."""
 
         def priority_score(issue: Issue) -> float:
@@ -330,8 +329,8 @@ class IssueAnalyzer:
         return sorted(issues, key=priority_score, reverse=True)
 
     def generate_remediation_plan(
-        self, prioritized_issues: List[Issue]
-    ) -> Dict[str, Any]:
+        self, prioritized_issues: list[Issue]
+    ) -> dict[str, Any]:
         """Generate a prioritized remediation plan."""
         plan = {
             "immediate_action_required": [],
@@ -390,7 +389,7 @@ class IssueAnalyzer:
 
         return plan
 
-    def run_analysis(self) -> Dict[str, Any]:
+    def run_analysis(self) -> dict[str, Any]:
         """Run complete issue analysis and prioritization."""
         print("Starting Issue Prioritization and Classification...")
         print("=" * 60)
@@ -496,7 +495,7 @@ class IssueAnalyzer:
             if count > 0:
                 print(f"  {category.title()}: {count}")
 
-        print(f"\nRemediation Plan:")
+        print("\nRemediation Plan:")
         print(
             f"  Immediate Action Required: {len(remediation_plan['immediate_action_required'])}"
         )

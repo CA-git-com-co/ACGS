@@ -2,9 +2,10 @@
 Tests for AICI Constitutional Controller integration with ACGS-PGP.
 """
 
-import pytest
 import asyncio
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
+
+import pytest
 
 from services.core.aici_integration.constitutional_controller import (
     ConstitutionalController,

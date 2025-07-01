@@ -13,21 +13,21 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import logging
-import json
+import warnings
+from collections import deque
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+from typing import Any
+
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Callable, Union
-from dataclasses import dataclass, asdict
-from collections import deque
-import warnings
 
 warnings.filterwarnings("ignore")
 
 # Import existing batch components
-from data_quality_framework import DataQualityAssessment, DataQualityMetrics
-from data_drift_detection import DataDriftDetector, DriftDetectionResult
 from baseline_performance_measurement import BaselinePerformanceMeasurement
+from data_drift_detection import DataDriftDetector, DriftDetectionResult
+from data_quality_framework import DataQualityAssessment, DataQualityMetrics
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,7 @@ class StreamingBuffer:
         self.data = deque(maxlen=self.max_size)
         self.timestamps = deque(maxlen=self.max_size)
 
-    def add_record(self, record: Dict[str, Any]):
+    def add_record(self, record: dict[str, Any]):
         """Add a record to the streaming buffer."""
         current_time = datetime.now()
         self.data.append(record)
@@ -95,11 +95,11 @@ class StreamingDataQualityAdapter:
         self.last_assessment_time = datetime.min
         self.last_alert_time = datetime.min
 
-        logger.info(f"Streaming Data Quality Adapter initialized")
+        logger.info("Streaming Data Quality Adapter initialized")
 
     async def process_streaming_record(
-        self, record: Dict[str, Any]
-    ) -> Optional[DataQualityMetrics]:
+        self, record: dict[str, Any]
+    ) -> DataQualityMetrics | None:
         """Process a single streaming record and potentially trigger assessment."""
 
         # Add record to buffer
@@ -114,7 +114,6 @@ class StreamingDataQualityAdapter:
             and self.streaming_buffer.size()
             >= self.streaming_config["min_records_for_assessment"]
         ):
-
             # Perform quality assessment on buffered data
             return await self._assess_buffer_quality()
 
@@ -185,11 +184,11 @@ class StreamingDriftAdapter:
         self.last_reference_update = datetime.min
         self.reference_established = False
 
-        logger.info(f"Streaming Drift Adapter initialized")
+        logger.info("Streaming Drift Adapter initialized")
 
     async def process_streaming_record(
-        self, record: Dict[str, Any]
-    ) -> Optional[DriftDetectionResult]:
+        self, record: dict[str, Any]
+    ) -> DriftDetectionResult | None:
         """Process a single streaming record for drift detection."""
 
         # Add record to current buffer
@@ -219,7 +218,6 @@ class StreamingDriftAdapter:
             and self.current_buffer.size()
             >= self.streaming_config["min_records_for_detection"]
         ):
-
             # Perform drift detection
             return await self._detect_streaming_drift()
 
@@ -287,7 +285,7 @@ class StreamingDriftAdapter:
                 )
 
                 self.last_reference_update = current_time
-                logger.info(f"🔄 Reference dataset updated with streaming data")
+                logger.info("🔄 Reference dataset updated with streaming data")
 
 
 class StreamingPerformanceAdapter:
@@ -308,11 +306,11 @@ class StreamingPerformanceAdapter:
 
         self.last_analysis_time = datetime.min
 
-        logger.info(f"Streaming Performance Adapter initialized")
+        logger.info("Streaming Performance Adapter initialized")
 
     async def process_streaming_record(
-        self, record: Dict[str, Any]
-    ) -> Optional[Dict[str, Any]]:
+        self, record: dict[str, Any]
+    ) -> dict[str, Any] | None:
         """Process a single streaming performance record."""
 
         # Add record to buffer
@@ -327,13 +325,12 @@ class StreamingPerformanceAdapter:
             and self.performance_buffer.size()
             >= self.streaming_config["min_records_for_analysis"]
         ):
-
             # Perform performance analysis
             return await self._analyze_streaming_performance()
 
         return None
 
-    async def _analyze_streaming_performance(self) -> Dict[str, Any]:
+    async def _analyze_streaming_performance(self) -> dict[str, Any]:
         """Analyze performance of streaming data."""
 
         # Get DataFrame from buffer
@@ -380,7 +377,7 @@ class StreamingPerformanceAdapter:
 
         return metrics
 
-    async def _check_performance_alerts(self, metrics: Dict[str, Any]):
+    async def _check_performance_alerts(self, metrics: dict[str, Any]):
         """Check for performance threshold violations."""
 
         # Check response time threshold
@@ -419,18 +416,16 @@ class StreamingAnalyticsOrchestrator:
         self.drift_adapter = StreamingDriftAdapter()
         self.performance_adapter = StreamingPerformanceAdapter()
 
-        logger.info(f"Streaming Analytics Orchestrator initialized")
+        logger.info("Streaming Analytics Orchestrator initialized")
 
-    async def process_streaming_data(self, data_stream: List[Dict[str, Any]]):
+    async def process_streaming_data(self, data_stream: list[dict[str, Any]]):
         """Process streaming data through all adapters."""
 
         for record in data_stream:
             # Validate constitutional hash
             if "constitutional_hash" in record:
                 if record["constitutional_hash"] != self.constitutional_hash:
-                    logger.warning(
-                        f"⚠️ Constitutional hash mismatch in streaming record"
-                    )
+                    logger.warning("⚠️ Constitutional hash mismatch in streaming record")
                     continue
 
             # Process through all adapters concurrently

@@ -9,7 +9,7 @@ and performance monitoring integration.
 import asyncio
 import logging
 import time
-from typing import Dict, List, Optional
+
 import asyncpg
 from prometheus_client import (
     CollectorRegistry,
@@ -17,8 +17,8 @@ from prometheus_client import (
     Gauge,
     Histogram,
     Info,
-    start_http_server,
     generate_latest,
+    start_http_server,
 )
 
 logger = logging.getLogger(__name__)

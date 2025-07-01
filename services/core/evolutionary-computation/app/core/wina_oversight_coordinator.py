@@ -53,7 +53,7 @@ try:
     )
 
     WINA_AVAILABLE = True
-except ImportError as e:
+except ImportError:
     WINA_AVAILABLE = False
 
     # Create mock classes for graceful degradation
@@ -583,12 +583,11 @@ class WINAECOversightCoordinator:
                         "pgc_metrics": pgc_status.get("metrics", {}),
                         "integration_timestamp": time.time(),
                     }
-                else:
-                    return {
-                        "status": "error",
-                        "error": f"PGC service returned status {response.status_code}",
-                        "compliance_boost": 0.0,
-                    }
+                return {
+                    "status": "error",
+                    "error": f"PGC service returned status {response.status_code}",
+                    "compliance_boost": 0.0,
+                }
 
         except Exception as e:
             return {"status": "error", "error": str(e), "compliance_boost": 0.0}
@@ -793,8 +792,10 @@ class WINAECOversightCoordinator:
                     governance_impact=0.8,
                     constitutional_changes_suggested=0,
                 )
-                await self.performance_collector.record_constitutional_compliance_metrics(
-                    compliance_metrics
+                await (
+                    self.performance_collector.record_constitutional_compliance_metrics(
+                        compliance_metrics
+                    )
                 )
 
             # Phase 5: Execute oversight strategy with WINA optimization
@@ -1012,30 +1013,29 @@ class WINAECOversightCoordinator:
             # Strategy selection logic with emergency handling
             if is_emergency:
                 return ECOversightStrategy.EMERGENCY_PROTOCOL
-            elif (
+            if (
                 has_constitutional_constraints
                 and wina_insights.get("constitutional_risk", 0) > 0.6
             ):
                 return ECOversightStrategy.CONSTITUTIONAL_PRIORITY
-            elif (
+            if (
                 has_performance_thresholds
                 and wina_insights.get("efficiency_benefit", 0)
                 > self.governance_efficiency_threshold
             ):
                 return ECOversightStrategy.EFFICIENCY_FOCUSED
-            elif (
+            if (
                 is_high_priority
                 and wina_insights.get("optimization_potential", 0) > 0.8
             ):
                 return ECOversightStrategy.WINA_OPTIMIZED
-            elif wina_insights.get("learning_adaptation_recommended", False):
+            if wina_insights.get("learning_adaptation_recommended", False):
                 return ECOversightStrategy.ADAPTIVE_LEARNING
-            else:
-                return (
-                    ECOversightStrategy.WINA_OPTIMIZED
-                    if self.enable_wina
-                    else ECOversightStrategy.STANDARD
-                )
+            return (
+                ECOversightStrategy.WINA_OPTIMIZED
+                if self.enable_wina
+                else ECOversightStrategy.STANDARD
+            )
 
         except Exception as e:
             logger.warning(f"Strategy selection failed: {e}. Using standard strategy.")
@@ -1192,7 +1192,7 @@ class WINAECOversightCoordinator:
             logger.error(f"Oversight strategy execution failed: {e}")
             return {
                 "decision": "requires_review",
-                "rationale": f"Oversight execution failed: {str(e)}",
+                "rationale": f"Oversight execution failed: {e!s}",
                 "confidence_score": 0.0,
                 "oversight_execution_time_ms": 0.0,
             }
@@ -1448,9 +1448,8 @@ class WINAECOversightCoordinator:
             if datetime.now() - timestamp < self.cache_ttl:
                 logger.debug(f"Cache hit for oversight request: {cache_key}")
                 return result
-            else:
-                # Remove expired entry
-                del self._oversight_cache[cache_key]
+            # Remove expired entry
+            del self._oversight_cache[cache_key]
 
         return None
 
@@ -1517,12 +1516,11 @@ class WINAECOversightCoordinator:
             # Strategy-specific optimizations
             if strategy == ECOversightStrategy.EFFICIENCY_FOCUSED:
                 return f"[EFFICIENCY-OPTIMIZED] {requirement}"
-            elif strategy == ECOversightStrategy.CONSTITUTIONAL_PRIORITY:
+            if strategy == ECOversightStrategy.CONSTITUTIONAL_PRIORITY:
                 return f"[CONSTITUTIONAL-PRIORITY] {requirement}"
-            elif strategy == ECOversightStrategy.WINA_OPTIMIZED:
+            if strategy == ECOversightStrategy.WINA_OPTIMIZED:
                 return f"[WINA-OPTIMIZED] {requirement}"
-            else:
-                return requirement
+            return requirement
         except Exception:
             return requirement
 

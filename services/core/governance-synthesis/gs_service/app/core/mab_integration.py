@@ -252,9 +252,10 @@ class MABIntegratedGSService:
                 context=synthesis_input.context,
             )
 
-            llm_output, reliability_metrics = (
-                await self.reliability_framework.validate_with_ensemble(llm_input)
-            )
+            (
+                llm_output,
+                reliability_metrics,
+            ) = await self.reliability_framework.validate_with_ensemble(llm_input)
             self.integration_metrics["reliability_validations"] += 1
 
             # 5. Convert to constitutional synthesis output
@@ -323,7 +324,7 @@ class MABIntegratedGSService:
         if constitutional_context.get("normative_framework"):
             constitutional_preamble = f"""
             CONSTITUTIONAL FRAMEWORK:
-            {constitutional_context['normative_framework']}
+            {constitutional_context["normative_framework"]}
 
             """
             formatted_prompt = constitutional_preamble + formatted_prompt

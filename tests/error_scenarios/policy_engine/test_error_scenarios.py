@@ -2,9 +2,6 @@
 Error scenario tests for policy-engine
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-
 
 class TestErrorScenarios:
     """Error scenario test suite for policy-engine."""

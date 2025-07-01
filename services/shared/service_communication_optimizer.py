@@ -297,14 +297,13 @@ class ServiceCommunicationOptimizer:
 
         if service_config.strategy == LoadBalancingStrategy.ROUND_ROBIN:
             return self._round_robin_select(service_config.name, healthy_endpoints)
-        elif service_config.strategy == LoadBalancingStrategy.LEAST_CONNECTIONS:
+        if service_config.strategy == LoadBalancingStrategy.LEAST_CONNECTIONS:
             return min(healthy_endpoints, key=lambda ep: ep.current_connections)
-        elif service_config.strategy == LoadBalancingStrategy.WEIGHTED_ROUND_ROBIN:
+        if service_config.strategy == LoadBalancingStrategy.WEIGHTED_ROUND_ROBIN:
             return self._weighted_round_robin_select(healthy_endpoints)
-        elif service_config.strategy == LoadBalancingStrategy.HEALTH_BASED:
+        if service_config.strategy == LoadBalancingStrategy.HEALTH_BASED:
             return self._health_based_select(healthy_endpoints)
-        else:
-            return random.choice(healthy_endpoints)
+        return random.choice(healthy_endpoints)
 
     def _round_robin_select(
         self, service_name: str, endpoints: list[ServiceEndpoint]

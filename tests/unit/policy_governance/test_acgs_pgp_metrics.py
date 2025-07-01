@@ -2,12 +2,7 @@
 Unit tests for services.core.policy-governance.pgc_service.app.monitoring.acgs_pgp_metrics
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.policy_governance.pgc_service.app.monitoring.acgs_pgp_metrics import (
-    ConstitutionalStabilityMetrics,
-    EnforcementPerformanceMetrics,
-    AdversarialRobustnessMetrics,
     ACGSPGPMetricsCollector,
 )
 

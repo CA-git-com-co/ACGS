@@ -8,9 +8,8 @@ import json
 import os
 import statistics
 import time
-from locust import HttpUser, task, between, events
-from locust.runners import MasterRunner, WorkerRunner
 
+from locust import HttpUser, between, events, task
 
 # Configuration
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -112,7 +111,7 @@ def on_test_start(environment, **kwargs):
         "dangerous_actions": {"denied": 0, "total": 0},
     }
 
-    print(f"🚀 Starting ACGS-1 Lite load test")
+    print("🚀 Starting ACGS-1 Lite load test")
     print(f"Constitutional Hash: {CONSTITUTIONAL_HASH}")
     print(f"Performance Target: P99 < {PERFORMANCE_TARGET_P99_MS}ms")
 
@@ -182,14 +181,14 @@ def on_test_stop(environment, **kwargs):
     print("LOCUST LOAD TEST RESULTS")
     print("=" * 60)
 
-    print(f"\n📊 PERFORMANCE METRICS:")
+    print("\n📊 PERFORMANCE METRICS:")
     print(f"   Total Requests:    {stats['total_requests']}")
     print(f"   Successful:        {stats['successful_requests']}")
     print(f"   Error Rate:        {stats['error_rate']:.1%}")
     print(f"   Duration:          {stats['total_time']:.1f}s")
     print(f"   Throughput:        {stats['requests_per_second']:.0f} RPS")
 
-    print(f"\n⏱️  LATENCY STATISTICS:")
+    print("\n⏱️  LATENCY STATISTICS:")
     print(f"   Mean:              {stats['mean_latency_ms']:.1f} ms")
     print(f"   Median:            {stats['median_latency_ms']:.1f} ms")
     print(f"   P90:               {stats['p90_latency_ms']:.1f} ms")
@@ -197,7 +196,7 @@ def on_test_stop(environment, **kwargs):
     print(f"   P99:               {stats['p99_latency_ms']:.1f} ms")
     print(f"   Max:               {stats['max_latency_ms']:.1f} ms")
 
-    print(f"\n🎭 SCENARIO ANALYSIS:")
+    print("\n🎭 SCENARIO ANALYSIS:")
     print(
         f"   Safe Actions Allowed:      {safe_allow_rate:.1%} ({scenario_metrics['safe_actions']['allowed']}/{scenario_metrics['safe_actions']['total']})"
     )
@@ -210,7 +209,7 @@ def on_test_stop(environment, **kwargs):
     print(f"   Constitutional Compliance: {constitutional_compliance:.1%}")
 
     # Validate SLOs
-    print(f"\n🎯 SLO VALIDATION:")
+    print("\n🎯 SLO VALIDATION:")
 
     slo_violations = []
 
@@ -250,16 +249,16 @@ def on_test_stop(environment, **kwargs):
 
     # Final verdict
     if slo_violations:
-        print(f"\n❌ SLO VIOLATIONS DETECTED:")
+        print("\n❌ SLO VIOLATIONS DETECTED:")
         for violation in slo_violations:
             print(f"   - {violation}")
-        print(f"\n❌ LOAD TEST FAILED")
+        print("\n❌ LOAD TEST FAILED")
 
         # Exit with error code for CI/CD
         if hasattr(environment, "process_exit_code"):
             environment.process_exit_code = 1
     else:
-        print(f"\n✅ ALL SLOs MET - LOAD TEST PASSED")
+        print("\n✅ ALL SLOs MET - LOAD TEST PASSED")
 
     print(f"\nConstitutional Hash: {CONSTITUTIONAL_HASH}")
     print("=" * 60)

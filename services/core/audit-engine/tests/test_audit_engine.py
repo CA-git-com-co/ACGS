@@ -11,17 +11,14 @@ Tests cover:
 """
 
 import asyncio
-import json
-import pytest
 import time
 import uuid
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List
+from datetime import datetime, timedelta, timezone
 
-import httpx
-import asyncpg
 import aioredis
-from fastapi.testclient import TestClient
+import asyncpg
+import httpx
+import pytest
 
 # Test configuration
 TEST_DB_URL = "postgresql://postgres:password@localhost:5432/audit_test_db"
@@ -443,9 +440,7 @@ async def run_performance_benchmarks():
         print(f"   Ingested {successful}/{num_events} events in {duration:.2f}s")
         print(f"   Rate: {rate:.2f} events/second")
         print(
-            f"   ✅ PASS"
-            if rate >= 1000
-            else f"   ❌ FAIL - Target: 1000+ events/second"
+            "   ✅ PASS" if rate >= 1000 else "   ❌ FAIL - Target: 1000+ events/second"
         )
 
         # Test 2: Query performance
@@ -456,7 +451,7 @@ async def run_performance_benchmarks():
         query_time_ms = (time.time() - start_time) * 1000
 
         print(f"   Query completed in {query_time_ms:.2f}ms")
-        print(f"   ✅ PASS" if query_time_ms < 100 else f"   ❌ FAIL - Target: <100ms")
+        print("   ✅ PASS" if query_time_ms < 100 else "   ❌ FAIL - Target: <100ms")
 
         # Test 3: Chain verification
         print("\n3. Testing chain verification performance...")
@@ -469,9 +464,7 @@ async def run_performance_benchmarks():
         print(
             f"   Verified chain of {data['total_events']} events in {verify_time_ms:.2f}ms"
         )
-        print(
-            f"   ✅ PASS" if verify_time_ms < 5000 else f"   ❌ FAIL - Target: <5000ms"
-        )
+        print("   ✅ PASS" if verify_time_ms < 5000 else "   ❌ FAIL - Target: <5000ms")
         print(f"   Chain integrity: {'✅ VALID' if data['is_valid'] else '❌ INVALID'}")
 
 

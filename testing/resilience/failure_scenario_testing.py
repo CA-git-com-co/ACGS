@@ -5,14 +5,15 @@ Tests system resilience under various failure conditions
 """
 
 import asyncio
-import aiohttp
-import time
-import random
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone
 import json
 import logging
+import random
+import time
+from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
+from typing import Any
+
+import aiohttp
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +26,7 @@ class FailureScenario:
     name: str
     description: str
     failure_type: str
-    affected_services: List[str]
+    affected_services: list[str]
     expected_behavior: str
     recovery_time_target: float  # seconds
 
@@ -44,7 +45,7 @@ class FailureTestResult:
     recovery_time_seconds: float
     data_consistency_maintained: bool
     constitutional_compliance_maintained: bool
-    error_details: Optional[str]
+    error_details: str | None
 
 
 class FailureScenarioTester:
@@ -62,7 +63,7 @@ class FailureScenarioTester:
         }
         self.test_results = []
 
-    def define_failure_scenarios(self) -> List[FailureScenario]:
+    def define_failure_scenarios(self) -> list[FailureScenario]:
         """Define comprehensive failure scenarios"""
         return [
             FailureScenario(
@@ -121,7 +122,7 @@ class FailureScenarioTester:
             ),
         ]
 
-    async def conduct_failure_scenario_testing(self) -> Dict[str, Any]:
+    async def conduct_failure_scenario_testing(self) -> dict[str, Any]:
         """Conduct comprehensive failure scenario testing"""
         print("💥 ACGS Failure Scenario Testing Suite")
         print("=" * 40)
@@ -140,7 +141,7 @@ class FailureScenarioTester:
             test_results.append(result)
 
             # Display results
-            print(f"   📊 Results:")
+            print("   📊 Results:")
             print(f"     Failure Detected: {'✅' if result.failure_detected else '❌'}")
             print(
                 f"     Recovery Successful: {'✅' if result.recovery_successful else '❌'}"
@@ -161,7 +162,7 @@ class FailureScenarioTester:
         # Generate comprehensive analysis
         analysis = self.analyze_failure_test_results(test_results)
 
-        print(f"\n📊 Failure Scenario Analysis:")
+        print("\n📊 Failure Scenario Analysis:")
         print(f"  Total Scenarios Tested: {analysis['total_scenarios']}")
         print(f"  Successful Recoveries: {analysis['successful_recoveries']}")
         print(f"  Average Recovery Time: {analysis['average_recovery_time']:.1f}s")
@@ -222,7 +223,7 @@ class FailureScenarioTester:
             error_details=None,
         )
 
-    async def check_system_health(self) -> Dict[str, bool]:
+    async def check_system_health(self) -> dict[str, bool]:
         """Check baseline system health"""
         health_status = {}
 
@@ -244,20 +245,19 @@ class FailureScenarioTester:
 
         if scenario.failure_type == "service_crash":
             return await self.simulate_service_crash(scenario.affected_services)
-        elif scenario.failure_type == "database_failure":
+        if scenario.failure_type == "database_failure":
             return await self.simulate_database_failure()
-        elif scenario.failure_type == "network_partition":
+        if scenario.failure_type == "network_partition":
             return await self.simulate_network_partition()
-        elif scenario.failure_type == "resource_exhaustion":
+        if scenario.failure_type == "resource_exhaustion":
             return await self.simulate_resource_exhaustion()
-        elif scenario.failure_type == "compliance_failure":
+        if scenario.failure_type == "compliance_failure":
             return await self.simulate_compliance_failure()
-        elif scenario.failure_type == "cascading_failure":
+        if scenario.failure_type == "cascading_failure":
             return await self.simulate_cascading_failure(scenario.affected_services)
-        else:
-            return False
+        return False
 
-    async def simulate_service_crash(self, services: List[str]) -> bool:
+    async def simulate_service_crash(self, services: list[str]) -> bool:
         """Simulate service crash"""
         # In a real implementation, this would actually stop services
         # For testing, we simulate the failure
@@ -267,39 +267,39 @@ class FailureScenarioTester:
 
     async def simulate_database_failure(self) -> bool:
         """Simulate database connectivity failure"""
-        print(f"       🗄️ Simulating database connection failure")
+        print("       🗄️ Simulating database connection failure")
         await asyncio.sleep(3)  # Simulate database failure
         return True
 
     async def simulate_network_partition(self) -> bool:
         """Simulate network partition"""
-        print(f"       🌐 Simulating network partition")
+        print("       🌐 Simulating network partition")
         await asyncio.sleep(5)  # Simulate network partition
         return True
 
     async def simulate_resource_exhaustion(self) -> bool:
         """Simulate resource exhaustion"""
-        print(f"       💾 Simulating memory/CPU exhaustion")
+        print("       💾 Simulating memory/CPU exhaustion")
         await asyncio.sleep(4)  # Simulate resource exhaustion
         return True
 
     async def simulate_compliance_failure(self) -> bool:
         """Simulate constitutional compliance failure"""
-        print(f"       ⚖️ Simulating constitutional compliance failure")
+        print("       ⚖️ Simulating constitutional compliance failure")
         await asyncio.sleep(2)  # Simulate compliance failure
         return True
 
-    async def simulate_cascading_failure(self, services: List[str]) -> bool:
+    async def simulate_cascading_failure(self, services: list[str]) -> bool:
         """Simulate cascading failure across services"""
         print(f"       ⛓️ Simulating cascading failure across: {', '.join(services)}")
         for i, service in enumerate(services):
-            print(f"         Step {i+1}: {service} failing...")
+            print(f"         Step {i + 1}: {service} failing...")
             await asyncio.sleep(2)  # Simulate progressive failure
         return True
 
     async def monitor_failure_detection(self, scenario: FailureScenario) -> bool:
         """Monitor for failure detection"""
-        print(f"     🔍 Monitoring failure detection...")
+        print("     🔍 Monitoring failure detection...")
 
         # Simulate monitoring system detecting the failure
         detection_time = random.uniform(1, 5)  # 1-5 seconds detection time
@@ -310,7 +310,7 @@ class FailureScenarioTester:
 
     async def monitor_recovery(self, scenario: FailureScenario) -> bool:
         """Monitor system recovery"""
-        print(f"     🔄 Monitoring system recovery...")
+        print("     🔄 Monitoring system recovery...")
 
         # Simulate recovery process
         recovery_steps = [
@@ -335,7 +335,7 @@ class FailureScenarioTester:
 
     async def verify_data_consistency(self) -> bool:
         """Verify data consistency after failure"""
-        print(f"     🔍 Verifying data consistency...")
+        print("     🔍 Verifying data consistency...")
 
         # Simulate data consistency checks
         consistency_checks = [
@@ -358,7 +358,7 @@ class FailureScenarioTester:
 
     async def verify_constitutional_compliance(self) -> bool:
         """Verify constitutional compliance after failure"""
-        print(f"     ⚖️ Verifying constitutional compliance...")
+        print("     ⚖️ Verifying constitutional compliance...")
 
         # Simulate constitutional compliance checks
         await asyncio.sleep(1)
@@ -375,8 +375,8 @@ class FailureScenarioTester:
         return compliant
 
     def analyze_failure_test_results(
-        self, results: List[FailureTestResult]
-    ) -> Dict[str, Any]:
+        self, results: list[FailureTestResult]
+    ) -> dict[str, Any]:
         """Analyze failure test results"""
         total_scenarios = len(results)
         successful_recoveries = sum(1 for r in results if r.recovery_successful)
@@ -421,8 +421,8 @@ class FailureScenarioTester:
         }
 
     def generate_resilience_recommendations(
-        self, results: List[FailureTestResult]
-    ) -> List[str]:
+        self, results: list[FailureTestResult]
+    ) -> list[str]:
         """Generate resilience improvement recommendations"""
         recommendations = []
 
@@ -476,7 +476,7 @@ async def test_failure_scenario_testing():
         json.dump(results, f, indent=2, default=str)
 
     print(f"\n📄 Detailed results saved: failure_scenario_results_{timestamp}.json")
-    print(f"\n✅ Failure Scenario Testing: COMPLETE")
+    print("\n✅ Failure Scenario Testing: COMPLETE")
 
 
 if __name__ == "__main__":

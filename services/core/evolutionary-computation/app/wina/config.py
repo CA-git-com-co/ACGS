@@ -4,9 +4,9 @@ WINA Configuration Management
 Provides configuration loading and management for WINA optimization components.
 """
 
-import os
 import logging
-from typing import Dict, Any, Tuple
+import os
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +56,7 @@ DEFAULT_INTEGRATION_CONFIG = {
 }
 
 
-def load_wina_config_from_env() -> Tuple[Dict[str, Any], Dict[str, Any]]:
+def load_wina_config_from_env() -> tuple[dict[str, Any], dict[str, Any]]:
     """
     Load WINA configuration from environment variables with fallback to defaults.
 
@@ -108,7 +108,7 @@ def load_wina_config_from_env() -> Tuple[Dict[str, Any], Dict[str, Any]]:
         return DEFAULT_WINA_CONFIG.copy(), DEFAULT_INTEGRATION_CONFIG.copy()
 
 
-def validate_wina_config(config: Dict[str, Any]) -> bool:
+def validate_wina_config(config: dict[str, Any]) -> bool:
     """
     Validate WINA configuration for required fields and valid values.
 
@@ -150,7 +150,7 @@ def validate_wina_config(config: Dict[str, Any]) -> bool:
         return False
 
 
-def get_wina_config_summary(config: Dict[str, Any]) -> Dict[str, Any]:
+def get_wina_config_summary(config: dict[str, Any]) -> dict[str, Any]:
     """
     Get a summary of WINA configuration for logging/monitoring.
 

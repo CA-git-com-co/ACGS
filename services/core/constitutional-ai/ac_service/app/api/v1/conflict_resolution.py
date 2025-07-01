@@ -291,7 +291,7 @@ async def generate_conflict_patch(
         logger.error(f"Patch generation failed for conflict {conflict_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Patch generation failed: {str(e)}",
+            detail=f"Patch generation failed: {e!s}",
         )
 
 
@@ -375,7 +375,7 @@ async def detect_conflicts(
         logger.error(f"Conflict detection scan failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Conflict detection failed: {str(e)}",
+            detail=f"Conflict detection failed: {e!s}",
         )
 
 
@@ -387,10 +387,12 @@ async def resolve_conflict_automatically(
 ):
     """Attempt automatic resolution of a conflict."""
     try:
-        success, resolution_result, escalation_request = (
-            await orchestrator.resolve_conflict_automatically(
-                db, conflict_id, None, current_user.id
-            )
+        (
+            success,
+            resolution_result,
+            escalation_request,
+        ) = await orchestrator.resolve_conflict_automatically(
+            db, conflict_id, None, current_user.id
         )
 
         response = {
@@ -424,7 +426,7 @@ async def resolve_conflict_automatically(
         logger.error(f"Automatic resolution failed for conflict {conflict_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Automatic resolution failed: {str(e)}",
+            detail=f"Automatic resolution failed: {e!s}",
         )
 
 
@@ -453,7 +455,7 @@ async def handle_human_intervention(
         logger.error(f"Human intervention failed for conflict {conflict_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Human intervention failed: {str(e)}",
+            detail=f"Human intervention failed: {e!s}",
         )
 
 
@@ -470,7 +472,7 @@ async def get_performance_report(
         logger.error(f"Performance report generation failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Performance report generation failed: {str(e)}",
+            detail=f"Performance report generation failed: {e!s}",
         )
 
 
@@ -502,5 +504,5 @@ async def get_conflict_audit_trace(
         logger.error(f"Audit trace generation failed for conflict {conflict_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Audit trace generation failed: {str(e)}",
+            detail=f"Audit trace generation failed: {e!s}",
         )

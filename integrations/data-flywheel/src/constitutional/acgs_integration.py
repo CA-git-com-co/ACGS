@@ -161,11 +161,10 @@ class ACGSServiceIntegration:
                 if response.status_code == 200:
                     logs_data = response.json()
                     return self._parse_service_logs(service_name, logs_data)
-                else:
-                    self.logger.warning(
-                        f"Failed to get logs from {service_name}: {response.status_code}"
-                    )
-                    return []
+                self.logger.warning(
+                    f"Failed to get logs from {service_name}: {response.status_code}"
+                )
+                return []
 
         except Exception as e:
             self.logger.error(f"Error collecting traffic from {service_name}: {e}")
@@ -278,10 +277,9 @@ class ACGSServiceIntegration:
 
                 if response.status_code == 200:
                     return response.json()
-                else:
-                    self.logger.warning(
-                        f"Failed to get constitutional context: {response.status_code}"
-                    )
+                self.logger.warning(
+                    f"Failed to get constitutional context: {response.status_code}"
+                )
 
         except Exception as e:
             self.logger.error(f"Error getting constitutional context: {e}")

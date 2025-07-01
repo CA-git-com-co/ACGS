@@ -172,7 +172,7 @@ class TieredValidationPipeline:
             )
 
         except Exception as e:
-            logger.error(f"Automated validation failed: {str(e)}")
+            logger.error(f"Automated validation failed: {e!s}")
             return TieredVerificationResult(
                 policy_rule_id=rule.id,
                 validation_tier=ValidationTier.AUTOMATED,
@@ -180,7 +180,7 @@ class TieredValidationPipeline:
                 status="error",
                 confidence_score=0.0,
                 verification_method="z3_smt_solver",
-                counter_example=f"Validation error: {str(e)}",
+                counter_example=f"Validation error: {e!s}",
             )
 
     async def _hitl_validation(
@@ -287,7 +287,7 @@ class TieredValidationPipeline:
             )
 
         except Exception as e:
-            logger.error(f"Rigorous validation failed: {str(e)}")
+            logger.error(f"Rigorous validation failed: {e!s}")
             return TieredVerificationResult(
                 policy_rule_id=rule.id,
                 validation_tier=ValidationTier.RIGOROUS,
@@ -295,7 +295,7 @@ class TieredValidationPipeline:
                 status="error",
                 confidence_score=0.0,
                 verification_method="rigorous_verification",
-                counter_example=f"Rigorous validation error: {str(e)}",
+                counter_example=f"Rigorous validation error: {e!s}",
             )
 
     def _simulate_human_review(
@@ -397,10 +397,9 @@ class TieredValidationPipeline:
 
         if failed_count > 0:
             return "failed"
-        elif verified_count == len(results):
+        if verified_count == len(results):
             return "verified"
-        else:
-            return "inconclusive"
+        return "inconclusive"
 
     def _generate_proof_trace(
         self, results: list[TieredVerificationResult], methods: list[str]
@@ -411,7 +410,7 @@ class TieredValidationPipeline:
         trace_parts = []
         for i, (result, method) in enumerate(zip(results, methods, strict=False)):
             trace_parts.append(
-                f"Method {i+1} ({method}): {result.status} (confidence: {result.confidence_score:.2f})"
+                f"Method {i + 1} ({method}): {result.status} (confidence: {result.confidence_score:.2f})"
             )
 
         return " | ".join(trace_parts)
@@ -429,12 +428,11 @@ class TieredValidationPipeline:
 
         if error_count > 0:
             return "error"
-        elif failed_count > 0:
+        if failed_count > 0:
             return "failed"
-        elif verified_count == len(results):
+        if verified_count == len(results):
             return "verified"
-        else:
-            return "inconclusive"
+        return "inconclusive"
 
     def _generate_summary(
         self, results: list[TieredVerificationResult], tier: ValidationTier

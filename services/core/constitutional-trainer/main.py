@@ -7,17 +7,15 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio
-import json
 import logging
 import os
 import time
 import uuid
 from contextlib import asynccontextmanager
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import aiohttp
-import torch
 import uvicorn
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Security
 from fastapi.middleware.cors import CORSMiddleware
@@ -35,9 +33,6 @@ from starlette.responses import Response
 
 # Import constitutional training components
 from .constitutional_trainer import ConstitutionalConfig, ConstitutionalTrainer
-from .metrics import ConstitutionalMetrics
-from .privacy_engine import ConstitutionalPrivacyEngine
-from .validators import ACGSConstitutionalValidator
 
 # Configure logging
 logging.basicConfig(
@@ -104,19 +99,19 @@ class TrainingRequest(BaseModel):
     """Constitutional training request model."""
 
     model_name: str = Field(..., description="Base model name for training")
-    training_data: List[Dict[str, Any]] = Field(
+    training_data: list[dict[str, Any]] = Field(
         ..., description="Training data with prompts and responses"
     )
     model_id: str = Field(
         default_factory=lambda: str(uuid.uuid4()), description="Unique model identifier"
     )
-    constitutional_constraints: Dict[str, Any] = Field(
+    constitutional_constraints: dict[str, Any] = Field(
         default_factory=dict, description="Constitutional constraints"
     )
-    lora_config: Optional[Dict[str, Any]] = Field(
+    lora_config: dict[str, Any] | None = Field(
         default=None, description="LoRA configuration parameters"
     )
-    privacy_config: Optional[Dict[str, Any]] = Field(
+    privacy_config: dict[str, Any] | None = Field(
         default=None, description="Differential privacy configuration"
     )
     max_training_time: int = Field(
@@ -141,10 +136,10 @@ class TrainingResponse(BaseModel):
     training_id: str
     status: str
     message: str
-    constitutional_compliance_score: Optional[float] = None
-    model_artifacts: Optional[Dict[str, str]] = None
-    training_metrics: Optional[Dict[str, Any]] = None
-    privacy_metrics: Optional[Dict[str, float]] = None
+    constitutional_compliance_score: float | None = None
+    model_artifacts: dict[str, str] | None = None
+    training_metrics: dict[str, Any] | None = None
+    privacy_metrics: dict[str, float] | None = None
 
 
 class TrainingStatus(BaseModel):
@@ -155,8 +150,8 @@ class TrainingStatus(BaseModel):
     progress: float
     constitutional_compliance_score: float
     current_phase: str
-    estimated_completion: Optional[str] = None
-    error_message: Optional[str] = None
+    estimated_completion: str | None = None
+    error_message: str | None = None
 
 
 # Global state management
@@ -164,10 +159,10 @@ class TrainingSessionManager:
     """Manage active training sessions."""
 
     def __init__(self):
-        self.active_sessions: Dict[str, Dict] = {}
+        self.active_sessions: dict[str, dict] = {}
         self.session_lock = asyncio.Lock()
 
-    async def create_session(self, training_id: str, session_data: Dict) -> bool:
+    async def create_session(self, training_id: str, session_data: dict) -> bool:
         """Create a new training session."""
         async with self.session_lock:
             if len(self.active_sessions) >= config.max_concurrent_sessions:
@@ -176,12 +171,12 @@ class TrainingSessionManager:
             ACTIVE_TRAINING_SESSIONS.set(len(self.active_sessions))
             return True
 
-    async def get_session(self, training_id: str) -> Optional[Dict]:
+    async def get_session(self, training_id: str) -> dict | None:
         """Get training session data."""
         async with self.session_lock:
             return self.active_sessions.get(training_id)
 
-    async def update_session(self, training_id: str, updates: Dict):
+    async def update_session(self, training_id: str, updates: dict):
         """Update training session data."""
         async with self.session_lock:
             if training_id in self.active_sessions:
@@ -201,7 +196,7 @@ session_manager = TrainingSessionManager()
 # Authentication and authorization
 async def verify_token(
     credentials: HTTPAuthorizationCredentials = Security(security),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Verify JWT token and extract user information."""
     try:
         # In production, implement proper JWT validation
@@ -301,7 +296,7 @@ async def metrics():
 async def start_constitutional_training(
     request: TrainingRequest,
     background_tasks: BackgroundTasks,
-    user: Dict[str, Any] = Depends(verify_token),
+    user: dict[str, Any] = Depends(verify_token),
 ):
     """Start constitutional training with ACGS-1 Lite integration."""
     training_id = str(uuid.uuid4())
@@ -357,13 +352,13 @@ async def start_constitutional_training(
         logger.error(f"Failed to start training: {e}")
         await session_manager.remove_session(training_id)
         raise HTTPException(
-            status_code=500, detail=f"Training initialization failed: {str(e)}"
+            status_code=500, detail=f"Training initialization failed: {e!s}"
         )
 
 
 @app.get("/api/v1/train/{training_id}/status", response_model=TrainingStatus)
 async def get_training_status(
-    training_id: str, user: Dict[str, Any] = Depends(verify_token)
+    training_id: str, user: dict[str, Any] = Depends(verify_token)
 ):
     """Get constitutional training status."""
     session_data = await session_manager.get_session(training_id)
@@ -390,7 +385,7 @@ async def get_training_status(
 
 @app.delete("/api/v1/train/{training_id}")
 async def cancel_training(
-    training_id: str, user: Dict[str, Any] = Depends(verify_token)
+    training_id: str, user: dict[str, Any] = Depends(verify_token)
 ):
     """Cancel constitutional training session."""
     session_data = await session_manager.get_session(training_id)
@@ -420,7 +415,7 @@ async def cancel_training(
 
 # Background training execution
 async def execute_constitutional_training(
-    training_id: str, request: TrainingRequest, user: Dict[str, Any]
+    training_id: str, request: TrainingRequest, user: dict[str, Any]
 ):
     """Execute constitutional training in background."""
     start_time = time.time()

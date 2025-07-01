@@ -496,22 +496,19 @@ class AdversarialDefenseSystem:
         ]:
             if confidence > 0.8:
                 return "critical"
-            elif confidence > 0.6:
+            if confidence > 0.6:
                 return "high"
-            else:
-                return "medium"
-        elif attack_type in [
+            return "medium"
+        if attack_type in [
             AttackType.JAILBREAK_ATTEMPT,
             AttackType.RULE_SYNTHESIS_GAMING,
         ]:
             if confidence > 0.7:
                 return "high"
-            elif confidence > 0.5:
+            if confidence > 0.5:
                 return "medium"
-            else:
-                return "low"
-        else:
             return "low"
+        return "low"
 
     async def apply_mitigation(self, event: AdversarialEvent) -> dict[str, Any]:
         """Apply mitigation measures for detected attacks"""

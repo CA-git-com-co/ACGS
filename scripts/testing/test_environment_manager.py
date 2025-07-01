@@ -13,12 +13,11 @@ import asyncio
 import json
 import logging
 import os
-import subprocess
-import time
-import yaml
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any
+
+import yaml
 
 # Configure logging
 logging.basicConfig(
@@ -42,7 +41,7 @@ class TestEnvironmentManager:
         self.data_path.mkdir(parents=True, exist_ok=True)
         self.logs_path.mkdir(parents=True, exist_ok=True)
 
-    async def manage_test_environments(self) -> Dict[str, Any]:
+    async def manage_test_environments(self) -> dict[str, Any]:
         """Manage comprehensive test environment lifecycle."""
         logger.info("🚀 Starting Test Environment Management")
         logger.info(f"📜 Constitutional Hash: {self.constitutional_hash}")
@@ -134,7 +133,7 @@ class TestEnvironmentManager:
                 yaml.dump(default_config, f, default_flow_style=False)
 
         # Load configuration
-        with open(self.config_path, "r") as f:
+        with open(self.config_path) as f:
             self.config = yaml.safe_load(f)
 
         logger.info(
@@ -189,8 +188,8 @@ class TestEnvironmentManager:
                 self.environments[env_name] = {"status": "failed", "error": str(e)}
 
     async def _generate_environment_config(
-        self, env_name: str, env_config: Dict
-    ) -> Dict:
+        self, env_name: str, env_config: dict
+    ) -> dict:
         """Generate environment-specific configuration."""
         base_ports = {
             "unit_test": 9000,
@@ -278,7 +277,7 @@ class TestEnvironmentManager:
 
         return config
 
-    async def _provision_lightweight_environment(self, env_name: str, env_config: Dict):
+    async def _provision_lightweight_environment(self, env_name: str, env_config: dict):
         """Provision lightweight test environment."""
         logger.info(f"🪶 Provisioning lightweight environment: {env_name}")
 
@@ -296,7 +295,7 @@ echo "Starting lightweight test environment: {env_name}"
 echo "Constitutional Hash: {self.constitutional_hash}"
 
 # Create test database if needed
-if [ "{env_config.get('database')}" = "sqlite_memory" ]; then
+if [ "{env_config.get("database")}" = "sqlite_memory" ]; then
     export DATABASE_URL="sqlite:///:memory:"
 else
     export DATABASE_URL="sqlite:///data/testing/{env_name}/test.db"
@@ -316,7 +315,7 @@ echo "Environment {env_name} ready for testing"
         os.chmod(script_path, 0o755)
 
     async def _provision_containerized_environment(
-        self, env_name: str, env_config: Dict
+        self, env_name: str, env_config: dict
     ):
         """Provision containerized test environment."""
         logger.info(f"🐳 Provisioning containerized environment: {env_name}")
@@ -396,7 +395,7 @@ echo "Constitutional Hash: {self.constitutional_hash}"
         os.chmod(script_path, 0o755)
 
     async def _provision_production_like_environment(
-        self, env_name: str, env_config: Dict
+        self, env_name: str, env_config: dict
     ):
         """Provision production-like test environment."""
         logger.info(f"🏭 Provisioning production-like environment: {env_name}")
@@ -584,7 +583,7 @@ echo "Constitutional Hash: {self.constitutional_hash}"
 
         logger.info("📊 Environment monitoring setup completed")
 
-    async def _validate_environment_readiness(self) -> Dict[str, Any]:
+    async def _validate_environment_readiness(self) -> dict[str, Any]:
         """Validate that all test environments are ready."""
         logger.info("✅ Validating environment readiness")
 

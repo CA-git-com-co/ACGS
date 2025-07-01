@@ -12,15 +12,12 @@ Tests database operations performance:
 import asyncio
 import statistics
 import time
-from typing import Any, Dict, List
 
 import pytest
 from dgm_service.database import database_manager
-from dgm_service.models.constitutional_compliance import ConstitutionalComplianceLog
 from dgm_service.models.dgm_archive import DGMArchiveEntry
 from dgm_service.models.performance_metrics import PerformanceMetric
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class DatabasePerformanceTest:
@@ -39,7 +36,7 @@ class DatabasePerformanceTest:
         if self.session:
             await self.session.close()
 
-    async def measure_query_time(self, query: str, params: Dict = None) -> Dict:
+    async def measure_query_time(self, query: str, params: dict = None) -> dict:
         """Measure query execution time."""
         start_time = time.perf_counter()
 
@@ -68,8 +65,8 @@ class DatabasePerformanceTest:
             }
 
     async def bulk_insert_performance(
-        self, table_name: str, records: List[Dict], batch_size: int = 1000
-    ) -> Dict:
+        self, table_name: str, records: list[dict], batch_size: int = 1000
+    ) -> dict:
         """Test bulk insert performance."""
         start_time = time.perf_counter()
 
@@ -112,7 +109,7 @@ class DatabasePerformanceTest:
 
     async def connection_pool_test(
         self, concurrent_connections: int = 20, operations_per_connection: int = 10
-    ) -> Dict:
+    ) -> dict:
         """Test connection pool performance."""
 
         async def connection_worker():

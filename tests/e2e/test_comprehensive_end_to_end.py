@@ -24,15 +24,14 @@ import asyncio
 import json
 import logging
 import time
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-from dataclasses import dataclass, asdict
+from typing import Any
 
 import pytest
 import requests
-import aiohttp
-from playwright.async_api import async_playwright, Page, Browser
+from playwright.async_api import Browser, Page, async_playwright
 
 # Configure logging
 logging.basicConfig(
@@ -48,10 +47,10 @@ class E2ETestMetrics:
     start_time: float
     end_time: float
     total_duration: float
-    service_response_times: Dict[str, float]
-    blockchain_costs: Dict[str, float]
+    service_response_times: dict[str, float]
+    blockchain_costs: dict[str, float]
     success_rate: float
-    failed_tests: List[str]
+    failed_tests: list[str]
     constitutional_compliance_score: float
     security_validation_score: float
 
@@ -64,7 +63,7 @@ class ServiceEndpoint:
     port: int
     base_url: str
     health_endpoint: str
-    key_endpoints: List[str]
+    key_endpoints: list[str]
 
 
 class ACGSEndToEndTestSuite:
@@ -168,8 +167,8 @@ class ACGSEndToEndTestSuite:
         self.test_proposals = []
 
         # Browser instance for frontend testing
-        self.browser: Optional[Browser] = None
-        self.page: Optional[Page] = None
+        self.browser: Browser | None = None
+        self.page: Page | None = None
 
     async def setup_test_environment(self) -> bool:
         """
@@ -206,7 +205,7 @@ class ACGSEndToEndTestSuite:
             return True
 
         except Exception as e:
-            logger.error(f"❌ Test environment setup failed: {str(e)}")
+            logger.error(f"❌ Test environment setup failed: {e!s}")
             return False
 
     async def _validate_service_health(self) -> bool:
@@ -234,7 +233,7 @@ class ACGSEndToEndTestSuite:
                     self.metrics.failed_tests.append(f"Service health: {service_name}")
 
             except Exception as e:
-                logger.error(f"  ❌ {service_name}: {str(e)}")
+                logger.error(f"  ❌ {service_name}: {e!s}")
                 self.metrics.failed_tests.append(f"Service health: {service_name}")
 
         success_rate = healthy_services / total_services
@@ -277,7 +276,7 @@ class ACGSEndToEndTestSuite:
                 self.metrics.blockchain_costs[operation] = simulated_cost
 
                 logger.info(
-                    f"  ✅ {operation}: {operation_time*1000:.2f}ms, {simulated_cost:.6f} SOL"
+                    f"  ✅ {operation}: {operation_time * 1000:.2f}ms, {simulated_cost:.6f} SOL"
                 )
 
             total_cost = sum(self.metrics.blockchain_costs.values())
@@ -290,7 +289,7 @@ class ACGSEndToEndTestSuite:
             )  # Allow 5x for setup
 
         except Exception as e:
-            logger.error(f"❌ Blockchain initialization failed: {str(e)}")
+            logger.error(f"❌ Blockchain initialization failed: {e!s}")
             return False
 
     async def _setup_frontend_automation(self) -> bool:
@@ -312,7 +311,7 @@ class ACGSEndToEndTestSuite:
             return True
 
         except Exception as e:
-            logger.error(f"❌ Frontend automation setup failed: {str(e)}")
+            logger.error(f"❌ Frontend automation setup failed: {e!s}")
             return False
 
     async def _create_test_data(self) -> bool:
@@ -357,7 +356,7 @@ class ACGSEndToEndTestSuite:
             return True
 
         except Exception as e:
-            logger.error(f"❌ Test data creation failed: {str(e)}")
+            logger.error(f"❌ Test data creation failed: {e!s}")
             return False
 
     async def run_comprehensive_governance_workflow(self) -> bool:
@@ -406,7 +405,7 @@ class ACGSEndToEndTestSuite:
             return workflow_success
 
         except Exception as e:
-            logger.error(f"❌ Governance workflow execution failed: {str(e)}")
+            logger.error(f"❌ Governance workflow execution failed: {e!s}")
             return False
 
     async def _test_democratic_policy_creation(self) -> bool:
@@ -458,10 +457,10 @@ class ACGSEndToEndTestSuite:
             return True
 
         except Exception as e:
-            logger.error(f"❌ Democratic policy creation failed: {str(e)}")
+            logger.error(f"❌ Democratic policy creation failed: {e!s}")
             return False
 
-    async def _authenticate_user(self, user_data: Dict[str, Any]) -> Optional[str]:
+    async def _authenticate_user(self, user_data: dict[str, Any]) -> str | None:
         """Authenticate user and return JWT token."""
         try:
             start_time = time.time()
@@ -494,16 +493,13 @@ class ACGSEndToEndTestSuite:
                     f"  ✅ User {user_data['username']} authenticated ({response_time:.2f}ms)"
                 )
                 return token_data.get("access_token")
-            else:
-                logger.error(
-                    f"  ❌ Authentication failed for {user_data['username']}: HTTP {login_response.status_code}"
-                )
-                return None
+            logger.error(
+                f"  ❌ Authentication failed for {user_data['username']}: HTTP {login_response.status_code}"
+            )
+            return None
 
         except Exception as e:
-            logger.error(
-                f"❌ Authentication error for {user_data['username']}: {str(e)}"
-            )
+            logger.error(f"❌ Authentication error for {user_data['username']}: {e!s}")
             return None
 
     async def _create_constitutional_principles(self, auth_token: str) -> bool:
@@ -549,19 +545,18 @@ class ACGSEndToEndTestSuite:
                     f"  ✅ Constitutional principles created ({response_time:.2f}ms)"
                 )
                 return True
-            else:
-                logger.error(
-                    f"  ❌ Principles creation failed: HTTP {response.status_code}"
-                )
-                return False
+            logger.error(
+                f"  ❌ Principles creation failed: HTTP {response.status_code}"
+            )
+            return False
 
         except Exception as e:
-            logger.error(f"❌ Principles creation error: {str(e)}")
+            logger.error(f"❌ Principles creation error: {e!s}")
             return False
 
     async def _synthesize_policy(
-        self, auth_token: str, policy_data: Dict[str, Any]
-    ) -> Optional[Dict[str, Any]]:
+        self, auth_token: str, policy_data: dict[str, Any]
+    ) -> dict[str, Any] | None:
         """Synthesize policy using GS service."""
         try:
             start_time = time.time()
@@ -593,18 +588,15 @@ class ACGSEndToEndTestSuite:
                 synthesized_policy = response.json()
                 logger.info(f"  ✅ Policy synthesized ({response_time:.2f}ms)")
                 return synthesized_policy
-            else:
-                logger.error(
-                    f"  ❌ Policy synthesis failed: HTTP {response.status_code}"
-                )
-                return None
+            logger.error(f"  ❌ Policy synthesis failed: HTTP {response.status_code}")
+            return None
 
         except Exception as e:
-            logger.error(f"❌ Policy synthesis error: {str(e)}")
+            logger.error(f"❌ Policy synthesis error: {e!s}")
             return None
 
     async def _validate_policy_multi_model(
-        self, auth_token: str, policy: Dict[str, Any]
+        self, auth_token: str, policy: dict[str, Any]
     ) -> bool:
         """Validate policy using multi-model consensus."""
         try:
@@ -638,18 +630,17 @@ class ACGSEndToEndTestSuite:
                     f"  ✅ Multi-model validation completed ({response_time:.2f}ms, consensus: {consensus_score:.2f})"
                 )
                 return consensus_score >= 0.8
-            else:
-                logger.error(
-                    f"  ❌ Multi-model validation failed: HTTP {response.status_code}"
-                )
-                return False
+            logger.error(
+                f"  ❌ Multi-model validation failed: HTTP {response.status_code}"
+            )
+            return False
 
         except Exception as e:
-            logger.error(f"❌ Multi-model validation error: {str(e)}")
+            logger.error(f"❌ Multi-model validation error: {e!s}")
             return False
 
     async def _build_stakeholder_consensus(
-        self, auth_token: str, policy: Dict[str, Any]
+        self, auth_token: str, policy: dict[str, Any]
     ) -> bool:
         """Build stakeholder consensus for policy."""
         try:
@@ -677,18 +668,15 @@ class ACGSEndToEndTestSuite:
                     f"  ✅ Stakeholder consensus building initiated ({response_time:.2f}ms)"
                 )
                 return True
-            else:
-                logger.error(
-                    f"  ❌ Consensus building failed: HTTP {response.status_code}"
-                )
-                return False
+            logger.error(f"  ❌ Consensus building failed: HTTP {response.status_code}")
+            return False
 
         except Exception as e:
-            logger.error(f"❌ Consensus building error: {str(e)}")
+            logger.error(f"❌ Consensus building error: {e!s}")
             return False
 
     async def _deploy_policy_to_blockchain(
-        self, auth_token: str, policy: Dict[str, Any]
+        self, auth_token: str, policy: dict[str, Any]
     ) -> bool:
         """Deploy policy to Solana blockchain."""
         try:
@@ -716,12 +704,11 @@ class ACGSEndToEndTestSuite:
                     f"  ✅ Policy deployed to blockchain ({response_time:.2f}ms, {estimated_cost:.6f} SOL)"
                 )
                 return True
-            else:
-                logger.error(f"  ❌ Deployment cost too high: {estimated_cost:.6f} SOL")
-                return False
+            logger.error(f"  ❌ Deployment cost too high: {estimated_cost:.6f} SOL")
+            return False
 
         except Exception as e:
-            logger.error(f"❌ Blockchain deployment error: {str(e)}")
+            logger.error(f"❌ Blockchain deployment error: {e!s}")
             return False
 
     async def _test_constitutional_compliance(self) -> bool:
@@ -796,7 +783,7 @@ class ACGSEndToEndTestSuite:
             return avg_compliance >= 0.8
 
         except Exception as e:
-            logger.error(f"❌ Constitutional compliance test failed: {str(e)}")
+            logger.error(f"❌ Constitutional compliance test failed: {e!s}")
             return False
 
     async def _test_policy_enforcement(self) -> bool:
@@ -869,7 +856,7 @@ class ACGSEndToEndTestSuite:
             return success_rate >= 0.8
 
         except Exception as e:
-            logger.error(f"❌ Policy enforcement test failed: {str(e)}")
+            logger.error(f"❌ Policy enforcement test failed: {e!s}")
             return False
 
     async def _test_appeals_resolution(self) -> bool:
@@ -898,14 +885,11 @@ class ACGSEndToEndTestSuite:
                     f"  ✅ Appeal submitted successfully ({response_time:.2f}ms)"
                 )
                 return True
-            else:
-                logger.error(
-                    f"  ❌ Appeal submission failed: HTTP {response.status_code}"
-                )
-                return False
+            logger.error(f"  ❌ Appeal submission failed: HTTP {response.status_code}")
+            return False
 
         except Exception as e:
-            logger.error(f"❌ Appeals resolution test failed: {str(e)}")
+            logger.error(f"❌ Appeals resolution test failed: {e!s}")
             return False
 
     async def _test_emergency_governance(self) -> bool:
@@ -934,14 +918,13 @@ class ACGSEndToEndTestSuite:
                     f"  ✅ Emergency governance initiated ({response_time:.2f}ms)"
                 )
                 return response_time <= self.test_config["max_response_time_ms"]
-            else:
-                logger.error(
-                    f"  ❌ Emergency governance failed: HTTP {response.status_code}"
-                )
-                return False
+            logger.error(
+                f"  ❌ Emergency governance failed: HTTP {response.status_code}"
+            )
+            return False
 
         except Exception as e:
-            logger.error(f"❌ Emergency governance test failed: {str(e)}")
+            logger.error(f"❌ Emergency governance test failed: {e!s}")
             return False
 
     async def _test_frontend_workflows(self) -> bool:
@@ -983,7 +966,7 @@ class ACGSEndToEndTestSuite:
             return True
 
         except Exception as e:
-            logger.error(f"❌ Frontend workflows test failed: {str(e)}")
+            logger.error(f"❌ Frontend workflows test failed: {e!s}")
             return False
 
     async def validate_performance_metrics(self) -> bool:
@@ -1022,7 +1005,7 @@ class ACGSEndToEndTestSuite:
             passed_tests = total_tests - len(self.metrics.failed_tests)
             self.metrics.success_rate = passed_tests / total_tests
 
-            logger.info(f"📈 Performance Summary:")
+            logger.info("📈 Performance Summary:")
             logger.info(f"  Success Rate: {self.metrics.success_rate:.1%}")
             logger.info(
                 f"  Avg Response Time: {sum(self.metrics.service_response_times.values()) / len(self.metrics.service_response_times):.2f}ms"
@@ -1039,7 +1022,7 @@ class ACGSEndToEndTestSuite:
             )
 
         except Exception as e:
-            logger.error(f"❌ Performance validation failed: {str(e)}")
+            logger.error(f"❌ Performance validation failed: {e!s}")
             return False
 
     async def cleanup_test_environment(self):
@@ -1062,9 +1045,9 @@ class ACGSEndToEndTestSuite:
             logger.info("✅ Test environment cleanup completed")
 
         except Exception as e:
-            logger.error(f"❌ Cleanup failed: {str(e)}")
+            logger.error(f"❌ Cleanup failed: {e!s}")
 
-    async def generate_test_report(self) -> Dict[str, Any]:
+    async def generate_test_report(self) -> dict[str, Any]:
         """Generate comprehensive test report."""
         self.metrics.end_time = time.time()
         self.metrics.total_duration = self.metrics.end_time - self.metrics.start_time
@@ -1162,7 +1145,7 @@ class ACGSEndToEndTestSuite:
             return overall_success
 
         except Exception as e:
-            logger.error(f"❌ Test suite execution failed: {str(e)}")
+            logger.error(f"❌ Test suite execution failed: {e!s}")
             return False
 
 

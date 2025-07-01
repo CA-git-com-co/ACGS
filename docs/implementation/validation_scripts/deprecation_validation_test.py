@@ -9,15 +9,15 @@ using controlled test scenarios.
 import asyncio
 import json
 import logging
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Any
 
 import httpx
-from fastapi import FastAPI, Request, Response
-from fastapi.responses import JSONResponse
 import uvicorn
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -30,9 +30,9 @@ class DeprecationTestCase:
     name: str
     version: str
     deprecated: bool
-    deprecated_since: Optional[datetime] = None
-    sunset_date: Optional[datetime] = None
-    expected_headers: Dict[str, str] = None
+    deprecated_since: datetime | None = None
+    sunset_date: datetime | None = None
+    expected_headers: dict[str, str] = None
     expected_status: int = 200
 
 
@@ -203,7 +203,7 @@ class DeprecationValidator:
             ),
         ]
 
-    async def validate_deprecation_process(self) -> Dict[str, Any]:
+    async def validate_deprecation_process(self) -> dict[str, Any]:
         """Run comprehensive deprecation process validation."""
         logger.info("🔍 Starting deprecation process validation...")
 
@@ -294,7 +294,7 @@ class DeprecationValidator:
 
             await asyncio.sleep(0.1)
 
-    async def _run_deprecation_tests(self) -> List[Dict[str, Any]]:
+    async def _run_deprecation_tests(self) -> list[dict[str, Any]]:
         """Run all deprecation test cases."""
         logger.info("🧪 Running deprecation test cases...")
 
@@ -314,7 +314,7 @@ class DeprecationValidator:
 
     async def _run_single_test(
         self, client: httpx.AsyncClient, test_case: DeprecationTestCase
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Run a single deprecation test case."""
         try:
             # Determine endpoint URL based on test case
@@ -375,8 +375,8 @@ class DeprecationValidator:
             return {"test_case": test_case.name, "success": False, "error": str(e)}
 
     def _validate_headers(
-        self, actual_headers: Dict[str, str], expected_headers: Dict[str, str]
-    ) -> Dict[str, Any]:
+        self, actual_headers: dict[str, str], expected_headers: dict[str, str]
+    ) -> dict[str, Any]:
         """Validate response headers against expected values."""
         if not expected_headers:
             return {"valid": True, "errors": []}
@@ -394,8 +394,8 @@ class DeprecationValidator:
         return {"valid": len(errors) == 0, "errors": errors}
 
     def _validate_response_content(
-        self, response_data: Dict[str, Any], test_case: DeprecationTestCase
-    ) -> Dict[str, Any]:
+        self, response_data: dict[str, Any], test_case: DeprecationTestCase
+    ) -> dict[str, Any]:
         """Validate response content structure."""
         errors = []
 
@@ -416,8 +416,8 @@ class DeprecationValidator:
         return {"valid": len(errors) == 0, "errors": errors}
 
     def _validate_rfc_compliance(
-        self, test_results: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, test_results: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """Validate RFC 8594 compliance."""
         logger.info("📋 Validating RFC 8594 compliance...")
 
@@ -475,7 +475,7 @@ class DeprecationValidator:
         except ValueError:
             return False
 
-    async def _test_client_behavior(self) -> Dict[str, Any]:
+    async def _test_client_behavior(self) -> dict[str, Any]:
         """Test how clients should behave with deprecated APIs."""
         logger.info("👥 Testing client behavior with deprecated APIs...")
 
@@ -509,7 +509,7 @@ class DeprecationValidator:
             "behavior_checks": behavior_tests,
         }
 
-    def _validate_deprecation_timeline(self) -> Dict[str, Any]:
+    def _validate_deprecation_timeline(self) -> dict[str, Any]:
         """Validate deprecation timeline logic."""
         logger.info("📅 Validating deprecation timeline...")
 
@@ -533,7 +533,7 @@ class DeprecationValidator:
             "within_tolerance": timeline_valid,
         }
 
-    def save_report(self, report: Dict[str, Any], output_path: Path):
+    def save_report(self, report: dict[str, Any], output_path: Path):
         """Save deprecation validation report."""
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -565,7 +565,7 @@ async def main():
     print(f"❌ Failed: {summary['failed_tests']}")
 
     criteria = report["success_criteria"]
-    print(f"\n🎯 SUCCESS CRITERIA:")
+    print("\n🎯 SUCCESS CRITERIA:")
     print(f"   ✅ All Tests Pass: {'PASS' if criteria['all_tests_pass'] else 'FAIL'}")
     print(
         f"   📋 RFC 8594 Compliant: {'PASS' if criteria['rfc_8594_compliant'] else 'FAIL'}"
@@ -577,7 +577,7 @@ async def main():
 
     rfc_compliance = report["rfc_compliance"]
     if not rfc_compliance["compliant"]:
-        print(f"\n⚠️  RFC COMPLIANCE ISSUES:")
+        print("\n⚠️  RFC COMPLIANCE ISSUES:")
         for error in rfc_compliance["errors"]:
             print(f"   - {error}")
 

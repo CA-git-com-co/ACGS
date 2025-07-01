@@ -5,13 +5,13 @@ Simulates enterprise-scale load with constitutional policy validation
 """
 
 import asyncio
-import aiohttp
-import time
 import json
 import statistics
+import time
 from datetime import datetime
-from concurrent.futures import ThreadPoolExecutor
-from typing import List, Dict, Any
+from typing import Any
+
+import aiohttp
 
 
 class EnterpriseLoadTester:
@@ -26,7 +26,7 @@ class EnterpriseLoadTester:
 
     async def simulate_user_session(
         self, session: aiohttp.ClientSession, user_id: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Simulate a realistic user session with constitutional policy validation"""
         session_start = time.time()
         session_results = {
@@ -97,7 +97,7 @@ class EnterpriseLoadTester:
 
     async def run_concurrent_load(
         self, concurrent_users: int, duration_seconds: int = 60
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Run concurrent load test with specified number of users"""
         print(
             f"🚀 Starting load test: {concurrent_users} concurrent users for {duration_seconds}s"
@@ -143,7 +143,7 @@ class EnterpriseLoadTester:
 
         return self.analyze_results()
 
-    def analyze_results(self) -> Dict[str, Any]:
+    def analyze_results(self) -> dict[str, Any]:
         """Analyze load test results and generate metrics"""
         if not self.results:
             return {"error": "No results to analyze"}
@@ -255,7 +255,7 @@ async def main():
                 perf = results["performance_metrics"]
                 summary = results["test_summary"]
 
-                print(f"   📈 Results:")
+                print("   📈 Results:")
                 print(f"     Total Requests: {summary['total_requests']}")
                 print(f"     Error Rate: {summary['error_rate']:.1f}%")
                 print(f"     Avg Latency: {perf.get('avg_latency_ms', 0):.2f}ms")
@@ -271,11 +271,11 @@ async def main():
                 )
 
         except Exception as e:
-            print(f"   ❌ Test failed: {str(e)}")
+            print(f"   ❌ Test failed: {e!s}")
             all_results[scenario["name"]] = {"error": str(e)}
 
     # Generate final report
-    print(f"\n🎯 Enterprise Load Testing Summary:")
+    print("\n🎯 Enterprise Load Testing Summary:")
     print("=" * 50)
 
     successful_tests = 0

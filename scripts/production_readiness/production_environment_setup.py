@@ -26,7 +26,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -49,7 +49,7 @@ class ProductionEnvironmentSetup:
         }
         self.setup_results = {}
 
-    def setup_prometheus_monitoring(self) -> Dict[str, Any]:
+    def setup_prometheus_monitoring(self) -> dict[str, Any]:
         """Setup production-grade Prometheus monitoring."""
         logger.info("📊 Setting up Prometheus Monitoring...")
 
@@ -134,7 +134,7 @@ class ProductionEnvironmentSetup:
             ],
         }
 
-    def _generate_alert_rules(self) -> Dict[str, Any]:
+    def _generate_alert_rules(self) -> dict[str, Any]:
         """Generate comprehensive alerting rules."""
         return {
             "groups": [
@@ -196,7 +196,7 @@ class ProductionEnvironmentSetup:
             ]
         }
 
-    def setup_grafana_dashboards(self) -> Dict[str, Any]:
+    def setup_grafana_dashboards(self) -> dict[str, Any]:
         """Setup Grafana dashboards for production monitoring."""
         logger.info("📊 Setting up Grafana Dashboards...")
 
@@ -329,7 +329,7 @@ class ProductionEnvironmentSetup:
             "config_file": str(dashboard_dir / "acgs_main_dashboard.json"),
         }
 
-    def setup_backup_procedures(self) -> Dict[str, Any]:
+    def setup_backup_procedures(self) -> dict[str, Any]:
         """Setup backup and disaster recovery procedures."""
         logger.info("💾 Setting up Backup and Disaster Recovery...")
 
@@ -549,7 +549,7 @@ rm -rf "${RESTORE_DIR}"
 echo "Restore completed successfully"
 """
 
-    def setup_automated_testing(self) -> Dict[str, Any]:
+    def setup_automated_testing(self) -> dict[str, Any]:
         """Setup automated performance regression testing."""
         logger.info("🧪 Setting up Automated Performance Regression Testing...")
 
@@ -610,7 +610,7 @@ echo "Restore completed successfully"
             "config_file": str(testing_dir / "automated_testing_config.json"),
         }
 
-    def run_production_setup(self) -> Dict[str, Any]:
+    def run_production_setup(self) -> dict[str, Any]:
         """Run comprehensive production environment setup."""
         logger.info("🚀 Starting Production Environment Setup")
         logger.info("=" * 80)

@@ -2,14 +2,10 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.services.advanced_cache
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.governance_synthesis.gs_service.app.services.advanced_cache import (
-    CacheEntry,
-    CacheStats,
     LRUCache,
-    RedisCache,
     MultiTierCache,
+    RedisCache,
 )
 
 

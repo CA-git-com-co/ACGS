@@ -44,7 +44,7 @@ async def get_aggregation_config(current_user: dict = Depends(get_current_active
         logger.error(f"Failed to get aggregation config: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get configuration: {str(e)}",
+            detail=f"Failed to get configuration: {e!s}",
         )
 
 
@@ -90,7 +90,7 @@ async def update_aggregation_config(
         logger.error(f"Failed to update aggregation config: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to update configuration: {str(e)}",
+            detail=f"Failed to update configuration: {e!s}",
         )
 
 
@@ -107,7 +107,7 @@ async def get_aggregation_metrics(
         logger.error(f"Failed to get aggregation metrics: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get metrics: {str(e)}",
+            detail=f"Failed to get metrics: {e!s}",
         )
 
 
@@ -169,7 +169,7 @@ async def create_secure_shares(
         logger.error(f"Failed to create secure shares: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create secure shares: {str(e)}",
+            detail=f"Failed to create secure shares: {e!s}",
         )
 
 
@@ -199,7 +199,7 @@ async def verify_aggregation_integrity(
         logger.error(f"Failed to verify aggregation integrity: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to verify integrity: {str(e)}",
+            detail=f"Failed to verify integrity: {e!s}",
         )
 
 
@@ -267,5 +267,5 @@ async def get_aggregation_status(current_user: dict = Depends(get_current_active
         logger.error(f"Failed to get aggregation status: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get status: {str(e)}",
+            detail=f"Failed to get status: {e!s}",
         )

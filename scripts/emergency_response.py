@@ -6,17 +6,17 @@ Provides emergency shutdown, recovery, and monitoring capabilities
 with <30min RTO (Recovery Time Objective) for constitutional AI governance.
 """
 
-import asyncio
 import json
 import logging
 import os
 import signal
+import subprocess
 import sys
 import time
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional
+from typing import Any
+
 import requests
-import subprocess
 
 # Configure logging
 logging.basicConfig(
@@ -61,12 +61,12 @@ class ACGSEmergencyResponse:
         self.emergency_log.append(event)
         logger.log(getattr(logging, severity), f"[{event_type}] {message}")
 
-    def get_service_pids(self) -> Dict[str, Optional[int]]:
+    def get_service_pids(self) -> dict[str, int | None]:
         """Get PIDs of running ACGS services."""
         try:
             # Get processes listening on ACGS ports
             result = subprocess.run(
-                ["ss", "-tlnp"], capture_output=True, text=True, timeout=10
+                ["ss", "-tlnp"], check=False, capture_output=True, text=True, timeout=10
             )
 
             for service_name, service_info in self.services.items():
@@ -96,7 +96,7 @@ class ACGSEmergencyResponse:
 
     def emergency_shutdown(
         self, reason: str = "Manual emergency shutdown"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Emergency shutdown of all ACGS services with <30min RTO capability."""
         start_time = time.time()
         self.log_emergency_event(
@@ -170,7 +170,7 @@ class ACGSEmergencyResponse:
         )
         return result
 
-    def verify_services_down(self) -> Dict[str, bool]:
+    def verify_services_down(self) -> dict[str, bool]:
         """Verify that all services are properly shut down."""
         verification = {}
 
@@ -184,7 +184,7 @@ class ACGSEmergencyResponse:
 
         return verification
 
-    def health_check_all_services(self) -> Dict[str, Any]:
+    def health_check_all_services(self) -> dict[str, Any]:
         """Comprehensive health check of all ACGS services."""
         health_results = {}
 
@@ -210,7 +210,7 @@ class ACGSEmergencyResponse:
 
         return health_results
 
-    def constitutional_compliance_check(self) -> Dict[str, Any]:
+    def constitutional_compliance_check(self) -> dict[str, Any]:
         """Check constitutional compliance across services."""
         compliance_results = {}
 
@@ -253,7 +253,7 @@ class ACGSEmergencyResponse:
 
         return compliance_results
 
-    def generate_emergency_report(self) -> Dict[str, Any]:
+    def generate_emergency_report(self) -> dict[str, Any]:
         """Generate comprehensive emergency status report."""
         report_time = datetime.now(timezone.utc)
 

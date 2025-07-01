@@ -16,14 +16,12 @@ Features:
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import asyncio
 import logging
-import time
+from collections import deque
 from dataclasses import dataclass, field
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Dict, List, Any, Optional, Tuple
-from collections import defaultdict, deque
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +71,7 @@ class CircuitBreakerState:
     """Circuit breaker state for model health management."""
 
     failure_count: int = 0
-    last_failure_time: Optional[datetime] = None
+    last_failure_time: datetime | None = None
     state: ModelHealth = ModelHealth.HEALTHY
     failure_threshold: int = 5
     recovery_timeout_seconds: int = 60
@@ -87,8 +85,8 @@ class RoutingDecision:
 
     selected_model: "ModelType"
     confidence: float
-    reasoning: List[str]
-    fallback_models: List["ModelType"]
+    reasoning: list[str]
+    fallback_models: list["ModelType"]
     estimated_response_time_ms: float
     estimated_cost: float
     routing_strategy_used: RoutingStrategy
@@ -131,7 +129,7 @@ class ContentAnalyzer:
             "low": ["minor", "optional", "background"],
         }
 
-    def analyze_content_complexity(self, text: str) -> Tuple[str, float]:
+    def analyze_content_complexity(self, text: str) -> tuple[str, float]:
         """Analyze content complexity level."""
         if not text:
             return "low", 0.3
@@ -173,12 +171,11 @@ class ContentAnalyzer:
 
         if complexity_score >= 0.7:
             return "high", complexity_score
-        elif complexity_score >= 0.5:
+        if complexity_score >= 0.5:
             return "medium", complexity_score
-        else:
-            return "low", complexity_score
+        return "low", complexity_score
 
-    def detect_constitutional_content(self, text: str) -> Tuple[bool, float]:
+    def detect_constitutional_content(self, text: str) -> tuple[bool, float]:
         """Detect if content requires constitutional analysis."""
         if not text:
             return False, 0.0
@@ -197,7 +194,7 @@ class ContentAnalyzer:
 
     def analyze_priority_indicators(
         self, text: str, explicit_priority: str = "normal"
-    ) -> Tuple[str, float]:
+    ) -> tuple[str, float]:
         """Analyze priority indicators in content."""
         if not text:
             return explicit_priority, 0.5
@@ -336,7 +333,7 @@ class IntelligentRouter:
 
         return decision
 
-    def _analyze_request_content(self, request: "MultimodalRequest") -> Dict[str, Any]:
+    def _analyze_request_content(self, request: "MultimodalRequest") -> dict[str, Any]:
         """Analyze request content for routing decisions."""
 
         text_content = request.text_content or ""
@@ -381,7 +378,7 @@ class IntelligentRouter:
             "has_image": bool(request.image_url or request.image_data),
         }
 
-    def _get_available_models(self) -> List["ModelType"]:
+    def _get_available_models(self) -> list["ModelType"]:
         """Get list of currently available (healthy) models."""
 
         available = []
@@ -399,7 +396,6 @@ class IntelligentRouter:
                 ) - circuit_breaker.last_failure_time > timedelta(
                     seconds=circuit_breaker.recovery_timeout_seconds
                 ):
-
                     # Move to half-open state
                     circuit_breaker.state = ModelHealth.HEALTHY
                     circuit_breaker.half_open_requests = 0
@@ -423,10 +419,10 @@ class IntelligentRouter:
     def _calculate_routing_scores(
         self,
         request: "MultimodalRequest",
-        content_analysis: Dict[str, Any],
-        available_models: List["ModelType"],
+        content_analysis: dict[str, Any],
+        available_models: list["ModelType"],
         strategy: RoutingStrategy,
-    ) -> Dict["ModelType", Tuple[float, List[str]]]:
+    ) -> dict["ModelType", tuple[float, list[str]]]:
         """Calculate routing scores for available models."""
 
         scores = {}
@@ -443,9 +439,9 @@ class IntelligentRouter:
         self,
         model: "ModelType",
         request: "MultimodalRequest",
-        content_analysis: Dict[str, Any],
+        content_analysis: dict[str, Any],
         strategy: RoutingStrategy,
-    ) -> Tuple[float, List[str]]:
+    ) -> tuple[float, list[str]]:
         """Score a specific model for a request."""
 
         reasoning = []
@@ -495,9 +491,9 @@ class IntelligentRouter:
     def _score_for_performance(
         self,
         model: "ModelType",
-        content_analysis: Dict[str, Any],
+        content_analysis: dict[str, Any],
         metrics: ModelPerformanceMetrics,
-    ) -> Tuple[float, List[str]]:
+    ) -> tuple[float, list[str]]:
         """Score model for performance-optimized routing."""
 
         reasoning = []
@@ -532,9 +528,9 @@ class IntelligentRouter:
     def _score_for_quality(
         self,
         model: "ModelType",
-        content_analysis: Dict[str, Any],
+        content_analysis: dict[str, Any],
         metrics: ModelPerformanceMetrics,
-    ) -> Tuple[float, List[str]]:
+    ) -> tuple[float, list[str]]:
         """Score model for quality-optimized routing."""
 
         reasoning = []
@@ -573,9 +569,9 @@ class IntelligentRouter:
     def _score_for_cost(
         self,
         model: "ModelType",
-        content_analysis: Dict[str, Any],
+        content_analysis: dict[str, Any],
         metrics: ModelPerformanceMetrics,
-    ) -> Tuple[float, List[str]]:
+    ) -> tuple[float, list[str]]:
         """Score model for cost-optimized routing."""
 
         reasoning = []
@@ -605,9 +601,9 @@ class IntelligentRouter:
     def _score_for_constitutional(
         self,
         model: "ModelType",
-        content_analysis: Dict[str, Any],
+        content_analysis: dict[str, Any],
         metrics: ModelPerformanceMetrics,
-    ) -> Tuple[float, List[str]]:
+    ) -> tuple[float, list[str]]:
         """Score model for constitutional compliance priority."""
 
         reasoning = []
@@ -652,9 +648,9 @@ class IntelligentRouter:
     def _score_balanced(
         self,
         model: "ModelType",
-        content_analysis: Dict[str, Any],
+        content_analysis: dict[str, Any],
         metrics: ModelPerformanceMetrics,
-    ) -> Tuple[float, List[str]]:
+    ) -> tuple[float, list[str]]:
         """Score model using balanced approach."""
 
         reasoning = []
@@ -693,7 +689,7 @@ class IntelligentRouter:
         return balanced_score, reasoning
 
     def _estimate_response_time(
-        self, model: "ModelType", content_analysis: Dict[str, Any]
+        self, model: "ModelType", content_analysis: dict[str, Any]
     ) -> float:
         """Estimate response time for model and content."""
 
@@ -724,7 +720,7 @@ class IntelligentRouter:
         return estimated_time
 
     def _estimate_cost(
-        self, model: "ModelType", content_analysis: Dict[str, Any]
+        self, model: "ModelType", content_analysis: dict[str, Any]
     ) -> float:
         """Estimate cost for model and content."""
 
@@ -824,7 +820,7 @@ class IntelligentRouter:
         # Decrease load
         self._update_load(model, -1)
 
-    def get_routing_metrics(self) -> Dict[str, Any]:
+    def get_routing_metrics(self) -> dict[str, Any]:
         """Get comprehensive routing metrics."""
 
         return {

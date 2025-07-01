@@ -3,13 +3,13 @@ import time
 import uuid
 from concurrent import futures
 
-import docker
-
 # Add the proto directory to the path to ensure generated files are found
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'proto'))  # Removed during reorganization
 import evaluation_pb2
 import evaluation_pb2_grpc
 import grpc
+
+import docker
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

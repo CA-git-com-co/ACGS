@@ -27,7 +27,7 @@ def add_security_headers_to_service(service_path, service_name):
     print(f"📝 Adding security headers to {service_name} at {main_py_path}")
 
     # Read the file
-    with open(main_py_path, "r") as f:
+    with open(main_py_path) as f:
         content = f.read()
 
     # Check if security headers are already present

@@ -283,10 +283,9 @@ class WebhookManager:
                     if response.status_code < 400:
                         logger.info(f"Webhook delivered successfully: {delivery_id}")
                         return
-                    else:
-                        logger.warning(
-                            f"Webhook delivery failed: {delivery_id}, status: {response.status_code}"
-                        )
+                    logger.warning(
+                        f"Webhook delivery failed: {delivery_id}, status: {response.status_code}"
+                    )
 
             except Exception as e:
                 logger.error(
@@ -485,7 +484,7 @@ class AuditTrailManager:
 
         query = f"""
             SELECT * FROM audit_events
-            WHERE {' AND '.join(conditions)}
+            WHERE {" AND ".join(conditions)}
             ORDER BY timestamp DESC
             LIMIT {limit}
         """
@@ -531,10 +530,9 @@ class ComplianceManager:
         """Generate compliance report"""
         if compliance_type.upper() == "SOC2":
             return await self._generate_soc2_report(tenant_id, start_date, end_date)
-        elif compliance_type.upper() == "GDPR":
+        if compliance_type.upper() == "GDPR":
             return await self._generate_gdpr_report(tenant_id, start_date, end_date)
-        else:
-            raise HTTPException(status_code=400, detail="Unsupported compliance type")
+        raise HTTPException(status_code=400, detail="Unsupported compliance type")
 
     async def _generate_soc2_report(
         self, tenant_id: str, start_date: datetime, end_date: datetime

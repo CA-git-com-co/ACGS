@@ -173,7 +173,7 @@ async def get_oversight_coordinator() -> WINAECOversightCoordinator:
     except Exception as e:
         logger.error(f"Failed to get oversight coordinator: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Oversight coordinator not available: {str(e)}"
+            status_code=500, detail=f"Oversight coordinator not available: {e!s}"
         )
 
 
@@ -250,11 +250,11 @@ async def coordinate_oversight(
 
     except ValueError as e:
         logger.warning(f"Invalid oversight request: {e}")
-        raise HTTPException(status_code=400, detail=f"Invalid request: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Invalid request: {e!s}")
     except Exception as e:
         logger.error(f"Oversight coordination failed: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Oversight coordination failed: {str(e)}"
+            status_code=500, detail=f"Oversight coordination failed: {e!s}"
         )
 
 
@@ -311,12 +311,10 @@ async def select_oversight_strategy(
 
     except ValueError as e:
         logger.warning(f"Invalid strategy selection request: {e}")
-        raise HTTPException(status_code=400, detail=f"Invalid request: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Invalid request: {e!s}")
     except Exception as e:
         logger.error(f"Strategy selection failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Strategy selection failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Strategy selection failed: {e!s}")
 
 
 @router.post("/generate-report")
@@ -374,9 +372,7 @@ async def generate_comprehensive_report(
 
     except Exception as e:
         logger.error(f"Report generation failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Report generation failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Report generation failed: {e!s}")
 
 
 @router.get("/strategies")
@@ -408,7 +404,7 @@ async def get_available_strategies() -> dict[str, Any]:
     except Exception as e:
         logger.error(f"Strategy information retrieval failed: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Strategy information retrieval failed: {str(e)}"
+            status_code=500, detail=f"Strategy information retrieval failed: {e!s}"
         )
 
 
@@ -440,7 +436,7 @@ async def get_oversight_contexts() -> dict[str, Any]:
     except Exception as e:
         logger.error(f"Context information retrieval failed: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Context information retrieval failed: {str(e)}"
+            status_code=500, detail=f"Context information retrieval failed: {e!s}"
         )
 
 
@@ -526,7 +522,7 @@ async def get_oversight_health(
     except Exception as e:
         logger.error(f"Health status retrieval failed: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Health status retrieval failed: {str(e)}"
+            status_code=500, detail=f"Health status retrieval failed: {e!s}"
         )
 
 

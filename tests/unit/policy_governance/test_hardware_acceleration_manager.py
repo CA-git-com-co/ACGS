@@ -2,18 +2,6 @@
 Unit tests for services.core.policy-governance.pgc_service.app.core.hardware_acceleration_manager
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.policy_governance.pgc_service.app.core.hardware_acceleration_manager import (
-    HardwareType,
-    AccelerationType,
-    EdgeDeploymentTarget,
-    HardwareCapability,
-    AccelerationProfile,
-    EdgeDeploymentConfig,
-    HardwareAccelerationManager,
-)
-
 
 class TestHardwareType:
     """Test suite for HardwareType."""

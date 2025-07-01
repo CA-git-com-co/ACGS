@@ -382,11 +382,8 @@ async def test_mab_metrics_endpoint():
                             f"✅ MAB metrics endpoint responding: {len(metrics_data)} metrics available"
                         )
                         return True
-                    else:
-                        print(
-                            f"⚠️  MAB metrics endpoint returned status {response.status}"
-                        )
-                        return False
+                    print(f"⚠️  MAB metrics endpoint returned status {response.status}")
+                    return False
             except aiohttp.ClientConnectorError:
                 print(
                     "⚠️  MAB metrics endpoint not available (GS service may not be running)"
@@ -443,7 +440,9 @@ async def main():
         print(f"{task_name:.<40} {status}")
 
     print("-" * 70)
-    print(f"Overall: {completed}/{total} tasks completed ({completed/total*100:.1f}%)")
+    print(
+        f"Overall: {completed}/{total} tasks completed ({completed / total * 100:.1f}%)"
+    )
 
     if completed == total:
         print("\n🎉 MAB Performance Monitoring setup completed successfully!")
@@ -457,9 +456,8 @@ async def main():
         print("5. Monitor MAB metrics at: http://localhost:8004/api/v1/mab/metrics")
         print("\n✅ Phase 3 Complete: Performance monitoring setup ready")
         return True
-    else:
-        print(f"\n⚠️  {total - completed} task(s) failed. Please review and fix issues.")
-        return False
+    print(f"\n⚠️  {total - completed} task(s) failed. Please review and fix issues.")
+    return False
 
 
 if __name__ == "__main__":

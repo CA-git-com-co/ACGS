@@ -403,9 +403,7 @@ class AlphaEvolveBridge:
 
         except Exception as e:
             logger.error(f"Failed to evaluate EC proposal: {e}")
-            return self._create_fallback_decision(
-                proposal, f"Evaluation error: {str(e)}"
-            )
+            return self._create_fallback_decision(proposal, f"Evaluation error: {e!s}")
 
     def _convert_to_rego_policy(self, ac_principle: dict[str, Any]) -> str:
         """Convert AC principle to Rego policy format."""
@@ -414,8 +412,8 @@ class AlphaEvolveBridge:
         rego_policy = f"""
 package constitutional.{principle_name}
 
-# Constitutional Principle: {ac_principle.get('name', 'Unknown')}
-# Description: {ac_principle.get('description', 'No description')}
+# Constitutional Principle: {ac_principle.get("name", "Unknown")}
+# Description: {ac_principle.get("description", "No description")}
 
 default allow = false
 
@@ -431,7 +429,7 @@ allow {{
 # Violation detection
 violation[msg] {{
     not allow
-    msg := "Violation of constitutional principle: {ac_principle.get('name', 'Unknown')}"
+    msg := "Violation of constitutional principle: {ac_principle.get("name", "Unknown")}"
 }}
 """
         return rego_policy.strip()
@@ -442,12 +440,11 @@ violation[msg] {{
 
         if "safety" in category:
             return "input.proposal.safety_score >= 0.8"
-        elif "privacy" in category:
+        if "privacy" in category:
             return "input.proposal.privacy_compliant == true"
-        elif "fairness" in category:
+        if "fairness" in category:
             return "input.proposal.fairness_score >= 0.7"
-        else:
-            return "input.proposal.general_compliance == true"
+        return "input.proposal.general_compliance == true"
 
     async def _validate_synthesized_policy(self, policy_suggestion) -> dict[str, Any]:
         """Validate synthesized policy using AlphaEvolve validators."""
@@ -472,7 +469,7 @@ violation[msg] {{
             validation_results["semantic_valid"] = True  # Placeholder
 
         except Exception as e:
-            validation_results["errors"].append(f"Validation error: {str(e)}")
+            validation_results["errors"].append(f"Validation error: {e!s}")
 
         return validation_results
 

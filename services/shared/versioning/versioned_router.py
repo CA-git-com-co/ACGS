@@ -7,16 +7,16 @@ and seamless integration with existing FastAPI routing infrastructure.
 
 import logging
 from collections import defaultdict
+from collections.abc import Callable
 from functools import wraps
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.routing import APIRoute
 
-from ..api_models import APIError, APIResponse, APIStatus, ErrorCode
+from ..api_models import APIStatus
 from .response_transformers import VersionedResponseBuilder
-from .version_manager import APIVersion, UnsupportedVersionError, VersionManager
+from .version_manager import APIVersion, VersionManager
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +27,9 @@ class VersionedEndpoint:
     def __init__(self, path: str, method: str):
         self.path = path
         self.method = method
-        self.handlers: Dict[str, Callable] = {}  # version -> handler
-        self.fallback_handler: Optional[Callable] = None
-        self.metadata: Dict[str, Any] = {}
+        self.handlers: dict[str, Callable] = {}  # version -> handler
+        self.fallback_handler: Callable | None = None
+        self.metadata: dict[str, Any] = {}
 
     def add_handler(self, version: APIVersion, handler: Callable):
         """Add a version-specific handler."""
@@ -41,7 +41,7 @@ class VersionedEndpoint:
         """Set fallback handler for unsupported versions."""
         self.fallback_handler = handler
 
-    def get_handler(self, version: APIVersion) -> Optional[Callable]:
+    def get_handler(self, version: APIVersion) -> Callable | None:
         """Get handler for specific version with intelligent fallback."""
         version_str = str(version)
 
@@ -64,7 +64,7 @@ class VersionedEndpoint:
         # Return fallback handler if available
         return self.fallback_handler
 
-    def get_supported_versions(self) -> List[APIVersion]:
+    def get_supported_versions(self) -> list[APIVersion]:
         """Get list of supported versions for this endpoint."""
         return [APIVersion.from_string(v) for v in self.handlers.keys()]
 
@@ -84,8 +84,8 @@ class VersionedRouter:
     def __init__(
         self,
         service_name: str,
-        version_manager: Optional[VersionManager] = None,
-        response_builder: Optional[VersionedResponseBuilder] = None,
+        version_manager: VersionManager | None = None,
+        response_builder: VersionedResponseBuilder | None = None,
         enable_fallback: bool = True,
         enable_metrics: bool = True,
     ):
@@ -102,14 +102,14 @@ class VersionedRouter:
         )
 
         # Endpoint registry
-        self.endpoints: Dict[str, VersionedEndpoint] = {}  # "METHOD:path" -> endpoint
+        self.endpoints: dict[str, VersionedEndpoint] = {}  # "METHOD:path" -> endpoint
 
         # FastAPI routers for each version
-        self.routers: Dict[str, APIRouter] = {}
+        self.routers: dict[str, APIRouter] = {}
 
         # Metrics
         self.request_count = 0
-        self.version_usage: Dict[str, int] = defaultdict(int)
+        self.version_usage: dict[str, int] = defaultdict(int)
 
         logger.info(f"VersionedRouter initialized for {service_name}")
 
@@ -129,9 +129,9 @@ class VersionedRouter:
 
     def version(
         self,
-        version: Union[str, APIVersion],
+        version: str | APIVersion,
         path: str,
-        methods: List[str] = None,
+        methods: list[str] = None,
         **route_kwargs,
     ):
         """
@@ -168,7 +168,7 @@ class VersionedRouter:
 
         return decorator
 
-    def fallback(self, path: str, methods: List[str] = None):
+    def fallback(self, path: str, methods: list[str] = None):
         """
         Decorator to register fallback handlers for unsupported versions.
 
@@ -242,7 +242,7 @@ class VersionedRouter:
         pattern = r"^/api/v\d+\.\d+\.\d+"
         return re.sub(pattern, "", path) or "/"
 
-    def get_version_info(self) -> Dict[str, Any]:
+    def get_version_info(self) -> dict[str, Any]:
         """Get comprehensive version information for all endpoints."""
         info = {
             "service": self.service_name,
@@ -263,7 +263,7 @@ class VersionedRouter:
 
         return info
 
-    def create_openapi_spec(self) -> Dict[str, Any]:
+    def create_openapi_spec(self) -> dict[str, Any]:
         """Create OpenAPI specification for all versions."""
         spec = {
             "openapi": "3.0.0",
@@ -324,7 +324,7 @@ class VersionedRouter:
 def create_versioned_router(
     service_name: str,
     current_version: str = "v1.0.0",
-    supported_versions: Optional[List[str]] = None,
+    supported_versions: list[str] | None = None,
     **kwargs,
 ) -> VersionedRouter:
     """
@@ -361,7 +361,7 @@ def get_api_version(request: Request) -> APIVersion:
 
 
 # Decorator for automatic version-aware response building
-def versioned_response(response_builder: Optional[VersionedResponseBuilder] = None):
+def versioned_response(response_builder: VersionedResponseBuilder | None = None):
     """
     Decorator to automatically build version-aware responses.
 

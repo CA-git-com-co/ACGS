@@ -84,7 +84,7 @@ async def test_registration_performance(session, user_id, metrics):
 
     except Exception as e:
         response_time = (time.time() - start_time) * 1000
-        metrics.add_result(response_time, False, f"Registration exception: {str(e)}")
+        metrics.add_result(response_time, False, f"Registration exception: {e!s}")
 
 
 async def test_login_performance(session, user_id, metrics):
@@ -111,7 +111,7 @@ async def test_login_performance(session, user_id, metrics):
 
     except Exception as e:
         response_time = (time.time() - start_time) * 1000
-        metrics.add_result(response_time, False, f"Login exception: {str(e)}")
+        metrics.add_result(response_time, False, f"Login exception: {e!s}")
 
 
 async def test_health_check_performance(session, user_id, metrics):
@@ -131,7 +131,7 @@ async def test_health_check_performance(session, user_id, metrics):
 
     except Exception as e:
         response_time = (time.time() - start_time) * 1000
-        metrics.add_result(response_time, False, f"Health check exception: {str(e)}")
+        metrics.add_result(response_time, False, f"Health check exception: {e!s}")
 
 
 async def run_concurrent_test(test_func, num_requests, concurrency, test_name):
@@ -167,7 +167,7 @@ async def run_concurrent_test(test_func, num_requests, concurrency, test_name):
 
     print(f"   📊 {test_name} Results:")
     print(f"      Total Time: {total_time:.2f}s")
-    print(f"      Requests/sec: {num_requests/total_time:.2f}")
+    print(f"      Requests/sec: {num_requests / total_time:.2f}")
     print(f"      Success Rate: {stats.get('success_rate', 0):.1f}%")
     print(f"      Avg Response Time: {stats.get('avg_response_time', 0):.2f}ms")
     print(
@@ -215,7 +215,7 @@ async def main():
             results.append((test_name, meets_targets, stats))
             print()
         except Exception as e:
-            print(f"   ❌ {test_name} failed with error: {str(e)}")
+            print(f"   ❌ {test_name} failed with error: {e!s}")
             results.append((test_name, False, {}))
             print()
 

@@ -138,12 +138,12 @@ class SafetyPropertyChecker:
 
         except Exception as e:
             logger.error(
-                f"Safety property check failed for {safety_property.property_id}: {str(e)}"
+                f"Safety property check failed for {safety_property.property_id}: {e!s}"
             )
             return SafetyCheckResult(
                 property_id=safety_property.property_id,
                 status="unknown",
-                counter_example_trace=f"Verification error: {str(e)}",
+                counter_example_trace=f"Verification error: {e!s}",
                 verification_time_ms=int((time.time() - start_time) * 1000),
             )
 
@@ -196,13 +196,12 @@ class SafetyPropertyChecker:
                 counter_example_trace="; ".join(violations),
                 verification_depth=depth,
             )
-        else:
-            return SafetyCheckResult(
-                property_id=safety_property.property_id,
-                status="satisfied",
-                witness_trace=f"Property verified up to depth {depth}",
-                verification_depth=depth,
-            )
+        return SafetyCheckResult(
+            property_id=safety_property.property_id,
+            status="satisfied",
+            witness_trace=f"Property verified up to depth {depth}",
+            verification_depth=depth,
+        )
 
     async def _symbolic_execution_check(
         self, safety_property: SafetyProperty, policy_rules: list[PolicyRule]
@@ -320,12 +319,11 @@ class SafetyPropertyChecker:
 
         if violated_count > 0:
             return "unsafe"
-        elif satisfied_count == len(results):
+        if satisfied_count == len(results):
             return "safe"
-        elif unknown_count > 0:
+        if unknown_count > 0:
             return "unknown"
-        else:
-            return "inconclusive"
+        return "inconclusive"
 
     def _generate_safety_summary(
         self, results: list[SafetyCheckResult], critical_violations: list[str]
@@ -518,7 +516,7 @@ class ConflictDetector:
                     severity="high",
                     resolution_suggestion="Review rule logic and resolve contradiction through priority ordering or condition refinement",
                 )
-            elif neg in content_1 and pos in content_2:
+            if neg in content_1 and pos in content_2:
                 return ConflictDetectionResult(
                     conflict_id=f"logical_{rule_1.id}_{rule_2.id}",
                     conflict_type=ConflictType.LOGICAL_CONTRADICTION,
@@ -579,7 +577,6 @@ class ConflictDetector:
             and "access" in content_1
             and "access" in content_2
         ):
-
             return ConflictDetectionResult(
                 conflict_id=f"priority_{rule_1.id}_{rule_2.id}",
                 conflict_type=ConflictType.PRIORITY_CONFLICT,

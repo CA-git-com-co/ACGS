@@ -6,14 +6,14 @@ Continuously monitors system performance with version-specific metrics,
 Grafana dashboards, and automatic rollback validation.
 """
 
+import asyncio
 import json
 import logging
-import asyncio
-from datetime import datetime, timezone, timedelta
-from pathlib import Path
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass
 import random
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -28,7 +28,7 @@ class PerformanceMetric:
     value: float
     unit: str
     timestamp: datetime
-    version: Optional[str] = None
+    version: str | None = None
     threshold_status: str = "normal"  # normal, warning, critical
 
 
@@ -57,12 +57,12 @@ class ProductionPerformanceMonitor:
 
     def __init__(self, monitoring_duration_minutes: int = 60):
         self.monitoring_duration_minutes = monitoring_duration_minutes
-        self.metrics: List[PerformanceMetric] = []
-        self.alerts: List[MonitoringAlert] = []
+        self.metrics: list[PerformanceMetric] = []
+        self.alerts: list[MonitoringAlert] = []
         self.api_versions = ["v1.0.0", "v1.5.0", "v2.0.0", "v2.1.0"]
         self.monitoring_start_time = None
 
-    async def start_continuous_monitoring(self) -> Dict[str, Any]:
+    async def start_continuous_monitoring(self) -> dict[str, Any]:
         """Start continuous performance monitoring."""
         logger.info(
             f"📊 Starting {self.monitoring_duration_minutes}-minute production monitoring..."
@@ -148,7 +148,7 @@ class ProductionPerformanceMonitor:
 
             if i % 3 == 0:  # Log every 15 minutes
                 logger.info(
-                    f"📈 Response time checkpoint {i//3 + 1}: All versions within targets"
+                    f"📈 Response time checkpoint {i // 3 + 1}: All versions within targets"
                 )
 
     async def _monitor_error_rates(self):
@@ -239,7 +239,7 @@ class ProductionPerformanceMonitor:
                 self.metrics.append(metric)
 
             logger.info(
-                f"📈 Version adoption checkpoint {i+1}: v2.0.0 at {version_usage['v2.0.0']:.1f}%"
+                f"📈 Version adoption checkpoint {i + 1}: v2.0.0 at {version_usage['v2.0.0']:.1f}%"
             )
 
     async def _monitor_system_resources(self):
@@ -339,7 +339,7 @@ class ProductionPerformanceMonitor:
 
                 self.metrics.append(metric)
 
-            logger.info(f"🔄 Rollback validation {i+1}: All mechanisms operational")
+            logger.info(f"🔄 Rollback validation {i + 1}: All mechanisms operational")
 
     async def _check_deprecation_compliance(self):
         """Check deprecation policy compliance."""
@@ -375,10 +375,10 @@ class ProductionPerformanceMonitor:
                 self.metrics.append(metric)
 
             logger.info(
-                f"⚠️ Deprecation compliance check {i+1}: {compliance_metrics['deprecated_endpoints_properly_marked']}% compliant"
+                f"⚠️ Deprecation compliance check {i + 1}: {compliance_metrics['deprecated_endpoints_properly_marked']}% compliant"
             )
 
-    def _generate_monitoring_report(self, monitoring_duration: float) -> Dict[str, Any]:
+    def _generate_monitoring_report(self, monitoring_duration: float) -> dict[str, Any]:
         """Generate comprehensive monitoring report."""
         # Calculate summary statistics
         total_metrics = len(self.metrics)
@@ -484,14 +484,14 @@ async def main():
     print(f"⚠️  Warning Alerts: {summary['warning_alerts']}")
     print(f"💚 Status: {summary['monitoring_status'].upper()}")
 
-    print(f"\n🎯 SUCCESS CRITERIA:")
+    print("\n🎯 SUCCESS CRITERIA:")
     criteria = report["success_criteria"]
     for criterion, passed in criteria.items():
         status = "PASS" if passed else "FAIL"
         print(f"   {criterion}: {status}")
 
     if summary["critical_alerts"] > 0:
-        print(f"\n🚨 CRITICAL ALERTS:")
+        print("\n🚨 CRITICAL ALERTS:")
         for alert in report["alerts"]:
             if alert["severity"] == "critical":
                 print(f"   - {alert['alert_name']}: {alert['message']}")

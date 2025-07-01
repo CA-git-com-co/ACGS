@@ -4,11 +4,10 @@ Anomaly Detection System for ACGS-2 Observability
 Detects anomalies in metrics and triggers alerts.
 """
 
-import numpy as np
-import pandas as pd
-from datetime import datetime, timedelta
-from typing import Dict, List, Tuple
 import logging
+from datetime import datetime, timedelta
+
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +18,7 @@ class AnomalyDetector:
     def __init__(self, window_size: int = 100, threshold: float = 3.0):
         self.window_size = window_size
         self.threshold = threshold
-        self.metric_history: Dict[str, List[float]] = {}
+        self.metric_history: dict[str, list[float]] = {}
 
     def add_metric_value(
         self, metric_name: str, value: float, timestamp: datetime = None
@@ -38,7 +37,7 @@ class AnomalyDetector:
 
     def detect_anomaly(
         self, metric_name: str, current_value: float
-    ) -> Tuple[bool, float]:
+    ) -> tuple[bool, float]:
         """Detect if current value is anomalous using statistical methods."""
         if metric_name not in self.metric_history:
             return False, 0.0
@@ -59,7 +58,7 @@ class AnomalyDetector:
 
         return is_anomaly, z_score
 
-    def get_metric_statistics(self, metric_name: str) -> Dict:
+    def get_metric_statistics(self, metric_name: str) -> dict:
         """Get statistical summary of a metric."""
         if metric_name not in self.metric_history:
             return {}
@@ -85,7 +84,7 @@ class ObservabilityAnomalyMonitor:
         self.alert_cooldown = {}  # Prevent alert spam
         self.cooldown_minutes = 15
 
-    def monitor_metrics(self, metrics: Dict[str, float]):
+    def monitor_metrics(self, metrics: dict[str, float]):
         """Monitor multiple metrics for anomalies."""
         anomalies_detected = []
 

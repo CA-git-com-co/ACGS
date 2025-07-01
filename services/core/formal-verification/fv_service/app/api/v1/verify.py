@@ -386,7 +386,7 @@ async def get_validation_status(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Error retrieving validation status: {str(e)}"
+            status_code=500, detail=f"Error retrieving validation status: {e!s}"
         )
 
 
@@ -447,7 +447,7 @@ async def parallel_verify_policies(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Parallel verification failed: {str(e)}"
+            status_code=500, detail=f"Parallel verification failed: {e!s}"
         )
 
 
@@ -595,7 +595,7 @@ async def verify_constitutional_compliance(
 
         raise HTTPException(
             status_code=500,
-            detail=f"Constitutional compliance verification failed: {str(e)}",
+            detail=f"Constitutional compliance verification failed: {e!s}",
         )
 
 
@@ -699,7 +699,7 @@ async def generate_formal_proof(
         logger.error(f"Formal proof generation failed after {proof_time_ms:.2f}ms: {e}")
 
         raise HTTPException(
-            status_code=500, detail=f"Formal proof generation failed: {str(e)}"
+            status_code=500, detail=f"Formal proof generation failed: {e!s}"
         )
 
 
@@ -760,7 +760,7 @@ async def get_verification_performance_metrics(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Failed to retrieve verification metrics: {str(e)}"
+            status_code=500, detail=f"Failed to retrieve verification metrics: {e!s}"
         )
 
 
@@ -787,9 +787,7 @@ async def get_parallel_validation_statistics(
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get statistics: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to get statistics: {e!s}")
 
 
 @router.post("/parallel/scale", status_code=status.HTTP_200_OK)
@@ -819,7 +817,7 @@ async def manual_scale_parallel_pipeline(
             "current_concurrent_tasks": parallel_pipeline.parallel_executor.max_concurrent,
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Scaling failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Scaling failed: {e!s}")
 
 
 @router.get("/parallel/stats", response_model=dict, status_code=status.HTTP_200_OK)
@@ -835,7 +833,7 @@ async def get_parallel_pipeline_stats(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Failed to get pipeline stats: {str(e)}"
+            status_code=500, detail=f"Failed to get pipeline stats: {e!s}"
         )
 
 

@@ -747,7 +747,6 @@ class ObservabilityFramework:
                     ).total_seconds()
                     > 900
                 ):
-
                     logger.critical(
                         f"ESCALATION: Critical alert {alert.alert_id} has been active for >15 minutes"
                     )

@@ -500,7 +500,7 @@ def get_llm_service(
             api_key=config.get("api_key"),
             default_model=config.get("default_model", "gpt-3.5-turbo"),
         )
-    elif effective_service_type == "groq":
+    if effective_service_type == "groq":
         if openai is None:
             logger.error(
                 "OpenAI client library not installed (required for Groq). Falling back to MockLLMService."
@@ -510,12 +510,11 @@ def get_llm_service(
             api_key=config.get("api_key"),
             default_model=config.get("default_model", "llama-3.3-70b-versatile"),
         )
-    elif effective_service_type == "mock":
+    if effective_service_type == "mock":
         return MockLLMService(
             **config.get("mock_config", {})
         )  # e.g. config={"mock_config": {"delay": 0.2}}
-    else:
-        raise ValueError(f"Unsupported LLM service type: {service_type}")
+    raise ValueError(f"Unsupported LLM service type: {service_type}")
 
 
 # Example Usage

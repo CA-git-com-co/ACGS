@@ -30,7 +30,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -44,7 +44,7 @@ class CompleteSystemValidator:
         self.constitution_hash = "cdd01ef066bc6cf2"
         self.validation_results = {}
 
-    async def validate_mathematical_reasoning_complete(self) -> Dict[str, Any]:
+    async def validate_mathematical_reasoning_complete(self) -> dict[str, Any]:
         """Complete mathematical reasoning validation with NeMo-Skills."""
         logger.info("🧮 Running Complete Mathematical Reasoning Validation...")
 
@@ -90,7 +90,7 @@ class CompleteSystemValidator:
         logger.info(
             f"  🧮 Problems Solved: {gsm8k_results['constitutional_mathematics']['correct_answers']}/100"
         )
-        logger.info(f"  🔒 Sandbox Security: Validated")
+        logger.info("  🔒 Sandbox Security: Validated")
 
         return {
             "mathematical_reasoning_score": gsm8k_results["constitutional_mathematics"][
@@ -112,7 +112,7 @@ class CompleteSystemValidator:
             "status": "PASS",
         }
 
-    async def validate_multi_model_ai_complete(self) -> Dict[str, Any]:
+    async def validate_multi_model_ai_complete(self) -> dict[str, Any]:
         """Complete multi-model constitutional AI validation."""
         logger.info("🤖 Running Complete Multi-Model Constitutional AI Validation...")
 
@@ -173,7 +173,7 @@ class CompleteSystemValidator:
             "status": "PASS",
         }
 
-    async def validate_load_testing_complete(self) -> Dict[str, Any]:
+    async def validate_load_testing_complete(self) -> dict[str, Any]:
         """Complete load testing validation with >1000 concurrent users."""
         logger.info("🚀 Running Complete Load Testing Validation...")
 
@@ -249,7 +249,7 @@ class CompleteSystemValidator:
             "status": "PASS",
         }
 
-    async def validate_backup_recovery_complete(self) -> Dict[str, Any]:
+    async def validate_backup_recovery_complete(self) -> dict[str, Any]:
         """Complete backup and disaster recovery validation."""
         logger.info("💾 Running Complete Backup and Recovery Validation...")
 
@@ -298,7 +298,7 @@ class CompleteSystemValidator:
 
         backup_recovery_score = (sum(backup_components) / len(backup_components)) * 100
 
-        logger.info(f"  ✅ Backup Integrity: Verified")
+        logger.info("  ✅ Backup Integrity: Verified")
         logger.info(
             f"  🎯 Recovery Time: {backup_recovery_results['recovery_testing']['recovery_time_minutes']:.1f} minutes"
         )
@@ -323,7 +323,7 @@ class CompleteSystemValidator:
             "status": "PASS",
         }
 
-    async def validate_production_deployment_readiness(self) -> Dict[str, Any]:
+    async def validate_production_deployment_readiness(self) -> dict[str, Any]:
         """Validate complete production deployment readiness."""
         logger.info("🚀 Running Production Deployment Readiness Validation...")
 
@@ -367,10 +367,10 @@ class CompleteSystemValidator:
         ]
         deployment_score = 100.0  # All categories are ready
 
-        logger.info(f"  ✅ Infrastructure: Operational")
-        logger.info(f"  🔒 Security: Configured")
-        logger.info(f"  📋 Operations: Ready")
-        logger.info(f"  ⚖️ Compliance: Verified")
+        logger.info("  ✅ Infrastructure: Operational")
+        logger.info("  🔒 Security: Configured")
+        logger.info("  📋 Operations: Ready")
+        logger.info("  ⚖️ Compliance: Verified")
 
         return {
             "deployment_readiness_score": deployment_score,
@@ -385,8 +385,8 @@ class CompleteSystemValidator:
         }
 
     async def generate_final_system_certification(
-        self, validation_results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, validation_results: dict[str, Any]
+    ) -> dict[str, Any]:
         """Generate final system certification for complete E2E validation."""
         logger.info("📜 Generating Final System Certification...")
 
@@ -471,7 +471,7 @@ class CompleteSystemValidator:
 
         return certification
 
-    async def run_complete_system_validation(self) -> Dict[str, Any]:
+    async def run_complete_system_validation(self) -> dict[str, Any]:
         """Run complete system validation to achieve 100% E2E coverage."""
         logger.info("🚀 Starting Complete System Validation")
         logger.info("=" * 80)

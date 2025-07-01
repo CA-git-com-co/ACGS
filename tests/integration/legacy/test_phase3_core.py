@@ -82,12 +82,10 @@ def test_performance_profiler():
             if profile.avg_latency_ms < 50.0:
                 print("✅ Performance target <50ms achieved")
                 return True
-            else:
-                print(f"⚠️  Performance target not met: {profile.avg_latency_ms:.2f}ms")
-                return False
-        else:
-            print("❌ Failed to create latency profile")
+            print(f"⚠️  Performance target not met: {profile.avg_latency_ms:.2f}ms")
             return False
+        print("❌ Failed to create latency profile")
+        return False
 
     except Exception as e:
         print(f"❌ Performance profiler test failed: {e}")
@@ -122,12 +120,10 @@ def test_lru_cache():
                     f"✅ Cache stats working: {stats.cache_hits} hits, {stats.cache_misses} misses"
                 )
                 return True
-            else:
-                print("⚠️  Cache stats not recording properly")
-                return False
-        else:
-            print("❌ Cache put/get failed")
+            print("⚠️  Cache stats not recording properly")
             return False
+        print("❌ Cache put/get failed")
+        return False
 
     except Exception as e:
         print(f"❌ LRU cache test failed: {e}")
@@ -173,9 +169,8 @@ def test_input_validator():
         if "\x00" not in sanitized:
             print("✅ Input sanitization working")
             return True
-        else:
-            print("❌ Input sanitization failed")
-            return False
+        print("❌ Input sanitization failed")
+        return False
 
     except Exception as e:
         print(f"❌ Input validator test failed: {e}")
@@ -200,7 +195,7 @@ def test_rate_limiter():
         for i in range(max_requests):
             result = rate_limiter.is_allowed(client_id, max_requests, window_minutes)
             if result.blocked:
-                print(f"❌ Request {i+1} should not be blocked")
+                print(f"❌ Request {i + 1} should not be blocked")
                 return False
 
         print(f"✅ {max_requests} requests allowed")
@@ -210,9 +205,8 @@ def test_rate_limiter():
         if result.blocked:
             print("✅ Rate limiting working - additional request blocked")
             return True
-        else:
-            print("❌ Rate limiting failed - additional request not blocked")
-            return False
+        print("❌ Rate limiting failed - additional request not blocked")
+        return False
 
     except Exception as e:
         print(f"❌ Rate limiter test failed: {e}")
@@ -242,9 +236,8 @@ async def test_performance_monitor():
             print("✅ Performance monitoring working")
             print(f"✅ Active requests: {summary['active_requests']}")
             return True
-        else:
-            print("❌ Performance monitoring summary incomplete")
-            return False
+        print("❌ Performance monitoring summary incomplete")
+        return False
 
     except Exception as e:
         print(f"❌ Performance monitor test failed: {e}")
@@ -289,7 +282,7 @@ async def main():
     print(f"Total Tests: {total}")
     print(f"Passed: {passed}")
     print(f"Failed: {total - passed}")
-    print(f"Success Rate: {(passed/total)*100:.1f}%")
+    print(f"Success Rate: {(passed / total) * 100:.1f}%")
 
     if passed == total:
         print("\n🎉 All Phase 3 core tests passed!")
@@ -306,9 +299,8 @@ async def main():
         print("  - Security validation active ✅")
 
         return True
-    else:
-        print(f"\n❌ {total - passed} tests failed. Phase 3 needs attention.")
-        return False
+    print(f"\n❌ {total - passed} tests failed. Phase 3 needs attention.")
+    return False
 
 
 if __name__ == "__main__":

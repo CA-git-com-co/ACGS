@@ -5,12 +5,12 @@ Starts individual ACGS services with proper isolation and security middleware
 """
 
 import os
-import sys
 import subprocess
+import sys
 import time
-import requests
-import json
 from pathlib import Path
+
+import requests
 
 # Add project root to Python path
 PROJECT_ROOT = Path(__file__).parent.parent.absolute()
@@ -102,18 +102,17 @@ def start_service_process(service_name, port, service_dir, main_module):
                     print_success(f"{service_name} health check passed")
                     return process
                 print_status(
-                    f"Waiting for {service_name} health check... (attempt {attempt+1}/10)"
+                    f"Waiting for {service_name} health check... (attempt {attempt + 1}/10)"
                 )
                 time.sleep(2)
 
             print_error(f"{service_name} started but health check failed")
             return process
-        else:
-            stdout, stderr = process.communicate()
-            print_error(f"{service_name} failed to start")
-            print_error(f"STDOUT: {stdout}")
-            print_error(f"STDERR: {stderr}")
-            return None
+        stdout, stderr = process.communicate()
+        print_error(f"{service_name} failed to start")
+        print_error(f"STDOUT: {stdout}")
+        print_error(f"STDERR: {stderr}")
+        return None
 
     except Exception as e:
         print_error(f"Failed to start {service_name}: {e}")
@@ -198,8 +197,7 @@ def main():
             print_error(f"Failed to validate {service_name} compliance: {e}")
 
         return 0
-    else:
-        return 1
+    return 1
 
 
 if __name__ == "__main__":

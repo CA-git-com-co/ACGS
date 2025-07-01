@@ -11,17 +11,16 @@ Implements statistical data drift detection using:
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
+import json
 import logging
+import os
+import warnings
+from dataclasses import asdict, dataclass
+from datetime import datetime
+
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
-from typing import Dict, List, Tuple
-from dataclasses import dataclass, asdict
-import json
-import os
-from scipy import stats
 from scipy.stats import ks_2samp
-import warnings
 
 warnings.filterwarnings("ignore")
 
@@ -42,19 +41,19 @@ class DriftDetectionResults:
     drift_score: float  # 0-1, higher indicates more drift
 
     # KS test results
-    ks_test_results: Dict[
-        str, Dict[str, float]
+    ks_test_results: dict[
+        str, dict[str, float]
     ]  # feature -> {statistic, p_value, drift_detected}
-    features_with_ks_drift: List[str]
+    features_with_ks_drift: list[str]
 
     # PSI results
-    psi_results: Dict[str, float]  # feature -> PSI value
-    features_with_psi_drift: List[str]
+    psi_results: dict[str, float]  # feature -> PSI value
+    features_with_psi_drift: list[str]
 
     # Retraining recommendations
     retraining_required: bool
     retraining_urgency: str  # 'none', 'low', 'medium', 'high'
-    affected_features: List[str]
+    affected_features: list[str]
 
     # Monitoring metadata
     reference_period: str
@@ -120,7 +119,7 @@ class DataDriftDetector:
 
     def perform_ks_test(
         self, reference: np.ndarray, current: np.ndarray
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Perform Kolmogorov-Smirnov test for drift detection."""
 
         if len(reference) == 0 or len(current) == 0:
@@ -321,7 +320,7 @@ class DataDriftDetector:
             timestamp=datetime.now().isoformat(),
         )
 
-        logger.info(f"✅ Drift detection complete:")
+        logger.info("✅ Drift detection complete:")
         logger.info(f"  - Overall drift detected: {overall_drift_detected}")
         logger.info(f"  - Drift severity: {drift_severity}")
         logger.info(f"  - Features with KS drift: {len(features_with_ks_drift)}")
@@ -330,7 +329,7 @@ class DataDriftDetector:
 
         return results
 
-    def _calculate_drift_score(self, ks_results: Dict, psi_results: Dict) -> float:
+    def _calculate_drift_score(self, ks_results: dict, psi_results: dict) -> float:
         """Calculate overall drift score (0-1)."""
 
         if not ks_results and not psi_results:
@@ -362,19 +361,18 @@ class DataDriftDetector:
 
         if drift_score < 0.1:
             return "none"
-        elif drift_score < 0.3:
+        if drift_score < 0.3:
             return "low"
-        elif drift_score < 0.6:
+        if drift_score < 0.6:
             return "medium"
-        else:
-            return "high"
+        return "high"
 
     def _assess_retraining_needs(
         self,
-        ks_drift_features: List[str],
-        psi_drift_features: List[str],
+        ks_drift_features: list[str],
+        psi_drift_features: list[str],
         drift_severity: str,
-    ) -> Tuple[bool, str]:
+    ) -> tuple[bool, str]:
         """Assess retraining requirements based on drift analysis."""
 
         total_drift_features = len(set(ks_drift_features + psi_drift_features))
@@ -400,7 +398,7 @@ class DataDriftDetector:
         self,
         results: DriftDetectionResults,
         output_dir: str = "drift_detection_results",
-    ) -> Tuple[str, str]:
+    ) -> tuple[str, str]:
         """Save drift detection results."""
         logger.info("Saving drift detection results...")
 

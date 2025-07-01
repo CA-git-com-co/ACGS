@@ -31,12 +31,10 @@ Services to be enhanced:
 import asyncio
 import json
 import logging
-import os
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -115,11 +113,11 @@ class SecurityMiddlewareDeployer:
             },
         }
 
-    async def deploy_security_middleware(self) -> Dict:
+    async def deploy_security_middleware(self) -> dict:
         """Deploy security middleware to all core services."""
         logger.info("🚀 Starting Enhanced Security Middleware Deployment")
-        logger.info(f"📊 Target: Improve compliance score from 47.37% to >70%")
-        logger.info(f"🎯 Address 226 high-severity security findings")
+        logger.info("📊 Target: Improve compliance score from 47.37% to >70%")
+        logger.info("🎯 Address 226 high-severity security findings")
 
         try:
             # 1. Validate environment
@@ -178,7 +176,7 @@ class SecurityMiddlewareDeployer:
 
         logger.info("✅ Environment validation completed")
 
-    async def _deploy_to_service(self, service_name: str, config: Dict) -> Dict:
+    async def _deploy_to_service(self, service_name: str, config: dict) -> dict:
         """Deploy security middleware to a specific service."""
         service_result = {
             "status": "pending",
@@ -201,7 +199,7 @@ class SecurityMiddlewareDeployer:
                 return service_result
 
             # Read current main.py content
-            with open(main_file_path, "r") as f:
+            with open(main_file_path) as f:
                 content = f.read()
 
             # Check if security middleware is already imported
@@ -271,7 +269,7 @@ except ImportError:
 
         # Add security middleware application after app creation
         app_creation_pattern = "app = FastAPI("
-        security_application = """
+        security_application = f"""
 # Apply enhanced security middleware
 if SECURITY_MIDDLEWARE_AVAILABLE:
     security_config = SecurityConfig()
@@ -279,9 +277,7 @@ if SECURITY_MIDDLEWARE_AVAILABLE:
     logger.info("✅ Enhanced security middleware applied")
 else:
     logger.warning("⚠️ Running without enhanced security middleware")
-""".format(
-            service_name=service_name
-        )
+"""
 
         # Find app creation and add security middleware after it
         for i, line in enumerate(lines):
@@ -489,7 +485,7 @@ else:
             logger.info(
                 f"🔒 Security score: {self.deployment_report['security_score']:.1f}%"
             )
-        logger.info(f"📈 Expected compliance improvement: 47.37% → 70%+")
+        logger.info("📈 Expected compliance improvement: 47.37% → 70%+")
         logger.info("=" * 60)
 
 
@@ -503,9 +499,8 @@ async def main():
         if result["overall_status"] == "completed":
             logger.info("🎉 Security middleware deployment completed successfully!")
             return 0
-        else:
-            logger.error("❌ Security middleware deployment failed!")
-            return 1
+        logger.error("❌ Security middleware deployment failed!")
+        return 1
 
     except Exception as e:
         logger.error(f"💥 Deployment failed with error: {e}")

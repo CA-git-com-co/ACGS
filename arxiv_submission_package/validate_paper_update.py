@@ -6,10 +6,9 @@ This script validates that the paper has been properly updated to reflect
 the current ACGS-PGP system implementation.
 """
 
-import re
 import os
+import re
 from pathlib import Path
-from typing import List, Dict, Tuple
 
 
 class PaperValidator:
@@ -20,7 +19,7 @@ class PaperValidator:
 
     def _read_paper(self) -> str:
         """Read the LaTeX paper content."""
-        with open(self.paper_path, "r", encoding="utf-8") as f:
+        with open(self.paper_path, encoding="utf-8") as f:
             return f.read()
 
     def validate_title_update(self) -> bool:
@@ -197,7 +196,7 @@ class PaperValidator:
         )
         return is_valid
 
-    def run_all_validations(self) -> Dict:
+    def run_all_validations(self) -> dict:
         """Run all validation checks."""
         checks = [
             self.validate_title_update,
@@ -228,10 +227,10 @@ class PaperValidator:
         report = f"""
 # ACGS-PGP Paper Update Validation Report
 
-**Validation Date**: {os.popen('date').read().strip()}
+**Validation Date**: {os.popen("date").read().strip()}
 **Paper File**: {self.paper_path}
-**Overall Status**: {results['overall_status']}
-**Success Rate**: {results['passed_checks']}/{results['total_checks']} ({results['success_rate']:.1%})
+**Overall Status**: {results["overall_status"]}
+**Success Rate**: {results["passed_checks"]}/{results["total_checks"]} ({results["success_rate"]:.1%})
 
 ## Detailed Results
 

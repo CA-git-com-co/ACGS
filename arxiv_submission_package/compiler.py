@@ -18,16 +18,13 @@ Usage:
     python compiler.py validate       # Validate compilation
 """
 
-import os
-import sys
-import subprocess
 import shutil
-import json
+import subprocess
+import sys
 import time
-from pathlib import Path
-from typing import List, Dict, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
 
 
 class CompilationType(Enum):
@@ -48,10 +45,10 @@ class CompilationResult:
     success: bool
     compilation_type: str
     duration: float
-    output_files: List[str]
-    warnings: List[str]
-    errors: List[str]
-    log_file: Optional[str] = None
+    output_files: list[str]
+    warnings: list[str]
+    errors: list[str]
+    log_file: str | None = None
 
 
 class AcademicCompiler:
@@ -92,8 +89,8 @@ class AcademicCompiler:
             f.write(log_message + "\n")
 
     def run_command(
-        self, cmd: List[str], cwd: Optional[Path] = None, capture_output: bool = True
-    ) -> Tuple[int, str, str]:
+        self, cmd: list[str], cwd: Path | None = None, capture_output: bool = True
+    ) -> tuple[int, str, str]:
         """Run a command and return exit code, stdout, stderr."""
         if cwd is None:
             cwd = self.base_dir
@@ -103,6 +100,7 @@ class AcademicCompiler:
         try:
             result = subprocess.run(
                 cmd,
+                check=False,
                 cwd=cwd,
                 capture_output=capture_output,
                 text=True,
@@ -195,7 +193,7 @@ class AcademicCompiler:
         # Check for warnings in log file
         log_file = Path("main.log")
         if log_file.exists():
-            with open(log_file, "r") as f:
+            with open(log_file) as f:
                 log_content = f.read()
                 if "Warning" in log_content:
                     warnings.append("LaTeX warnings found in log file")
@@ -344,7 +342,7 @@ class AcademicCompiler:
         # Validate markdown files
         for md_file in md_files:
             try:
-                with open(md_file, "r", encoding="utf-8") as f:
+                with open(md_file, encoding="utf-8") as f:
                     content = f.read()
                     if len(content.strip()) == 0:
                         warnings.append(f"Empty documentation file: {md_file}")
@@ -527,7 +525,7 @@ class AcademicCompiler:
             errors=errors,
         )
 
-    def compile_all(self) -> Dict[str, CompilationResult]:
+    def compile_all(self) -> dict[str, CompilationResult]:
         """Compile everything in the correct order."""
         self.log("Starting complete compilation")
 
@@ -558,7 +556,7 @@ class AcademicCompiler:
 
         return results
 
-    def generate_report(self, results: Dict[str, CompilationResult]) -> str:
+    def generate_report(self, results: dict[str, CompilationResult]) -> str:
         """Generate a compilation report."""
         report_lines = [
             "# Academic Submission System Compilation Report",

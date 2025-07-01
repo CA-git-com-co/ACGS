@@ -8,10 +8,9 @@ with router optimization, targeting 97.2% consensus success rate and performance
 import asyncio
 import json
 import logging
-import time
-from datetime import datetime
-from typing import Dict, List, Any
 import statistics
+import time
+from typing import Any
 
 # Test configuration
 TEST_CONFIG = {
@@ -55,18 +54,18 @@ SAMPLE_REQUESTS = [
 class RouterOptimizationTester:
     """Load tester for router optimization validation."""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         self.config = config
-        self.results: List[Dict[str, Any]] = []
+        self.results: list[dict[str, Any]] = []
         self.logger = logging.getLogger(__name__)
 
-    async def run_load_test(self) -> Dict[str, Any]:
+    async def run_load_test(self) -> dict[str, Any]:
         """Execute comprehensive load test."""
         self.logger.info("Starting router optimization load test...")
 
         # Import the coordinator here to avoid import issues during testing
-        import sys
         import os
+        import sys
 
         sys.path.append(os.path.join(os.path.dirname(__file__), "..", "app"))
         try:
@@ -119,8 +118,8 @@ class RouterOptimizationTester:
         return self._generate_test_report(total_time, coordinator)
 
     async def _execute_synthesis_request(
-        self, coordinator, request: Dict[str, Any], request_id: int
-    ) -> Dict[str, Any]:
+        self, coordinator, request: dict[str, Any], request_id: int
+    ) -> dict[str, Any]:
         """Execute single synthesis request with timing."""
         start_time = time.time()
 
@@ -152,7 +151,7 @@ class RouterOptimizationTester:
                 "error": str(e),
             }
 
-    def _process_batch_results(self, batch_results: List[Any]):
+    def _process_batch_results(self, batch_results: list[Any]):
         """Process batch of results, handling exceptions."""
         for result in batch_results:
             if isinstance(result, Exception):
@@ -163,7 +162,7 @@ class RouterOptimizationTester:
             else:
                 self.results.append(result)
 
-    def _generate_test_report(self, total_time: float, coordinator) -> Dict[str, Any]:
+    def _generate_test_report(self, total_time: float, coordinator) -> dict[str, Any]:
         """Generate comprehensive test report."""
         successful_results = [r for r in self.results if r.get("success", False)]
         failed_results = [r for r in self.results if not r.get("success", False)]
@@ -242,7 +241,7 @@ class RouterOptimizationTester:
 
         return report
 
-    def _percentile(self, data: List[float], percentile: int) -> float:
+    def _percentile(self, data: list[float], percentile: int) -> float:
         """Calculate percentile of data."""
         if not data:
             return 0.0
@@ -252,7 +251,7 @@ class RouterOptimizationTester:
 
     def _generate_recommendations(
         self, consensus_rate: float, avg_response_time: float, cache_hit_rate: float
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate optimization recommendations."""
         recommendations = []
 

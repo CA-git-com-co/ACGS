@@ -6,15 +6,16 @@ Comprehensive UAT for API versioning system including version detection,
 response transformation, deprecation handling, and SDK compatibility.
 """
 
-import sys
+import asyncio
 import json
 import logging
-import asyncio
-import httpx
+import sys
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass
+from typing import Any
+
+import httpx
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -35,8 +36,8 @@ class UATTestCase:
     test_type: str
     expected_result: str
     success: bool = False
-    actual_result: Optional[str] = None
-    details: Optional[Dict[str, Any]] = None
+    actual_result: str | None = None
+    details: dict[str, Any] | None = None
 
 
 class UserAcceptanceTestRunner:
@@ -52,10 +53,10 @@ class UserAcceptanceTestRunner:
 
     def __init__(self, base_url: str = "http://localhost:8999"):
         self.base_url = base_url
-        self.test_cases: List[UATTestCase] = []
+        self.test_cases: list[UATTestCase] = []
         self.test_server = None
 
-    async def run_comprehensive_uat(self) -> Dict[str, Any]:
+    async def run_comprehensive_uat(self) -> dict[str, Any]:
         """Run all User Acceptance Tests."""
         logger.info("🧪 Starting Comprehensive User Acceptance Testing...")
 
@@ -154,10 +155,11 @@ class UserAcceptanceTestRunner:
         """Start test server for UAT."""
         try:
             # Import and start the test server from deprecation validation
+            import uvicorn
+
             from docs.implementation.validation_scripts.deprecation_validation_test import (
                 create_test_app,
             )
-            import uvicorn
 
             app = create_test_app()
 
@@ -295,7 +297,6 @@ class UserAcceptanceTestRunner:
                     V1ToV2Transformer,
                     V2ToV1Transformer,
                 )
-                from services.shared.versioning.version_manager import APIVersion
 
                 if test["source_version"] == "v1.0.0":
                     transformer = V1ToV2Transformer()
@@ -474,19 +475,19 @@ async def main():
     print(f"📈 Success Rate: {summary['success_rate']}%")
     print(f"⏱️  Duration: {summary['duration_seconds']}s")
 
-    print(f"\n📋 TEST CATEGORIES:")
+    print("\n📋 TEST CATEGORIES:")
     for category, results in report["test_categories"].items():
         total = results["passed"] + results["failed"]
         print(f"   {category}: {results['passed']}/{total} passed")
 
-    print(f"\n🎯 SUCCESS CRITERIA:")
+    print("\n🎯 SUCCESS CRITERIA:")
     criteria = report["success_criteria"]
     for criterion, passed in criteria.items():
         status = "PASS" if passed else "FAIL"
         print(f"   {criterion}: {status}")
 
     if summary["failed_tests"] > 0:
-        print(f"\n⚠️  FAILED TESTS:")
+        print("\n⚠️  FAILED TESTS:")
         for category, results in report["test_categories"].items():
             for test in results["tests"]:
                 if not test["success"]:

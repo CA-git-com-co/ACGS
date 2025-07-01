@@ -148,11 +148,10 @@ class Qwen3EmbeddingClient:
                 )
 
                 return True
-            else:
-                logger.warning("Qwen3 model not available - using fallback mode")
-                self.model_available = False
-                self.initialized = True
-                return True
+            logger.warning("Qwen3 model not available - using fallback mode")
+            self.model_available = False
+            self.initialized = True
+            return True
 
         except Exception as e:
             logger.error(f"Failed to initialize Qwen3EmbeddingClient: {e}")
@@ -310,11 +309,10 @@ class Qwen3EmbeddingClient:
                             embedding = embedding[: self.embedding_dimension]
 
                     return embedding
-                else:
-                    logger.error(
-                        f"OpenRouter API error: {response.status_code} - {response.text}"
-                    )
-                    return await self._generate_mock_embedding(request)
+                logger.error(
+                    f"OpenRouter API error: {response.status_code} - {response.text}"
+                )
+                return await self._generate_mock_embedding(request)
 
         except Exception as e:
             logger.error(f"Error calling OpenRouter API: {e}")

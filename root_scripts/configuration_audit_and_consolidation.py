@@ -7,16 +7,10 @@ Comprehensive audit and consolidation of scattered configuration files
 into a centralized, hierarchical configuration system with environment-specific overrides.
 """
 
-import os
-import sys
 import json
-import yaml
-import shutil
 import logging
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any, Optional
-import re
+from pathlib import Path
 
 # Configure logging
 logging.basicConfig(
@@ -96,20 +90,19 @@ class ConfigurationManager:
 
         if name.startswith(".env"):
             return "environment"
-        elif "docker" in name:
+        if "docker" in name:
             return "docker"
-        elif "config" in name:
+        if "config" in name:
             return "application_config"
-        elif name.endswith(".toml"):
+        if name.endswith(".toml"):
             return "build_config"
-        elif "compose" in name:
+        if "compose" in name:
             return "docker_compose"
-        elif name.startswith("Dockerfile"):
+        if name.startswith("Dockerfile"):
             return "dockerfile"
-        else:
-            return "other"
+        return "other"
 
-    def _analyze_configuration_patterns(self, config_files: Dict):
+    def _analyze_configuration_patterns(self, config_files: dict):
         """Analyze configuration patterns and identify inconsistencies"""
         logger.info("📊 Analyzing configuration patterns...")
 
@@ -234,7 +227,7 @@ class ConfigurationManager:
             env_config = {
                 "database": {
                     "host": (
-                        f"localhost"
+                        "localhost"
                         if env == "development"
                         else f"{env}-db.acgs.internal"
                     ),
@@ -245,7 +238,7 @@ class ConfigurationManager:
                 },
                 "redis": {
                     "host": (
-                        f"localhost"
+                        "localhost"
                         if env == "development"
                         else f"{env}-redis.acgs.internal"
                     ),

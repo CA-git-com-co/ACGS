@@ -6,12 +6,12 @@ Central coordination service that integrates all ACGS components.
 
 import asyncio
 import logging
-from typing import Dict, List, Optional, Any
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
+from typing import Any
 
 import httpx
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI
 from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
@@ -35,9 +35,9 @@ class AgentOperationRequest(BaseModel):
     agent_type: str
     operation_type: str
     operation_description: str
-    code: Optional[str] = None
-    execution_environment: Optional[str] = None
-    operation_context: Dict[str, Any] = {}
+    code: str | None = None
+    execution_environment: str | None = None
+    operation_context: dict[str, Any] = {}
     requires_human_approval: bool = False
     bypass_hitl: bool = False
     constitutional_hash: str = "cdd01ef066bc6cf2"
@@ -49,13 +49,13 @@ class ACGSOperationResult(BaseModel):
     operation_id: str
     agent_id: str
     status: str  # approved, rejected, executed, failed
-    hitl_review_id: Optional[str] = None
-    execution_id: Optional[str] = None
-    verification_results: Dict[str, Any] = {}
-    audit_entries: List[str] = []
-    execution_results: Optional[Dict[str, Any]] = None
+    hitl_review_id: str | None = None
+    execution_id: str | None = None
+    verification_results: dict[str, Any] = {}
+    audit_entries: list[str] = []
+    execution_results: dict[str, Any] | None = None
     constitutional_compliance: bool = True
-    policy_violations: List[str] = []
+    policy_violations: list[str] = []
     elapsed_time_ms: int = 0
 
 
@@ -216,13 +216,13 @@ class ACGSCoordinator:
 
             await self._audit_log(
                 "operation_failed",
-                f"ACGS operation {operation_id} failed with error: {str(e)}",
+                f"ACGS operation {operation_id} failed with error: {e!s}",
                 {"error": str(e), "operation_id": operation_id},
             )
 
             return result
 
-    async def _authenticate_agent(self, agent_id: str) -> Dict[str, Any]:
+    async def _authenticate_agent(self, agent_id: str) -> dict[str, Any]:
         """Authenticate agent with the auth service."""
         try:
             response = await self.http_client.get(
@@ -236,8 +236,7 @@ class ACGSCoordinator:
                     "agent": agent_data,
                     "status": agent_data.get("status"),
                 }
-            else:
-                return {"authenticated": False, "error": "Agent not found or inactive"}
+            return {"authenticated": False, "error": "Agent not found or inactive"}
 
         except Exception as e:
             logger.error(f"Agent authentication failed: {e}")
@@ -245,7 +244,7 @@ class ACGSCoordinator:
 
     async def _request_hitl_review(
         self, request: AgentOperationRequest, operation_id: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Request Human-in-the-Loop review."""
         try:
             review_request = {
@@ -268,9 +267,8 @@ class ACGSCoordinator:
 
             if response.status_code == 201:
                 return response.json()
-            else:
-                logger.error(f"HITL review request failed: {response.status_code}")
-                return {"status": "error", "error": "HITL service unavailable"}
+            logger.error(f"HITL review request failed: {response.status_code}")
+            return {"status": "error", "error": "HITL service unavailable"}
 
         except Exception as e:
             logger.error(f"HITL review request failed: {e}")
@@ -278,7 +276,7 @@ class ACGSCoordinator:
 
     async def _verify_operation_compliance(
         self, request: AgentOperationRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Verify operation compliance with formal verification."""
         try:
             # For now, implement basic compliance checks
@@ -319,13 +317,13 @@ class ACGSCoordinator:
             logger.error(f"Formal verification failed: {e}")
             return {
                 "compliant": False,
-                "violations": [f"Verification error: {str(e)}"],
+                "violations": [f"Verification error: {e!s}"],
                 "error": str(e),
             }
 
     async def _execute_in_sandbox(
         self, request: AgentOperationRequest, operation_id: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute code in secure sandbox."""
         try:
             execution_request = {
@@ -360,26 +358,22 @@ class ACGSCoordinator:
 
                 if status_response.status_code == 200:
                     return status_response.json()
-                else:
-                    return {
-                        "status": "failed",
-                        "error": "Could not retrieve execution status",
-                    }
-            else:
-                logger.error(
-                    f"Sandbox execution request failed: {response.status_code}"
-                )
                 return {
                     "status": "failed",
-                    "error": "Sandbox execution service unavailable",
+                    "error": "Could not retrieve execution status",
                 }
+            logger.error(f"Sandbox execution request failed: {response.status_code}")
+            return {
+                "status": "failed",
+                "error": "Sandbox execution service unavailable",
+            }
 
         except Exception as e:
             logger.error(f"Sandbox execution failed: {e}")
             return {"status": "failed", "error": str(e)}
 
     async def _audit_log(
-        self, event_type: str, description: str, metadata: Dict[str, Any]
+        self, event_type: str, description: str, metadata: dict[str, Any]
     ) -> None:
         """Create audit log entry with integrity."""
         try:
@@ -399,7 +393,7 @@ class ACGSCoordinator:
             logger.error(f"Audit logging failed: {e}")
             # Don't fail the operation due to audit logging failure
 
-    async def get_operation_status(self, operation_id: str) -> Dict[str, Any]:
+    async def get_operation_status(self, operation_id: str) -> dict[str, Any]:
         """Get the status of an ACGS operation."""
         # This would query the database for operation status
         # For now, return a placeholder
@@ -411,7 +405,7 @@ class ACGSCoordinator:
 
     async def list_agent_operations(
         self, agent_id: str, limit: int = 50
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """List recent operations for an agent."""
         # This would query the database for agent operations
         # For now, return empty list
@@ -419,7 +413,7 @@ class ACGSCoordinator:
 
     async def generate_governance_report(
         self, start_date: datetime, end_date: datetime
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate comprehensive governance report."""
         # This would aggregate data from all ACGS services
         return {

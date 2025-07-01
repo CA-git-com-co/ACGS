@@ -622,12 +622,11 @@ class DomainContextManager:
 
         if conflict_indicators:
             return "conflicting"
-        elif similarity_score > 0.8:
+        if similarity_score > 0.8:
             return "equivalent"
-        elif similarity_score > 0.5:
+        if similarity_score > 0.5:
             return "adapted"
-        else:
-            return "complementary"
+        return "complementary"
 
     async def _generate_resolution_recommendations(
         self,

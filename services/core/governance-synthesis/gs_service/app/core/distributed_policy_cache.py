@@ -23,7 +23,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 import aiohttp
 import numpy as np
@@ -55,7 +55,7 @@ class LogEntry:
     term: int
     index: int
     entry_type: LogEntryType
-    data: Dict[str, Any]
+    data: dict[str, Any]
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     checksum: str = ""
 
@@ -72,14 +72,14 @@ class PolicyCacheEntry:
     """Cached policy entry with metadata."""
 
     policy_id: str
-    policy_data: Dict[str, Any]
+    policy_data: dict[str, Any]
     version: int
     created_at: datetime
     updated_at: datetime
     access_count: int = 0
-    last_accessed: Optional[datetime] = None
-    ttl: Optional[int] = None  # Time to live in seconds
-    tags: Set[str] = field(default_factory=set)
+    last_accessed: datetime | None = None
+    ttl: int | None = None  # Time to live in seconds
+    tags: set[str] = field(default_factory=set)
 
     def is_expired(self) -> bool:
         """Check if the cache entry has expired."""
@@ -99,7 +99,7 @@ class RaftConfig:
 
     # Node configuration
     node_id: str
-    cluster_nodes: List[str]  # List of node addresses
+    cluster_nodes: list[str]  # List of node addresses
 
     # Timing parameters
     election_timeout_min: float = 150.0  # milliseconds
@@ -132,20 +132,20 @@ class DistributedPolicyCache:
 
         # Raft state
         self.current_term = 0
-        self.voted_for: Optional[str] = None
-        self.log: List[LogEntry] = []
+        self.voted_for: str | None = None
+        self.log: list[LogEntry] = []
         self.commit_index = 0
         self.last_applied = 0
 
         # Leader state
         self.state = NodeState.FOLLOWER
-        self.leader_id: Optional[str] = None
-        self.next_index: Dict[str, int] = {}
-        self.match_index: Dict[str, int] = {}
+        self.leader_id: str | None = None
+        self.next_index: dict[str, int] = {}
+        self.match_index: dict[str, int] = {}
 
         # Cache storage
-        self.cache: Dict[str, PolicyCacheEntry] = {}
-        self.version_vector: Dict[str, int] = {}
+        self.cache: dict[str, PolicyCacheEntry] = {}
+        self.version_vector: dict[str, int] = {}
 
         # Timing
         self.last_heartbeat = time.time()
@@ -162,7 +162,7 @@ class DistributedPolicyCache:
         }
 
         # Network session
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.session: aiohttp.ClientSession | None = None
 
         logger.info(f"Initialized distributed cache node {self.node_id}")
 
@@ -184,7 +184,7 @@ class DistributedPolicyCache:
 
         logger.info(f"Stopped distributed cache node {self.node_id}")
 
-    async def get_policy(self, policy_id: str) -> Optional[Dict[str, Any]]:
+    async def get_policy(self, policy_id: str) -> dict[str, Any] | None:
         """Get policy from cache with consistency guarantees."""
         self.metrics["total_requests"] += 1
 
@@ -207,12 +207,11 @@ class DistributedPolicyCache:
         if self.state == NodeState.LEADER:
             # We are the leader, check if we have the latest version
             return await self._fetch_policy_as_leader(policy_id)
-        else:
-            # Forward request to leader
-            return await self._fetch_policy_from_leader(policy_id)
+        # Forward request to leader
+        return await self._fetch_policy_from_leader(policy_id)
 
     async def update_policy(
-        self, policy_id: str, policy_data: Dict[str, Any], ttl: Optional[int] = None
+        self, policy_id: str, policy_data: dict[str, Any], ttl: int | None = None
     ) -> bool:
         """Update policy with distributed consensus."""
         if self.state != NodeState.LEADER:
@@ -251,13 +250,12 @@ class DistributedPolicyCache:
 
             logger.info(f"Successfully updated policy {policy_id} via consensus")
             return True
-        else:
-            # Rollback local log
-            self.log.pop()
-            self.metrics["log_entries"] -= 1
+        # Rollback local log
+        self.log.pop()
+        self.metrics["log_entries"] -= 1
 
-            logger.warning(f"Failed to achieve consensus for policy {policy_id}")
-            return False
+        logger.warning(f"Failed to achieve consensus for policy {policy_id}")
+        return False
 
     async def delete_policy(self, policy_id: str) -> bool:
         """Delete policy with distributed consensus."""
@@ -285,12 +283,9 @@ class DistributedPolicyCache:
             await self._apply_log_entry(log_entry)
             logger.info(f"Successfully deleted policy {policy_id} via consensus")
             return True
-        else:
-            self.log.pop()
-            logger.warning(
-                f"Failed to achieve consensus for deleting policy {policy_id}"
-            )
-            return False
+        self.log.pop()
+        logger.warning(f"Failed to achieve consensus for deleting policy {policy_id}")
+        return False
 
     async def _raft_consensus_loop(self):
         """Main Raft consensus loop."""
@@ -359,7 +354,7 @@ class DistributedPolicyCache:
 
         if (current_time - self.last_heartbeat) * 1000 > self.election_timeout:
             # Election timeout, become candidate
-            logger.info(f"Election timeout, becoming candidate")
+            logger.info("Election timeout, becoming candidate")
             await self._become_candidate()
 
     async def _become_candidate(self):
@@ -400,7 +395,7 @@ class DistributedPolicyCache:
             # Election failed, become follower
             await self._become_follower()
 
-    async def _request_vote(self, node: str) -> Dict[str, Any]:
+    async def _request_vote(self, node: str) -> dict[str, Any]:
         """Request vote from a node."""
         try:
             if not self.session:
@@ -437,7 +432,7 @@ class DistributedPolicyCache:
 
         logger.info(f"Became leader for term {self.current_term}")
 
-    async def _become_follower(self, term: Optional[int] = None):
+    async def _become_follower(self, term: int | None = None):
         """Transition to follower state."""
         self.state = NodeState.FOLLOWER
 
@@ -544,7 +539,7 @@ class DistributedPolicyCache:
         except Exception as e:
             logger.error(f"Failed to apply log entry {log_entry.index}: {e}")
 
-    async def _apply_policy_update(self, data: Dict[str, Any]):
+    async def _apply_policy_update(self, data: dict[str, Any]):
         """Apply policy update to local cache."""
         policy_id = data["policy_id"]
         policy_data = data["policy_data"]
@@ -570,7 +565,7 @@ class DistributedPolicyCache:
 
         logger.debug(f"Applied policy update for {policy_id}, version {new_version}")
 
-    async def _apply_policy_delete(self, data: Dict[str, Any]):
+    async def _apply_policy_delete(self, data: dict[str, Any]):
         """Apply policy deletion to local cache."""
         policy_id = data["policy_id"]
 
@@ -580,7 +575,7 @@ class DistributedPolicyCache:
 
         logger.debug(f"Applied policy deletion for {policy_id}")
 
-    async def _apply_cache_invalidate(self, data: Dict[str, Any]):
+    async def _apply_cache_invalidate(self, data: dict[str, Any]):
         """Apply cache invalidation."""
         policy_ids = data.get("policy_ids", [])
 
@@ -589,7 +584,7 @@ class DistributedPolicyCache:
 
         logger.debug(f"Applied cache invalidation for {len(policy_ids)} policies")
 
-    async def _fetch_policy_as_leader(self, policy_id: str) -> Optional[Dict[str, Any]]:
+    async def _fetch_policy_as_leader(self, policy_id: str) -> dict[str, Any] | None:
         """Fetch policy as leader (authoritative source)."""
         # As leader, our cache is authoritative
         cache_entry = self.cache.get(policy_id)
@@ -601,9 +596,7 @@ class DistributedPolicyCache:
 
         return None
 
-    async def _fetch_policy_from_leader(
-        self, policy_id: str
-    ) -> Optional[Dict[str, Any]]:
+    async def _fetch_policy_from_leader(self, policy_id: str) -> dict[str, Any] | None:
         """Fetch policy from leader node."""
         if not self.leader_id or not self.session:
             return None
@@ -627,7 +620,7 @@ class DistributedPolicyCache:
         return None
 
     async def _update_local_cache_from_leader(
-        self, policy_id: str, leader_data: Dict[str, Any]
+        self, policy_id: str, leader_data: dict[str, Any]
     ):
         """Update local cache with data from leader."""
         policy_data = leader_data["policy_data"]
@@ -647,7 +640,7 @@ class DistributedPolicyCache:
         self.version_vector[policy_id] = version
 
     async def _forward_update_to_leader(
-        self, policy_id: str, policy_data: Dict[str, Any], ttl: Optional[int] = None
+        self, policy_id: str, policy_data: dict[str, Any], ttl: int | None = None
     ) -> bool:
         """Forward update request to leader."""
         if not self.leader_id or not self.session:
@@ -684,7 +677,7 @@ class DistributedPolicyCache:
             logger.warning(f"Failed to forward delete to leader: {e}")
             return False
 
-    def get_cache_statistics(self) -> Dict[str, Any]:
+    def get_cache_statistics(self) -> dict[str, Any]:
         """Get comprehensive cache statistics."""
         total_entries = len(self.cache)
         expired_entries = sum(1 for entry in self.cache.values() if entry.is_expired())

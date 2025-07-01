@@ -5,16 +5,14 @@ End-to-end integration tests for Academic Submission System.
 Tests complete workflows from paper input to final validation reports.
 """
 
-import pytest
-import subprocess
 import json
-import tempfile
-import shutil
+import subprocess
 from pathlib import Path
 from unittest.mock import patch
 
-from quality_assurance.submission_validator import SubmissionValidator
+import pytest
 from quality_assurance.compliance_checker import ComplianceChecker
+from quality_assurance.submission_validator import SubmissionValidator
 
 
 class TestEndToEndValidation:
@@ -175,7 +173,7 @@ class TestEndToEndValidation:
 \\begin{{document}}
 \\maketitle
 \\begin{{abstract}}
-{'Large abstract content. ' * 100}
+{"Large abstract content. " * 100}
 \\end{{abstract}}
 {large_content}
 \\end{{document}}
@@ -300,6 +298,7 @@ class TestCLIIntegration:
                 "--output",
                 str(output_file),
             ],
+            check=False,
             capture_output=True,
             text=True,
             cwd=Path(__file__).parent.parent.parent,
@@ -336,6 +335,7 @@ class TestCLIIntegration:
                 "--output",
                 str(output_file),
             ],
+            check=False,
             capture_output=True,
             text=True,
             cwd=Path(__file__).parent.parent.parent,
@@ -355,6 +355,7 @@ class TestCLIIntegration:
         # Run CLI status check
         result = subprocess.run(
             ["python", "cli/academic_cli.py", "status", str(complete_paper)],
+            check=False,
             capture_output=True,
             text=True,
             cwd=Path(__file__).parent.parent.parent,
@@ -372,6 +373,7 @@ class TestCLIIntegration:
         # Test with non-existent path
         result = subprocess.run(
             ["python", "cli/academic_cli.py", "validate", "/nonexistent/path"],
+            check=False,
             capture_output=True,
             text=True,
             cwd=Path(__file__).parent.parent.parent,
@@ -411,8 +413,8 @@ class TestWebIntegration:
     def test_web_file_upload_workflow(self, flask_client, complete_paper):
         """Test web file upload and validation workflow."""
         # Create a ZIP file for upload
-        import zipfile
         import io
+        import zipfile
 
         zip_buffer = io.BytesIO()
         with zipfile.ZipFile(zip_buffer, "w") as zip_file:

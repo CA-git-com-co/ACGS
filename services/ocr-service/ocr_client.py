@@ -11,7 +11,7 @@ import json
 import logging
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 import requests
 
@@ -51,7 +51,7 @@ class OCRClient:
             logger.warning(f"OCR service health check failed: {e}")
             return False
 
-    def encode_image(self, image_path: Union[str, Path]) -> str:
+    def encode_image(self, image_path: str | Path) -> str:
         """Encode an image file to base64."""
         image_path = Path(image_path)
         with open(image_path, "rb") as image_file:
@@ -59,9 +59,9 @@ class OCRClient:
 
     def extract_text(
         self,
-        image_data: Union[str, Path, bytes],
+        image_data: str | Path | bytes,
         prompt: str = "Extract all text from this image.",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Extract text from an image using the OCR service.
 
@@ -118,23 +118,22 @@ class OCRClient:
                         "usage": result.get("usage", {}),
                     },
                 }
-            else:
-                return {
-                    "success": False,
-                    "error": "No content in response",
-                    "raw_response": result,
-                }
+            return {
+                "success": False,
+                "error": "No content in response",
+                "raw_response": result,
+            }
 
         except requests.exceptions.RequestException as e:
             logger.error(f"Error calling OCR service: {e}")
-            raise OCRServiceException(f"OCR service request failed: {str(e)}")
+            raise OCRServiceException(f"OCR service request failed: {e!s}")
         except Exception as e:
             logger.error(f"Unexpected error in OCR client: {e}")
-            raise OCRServiceException(f"OCR client error: {str(e)}")
+            raise OCRServiceException(f"OCR client error: {e!s}")
 
     def analyze_document(
-        self, image_data: Union[str, Path, bytes], analysis_type: str = "general"
-    ) -> Dict[str, Any]:
+        self, image_data: str | Path | bytes, analysis_type: str = "general"
+    ) -> dict[str, Any]:
         """
         Perform document analysis with the OCR service.
 

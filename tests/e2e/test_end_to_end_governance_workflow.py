@@ -75,21 +75,20 @@ class GovernanceWorkflowTester:
                         "status_code": response.status_code,
                         "response_data": response.json() if response.content else {},
                     }
-                else:
-                    logger.warning(
-                        f"  ⚠️ {workflow_name}: Non-200 status ({response.status_code})"
-                    )
-                    return {
-                        "status": "degraded",
-                        "response_time_ms": response_time,
-                        "status_code": response.status_code,
-                        "error": f"HTTP {response.status_code}",
-                    }
+                logger.warning(
+                    f"  ⚠️ {workflow_name}: Non-200 status ({response.status_code})"
+                )
+                return {
+                    "status": "degraded",
+                    "response_time_ms": response_time,
+                    "status_code": response.status_code,
+                    "error": f"HTTP {response.status_code}",
+                }
 
         except Exception as e:
             end_time = time.time()
             response_time = (end_time - start_time) * 1000
-            logger.error(f"  ❌ {workflow_name}: Failed - {str(e)}")
+            logger.error(f"  ❌ {workflow_name}: Failed - {e!s}")
             return {
                 "status": "failed",
                 "response_time_ms": response_time,
@@ -105,32 +104,31 @@ class GovernanceWorkflowTester:
                 "category": "Testing",
                 "priority": "medium",
             }
-        elif workflow_name == "Constitutional Compliance":
+        if workflow_name == "Constitutional Compliance":
             return {
                 "policy_id": "test-policy-001",
                 "validation_type": "constitutional",
                 "constitutional_principles": ["transparency", "accountability"],
             }
-        elif workflow_name == "Policy Enforcement":
+        if workflow_name == "Policy Enforcement":
             return {
                 "policy_id": "test-policy-001",
                 "enforcement_action": "monitor",
                 "scope": "system-wide",
             }
-        elif workflow_name == "WINA Oversight":
+        if workflow_name == "WINA Oversight":
             return {
                 "oversight_type": "performance_monitoring",
                 "target_metrics": ["response_time", "accuracy"],
                 "reporting_interval": "daily",
             }
-        elif workflow_name == "Audit/Transparency":
+        if workflow_name == "Audit/Transparency":
             return {
                 "audit_type": "governance_transparency",
                 "scope": "policy_decisions",
                 "reporting_format": "public",
             }
-        else:
-            return {"test": True, "workflow": workflow_name}
+        return {"test": True, "workflow": workflow_name}
 
     async def test_policy_creation_workflow(self) -> dict[str, Any]:
         """Test the complete policy creation workflow."""
@@ -168,20 +166,17 @@ class GovernanceWorkflowTester:
                         "policy_id": policy_data.get("policy_id", "test-policy"),
                         "workflow_status": policy_data.get("status", "draft"),
                     }
-                else:
-                    logger.warning(
-                        f"  ⚠️ Policy creation returned {response.status_code}"
-                    )
-                    return {
-                        "status": "degraded",
-                        "response_time_ms": response_time,
-                        "status_code": response.status_code,
-                    }
+                logger.warning(f"  ⚠️ Policy creation returned {response.status_code}")
+                return {
+                    "status": "degraded",
+                    "response_time_ms": response_time,
+                    "status_code": response.status_code,
+                }
 
         except Exception as e:
             end_time = time.time()
             response_time = (end_time - start_time) * 1000
-            logger.error(f"  ❌ Policy creation failed: {str(e)}")
+            logger.error(f"  ❌ Policy creation failed: {e!s}")
             return {
                 "status": "failed",
                 "response_time_ms": response_time,
@@ -229,20 +224,19 @@ class GovernanceWorkflowTester:
                             "validation_id", "test-validation"
                         ),
                     }
-                else:
-                    logger.warning(
-                        f"  ⚠️ Compliance validation returned {response.status_code}"
-                    )
-                    return {
-                        "status": "degraded",
-                        "response_time_ms": response_time,
-                        "status_code": response.status_code,
-                    }
+                logger.warning(
+                    f"  ⚠️ Compliance validation returned {response.status_code}"
+                )
+                return {
+                    "status": "degraded",
+                    "response_time_ms": response_time,
+                    "status_code": response.status_code,
+                }
 
         except Exception as e:
             end_time = time.time()
             response_time = (end_time - start_time) * 1000
-            logger.error(f"  ❌ Compliance validation failed: {str(e)}")
+            logger.error(f"  ❌ Compliance validation failed: {e!s}")
             return {
                 "status": "failed",
                 "response_time_ms": response_time,

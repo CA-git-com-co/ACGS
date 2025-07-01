@@ -3,13 +3,12 @@ WINA EC Oversight Coordinator Module
 Mock implementation for test compatibility.
 """
 
+import asyncio
 import time
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 from unittest.mock import Mock
-
-import asyncio
 
 
 class ECOversightContext(Enum):
@@ -42,12 +41,12 @@ class ECOversightRequest:
         request_id: str,
         oversight_type: ECOversightContext,
         target_system: str,
-        governance_requirements: List[str] = None,
-        constitutional_constraints: List[str] = None,
-        performance_thresholds: Dict[str, float] = None,
+        governance_requirements: list[str] = None,
+        constitutional_constraints: list[str] = None,
+        performance_thresholds: dict[str, float] = None,
         priority_level: str = "normal",
         wina_optimization_enabled: bool = False,
-        metadata: Dict[str, Any] = None,
+        metadata: dict[str, Any] = None,
     ):
         self.request_id = request_id
         self.oversight_type = oversight_type
@@ -164,20 +163,19 @@ class WINAECOversightCoordinator:
         """Select oversight strategy based on request."""
         if request.oversight_type == ECOversightContext.INCIDENT_RESPONSE:
             return ECOversightStrategy.EMERGENCY_PROTOCOL
-        elif request.oversight_type == ECOversightContext.CONSTITUTIONAL_REVIEW:
+        if request.oversight_type == ECOversightContext.CONSTITUTIONAL_REVIEW:
             return ECOversightStrategy.CONSTITUTIONAL_PRIORITY
-        elif request.oversight_type == ECOversightContext.PERFORMANCE_OPTIMIZATION:
+        if request.oversight_type == ECOversightContext.PERFORMANCE_OPTIMIZATION:
             return ECOversightStrategy.EFFICIENCY_FOCUSED
-        else:
-            return (
-                ECOversightStrategy.WINA_OPTIMIZED
-                if self.enable_wina
-                else ECOversightStrategy.STANDARD
-            )
+        return (
+            ECOversightStrategy.WINA_OPTIMIZED
+            if self.enable_wina
+            else ECOversightStrategy.STANDARD
+        )
 
     async def _execute_emergency_oversight(
-        self, analysis: Dict, request: ECOversightRequest
-    ) -> Dict:
+        self, analysis: dict, request: ECOversightRequest
+    ) -> dict:
         """Execute emergency oversight protocol."""
         return {
             "decision": "conditional",
@@ -187,7 +185,7 @@ class WINAECOversightCoordinator:
         }
 
     async def _verify_constitutional_compliance(
-        self, request: ECOversightRequest, requirements: List[str]
+        self, request: ECOversightRequest, requirements: list[str]
     ) -> bool:
         """Verify constitutional compliance."""
         cache_key = self._generate_compliance_cache_key(request, requirements)
@@ -202,7 +200,7 @@ class WINAECOversightCoordinator:
         return compliance
 
     def _generate_compliance_cache_key(
-        self, request: ECOversightRequest, requirements: List[str]
+        self, request: ECOversightRequest, requirements: list[str]
     ) -> str:
         """Generate cache key for compliance check."""
         return f"compliance_{request.request_id}_{hash(tuple(requirements))}"
@@ -211,7 +209,7 @@ class WINAECOversightCoordinator:
         """Generate cache key for oversight request."""
         return f"oversight_{request.request_id}_{request.oversight_type.value}"
 
-    async def _get_wina_strategy_insights(self, request: ECOversightRequest) -> Dict:
+    async def _get_wina_strategy_insights(self, request: ECOversightRequest) -> dict:
         """Get WINA strategy insights."""
         return {
             "constitutional_risk": 0.1,
@@ -221,8 +219,8 @@ class WINAECOversightCoordinator:
         }
 
     async def _apply_wina_optimization(
-        self, analysis: Dict, request: ECOversightRequest
-    ) -> Dict:
+        self, analysis: dict, request: ECOversightRequest
+    ) -> dict:
         """Apply WINA optimization."""
         return {
             "confidence": 0.95,
@@ -239,7 +237,7 @@ class WINAECOversightCoordinator:
 
     async def _optimize_governance_requirements(
         self, request: ECOversightRequest, strategy: ECOversightStrategy, context: Any
-    ) -> List[str]:
+    ) -> list[str]:
         """Optimize governance requirements."""
         optimized = []
         for req in request.governance_requirements:
@@ -254,8 +252,8 @@ class WINAECOversightCoordinator:
         return optimized
 
     async def _apply_learning_feedback(
-        self, request: ECOversightRequest, result: Dict, strategy: ECOversightStrategy
-    ) -> Dict:
+        self, request: ECOversightRequest, result: dict, strategy: ECOversightStrategy
+    ) -> dict:
         """Apply learning feedback."""
         feedback = {
             "strategy_effectiveness": 0.9,
@@ -272,7 +270,7 @@ class WINAECOversightCoordinator:
 
         return feedback
 
-    async def _get_learning_insights(self, request: ECOversightRequest) -> Dict:
+    async def _get_learning_insights(self, request: ECOversightRequest) -> dict:
         """Get learning insights."""
         return {
             "confidence": 0.9,
@@ -303,7 +301,7 @@ class WINAECOversightCoordinator:
             )
 
     async def _fallback_oversight(
-        self, request: ECOversightRequest, errors: List[str]
+        self, request: ECOversightRequest, errors: list[str]
     ) -> WINAOversightResult:
         """Fallback oversight mechanism."""
         result = WINAOversightResult()

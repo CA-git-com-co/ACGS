@@ -17,7 +17,7 @@ def test_python_environment():
 
 def test_project_structure():
     """Test that basic project structure exists."""
-    project_root = Path(".")
+    project_root = Path()
 
     # Check for key directories
     assert (project_root / "tests").exists(), "Tests directory should exist"

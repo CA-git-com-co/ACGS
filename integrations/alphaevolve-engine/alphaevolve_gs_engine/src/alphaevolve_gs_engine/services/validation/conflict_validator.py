@@ -207,7 +207,7 @@ class OPAConflictDetector(ConflictValidator):
                         f"OPA conflict query '{conflict_query}' successful. Found {len(detected_conflicts)} potential conflicts."
                     )
                     return detected_conflicts, ""
-                elif (
+                if (
                     opa_output
                     and isinstance(opa_output, list)
                     and not opa_output[0].get("result")
@@ -217,11 +217,11 @@ class OPAConflictDetector(ConflictValidator):
                         f"Conflict query '{conflict_query}' output was not in expected format (e.g. empty or no 'result' list): {result.stdout[:300]}"
                     )
                     return [], ""  # No conflicts found / query undefined
-                else:  # Query ran, no conflicts found (e.g. result was empty list `[]`)
-                    logger.debug(
-                        f"OPA conflict query '{conflict_query}' successful. No conflicts found. Output: {result.stdout[:300]}"
-                    )
-                    return [], ""
+                # Query ran, no conflicts found (e.g. result was empty list `[]`)
+                logger.debug(
+                    f"OPA conflict query '{conflict_query}' successful. No conflicts found. Output: {result.stdout[:300]}"
+                )
+                return [], ""
 
             except (json.JSONDecodeError, IndexError, KeyError) as e:
                 error_msg = f"Failed to parse OPA output for conflict query '{conflict_query}'. Error: {e}. Output: {result.stdout[:500]}"
@@ -252,7 +252,6 @@ class OPAConflictDetector(ConflictValidator):
         conflict_definitions: list[ConflictDefinition],
         input_scenario: dict[str, Any] | None = None,
     ) -> list[dict[str, Any]]:
-
         all_detected_conflicts: list[dict[str, Any]] = []
         temp_file_paths: list[str] = []
         input_scenario_file_path: str | None = None

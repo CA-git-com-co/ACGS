@@ -7,7 +7,6 @@ while maintaining constitutional governance guarantees.
 
 import asyncio
 import time
-from typing import Dict, List, Optional
 
 import redis
 
@@ -21,8 +20,8 @@ class AICIPerformanceOptimizer:
         self.cache_ttl = 60  # seconds
 
     async def parallel_policy_evaluation(
-        self, policies: List[str], context: Dict
-    ) -> Dict[str, float]:
+        self, policies: list[str], context: dict
+    ) -> dict[str, float]:
         """Evaluate multiple policies in parallel for maximum performance."""
         start_time = time.time()
 
@@ -49,11 +48,11 @@ class AICIPerformanceOptimizer:
 
         evaluation_time = time.time() - start_time
         if evaluation_time > 0.005:  # 5ms threshold
-            print(f"Warning: Policy evaluation took {evaluation_time*1000:.2f}ms")
+            print(f"Warning: Policy evaluation took {evaluation_time * 1000:.2f}ms")
 
         return policy_results
 
-    async def _evaluate_policy(self, policy: str, context: Dict) -> float:
+    async def _evaluate_policy(self, policy: str, context: dict) -> float:
         """Evaluate a single policy against the provided context."""
         # Implementation simplified for brevity
         return 0.95  # Example compliance score

@@ -11,13 +11,12 @@ Creates comprehensive production documentation including:
 Target: New team member can deploy system using only documentation
 """
 
-import os
-import sys
-import logging
 import json
+import logging
+import sys
 import time
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -64,7 +63,7 @@ class ProductionDocumentationCreator:
             ],
         }
 
-    def create_production_documentation(self) -> Dict[str, Any]:
+    def create_production_documentation(self) -> dict[str, Any]:
         """Create comprehensive production documentation."""
         logger.info("📚 Creating production documentation...")
 
@@ -133,7 +132,7 @@ class ProductionDocumentationCreator:
 
         logger.info("✅ Documentation structure created")
 
-    def _create_deployment_documentation(self) -> Dict[str, Any]:
+    def _create_deployment_documentation(self) -> dict[str, Any]:
         """Create deployment documentation."""
         logger.info("🚀 Creating deployment documentation...")
 
@@ -438,7 +437,7 @@ server {
             logger.error(f"Deployment documentation creation failed: {e}")
             raise
 
-    def _create_configuration_documentation(self) -> Dict[str, Any]:
+    def _create_configuration_documentation(self) -> dict[str, Any]:
         """Create configuration documentation."""
         logger.info("⚙️ Creating configuration documentation...")
 
@@ -616,7 +615,7 @@ ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
             logger.error(f"Configuration documentation creation failed: {e}")
             raise
 
-    def _create_operational_documentation(self) -> Dict[str, Any]:
+    def _create_operational_documentation(self) -> dict[str, Any]:
         """Create operational documentation."""
         logger.info("🔧 Creating operational documentation...")
 
@@ -843,7 +842,7 @@ du -sh /var/log/acgs/*
             logger.error(f"Operational documentation creation failed: {e}")
             raise
 
-    def _create_reference_documentation(self) -> Dict[str, Any]:
+    def _create_reference_documentation(self) -> dict[str, Any]:
         """Create reference documentation."""
         logger.info("📖 Creating reference documentation...")
 
@@ -1155,7 +1154,7 @@ A new team member should be able to:
 
         logger.info("✅ Documentation index created")
 
-    def _validate_documentation_completeness(self) -> Dict[str, Any]:
+    def _validate_documentation_completeness(self) -> dict[str, Any]:
         """Validate documentation completeness."""
         logger.info("✅ Validating documentation completeness...")
 
@@ -1186,7 +1185,7 @@ A new team member should be able to:
             "missing_documents": missing_docs,
         }
 
-    def _generate_documentation_report(self, results: Dict[str, Any]):
+    def _generate_documentation_report(self, results: dict[str, Any]):
         """Generate documentation creation report."""
         report_path = self.project_root / "production_documentation_report.json"
 
@@ -1268,7 +1267,7 @@ def main():
                 for doc in results["missing_documents"]:
                     print(f"   - {doc}")
 
-        print(f"\n📚 Documentation available at: docs/production/")
+        print("\n📚 Documentation available at: docs/production/")
         print("📖 Start with: docs/production/README.md")
     else:
         print("❌ Production documentation creation failed!")

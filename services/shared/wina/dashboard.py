@@ -108,7 +108,7 @@ class WINADashboard:
             logger.error(f"Dashboard data retrieval failed: {e}")
             return {
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-                "error": f"Dashboard data unavailable: {str(e)}",
+                "error": f"Dashboard data unavailable: {e!s}",
                 "status": "error",
             }
 
@@ -753,7 +753,7 @@ class WINADashboard:
 
         except Exception as e:
             logger.error(f"Recommendations generation failed: {e}")
-            return [f"Unable to generate recommendations: {str(e)}"]
+            return [f"Unable to generate recommendations: {e!s}"]
 
     async def export_dashboard_data(self, format_type: str = "json") -> str:
         """
@@ -770,7 +770,7 @@ class WINADashboard:
 
             if format_type.lower() == "json":
                 return json.dumps(dashboard_data, indent=2, default=str)
-            elif format_type.lower() == "csv":
+            if format_type.lower() == "csv":
                 # Simple CSV export of key metrics
                 lines = ["metric,value,timestamp"]
                 timestamp = dashboard_data.get("timestamp", "")
@@ -787,8 +787,7 @@ class WINADashboard:
                 )
 
                 return "\n".join(lines)
-            else:
-                raise ValueError(f"Unsupported export format: {format_type}")
+            raise ValueError(f"Unsupported export format: {format_type}")
 
         except Exception as e:
             logger.error(f"Dashboard data export failed: {e}")

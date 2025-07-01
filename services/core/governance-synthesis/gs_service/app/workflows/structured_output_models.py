@@ -88,12 +88,11 @@ class ConstitutionalFidelityScore(BaseModel):
         score = values.get("overall_score", 0.0)
         if score >= 0.95:
             return ConstitutionalComplianceLevel.FULLY_COMPLIANT
-        elif score >= 0.85:
+        if score >= 0.85:
             return ConstitutionalComplianceLevel.MOSTLY_COMPLIANT
-        elif score >= 0.70:
+        if score >= 0.70:
             return ConstitutionalComplianceLevel.PARTIALLY_COMPLIANT
-        else:
-            return ConstitutionalComplianceLevel.NON_COMPLIANT
+        return ConstitutionalComplianceLevel.NON_COMPLIANT
 
     @property
     def meets_target_fidelity(self) -> bool:

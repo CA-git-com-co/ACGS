@@ -491,7 +491,6 @@ class TestConflictResolutionOrchestrator:
                 with patch.object(
                     orchestrator.auditor, "log_conflict_detection"
                 ) as mock_audit:
-
                     # Setup mocks
                     mock_detect.return_value = [
                         ConflictDetectionResult(

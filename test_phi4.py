@@ -3,9 +3,10 @@
 Simple test script for Microsoft Phi-4 reasoning model with ONNX Runtime GenAI
 """
 
-import onnxruntime_genai as og
 import argparse
 import sys
+
+import onnxruntime_genai as og
 
 
 def test_phi4_model(model_path, execution_provider="cpu"):

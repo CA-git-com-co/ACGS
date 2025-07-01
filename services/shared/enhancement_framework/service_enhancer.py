@@ -7,7 +7,7 @@ Provides the main interface for applying the enhancement framework.
 
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import FastAPI
 
@@ -34,7 +34,7 @@ class ACGSServiceEnhancer:
         service_name: str,
         port: int,
         version: str = "3.0.0",
-        description: Optional[str] = None,
+        description: str | None = None,
     ):
         """
         Initialize the service enhancer.
@@ -87,7 +87,7 @@ class ACGSServiceEnhancer:
         app = await self.template.create_enhanced_app()
 
         logger.info(f"✅ Enhanced service created: {self.service_name}")
-        logger.info(f"🔧 Enhancements applied:")
+        logger.info("🔧 Enhancements applied:")
         logger.info(
             f"   - Constitutional Validation: {self.template.enable_constitutional_validation}"
         )
@@ -103,7 +103,7 @@ class ACGSServiceEnhancer:
         self,
         enabled: bool = True,
         strict_mode: bool = True,
-        bypass_paths: Optional[List[str]] = None,
+        bypass_paths: list[str] | None = None,
         performance_target_ms: float = 5.0,
     ):
         """
@@ -195,7 +195,7 @@ class ACGSServiceEnhancer:
 
         logger.info(f"Caching configured for {self.service_name}")
 
-    def get_service_info(self) -> Dict[str, Any]:
+    def get_service_info(self) -> dict[str, Any]:
         """
         Get comprehensive service information and configuration.
 
@@ -227,7 +227,7 @@ class ACGSServiceEnhancer:
             ],
         }
 
-    async def validate_service_health(self) -> Dict[str, Any]:
+    async def validate_service_health(self) -> dict[str, Any]:
         """
         Validate service health and return comprehensive status.
 

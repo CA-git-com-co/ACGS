@@ -9,7 +9,6 @@ import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
-
 # Import production security middleware
 try:
     import sys
@@ -40,7 +39,7 @@ except ImportError as e:
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 from starlette.responses import PlainTextResponse
 
 # Service configuration
@@ -185,9 +184,9 @@ if SECURITY_MIDDLEWARE_AVAILABLE:
         enable_threat_detection=True,
     )
     apply_production_security_middleware(app, "gs_service", security_config)
-    print(f"✅ Production security middleware applied to gs service")
+    print("✅ Production security middleware applied to gs service")
 else:
-    print(f"⚠️ Security middleware not available for gs service")
+    print("⚠️ Security middleware not available for gs service")
 
 
 # Add secure CORS middleware with environment-based configuration
@@ -273,12 +272,11 @@ async def get_leader_election_status():
     """Get leader election status."""
     if leader_election_service:
         return leader_election_service.get_health_status()
-    else:
-        return {
-            "service_name": SERVICE_NAME,
-            "leader_election_enabled": False,
-            "message": "Leader election not configured",
-        }
+    return {
+        "service_name": SERVICE_NAME,
+        "leader_election_enabled": False,
+        "message": "Leader election not configured",
+    }
 
 
 @app.get("/leader-election/health")
@@ -288,8 +286,7 @@ async def get_leader_election_health():
         health_info = leader_election_service.get_health_status()
         health_info["endpoint"] = "leader_election_health"
         return health_info
-    else:
-        return {"status": "disabled", "leader_election_enabled": False}
+    return {"status": "disabled", "leader_election_enabled": False}
 
 
 # Leader-only governance synthesis operations
@@ -391,11 +388,6 @@ if __name__ == "__main__":
     import uvicorn
 
 # Security validation imports
-from services.shared.security_validation import (
-    validate_user_input,
-    validate_policy_input,
-    validate_governance_input,
-)
 
 config = {
     "host": "0.0.0.0",

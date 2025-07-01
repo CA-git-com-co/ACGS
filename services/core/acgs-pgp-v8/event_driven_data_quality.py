@@ -13,14 +13,16 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio
-import logging
 import json
+import logging
+import warnings
+from collections.abc import Callable
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from typing import Any
+
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Callable
-from dataclasses import dataclass, asdict
-import warnings
 
 warnings.filterwarnings("ignore")
 
@@ -50,9 +52,9 @@ class QualityEvent:
     service_id: str
     quality_score: float
     threshold: float
-    violations: List[Dict[str, Any]]
+    violations: list[dict[str, Any]]
     severity: str
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class EventDrivenDataQualityFramework:
@@ -61,7 +63,7 @@ class EventDrivenDataQualityFramework:
     def __init__(self, nats_url: str = "nats://localhost:4222"):
         self.constitutional_hash = "cdd01ef066bc6cf2"
         self.nats_url = nats_url
-        self.nats_client: Optional[NATS] = None
+        self.nats_client: NATS | None = None
         self.quality_assessor = DataQualityAssessment()
 
         # Quality thresholds for event triggering
@@ -72,14 +74,14 @@ class EventDrivenDataQualityFramework:
         }
 
         # Event handlers registry
-        self.event_handlers: Dict[str, List[Callable]] = {
+        self.event_handlers: dict[str, list[Callable]] = {
             "quality_alert": [],
             "quality_degradation": [],
             "quality_improvement": [],
             "quality_violation": [],
         }
 
-        logger.info(f"Event-driven data quality framework initialized")
+        logger.info("Event-driven data quality framework initialized")
         logger.info(f"Constitutional hash: {self.constitutional_hash}")
         logger.info(f"NATS URL: {self.nats_url}")
 
@@ -198,14 +200,13 @@ class EventDrivenDataQualityFramework:
         """Determine event type and severity based on quality score."""
         if quality_score < self.quality_thresholds["critical"]:
             return "quality_alert", "CRITICAL"
-        elif quality_score < self.quality_thresholds["warning"]:
+        if quality_score < self.quality_thresholds["warning"]:
             return "quality_alert", "WARNING"
-        elif quality_score < self.quality_thresholds["target"]:
+        if quality_score < self.quality_thresholds["target"]:
             return "quality_degradation", "INFO"
-        else:
-            return "quality_normal", "INFO"
+        return "quality_normal", "INFO"
 
-    def _extract_violations(self, metrics: DataQualityMetrics) -> List[Dict[str, Any]]:
+    def _extract_violations(self, metrics: DataQualityMetrics) -> list[dict[str, Any]]:
         """Extract quality violations from metrics."""
         violations = []
 
@@ -280,7 +281,7 @@ async def handle_quality_alert(event: QualityEvent):
     )
 
     if event.severity == "CRITICAL":
-        logger.critical(f"🔴 CRITICAL quality issue - immediate action required")
+        logger.critical("🔴 CRITICAL quality issue - immediate action required")
         # In production: trigger emergency response, notifications, etc.
 
 

@@ -5,13 +5,12 @@ Resolves major issues affecting system functionality, maintainability concerns,
 and performance optimizations that don't meet critical thresholds.
 """
 
-import os
-import sys
 import json
+import sys
 import time
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
 # Add project paths
 project_root = Path(__file__).parent
@@ -23,10 +22,10 @@ class MajorResolutionResult:
     issue_id: str
     status: str  # RESOLVED, PARTIAL, FAILED, SKIPPED
     resolution_time: float
-    actions_taken: List[str]
+    actions_taken: list[str]
     verification_passed: bool
-    remaining_work: List[str]
-    details: Dict[str, Any]
+    remaining_work: list[str]
+    details: dict[str, Any]
 
 
 class MajorIssueResolver:
@@ -34,7 +33,7 @@ class MajorIssueResolver:
         self.project_root = project_root
         self.resolution_results = []
 
-    def load_major_issues(self) -> List[Dict[str, Any]]:
+    def load_major_issues(self) -> list[dict[str, Any]]:
         """Load major issues from the analysis results."""
         issue_file = self.project_root / "issue_analysis_results.json"
 
@@ -42,7 +41,7 @@ class MajorIssueResolver:
             print("❌ Issue analysis results not found. Run issue_analyzer.py first.")
             return []
 
-        with open(issue_file, "r") as f:
+        with open(issue_file) as f:
             data = json.load(f)
 
         # Filter for major issues
@@ -56,7 +55,7 @@ class MajorIssueResolver:
         return major_issues
 
     def resolve_cache_performance_issue(
-        self, issue: Dict[str, Any]
+        self, issue: dict[str, Any]
     ) -> MajorResolutionResult:
         """Resolve cache performance optimization issues."""
         start_time = time.time()
@@ -460,7 +459,7 @@ def test_get_cached_function():
             return False
 
     def resolve_business_rule_edge_cases(
-        self, issue: Dict[str, Any]
+        self, issue: dict[str, Any]
     ) -> MajorResolutionResult:
         """Resolve business rule edge case handling issues."""
         start_time = time.time()
@@ -468,7 +467,7 @@ def test_get_cached_function():
 
         try:
             # Create enhanced business rule validation
-            enhanced_rules_code = '''"""
+            enhanced_rules_code = r'''"""
 Enhanced Business Rule Validation for ACGS-2
 Improves edge case handling and validation robustness.
 """
@@ -790,7 +789,7 @@ def validate_constitutional_compliance(document: Dict[str, Any]) -> Dict[str, An
         except Exception:
             return False
 
-    def resolve_major_issues(self) -> Dict[str, Any]:
+    def resolve_major_issues(self) -> dict[str, Any]:
         """Resolve all major issues."""
         print("Starting Major Issue Resolution...")
         print("=" * 60)
@@ -904,7 +903,7 @@ def main():
     if summary["failed"] > 0:
         print(f"\n⚠️  {summary['failed']} major issues failed to resolve!")
         return 1
-    elif summary["resolved"] < summary["total_issues"]:
+    if summary["resolved"] < summary["total_issues"]:
         print(
             f"\n⚠️  {summary['total_issues'] - summary['resolved']} major issues need manual attention!"
         )

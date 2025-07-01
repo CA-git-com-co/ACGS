@@ -67,7 +67,8 @@ async def test_svd_transformation():
 
         # Initialize SVD transformer
         config = WINAConfig(
-            svd_rank_reduction=0.5, accuracy_threshold=0.95  # 50% rank reduction
+            svd_rank_reduction=0.5,
+            accuracy_threshold=0.95,  # 50% rank reduction
         )
 
         svd_transformer = SVDTransformation(config)

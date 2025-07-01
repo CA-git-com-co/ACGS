@@ -9,9 +9,9 @@ performance with the current implementation.
 import asyncio
 import logging
 import sys
-import time
-import numpy as np
 from pathlib import Path
+
+import numpy as np
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))

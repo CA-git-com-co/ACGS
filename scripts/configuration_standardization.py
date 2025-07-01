@@ -11,15 +11,15 @@ Consolidates multiple configuration versions and establishes single source of tr
 From remediation plan TIER 3 - MODERATE (Complete within 1 week)
 """
 
-import os
-import json
-import yaml
-import shutil
-from pathlib import Path
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, asdict
 import argparse
+import json
+import shutil
+from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+import yaml
 
 
 @dataclass
@@ -50,11 +50,11 @@ class ConfigurationStandardizer:
 
     def __init__(self, project_root: str = "/home/ubuntu/ACGS"):
         self.project_root = Path(project_root)
-        self.config_files: List[ConfigFile] = []
+        self.config_files: list[ConfigFile] = []
         self.standard_resource_limits = ResourceLimits()
         self.environments = ["dev", "staging", "prod", "shared"]
 
-    def discover_config_files(self) -> List[ConfigFile]:
+    def discover_config_files(self) -> list[ConfigFile]:
         """Discover all configuration files in the project."""
         print("🔍 Discovering configuration files...")
 
@@ -121,12 +121,11 @@ class ConfigurationStandardizer:
 
         if "prod" in path_str:
             return "prod"
-        elif "staging" in path_str:
+        if "staging" in path_str:
             return "staging"
-        elif "dev" in path_str or "development" in path_str:
+        if "dev" in path_str or "development" in path_str:
             return "dev"
-        else:
-            return "shared"
+        return "shared"
 
     def _determine_service(self, file_path: Path) -> str:
         """Determine service from file path."""
@@ -154,19 +153,18 @@ class ConfigurationStandardizer:
     def _load_config_content(self, file_path: Path) -> Any:
         """Load configuration file content."""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 if file_path.suffix.lower() in [".json"]:
                     return json.load(f)
-                elif file_path.suffix.lower() in [".yaml", ".yml"]:
+                if file_path.suffix.lower() in [".yaml", ".yml"]:
                     return yaml.safe_load(f)
-                else:
-                    # For .py, .env, etc., just return first 1000 chars
-                    content = f.read()
-                    return content[:1000] if len(content) > 1000 else content
+                # For .py, .env, etc., just return first 1000 chars
+                content = f.read()
+                return content[:1000] if len(content) > 1000 else content
         except Exception:
             return None
 
-    def analyze_configurations(self) -> Dict[str, Any]:
+    def analyze_configurations(self) -> dict[str, Any]:
         """Analyze configuration files for standardization opportunities."""
         print("📊 Analyzing configurations...")
 
@@ -205,7 +203,7 @@ class ConfigurationStandardizer:
 
         return analysis
 
-    def _check_resource_limits(self) -> Dict[str, Any]:
+    def _check_resource_limits(self) -> dict[str, Any]:
         """Check resource limits compliance across configurations."""
         compliance = {
             "compliant_files": [],
@@ -246,7 +244,7 @@ class ConfigurationStandardizer:
 
         return compliance
 
-    def _validate_k8s_resources(self, resources: Dict) -> bool:
+    def _validate_k8s_resources(self, resources: dict) -> bool:
         """Validate Kubernetes resource limits."""
         try:
             limits = resources.get("limits", {})
@@ -269,7 +267,7 @@ class ConfigurationStandardizer:
         except:
             return False
 
-    def _validate_docker_resources(self, resources: Dict) -> bool:
+    def _validate_docker_resources(self, resources: dict) -> bool:
         """Validate Docker resource limits."""
         try:
             limits = resources.get("limits", {})
@@ -287,7 +285,7 @@ class ConfigurationStandardizer:
         except:
             return False
 
-    def _generate_recommendations(self, analysis: Dict) -> List[str]:
+    def _generate_recommendations(self, analysis: dict) -> list[str]:
         """Generate standardization recommendations."""
         recommendations = []
 
@@ -321,7 +319,7 @@ class ConfigurationStandardizer:
 
         return recommendations
 
-    def standardize_configurations(self) -> Dict[str, Any]:
+    def standardize_configurations(self) -> dict[str, Any]:
         """Apply configuration standardization."""
         print("🔧 Applying configuration standardization...")
 
@@ -386,35 +384,35 @@ class ConfigurationStandardizer:
         print(f"  ✅ Created resource limits template: {template_path}")
 
 
-def print_standardization_report(analysis: Dict[str, Any], results: Dict[str, Any]):
+def print_standardization_report(analysis: dict[str, Any], results: dict[str, Any]):
     """Print configuration standardization report."""
     print("\n" + "=" * 80)
     print("⚙️ ACGS-PGP CONFIGURATION STANDARDIZATION REPORT")
     print("=" * 80)
 
-    print(f"📊 Configuration Analysis:")
+    print("📊 Configuration Analysis:")
     print(f"   • Total Files: {analysis['total_files']}")
     print(f"   • Environments: {', '.join(analysis['by_environment'].keys())}")
     print(f"   • Services: {len(analysis['by_service'])} services")
     print(f"   • File Types: {', '.join(analysis['by_type'].keys())}")
 
-    print(f"\n🎯 Resource Limits Compliance:")
+    print("\n🎯 Resource Limits Compliance:")
     compliance = analysis["resource_limit_compliance"]
     print(f"   • Compliant Files: {len(compliance['compliant_files'])}")
     print(f"   • Non-Compliant Files: {len(compliance['non_compliant_files'])}")
     print(f"   • Missing Limits: {len(compliance['missing_limits'])}")
 
-    print(f"\n🔧 Standardization Results:")
+    print("\n🔧 Standardization Results:")
     print(f"   • Backup Created: {'✅' if results['backup_created'] else '❌'}")
     print(f"   • Directories Created: {len(results['created_directories'])}")
     print(f"   • Files Standardized: {len(results['standardized_files'])}")
 
     if results["errors"]:
-        print(f"\n⚠️ Errors:")
+        print("\n⚠️ Errors:")
         for error in results["errors"]:
             print(f"   • {error}")
 
-    print(f"\n💡 Recommendations:")
+    print("\n💡 Recommendations:")
     for rec in analysis["recommendations"]:
         print(f"   • {rec}")
 

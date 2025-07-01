@@ -13,10 +13,10 @@ from .registry import ServiceConfig, ServiceRegistry
 
 __all__ = [
     "ACGSServiceClient",
-    "ServiceMesh",
-    "ServiceRegistry",
-    "ServiceConfig",
-    "ServiceDiscovery",
     "CircuitBreaker",
     "CircuitBreakerState",
+    "ServiceConfig",
+    "ServiceDiscovery",
+    "ServiceMesh",
+    "ServiceRegistry",
 ]

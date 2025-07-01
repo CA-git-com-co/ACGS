@@ -343,15 +343,14 @@ class OpenAIPlatformAdapter(BasePlatformAdapter):
             if response.status_code == 200:
                 result = response.json()
                 return self._parse_openai_response(request, result, execution_time)
-            else:
-                return EvaluationResponse(
-                    request_id=request.request_id,
-                    platform_type=self.platform_type,
-                    success=False,
-                    execution_time_ms=execution_time,
-                    error_message=f"OpenAI API error: {response.status_code}",
-                    error_code=str(response.status_code),
-                )
+            return EvaluationResponse(
+                request_id=request.request_id,
+                platform_type=self.platform_type,
+                success=False,
+                execution_time_ms=execution_time,
+                error_message=f"OpenAI API error: {response.status_code}",
+                error_code=str(response.status_code),
+            )
 
         except Exception as e:
             execution_time = (time.time() - start_time) * 1000
@@ -522,15 +521,14 @@ class AnthropicPlatformAdapter(BasePlatformAdapter):
             if response.status_code == 200:
                 result = response.json()
                 return self._parse_anthropic_response(request, result, execution_time)
-            else:
-                return EvaluationResponse(
-                    request_id=request.request_id,
-                    platform_type=self.platform_type,
-                    success=False,
-                    execution_time_ms=execution_time,
-                    error_message=f"Anthropic API error: {response.status_code}",
-                    error_code=str(response.status_code),
-                )
+            return EvaluationResponse(
+                request_id=request.request_id,
+                platform_type=self.platform_type,
+                success=False,
+                execution_time_ms=execution_time,
+                error_message=f"Anthropic API error: {response.status_code}",
+                error_code=str(response.status_code),
+            )
 
         except Exception as e:
             execution_time = (time.time() - start_time) * 1000
@@ -758,15 +756,14 @@ class CoherePlatformAdapter(BasePlatformAdapter):
             if response.status_code == 200:
                 result = response.json()
                 return self._parse_cohere_response(request, result, execution_time)
-            else:
-                return EvaluationResponse(
-                    request_id=request.request_id,
-                    platform_type=self.platform_type,
-                    success=False,
-                    execution_time_ms=execution_time,
-                    error_message=f"Cohere API error: {response.status_code}",
-                    error_code=str(response.status_code),
-                )
+            return EvaluationResponse(
+                request_id=request.request_id,
+                platform_type=self.platform_type,
+                success=False,
+                execution_time_ms=execution_time,
+                error_message=f"Cohere API error: {response.status_code}",
+                error_code=str(response.status_code),
+            )
 
         except Exception as e:
             execution_time = (time.time() - start_time) * 1000
@@ -995,15 +992,14 @@ class GroqPlatformAdapter(BasePlatformAdapter):
             if response.status_code == 200:
                 result = response.json()
                 return self._parse_groq_response(request, result, execution_time)
-            else:
-                return EvaluationResponse(
-                    request_id=request.request_id,
-                    platform_type=self.platform_type,
-                    success=False,
-                    execution_time_ms=execution_time,
-                    error_message=f"Groq API error: {response.status_code}",
-                    error_code=str(response.status_code),
-                )
+            return EvaluationResponse(
+                request_id=request.request_id,
+                platform_type=self.platform_type,
+                success=False,
+                execution_time_ms=execution_time,
+                error_message=f"Groq API error: {response.status_code}",
+                error_code=str(response.status_code),
+            )
 
         except Exception as e:
             execution_time = (time.time() - start_time) * 1000

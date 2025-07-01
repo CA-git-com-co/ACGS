@@ -5,12 +5,10 @@ Comprehensive tests for Quantum Error Correction - Semantic Fault Tolerance syst
 including LSU validation, stabilizer execution, and syndrome diagnosis.
 """
 
-import asyncio
-import json
-from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import patch
 
 import pytest
+
 from services.core.generation_engine.models import (
     ConstraintType,
     LogicalSemanticUnit,
@@ -18,7 +16,6 @@ from services.core.generation_engine.models import (
     LSUDomain,
 )
 from services.core.sde.engine import SyndromeDiagnosticEngine
-from services.core.sde.models import DiagnosticResult, ErrorSeverity
 from services.core.see.environment import StabilizerExecutionEnvironment
 from services.core.see.models import Stabilizer, StabilizerResult, StabilizerStatus
 

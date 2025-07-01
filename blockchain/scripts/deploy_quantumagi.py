@@ -94,7 +94,9 @@ class QuantumagiDeployer:
         os.chdir(self.project_root)
 
         # Build the program
-        result = subprocess.run(["anchor", "build"], capture_output=True, text=True)
+        result = subprocess.run(
+            ["anchor", "build"], check=False, capture_output=True, text=True
+        )
         if result.returncode != 0:
             raise Exception(f"Build failed: {result.stderr}")
 
@@ -112,7 +114,7 @@ class QuantumagiDeployer:
             self.config["deployer_keypair_path"],
         ]
 
-        result = subprocess.run(deploy_cmd, capture_output=True, text=True)
+        result = subprocess.run(deploy_cmd, check=False, capture_output=True, text=True)
         if result.returncode != 0:
             raise Exception(f"Deployment failed: {result.stderr}")
 
@@ -218,6 +220,7 @@ class QuantumagiDeployer:
         if requirements_file.exists():
             result = subprocess.run(
                 [sys.executable, "-m", "pip", "install", "-r", str(requirements_file)],
+                check=False,
                 capture_output=True,
                 text=True,
             )
@@ -333,6 +336,7 @@ class QuantumagiDeployer:
             # Run anchor tests
             result = subprocess.run(
                 ["anchor", "test", "--skip-deploy"],
+                check=False,
                 capture_output=True,
                 text=True,
                 cwd=self.project_root,
@@ -353,8 +357,8 @@ class QuantumagiDeployer:
 🎉 Quantumagi Deployment Summary
 ================================
 
-Program ID: {self.config.get('program_id', 'N/A')}
-Cluster: {self.config['solana_cluster']}
+Program ID: {self.config.get("program_id", "N/A")}
+Cluster: {self.config["solana_cluster"]}
 Constitution: Initialized ✅
 Initial Policies: Deployed ✅
 GS Engine: Ready ✅

@@ -8,7 +8,7 @@ vulnerabilities in the ACGS-PGP governance synthesis engine.
 import json
 import logging
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 import aiohttp
 
@@ -115,22 +115,21 @@ class PolicyPoisoningDetector:
 
         if vector == "malicious_policy_injection":
             return await self._test_malicious_policy_injection(gs_endpoint)
-        elif vector == "synthesis_process_manipulation":
+        if vector == "synthesis_process_manipulation":
             return await self._test_synthesis_process_manipulation(gs_endpoint)
-        elif vector == "llm_prompt_poisoning":
+        if vector == "llm_prompt_poisoning":
             return await self._test_llm_prompt_poisoning(gs_endpoint)
-        elif vector == "policy_template_corruption":
+        if vector == "policy_template_corruption":
             return await self._test_policy_template_corruption(gs_endpoint)
-        elif vector == "context_injection_attack":
+        if vector == "context_injection_attack":
             return await self._test_context_injection_attack(gs_endpoint)
-        elif vector == "rule_logic_manipulation":
+        if vector == "rule_logic_manipulation":
             return await self._test_rule_logic_manipulation(gs_endpoint)
-        elif vector == "output_format_corruption":
+        if vector == "output_format_corruption":
             return await self._test_output_format_corruption(gs_endpoint)
-        elif vector == "semantic_drift_injection":
+        if vector == "semantic_drift_injection":
             return await self._test_semantic_drift_injection(gs_endpoint)
-        else:
-            return []
+        return []
 
     async def _test_malicious_policy_injection(
         self, gs_endpoint: str
@@ -160,7 +159,6 @@ class PolicyPoisoningDetector:
                             json=malicious_request,
                             timeout=30,
                         ) as response:
-
                             execution_time = (time.time() - start_time) * 1000
 
                             if response.status == 200:
@@ -264,7 +262,6 @@ class PolicyPoisoningDetector:
                         json=synthesis_request,
                         timeout=30,
                     ) as response:
-
                         execution_time = (time.time() - start_time) * 1000
 
                         if response.status == 200:
@@ -328,7 +325,6 @@ class PolicyPoisoningDetector:
                         json=poisoned_request,
                         timeout=30,
                     ) as response:
-
                         execution_time = (time.time() - start_time) * 1000
 
                         if response.status == 200:
@@ -415,7 +411,6 @@ class PolicyPoisoningDetector:
                         json=synthesis_request,
                         timeout=30,
                     ) as response:
-
                         execution_time = (time.time() - start_time) * 1000
 
                         if response.status == 200:

@@ -323,9 +323,8 @@ class KeyManagementService:
             if result.rowcount > 0:
                 logger.info(f"Revoked key {key_id}")
                 return True
-            else:
-                logger.warning(f"Key {key_id} not found for revocation")
-                return False
+            logger.warning(f"Key {key_id} not found for revocation")
+            return False
 
         except Exception as e:
             logger.error(f"Error revoking key {key_id}: {e}")

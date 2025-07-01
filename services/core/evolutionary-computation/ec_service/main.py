@@ -8,39 +8,29 @@ constitutional compliance verification, and comprehensive oversight mechanisms.
 
 import asyncio
 import logging
+import os
+import sys
 import time
 import uuid
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
-from typing import Dict, List, Optional
 
-from fastapi import FastAPI, HTTPException, Request, status, Depends
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
-import sys
-import os
 
 # Add path for shared services
 sys.path.append("/home/ubuntu/ACGS/services/shared")
-from leader_election import create_leader_election_service, leader_required
+from leader_election import create_leader_election_service
 
 # Import our evolution components
 from .evolution_engine import (
-    evolution_engine,
     EvolutionRequest,
     EvolutionType,
-    RiskLevel,
+    evolution_engine,
 )
 from .human_approval_workflow import (
-    human_approval_workflow,
     ReviewDecision,
-    ReviewPriority,
-)
-from .security_architecture import (
-    security_architecture,
-    SecurityLevel,
-    AuthenticationMethod,
+    human_approval_workflow,
 )
 
 # Configure logging
@@ -70,7 +60,7 @@ class EvolutionRequestModel(BaseModel):
 
     evolution_type: str = Field(..., description="Type of evolution")
     description: str = Field(..., description="Description of evolution")
-    proposed_changes: Dict = Field(..., description="Proposed changes")
+    proposed_changes: dict = Field(..., description="Proposed changes")
     target_service: str = Field(..., description="Target service")
     priority: int = Field(default=3, description="Priority level")
 
@@ -80,16 +70,16 @@ class ReviewDecisionModel(BaseModel):
 
     decision: str = Field(..., description="Review decision")
     justification: str = Field(..., description="Justification for decision")
-    recommendations: List[str] = Field(default=[], description="Recommendations")
+    recommendations: list[str] = Field(default=[], description="Recommendations")
 
 
 class SecurityCredentials(BaseModel):
     """Security credentials for authentication."""
 
     method: str = Field(default="jwt_token", description="Authentication method")
-    token: Optional[str] = Field(None, description="JWT token")
-    api_key: Optional[str] = Field(None, description="API key")
-    source_ip: Optional[str] = Field(None, description="Source IP address")
+    token: str | None = Field(None, description="JWT token")
+    api_key: str | None = Field(None, description="API key")
+    source_ip: str | None = Field(None, description="Source IP address")
 
 
 # Leader election callbacks
@@ -253,12 +243,11 @@ async def get_leader_election_status():
     """Get leader election status."""
     if leader_election_service:
         return leader_election_service.get_health_status()
-    else:
-        return {
-            "service_name": SERVICE_NAME,
-            "leader_election_enabled": False,
-            "message": "Leader election not configured",
-        }
+    return {
+        "service_name": SERVICE_NAME,
+        "leader_election_enabled": False,
+        "message": "Leader election not configured",
+    }
 
 
 @app.get("/leader-election/health")
@@ -268,8 +257,7 @@ async def get_leader_election_health():
         health_info = leader_election_service.get_health_status()
         health_info["endpoint"] = "leader_election_health"
         return health_info
-    else:
-        return {"status": "disabled", "leader_election_enabled": False}
+    return {"status": "disabled", "leader_election_enabled": False}
 
 
 # Leader-only evolutionary computation operations
@@ -611,10 +599,7 @@ async def submit_review_decision(task_id: str, decision: ReviewDecisionModel):
                 "message": "Review decision submitted successfully",
                 "task_id": task_id,
             }
-        else:
-            raise HTTPException(
-                status_code=400, detail="Failed to submit review decision"
-            )
+        raise HTTPException(status_code=400, detail="Failed to submit review decision")
 
     except HTTPException:
         raise

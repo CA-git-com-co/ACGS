@@ -78,17 +78,16 @@ class Phase3AppealsTestRunner:
                         test_name, True, f"Appeal created with ID {appeal['id']}"
                     )
                     return appeal["id"]
-                else:
-                    self.log_test_result(
-                        test_name, False, "Missing required fields in appeal response"
-                    )
+                self.log_test_result(
+                    test_name, False, "Missing required fields in appeal response"
+                )
             else:
                 self.log_test_result(
                     test_name, False, f"HTTP {response.status_code}: {response.text}"
                 )
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Exception: {str(e)}")
+            self.log_test_result(test_name, False, f"Exception: {e!s}")
 
         return None
 
@@ -119,7 +118,7 @@ class Phase3AppealsTestRunner:
                 )
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Exception: {str(e)}")
+            self.log_test_result(test_name, False, f"Exception: {e!s}")
 
     async def test_get_appeal_by_id(self, appeal_id: int):
         """Test retrieving a specific appeal by ID."""
@@ -152,7 +151,7 @@ class Phase3AppealsTestRunner:
                 )
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Exception: {str(e)}")
+            self.log_test_result(test_name, False, f"Exception: {e!s}")
 
     async def test_update_appeal(self, appeal_id: int):
         """Test updating an appeal."""
@@ -192,7 +191,7 @@ class Phase3AppealsTestRunner:
                 )
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Exception: {str(e)}")
+            self.log_test_result(test_name, False, f"Exception: {e!s}")
 
     async def test_escalate_appeal(self, appeal_id: int):
         """Test escalating an appeal."""
@@ -225,7 +224,7 @@ class Phase3AppealsTestRunner:
                 )
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Exception: {str(e)}")
+            self.log_test_result(test_name, False, f"Exception: {e!s}")
 
     async def test_create_dispute_resolution(self, appeal_id: int):
         """Test creating a dispute resolution process."""
@@ -263,19 +262,18 @@ class Phase3AppealsTestRunner:
                         f"Dispute resolution created with ID {dispute['id']}",
                     )
                     return dispute["id"]
-                else:
-                    self.log_test_result(
-                        test_name,
-                        False,
-                        "Missing required fields in dispute resolution response",
-                    )
+                self.log_test_result(
+                    test_name,
+                    False,
+                    "Missing required fields in dispute resolution response",
+                )
             else:
                 self.log_test_result(
                     test_name, False, f"HTTP {response.status_code}: {response.text}"
                 )
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Exception: {str(e)}")
+            self.log_test_result(test_name, False, f"Exception: {e!s}")
 
         return None
 
@@ -323,7 +321,7 @@ class Phase3AppealsTestRunner:
                 )
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Exception: {str(e)}")
+            self.log_test_result(test_name, False, f"Exception: {e!s}")
 
     async def test_rule_provenance(self):
         """Test rule provenance functionality."""
@@ -360,7 +358,7 @@ class Phase3AppealsTestRunner:
                 )
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Exception: {str(e)}")
+            self.log_test_result(test_name, False, f"Exception: {e!s}")
 
     async def run_all_tests(self):
         """Run all Phase 3 appeal and dispute resolution tests."""

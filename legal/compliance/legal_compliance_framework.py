@@ -5,12 +5,11 @@ Comprehensive legal framework for enterprise software commercialization
 """
 
 import json
-import time
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone, timedelta
-from enum import Enum
 import logging
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -42,12 +41,12 @@ class SoftwareLicense:
     license_id: str
     license_type: LicenseType
     license_name: str
-    permitted_uses: List[str]
-    restrictions: List[str]
-    constitutional_governance_rights: List[str]
-    intellectual_property_terms: List[str]
-    liability_limitations: List[str]
-    termination_conditions: List[str]
+    permitted_uses: list[str]
+    restrictions: list[str]
+    constitutional_governance_rights: list[str]
+    intellectual_property_terms: list[str]
+    liability_limitations: list[str]
+    termination_conditions: list[str]
     constitutional_hash: str
 
 
@@ -58,13 +57,13 @@ class EnterpriseContract:
     contract_id: str
     contract_type: str
     service_description: str
-    constitutional_governance_scope: List[str]
-    service_level_agreements: Dict[str, Any]
-    data_processing_terms: List[str]
-    security_requirements: List[str]
-    compliance_obligations: List[str]
-    liability_framework: Dict[str, Any]
-    constitutional_compliance_requirements: List[str]
+    constitutional_governance_scope: list[str]
+    service_level_agreements: dict[str, Any]
+    data_processing_terms: list[str]
+    security_requirements: list[str]
+    compliance_obligations: list[str]
+    liability_framework: dict[str, Any]
+    constitutional_compliance_requirements: list[str]
 
 
 @dataclass
@@ -74,13 +73,13 @@ class DataProcessingAgreement:
     dpa_id: str
     data_controller: str
     data_processor: str
-    processing_purposes: List[str]
-    data_categories: List[str]
-    constitutional_data_protection: List[str]
-    security_measures: List[str]
-    retention_periods: Dict[str, str]
-    cross_border_transfers: List[str]
-    constitutional_governance_data_handling: List[str]
+    processing_purposes: list[str]
+    data_categories: list[str]
+    constitutional_data_protection: list[str]
+    security_measures: list[str]
+    retention_periods: dict[str, str]
+    cross_border_transfers: list[str]
+    constitutional_governance_data_handling: list[str]
 
 
 class LegalComplianceFramework:
@@ -93,7 +92,7 @@ class LegalComplianceFramework:
         self.data_processing_agreements = {}
         self.compliance_frameworks = {}
 
-    async def establish_legal_compliance_framework(self) -> Dict[str, Any]:
+    async def establish_legal_compliance_framework(self) -> dict[str, Any]:
         """Establish comprehensive legal and compliance framework"""
         print("⚖️ ACGS Legal and Compliance Framework Establishment")
         print("=" * 55)
@@ -121,12 +120,12 @@ class LegalComplianceFramework:
             await self.create_constitutional_governance_legal_framework()
         )
 
-        print(f"\n📊 Legal and Compliance Framework Summary:")
+        print("\n📊 Legal and Compliance Framework Summary:")
         print(f"  Software License Types: {len(licensing_terms)}")
         print(f"  Enterprise Contract Templates: {len(contract_templates)}")
         print(f"  Liability Frameworks: {len(liability_frameworks)}")
         print(f"  Compliance Standards: {len(regulatory_compliance)}")
-        print(f"  Constitutional Legal Framework: ✅ Established")
+        print("  Constitutional Legal Framework: ✅ Established")
 
         return {
             "establishment_timestamp": datetime.now(timezone.utc).isoformat(),
@@ -140,7 +139,7 @@ class LegalComplianceFramework:
             "constitutional_legal": constitutional_legal,
         }
 
-    async def create_software_licensing_terms(self) -> Dict[str, SoftwareLicense]:
+    async def create_software_licensing_terms(self) -> dict[str, SoftwareLicense]:
         """Create comprehensive software licensing terms"""
         print("  📜 Creating software licensing terms...")
 
@@ -292,7 +291,7 @@ class LegalComplianceFramework:
 
     async def create_enterprise_contract_templates(
         self,
-    ) -> Dict[str, EnterpriseContract]:
+    ) -> dict[str, EnterpriseContract]:
         """Create comprehensive enterprise contract templates"""
         print("  📋 Creating enterprise contract templates...")
 
@@ -415,7 +414,7 @@ class LegalComplianceFramework:
 
         return contract_templates
 
-    async def create_liability_frameworks(self) -> Dict[str, Any]:
+    async def create_liability_frameworks(self) -> dict[str, Any]:
         """Create comprehensive liability frameworks"""
         print("  ⚖️ Creating liability frameworks...")
 
@@ -527,7 +526,7 @@ class LegalComplianceFramework:
 
         return liability_frameworks
 
-    async def create_intellectual_property_protection(self) -> Dict[str, Any]:
+    async def create_intellectual_property_protection(self) -> dict[str, Any]:
         """Create intellectual property protection framework"""
         print("  🔒 Creating intellectual property protection...")
 
@@ -591,7 +590,7 @@ class LegalComplianceFramework:
 
         return ip_protection
 
-    async def create_regulatory_compliance_framework(self) -> Dict[str, Any]:
+    async def create_regulatory_compliance_framework(self) -> dict[str, Any]:
         """Create regulatory compliance framework"""
         print("  📋 Creating regulatory compliance framework...")
 
@@ -682,7 +681,7 @@ class LegalComplianceFramework:
 
     async def create_data_processing_agreements(
         self,
-    ) -> Dict[str, DataProcessingAgreement]:
+    ) -> dict[str, DataProcessingAgreement]:
         """Create data processing agreements"""
         print("  📄 Creating data processing agreements...")
 
@@ -745,11 +744,11 @@ class LegalComplianceFramework:
         self.data_processing_agreements = data_processing_agreements
 
         for dpa_id, dpa in data_processing_agreements.items():
-            print(f"    ✅ Constitutional Governance DPA")
+            print("    ✅ Constitutional Governance DPA")
 
         return data_processing_agreements
 
-    async def create_constitutional_governance_legal_framework(self) -> Dict[str, Any]:
+    async def create_constitutional_governance_legal_framework(self) -> dict[str, Any]:
         """Create constitutional governance specific legal framework"""
         print("  🏛️ Creating constitutional governance legal framework...")
 
@@ -835,7 +834,7 @@ async def test_legal_compliance_framework():
         json.dump(results, f, indent=2, default=str)
 
     print(f"\n📄 Detailed results saved: legal_compliance_framework_{timestamp}.json")
-    print(f"\n✅ Legal and Compliance Framework: ESTABLISHED")
+    print("\n✅ Legal and Compliance Framework: ESTABLISHED")
 
 
 if __name__ == "__main__":

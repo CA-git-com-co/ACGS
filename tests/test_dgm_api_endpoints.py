@@ -2,13 +2,13 @@
 Test suite for DGM API endpoints.
 """
 
-import pytest
 from datetime import datetime, timedelta
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 from uuid import uuid4
 
-from fastapi.testclient import TestClient
+import pytest
 from fastapi import status
+from fastapi.testclient import TestClient
 
 from services.core.dgm_service.dgm_service.main import app
 
@@ -111,7 +111,6 @@ class TestDGMAPIEndpoints:
                 return_value=mock_archive_manager,
             ),
         ):
-
             response = client.get("/api/v1/dgm/status")
 
             assert response.status_code == status.HTTP_200_OK
@@ -132,7 +131,6 @@ class TestDGMAPIEndpoints:
             "services.core.dgm_service.dgm_service.api.v1.dgm.get_dgm_engine",
             return_value=mock_dgm_engine,
         ):
-
             improvement_request = {
                 "target_service": "dgm-service",
                 "improvement_type": "code_optimization",
@@ -158,7 +156,6 @@ class TestDGMAPIEndpoints:
             "services.core.dgm_service.dgm_service.api.v1.dgm.get_bandit_manager",
             return_value=mock_bandit_manager,
         ):
-
             bandit_request = {
                 "context_key": "improvement_context",
                 "algorithm_type": "conservative_bandit",
@@ -183,7 +180,6 @@ class TestDGMAPIEndpoints:
             "services.core.dgm_service.dgm_service.api.v1.dgm.get_bandit_manager",
             return_value=mock_bandit_manager,
         ):
-
             feedback_request = {
                 "context_key": "improvement_context",
                 "arm_id": "code_optimization",
@@ -208,7 +204,6 @@ class TestDGMAPIEndpoints:
             "services.core.dgm_service.dgm_service.api.v1.dgm.get_performance_monitor",
             return_value=mock_performance_monitor,
         ):
-
             metrics_request = {
                 "metric_name": "response_time",
                 "start_time": "2025-01-20T12:00:00Z",
@@ -233,7 +228,6 @@ class TestDGMAPIEndpoints:
             "services.core.dgm_service.dgm_service.api.v1.dgm.get_performance_monitor",
             return_value=mock_performance_monitor,
         ):
-
             response = client.get("/api/v1/dgm/metrics/summary?hours=24")
 
             assert response.status_code == status.HTTP_200_OK
@@ -260,7 +254,6 @@ class TestDGMAPIEndpoints:
             "services.core.dgm_service.dgm_service.api.v1.dgm.get_performance_optimizer",
             return_value=mock_optimizer,
         ):
-
             response = client.post("/api/v1/dgm/optimize/database")
 
             assert response.status_code == status.HTTP_200_OK
@@ -290,7 +283,6 @@ class TestDGMAPIEndpoints:
             "services.core.dgm_service.dgm_service.api.v1.dgm.get_cache_manager",
             return_value=mock_cache_manager,
         ):
-
             response = client.get("/api/v1/dgm/cache/stats")
 
             assert response.status_code == status.HTTP_200_OK
@@ -310,7 +302,6 @@ class TestDGMAPIEndpoints:
             "services.core.dgm_service.dgm_service.api.v1.dgm.get_cache_manager",
             return_value=mock_cache_manager,
         ):
-
             response = client.post("/api/v1/dgm/cache/clear?pattern=dgm:metrics:*")
 
             assert response.status_code == status.HTTP_200_OK
@@ -349,7 +340,6 @@ class TestDGMAPIEndpoints:
             "services.core.dgm_service.dgm_service.api.v1.dgm.get_performance_optimizer",
             return_value=None,
         ):
-
             response = client.post("/api/v1/dgm/optimize/database")
 
             assert response.status_code == status.HTTP_503_SERVICE_UNAVAILABLE
@@ -390,7 +380,6 @@ class TestConstitutionalAPIEndpoints:
             "services.core.dgm_service.dgm_service.api.v1.constitutional.get_constitutional_validator",
             return_value=mock_constitutional_validator,
         ):
-
             response = client.get("/api/v1/constitutional/compliance/status")
 
             assert response.status_code == status.HTTP_200_OK
@@ -407,7 +396,6 @@ class TestConstitutionalAPIEndpoints:
             "services.core.dgm_service.dgm_service.api.v1.constitutional.get_constitutional_validator",
             return_value=mock_constitutional_validator,
         ):
-
             validation_request = {
                 "content": "Proposed algorithm improvement",
                 "context": {"service": "dgm", "type": "optimization"},

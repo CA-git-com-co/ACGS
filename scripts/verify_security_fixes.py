@@ -11,7 +11,7 @@ import logging
 import os
 import re
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -64,7 +64,7 @@ class SecurityVerifier:
             "services/core/governance-synthesis/gs_service/app/services/advanced_cache.py",
         ]
 
-    def verify_security_fixes(self) -> Dict[str, Any]:
+    def verify_security_fixes(self) -> dict[str, Any]:
         """Verify all security fixes"""
         logger.info("🔍 Verifying ACGS-1 Security Fixes")
         logger.info("=" * 50)
@@ -118,7 +118,7 @@ class SecurityVerifier:
             else:
                 logger.info("✅ No HIGH severity vulnerabilities found")
 
-            logger.info(f"📊 Verification Summary:")
+            logger.info("📊 Verification Summary:")
             logger.info(f"   Files Verified: {results['files_verified']}")
             logger.info(
                 f"   Security Improvements: {len(results['security_improvements'])}"
@@ -133,10 +133,10 @@ class SecurityVerifier:
             logger.error(f"❌ Verification failed: {e}")
             return {"status": "failed", "error": str(e)}
 
-    def _verify_file(self, file_path: Path) -> Dict[str, Any]:
+    def _verify_file(self, file_path: Path) -> dict[str, Any]:
         """Verify security fixes in a specific file"""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             file_results = {
@@ -190,7 +190,7 @@ class SecurityVerifier:
                 "security_improvements": [],
             }
 
-    def _verify_security_infrastructure(self, results: Dict[str, Any]):
+    def _verify_security_infrastructure(self, results: dict[str, Any]):
         """Verify security infrastructure components"""
         logger.info("🔍 Verifying security infrastructure...")
 

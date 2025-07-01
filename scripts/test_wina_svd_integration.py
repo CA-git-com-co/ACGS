@@ -468,9 +468,8 @@ async def main():
         if failed_suites == 0:
             logger.info("All tests passed successfully!")
             return 0
-        else:
-            logger.error(f"{failed_suites} test suite(s) failed")
-            return 1
+        logger.error(f"{failed_suites} test suite(s) failed")
+        return 1
 
     except Exception as e:
         logger.error(f"Test execution failed: {e}")

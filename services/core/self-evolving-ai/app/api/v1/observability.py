@@ -451,12 +451,11 @@ async def observability_health_check(
                 "message": "Observability framework is operational",
                 "data": health_status,
             }
-        else:
-            return {
-                "status": "unhealthy",
-                "message": "Observability framework has issues",
-                "data": health_status,
-            }
+        return {
+            "status": "unhealthy",
+            "message": "Observability framework has issues",
+            "data": health_status,
+        }
 
     except Exception as e:
         logger.error(f"Observability health check failed: {e}")

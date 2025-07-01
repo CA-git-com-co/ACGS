@@ -11,8 +11,6 @@ Tests API endpoint performance against SLA requirements:
 import asyncio
 import statistics
 import time
-from concurrent.futures import ThreadPoolExecutor
-from typing import Dict, List
 
 import httpx
 import pytest
@@ -39,9 +37,9 @@ class APIPerformanceTest:
         self,
         endpoint: str,
         method: str = "GET",
-        data: Dict = None,
-        headers: Dict = None,
-    ) -> Dict:
+        data: dict = None,
+        headers: dict = None,
+    ) -> dict:
         """Measure response time for a single request."""
         start_time = time.perf_counter()
 
@@ -80,8 +78,8 @@ class APIPerformanceTest:
         concurrent_requests: int = 10,
         total_requests: int = 100,
         method: str = "GET",
-        data: Dict = None,
-    ) -> Dict:
+        data: dict = None,
+    ) -> dict:
         """Perform load testing on an endpoint."""
         results = []
 
@@ -114,7 +112,7 @@ class APIPerformanceTest:
             "concurrent_requests": concurrent_requests,
         }
 
-    def _percentile(self, data: List[float], percentile: int) -> float:
+    def _percentile(self, data: list[float], percentile: int) -> float:
         """Calculate percentile of data."""
         sorted_data = sorted(data)
         index = int((percentile / 100) * len(sorted_data))

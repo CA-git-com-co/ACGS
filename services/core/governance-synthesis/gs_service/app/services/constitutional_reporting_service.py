@@ -531,11 +531,10 @@ Key Achievements:
         try:
             if notification_type == "email":
                 return await self._send_email_notification(report, recipients)
-            elif notification_type == "webhook":
+            if notification_type == "webhook":
                 return await self._send_webhook_notification(report, recipients)
-            else:
-                logger.error(f"Unsupported notification type: {notification_type}")
-                return False
+            logger.error(f"Unsupported notification type: {notification_type}")
+            return False
 
         except Exception as e:
             logger.error(f"Error sending notification: {e}")

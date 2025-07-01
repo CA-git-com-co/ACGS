@@ -300,8 +300,8 @@ class DocumentationSummaryGenerator:
 
         report = f"""# ACGS-1 Documentation Update Summary Report
 
-**Generated**: {self.summary_data['timestamp']}
-**Project Root**: {self.summary_data['project_root']}
+**Generated**: {self.summary_data["timestamp"]}
+**Project Root**: {self.summary_data["project_root"]}
 
 ## Overview
 
@@ -384,9 +384,9 @@ The ACGS-1 documentation has been comprehensively updated to reflect the new blo
 - ✅ Updated contributor onboarding materials
 - ✅ Established code review guidelines
 
-**Total Files Updated:** {len(self.summary_data['service_ports']) + len(self.summary_data['path_updates']) + 50}+
+**Total Files Updated:** {len(self.summary_data["service_ports"]) + len(self.summary_data["path_updates"]) + 50}+
 **Documentation Sections Added:** 100+
-**Architecture Components Documented:** {len(self.summary_data['directory_structure'])}
+**Architecture Components Documented:** {len(self.summary_data["directory_structure"])}
 
 The documentation now accurately reflects the production-ready state of ACGS-1 with its enterprise-grade blockchain governance capabilities.
 """

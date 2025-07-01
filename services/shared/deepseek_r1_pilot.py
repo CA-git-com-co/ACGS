@@ -17,17 +17,16 @@ Key Features:
 Expected Savings: 96.4% reduction in AI model costs ($1.62M annually)
 """
 
-import asyncio
 import hashlib
 import logging
 import time
-import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import httpx
+
 from services.shared.utils import get_config
 
 logger = logging.getLogger(__name__)
@@ -58,7 +57,7 @@ class ConstitutionalValidationResult:
     constitutional_hash: str
     validation_time_ms: float
     reasoning: str
-    violations: List[str] = field(default_factory=list)
+    violations: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -102,10 +101,10 @@ class DeepSeekR1PilotManager:
     while maintaining constitutional compliance and performance targets.
     """
 
-    def __init__(self, config: Optional[PilotConfiguration] = None):
+    def __init__(self, config: PilotConfiguration | None = None):
         self.config = config or self._load_configuration()
         self.http_client = httpx.AsyncClient(timeout=30.0)
-        self.metrics_store: List[ModelPerformanceMetrics] = []
+        self.metrics_store: list[ModelPerformanceMetrics] = []
         self.constitutional_validator = ConstitutionalComplianceValidator()
 
         # Cost tracking (current vs DeepSeek R1)
@@ -155,8 +154,8 @@ class DeepSeekR1PilotManager:
         return (hash_value % 100) < self.config.traffic_percentage
 
     async def process_request(
-        self, request: Dict[str, Any], request_id: str
-    ) -> Dict[str, Any]:
+        self, request: dict[str, Any], request_id: str
+    ) -> dict[str, Any]:
         """
         Process AI request with A/B testing between current models and DeepSeek R1.
 
@@ -201,13 +200,12 @@ class DeepSeekR1PilotManager:
                 < self.config.constitutional_compliance_threshold
                 or response_time_ms > self.config.response_time_threshold_ms
             ):
-
                 if (
                     test_group == TestGroup.TREATMENT
                     and self.config.fallback_on_failure
                 ):
                     logger.warning(
-                        f"DeepSeek R1 performance below threshold, falling back to control model"
+                        "DeepSeek R1 performance below threshold, falling back to control model"
                     )
                     return await self._call_control_model(request, request_id)
 
@@ -220,8 +218,8 @@ class DeepSeekR1PilotManager:
             raise
 
     async def _call_deepseek_r1(
-        self, request: Dict[str, Any], request_id: str
-    ) -> Dict[str, Any]:
+        self, request: dict[str, Any], request_id: str
+    ) -> dict[str, Any]:
         """Call DeepSeek R1 via OpenRouter API."""
         headers = {
             "Content-Type": "application/json",
@@ -246,8 +244,8 @@ class DeepSeekR1PilotManager:
         return response.json()
 
     async def _call_control_model(
-        self, request: Dict[str, Any], request_id: str
-    ) -> Dict[str, Any]:
+        self, request: dict[str, Any], request_id: str
+    ) -> dict[str, Any]:
         """Call current control model (Claude/GPT-4)."""
         # This would integrate with existing AI model service
         # For now, return mock response maintaining same structure
@@ -311,7 +309,7 @@ class DeepSeekR1PilotManager:
 
         return (total_tokens / 1000) * (cost_per_1k / 1000)  # Convert to actual cost
 
-    def get_pilot_summary(self) -> Dict[str, Any]:
+    def get_pilot_summary(self) -> dict[str, Any]:
         """Generate pilot performance summary for monitoring."""
         if not self.metrics_store:
             return {"status": "no_data", "message": "No pilot data available"}
@@ -389,7 +387,7 @@ class ConstitutionalComplianceValidator:
     """Validates constitutional compliance for AI responses."""
 
     async def validate_response(
-        self, response: Dict[str, Any], constitutional_hash: str
+        self, response: dict[str, Any], constitutional_hash: str
     ) -> ConstitutionalValidationResult:
         """
         Validate AI response against constitutional requirements.
@@ -400,7 +398,7 @@ class ConstitutionalComplianceValidator:
 
         # Extract response content
         content = ""
-        if "choices" in response and response["choices"]:
+        if response.get("choices"):
             content = response["choices"][0].get("message", {}).get("content", "")
 
         # Basic constitutional compliance checks

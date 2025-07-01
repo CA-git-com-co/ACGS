@@ -4,10 +4,11 @@ ACGS-1 Service Status Checker
 Check the health and status of all 7 core services
 """
 
-import requests
 import json
 import time
-from typing import Dict, List, Any
+from typing import Any
+
+import requests
 
 # Service definitions
 SERVICES = [
@@ -25,7 +26,7 @@ SERVICES = [
 ]
 
 
-def check_service_health(service: Dict[str, Any]) -> Dict[str, Any]:
+def check_service_health(service: dict[str, Any]) -> dict[str, Any]:
     """Check the health of a single service."""
     name = service["name"]
     port = service["port"]
@@ -74,7 +75,7 @@ def check_service_health(service: Dict[str, Any]) -> Dict[str, Any]:
     return result
 
 
-def check_all_services() -> List[Dict[str, Any]]:
+def check_all_services() -> list[dict[str, Any]]:
     """Check the health of all services."""
     results = []
 
@@ -98,7 +99,7 @@ def check_all_services() -> List[Dict[str, Any]]:
     return results
 
 
-def print_summary(results: List[Dict[str, Any]]):
+def print_summary(results: list[dict[str, Any]]):
     """Print a summary of service health."""
     print("\n" + "=" * 60)
     print("📊 ACGS-1 Service Health Summary")
@@ -113,7 +114,7 @@ def print_summary(results: List[Dict[str, Any]]):
     print(f"⚠️ Unhealthy: {len(unhealthy)}")
 
     if healthy:
-        print(f"\n🟢 Healthy Services:")
+        print("\n🟢 Healthy Services:")
         for service in healthy:
             version = "unknown"
             if service["health_data"] and isinstance(service["health_data"], dict):
@@ -121,12 +122,12 @@ def print_summary(results: List[Dict[str, Any]]):
             print(f"   • {service['name']} (port {service['port']}) - v{version}")
 
     if not_running:
-        print(f"\n🔴 Not Running:")
+        print("\n🔴 Not Running:")
         for service in not_running:
             print(f"   • {service['name']} (port {service['port']})")
 
     if unhealthy:
-        print(f"\n🟡 Unhealthy:")
+        print("\n🟡 Unhealthy:")
         for service in unhealthy:
             print(
                 f"   • {service['name']} (port {service['port']}) - {service['error']}"
@@ -135,7 +136,7 @@ def print_summary(results: List[Dict[str, Any]]):
 
 def check_constitution_hash():
     """Check if the constitution hash is preserved across services."""
-    print(f"\n🔐 Checking Constitution Hash Preservation...")
+    print("\n🔐 Checking Constitution Hash Preservation...")
     print("=" * 60)
 
     target_hash = "cdd01ef066bc6cf2"
@@ -177,7 +178,7 @@ def check_constitution_hash():
         except Exception as e:
             print(f"⚠️ {service['name']} - Error checking hash: {e}")
 
-    print(f"\n📊 Constitution Hash Summary:")
+    print("\n📊 Constitution Hash Summary:")
     print(f"   Services with hash: {len(services_with_hash)}/{len(SERVICES)}")
     print(f"   Target hash: {target_hash}")
 
@@ -217,4 +218,4 @@ if __name__ == "__main__":
             indent=2,
         )
 
-    print(f"\n📄 Detailed report saved to: service_health_report.json")
+    print("\n📄 Detailed report saved to: service_health_report.json")

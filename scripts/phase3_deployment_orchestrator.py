@@ -173,6 +173,7 @@ class DeploymentOrchestrator:
             # Execute the script
             result = subprocess.run(
                 script.split(),
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=1800,  # 30 minutes timeout
@@ -214,12 +215,11 @@ class DeploymentOrchestrator:
 
                 self.deployment_log["steps_completed"].append(step_result)
                 return True
-            else:
-                self.error(f"❌ {description} failed (exit code: {result.returncode})")
-                step_result["status"] = "FAILED"
-                step_result["stderr"] = result.stderr[-1000:]  # Last 1000 chars
-                self.deployment_log["steps_completed"].append(step_result)
-                return False
+            self.error(f"❌ {description} failed (exit code: {result.returncode})")
+            step_result["status"] = "FAILED"
+            step_result["stderr"] = result.stderr[-1000:]  # Last 1000 chars
+            self.deployment_log["steps_completed"].append(step_result)
+            return False
 
         except subprocess.TimeoutExpired:
             self.error(f"❌ {description} timed out after 30 minutes")
@@ -233,7 +233,7 @@ class DeploymentOrchestrator:
             self.deployment_log["steps_completed"].append(step_result)
             return False
         except Exception as e:
-            self.error(f"❌ {description} failed with exception: {str(e)}")
+            self.error(f"❌ {description} failed with exception: {e!s}")
             step_result = {
                 "name": step_name,
                 "description": description,
@@ -272,9 +272,11 @@ class DeploymentOrchestrator:
             if step["environment"] == "both":
                 # 'both' environment steps run in all environments
                 pass
-            elif self.environment == "staging" and step["environment"] == "production":
-                continue
-            elif self.environment == "production" and step["environment"] == "staging":
+            elif (
+                self.environment == "staging" and step["environment"] == "production"
+            ) or (
+                self.environment == "production" and step["environment"] == "staging"
+            ):
                 continue
 
             # Handle start_from parameter
@@ -308,8 +310,7 @@ class DeploymentOrchestrator:
                     self.error(f"Required step failed: {step['name']}")
                     all_steps_passed = False
                     break
-                else:
-                    self.warning(f"Optional step failed: {step['name']}")
+                self.warning(f"Optional step failed: {step['name']}")
 
             # Brief pause between steps
             if i < len(steps_to_execute):
@@ -350,7 +351,7 @@ class DeploymentOrchestrator:
         self.log("=" * 80)
         self.log(f"Environment: {self.environment}")
         self.log(
-            f"Total Duration: {workflow_duration:.1f} seconds ({workflow_duration/60:.1f} minutes)"
+            f"Total Duration: {workflow_duration:.1f} seconds ({workflow_duration / 60:.1f} minutes)"
         )
         self.log(f"Steps Executed: {len(steps_to_execute)}")
         self.log(f"Steps Passed: {self.deployment_log['steps_passed']}")
@@ -406,7 +407,7 @@ def main():
         orchestrator.error("Deployment workflow interrupted by user")
         sys.exit(1)
     except Exception as e:
-        orchestrator.error(f"Deployment workflow failed with exception: {str(e)}")
+        orchestrator.error(f"Deployment workflow failed with exception: {e!s}")
         sys.exit(1)
 
 

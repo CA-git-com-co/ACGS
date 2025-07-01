@@ -30,7 +30,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 import numpy as np
@@ -77,10 +77,10 @@ class LoadTestConfig:
     target_response_time_ms: float = 500.0
     target_availability_percent: float = 99.9
     target_sol_cost: float = 0.01
-    services_to_test: List[str] = field(
+    services_to_test: list[str] = field(
         default_factory=lambda: ["auth", "ac", "integrity", "fv", "gs", "pgc", "ec"]
     )
-    governance_workflows: List[str] = field(
+    governance_workflows: list[str] = field(
         default_factory=lambda: [
             "policy_creation",
             "constitutional_compliance",
@@ -103,8 +103,8 @@ class LoadTestResult:
     status_code: int
     success: bool
     timestamp: datetime
-    error_message: Optional[str] = None
-    sol_cost: Optional[float] = None
+    error_message: str | None = None
+    sol_cost: float | None = None
 
 
 class ServiceLoadTester:
@@ -228,7 +228,7 @@ class ServiceLoadTester:
 
     def _prepare_request_data(
         self, service: str, endpoint: str, user_id: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Prepare request data for different service endpoints."""
         base_data = {
             "user_id": user_id,
@@ -302,7 +302,7 @@ class GovernanceWorkflowLoadTester:
 
     async def test_governance_workflow(
         self, workflow: str, user_id: str, test_id: str
-    ) -> List[LoadTestResult]:
+    ) -> list[LoadTestResult]:
         """Test a complete governance workflow."""
         results = []
         workflow_start_time = time.time()
@@ -333,12 +333,12 @@ class ComprehensiveLoadTester:
 
     def __init__(self, config: LoadTestConfig):
         self.config = config
-        self.results: List[LoadTestResult] = []
+        self.results: list[LoadTestResult] = []
         self.active_users = 0
 
     async def simulate_user_session(
         self, user_id: str, test_id: str, session_duration: float
-    ) -> List[LoadTestResult]:
+    ) -> list[LoadTestResult]:
         """Simulate a user session with multiple requests."""
         session_results = []
         session_start = time.time()
@@ -369,7 +369,7 @@ class ComprehensiveLoadTester:
 
         return session_results
 
-    async def run_load_test(self) -> Dict[str, Any]:
+    async def run_load_test(self) -> dict[str, Any]:
         """Run comprehensive load test."""
         test_id = str(uuid.uuid4())
         logger.info(
@@ -416,7 +416,7 @@ class ComprehensiveLoadTester:
 
     async def _delayed_user_session(
         self, user_id: str, test_id: str, delay: float, duration: float
-    ) -> List[LoadTestResult]:
+    ) -> list[LoadTestResult]:
         """Start a user session after a delay."""
         await asyncio.sleep(delay)
 
@@ -432,7 +432,7 @@ class ComprehensiveLoadTester:
 
     def _calculate_performance_metrics(
         self, test_id: str, duration: float
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Calculate comprehensive performance metrics."""
         if not self.results:
             return {"error": "No results collected"}
@@ -519,7 +519,7 @@ class ComprehensiveLoadTester:
             "performance_assessment": performance_assessment,
         }
 
-        logger.info(f"Load Test Results:")
+        logger.info("Load Test Results:")
         logger.info(f"  Total Requests: {total_requests}")
         logger.info(f"  Success Rate: {success_rate:.2f}%")
         logger.info(f"  P95 Response Time: {p95_response_time:.2f}ms")
@@ -528,7 +528,7 @@ class ComprehensiveLoadTester:
 
         return results
 
-    def save_results(self, filepath: str, metrics: Dict[str, Any]):
+    def save_results(self, filepath: str, metrics: dict[str, Any]):
         """Save load test results to file."""
         Path(filepath).parent.mkdir(parents=True, exist_ok=True)
         with open(filepath, "w") as f:

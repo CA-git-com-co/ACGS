@@ -310,19 +310,17 @@ class AmendmentStateMachine:
 
             except SQLAlchemyError as e:
                 logger.error(f"Database error in state transition: {e}")
-                await self._record_failed_transition(
-                    context, f"Database error: {str(e)}"
-                )
+                await self._record_failed_transition(context, f"Database error: {e!s}")
                 self.metrics.record_policy_operation("state_transition", "db_error")
-                return {"success": False, "error": f"Database error: {str(e)}"}
+                return {"success": False, "error": f"Database error: {e!s}"}
 
             except Exception as e:
                 logger.error(f"Unexpected error in state transition: {e}")
                 await self._record_failed_transition(
-                    context, f"Unexpected error: {str(e)}"
+                    context, f"Unexpected error: {e!s}"
                 )
                 self.metrics.record_policy_operation("state_transition", "error")
-                return {"success": False, "error": f"State machine error: {str(e)}"}
+                return {"success": False, "error": f"State machine error: {e!s}"}
 
     def register_event_handler(self, event: AmendmentEvent, handler: Callable):
         # requires: Valid input parameters

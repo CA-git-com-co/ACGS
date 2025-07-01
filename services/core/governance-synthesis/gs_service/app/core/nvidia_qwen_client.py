@@ -291,7 +291,7 @@ Please format your response as JSON with the following structure:
         """
         policies_text = "\n\n".join(
             [
-                f"Policy {i+1}:\n{policy}"
+                f"Policy {i + 1}:\n{policy}"
                 for i, policy in enumerate(conflicting_policies)
             ]
         )

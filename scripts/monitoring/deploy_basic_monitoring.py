@@ -9,17 +9,17 @@ Deploys comprehensive monitoring infrastructure for ACGS-2 services including:
 - Target: All services report healthy status and alerts trigger within 1 minute
 """
 
-import os
-import sys
-import logging
 import asyncio
 import json
+import logging
+import sys
 import time
-import yaml
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
 import aiohttp
+import yaml
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -70,10 +70,10 @@ class BasicMonitoringDeployer:
         }
 
         # Monitoring results
-        self.service_health: Dict[str, ServiceHealth] = {}
+        self.service_health: dict[str, ServiceHealth] = {}
         self.alerts_triggered = []
 
-    async def deploy_monitoring_infrastructure(self) -> Dict[str, Any]:
+    async def deploy_monitoring_infrastructure(self) -> dict[str, Any]:
         """Deploy complete monitoring infrastructure."""
         logger.info("🚀 Deploying basic monitoring infrastructure...")
 
@@ -125,7 +125,7 @@ class BasicMonitoringDeployer:
             deployment_results["errors"].append(str(e))
             return deployment_results
 
-    async def _deploy_health_checks(self) -> Dict[str, Any]:
+    async def _deploy_health_checks(self) -> dict[str, Any]:
         """Deploy health check infrastructure."""
         logger.info("🏥 Deploying health check infrastructure...")
 
@@ -176,7 +176,7 @@ class BasicMonitoringDeployer:
 
         return health_results
 
-    async def _deploy_metrics_collection(self) -> Dict[str, Any]:
+    async def _deploy_metrics_collection(self) -> dict[str, Any]:
         """Deploy metrics collection infrastructure."""
         logger.info("📊 Deploying metrics collection...")
 
@@ -228,7 +228,7 @@ class BasicMonitoringDeployer:
 
         return metrics_results
 
-    async def _deploy_alerting_system(self) -> Dict[str, Any]:
+    async def _deploy_alerting_system(self) -> dict[str, Any]:
         """Deploy alerting system."""
         logger.info("🚨 Deploying alerting system...")
 
@@ -307,7 +307,7 @@ class BasicMonitoringDeployer:
 
         return alert_results
 
-    async def _configure_monitoring_dashboards(self) -> Dict[str, Any]:
+    async def _configure_monitoring_dashboards(self) -> dict[str, Any]:
         """Configure monitoring dashboards."""
         logger.info("📈 Configuring monitoring dashboards...")
 
@@ -367,7 +367,7 @@ class BasicMonitoringDeployer:
             logger.error(f"Dashboard configuration failed: {e}")
             raise
 
-    async def _perform_initial_health_check(self) -> Dict[str, Any]:
+    async def _perform_initial_health_check(self) -> dict[str, Any]:
         """Perform initial health check of all services."""
         logger.info("🔍 Performing initial health check...")
 
@@ -428,7 +428,7 @@ class BasicMonitoringDeployer:
 
         return health_results
 
-    async def _test_alert_system(self) -> Dict[str, Any]:
+    async def _test_alert_system(self) -> dict[str, Any]:
         """Test alert system response time."""
         logger.info("⚡ Testing alert system...")
 
@@ -467,7 +467,7 @@ class BasicMonitoringDeployer:
                 "alert_system_functional": False,
             }
 
-    async def _generate_monitoring_report(self, results: Dict[str, Any]):
+    async def _generate_monitoring_report(self, results: dict[str, Any]):
         """Generate comprehensive monitoring deployment report."""
         report_path = self.project_root / "monitoring_deployment_report.json"
 

@@ -5,7 +5,7 @@ Comprehensive Security Input Validation Integration Tests
 Tests the integration of security_validation.py across all ACGS-2 API endpoints
 to ensure 100% coverage of the 8 vulnerable input patterns:
 1. SQL injection
-2. XSS attacks  
+2. XSS attacks
 3. Command injection
 4. Path traversal
 5. JSON injection
@@ -14,13 +14,12 @@ to ensure 100% coverage of the 8 vulnerable input patterns:
 8. NoSQL injection
 """
 
-import pytest
-import asyncio
 import json
 import sys
 from pathlib import Path
-from typing import Dict, List, Any
 from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -29,7 +28,6 @@ sys.path.insert(0, str(project_root))
 from services.shared.security_validation import (
     SecurityInputValidator,
     SecurityValidationMiddleware,
-    validate_user_input,
 )
 
 
@@ -252,7 +250,7 @@ class TestSecurityValidationIntegration:
         for service_path in target_services:
             full_path = project_root / service_path
             if full_path.exists():
-                with open(full_path, "r") as f:
+                with open(full_path) as f:
                     content = f.read()
 
                 # Check that security validation imports are present
@@ -308,7 +306,7 @@ class TestSecurityValidationIntegration:
         report_path = project_root / "security_validation_integration_report.json"
         assert report_path.exists(), "Integration report not found"
 
-        with open(report_path, "r") as f:
+        with open(report_path) as f:
             report = json.load(f)
 
         # Verify report structure

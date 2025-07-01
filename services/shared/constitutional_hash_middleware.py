@@ -6,9 +6,11 @@ Middleware to ensure constitutional hash consistency across all ACGS services.
 Validates and enforces the constitutional hash "cdd01ef066bc6cf2" in all service responses.
 """
 
-import time
 import logging
-from typing import Callable, Dict, Any
+import time
+from collections.abc import Callable
+from typing import Any
+
 from fastapi import Request, Response
 from fastapi.middleware.base import BaseHTTPMiddleware
 
@@ -87,7 +89,7 @@ class ConstitutionalHashValidator:
     """
 
     @staticmethod
-    def validate_hash(provided_hash: str) -> Dict[str, Any]:
+    def validate_hash(provided_hash: str) -> dict[str, Any]:
         """
         Validate a provided constitutional hash against the expected value.
 
@@ -108,7 +110,7 @@ class ConstitutionalHashValidator:
         }
 
     @staticmethod
-    def get_constitutional_info() -> Dict[str, Any]:
+    def get_constitutional_info() -> dict[str, Any]:
         """
         Get constitutional hash information for service responses.
 
@@ -148,8 +150,8 @@ def create_constitutional_health_response(
     service_name: str,
     service_version: str = "3.0.0",
     port: int = 8000,
-    additional_data: Dict[str, Any] = None,
-) -> Dict[str, Any]:
+    additional_data: dict[str, Any] = None,
+) -> dict[str, Any]:
     """
     Create a standardized health response with constitutional hash.
 
@@ -182,7 +184,7 @@ def create_constitutional_health_response(
     return health_response
 
 
-async def validate_constitutional_compliance(request: Request) -> Dict[str, Any]:
+async def validate_constitutional_compliance(request: Request) -> dict[str, Any]:
     """
     Validate constitutional compliance for incoming requests.
 
@@ -214,10 +216,10 @@ async def validate_constitutional_compliance(request: Request) -> Dict[str, Any]
 
 # Export key components
 __all__ = [
+    "CONSTITUTIONAL_HASH",
     "ConstitutionalHashMiddleware",
     "ConstitutionalHashValidator",
     "add_constitutional_hash_middleware",
     "create_constitutional_health_response",
     "validate_constitutional_compliance",
-    "CONSTITUTIONAL_HASH",
 ]

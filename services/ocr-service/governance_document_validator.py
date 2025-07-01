@@ -4,17 +4,17 @@ Governance Document Validator for ACGS
 Provides specialized validation for governance documents processed through OCR
 """
 
-import re
 import logging
-from typing import Dict, List, Any, Optional, Tuple
+import re
 from dataclasses import dataclass
-from enum import Enum
 from datetime import datetime
+from enum import Enum
+from typing import Any
 
 try:
     from .advanced_document_processor import ProcessedDocument, Signature, Watermark
 except ImportError:
-    from advanced_document_processor import ProcessedDocument, Signature, Watermark
+    from advanced_document_processor import ProcessedDocument
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ class ValidationRule:
     description: str
     rule_type: str  # required, recommended, optional
     validator_function: str
-    parameters: Dict[str, Any] = None
+    parameters: dict[str, Any] = None
 
     def __post_init__(self):
         if self.parameters is None:
@@ -66,7 +66,7 @@ class ValidationResult:
     passed: bool
     score: float  # 0.0 to 1.0
     message: str
-    details: Dict[str, Any] = None
+    details: dict[str, Any] = None
 
     def __post_init__(self):
         if self.details is None:
@@ -83,12 +83,12 @@ class DocumentValidationReport:
     overall_score: float
     passed_rules: int
     total_rules: int
-    validation_results: List[ValidationResult]
+    validation_results: list[ValidationResult]
     authenticity_score: float
     compliance_score: float
-    recommendations: List[str]
+    recommendations: list[str]
     timestamp: datetime
-    metadata: Dict[str, Any] = None
+    metadata: dict[str, Any] = None
 
     def __post_init__(self):
         if self.metadata is None:
@@ -177,7 +177,7 @@ class GovernanceDocumentValidator:
 
         return report
 
-    def _initialize_validation_rules(self) -> Dict[str, ValidationRule]:
+    def _initialize_validation_rules(self) -> dict[str, ValidationRule]:
         """Initialize the validation rule set"""
         rules = {
             "has_signatures": ValidationRule(
@@ -244,7 +244,7 @@ class GovernanceDocumentValidator:
 
         return rules
 
-    def _initialize_document_type_rules(self) -> Dict[DocumentType, List[str]]:
+    def _initialize_document_type_rules(self) -> dict[DocumentType, list[str]]:
         """Map document types to applicable validation rules"""
         return {
             DocumentType.CONSTITUTION: [
@@ -314,7 +314,7 @@ class GovernanceDocumentValidator:
 
     def _get_applicable_rules(
         self, document_type: DocumentType, validation_level: ValidationLevel
-    ) -> List[ValidationRule]:
+    ) -> list[ValidationRule]:
         """Get validation rules applicable to document type and validation level"""
         rule_ids = self.document_type_rules.get(document_type, [])
 
@@ -361,20 +361,20 @@ class GovernanceDocumentValidator:
             )
 
         except Exception as e:
-            logger.error(f"Error executing validation rule {rule.rule_id}: {str(e)}")
+            logger.error(f"Error executing validation rule {rule.rule_id}: {e!s}")
             return ValidationResult(
                 rule_id=rule.rule_id,
                 passed=False,
                 score=0.0,
-                message=f"Validation error: {str(e)}",
+                message=f"Validation error: {e!s}",
                 details={"error": str(e)},
             )
 
     # Validation methods
 
     def validate_signatures_present(
-        self, processed_doc: ProcessedDocument, parameters: Dict[str, Any]
-    ) -> Tuple[bool, float, str, Dict[str, Any]]:
+        self, processed_doc: ProcessedDocument, parameters: dict[str, Any]
+    ) -> tuple[bool, float, str, dict[str, Any]]:
         """Validate that document contains signatures"""
         signature_count = len(processed_doc.signatures)
 
@@ -386,12 +386,11 @@ class GovernanceDocumentValidator:
                 f"Found {signature_count} signature(s)",
                 {"signature_count": signature_count},
             )
-        else:
-            return False, 0.0, "No signatures found", {"signature_count": 0}
+        return False, 0.0, "No signatures found", {"signature_count": 0}
 
     def validate_watermarks_present(
-        self, processed_doc: ProcessedDocument, parameters: Dict[str, Any]
-    ) -> Tuple[bool, float, str, Dict[str, Any]]:
+        self, processed_doc: ProcessedDocument, parameters: dict[str, Any]
+    ) -> tuple[bool, float, str, dict[str, Any]]:
         """Validate that document contains watermarks"""
         watermark_count = len(processed_doc.watermarks)
 
@@ -403,12 +402,11 @@ class GovernanceDocumentValidator:
                 f"Found {watermark_count} watermark(s)",
                 {"watermark_count": watermark_count},
             )
-        else:
-            return False, 0.0, "No watermarks found", {"watermark_count": 0}
+        return False, 0.0, "No watermarks found", {"watermark_count": 0}
 
     def validate_document_structure(
-        self, processed_doc: ProcessedDocument, parameters: Dict[str, Any]
-    ) -> Tuple[bool, float, str, Dict[str, Any]]:
+        self, processed_doc: ProcessedDocument, parameters: dict[str, Any]
+    ) -> tuple[bool, float, str, dict[str, Any]]:
         """Validate document has proper structure"""
         text = processed_doc.raw_text
 
@@ -440,8 +438,8 @@ class GovernanceDocumentValidator:
         return passed, structure_score, message, details
 
     def validate_page_numbering(
-        self, processed_doc: ProcessedDocument, parameters: Dict[str, Any]
-    ) -> Tuple[bool, float, str, Dict[str, Any]]:
+        self, processed_doc: ProcessedDocument, parameters: dict[str, Any]
+    ) -> tuple[bool, float, str, dict[str, Any]]:
         """Validate page numbering consistency"""
         page_numbers = processed_doc.page_numbers
 
@@ -479,8 +477,8 @@ class GovernanceDocumentValidator:
         )
 
     def validate_text_quality(
-        self, processed_doc: ProcessedDocument, parameters: Dict[str, Any]
-    ) -> Tuple[bool, float, str, Dict[str, Any]]:
+        self, processed_doc: ProcessedDocument, parameters: dict[str, Any]
+    ) -> tuple[bool, float, str, dict[str, Any]]:
         """Validate OCR text extraction quality"""
         text = processed_doc.raw_text
 
@@ -524,8 +522,8 @@ class GovernanceDocumentValidator:
         return passed, quality_score, message, details
 
     def validate_legal_language(
-        self, processed_doc: ProcessedDocument, parameters: Dict[str, Any]
-    ) -> Tuple[bool, float, str, Dict[str, Any]]:
+        self, processed_doc: ProcessedDocument, parameters: dict[str, Any]
+    ) -> tuple[bool, float, str, dict[str, Any]]:
         """Validate use of appropriate legal language"""
         text = processed_doc.raw_text.lower()
 
@@ -586,8 +584,8 @@ class GovernanceDocumentValidator:
         return passed, score, message, details
 
     def validate_date_consistency(
-        self, processed_doc: ProcessedDocument, parameters: Dict[str, Any]
-    ) -> Tuple[bool, float, str, Dict[str, Any]]:
+        self, processed_doc: ProcessedDocument, parameters: dict[str, Any]
+    ) -> tuple[bool, float, str, dict[str, Any]]:
         """Validate date consistency in document"""
         text = processed_doc.raw_text
 
@@ -619,8 +617,8 @@ class GovernanceDocumentValidator:
         return passed, score, message, details
 
     def validate_signature_authenticity(
-        self, processed_doc: ProcessedDocument, parameters: Dict[str, Any]
-    ) -> Tuple[bool, float, str, Dict[str, Any]]:
+        self, processed_doc: ProcessedDocument, parameters: dict[str, Any]
+    ) -> tuple[bool, float, str, dict[str, Any]]:
         """Validate signature authenticity"""
         signatures = processed_doc.signatures
 
@@ -653,8 +651,8 @@ class GovernanceDocumentValidator:
         return passed, authentic_score, message, details
 
     def validate_checkbox_completion(
-        self, processed_doc: ProcessedDocument, parameters: Dict[str, Any]
-    ) -> Tuple[bool, float, str, Dict[str, Any]]:
+        self, processed_doc: ProcessedDocument, parameters: dict[str, Any]
+    ) -> tuple[bool, float, str, dict[str, Any]]:
         """Validate checkbox completion in forms"""
         checkboxes = processed_doc.checkboxes
 
@@ -686,8 +684,8 @@ class GovernanceDocumentValidator:
         return passed, score, message, details
 
     def validate_table_integrity(
-        self, processed_doc: ProcessedDocument, parameters: Dict[str, Any]
-    ) -> Tuple[bool, float, str, Dict[str, Any]]:
+        self, processed_doc: ProcessedDocument, parameters: dict[str, Any]
+    ) -> tuple[bool, float, str, dict[str, Any]]:
         """Validate table structure and integrity"""
         tables = processed_doc.tables
 
@@ -730,7 +728,7 @@ class GovernanceDocumentValidator:
     # Helper methods for scoring and recommendations
 
     def _calculate_overall_score(
-        self, validation_results: List[ValidationResult]
+        self, validation_results: list[ValidationResult]
     ) -> float:
         """Calculate overall validation score"""
         if not validation_results:
@@ -758,7 +756,7 @@ class GovernanceDocumentValidator:
         return min(1.0, score)
 
     def _calculate_compliance_score(
-        self, validation_results: List[ValidationResult], document_type: DocumentType
+        self, validation_results: list[ValidationResult], document_type: DocumentType
     ) -> float:
         """Calculate compliance score based on document type requirements"""
         if not validation_results:
@@ -804,9 +802,9 @@ class GovernanceDocumentValidator:
 
     def _generate_recommendations(
         self,
-        validation_results: List[ValidationResult],
+        validation_results: list[ValidationResult],
         processed_doc: ProcessedDocument,
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate recommendations based on validation results"""
         recommendations = []
 

@@ -8,7 +8,7 @@ have 0% coverage.
 
 Target Components:
 1. Policy Engine (1 file) - Target: 60% coverage
-2. Constitutional AI (68 files) - Target: 60% coverage  
+2. Constitutional AI (68 files) - Target: 60% coverage
 3. Policy Governance (57 files) - Target: 60% coverage
 4. Governance Workflows (6 files) - Target: 60% coverage
 5. Governance Synthesis (113 files) - Target: 60% coverage
@@ -20,15 +20,13 @@ Success Criteria:
 - Performance tests for critical paths
 """
 
-import os
-import sys
-import logging
-import asyncio
-from pathlib import Path
-from typing import Dict, List, Any, Optional
-import json
 import ast
-import inspect
+import asyncio
+import json
+import logging
+import sys
+from pathlib import Path
+from typing import Any
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -89,7 +87,7 @@ class FunctionalTestSuiteImplementor:
             "synthesis": self._get_synthesis_test_template(),
         }
 
-    async def implement_test_suites(self) -> Dict[str, Any]:
+    async def implement_test_suites(self) -> dict[str, Any]:
         """Implement functional test suites for all critical components."""
         logger.info("🧪 Starting functional test suite implementation...")
 
@@ -134,8 +132,8 @@ class FunctionalTestSuiteImplementor:
             return implementation_results
 
     async def _implement_component_tests(
-        self, component_name: str, config: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, component_name: str, config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Implement tests for a specific component."""
         component_results = {
             "test_files_created": 0,
@@ -176,7 +174,7 @@ class FunctionalTestSuiteImplementor:
 
     async def _analyze_component_structure(
         self, component_path: Path
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Analyze component structure to identify testable elements."""
         analysis = {
             "python_files": [],
@@ -195,7 +193,7 @@ class FunctionalTestSuiteImplementor:
 
             try:
                 # Parse file to extract classes and functions
-                with open(py_file, "r", encoding="utf-8") as f:
+                with open(py_file, encoding="utf-8") as f:
                     content = f.read()
 
                 tree = ast.parse(content)
@@ -234,7 +232,7 @@ class FunctionalTestSuiteImplementor:
         return analysis
 
     async def _create_test_files(
-        self, component_name: str, test_type: str, analysis: Dict[str, Any]
+        self, component_name: str, test_type: str, analysis: dict[str, Any]
     ) -> int:
         """Create test files for a specific test type."""
         test_files_created = 0
@@ -246,7 +244,7 @@ class FunctionalTestSuiteImplementor:
         # Create __init__.py
         init_file = test_dir / "__init__.py"
         if not init_file.exists():
-            init_file.write_text('"""Test suite for {}."""\n'.format(component_name))
+            init_file.write_text(f'"""Test suite for {component_name}."""\n')
 
         if test_type == "unit":
             # Create unit tests for classes and functions
@@ -273,7 +271,7 @@ class FunctionalTestSuiteImplementor:
 
         return test_files_created
 
-    async def _create_unit_tests(self, test_dir: Path, analysis: Dict[str, Any]) -> int:
+    async def _create_unit_tests(self, test_dir: Path, analysis: dict[str, Any]) -> int:
         """Create unit test files."""
         test_files_created = 0
 
@@ -301,7 +299,7 @@ class FunctionalTestSuiteImplementor:
         return test_files_created
 
     def _generate_unit_test_content(
-        self, source_file: Path, classes: List[Dict[str, Any]]
+        self, source_file: Path, classes: list[dict[str, Any]]
     ) -> str:
         """Generate unit test content for classes."""
         template = self.test_templates["unit"]
@@ -344,7 +342,7 @@ class Test{class_name}:
         \"\"\"Clean up after tests.\"\"\"
         # TODO: Add cleanup logic
         pass
-{''.join(test_methods)}
+{"".join(test_methods)}
 """
             test_classes.append(test_class)
 
@@ -369,7 +367,7 @@ from {import_path} import {class_imports}
 '''
 
     async def _create_integration_tests(
-        self, test_dir: Path, analysis: Dict[str, Any]
+        self, test_dir: Path, analysis: dict[str, Any]
     ) -> int:
         """Create integration test files."""
         test_file_path = test_dir / "test_integration.py"
@@ -436,7 +434,7 @@ class TestComponentIntegration:
         assert True  # Placeholder
 '''
 
-    async def _create_api_tests(self, test_dir: Path, analysis: Dict[str, Any]) -> int:
+    async def _create_api_tests(self, test_dir: Path, analysis: dict[str, Any]) -> int:
         """Create API test files."""
         if not analysis["api_endpoints"]:
             return 0
@@ -511,7 +509,7 @@ class TestAPIEndpoints:
 '''
 
     async def _create_performance_tests(
-        self, test_dir: Path, analysis: Dict[str, Any]
+        self, test_dir: Path, analysis: dict[str, Any]
     ) -> int:
         """Create performance test files."""
         test_file_path = test_dir / "test_performance.py"
@@ -608,7 +606,7 @@ class TestPerformance:
 '''
 
     async def _create_workflow_tests(
-        self, test_dir: Path, analysis: Dict[str, Any]
+        self, test_dir: Path, analysis: dict[str, Any]
     ) -> int:
         """Create workflow test files."""
         test_file_path = test_dir / "test_workflows.py"
@@ -683,7 +681,7 @@ class TestWorkflows:
 '''
 
     async def _create_synthesis_tests(
-        self, test_dir: Path, analysis: Dict[str, Any]
+        self, test_dir: Path, analysis: dict[str, Any]
     ) -> int:
         """Create synthesis test files."""
         test_file_path = test_dir / "test_synthesis.py"
@@ -757,7 +755,7 @@ class TestSynthesis:
 '''
 
     async def _estimate_coverage(
-        self, component_name: str, analysis: Dict[str, Any]
+        self, component_name: str, analysis: dict[str, Any]
     ) -> int:
         """Estimate test coverage achieved."""
         # Simple estimation based on testable elements
@@ -771,7 +769,7 @@ class TestSynthesis:
 
         return min(int(coverage_percentage), 60)  # Cap at 60% target
 
-    async def _generate_implementation_report(self, results: Dict[str, Any]):
+    async def _generate_implementation_report(self, results: dict[str, Any]):
         """Generate comprehensive implementation report."""
         report_path = self.project_root / "functional_test_implementation_report.json"
 
@@ -797,8 +795,6 @@ class TestSynthesis:
                 "Integrate with CI/CD pipeline",
             ],
         }
-
-        import json
 
         with open(report_path, "w") as f:
             json.dump(report, f, indent=2)

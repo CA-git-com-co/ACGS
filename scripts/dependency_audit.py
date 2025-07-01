@@ -2,7 +2,7 @@
 """
 ACGS-1 Third-Party Dependency Audit
 
-Comprehensive audit of all third-party dependencies across Python, JavaScript, 
+Comprehensive audit of all third-party dependencies across Python, JavaScript,
 and Rust components to identify security vulnerabilities and licensing issues.
 """
 
@@ -13,7 +13,7 @@ import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -56,7 +56,7 @@ class DependencyAudit:
         os.makedirs("logs", exist_ok=True)
         os.makedirs("reports/security", exist_ok=True)
 
-    def run_audit(self) -> Dict[str, Any]:
+    def run_audit(self) -> dict[str, Any]:
         """Run comprehensive dependency audit."""
         logger.info(f"🔍 Starting dependency audit: {self.audit_id}")
 
@@ -103,7 +103,7 @@ class DependencyAudit:
                     continue
 
                 try:
-                    with open(req_file, "r") as f:
+                    with open(req_file) as f:
                         lines = f.readlines()
 
                     for line_num, line in enumerate(lines, 1):
@@ -149,12 +149,12 @@ class DependencyAudit:
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
-    def _run_pip_audit(self) -> List[Dict[str, Any]]:
+    def _run_pip_audit(self) -> list[dict[str, Any]]:
         """Run pip-audit for Python vulnerabilities."""
         try:
             cmd = ["/home/dislove/.local/bin/pip-audit", "--format=json"]
             result = subprocess.run(
-                cmd, cwd=self.project_root, capture_output=True, text=True
+                cmd, check=False, cwd=self.project_root, capture_output=True, text=True
             )
 
             findings = []
@@ -198,12 +198,12 @@ class DependencyAudit:
             logger.warning(f"pip-audit failed: {e}")
             return []
 
-    def _run_safety_check(self) -> List[Dict[str, Any]]:
+    def _run_safety_check(self) -> list[dict[str, Any]]:
         """Run safety check for Python vulnerabilities."""
         try:
             cmd = ["/home/dislove/.local/bin/safety", "check", "--json"]
             result = subprocess.run(
-                cmd, cwd=self.project_root, capture_output=True, text=True
+                cmd, check=False, cwd=self.project_root, capture_output=True, text=True
             )
 
             findings = []
@@ -255,7 +255,11 @@ class DependencyAudit:
                 try:
                     cmd = ["npm", "audit", "--json"]
                     result = subprocess.run(
-                        cmd, cwd=package_dir, capture_output=True, text=True
+                        cmd,
+                        check=False,
+                        cwd=package_dir,
+                        capture_output=True,
+                        text=True,
                     )
 
                     if result.stdout:
@@ -343,7 +347,7 @@ class DependencyAudit:
                 try:
                     cmd = ["cargo", "audit", "--json"]
                     result = subprocess.run(
-                        cmd, cwd=cargo_dir, capture_output=True, text=True
+                        cmd, check=False, cwd=cargo_dir, capture_output=True, text=True
                     )
 
                     if result.stdout:
@@ -419,7 +423,7 @@ class DependencyAudit:
             req_files = list(self.project_root.rglob("requirements*.txt"))
             for req_file in req_files:
                 try:
-                    with open(req_file, "r") as f:
+                    with open(req_file) as f:
                         lines = [
                             line.strip()
                             for line in f.readlines()
@@ -435,7 +439,7 @@ class DependencyAudit:
                 if "node_modules" in str(package_file):
                     continue
                 try:
-                    with open(package_file, "r") as f:
+                    with open(package_file) as f:
                         package_data = json.load(f)
                         deps = package_data.get("dependencies", {})
                         dev_deps = package_data.get("devDependencies", {})
@@ -449,7 +453,7 @@ class DependencyAudit:
                 if "target" in str(cargo_file):
                     continue
                 try:
-                    with open(cargo_file, "r") as f:
+                    with open(cargo_file) as f:
                         content = f.read()
                         # Simple count of dependencies (not perfect but reasonable estimate)
                         deps_section = False

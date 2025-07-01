@@ -117,7 +117,7 @@ class StagingValidator:
                     }
 
             except Exception as e:
-                self.error(f"❌ {service_name} health check failed: {str(e)}")
+                self.error(f"❌ {service_name} health check failed: {e!s}")
                 all_healthy = False
                 self.validation_results["service_health"][service_name] = {
                     "status": "error",
@@ -167,7 +167,7 @@ class StagingValidator:
                 ] = False
 
         except Exception as e:
-            self.error(f"❌ Performance validation failed: {str(e)}")
+            self.error(f"❌ Performance validation failed: {e!s}")
             performance_passed = False
             self.validation_results["performance_metrics"]["error"] = str(e)
 
@@ -210,6 +210,7 @@ class StagingValidator:
                     "--duration",
                     "60",
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=300,
@@ -244,16 +245,15 @@ class StagingValidator:
                     ] = result.stdout
 
                 return True
-            else:
-                self.error(f"❌ Load testing failed: {result.stderr}")
-                self.validation_results["load_testing"]["error"] = result.stderr
-                return False
+            self.error(f"❌ Load testing failed: {result.stderr}")
+            self.validation_results["load_testing"]["error"] = result.stderr
+            return False
 
         except subprocess.TimeoutExpired:
             self.error("❌ Load testing timed out")
             return False
         except Exception as e:
-            self.error(f"❌ Load testing error: {str(e)}")
+            self.error(f"❌ Load testing error: {e!s}")
             return False
 
     async def run_security_testing(self) -> bool:
@@ -268,6 +268,7 @@ class StagingValidator:
                     "scripts/phase3_security_penetration_testing.py",
                     "--staging-mode",
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=300,
@@ -290,11 +291,10 @@ class StagingValidator:
                     if compliance_score >= 90:
                         self.success(f"✅ Security compliance: {compliance_score}%")
                         return True
-                    else:
-                        self.error(
-                            f"❌ Security compliance: {compliance_score}% (target: ≥90%)"
-                        )
-                        return False
+                    self.error(
+                        f"❌ Security compliance: {compliance_score}% (target: ≥90%)"
+                    )
+                    return False
 
                 except (json.JSONDecodeError, IndexError):
                     self.warning("⚠️ Could not parse security testing results")
@@ -312,7 +312,7 @@ class StagingValidator:
             self.error("❌ Security testing timed out")
             return False
         except Exception as e:
-            self.error(f"❌ Security testing error: {str(e)}")
+            self.error(f"❌ Security testing error: {e!s}")
             return False
 
     async def validate_monitoring(self) -> bool:
@@ -355,7 +355,7 @@ class StagingValidator:
                 monitoring_healthy = False
 
         except Exception as e:
-            self.error(f"❌ Monitoring validation failed: {str(e)}")
+            self.error(f"❌ Monitoring validation failed: {e!s}")
             monitoring_healthy = False
             self.validation_results["monitoring_validation"]["error"] = str(e)
 
@@ -427,7 +427,7 @@ async def main():
         validator.error("Validation interrupted by user")
         sys.exit(1)
     except Exception as e:
-        validator.error(f"Validation failed with exception: {str(e)}")
+        validator.error(f"Validation failed with exception: {e!s}")
         sys.exit(1)
 
 

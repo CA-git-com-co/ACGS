@@ -12,15 +12,13 @@ Usage:
     python tools/large_file_analyzer.py [--threshold-mb SIZE] [--output-format json|table]
 """
 
-import os
-import sys
-import json
 import argparse
-from pathlib import Path
-from datetime import datetime
-from collections import defaultdict
-from typing import Dict, List, Tuple, Optional
 import hashlib
+import json
+import os
+from collections import defaultdict
+from datetime import datetime
+from pathlib import Path
 
 
 class LargeFileAnalyzer:
@@ -93,7 +91,7 @@ class LargeFileAnalyzer:
             size_bytes /= 1024.0
         return f"{size_bytes:.1f}PB"
 
-    def get_file_hash(self, file_path: Path) -> Optional[str]:
+    def get_file_hash(self, file_path: Path) -> str | None:
         """Get MD5 hash of file for duplicate detection."""
         try:
             hash_md5 = hashlib.md5()
@@ -101,7 +99,7 @@ class LargeFileAnalyzer:
                 for chunk in iter(lambda: f.read(4096), b""):
                     hash_md5.update(chunk)
             return hash_md5.hexdigest()
-        except (OSError, IOError):
+        except OSError:
             return None
 
     def should_ignore_path(self, path: str) -> bool:
@@ -128,7 +126,7 @@ class LargeFileAnalyzer:
     def analyze_large_files(self) -> None:
         """Scan and analyze all large files in the project."""
         print(
-            f"🔍 Scanning for files larger than {self.threshold_bytes / (1024*1024):.1f}MB..."
+            f"🔍 Scanning for files larger than {self.threshold_bytes / (1024 * 1024):.1f}MB..."
         )
 
         total_files = 0
@@ -191,7 +189,7 @@ class LargeFileAnalyzer:
                                 "100MB_plus"
                             ].append(file_info)
 
-                except (OSError, IOError):
+                except OSError:
                     continue
 
         print(
@@ -241,7 +239,7 @@ class LargeFileAnalyzer:
             "size_distribution": size_stats,
         }
 
-    def detect_duplicates(self) -> List[Dict]:
+    def detect_duplicates(self) -> list[dict]:
         """Detect potential duplicate files based on size and hash."""
         print("🔍 Detecting potential duplicate files...")
 
@@ -277,7 +275,7 @@ class LargeFileAnalyzer:
 
         return duplicates
 
-    def generate_recommendations(self) -> List[Dict]:
+    def generate_recommendations(self) -> list[dict]:
         """Generate cleanup and optimization recommendations."""
         recommendations = []
 
@@ -333,18 +331,18 @@ class LargeFileAnalyzer:
         print("=" * 80)
 
         summary = self.analysis_results["summary"]
-        print(f"\n📈 SUMMARY:")
+        print("\n📈 SUMMARY:")
         print(f"   Total large files: {summary['total_large_files']}")
         print(f"   Total size: {summary['total_size']}")
         print(f"   Analysis threshold: {self.analysis_results['threshold_mb']}MB")
 
-        print(f"\n📂 BY CATEGORY:")
+        print("\n📂 BY CATEGORY:")
         for category, stats in summary["category_breakdown"].items():
             print(
                 f"   {category:15} {stats['count']:4d} files  {stats['total_size']:>10}  ({stats['percentage']:5.1f}%)"
             )
 
-        print(f"\n📏 BY SIZE RANGE:")
+        print("\n📏 BY SIZE RANGE:")
         for size_range, stats in summary["size_distribution"].items():
             range_name = size_range.replace("_", "-").replace("plus", "+")
             print(
@@ -358,14 +356,14 @@ class LargeFileAnalyzer:
 
         top_files = sorted(all_files, key=lambda x: x["size_bytes"], reverse=True)[:10]
 
-        print(f"\n🔝 TOP 10 LARGEST FILES:")
+        print("\n🔝 TOP 10 LARGEST FILES:")
         for i, file_info in enumerate(top_files, 1):
             print(f"   {i:2d}. {file_info['size_formatted']:>8} {file_info['path']}")
 
         # Show recommendations
         recommendations = self.generate_recommendations()
         if recommendations:
-            print(f"\n💡 RECOMMENDATIONS:")
+            print("\n💡 RECOMMENDATIONS:")
             for rec in recommendations:
                 print(f"   [{rec['priority']}] {rec['title']}")
                 print(f"       {rec['description']}")
@@ -373,7 +371,7 @@ class LargeFileAnalyzer:
         # Show duplicates
         duplicates = self.detect_duplicates()
         if duplicates:
-            print(f"\n🔄 POTENTIAL DUPLICATES:")
+            print("\n🔄 POTENTIAL DUPLICATES:")
             for dup in duplicates[:5]:  # Show top 5
                 print(
                     f"   {len(dup['files'])} files, potential savings: {dup['potential_savings']}"

@@ -5,7 +5,6 @@ Quick test for production dashboard functionality
 
 import asyncio
 import sys
-import os
 
 # Add the project root to the Python path
 sys.path.insert(0, "/home/ubuntu/ACGS")
@@ -98,9 +97,8 @@ async def main():
         print("\n✅ All dashboard tests passed!")
         print("🎉 Production monitoring dashboard is fully operational")
         return 0
-    else:
-        print("\n❌ Dashboard tests failed!")
-        return 1
+    print("\n❌ Dashboard tests failed!")
+    return 1
 
 
 if __name__ == "__main__":

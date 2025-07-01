@@ -5,10 +5,10 @@ Basic ACGS-1 API Versioning Test
 Simple test that validates the core versioning functionality without complex dependencies.
 """
 
-import sys
 import json
-from pathlib import Path
+import sys
 from datetime import datetime, timezone
+from pathlib import Path
 
 
 def test_file_structure():
@@ -48,7 +48,7 @@ def test_file_structure():
             missing_files.append(file_path)
             print(f"  ❌ {file_path} - MISSING")
 
-    print(f"\n📊 File Structure Summary:")
+    print("\n📊 File Structure Summary:")
     print(f"  Existing: {len(existing_files)}")
     print(f"  Missing: {len(missing_files)}")
 
@@ -398,12 +398,12 @@ def main():
         print(f"{status} {test_name.replace('_', ' ').title()}: {completed}/{total}")
 
     print(
-        f"\nOverall: {total_passed}/{total_tests} test categories passed ({total_passed/total_tests*100:.1f}%)"
+        f"\nOverall: {total_passed}/{total_tests} test categories passed ({total_passed / total_tests * 100:.1f}%)"
     )
 
     # Implementation completeness
     completeness = report["implementation_completeness"]
-    print(f"\n🎯 IMPLEMENTATION COMPLETENESS:")
+    print("\n🎯 IMPLEMENTATION COMPLETENESS:")
     print(
         f"  ✅ Core Components: {'COMPLETE' if completeness['core_components'] else 'INCOMPLETE'}"
     )
@@ -437,7 +437,7 @@ def main():
         print("  4. Start phased rollout to production")
 
     else:
-        print(f"\n⚠️ IMPLEMENTATION INCOMPLETE")
+        print("\n⚠️ IMPLEMENTATION INCOMPLETE")
         print("Some components need attention before deployment.")
 
         # Show what's missing
@@ -451,7 +451,7 @@ def main():
     # Save report
     with open("api_versioning_implementation_report.json", "w") as f:
         json.dump(report, f, indent=2)
-    print(f"\n📄 Detailed report saved to: api_versioning_implementation_report.json")
+    print("\n📄 Detailed report saved to: api_versioning_implementation_report.json")
 
     return 0 if report["overall_success"] else 1
 

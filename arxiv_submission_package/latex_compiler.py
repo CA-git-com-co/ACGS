@@ -18,18 +18,14 @@ Usage:
     python latex_compiler.py --watch            # Watch mode for development
 """
 
-import os
-import sys
-import subprocess
-import time
+import hashlib
 import re
-import shutil
-from pathlib import Path
-from typing import List, Dict, Optional, Tuple, Set
+import subprocess
+import sys
+import time
 from dataclasses import dataclass
 from enum import Enum
-import threading
-import hashlib
+from pathlib import Path
 
 
 class LaTeXEngine(Enum):
@@ -54,10 +50,10 @@ class VenueOptimization(Enum):
 class LaTeXError:
     """Represents a LaTeX compilation error."""
 
-    line_number: Optional[int]
+    line_number: int | None
     error_type: str
     message: str
-    suggestion: Optional[str] = None
+    suggestion: str | None = None
 
 
 @dataclass
@@ -88,8 +84,8 @@ class LaTeXCompiler:
         self.watch_mode = False
 
         # File tracking for watch mode
-        self.tracked_files: Set[Path] = set()
-        self.file_hashes: Dict[Path, str] = {}
+        self.tracked_files: set[Path] = set()
+        self.file_hashes: dict[Path, str] = {}
 
         # Compilation state
         self.last_compilation_time = 0
@@ -116,7 +112,7 @@ class LaTeXCompiler:
             timestamp = time.strftime("%H:%M:%S")
             print(f"[{timestamp}] {level}: {message}")
 
-    def detect_dependencies(self) -> Set[Path]:
+    def detect_dependencies(self) -> set[Path]:
         """Detect all LaTeX dependencies (input files, figures, etc.)."""
         dependencies = set()
         dependencies.add(self.main_file)
@@ -127,7 +123,7 @@ class LaTeXCompiler:
                 return
 
             try:
-                with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+                with open(file_path, encoding="utf-8", errors="ignore") as f:
                     content = f.read()
             except Exception:
                 return
@@ -224,8 +220,8 @@ class LaTeXCompiler:
         return False
 
     def run_latex_command(
-        self, additional_args: List[str] = None
-    ) -> Tuple[int, str, str]:
+        self, additional_args: list[str] = None
+    ) -> tuple[int, str, str]:
         """Run LaTeX compilation command."""
         if additional_args is None:
             additional_args = []
@@ -252,6 +248,7 @@ class LaTeXCompiler:
         try:
             result = subprocess.run(
                 cmd,
+                check=False,
                 cwd=self.base_dir,
                 capture_output=True,
                 text=True,
@@ -263,7 +260,7 @@ class LaTeXCompiler:
         except FileNotFoundError:
             return 1, "", f"LaTeX engine not found: {self.engine.value}"
 
-    def parse_log_file(self) -> Tuple[List[LaTeXError], CompilationStats]:
+    def parse_log_file(self) -> tuple[list[LaTeXError], CompilationStats]:
         """Parse LaTeX log file for errors and statistics."""
         log_file = self.base_dir / f"{self.main_file.stem}.log"
         if not log_file.exists():
@@ -273,7 +270,7 @@ class LaTeXCompiler:
         stats = CompilationStats()
 
         try:
-            with open(log_file, "r", encoding="utf-8", errors="ignore") as f:
+            with open(log_file, encoding="utf-8", errors="ignore") as f:
                 log_content = f.read()
         except Exception:
             return errors, stats
@@ -329,7 +326,7 @@ class LaTeXCompiler:
         aux_file = self.base_dir / f"{self.main_file.stem}.aux"
         if aux_file.exists():
             try:
-                with open(aux_file, "r") as f:
+                with open(aux_file) as f:
                     aux_content = f.read()
                     stats.figures = len(re.findall(r"\\@writefile\{lof\}", aux_content))
                     stats.tables = len(re.findall(r"\\@writefile\{lot\}", aux_content))
@@ -341,7 +338,7 @@ class LaTeXCompiler:
 
     def generate_error_suggestion(
         self, error_message: str, error_type: str
-    ) -> Optional[str]:
+    ) -> str | None:
         """Generate helpful suggestions for common LaTeX errors."""
         suggestions = {
             "Undefined control sequence": "Check for typos in command names or missing packages",
@@ -369,7 +366,7 @@ class LaTeXCompiler:
 
         # Check if BibTeX is needed
         try:
-            with open(aux_file, "r") as f:
+            with open(aux_file) as f:
                 aux_content = f.read()
                 if "\\bibdata" not in aux_content:
                     return True  # No bibliography
@@ -380,6 +377,7 @@ class LaTeXCompiler:
         try:
             result = subprocess.run(
                 ["bibtex", self.main_file.stem],
+                check=False,
                 cwd=self.base_dir,
                 capture_output=True,
                 text=True,
@@ -395,7 +393,7 @@ class LaTeXCompiler:
             self.log(f"BibTeX failed: {e}", "ERROR")
             return False
 
-    def compile_once(self) -> Tuple[bool, List[LaTeXError], CompilationStats]:
+    def compile_once(self) -> tuple[bool, list[LaTeXError], CompilationStats]:
         """Perform one compilation pass."""
         self.compilation_count += 1
         self.log(f"Compilation pass {self.compilation_count}")
@@ -415,7 +413,7 @@ class LaTeXCompiler:
 
         return success, errors, stats
 
-    def compile_full(self) -> Tuple[bool, List[LaTeXError], CompilationStats]:
+    def compile_full(self) -> tuple[bool, list[LaTeXError], CompilationStats]:
         """Perform full compilation with bibliography and cross-references."""
         self.log("Starting full LaTeX compilation")
         start_time = time.time()
@@ -451,7 +449,7 @@ class LaTeXCompiler:
         aux_file = self.base_dir / f"{self.main_file.stem}.aux"
         if aux_file.exists() and self.compilation_count < self.max_runs:
             try:
-                with open(aux_file, "r") as f:
+                with open(aux_file) as f:
                     aux_content = f.read()
                     if "Rerun to get cross-references right" in aux_content:
                         self.log("Additional pass needed for cross-references")
@@ -522,7 +520,7 @@ class LaTeXCompiler:
             self.log("Applying ACM optimizations")
 
     def generate_compilation_report(
-        self, errors: List[LaTeXError], stats: CompilationStats
+        self, errors: list[LaTeXError], stats: CompilationStats
     ) -> str:
         """Generate a detailed compilation report."""
         report_lines = [

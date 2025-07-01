@@ -16,6 +16,7 @@ import hashlib
 from pathlib import Path
 
 from nemo_skills.pipeline.cli import run_cmd, wrap_arguments
+
 from tests.conftest import docker_rm_and_mkdir
 
 
@@ -28,7 +29,7 @@ def compute_sha256(file_path):
 
 
 def test_multiple_files():
-    output_file = f"/tmp/nemo-skills-tests/data/processed_multifile_output.jsonl"
+    output_file = "/tmp/nemo-skills-tests/data/processed_multifile_output.jsonl"
     docker_rm_and_mkdir(output_file)
     run_cmd(
         cluster="test-local",
@@ -63,7 +64,7 @@ def test_multiple_files():
 
 
 def test_exclude_keys():
-    output_file = f"/tmp/nemo-skills-tests/data/processed_compact_output.jsonl"
+    output_file = "/tmp/nemo-skills-tests/data/processed_compact_output.jsonl"
     docker_rm_and_mkdir(output_file)
     run_cmd(
         cluster="test-local",
@@ -99,7 +100,7 @@ def test_exclude_keys():
 
 
 def test_code_sft_data():
-    output_file = f"/tmp/nemo-skills-tests/data/code_processed_output.jsonl"
+    output_file = "/tmp/nemo-skills-tests/data/code_processed_output.jsonl"
     docker_rm_and_mkdir(output_file)
     run_cmd(
         cluster="test-local",
@@ -128,7 +129,7 @@ def test_code_sft_data():
 
 
 def test_openmathinstruct2():
-    output_file = f"/tmp/nemo-skills-tests/data/openmathinstruct2-sft.jsonl"
+    output_file = "/tmp/nemo-skills-tests/data/openmathinstruct2-sft.jsonl"
     docker_rm_and_mkdir(output_file)
     run_cmd(
         cluster="test-local",

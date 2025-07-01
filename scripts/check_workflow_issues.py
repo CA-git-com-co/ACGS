@@ -8,7 +8,6 @@ Checks for common issues in GitHub Actions workflows.
 """
 
 import os
-import yaml
 from pathlib import Path
 
 
@@ -48,11 +47,11 @@ def main():
     os.chdir(Path(__file__).parent.parent)
     check_workflow_files()
 
-    print(f"\n✅ Workflow check completed!")
-    print(f"\nNext steps:")
-    print(f"1. Commit and push the fixes")
-    print(f"2. Check GitHub Actions for any remaining failures")
-    print(f"3. Monitor workflow runs after pushing")
+    print("\n✅ Workflow check completed!")
+    print("\nNext steps:")
+    print("1. Commit and push the fixes")
+    print("2. Check GitHub Actions for any remaining failures")
+    print("3. Monitor workflow runs after pushing")
 
 
 if __name__ == "__main__":

@@ -8,7 +8,7 @@ permissions for DGM operations and constitutional compliance.
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 from .models import DGMPermissions, User
 
@@ -45,8 +45,8 @@ class PermissionRule:
 
     resource: ResourceType
     action: ActionType
-    conditions: Optional[Dict[str, Any]] = None
-    description: Optional[str] = None
+    conditions: dict[str, Any] | None = None
+    description: str | None = None
 
 
 class PermissionChecker:
@@ -76,7 +76,7 @@ class PermissionChecker:
             "admin": ["system_admin"],
         }
 
-    def _define_permission_rules(self) -> Dict[str, PermissionRule]:
+    def _define_permission_rules(self) -> dict[str, PermissionRule]:
         """Define all permission rules."""
         rules = {}
 
@@ -197,8 +197,8 @@ class PermissionChecker:
         self,
         user: User,
         permission: str,
-        resource_id: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None,
+        resource_id: str | None = None,
+        context: dict[str, Any] | None = None,
     ) -> bool:
         """
         Check if user has permission for a specific action.
@@ -285,8 +285,8 @@ class PermissionChecker:
         self,
         user: User,
         permission: str,
-        resource_id: Optional[str],
-        context: Optional[Dict[str, Any]],
+        resource_id: str | None,
+        context: dict[str, Any] | None,
     ) -> bool:
         """Check conditional permissions."""
         if permission not in self.permission_rules:
@@ -313,7 +313,7 @@ class PermissionChecker:
 
         return True
 
-    def get_user_permissions(self, user: User) -> Set[str]:
+    def get_user_permissions(self, user: User) -> set[str]:
         """Get all permissions for a user."""
         permissions = set()
 
@@ -327,7 +327,7 @@ class PermissionChecker:
 
         return permissions
 
-    def _get_role_permissions(self, role: str) -> Set[str]:
+    def _get_role_permissions(self, role: str) -> set[str]:
         """Get all permissions for a role."""
         permissions = set()
 
@@ -340,7 +340,7 @@ class PermissionChecker:
 
     def get_resource_permissions(
         self, user: User, resource_type: ResourceType
-    ) -> Dict[ActionType, bool]:
+    ) -> dict[ActionType, bool]:
         """Get user permissions for a specific resource type."""
         permissions = {}
 
@@ -374,7 +374,7 @@ class PermissionChecker:
         """Check if user has DGM admin permissions."""
         return self.check_permission(user, DGMPermissions.DGM_ADMIN.value)
 
-    def get_permission_summary(self, user: User) -> Dict[str, Any]:
+    def get_permission_summary(self, user: User) -> dict[str, Any]:
         """Get a summary of user permissions."""
         all_permissions = self.get_user_permissions(user)
 

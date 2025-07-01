@@ -5,8 +5,8 @@ GitHub Actions Workflow Improvements Validation Script
 This script validates the improvements made to resolve critical workflow failures.
 """
 
-import os
 import json
+import os
 import subprocess
 from pathlib import Path
 
@@ -109,7 +109,7 @@ def main():
 
     # Check git status
     git_status = check_git_status()
-    print(f"\n📁 Repository Status:")
+    print("\n📁 Repository Status:")
     print(
         f"   {'✅' if git_status['clean'] else '⚠️'} Working tree: {'clean' if git_status['clean'] else 'has changes'}"
     )
@@ -137,7 +137,10 @@ def main():
     # Save validation results
     results = {
         "timestamp": subprocess.run(
-            ["date", "-u", "+%Y-%m-%d %H:%M:%S UTC"], capture_output=True, text=True
+            ["date", "-u", "+%Y-%m-%d %H:%M:%S UTC"],
+            check=False,
+            capture_output=True,
+            text=True,
         ).stdout.strip(),
         "fixes": fixes,
         "git_status": git_status,
@@ -147,7 +150,7 @@ def main():
     with open("workflow_validation_results.json", "w") as f:
         json.dump(results, f, indent=2)
 
-    print(f"\n💾 Results saved to: workflow_validation_results.json")
+    print("\n💾 Results saved to: workflow_validation_results.json")
 
     return 0 if all_fixed else 1
 

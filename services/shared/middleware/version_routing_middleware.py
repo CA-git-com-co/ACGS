@@ -7,22 +7,21 @@ integrating seamlessly with existing ACGS middleware stack.
 
 import logging
 import time
-from typing import Any, Callable, Dict, Optional
-from urllib.parse import parse_qs, urlparse
+from collections.abc import Callable
+from typing import Any
 
-from fastapi import HTTPException, Request, Response
+from fastapi import Request, Response
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
-from ..api_models import APIError, APIResponse, APIStatus, ErrorCode
+from ..api_models import APIError, APIStatus, ErrorCode
 from ..versioning.response_transformers import VersionedResponseBuilder
 from ..versioning.version_manager import (
     APIVersion,
     DeprecatedVersionError,
     UnsupportedVersionError,
     VersionManager,
-    VersionValidationError,
 )
 
 logger = logging.getLogger(__name__)
@@ -44,12 +43,12 @@ class VersionRoutingMiddleware(BaseHTTPMiddleware):
         self,
         app: ASGIApp,
         service_name: str,
-        version_manager: Optional[VersionManager] = None,
-        response_builder: Optional[VersionedResponseBuilder] = None,
+        version_manager: VersionManager | None = None,
+        response_builder: VersionedResponseBuilder | None = None,
         enable_strict_validation: bool = True,
         enable_deprecation_warnings: bool = True,
         performance_target_ms: float = 5.0,
-        bypass_paths: Optional[list] = None,
+        bypass_paths: list | None = None,
     ):
         """
         Initialize version routing middleware.
@@ -172,7 +171,7 @@ class VersionRoutingMiddleware(BaseHTTPMiddleware):
         self,
         response: Response,
         version: APIVersion,
-        compatibility_info: Optional[Any] = None,
+        compatibility_info: Any | None = None,
     ):
         """Add version-related headers to response."""
         # Standard version headers
@@ -200,7 +199,7 @@ class VersionRoutingMiddleware(BaseHTTPMiddleware):
         message: str,
         status_code: int,
         request: Request,
-        details: Optional[Dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ) -> JSONResponse:
         """Create standardized error response."""
         # Get correlation ID from request state if available
@@ -237,7 +236,7 @@ class VersionRoutingMiddleware(BaseHTTPMiddleware):
                 f"(target: {self.performance_target_ms}ms)"
             )
 
-    def get_performance_stats(self) -> Dict[str, Any]:
+    def get_performance_stats(self) -> dict[str, Any]:
         """Get middleware performance statistics."""
         avg_latency = (
             self.total_latency_ms / self.request_count if self.request_count > 0 else 0
@@ -261,7 +260,7 @@ def create_version_routing_middleware(
     app: ASGIApp,
     service_name: str,
     current_version: str = "v1.0.0",
-    supported_versions: Optional[list] = None,
+    supported_versions: list | None = None,
     **kwargs,
 ) -> VersionRoutingMiddleware:
     """

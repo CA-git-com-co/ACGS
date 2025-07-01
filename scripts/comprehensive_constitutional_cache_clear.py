@@ -13,25 +13,23 @@ Options:
     --test    Run immediate verification test after cache clearing
 """
 
-import asyncio
 import argparse
+import asyncio
+import hashlib
 import logging
 import sys
 import time
-import hashlib
-import json
 from pathlib import Path
-from typing import Dict, Any, List
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from services.shared.multi_level_cache import MultiLevelCacheManager
 from services.shared.multimodal_ai_service import (
-    get_multimodal_service,
+    ContentType,
     MultimodalRequest,
     RequestType,
-    ContentType,
+    get_multimodal_service,
 )
 
 # Configure logging
@@ -73,7 +71,7 @@ class ComprehensiveConstitutionalCacheCleaner:
             logger.error(f"❌ Failed to initialize cache managers: {e}")
             raise
 
-    def _generate_constitutional_validation_cache_keys(self) -> List[str]:
+    def _generate_constitutional_validation_cache_keys(self) -> list[str]:
         """Generate cache keys for known constitutional validation content."""
 
         test_contents = [
@@ -160,8 +158,10 @@ class ComprehensiveConstitutionalCacheCleaner:
                                 )
                             )
                             if keys:
-                                await self.multi_level_cache.l3_cache.redis_client.delete(
-                                    *keys
+                                await (
+                                    self.multi_level_cache.l3_cache.redis_client.delete(
+                                        *keys
+                                    )
                                 )
                                 self.cleared_counts["specific_keys"] += len(keys)
                                 logger.info(
@@ -318,7 +318,7 @@ class ComprehensiveConstitutionalCacheCleaner:
 
             if success:
                 logger.info("✅ Constitutional compliance test PASSED")
-                logger.info(f"   Content: Citizens have the right to participate...")
+                logger.info("   Content: Citizens have the right to participate...")
                 logger.info(f"   Compliant: {response.constitutional_compliance}")
                 logger.info(f"   Confidence: {response.confidence_score:.3f}")
                 logger.info(f"   Model: {response.model_used.value}")
@@ -367,13 +367,11 @@ async def main():
                     "🎉 Cache clearing and verification completed successfully!"
                 )
                 return 0
-            else:
-                logger.error("❌ Verification failed after cache clearing")
-                return 1
-        else:
-            logger.info("🎉 Cache clearing completed successfully!")
-            logger.info("💡 Run with --test to verify constitutional compliance")
-            return 0
+            logger.error("❌ Verification failed after cache clearing")
+            return 1
+        logger.info("🎉 Cache clearing completed successfully!")
+        logger.info("💡 Run with --test to verify constitutional compliance")
+        return 0
 
     except Exception as e:
         logger.error(f"❌ Cache clearing failed: {e}")

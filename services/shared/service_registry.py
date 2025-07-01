@@ -384,11 +384,10 @@ async def call_service(
 
             if response.status_code == 200:
                 return response.json()
-            else:
-                logger.error(
-                    f"Service call failed: {response.status_code} - {response.text}"
-                )
-                return None
+            logger.error(
+                f"Service call failed: {response.status_code} - {response.text}"
+            )
+            return None
 
     except Exception as e:
         logger.error(f"Error calling service {service_name}: {e}")
@@ -397,10 +396,10 @@ async def call_service(
 
 # Export main functions and classes
 __all__ = [
-    "ServiceRegistry",
     "ServiceInfo",
+    "ServiceRegistry",
     "ServiceStatus",
-    "service_registry",
-    "get_service_url",
     "call_service",
+    "get_service_url",
+    "service_registry",
 ]

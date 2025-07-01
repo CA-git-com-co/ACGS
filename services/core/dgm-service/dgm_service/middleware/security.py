@@ -4,7 +4,7 @@ Security middleware for DGM Service.
 
 import logging
 import time
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -161,7 +161,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
         return False
 
-    def _has_suspicious_patterns(self, security_info: Dict[str, Any]) -> bool:
+    def _has_suspicious_patterns(self, security_info: dict[str, Any]) -> bool:
         """Check if security info contains suspicious patterns."""
         # Check for empty or missing User-Agent
         if not security_info.get("user_agent"):

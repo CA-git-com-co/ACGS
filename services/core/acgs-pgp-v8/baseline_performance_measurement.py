@@ -15,17 +15,17 @@ Metrics measured:
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import sys
-import os
-import logging
 import json
+import logging
+import os
+import sys
 import time
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from typing import Any
+
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Tuple
-from dataclasses import dataclass, asdict
-from pathlib import Path
 
 # Add project paths
 sys.path.append("/home/ubuntu/ACGS/services/shared")
@@ -84,7 +84,7 @@ class BaselineMetrics:
     sample_size: int
 
 
-def generate_synthetic_training_data(n_samples: int = 1000) -> List[Dict[str, Any]]:
+def generate_synthetic_training_data(n_samples: int = 1000) -> list[dict[str, Any]]:
     """Generate synthetic training data for baseline measurement."""
     logger.info(f"Generating {n_samples} synthetic training samples...")
 
@@ -163,20 +163,20 @@ def generate_synthetic_training_data(n_samples: int = 1000) -> List[Dict[str, An
     return training_data
 
 
-def train_baseline_models(training_data: List[Dict[str, Any]]) -> Dict[str, Any]:
+def train_baseline_models(training_data: list[dict[str, Any]]) -> dict[str, Any]:
     """Train baseline ML models and measure training efficiency."""
     logger.info("Training baseline ML models...")
 
-    from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
-    from sklearn.preprocessing import StandardScaler, LabelEncoder
-    from sklearn.model_selection import train_test_split
+    import psutil
+    from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
     from sklearn.metrics import (
+        accuracy_score,
         mean_absolute_error,
         mean_squared_error,
         r2_score,
-        accuracy_score,
     )
-    import psutil
+    from sklearn.model_selection import train_test_split
+    from sklearn.preprocessing import LabelEncoder, StandardScaler
 
     start_time = time.time()
     process = psutil.Process()
@@ -314,7 +314,7 @@ def train_baseline_models(training_data: List[Dict[str, Any]]) -> Dict[str, Any]
     }
 
 
-def measure_prediction_performance(models_data: Dict[str, Any]) -> Dict[str, float]:
+def measure_prediction_performance(models_data: dict[str, Any]) -> dict[str, float]:
     """Measure prediction performance and latency."""
     logger.info("Measuring prediction performance...")
 
@@ -350,14 +350,14 @@ def measure_prediction_performance(models_data: Dict[str, Any]) -> Dict[str, flo
     }
 
 
-def verify_constitutional_integrity() -> Dict[str, Any]:
+def verify_constitutional_integrity() -> dict[str, Any]:
     """Verify constitutional hash integrity."""
     logger.info("Verifying constitutional hash integrity...")
 
     constitutional_hash = "cdd01ef066bc6cf2"
 
     # Check current file
-    with open(__file__, "r") as f:
+    with open(__file__) as f:
         content = f.read()
         hash_in_file = constitutional_hash in content
 
@@ -374,7 +374,7 @@ def verify_constitutional_integrity() -> Dict[str, Any]:
     for file_path in key_files:
         try:
             if os.path.exists(file_path):
-                with open(file_path, "r") as f:
+                with open(file_path) as f:
                     if constitutional_hash in f.read():
                         hash_verified_files += 1
         except Exception as e:
@@ -395,9 +395,9 @@ def verify_constitutional_integrity() -> Dict[str, Any]:
 
 
 def calculate_baseline_metrics(
-    models_data: Dict[str, Any],
-    performance_data: Dict[str, float],
-    integrity_data: Dict[str, Any],
+    models_data: dict[str, Any],
+    performance_data: dict[str, float],
+    integrity_data: dict[str, Any],
 ) -> BaselineMetrics:
     """Calculate comprehensive baseline metrics."""
     logger.info("Calculating comprehensive baseline metrics...")
@@ -499,7 +499,7 @@ def save_baseline_results(
         f.write(f"**Generated:** {baseline.measurement_timestamp}\n")
         f.write(f"**Version:** {baseline.baseline_version}\n")
         f.write(f"**Sample Size:** {baseline.sample_size:,}\n")
-        f.write(f"**Constitutional Hash:** cdd01ef066bc6cf2\n\n")
+        f.write("**Constitutional Hash:** cdd01ef066bc6cf2\n\n")
 
         f.write("## 📊 Key Performance Metrics\n\n")
         f.write(

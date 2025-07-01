@@ -13,7 +13,7 @@ import asyncio
 import json
 import os
 import sys
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 # Add the backend directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src", "backend"))
@@ -54,7 +54,7 @@ async def test_mab_metrics_generation():
         ]
 
         for i, scenario in enumerate(scenarios):
-            print(f"   Processing scenario {i+1}: {scenario['name']}")
+            print(f"   Processing scenario {i + 1}: {scenario['name']}")
 
             # Select template
             context = {
@@ -267,7 +267,7 @@ async def test_mab_prometheus_metrics():
             )
             prometheus_metrics.append("# TYPE mab_template_uses_total counter")
             prometheus_metrics.append(
-                f"mab_template_uses_total{{template_id=\"{template_id}\",template_name=\"{template_name}\"}} {template_data.get('total_uses', 0)}"
+                f'mab_template_uses_total{{template_id="{template_id}",template_name="{template_name}"}} {template_data.get("total_uses", 0)}'
             )
 
             prometheus_metrics.append(
@@ -275,7 +275,7 @@ async def test_mab_prometheus_metrics():
             )
             prometheus_metrics.append("# TYPE mab_template_average_reward gauge")
             prometheus_metrics.append(
-                f"mab_template_average_reward{{template_id=\"{template_id}\",template_name=\"{template_name}\"}} {template_data.get('average_reward', 0.0)}"
+                f'mab_template_average_reward{{template_id="{template_id}",template_name="{template_name}"}} {template_data.get("average_reward", 0.0)}'
             )
 
         prometheus_output = "\n".join(prometheus_metrics)
@@ -291,9 +291,8 @@ async def test_mab_prometheus_metrics():
         ):
             print("✅ Prometheus format validation passed")
             return True
-        else:
-            print("❌ Prometheus format validation failed")
-            return False
+        print("❌ Prometheus format validation failed")
+        return False
 
     except Exception as e:
         print(f"❌ MAB Prometheus metrics test failed: {e}")
@@ -342,7 +341,7 @@ async def main():
         print(f"{test_name:.<40} {status}")
 
     print("-" * 70)
-    print(f"Overall: {passed}/{total} tests passed ({passed/total*100:.1f}%)")
+    print(f"Overall: {passed}/{total} tests passed ({passed / total * 100:.1f}%)")
 
     if passed == total:
         print("\n🎉 All MAB metrics endpoint tests passed!")
@@ -354,9 +353,8 @@ async def main():
             "When GS service is properly deployed, the /api/v1/mab/metrics endpoint will work correctly."
         )
         return True
-    else:
-        print(f"\n⚠️  {total - passed} test(s) failed. Please review implementation.")
-        return False
+    print(f"\n⚠️  {total - passed} test(s) failed. Please review implementation.")
+    return False
 
 
 if __name__ == "__main__":

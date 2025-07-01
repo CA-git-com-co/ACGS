@@ -102,8 +102,7 @@ class PathUpdater:
                     f"✅ Updated {file_path} ({replacements_made} replacements)"
                 )
                 return True, replacements_made
-            else:
-                return False, 0
+            return False, 0
 
         except Exception as e:
             logger.error(f"❌ Failed to update {file_path}: {e}")
@@ -140,9 +139,8 @@ class PathUpdater:
             for file_path in remaining_files:
                 logger.warning(f"  - {file_path}")
             return False
-        else:
-            logger.info("✅ All old paths have been successfully updated")
-            return True
+        logger.info("✅ All old paths have been successfully updated")
+        return True
 
 
 def main():
@@ -164,9 +162,8 @@ def main():
     if updater.validate_updates():
         logger.info("✅ Path update process completed successfully!")
         return 0
-    else:
-        logger.error("❌ Some files still contain old paths")
-        return 1
+    logger.error("❌ Some files still contain old paths")
+    return 1
 
 
 if __name__ == "__main__":

@@ -197,21 +197,20 @@ class WorkflowRecoveryManager:
             if plan.recovery_action == RecoveryAction.RETRY:
                 return await self._execute_retry(plan)
 
-            elif plan.recovery_action == RecoveryAction.ROLLBACK:
+            if plan.recovery_action == RecoveryAction.ROLLBACK:
                 return await self._execute_rollback(plan)
 
-            elif plan.recovery_action == RecoveryAction.ALTERNATIVE_PATH:
+            if plan.recovery_action == RecoveryAction.ALTERNATIVE_PATH:
                 return await self._execute_alternative_path(plan)
 
-            elif plan.recovery_action == RecoveryAction.SKIP:
+            if plan.recovery_action == RecoveryAction.SKIP:
                 return await self._execute_skip(plan)
 
-            elif plan.recovery_action == RecoveryAction.MANUAL_INTERVENTION:
+            if plan.recovery_action == RecoveryAction.MANUAL_INTERVENTION:
                 return await self._request_manual_intervention(plan)
 
-            else:
-                logger.error(f"Unknown recovery action: {plan.recovery_action}")
-                return False
+            logger.error(f"Unknown recovery action: {plan.recovery_action}")
+            return False
 
         except Exception as e:
             logger.error(f"Recovery execution failed for plan {recovery_plan_id}: {e}")

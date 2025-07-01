@@ -5,14 +5,11 @@ Tests the core functionality of agent CRUD operations, authentication,
 and identity management.
 """
 
-import pytest
-import asyncio
-from unittest.mock import Mock, AsyncMock
-from datetime import datetime
-
 # Mock the database and service classes for unit testing
 from dataclasses import dataclass
-from typing import Optional, Dict, Any
+from datetime import datetime
+
+import pytest
 
 
 @dataclass

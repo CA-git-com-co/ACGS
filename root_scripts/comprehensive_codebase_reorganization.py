@@ -14,15 +14,13 @@ Author: ACGS-1 Development Team
 Version: 1.0.0
 """
 
-import os
-import sys
 import json
+import logging
 import shutil
 import subprocess
-import logging
-from pathlib import Path
+import sys
 from datetime import datetime
-from typing import Dict, List, Tuple, Optional
+from pathlib import Path
 
 # Configure logging
 logging.basicConfig(
@@ -30,7 +28,7 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
         logging.FileHandler(
-            f'acgs_reorganization_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log'
+            f"acgs_reorganization_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
         ),
         logging.StreamHandler(),
     ],
@@ -89,11 +87,12 @@ class ACGSReorganizer:
             logger.error(f"Backup creation failed: {e}")
             return False
 
-    def validate_service_health(self) -> Dict[str, bool]:
+    def validate_service_health(self) -> dict[str, bool]:
         """Validate current service health status"""
         try:
             result = subprocess.run(
                 ["python3", "check_service_health.py"],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -332,13 +331,13 @@ class ACGSReorganizer:
             if len(files) > 1:
                 self._merge_requirements_files(files, service)
 
-    def _merge_requirements_files(self, files: List[Path], service: str):
+    def _merge_requirements_files(self, files: list[Path], service: str):
         """Merge multiple requirements files for a service"""
         all_deps = set()
 
         for req_file in files:
             try:
-                with open(req_file, "r") as f:
+                with open(req_file) as f:
                     for line in f:
                         line = line.strip()
                         if line and not line.startswith("#"):

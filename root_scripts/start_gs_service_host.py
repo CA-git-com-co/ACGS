@@ -98,11 +98,10 @@ def start_gs_service():
         if process.poll() is None:
             print("✅ GS Service process is running")
             return process
-        else:
-            print("❌ GS Service process exited")
-            stdout, stderr = process.communicate()
-            print(f"Output: {stdout}")
-            return None
+        print("❌ GS Service process exited")
+        stdout, stderr = process.communicate()
+        print(f"Output: {stdout}")
+        return None
 
     except Exception as e:
         print(f"❌ Failed to start GS Service: {e}")
@@ -135,13 +134,11 @@ async def test_gs_service():
                     if ac_status == "healthy" and integrity_status == "healthy":
                         print("🎉 SUCCESS: All dependencies are healthy!")
                         return True
-                    else:
-                        print(
-                            f"⚠️ Dependencies status: AC={ac_status}, Integrity={integrity_status}"
-                        )
-                        return True  # Service is running, dependencies might take time
-                else:
-                    print(f"⚠️ GS Service returned HTTP {response.status_code}")
+                    print(
+                        f"⚠️ Dependencies status: AC={ac_status}, Integrity={integrity_status}"
+                    )
+                    return True  # Service is running, dependencies might take time
+                print(f"⚠️ GS Service returned HTTP {response.status_code}")
 
         except Exception as e:
             print(f"⚠️ Attempt {attempt + 1}/{max_retries}: {e}")
@@ -183,15 +180,14 @@ def main():
         print("   # or")
         print("   pkill -f 'uvicorn.*8004'")
         return 0
-    else:
-        print("\n❌ GS Service failed to start properly")
-        print("🔧 Stopping the process...")
-        try:
-            process.terminate()
-            process.wait(timeout=5)
-        except:
-            process.kill()
-        return 1
+    print("\n❌ GS Service failed to start properly")
+    print("🔧 Stopping the process...")
+    try:
+        process.terminate()
+        process.wait(timeout=5)
+    except:
+        process.kill()
+    return 1
 
 
 if __name__ == "__main__":

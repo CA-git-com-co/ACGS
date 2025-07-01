@@ -214,7 +214,7 @@ async def test_constitutional_synthesis_pipeline():
             }
 
             synthesis_results.append(result)
-            print(f"✅ Synthesis completed in {total_time*1000:.2f}ms")
+            print(f"✅ Synthesis completed in {total_time * 1000:.2f}ms")
             print(
                 f"   - Template: {selected_template.name if selected_template else 'None'}"
             )
@@ -232,7 +232,7 @@ async def test_constitutional_synthesis_pipeline():
         print(f"   - Average template selection: {avg_template_time:.2f}ms")
         print(f"   - Average total synthesis: {avg_total_time:.2f}ms")
         print(
-            f"   - Template selection overhead: {(avg_template_time/avg_total_time)*100:.1f}%"
+            f"   - Template selection overhead: {(avg_template_time / avg_total_time) * 100:.1f}%"
         )
 
         return True
@@ -265,7 +265,7 @@ async def test_mab_performance_tracking():
         performance_data = []
 
         for i, scenario in enumerate(TEST_SCENARIOS):
-            print(f"\n📋 Performance round {i+1}: {scenario['name']}")
+            print(f"\n📋 Performance round {i + 1}: {scenario['name']}")
 
             # Select template
             prompt_context = {
@@ -387,7 +387,7 @@ async def main():
         print(f"{test_name:.<40} {status}")
 
     print("-" * 70)
-    print(f"Overall: {passed}/{total} tests passed ({passed/total*100:.1f}%)")
+    print(f"Overall: {passed}/{total} tests passed ({passed / total * 100:.1f}%)")
 
     if passed == total:
         print("\n🎉 All real-world validation tests passed!")
@@ -398,9 +398,8 @@ async def main():
         print("- ✅ Performance tracking and optimization active")
         print("- ✅ Ready for Phase 3: Performance monitoring setup")
         return True
-    else:
-        print(f"\n⚠️  {total - passed} test(s) failed. Please review and fix issues.")
-        return False
+    print(f"\n⚠️  {total - passed} test(s) failed. Please review and fix issues.")
+    return False
 
 
 if __name__ == "__main__":

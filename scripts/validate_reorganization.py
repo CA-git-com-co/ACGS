@@ -123,6 +123,7 @@ def check_docker_compose():
     try:
         result = subprocess.run(
             ["docker-compose", "-f", "config/docker/docker-compose.yml", "config"],
+            check=False,
             capture_output=True,
             text=True,
             cwd=".",
@@ -131,9 +132,8 @@ def check_docker_compose():
         if result.returncode == 0:
             print("  ✅ Docker Compose configuration is valid")
             return True
-        else:
-            print(f"  ❌ Docker Compose validation failed: {result.stderr}")
-            return False
+        print(f"  ❌ Docker Compose validation failed: {result.stderr}")
+        return False
     except FileNotFoundError:
         print("  ⚠️  Docker Compose not available, skipping validation")
         return True
@@ -178,9 +178,8 @@ def main():
     if passed == total:
         print("🎉 All validation checks passed! Reorganization successful.")
         return 0
-    else:
-        print("⚠️  Some validation checks failed. Please review and fix issues.")
-        return 1
+    print("⚠️  Some validation checks failed. Please review and fix issues.")
+    return 1
 
 
 if __name__ == "__main__":

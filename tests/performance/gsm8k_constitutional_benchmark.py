@@ -27,7 +27,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 import numpy as np
@@ -76,15 +76,15 @@ class GSM8KResult:
     """Results from GSM8K benchmark testing."""
 
     problem_id: str
-    predicted_answer: Optional[float]
+    predicted_answer: float | None
     actual_answer: float
     is_correct: bool
     response_time_ms: float
-    reasoning_steps: List[str]
+    reasoning_steps: list[str]
     constitutional_compliance_score: float
     confidence_score: float
     model_used: str
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 class ConstitutionalGSM8KGenerator:
@@ -104,7 +104,7 @@ class ConstitutionalGSM8KGenerator:
 
     def generate_constitutional_gsm8k_problems(
         self, count: int = 100
-    ) -> List[GSM8KProblem]:
+    ) -> list[GSM8KProblem]:
         """Generate GSM8K problems with constitutional governance context."""
         problems = []
 
@@ -347,11 +347,11 @@ class GSM8KBenchmarkRunner:
 
     def __init__(self):
         self.generator = ConstitutionalGSM8KGenerator()
-        self.results: List[GSM8KResult] = []
+        self.results: list[GSM8KResult] = []
 
     async def run_benchmark(
-        self, num_problems: int = 100, models: List[str] = None
-    ) -> Dict[str, Any]:
+        self, num_problems: int = 100, models: list[str] = None
+    ) -> dict[str, Any]:
         """Run comprehensive GSM8K benchmark test."""
         if models is None:
             models = ["meta/llama-3.1-8b-instruct"]
@@ -417,7 +417,7 @@ class GSM8KBenchmarkRunner:
             },
         }
 
-        logger.info(f"GSM8K Benchmark Results:")
+        logger.info("GSM8K Benchmark Results:")
         logger.info(f"  Accuracy: {accuracy:.2f}% (Target: ≥85%)")
         logger.info(f"  Avg Response Time: {avg_response_time:.2f}ms (Target: ≤2000ms)")
         logger.info(

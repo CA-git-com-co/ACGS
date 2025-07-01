@@ -15,7 +15,7 @@ import logging
 import os
 import time
 from contextlib import contextmanager
-from typing import Any, Dict, Optional
+from typing import Any
 
 from opentelemetry import trace
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
@@ -50,8 +50,8 @@ class ACGSTracingManager:
         service_name: str,
         service_version: str = "1.0.0",
         environment: str = "production",
-        jaeger_endpoint: Optional[str] = None,
-        otlp_endpoint: Optional[str] = None,
+        jaeger_endpoint: str | None = None,
+        otlp_endpoint: str | None = None,
         sampling_rate: float = 0.1,
         enable_console_export: bool = False,
     ):
@@ -81,8 +81,8 @@ class ACGSTracingManager:
         )
 
         # Tracing components
-        self.tracer_provider: Optional[TracerProvider] = None
-        self.tracer: Optional[trace.Tracer] = None
+        self.tracer_provider: TracerProvider | None = None
+        self.tracer: trace.Tracer | None = None
 
         # Performance tracking
         self.instrumentation_overhead = 0.0
@@ -137,8 +137,8 @@ class ACGSTracingManager:
 
             logger.info(
                 f"✅ OpenTelemetry tracing initialized for {self.service_name} "
-                f"(overhead: {self.instrumentation_overhead*1000:.2f}ms, "
-                f"sampling: {self.sampling_rate*100:.1f}%)"
+                f"(overhead: {self.instrumentation_overhead * 1000:.2f}ms, "
+                f"sampling: {self.sampling_rate * 100:.1f}%)"
             )
 
             return True
@@ -246,8 +246,8 @@ class ACGSTracingManager:
     def trace_operation(
         self,
         operation_name: str,
-        attributes: Optional[Dict[str, Any]] = None,
-        operation_type: Optional[str] = None,
+        attributes: dict[str, Any] | None = None,
+        operation_type: str | None = None,
     ):
         """Context manager for tracing operations.
 
@@ -287,9 +287,9 @@ class ACGSTracingManager:
     def trace_constitutional_operation(
         self,
         operation_name: str,
-        constitutional_hash: Optional[str] = None,
-        policy_id: Optional[str] = None,
-        compliance_score: Optional[float] = None,
+        constitutional_hash: str | None = None,
+        policy_id: str | None = None,
+        compliance_score: float | None = None,
     ):
         """Decorator for tracing constitutional governance operations.
 
@@ -388,16 +388,15 @@ class ACGSTracingManager:
 
             if asyncio.iscoroutinefunction(func):
                 return async_wrapper
-            else:
-                return sync_wrapper
+            return sync_wrapper
 
         return decorator
 
     def trace_governance_workflow(
         self,
         workflow_name: str,
-        workflow_stage: Optional[str] = None,
-        user_id: Optional[str] = None,
+        workflow_stage: str | None = None,
+        user_id: str | None = None,
     ):
         """Decorator for tracing governance workflow operations.
 
@@ -451,12 +450,11 @@ class ACGSTracingManager:
 
             if asyncio.iscoroutinefunction(func):
                 return async_wrapper
-            else:
-                return sync_wrapper
+            return sync_wrapper
 
         return decorator
 
-    def get_performance_metrics(self) -> Dict[str, Any]:
+    def get_performance_metrics(self) -> dict[str, Any]:
         """Get tracing performance metrics.
 
         Returns:
@@ -491,7 +489,7 @@ class ACGSTracingManager:
 
 
 # Global tracing manager instance
-_tracing_manager: Optional[ACGSTracingManager] = None
+_tracing_manager: ACGSTracingManager | None = None
 
 
 def get_tracing_manager(

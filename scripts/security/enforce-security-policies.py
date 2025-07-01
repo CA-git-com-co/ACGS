@@ -6,17 +6,17 @@ This script enforces security policies across the ACGS-1 codebase and infrastruc
 It validates configurations, checks for security violations, and generates reports.
 """
 
-import os
-import sys
-import json
-import yaml
-import subprocess
 import argparse
+import json
 import logging
-from pathlib import Path
-from typing import Dict, List, Any, Optional
+import subprocess
+import sys
 from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+import yaml
 
 # Configure logging
 logging.basicConfig(
@@ -32,7 +32,7 @@ class SecurityViolation:
     rule: str
     severity: str
     file_path: str
-    line_number: Optional[int]
+    line_number: int | None
     description: str
     recommendation: str
 
@@ -44,12 +44,12 @@ class SecurityPolicyEnforcer:
         """Initialize the security policy enforcer."""
         self.config_path = config_path
         self.config = self._load_config()
-        self.violations: List[SecurityViolation] = []
+        self.violations: list[SecurityViolation] = []
 
-    def _load_config(self) -> Dict[str, Any]:
+    def _load_config(self) -> dict[str, Any]:
         """Load security configuration from YAML file."""
         try:
-            with open(self.config_path, "r") as f:
+            with open(self.config_path) as f:
                 return yaml.safe_load(f)
         except FileNotFoundError:
             logger.error(f"Security config file not found: {self.config_path}")
@@ -66,7 +66,7 @@ class SecurityPolicyEnforcer:
         dockerfiles = []
 
         for pattern in dockerfile_patterns:
-            dockerfiles.extend(Path(".").glob(pattern))
+            dockerfiles.extend(Path().glob(pattern))
 
         for dockerfile in dockerfiles:
             self._check_single_dockerfile(dockerfile)
@@ -74,7 +74,7 @@ class SecurityPolicyEnforcer:
     def _check_single_dockerfile(self, dockerfile_path: Path) -> None:
         """Check security policies for a single Dockerfile."""
         try:
-            with open(dockerfile_path, "r") as f:
+            with open(dockerfile_path) as f:
                 content = f.read()
                 lines = content.splitlines()
 
@@ -125,7 +125,7 @@ class SecurityPolicyEnforcer:
         """Check environment files for security issues."""
         logger.info("Checking environment files for security issues...")
 
-        env_files = list(Path(".").glob("**/*.env")) + list(Path(".").glob("**/.*env*"))
+        env_files = list(Path().glob("**/*.env")) + list(Path().glob("**/.*env*"))
 
         for env_file in env_files:
             self._check_single_env_file(env_file)
@@ -133,7 +133,7 @@ class SecurityPolicyEnforcer:
     def _check_single_env_file(self, env_file_path: Path) -> None:
         """Check security policies for a single environment file."""
         try:
-            with open(env_file_path, "r") as f:
+            with open(env_file_path) as f:
                 lines = f.readlines()
 
             for i, line in enumerate(lines, 1):
@@ -171,8 +171,8 @@ class SecurityPolicyEnforcer:
         """Check Docker Compose files for security issues."""
         logger.info("Checking Docker Compose security policies...")
 
-        compose_files = list(Path(".").glob("**/docker-compose*.yml")) + list(
-            Path(".").glob("**/docker-compose*.yaml")
+        compose_files = list(Path().glob("**/docker-compose*.yml")) + list(
+            Path().glob("**/docker-compose*.yaml")
         )
 
         for compose_file in compose_files:
@@ -181,7 +181,7 @@ class SecurityPolicyEnforcer:
     def _check_single_compose_file(self, compose_file_path: Path) -> None:
         """Check security policies for a single Docker Compose file."""
         try:
-            with open(compose_file_path, "r") as f:
+            with open(compose_file_path) as f:
                 compose_data = yaml.safe_load(f)
 
             if "services" not in compose_data:
@@ -235,10 +235,10 @@ class SecurityPolicyEnforcer:
         logger.info("Checking Kubernetes security policies...")
 
         k8s_files = (
-            list(Path(".").glob("**/kubernetes/**/*.yml"))
-            + list(Path(".").glob("**/kubernetes/**/*.yaml"))
-            + list(Path(".").glob("**/k8s/**/*.yml"))
-            + list(Path(".").glob("**/k8s/**/*.yaml"))
+            list(Path().glob("**/kubernetes/**/*.yml"))
+            + list(Path().glob("**/kubernetes/**/*.yaml"))
+            + list(Path().glob("**/k8s/**/*.yml"))
+            + list(Path().glob("**/k8s/**/*.yaml"))
         )
 
         for k8s_file in k8s_files:
@@ -247,7 +247,7 @@ class SecurityPolicyEnforcer:
     def _check_single_k8s_file(self, k8s_file_path: Path) -> None:
         """Check security policies for a single Kubernetes manifest."""
         try:
-            with open(k8s_file_path, "r") as f:
+            with open(k8s_file_path) as f:
                 # Handle multiple YAML documents in one file
                 documents = yaml.safe_load_all(f)
 
@@ -262,7 +262,7 @@ class SecurityPolicyEnforcer:
             logger.error(f"Error checking {k8s_file_path}: {e}")
 
     def _check_k8s_pod_security(
-        self, manifest: Dict[str, Any], file_path: Path
+        self, manifest: dict[str, Any], file_path: Path
     ) -> None:
         """Check pod security policies."""
         spec = manifest.get("spec", {})
@@ -337,6 +337,7 @@ class SecurityPolicyEnforcer:
         try:
             result = subprocess.run(
                 ["safety", "check", "--json"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=60,
@@ -362,6 +363,7 @@ class SecurityPolicyEnforcer:
         try:
             result = subprocess.run(
                 ["npm", "audit", "--audit-level=high"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=60,
@@ -390,6 +392,7 @@ class SecurityPolicyEnforcer:
 
             result = subprocess.run(
                 ["cargo", "audit"],
+                check=False,
                 cwd=cargo_dir,
                 capture_output=True,
                 text=True,
@@ -439,40 +442,39 @@ class SecurityPolicyEnforcer:
 
         if output_format == "json":
             return json.dumps(report_data, indent=2)
-        elif output_format == "yaml":
+        if output_format == "yaml":
             return yaml.dump(report_data, default_flow_style=False)
-        else:
-            # Text format
-            lines = [
-                "ACGS-1 Security Policy Enforcement Report",
-                "=" * 45,
-                f"Generated: {report_data['timestamp']}",
-                f"Total Violations: {report_data['total_violations']}",
-                "",
-                "Violations by Severity:",
-                f"  Critical: {report_data['violations_by_severity']['critical']}",
-                f"  High: {report_data['violations_by_severity']['high']}",
-                f"  Medium: {report_data['violations_by_severity']['medium']}",
-                f"  Low: {report_data['violations_by_severity']['low']}",
-                "",
-                "Detailed Violations:",
-                "-" * 20,
-            ]
+        # Text format
+        lines = [
+            "ACGS-1 Security Policy Enforcement Report",
+            "=" * 45,
+            f"Generated: {report_data['timestamp']}",
+            f"Total Violations: {report_data['total_violations']}",
+            "",
+            "Violations by Severity:",
+            f"  Critical: {report_data['violations_by_severity']['critical']}",
+            f"  High: {report_data['violations_by_severity']['high']}",
+            f"  Medium: {report_data['violations_by_severity']['medium']}",
+            f"  Low: {report_data['violations_by_severity']['low']}",
+            "",
+            "Detailed Violations:",
+            "-" * 20,
+        ]
 
-            for violation in self.violations:
-                lines.extend(
-                    [
-                        f"Rule: {violation.rule}",
-                        f"Severity: {violation.severity.upper()}",
-                        f"File: {violation.file_path}",
-                        f"Line: {violation.line_number or 'N/A'}",
-                        f"Description: {violation.description}",
-                        f"Recommendation: {violation.recommendation}",
-                        "",
-                    ]
-                )
+        for violation in self.violations:
+            lines.extend(
+                [
+                    f"Rule: {violation.rule}",
+                    f"Severity: {violation.severity.upper()}",
+                    f"File: {violation.file_path}",
+                    f"Line: {violation.line_number or 'N/A'}",
+                    f"Description: {violation.description}",
+                    f"Recommendation: {violation.recommendation}",
+                    "",
+                ]
+            )
 
-            return "\n".join(lines)
+        return "\n".join(lines)
 
     def run_all_checks(self) -> None:
         """Run all security policy checks."""

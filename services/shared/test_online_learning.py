@@ -8,16 +8,16 @@ and rollback capabilities of the Production ML Optimizer.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import sys
-import os
-import numpy as np
 import logging
-from datetime import datetime
+import os
+import sys
+
+import numpy as np
 
 # Add the services directory to the path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from production_ml_optimizer import ProductionMLOptimizer, OnlineLearningManager
+from production_ml_optimizer import OnlineLearningManager, ProductionMLOptimizer
 
 # Configure logging
 logging.basicConfig(
@@ -74,7 +74,7 @@ def test_online_learning_manager():
         metrics = manager.partial_fit(X_batch, y_batch)
 
         logger.info(
-            f"  📊 Update {i+2}: Performance = {metrics.performance_trend[-1]:.3f}, "
+            f"  📊 Update {i + 2}: Performance = {metrics.performance_trend[-1]:.3f}, "
             f"Drift = {metrics.drift_detected}"
         )
 
@@ -121,7 +121,7 @@ def test_production_ml_optimizer_integration():
 
     # Test incremental updates
     for i, (X_batch, y_batch) in enumerate(batches):
-        logger.info(f"  📊 Processing batch {i+1}...")
+        logger.info(f"  📊 Processing batch {i + 1}...")
 
         result = optimizer.update_model_incrementally(X_batch, y_batch)
 

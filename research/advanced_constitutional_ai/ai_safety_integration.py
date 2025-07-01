@@ -10,16 +10,13 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import logging
-import json
-import numpy as np
-from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional, Tuple, Callable
-from enum import Enum
-from dataclasses import dataclass, asdict
-from pathlib import Path
-import torch
-import torch.nn as nn
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Any
+
+import numpy as np
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -61,10 +58,10 @@ class SafetyEvaluation:
     evaluation_id: str
     model_id: str
     research_area: SafetyResearchArea
-    metrics: Dict[SafetyMetric, float]
-    detailed_results: Dict[str, Any]
+    metrics: dict[SafetyMetric, float]
+    detailed_results: dict[str, Any]
     safety_score: float
-    recommendations: List[str]
+    recommendations: list[str]
     timestamp: datetime
     constitutional_hash: str = "cdd01ef066bc6cf2"
 
@@ -75,11 +72,11 @@ class SafetyResearchPaper:
 
     paper_id: str
     title: str
-    authors: List[str]
+    authors: list[str]
     research_area: SafetyResearchArea
     abstract: str
-    key_findings: List[str]
-    methodologies: List[str]
+    key_findings: list[str]
+    methodologies: list[str]
     applicability_score: float
     implementation_complexity: str
     constitutional_relevance: float
@@ -106,7 +103,7 @@ class AlignmentEvaluator(SafetyResearchInterface):
         self.constitutional_hash = "cdd01ef066bc6cf2"
         self.alignment_criteria = self._initialize_alignment_criteria()
 
-    def _initialize_alignment_criteria(self) -> Dict[str, float]:
+    def _initialize_alignment_criteria(self) -> dict[str, float]:
         """Initialize alignment evaluation criteria."""
         return {
             "human_preference_alignment": 0.3,
@@ -186,8 +183,8 @@ class AlignmentEvaluator(SafetyResearchInterface):
         return 0.88
 
     def _generate_alignment_recommendations(
-        self, metrics: Dict[SafetyMetric, float]
-    ) -> List[str]:
+        self, metrics: dict[SafetyMetric, float]
+    ) -> list[str]:
         """Generate recommendations for improving alignment."""
         recommendations = []
 
@@ -264,8 +261,8 @@ class InterpretabilityEvaluator(SafetyResearchInterface):
         return method_scores.get(method, 0.5)
 
     def _generate_interpretability_recommendations(
-        self, method_scores: Dict[str, float]
-    ) -> List[str]:
+        self, method_scores: dict[str, float]
+    ) -> list[str]:
         """Generate recommendations for improving interpretability."""
         recommendations = []
 
@@ -347,8 +344,8 @@ class RobustnessEvaluator(SafetyResearchInterface):
         return test_scores.get(test, 0.5)
 
     def _generate_robustness_recommendations(
-        self, test_scores: Dict[str, float]
-    ) -> List[str]:
+        self, test_scores: dict[str, float]
+    ) -> list[str]:
         """Generate recommendations for improving robustness."""
         recommendations = []
 
@@ -367,9 +364,9 @@ class AISafetyIntegrationSystem:
 
     def __init__(self):
         self.constitutional_hash = "cdd01ef066bc6cf2"
-        self.safety_evaluators: Dict[SafetyResearchArea, SafetyResearchInterface] = {}
-        self.research_papers: Dict[str, SafetyResearchPaper] = {}
-        self.evaluation_history: List[SafetyEvaluation] = []
+        self.safety_evaluators: dict[SafetyResearchArea, SafetyResearchInterface] = {}
+        self.research_papers: dict[str, SafetyResearchPaper] = {}
+        self.evaluation_history: list[SafetyEvaluation] = []
 
         # Initialize evaluators
         self._initialize_evaluators()
@@ -424,7 +421,7 @@ class AISafetyIntegrationSystem:
 
     async def comprehensive_safety_evaluation(
         self, model: Any, data: Any
-    ) -> Dict[str, SafetyEvaluation]:
+    ) -> dict[str, SafetyEvaluation]:
         """Perform comprehensive safety evaluation across all research areas."""
         evaluations = {}
 
@@ -444,8 +441,8 @@ class AISafetyIntegrationSystem:
         return evaluations
 
     def get_safety_recommendations(
-        self, evaluations: Dict[str, SafetyEvaluation]
-    ) -> List[str]:
+        self, evaluations: dict[str, SafetyEvaluation]
+    ) -> list[str]:
         """Get consolidated safety recommendations."""
         all_recommendations = []
 
@@ -467,7 +464,7 @@ class AISafetyIntegrationSystem:
 
     def get_research_insights(
         self, research_area: SafetyResearchArea
-    ) -> List[SafetyResearchPaper]:
+    ) -> list[SafetyResearchPaper]:
         """Get relevant research papers for a specific area."""
         return [
             paper
@@ -476,8 +473,8 @@ class AISafetyIntegrationSystem:
         ]
 
     def generate_safety_report(
-        self, evaluations: Dict[str, SafetyEvaluation]
-    ) -> Dict[str, Any]:
+        self, evaluations: dict[str, SafetyEvaluation]
+    ) -> dict[str, Any]:
         """Generate comprehensive safety report."""
         overall_scores = [eval.safety_score for eval in evaluations.values()]
         overall_safety_score = np.mean(overall_scores) if overall_scores else 0.0

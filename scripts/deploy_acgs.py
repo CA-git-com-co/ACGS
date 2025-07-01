@@ -78,7 +78,11 @@ class ACGSDeployment:
         """Check if Docker daemon is running."""
         try:
             result = subprocess.run(
-                ["docker", "info"], capture_output=True, text=True, timeout=10
+                ["docker", "info"],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
             return result.returncode == 0
         except Exception:
@@ -113,6 +117,7 @@ class ACGSDeployment:
                     "build",
                     "--parallel",
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=600,  # 10 minutes timeout
@@ -124,12 +129,11 @@ class ACGSDeployment:
                     "message": "All services built successfully",
                     "build_output": result.stdout,
                 }
-            else:
-                return {
-                    "passed": False,
-                    "message": "Service build failed",
-                    "error": result.stderr,
-                }
+            return {
+                "passed": False,
+                "message": "Service build failed",
+                "error": result.stderr,
+            }
 
         except subprocess.TimeoutExpired:
             return {
@@ -148,6 +152,7 @@ class ACGSDeployment:
             # Stop existing services
             subprocess.run(
                 ["docker-compose", "-f", str(DOCKER_COMPOSE_PATH), "down"],
+                check=False,
                 capture_output=True,
                 timeout=120,
             )
@@ -155,6 +160,7 @@ class ACGSDeployment:
             # Start services
             result = subprocess.run(
                 ["docker-compose", "-f", str(DOCKER_COMPOSE_PATH), "up", "-d"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=300,  # 5 minutes timeout
@@ -166,12 +172,11 @@ class ACGSDeployment:
                     "message": "Services deployed successfully",
                     "deployment_output": result.stdout,
                 }
-            else:
-                return {
-                    "passed": False,
-                    "message": "Service deployment failed",
-                    "error": result.stderr,
-                }
+            return {
+                "passed": False,
+                "message": "Service deployment failed",
+                "error": result.stderr,
+            }
 
         except Exception as e:
             return {"passed": False, "message": "Deployment error", "error": str(e)}
@@ -282,6 +287,7 @@ class ACGSDeployment:
             # Stop current services
             result = subprocess.run(
                 ["docker-compose", "-f", str(DOCKER_COMPOSE_PATH), "down"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=120,
@@ -342,8 +348,7 @@ class ACGSDeployment:
                 }
 
                 return results
-            else:
-                logger.info(f"✅ Step {step_name} completed successfully")
+            logger.info(f"✅ Step {step_name} completed successfully")
 
         # All steps passed
         results["end_time"] = time.time()
@@ -361,8 +366,8 @@ class ACGSDeployment:
 # ACGS-1 Deployment Report
 
 ## Summary
-- **Success**: {results['summary']['success']}
-- **Message**: {results['summary']['message']}
+- **Success**: {results["summary"]["success"]}
+- **Message**: {results["summary"]["message"]}
 """
 
         if results["summary"]["success"]:

@@ -329,7 +329,7 @@ class FormalVerificationEnhancer:
                 "verified": True,
                 "confidence_score": 0.92,
                 "verification_time_ms": (task_end - task_start) * 1000,
-                "worker_id": f'worker_{hash(task["task_id"]) % parallel_config["max_workers"]}',
+                "worker_id": f"worker_{hash(task['task_id']) % parallel_config['max_workers']}",
             }
 
         # Execute tasks in parallel batches
@@ -554,14 +554,14 @@ class FormalVerificationEnhancer:
 
         # Generate mathematical explanation
         mathematical_explanation = f"""
-        Mathematical Proof for {scenario['property']}:
+        Mathematical Proof for {scenario["property"]}:
 
         Given: Constitutional principles C = {{c1, c2, ..., cn}}
         Given: Policy constraints P = {{p1, p2, ..., pm}}
 
         Theorem: ∀ policy p ∈ P, p ⊨ C (policy p entails constitutional principles)
 
-        Proof Strategy: {config['proof_strategies'][0]}
+        Proof Strategy: {config["proof_strategies"][0]}
         Confidence Level: >90%
         """
 

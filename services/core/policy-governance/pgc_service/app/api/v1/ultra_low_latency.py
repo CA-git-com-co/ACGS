@@ -130,7 +130,7 @@ async def optimize_policy_decision(
         logger.error(f"Error in policy decision optimization: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to optimize policy decision: {str(e)}",
+            detail=f"Failed to optimize policy decision: {e!s}",
         )
 
 
@@ -164,7 +164,7 @@ async def get_performance_metrics(
         logger.error(f"Error retrieving performance metrics: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve performance metrics: {str(e)}",
+            detail=f"Failed to retrieve performance metrics: {e!s}",
         )
 
 
@@ -198,7 +198,7 @@ async def get_optimization_report(
         logger.error(f"Error generating optimization report: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to generate optimization report: {str(e)}",
+            detail=f"Failed to generate optimization report: {e!s}",
         )
 
 
@@ -227,7 +227,7 @@ async def perform_adaptive_optimization(
         logger.error(f"Error in adaptive optimization: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to perform adaptive optimization: {str(e)}",
+            detail=f"Failed to perform adaptive optimization: {e!s}",
         )
 
 
@@ -259,7 +259,7 @@ async def run_performance_benchmark(
         logger.error(f"Error running performance benchmark: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to run performance benchmark: {str(e)}",
+            detail=f"Failed to run performance benchmark: {e!s}",
         )
 
 
@@ -311,7 +311,7 @@ async def list_optimization_levels(
         logger.error(f"Error listing optimization levels: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to list optimization levels: {str(e)}",
+            detail=f"Failed to list optimization levels: {e!s}",
         )
 
 
@@ -368,5 +368,5 @@ async def list_cache_strategies(
         logger.error(f"Error listing cache strategies: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to list cache strategies: {str(e)}",
+            detail=f"Failed to list cache strategies: {e!s}",
         )

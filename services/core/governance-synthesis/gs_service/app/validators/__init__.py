@@ -10,6 +10,6 @@ Exports:
 from .gemini_validators import GeminiFlashValidator, GeminiProValidator
 
 __all__ = [
-    "GeminiProValidator",
     "GeminiFlashValidator",
+    "GeminiProValidator",
 ]

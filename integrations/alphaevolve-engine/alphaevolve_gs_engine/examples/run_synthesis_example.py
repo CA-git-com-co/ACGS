@@ -102,7 +102,7 @@ The package name '{package_name}' has been used as requested.
 EXPLANATION_END
 """
                     return mock_rego_code
-                elif "constitutional_principle" in prompt.lower():
+                if "constitutional_principle" in prompt.lower():
                     return """
 POLICY_CODE_START
 # Principle Title: AI Prioritization of Human Well-being

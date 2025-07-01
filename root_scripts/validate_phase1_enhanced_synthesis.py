@@ -72,13 +72,12 @@ class Phase1ValidationReport:
             if has_multi_model_impl and has_human_review_impl:
                 self.results["task_1_recursion_fixes"]["status"] = "passed"
                 return True
-            else:
-                self.results["task_1_recursion_fixes"]["status"] = "failed"
-                return False
+            self.results["task_1_recursion_fixes"]["status"] = "failed"
+            return False
 
         except Exception as e:
             self.results["task_1_recursion_fixes"]["status"] = "error"
-            self.results["task_1_recursion_fixes"]["details"].append(f"Error: {str(e)}")
+            self.results["task_1_recursion_fixes"]["details"].append(f"Error: {e!s}")
             return False
 
     async def validate_task_2_test_fixes(self, engine: PolicySynthesisEngine) -> bool:
@@ -114,13 +113,12 @@ class Phase1ValidationReport:
             if has_constitutional_analysis and len(passed_stages) >= 2:
                 self.results["task_2_test_fixes"]["status"] = "passed"
                 return True
-            else:
-                self.results["task_2_test_fixes"]["status"] = "failed"
-                return False
+            self.results["task_2_test_fixes"]["status"] = "failed"
+            return False
 
         except Exception as e:
             self.results["task_2_test_fixes"]["status"] = "error"
-            self.results["task_2_test_fixes"]["details"].append(f"Error: {str(e)}")
+            self.results["task_2_test_fixes"]["details"].append(f"Error: {e!s}")
             return False
 
     async def validate_task_3_enhanced_implementation(
@@ -177,14 +175,13 @@ class Phase1ValidationReport:
             if all_successful and all_have_hash and all_have_analysis:
                 self.results["task_3_enhanced_implementation"]["status"] = "passed"
                 return True
-            else:
-                self.results["task_3_enhanced_implementation"]["status"] = "failed"
-                return False
+            self.results["task_3_enhanced_implementation"]["status"] = "failed"
+            return False
 
         except Exception as e:
             self.results["task_3_enhanced_implementation"]["status"] = "error"
             self.results["task_3_enhanced_implementation"]["details"].append(
-                f"Error: {str(e)}"
+                f"Error: {e!s}"
             )
             return False
 
@@ -234,13 +231,12 @@ class Phase1ValidationReport:
             if chain_of_thought and rag and validation_pipeline:
                 self.results["task_4_test_validation"]["status"] = "passed"
                 return True
-            else:
-                self.results["task_4_test_validation"]["status"] = "failed"
-                return False
+            self.results["task_4_test_validation"]["status"] = "failed"
+            return False
 
         except Exception as e:
             self.results["task_4_test_validation"]["status"] = "error"
-            self.results["task_4_test_validation"]["details"].append(f"Error: {str(e)}")
+            self.results["task_4_test_validation"]["details"].append(f"Error: {e!s}")
             return False
 
     async def validate_task_5_production_readiness(
@@ -296,14 +292,13 @@ class Phase1ValidationReport:
             if response_time_ok and accuracy_ok and constitutional_ok:
                 self.results["task_5_production_readiness"]["status"] = "passed"
                 return True
-            else:
-                self.results["task_5_production_readiness"]["status"] = "failed"
-                return False
+            self.results["task_5_production_readiness"]["status"] = "failed"
+            return False
 
         except Exception as e:
             self.results["task_5_production_readiness"]["status"] = "error"
             self.results["task_5_production_readiness"]["details"].append(
-                f"Error: {str(e)}"
+                f"Error: {e!s}"
             )
             return False
 

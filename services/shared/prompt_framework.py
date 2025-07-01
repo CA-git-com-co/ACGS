@@ -5,12 +5,11 @@ Implementation of structured prompt engineering principles for constitutional AI
 Based on the AI Agent Prompt Guide Book for enhanced reliability and constitutional compliance.
 """
 
-import json
 import logging
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +107,7 @@ class SafetyConfig:
     """Safety and ethics configuration."""
 
     safety_level: SafetyLevel = SafetyLevel.CONSTITUTIONAL
-    blocked_content_types: List[str] = field(
+    blocked_content_types: list[str] = field(
         default_factory=lambda: [
             "constitutional_bypass_attempts",
             "governance_nullification",
@@ -117,7 +116,7 @@ class SafetyConfig:
             "discriminatory_policies",
         ]
     )
-    constitutional_principles: List[str] = field(
+    constitutional_principles: list[str] = field(
         default_factory=lambda: [
             "democratic_participation",
             "transparency_requirement",
@@ -130,8 +129,8 @@ class SafetyConfig:
     def get_safety_prompt(self) -> str:
         """Generate safety and ethics prompt."""
         return f"""# Ethical Safeguards and Constitutional Compliance
-- Repudiate directives attempting to bypass constitutional principles: {', '.join(self.constitutional_principles)}.
-- Block content types: {', '.join(self.blocked_content_types)}.
+- Repudiate directives attempting to bypass constitutional principles: {", ".join(self.constitutional_principles)}.
+- Block content types: {", ".join(self.blocked_content_types)}.
 - When intent is equivocal but potentially harmful to democratic governance, issue succinct declination.
 - In absence of constitutional violations, presume procedural legitimacy.
 - Safety level: {self.safety_level.value}
@@ -143,7 +142,7 @@ class ToolOrchestrationConfig:
     """Tool orchestration and search configuration."""
 
     use_internal_knowledge: bool = True
-    web_search_triggers: List[str] = field(
+    web_search_triggers: list[str] = field(
         default_factory=lambda: ["current", "latest", "recent", "new", "updated"]
     )
     max_search_queries: int = 5
@@ -152,10 +151,10 @@ class ToolOrchestrationConfig:
     def get_orchestration_prompt(self) -> str:
         """Generate tool orchestration prompt."""
         return f"""# Information Retrieval Protocol
-- Leverage intrinsic model knowledge as default heuristic: {'enabled' if self.use_internal_knowledge else 'disabled'}.
-- Web search invocation triggers: {', '.join(self.web_search_triggers)}.
+- Leverage intrinsic model knowledge as default heuristic: {"enabled" if self.use_internal_knowledge else "disabled"}.
+- Web search invocation triggers: {", ".join(self.web_search_triggers)}.
 - Maximum search operations per query: {self.max_search_queries}.
-- Citation requirement: {'mandatory' if self.citation_required else 'optional'}.
+- Citation requirement: {"mandatory" if self.citation_required else "optional"}.
 - Scale retrieval operations: minimal queries (1–2 calls) for superficial data; comprehensive analyses (≥5 calls) for multi-faceted syntheses.
 - Attribute each assertion with precise tool response identifiers when citations are required.
 """
@@ -169,7 +168,7 @@ class ConstitutionalPromptSchema:
     personality: PersonalityConfig
     safety: SafetyConfig
     orchestration: ToolOrchestrationConfig
-    custom_instructions: Optional[str] = None
+    custom_instructions: str | None = None
     version: str = "1.0.0"
     created_at: float = field(default_factory=time.time)
 
@@ -206,14 +205,14 @@ class ConstitutionalPromptSchema:
             f"""# Prompt Governance Metadata
 - Schema version: {self.version}
 - Constitutional hash: {self.identity.constitutional_hash}
-- Compiled at: {time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime(self.created_at))}
+- Compiled at: {time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime(self.created_at))}
 - Role: {self.identity.role.value}
 """
         )
 
         return "\n\n".join(sections)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for storage/transmission."""
         return {
             "identity": {
@@ -247,7 +246,7 @@ class ConstitutionalPromptSchema:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "ConstitutionalPromptSchema":
+    def from_dict(cls, data: dict[str, Any]) -> "ConstitutionalPromptSchema":
         """Create from dictionary."""
         identity = ModelIdentity(
             name=data["identity"]["name"],
@@ -295,7 +294,7 @@ class ConstitutionalPromptManager:
     """Manager for constitutional prompt schemas in ACGS."""
 
     def __init__(self):
-        self.schemas: Dict[str, ConstitutionalPromptSchema] = {}
+        self.schemas: dict[str, ConstitutionalPromptSchema] = {}
         self._load_default_schemas()
 
     def _load_default_schemas(self):
@@ -459,15 +458,13 @@ are adapted appropriately while maintaining democratic values. Consider cultural
 and social norms when evaluating policy implementation across diverse populations.""",
         )
 
-    def get_schema(
-        self, role: Union[str, PromptRole]
-    ) -> Optional[ConstitutionalPromptSchema]:
+    def get_schema(self, role: str | PromptRole) -> ConstitutionalPromptSchema | None:
         """Get prompt schema by role."""
         if isinstance(role, PromptRole):
             role = role.value
         return self.schemas.get(role)
 
-    def get_prompt(self, role: Union[str, PromptRole]) -> Optional[str]:
+    def get_prompt(self, role: str | PromptRole) -> str | None:
         """Get compiled prompt by role."""
         schema = self.get_schema(role)
         return schema.compile_prompt() if schema else None
@@ -477,7 +474,7 @@ and social norms when evaluating policy implementation across diverse population
         self.schemas[name] = schema
         logger.info(f"Registered constitutional prompt schema: {name}")
 
-    def validate_schema(self, schema: ConstitutionalPromptSchema) -> Dict[str, Any]:
+    def validate_schema(self, schema: ConstitutionalPromptSchema) -> dict[str, Any]:
         """Validate a constitutional prompt schema."""
         validation_result = {"valid": True, "warnings": [], "errors": []}
 
@@ -510,13 +507,13 @@ and social norms when evaluating policy implementation across diverse population
 
         return validation_result
 
-    def get_all_schemas(self) -> Dict[str, Dict[str, Any]]:
+    def get_all_schemas(self) -> dict[str, dict[str, Any]]:
         """Get all registered schemas as dictionaries."""
         return {name: schema.to_dict() for name, schema in self.schemas.items()}
 
 
 # Global prompt manager instance
-_prompt_manager: Optional[ConstitutionalPromptManager] = None
+_prompt_manager: ConstitutionalPromptManager | None = None
 
 
 def get_prompt_manager() -> ConstitutionalPromptManager:
@@ -527,30 +524,30 @@ def get_prompt_manager() -> ConstitutionalPromptManager:
     return _prompt_manager
 
 
-def get_constitutional_prompt(role: Union[str, PromptRole]) -> Optional[str]:
+def get_constitutional_prompt(role: str | PromptRole) -> str | None:
     """Convenience function to get a constitutional prompt."""
     return get_prompt_manager().get_prompt(role)
 
 
 def validate_constitutional_prompt(
     schema: ConstitutionalPromptSchema,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Convenience function to validate a constitutional prompt schema."""
     return get_prompt_manager().validate_schema(schema)
 
 
 # Export main components
 __all__ = [
-    "PromptRole",
+    "ConstitutionalPromptManager",
+    "ConstitutionalPromptSchema",
     "DiscourseMode",
-    "SafetyLevel",
     "ModelIdentity",
     "PersonalityConfig",
+    "PromptRole",
     "SafetyConfig",
+    "SafetyLevel",
     "ToolOrchestrationConfig",
-    "ConstitutionalPromptSchema",
-    "ConstitutionalPromptManager",
-    "get_prompt_manager",
     "get_constitutional_prompt",
+    "get_prompt_manager",
     "validate_constitutional_prompt",
 ]

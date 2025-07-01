@@ -10,13 +10,11 @@ Standard Limits:
 - Memory Limit: 1Gi (2Gi for AC, GS, PGC services)
 """
 
-import json
-import yaml
-import os
 import sys
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
+from pathlib import Path
+
+import yaml
 
 
 @dataclass
@@ -41,9 +39,9 @@ class ValidationResult:
     service_name: str
     file_path: str
     compliant: bool
-    issues: List[str]
-    current_limits: Dict[str, str]
-    expected_limits: Dict[str, str]
+    issues: list[str]
+    current_limits: dict[str, str]
+    expected_limits: dict[str, str]
 
 
 class ResourceLimitsValidator:
@@ -52,9 +50,9 @@ class ResourceLimitsValidator:
     def __init__(self, project_root: str = "/home/ubuntu/ACGS"):
         self.project_root = Path(project_root)
         self.standard_limits = ResourceLimits()
-        self.validation_results: List[ValidationResult] = []
+        self.validation_results: list[ValidationResult] = []
 
-    def get_expected_limits(self, service_name: str) -> Dict[str, str]:
+    def get_expected_limits(self, service_name: str) -> dict[str, str]:
         """Get expected resource limits for a service."""
         limits = {
             "cpu_request": self.standard_limits.cpu_request,
@@ -73,12 +71,12 @@ class ResourceLimitsValidator:
 
         return limits
 
-    def validate_kubernetes_deployment(self, file_path: Path) -> List[ValidationResult]:
+    def validate_kubernetes_deployment(self, file_path: Path) -> list[ValidationResult]:
         """Validate Kubernetes deployment resource limits."""
         results = []
 
         try:
-            with open(file_path, "r") as f:
+            with open(file_path) as f:
                 docs = list(yaml.safe_load_all(f))
 
             for doc in docs:
@@ -132,7 +130,7 @@ class ResourceLimitsValidator:
                     service_name="unknown",
                     file_path=str(file_path),
                     compliant=False,
-                    issues=[f"Failed to parse file: {str(e)}"],
+                    issues=[f"Failed to parse file: {e!s}"],
                     current_limits={},
                     expected_limits={},
                 )
@@ -140,12 +138,12 @@ class ResourceLimitsValidator:
 
         return results
 
-    def validate_docker_compose(self, file_path: Path) -> List[ValidationResult]:
+    def validate_docker_compose(self, file_path: Path) -> list[ValidationResult]:
         """Validate Docker Compose resource limits."""
         results = []
 
         try:
-            with open(file_path, "r") as f:
+            with open(file_path) as f:
                 compose_data = yaml.safe_load(f)
 
             services = compose_data.get("services", {})
@@ -189,7 +187,7 @@ class ResourceLimitsValidator:
                     service_name="unknown",
                     file_path=str(file_path),
                     compliant=False,
-                    issues=[f"Failed to parse file: {str(e)}"],
+                    issues=[f"Failed to parse file: {e!s}"],
                     current_limits={},
                     expected_limits={},
                 )
@@ -197,7 +195,7 @@ class ResourceLimitsValidator:
 
         return results
 
-    def validate_all_configurations(self) -> List[ValidationResult]:
+    def validate_all_configurations(self) -> list[ValidationResult]:
         """Validate all resource configurations in the project."""
         all_results = []
 
@@ -237,7 +235,7 @@ Summary:
 - Total configurations checked: {total_count}
 - Compliant configurations: {compliant_count}
 - Non-compliant configurations: {total_count - compliant_count}
-- Compliance rate: {(compliant_count/total_count*100):.1f}%
+- Compliance rate: {(compliant_count / total_count * 100):.1f}%
 
 Standard Resource Limits:
 - CPU Request: {self.standard_limits.cpu_request}

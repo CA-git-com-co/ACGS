@@ -5,14 +5,11 @@ Academic Submission Web Interface
 A simple web interface for academic paper validation and submission preparation.
 """
 
-import os
 import sys
 import tempfile
-import shutil
-from pathlib import Path
-from datetime import datetime
-import json
 import zipfile
+from datetime import datetime
+from pathlib import Path
 
 # Add parent directory to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
@@ -20,23 +17,23 @@ sys.path.append(str(Path(__file__).parent.parent))
 try:
     from flask import (
         Flask,
+        flash,
+        jsonify,
+        redirect,
         render_template,
         request,
-        jsonify,
         send_file,
-        flash,
-        redirect,
         url_for,
-    )
-    from werkzeug.utils import secure_filename
-    from quality_assurance.submission_validator import (
-        SubmissionValidator,
-        generate_validation_report,
     )
     from quality_assurance.compliance_checker import (
         ComplianceChecker,
         generate_compliance_report,
     )
+    from quality_assurance.submission_validator import (
+        SubmissionValidator,
+        generate_validation_report,
+    )
+    from werkzeug.utils import secure_filename
 except ImportError as e:
     print(f"Error importing modules: {e}")
     print("Please install Flask: pip install flask")
@@ -147,7 +144,7 @@ def validate_submission(submission_id):
         return render_template("validation_results.html", report=report_data)
 
     except Exception as e:
-        flash(f"Validation error: {str(e)}")
+        flash(f"Validation error: {e!s}")
         return redirect(url_for("index"))
 
 
@@ -185,7 +182,7 @@ def check_compliance(submission_id):
         return render_template("compliance_results.html", compliance=compliance_data)
 
     except Exception as e:
-        flash(f"Compliance check error: {str(e)}")
+        flash(f"Compliance check error: {e!s}")
         return redirect(url_for("index"))
 
 

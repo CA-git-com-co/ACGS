@@ -13,7 +13,7 @@ import asyncio
 import json
 import os
 import sys
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 # Add the backend directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src", "backend"))
@@ -304,7 +304,7 @@ async def main():
         print(f"{validation_name:.<35} {status}")
 
     print("-" * 60)
-    print(f"Overall: {passed}/{total} validations passed ({passed/total*100:.1f}%)")
+    print(f"Overall: {passed}/{total} validations passed ({passed / total * 100:.1f}%)")
 
     if passed == total:
         print("\n🎉 MAB Metrics Functionality: FULLY VALIDATED")
@@ -319,9 +319,8 @@ async def main():
         )
         print("   not core functionality problems. The implementation is correct.")
         return True
-    else:
-        print(f"\n⚠️  {total - passed} validation(s) failed.")
-        return False
+    print(f"\n⚠️  {total - passed} validation(s) failed.")
+    return False
 
 
 if __name__ == "__main__":

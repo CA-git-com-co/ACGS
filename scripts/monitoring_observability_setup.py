@@ -404,7 +404,7 @@ class MonitoringObservabilityEnhancer:
                         "metric": "response_time",
                         "value": metrics.response_time_avg * 1000,
                         "threshold": self.config.alert_threshold_response_time,
-                        "message": f"{service_name} response time {metrics.response_time_avg*1000:.1f}ms exceeds threshold",
+                        "message": f"{service_name} response time {metrics.response_time_avg * 1000:.1f}ms exceeds threshold",
                     }
                 )
 

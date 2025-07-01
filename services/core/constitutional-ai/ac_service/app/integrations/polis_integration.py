@@ -492,12 +492,11 @@ class PolisIntegration:
         """Determine democratic legitimacy level from score."""
         if legitimacy_score >= 0.8:
             return DemocraticLegitimacyLevel.CONSENSUS
-        elif legitimacy_score >= 0.6:
+        if legitimacy_score >= 0.6:
             return DemocraticLegitimacyLevel.HIGH
-        elif legitimacy_score >= 0.3:
+        if legitimacy_score >= 0.3:
             return DemocraticLegitimacyLevel.MODERATE
-        else:
-            return DemocraticLegitimacyLevel.LOW
+        return DemocraticLegitimacyLevel.LOW
 
     async def _handle_bias_incident(
         self, conversation_id: str, bias_category: BiasCategory, bias_score: float

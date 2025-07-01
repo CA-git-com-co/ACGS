@@ -9,30 +9,27 @@ This test suite ensures all critical ML success factors work together while
 maintaining ACGS-PGP system performance standards and constitutional compliance.
 """
 
-import unittest
-import asyncio
-import time
-import tempfile
 import shutil
-import json
-import numpy as np
-import pandas as pd
-from datetime import datetime, timezone
-from pathlib import Path
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from unittest.mock import Mock, patch
-import threading
 import statistics
 
 # Import ACGS-PGP MLOps components
 import sys
+import tempfile
+import time
+import unittest
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
+from unittest.mock import patch
+
+import numpy as np
+import pandas as pd
 
 sys.path.append(str(Path(__file__).parent.parent.parent / "services" / "shared"))
 
-from mlops.mlops_manager import MLOpsManager, MLOpsConfig
-from mlops.production_integration import create_production_mlops_integration
+
+from mlops.mlops_manager import MLOpsConfig, MLOpsManager
 from mlops.monitoring_dashboard import MonitoringDashboard
-from production_ml_optimizer import ProductionMLOptimizer
+from mlops.production_integration import create_production_mlops_integration
 
 
 class TestEndToEndMLOpsIntegration(unittest.TestCase):
@@ -85,14 +82,18 @@ class TestEndToEndMLOpsIntegration(unittest.TestCase):
         import subprocess
 
         # Initialize Git repo
-        subprocess.run(["git", "init"], cwd=cls.test_path, capture_output=True)
+        subprocess.run(
+            ["git", "init"], check=False, cwd=cls.test_path, capture_output=True
+        )
         subprocess.run(
             ["git", "config", "user.name", "Test User"],
+            check=False,
             cwd=cls.test_path,
             capture_output=True,
         )
         subprocess.run(
             ["git", "config", "user.email", "test@example.com"],
+            check=False,
             cwd=cls.test_path,
             capture_output=True,
         )
@@ -102,10 +103,14 @@ class TestEndToEndMLOpsIntegration(unittest.TestCase):
         test_file.write_text("# End-to-End MLOps Test Repository")
 
         subprocess.run(
-            ["git", "add", "README.md"], cwd=cls.test_path, capture_output=True
+            ["git", "add", "README.md"],
+            check=False,
+            cwd=cls.test_path,
+            capture_output=True,
         )
         subprocess.run(
             ["git", "commit", "-m", "Initial commit"],
+            check=False,
             cwd=cls.test_path,
             capture_output=True,
         )
@@ -289,7 +294,7 @@ class TestEndToEndMLOpsIntegration(unittest.TestCase):
             "Constitutional compliance below target",
         )
 
-        print(f"✓ Model trained successfully")
+        print("✓ Model trained successfully")
         print(
             f"✓ Constitutional compliance: {performance_metrics.get('constitutional_compliance', 0):.3f}"
         )
@@ -336,7 +341,6 @@ class TestEndToEndMLOpsIntegration(unittest.TestCase):
                 "_validate_integration_test",
             ) as mock_integration,
         ):
-
             # Configure mocks to return passing results
             from mlops.deployment_pipeline import ValidationResult
 
@@ -378,9 +382,9 @@ class TestEndToEndMLOpsIntegration(unittest.TestCase):
                 "Constitutional compliance not verified in deployment",
             )
 
-            print(f"✓ Staging validation passed")
-            print(f"✓ Production promotion successful")
-            print(f"✓ Constitutional compliance verified")
+            print("✓ Staging validation passed")
+            print("✓ Production promotion successful")
+            print("✓ Constitutional compliance verified")
             print("✅ Deployment pipeline validated")
 
             return deployment_result
@@ -434,8 +438,7 @@ class TestEndToEndMLOpsIntegration(unittest.TestCase):
             print("✅ Prediction serving performance validated")
 
             return response_times, predictions
-        else:
-            self.fail("No successful predictions made")
+        self.fail("No successful predictions made")
 
     def test_load_testing_concurrent_requests(self):
         """Test system under load with 1000+ concurrent requests."""
@@ -602,10 +605,10 @@ class TestEndToEndMLOpsIntegration(unittest.TestCase):
                 "Constitutional hash mismatch in metrics",
             )
 
-            print(f"✓ Dashboard running successfully")
-            print(f"✓ Metrics collector operational")
-            print(f"✓ Constitutional hash verified")
-            print(f"✓ Performance targets met")
+            print("✓ Dashboard running successfully")
+            print("✓ Metrics collector operational")
+            print("✓ Constitutional hash verified")
+            print("✓ Performance targets met")
             print("✅ Monitoring dashboard integration validated")
 
         finally:
@@ -662,13 +665,13 @@ class TestEndToEndMLOpsIntegration(unittest.TestCase):
             all_passed, f"End-to-end workflow validation failed: {workflow_results}"
         )
 
-        print(f"\n🎉 COMPLETE END-TO-END WORKFLOW VALIDATION SUCCESSFUL! 🎉")
-        print(f"✓ Constitutional hash integrity maintained")
-        print(f"✓ Training and versioning successful")
-        print(f"✓ Deployment pipeline operational")
-        print(f"✓ Prediction performance meets targets")
-        print(f"✓ Load testing passed (1000+ concurrent requests)")
-        print(f"✓ Monitoring dashboard operational")
+        print("\n🎉 COMPLETE END-TO-END WORKFLOW VALIDATION SUCCESSFUL! 🎉")
+        print("✓ Constitutional hash integrity maintained")
+        print("✓ Training and versioning successful")
+        print("✓ Deployment pipeline operational")
+        print("✓ Prediction performance meets targets")
+        print("✓ Load testing passed (1000+ concurrent requests)")
+        print("✓ Monitoring dashboard operational")
         print(f"✓ Total workflow time: {workflow_total_time:.1f}s")
         print(f"✓ Constitutional hash: {self.constitutional_hash}")
 

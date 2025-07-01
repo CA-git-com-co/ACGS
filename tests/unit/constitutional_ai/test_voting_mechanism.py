@@ -2,16 +2,8 @@
 Unit tests for services.core.constitutional-ai.ac_service.app.services.voting_mechanism
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.constitutional_ai.ac_service.app.services.voting_mechanism import (
-    VoteType,
-    ConsensusAlgorithm,
-    VotingStatus,
     VoteWeight,
-    VotingResult,
-    VotingSession,
-    VotingMechanismService,
 )
 
 

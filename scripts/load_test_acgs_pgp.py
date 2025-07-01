@@ -15,15 +15,16 @@ Requirements from remediation plan:
 - Document performance metrics and identify bottlenecks
 """
 
+import argparse
 import asyncio
-import aiohttp
-import time
 import json
 import statistics
+import time
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Dict, List, Any
-from dataclasses import dataclass, asdict
-import argparse
+from typing import Any
+
+import aiohttp
 
 
 @dataclass
@@ -33,7 +34,7 @@ class ServiceEndpoint:
     name: str
     port: int
     health_path: str = "/health"
-    test_paths: List[str] = None
+    test_paths: list[str] = None
 
     def __post_init__(self):
         if self.test_paths is None:
@@ -88,7 +89,7 @@ class ACGSPGPLoadTester:
             ServiceEndpoint("pgc_service", 8005, "/health", ["/health"]),
             ServiceEndpoint("ec_service", 8006, "/health", ["/health"]),
         ]
-        self.results: List[LoadTestResult] = []
+        self.results: list[LoadTestResult] = []
 
     async def make_request(
         self, session: aiohttp.ClientSession, service: ServiceEndpoint, path: str
@@ -140,13 +141,13 @@ class ACGSPGPLoadTester:
 
     async def run_concurrent_requests(
         self, service: ServiceEndpoint, path: str, count: int
-    ) -> List[LoadTestResult]:
+    ) -> list[LoadTestResult]:
         """Run concurrent requests against a service endpoint."""
         async with aiohttp.ClientSession() as session:
             tasks = [self.make_request(session, service, path) for _ in range(count)]
             return await asyncio.gather(*tasks)
 
-    async def test_service(self, service: ServiceEndpoint) -> List[LoadTestResult]:
+    async def test_service(self, service: ServiceEndpoint) -> list[LoadTestResult]:
         """Test a single service with all its endpoints."""
         print(f"🔄 Testing {service.name} (port {service.port})...")
 
@@ -227,13 +228,13 @@ class ACGSPGPLoadTester:
             meets_95_compliance=avg_compliance >= 0.95 if avg_compliance else False,
         )
 
-    async def run_load_test(self) -> Dict[str, Any]:
+    async def run_load_test(self) -> dict[str, Any]:
         """Run comprehensive load test across all services."""
-        print(f"🚀 Starting ACGS-PGP Load Test")
+        print("🚀 Starting ACGS-PGP Load Test")
         print(
             f"📊 Configuration: {self.concurrent_requests} concurrent requests per endpoint"
         )
-        print(f"🎯 Targets: ≤2s response time, >95% constitutional compliance")
+        print("🎯 Targets: ≤2s response time, >95% constitutional compliance")
         print("=" * 60)
 
         start_time = time.time()
@@ -269,8 +270,8 @@ class ACGSPGPLoadTester:
         }
 
     def _calculate_overall_metrics(
-        self, service_reports: Dict[str, ServicePerformanceReport]
-    ) -> Dict[str, Any]:
+        self, service_reports: dict[str, ServicePerformanceReport]
+    ) -> dict[str, Any]:
         """Calculate overall system metrics."""
         all_response_times = [r.response_time for r in self.results if r.success]
 
@@ -305,8 +306,8 @@ class ACGSPGPLoadTester:
         }
 
     def _generate_compliance_summary(
-        self, service_reports: Dict[str, ServicePerformanceReport]
-    ) -> Dict[str, Any]:
+        self, service_reports: dict[str, ServicePerformanceReport]
+    ) -> dict[str, Any]:
         """Generate compliance summary against targets."""
         performance_compliant = all(
             report.meets_2s_target for report in service_reports.values()
@@ -325,8 +326,8 @@ class ACGSPGPLoadTester:
         }
 
     def _generate_recommendations(
-        self, service_reports: Dict[str, ServicePerformanceReport]
-    ) -> List[str]:
+        self, service_reports: dict[str, ServicePerformanceReport]
+    ) -> list[str]:
         """Generate performance recommendations."""
         recommendations = []
 
@@ -354,20 +355,20 @@ class ACGSPGPLoadTester:
         return recommendations
 
 
-def print_load_test_report(report: Dict[str, Any]):
+def print_load_test_report(report: dict[str, Any]):
     """Print formatted load test report."""
     print("\n" + "=" * 80)
     print("🎉 ACGS-PGP LOAD TEST REPORT")
     print("=" * 80)
 
     config = report["test_configuration"]
-    print(f"📊 Test Configuration:")
+    print("📊 Test Configuration:")
     print(f"   • Concurrent Requests: {config['concurrent_requests']}")
     print(f"   • Total Services: {config['total_services']}")
     print(f"   • Total Requests: {config['total_requests']}")
     print(f"   • Test Duration: {config['test_duration_seconds']:.2f}s")
 
-    print(f"\n🎯 Overall Performance:")
+    print("\n🎯 Overall Performance:")
     overall = report["overall_metrics"]
     print(f"   • Success Rate: {overall['overall_success_rate']:.1%}")
     print(f"   • Avg Response Time: {overall['system_avg_response_time']:.3f}s")
@@ -376,7 +377,7 @@ def print_load_test_report(report: Dict[str, Any]):
         f"   • Services Meeting 2s Target: {overall['services_meeting_2s_target']}/{config['total_services']}"
     )
 
-    print(f"\n📋 Service Performance:")
+    print("\n📋 Service Performance:")
     for service_name, service_report in report["service_reports"].items():
         status = "✅" if service_report["meets_2s_target"] else "❌"
         print(
@@ -384,7 +385,7 @@ def print_load_test_report(report: Dict[str, Any]):
             f"({service_report['success_rate']:.1%} success)"
         )
 
-    print(f"\n🏛️ Constitutional Compliance:")
+    print("\n🏛️ Constitutional Compliance:")
     compliance = report["compliance_summary"]
     print(
         f"   • Performance Targets Met: {'✅' if compliance['performance_targets_met'] else '❌'}"
@@ -396,7 +397,7 @@ def print_load_test_report(report: Dict[str, Any]):
         f"   • Overall Compliance: {'✅' if compliance['overall_compliance'] else '❌'}"
     )
 
-    print(f"\n💡 Recommendations:")
+    print("\n💡 Recommendations:")
     for rec in compliance["recommendations"]:
         print(f"   {rec}")
 

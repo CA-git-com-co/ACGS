@@ -5,9 +5,8 @@ Implements comprehensive monitoring for AICI controller performance,
 policy evaluation, and constitutional compliance.
 """
 
-import time
 import logging
-from typing import Dict, List, Optional
+import time
 
 import prometheus_client as prom
 
@@ -48,7 +47,7 @@ class AICIMonitoring:
 
         if duration > 0.005:  # 5ms threshold
             logger.warning(
-                f"AICI controller {phase} phase exceeded 5ms: {duration*1000:.2f}ms"
+                f"AICI controller {phase} phase exceeded 5ms: {duration * 1000:.2f}ms"
             )
 
     def record_policy_evaluation(self, policy_name: str, duration: float):

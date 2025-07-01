@@ -24,16 +24,13 @@ except ImportError:
     TfidfVectorizer = None
 
 # Import ML models
-from .ml_models import (
-    ErrorClassificationModel,
-    AnomalyDetectionModel,
-    RecoveryRecommendationModel,
-    MLModelTrainer,
-    TrainingDataGenerator,
-)
-
 from ..generation_engine.models import LogicalSemanticUnit
 from ..see.models import StabilizerResult
+from .ml_models import (
+    AnomalyDetectionModel,
+    ErrorClassificationModel,
+    RecoveryRecommendationModel,
+)
 from .models import (
     DiagnosticMetrics,
     DiagnosticResult,
@@ -127,6 +124,7 @@ class SyndromeDiagnosticEngine:
         """Load pre-trained ML models if available."""
         try:
             from pathlib import Path
+
             import joblib
 
             models_dir = Path("models")
@@ -234,8 +232,8 @@ class SyndromeDiagnosticEngine:
             return result
 
         except Exception as e:
-            logger.error(f"System diagnosis failed: {diagnostic_id} - {str(e)}")
-            raise RuntimeError(f"Diagnosis failed: {str(e)}")
+            logger.error(f"System diagnosis failed: {diagnostic_id} - {e!s}")
+            raise RuntimeError(f"Diagnosis failed: {e!s}")
 
     async def _analyze_errors(
         self, error_data: dict[str, Any], target_system: str
@@ -345,14 +343,13 @@ class SyndromeDiagnosticEngine:
 
         if any(pattern in message_lower for pattern in critical_patterns):
             return ErrorSeverity.CRITICAL
-        elif any(pattern in message_lower for pattern in high_patterns):
+        if any(pattern in message_lower for pattern in high_patterns):
             return ErrorSeverity.HIGH
-        elif any(pattern in message_lower for pattern in medium_patterns):
+        if any(pattern in message_lower for pattern in medium_patterns):
             return ErrorSeverity.MEDIUM
-        elif "info" in message_lower or "debug" in message_lower:
+        if "info" in message_lower or "debug" in message_lower:
             return ErrorSeverity.INFO
-        else:
-            return ErrorSeverity.LOW
+        return ErrorSeverity.LOW
 
     def _determine_error_category(
         self, error_message: str, error_context: dict[str, Any]
@@ -735,8 +732,8 @@ class SyndromeDiagnosticEngine:
             return result
 
         except Exception as e:
-            logger.error(f"LSU diagnosis failed: {diagnostic_id} - {str(e)}")
-            raise RuntimeError(f"LSU diagnosis failed: {str(e)}")
+            logger.error(f"LSU diagnosis failed: {diagnostic_id} - {e!s}")
+            raise RuntimeError(f"LSU diagnosis failed: {e!s}")
 
     async def _analyze_stabilizer_result(
         self, stabilizer_result: StabilizerResult, lsu: LogicalSemanticUnit

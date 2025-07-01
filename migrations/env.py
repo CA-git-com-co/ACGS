@@ -3,10 +3,8 @@ import os
 import sys
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
 from alembic import context
+from sqlalchemy import engine_from_config, pool
 
 # This line allows Alembic to find your models by adding the project root to sys.path
 # With the new directory structure:
@@ -35,10 +33,10 @@ try:
     # sys.path already has /app from:
     # sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
     # So we can use src.backend.shared
-    from services.shared.database import Base as SharedBase
     from services.shared import (
         models,
     )  # This import is crucial to ensure models are registered
+    from services.shared.database import Base as SharedBase
 
     target_metadata = SharedBase.metadata
     print(

@@ -2,8 +2,7 @@
 Tests for the security input validation module.
 """
 
-import pytest
-from services.shared.security_validation import validate_user_input, sanitize_user_input
+from services.shared.security_validation import sanitize_user_input, validate_user_input
 
 
 def test_sql_injection_prevention():

@@ -447,8 +447,7 @@ def monitor_performance(endpoint: str, method: str = "POST"):
 
         if asyncio.iscoroutinefunction(func):
             return async_wrapper
-        else:
-            return sync_wrapper
+        return sync_wrapper
 
     return decorator
 

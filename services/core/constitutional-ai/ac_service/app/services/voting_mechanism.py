@@ -216,7 +216,7 @@ class VotingMechanismService:
             await self._notify_eligible_voters(session)
 
             logger.info(
-                f"Created voting session {session_id} for amendment " f"{amendment_id}"
+                f"Created voting session {session_id} for amendment {amendment_id}"
             )
             return session_id
 
@@ -342,15 +342,17 @@ class VotingMechanismService:
                     weighted_abstain += weight
 
             # Apply consensus algorithm
-            consensus_reached, actual_threshold, result = (
-                await self._apply_consensus_algorithm(
-                    session,
-                    votes_for,
-                    votes_against,
-                    total_votes,
-                    weighted_for,
-                    weighted_against,
-                )
+            (
+                consensus_reached,
+                actual_threshold,
+                result,
+            ) = await self._apply_consensus_algorithm(
+                session,
+                votes_for,
+                votes_against,
+                total_votes,
+                weighted_for,
+                weighted_against,
             )
 
             # Create result object
@@ -420,8 +422,7 @@ class VotingMechanismService:
             await self._notify_voting_completion(session, result)
 
             logger.info(
-                f"Finalized voting session {session_id} with result: "
-                f"{result.result}"
+                f"Finalized voting session {session_id} with result: {result.result}"
             )
             return result
 
@@ -643,9 +644,7 @@ class VotingMechanismService:
     ) -> None:
         """Update amendment with voting information."""
         # This would update the amendment record in the database
-        logger.info(
-            f"Updated amendment {amendment_id} voting status to " f"{status.value}"
-        )
+        logger.info(f"Updated amendment {amendment_id} voting status to {status.value}")
 
     async def _update_amendment_from_voting_result(
         self, amendment_id: int, result: VotingResult
@@ -664,9 +663,7 @@ class VotingMechanismService:
     ) -> None:
         """Store individual vote record in database."""
         # Store vote record for audit trail
-        logger.info(
-            f"Stored vote record for voter {voter_id} in session " f"{session_id}"
-        )
+        logger.info(f"Stored vote record for voter {voter_id} in session {session_id}")
 
     async def _check_consensus(self, session_id: str) -> None:
         """Check if consensus has been reached early."""

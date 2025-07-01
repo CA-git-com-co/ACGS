@@ -391,14 +391,12 @@ class PerformanceValidator:
         ):
             if abs(improvement_rate) < improvement_threshold:
                 return ConvergenceStatus.CONVERGED
-            elif improvement_rate > 0:
+            if improvement_rate > 0:
                 return ConvergenceStatus.CONVERGING
-            else:
-                return ConvergenceStatus.STALLED
-        elif improvement_rate < -0.01:  # Significant decline
+            return ConvergenceStatus.STALLED
+        if improvement_rate < -0.01:  # Significant decline
             return ConvergenceStatus.DIVERGING
-        else:
-            return ConvergenceStatus.CONVERGING
+        return ConvergenceStatus.CONVERGING
 
     def _find_convergence_point(self) -> tuple[int | None, float]:
         """Find the iteration where convergence occurred."""

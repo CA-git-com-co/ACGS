@@ -4,8 +4,6 @@ Sandbox Execution Service Configuration
 Manages configuration for secure code execution environment.
 """
 
-import os
-from typing import List, Dict, Optional
 from pydantic import BaseSettings, Field
 
 
@@ -42,16 +40,16 @@ class Settings(BaseSettings):
 
     # Security settings
     ENABLE_NETWORK_ACCESS: bool = Field(default=False, env="ENABLE_NETWORK_ACCESS")
-    ALLOWED_NETWORK_HOSTS: List[str] = Field(default=[], env="ALLOWED_NETWORK_HOSTS")
+    ALLOWED_NETWORK_HOSTS: list[str] = Field(default=[], env="ALLOWED_NETWORK_HOSTS")
     MAX_CONCURRENT_SANDBOXES: int = Field(default=10, env="MAX_CONCURRENT_SANDBOXES")
     SANDBOX_USER_ID: int = Field(default=1000, env="SANDBOX_USER_ID")
 
     # File system restrictions
     SANDBOX_WORK_DIR: str = Field(default="/tmp/sandbox", env="SANDBOX_WORK_DIR")
-    READONLY_PATHS: List[str] = Field(
+    READONLY_PATHS: list[str] = Field(
         default=["/bin", "/usr", "/lib", "/lib64", "/etc"], env="READONLY_PATHS"
     )
-    WRITABLE_PATHS: List[str] = Field(
+    WRITABLE_PATHS: list[str] = Field(
         default=["/tmp", "/var/tmp"], env="WRITABLE_PATHS"
     )
 
@@ -89,7 +87,7 @@ class Settings(BaseSettings):
     )
 
     # Execution policies
-    EXECUTION_POLICIES: Dict[str, Dict] = Field(
+    EXECUTION_POLICIES: dict[str, dict] = Field(
         default={
             "python": {
                 "allowed_imports": [

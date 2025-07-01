@@ -7,7 +7,7 @@ sub-2s response time guarantee while maintaining constitutional compliance >95%.
 
 Pipeline Stages (Concurrent):
 1. Syntax Validation - Basic structure and format checks
-2. Semantic Validation - Content meaning and context analysis  
+2. Semantic Validation - Content meaning and context analysis
 3. Constitutional Rules Compliance - Full constitutional AI validation
 
 Architecture:
@@ -22,11 +22,10 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
-from services.shared.multi_level_cache import get_cache_manager, MultiLevelCacheManager
+from services.shared.multi_level_cache import MultiLevelCacheManager, get_cache_manager
 from services.shared.utils import get_config
 
 logger = logging.getLogger(__name__)
@@ -57,9 +56,9 @@ class StageResult:
     result: ValidationResult
     confidence: float
     execution_time_ms: float
-    details: Dict[str, Any] = field(default_factory=dict)
-    violations: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
+    details: dict[str, Any] = field(default_factory=dict)
+    violations: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -69,16 +68,16 @@ class PipelineResult:
     overall_result: ValidationResult
     overall_confidence: float
     total_execution_time_ms: float
-    stage_results: List[StageResult]
+    stage_results: list[StageResult]
     constitutional_hash: str
     cache_hit: bool = False
-    cache_level: Optional[str] = None
+    cache_level: str | None = None
 
     def is_compliant(self) -> bool:
         """Check if validation result indicates compliance."""
         return self.overall_result in [ValidationResult.PASS, ValidationResult.WARNING]
 
-    def get_violations(self) -> List[str]:
+    def get_violations(self) -> list[str]:
         """Get all violations from all stages."""
         violations = []
         for stage_result in self.stage_results:
@@ -100,13 +99,13 @@ class CircuitBreaker:
         """Check if execution is allowed."""
         if self.state == "closed":
             return True
-        elif self.state == "open":
+        if self.state == "open":
             if time.time() - self.last_failure_time > self.recovery_timeout:
                 self.state = "half_open"
                 return True
             return False
-        else:  # half_open
-            return True
+        # half_open
+        return True
 
     def record_success(self):
         """Record successful execution."""
@@ -131,7 +130,7 @@ class SyntaxValidator:
     def __init__(self):
         self.circuit_breaker = CircuitBreaker()
 
-    async def validate(self, content: str, context: Dict[str, Any]) -> StageResult:
+    async def validate(self, content: str, context: dict[str, Any]) -> StageResult:
         """Perform syntax validation."""
         start_time = time.time()
 
@@ -214,7 +213,7 @@ class SemanticValidator:
     def __init__(self):
         self.circuit_breaker = CircuitBreaker()
 
-    async def validate(self, content: str, context: Dict[str, Any]) -> StageResult:
+    async def validate(self, content: str, context: dict[str, Any]) -> StageResult:
         """Perform semantic validation."""
         start_time = time.time()
 
@@ -312,7 +311,7 @@ class ConstitutionalValidator:
         self.circuit_breaker = CircuitBreaker()
         self.constitutional_hash = "cdd01ef066bc6cf2"
 
-    async def validate(self, content: str, context: Dict[str, Any]) -> StageResult:
+    async def validate(self, content: str, context: dict[str, Any]) -> StageResult:
         """Perform constitutional validation with caching."""
         start_time = time.time()
 
@@ -383,7 +382,7 @@ class ParallelValidationPipeline:
     sub-2s response time guarantee with constitutional compliance >95%.
     """
 
-    def __init__(self, cache_manager: Optional[MultiLevelCacheManager] = None):
+    def __init__(self, cache_manager: MultiLevelCacheManager | None = None):
         self.cache_manager = cache_manager
         self.config = get_config()
 
@@ -409,7 +408,7 @@ class ParallelValidationPipeline:
         logger.info("Parallel validation pipeline ready")
 
     async def validate(
-        self, content: str, context: Optional[Dict[str, Any]] = None
+        self, content: str, context: dict[str, Any] | None = None
     ) -> PipelineResult:
         """
         Execute parallel validation pipeline.
@@ -467,7 +466,7 @@ class ParallelValidationPipeline:
         return aggregated_result
 
     def _aggregate_results(
-        self, stage_results: List[StageResult], total_time: float
+        self, stage_results: list[StageResult], total_time: float
     ) -> PipelineResult:
         """Aggregate results from all validation stages."""
         # Determine overall result based on stage results
@@ -529,7 +528,7 @@ class ParallelValidationPipeline:
                 self.compliance_rate * (self.total_validations - 1)
             ) / self.total_validations
 
-    async def get_performance_metrics(self) -> Dict[str, Any]:
+    async def get_performance_metrics(self) -> dict[str, Any]:
         """Get pipeline performance metrics."""
         avg_execution_time = (
             self.total_execution_time / self.total_validations
@@ -553,7 +552,7 @@ class ParallelValidationPipeline:
             "cache_manager_stats": cache_stats,
         }
 
-    async def warm_pipeline(self, sample_requests: List[Dict[str, Any]]):
+    async def warm_pipeline(self, sample_requests: list[dict[str, Any]]):
         """Warm up the pipeline with sample requests."""
         logger.info(f"Warming pipeline with {len(sample_requests)} sample requests...")
 
@@ -564,7 +563,7 @@ class ParallelValidationPipeline:
 
 
 # Global pipeline instance
-_pipeline: Optional[ParallelValidationPipeline] = None
+_pipeline: ParallelValidationPipeline | None = None
 
 
 async def get_validation_pipeline() -> ParallelValidationPipeline:

@@ -201,10 +201,11 @@ class QECEnhancedSynthesizer:
         for attempt in range(max_attempts):
             try:
                 # Attempt synthesis
-                llm_output, reliability_metrics = (
-                    await self.llm_framework.process_with_reliability(
-                        synthesis_input.llm_input
-                    )
+                (
+                    llm_output,
+                    reliability_metrics,
+                ) = await self.llm_framework.process_with_reliability(
+                    synthesis_input.llm_input
                 )
 
                 # Validate synthesis result
@@ -298,12 +299,11 @@ class QECEnhancedSynthesizer:
         """Select synthesis strategy based on QEC assessments."""
         if distance_score < 0.3 or risk_score > 0.8:
             return "high_risk_synthesis"
-        elif distance_score < 0.6 or risk_score > 0.6:
+        if distance_score < 0.6 or risk_score > 0.6:
             return "enhanced_validation_synthesis"
-        elif recommended_strategy == "multi_model_consensus":
+        if recommended_strategy == "multi_model_consensus":
             return "consensus_synthesis"
-        else:
-            return "standard_synthesis"
+        return "standard_synthesis"
 
     def _validate_synthesis_result(
         self, llm_output: LLMStructuredOutput, principle: ConstitutionalPrinciple
@@ -335,16 +335,15 @@ class QECEnhancedSynthesizer:
 
         if "timeout" in error_str:
             return FailureType.TIMEOUT
-        elif "syntax" in error_str:
+        if "syntax" in error_str:
             return FailureType.SYNTAX_ERROR
-        elif "validation" in error_str:
+        if "validation" in error_str:
             return FailureType.VALIDATION_FAILED
-        elif "confidence" in error_str:
+        if "confidence" in error_str:
             return FailureType.CONFIDENCE_LOW
-        elif "ambiguous" in error_str:
+        if "ambiguous" in error_str:
             return FailureType.AMBIGUOUS_PRINCIPLE
-        else:
-            return FailureType.SEMANTIC_CONFLICT
+        return FailureType.SEMANTIC_CONFLICT
 
     def _calculate_prediction_accuracy(
         self, prediction_result, actual_error: Exception | None
@@ -353,9 +352,8 @@ class QECEnhancedSynthesizer:
         if actual_error is None:
             # Success case - check if low risk was predicted
             return 1.0 - prediction_result.overall_risk_score
-        else:
-            # Failure case - check if high risk was predicted
-            return prediction_result.overall_risk_score
+        # Failure case - check if high risk was predicted
+        return prediction_result.overall_risk_score
 
     async def _create_fallback_result(
         self, synthesis_input: QECSynthesisInput, error_message: str

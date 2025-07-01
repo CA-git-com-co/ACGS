@@ -186,11 +186,10 @@ def get_problem_description_prompt(response_json, is_polyglot=False):
             implementation_suggestion=response_json["implementation_suggestion"],
             problem_description=response_json["problem_description"],
         )
-    else:
-        return coding_agent_summary + problem_description_prompt.format(
-            implementation_suggestion=response_json["implementation_suggestion"],
-            problem_description=response_json["problem_description"],
-        )
+    return coding_agent_summary + problem_description_prompt.format(
+        implementation_suggestion=response_json["implementation_suggestion"],
+        problem_description=response_json["problem_description"],
+    )
 
 
 def read_mdlog_file(filepath, filter=True):
@@ -399,7 +398,6 @@ def get_diagnose_prompt_swe(
 def get_diagnose_prompt_polyglot(
     entry_id, commit, root_dir, out_dir, dataset, patch_files=None
 ):
-
     if patch_files is None:
         patch_files = []
     md_logs, eval_logs, predicted_patches, eval_results = find_selfimprove_eval_logs(
@@ -566,7 +564,7 @@ def get_current_code(
     for i, patch_file in enumerate(patch_files):
         rel_path = os.path.relpath(patch_file, current_dir)
         if rel_path not in exclude_set:
-            code_text.append(f"# Patch {i+1}: {rel_path}")
+            code_text.append(f"# Patch {i + 1}: {rel_path}")
             code_text.append(read_file(patch_file))
 
     return "\n".join(code_text)

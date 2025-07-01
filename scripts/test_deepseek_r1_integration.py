@@ -18,13 +18,12 @@ Constitutional Hash: cdd01ef066bc6cf2
 import asyncio
 import json
 import logging
+import os
+import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, List
-
-import sys
-import os
+from typing import Any
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -45,7 +44,7 @@ class DeepSeekR1IntegrationTester:
 
         logger.info("DeepSeek R1 Integration Tester initialized")
 
-    async def run_comprehensive_test(self) -> Dict[str, Any]:
+    async def run_comprehensive_test(self) -> dict[str, Any]:
         """Run comprehensive DeepSeek R1 integration tests."""
 
         logger.info("🚀 Starting DeepSeek R1 Integration Test Suite")
@@ -97,15 +96,15 @@ class DeepSeekR1IntegrationTester:
 
         return overall_result
 
-    async def _test_service_initialization(self) -> Dict[str, Any]:
+    async def _test_service_initialization(self) -> dict[str, Any]:
         """Test multimodal service initialization with DeepSeek R1."""
 
         logger.info("🔧 Testing Service Initialization...")
 
         try:
             from services.shared.multimodal_ai_service import (
-                get_multimodal_service,
                 ModelType,
+                get_multimodal_service,
             )
 
             # Check if DeepSeek R1 is available
@@ -149,7 +148,7 @@ class DeepSeekR1IntegrationTester:
                 "details": "Failed to initialize service with DeepSeek R1",
             }
 
-    async def _test_model_availability(self) -> Dict[str, Any]:
+    async def _test_model_availability(self) -> dict[str, Any]:
         """Test DeepSeek R1 model availability through OpenRouter API."""
 
         logger.info("🌐 Testing DeepSeek R1 Model Availability...")
@@ -192,7 +191,6 @@ class DeepSeekR1IntegrationTester:
                     json=payload,
                     timeout=aiohttp.ClientTimeout(total=30),
                 ) as response:
-
                     response_time = (time.time() - start_time) * 1000
 
                     if response.status == 200:
@@ -210,14 +208,13 @@ class DeepSeekR1IntegrationTester:
                             .get("content", ""),
                             "details": "DeepSeek R1 model available and responding",
                         }
-                    else:
-                        error_text = await response.text()
-                        return {
-                            "status": "FAIL",
-                            "error": f"HTTP {response.status}: {error_text}",
-                            "response_time_ms": response_time,
-                            "details": "DeepSeek R1 model not available or API error",
-                        }
+                    error_text = await response.text()
+                    return {
+                        "status": "FAIL",
+                        "error": f"HTTP {response.status}: {error_text}",
+                        "response_time_ms": response_time,
+                        "details": "DeepSeek R1 model not available or API error",
+                    }
 
         except Exception as e:
             return {
@@ -226,15 +223,15 @@ class DeepSeekR1IntegrationTester:
                 "details": "DeepSeek R1 availability test failed",
             }
 
-    async def _test_cost_analysis(self) -> Dict[str, Any]:
+    async def _test_cost_analysis(self) -> dict[str, Any]:
         """Test cost analysis and savings calculation."""
 
         logger.info("💰 Testing Cost Analysis...")
 
         try:
             from services.shared.multimodal_ai_service import (
-                get_multimodal_service,
                 ModelType,
+                get_multimodal_service,
             )
 
             service = await get_multimodal_service()
@@ -287,18 +284,18 @@ class DeepSeekR1IntegrationTester:
                 "details": "Cost analysis test failed",
             }
 
-    async def _test_performance_comparison(self) -> Dict[str, Any]:
+    async def _test_performance_comparison(self) -> dict[str, Any]:
         """Test performance comparison between models."""
 
         logger.info("⚡ Testing Performance Comparison...")
 
         try:
             from services.shared.multimodal_ai_service import (
-                get_multimodal_service,
-                MultimodalRequest,
-                RequestType,
                 ContentType,
                 ModelType,
+                MultimodalRequest,
+                RequestType,
+                get_multimodal_service,
             )
 
             service = await get_multimodal_service()
@@ -388,18 +385,18 @@ class DeepSeekR1IntegrationTester:
                 "details": "Performance comparison test failed",
             }
 
-    async def _test_routing_optimization(self) -> Dict[str, Any]:
+    async def _test_routing_optimization(self) -> dict[str, Any]:
         """Test intelligent routing with DeepSeek R1 integration."""
 
         logger.info("🧠 Testing Routing Optimization...")
 
         try:
             from services.shared.multimodal_ai_service import (
-                get_multimodal_service,
-                MultimodalRequest,
-                RequestType,
                 ContentType,
                 ModelType,
+                MultimodalRequest,
+                RequestType,
+                get_multimodal_service,
             )
 
             service = await get_multimodal_service()
@@ -471,17 +468,17 @@ class DeepSeekR1IntegrationTester:
                 "details": "Routing optimization test failed",
             }
 
-    async def _test_constitutional_compliance(self) -> Dict[str, Any]:
+    async def _test_constitutional_compliance(self) -> dict[str, Any]:
         """Test constitutional compliance with DeepSeek R1."""
 
         logger.info("🏛️ Testing Constitutional Compliance...")
 
         try:
             from services.shared.multimodal_ai_service import (
-                get_multimodal_service,
+                ContentType,
                 MultimodalRequest,
                 RequestType,
-                ContentType,
+                get_multimodal_service,
             )
 
             service = await get_multimodal_service()
@@ -566,15 +563,15 @@ class DeepSeekR1IntegrationTester:
                 "details": "Constitutional compliance test failed",
             }
 
-    async def _test_load_balancing(self) -> Dict[str, Any]:
+    async def _test_load_balancing(self) -> dict[str, Any]:
         """Test load balancing with DeepSeek R1."""
 
         logger.info("⚖️ Testing Load Balancing...")
 
         try:
             from services.shared.multimodal_ai_service import (
-                get_multimodal_service,
                 ModelType,
+                get_multimodal_service,
             )
 
             service = await get_multimodal_service()
@@ -630,7 +627,7 @@ class DeepSeekR1IntegrationTester:
                 "details": "Load balancing test failed",
             }
 
-    def print_test_report(self, results: Dict[str, Any]):
+    def print_test_report(self, results: dict[str, Any]):
         """Print formatted test report."""
 
         print("\n" + "=" * 60)
@@ -645,12 +642,12 @@ class DeepSeekR1IntegrationTester:
         print(f"Constitutional Hash: {info['constitutional_hash']}")
         print(f"Target Cost Reduction: {info['target_cost_reduction']}%")
 
-        print(f"\n📊 OVERALL SUMMARY")
+        print("\n📊 OVERALL SUMMARY")
         print(f"Status: {summary['overall_status']}")
         print(f"Tests Passed: {summary['passed_tests']}/{summary['total_tests']}")
         print(f"Success Rate: {summary['success_rate_percent']:.1f}%")
 
-        print(f"\n🔍 DETAILED RESULTS")
+        print("\n🔍 DETAILED RESULTS")
         print("-" * 40)
 
         for test_name, test_result in results["test_results"].items():
@@ -673,9 +670,9 @@ class DeepSeekR1IntegrationTester:
                     f"   💰 Cost Reduction: {cost_reduction:.1f}% (Target: {info['target_cost_reduction']}%)"
                 )
                 if test_result.get("meets_target"):
-                    print(f"   ✅ Cost reduction target achieved!")
+                    print("   ✅ Cost reduction target achieved!")
                 else:
-                    print(f"   ⚠️ Cost reduction below target")
+                    print("   ⚠️ Cost reduction below target")
 
             if test_result["status"] == "FAIL" and "error" in test_result:
                 print(f"   Error: {test_result['error']}")

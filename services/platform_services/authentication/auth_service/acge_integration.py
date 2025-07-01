@@ -1,11 +1,10 @@
 # ACGE Phase 2 Auth Service Integration
 # Constitutional compliance middleware and ACGE model integration
 
-import asyncio
 import logging
 import time
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Any
 
 import httpx
 import jwt
@@ -46,9 +45,9 @@ class ACGEAuthIntegration:
     async def validate_constitutional_compliance(
         self,
         operation: str,
-        user_data: Dict[str, Any],
-        context: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        user_data: dict[str, Any],
+        context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Validate constitutional compliance for auth operations."""
 
         try:
@@ -98,16 +97,15 @@ class ACGEAuthIntegration:
                     )
 
                 return result
-            else:
-                ACGE_MODEL_REQUESTS.labels(operation=operation, status="error").inc()
+            ACGE_MODEL_REQUESTS.labels(operation=operation, status="error").inc()
 
-                logger.error(f"ACGE model validation failed: {response.status_code}")
-                return {
-                    "compliance_score": 0.5,  # Default fallback
-                    "compliant": False,
-                    "violations": ["acge_model_unavailable"],
-                    "fallback": True,
-                }
+            logger.error(f"ACGE model validation failed: {response.status_code}")
+            return {
+                "compliance_score": 0.5,  # Default fallback
+                "compliant": False,
+                "violations": ["acge_model_unavailable"],
+                "fallback": True,
+            }
 
         except Exception as e:
             ACGE_MODEL_REQUESTS.labels(operation=operation, status="exception").inc()
@@ -129,8 +127,8 @@ class ConstitutionalAuthMiddleware:
         self.acge = acge_integration
 
     async def validate_login_attempt(
-        self, username: str, user_data: Dict[str, Any], request_context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, username: str, user_data: dict[str, Any], request_context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Validate constitutional compliance for login attempts."""
 
         validation_result = await self.acge.validate_constitutional_compliance(
@@ -151,8 +149,8 @@ class ConstitutionalAuthMiddleware:
         return validation_result
 
     async def validate_token_creation(
-        self, user_data: Dict[str, Any], token_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, user_data: dict[str, Any], token_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Validate constitutional compliance for token creation."""
 
         validation_result = await self.acge.validate_constitutional_compliance(
@@ -168,8 +166,8 @@ class ConstitutionalAuthMiddleware:
         return validation_result
 
     async def validate_token_verification(
-        self, token_payload: Dict[str, Any], request_context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, token_payload: dict[str, Any], request_context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Validate constitutional compliance for token verification."""
 
         validation_result = await self.acge.validate_constitutional_compliance(
@@ -190,8 +188,8 @@ class ConstitutionalAuthMiddleware:
 
 
 def create_constitutional_jwt_claims(
-    user_data: Dict[str, Any], compliance_result: Dict[str, Any]
-) -> Dict[str, Any]:
+    user_data: dict[str, Any], compliance_result: dict[str, Any]
+) -> dict[str, Any]:
     """Create constitutional claims for JWT token."""
 
     constitutional_claims = {
@@ -231,14 +229,15 @@ async def constitutional_auth_dependency(
     request: Request,
     credentials: HTTPAuthorizationCredentials,
     acge_integration: ACGEAuthIntegration,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """FastAPI dependency for constitutional authentication."""
 
     try:
         # Decode JWT token
         token = credentials.credentials
         payload = jwt.decode(
-            token, options={"verify_signature": False}  # Signature verified elsewhere
+            token,
+            options={"verify_signature": False},  # Signature verified elsewhere
         )
 
         # Extract request context
@@ -278,7 +277,7 @@ async def constitutional_auth_dependency(
 
         return payload
 
-    except jwt.InvalidTokenError as e:
+    except jwt.InvalidTokenError:
         raise HTTPException(
             status_code=401,
             detail="Invalid token",
@@ -289,7 +288,7 @@ async def constitutional_auth_dependency(
         raise HTTPException(status_code=500, detail="Constitutional validation error")
 
 
-def add_constitutional_headers(response: Response, compliance_result: Dict[str, Any]):
+def add_constitutional_headers(response: Response, compliance_result: dict[str, Any]):
     """Add constitutional compliance headers to response."""
 
     response.headers["X-Constitutional-Hash"] = "cdd01ef066bc6cf2"

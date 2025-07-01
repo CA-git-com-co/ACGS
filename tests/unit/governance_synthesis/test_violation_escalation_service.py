@@ -2,16 +2,6 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.services.violation_escalation_service
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance_synthesis.gs_service.app.services.violation_escalation_service import (
-    EscalationLevel,
-    EscalationTrigger,
-    EscalationRule,
-    EscalationResult,
-    ViolationEscalationService,
-)
-
 
 class TestEscalationLevel:
     """Test suite for EscalationLevel."""

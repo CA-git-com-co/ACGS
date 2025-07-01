@@ -4,23 +4,22 @@ Test suite for the Comprehensive Load Testing Suite
 Validates the load testing framework functionality
 """
 
-import asyncio
-import pytest
 import json
-import tempfile
-from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
-import sys
 import os
+import sys
+import tempfile
+from unittest.mock import AsyncMock, patch
+
+import pytest
 
 # Add project root to path
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
 from tests.performance.comprehensive_load_testing_suite import (
+    ChaosScenario,
     ComprehensiveLoadTestSuite,
     LoadTestMetrics,
     ServiceEndpoint,
-    ChaosScenario,
 )
 
 

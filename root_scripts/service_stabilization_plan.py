@@ -95,6 +95,7 @@ class ServiceStabilizer:
                 logger.info(f"Installing {package}...")
                 result = subprocess.run(
                     [str(venv_python), "-m", "pip", "install", package],
+                    check=False,
                     cwd=self.project_root,
                     capture_output=True,
                     text=True,
@@ -350,6 +351,7 @@ class ServiceStabilizer:
             # Start monitoring stack
             result = subprocess.run(
                 ["docker-compose", "-f", "docker-compose.monitoring.yml", "up", "-d"],
+                check=False,
                 cwd=self.project_root / "infrastructure/monitoring",
                 capture_output=True,
                 text=True,
@@ -361,9 +363,8 @@ class ServiceStabilizer:
                 logger.info("📊 Grafana available at: http://localhost:3000")
                 logger.info("📊 Prometheus available at: http://localhost:9090")
                 return True
-            else:
-                logger.warning(f"⚠️ Monitoring deployment issues: {result.stderr}")
-                return False
+            logger.warning(f"⚠️ Monitoring deployment issues: {result.stderr}")
+            return False
 
         except Exception as e:
             logger.error(f"❌ Failed to deploy monitoring: {e}")
@@ -393,6 +394,7 @@ class ServiceStabilizer:
                     "--tb=short",
                     "-x",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -427,6 +429,7 @@ class ServiceStabilizer:
                     "-x",
                     "--continue-on-collection-errors",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,

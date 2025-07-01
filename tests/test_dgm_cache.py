@@ -3,25 +3,25 @@ Test suite for DGM cache implementation.
 """
 
 import asyncio
-import pytest
 import time
-from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
+
 from services.core.dgm_service.dgm_service.cache import (
-    DGMCacheManager,
     CacheStrategy,
     CacheTier,
-    initialize_cache_manager,
+    DGMCacheManager,
     close_cache_manager,
-)
-from services.core.dgm_service.dgm_service.cache.performance_cache import (
-    PerformanceMetricsCache,
-    initialize_performance_cache,
+    initialize_cache_manager,
 )
 from services.core.dgm_service.dgm_service.cache.bandit_cache import (
     BanditStateCache,
     initialize_bandit_cache,
+)
+from services.core.dgm_service.dgm_service.cache.performance_cache import (
+    PerformanceMetricsCache,
+    initialize_performance_cache,
 )
 
 

@@ -10,8 +10,6 @@ implementation strategies.
 import asyncio
 import logging
 import sys
-import numpy as np
-from pathlib import Path
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -318,8 +316,7 @@ async def main():
         logger.info("   for implementing these advanced ML practices!")
 
         return 0
-    else:
-        return 1
+    return 1
 
 
 if __name__ == "__main__":

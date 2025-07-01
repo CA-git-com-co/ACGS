@@ -43,9 +43,9 @@ class TestProactiveErrorPrediction:
             principle = Mock(spec=Principle)
             principle.id = i + 1
             principle.content = (
-                f"Test principle {i+1} content with some complexity and requirements."
+                f"Test principle {i + 1} content with some complexity and requirements."
             )
-            principle.description = f"Description for principle {i+1}"
+            principle.description = f"Description for principle {i + 1}"
             principle.priority_weight = 0.5 + (i * 0.2)
             principle.constraints = {"type": "test"} if i == 0 else None
             principle.scope = ["governance", "policy"] if i < 2 else ["governance"]
@@ -349,9 +349,9 @@ class TestIntegration:
             principle = Mock(spec=Principle)
             principle.id = i + 1
             principle.content = (
-                f"Complex governance principle {i+1} with regulatory requirements."
+                f"Complex governance principle {i + 1} with regulatory requirements."
             )
-            principle.description = f"Detailed description for principle {i+1}"
+            principle.description = f"Detailed description for principle {i + 1}"
             principle.priority_weight = 0.7
             principle.constraints = {"compliance": True}
             principle.scope = ["governance", "compliance", "policy"]

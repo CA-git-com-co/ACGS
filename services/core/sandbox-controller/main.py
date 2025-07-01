@@ -5,22 +5,21 @@ Manages isolated execution environments for AI agents with escape detection
 """
 
 import asyncio
-import json
 import logging
 import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 import aioredis
-import docker
-import psutil
 import uvicorn
-from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi import FastAPI, Response
 from prometheus_client import Counter, Gauge, Histogram, generate_latest
 from pydantic import BaseModel, Field
+
+import docker
 
 # Configure logging
 logging.basicConfig(
@@ -63,7 +62,7 @@ class SandboxExecutionRequest(BaseModel):
     timeout_seconds: int = Field(default=300, description="Execution timeout")
     memory_limit_mb: int = Field(default=2048, description="Memory limit in MB")
     cpu_limit: float = Field(default=0.5, description="CPU limit (cores)")
-    environment: Dict[str, str] = Field(
+    environment: dict[str, str] = Field(
         default_factory=dict, description="Environment variables"
     )
 
@@ -72,12 +71,12 @@ class SandboxExecutionResponse(BaseModel):
     execution_id: str = Field(..., description="Execution identifier")
     success: bool = Field(..., description="Whether execution completed successfully")
     output: str = Field(..., description="Execution output")
-    error: Optional[str] = Field(None, description="Error message if failed")
-    violations: List[Dict[str, Any]] = Field(
+    error: str | None = Field(None, description="Error message if failed")
+    violations: list[dict[str, Any]] = Field(
         default_factory=list, description="Security violations detected"
     )
     execution_time_seconds: float = Field(..., description="Actual execution time")
-    resource_usage: Dict[str, Any] = Field(..., description="Resource usage statistics")
+    resource_usage: dict[str, Any] = Field(..., description="Resource usage statistics")
     termination_reason: str = Field(..., description="Reason for termination")
 
 
@@ -89,7 +88,7 @@ class ViolationEvent(BaseModel):
     severity: str
     description: str
     detection_layer: str
-    indicators: Dict[str, Any]
+    indicators: dict[str, Any]
     timestamp: str
 
 
@@ -97,10 +96,10 @@ class ViolationEvent(BaseModel):
 class SandboxController:
     def __init__(self):
         self.docker_client = docker.from_env()
-        self.redis_client: Optional[aioredis.Redis] = None
+        self.redis_client: aioredis.Redis | None = None
         self.policy_engine_url = "http://policy-engine:8001"
         self.redpanda_url = "http://constitutional-events-kafka:9092"
-        self.active_sandboxes: Dict[str, Dict[str, Any]] = {}
+        self.active_sandboxes: dict[str, dict[str, Any]] = {}
         self.violation_patterns = self._load_violation_patterns()
 
     async def initialize(self):
@@ -121,7 +120,7 @@ class SandboxController:
             logger.error(f"Failed to initialize: {e}")
             raise
 
-    def _load_violation_patterns(self) -> Dict[str, Any]:
+    def _load_violation_patterns(self) -> dict[str, Any]:
         """Load violation detection patterns"""
         return {
             "process_injection": {
@@ -231,7 +230,7 @@ class SandboxController:
 
     async def _create_sandbox(
         self, execution_id: str, request: SandboxExecutionRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Create isolated sandbox container"""
         try:
             # Prepare container configuration
@@ -289,7 +288,7 @@ class SandboxController:
             raise
 
     async def _execute_code(
-        self, sandbox_info: Dict[str, Any], request: SandboxExecutionRequest
+        self, sandbox_info: dict[str, Any], request: SandboxExecutionRequest
     ) -> SandboxExecutionResponse:
         """Execute code in sandbox with monitoring"""
         container = sandbox_info["container"]
@@ -353,7 +352,7 @@ class SandboxController:
             logger.error(f"Sandbox execution failed: {e}")
             raise
 
-    async def _monitor_sandbox_execution(self, sandbox_info: Dict[str, Any]):
+    async def _monitor_sandbox_execution(self, sandbox_info: dict[str, Any]):
         """Monitor sandbox for violations during execution"""
         container = sandbox_info["container"]
 
@@ -375,7 +374,7 @@ class SandboxController:
         except Exception as e:
             logger.error(f"Monitoring failed: {e}")
 
-    async def _check_process_violations(self, sandbox_info: Dict[str, Any]):
+    async def _check_process_violations(self, sandbox_info: dict[str, Any]):
         """Check for process-based violations"""
         try:
             container = sandbox_info["container"]
@@ -401,7 +400,7 @@ class SandboxController:
         except Exception as e:
             logger.warning(f"Process violation check failed: {e}")
 
-    async def _check_resource_violations(self, sandbox_info: Dict[str, Any]):
+    async def _check_resource_violations(self, sandbox_info: dict[str, Any]):
         """Check for resource limit violations"""
         try:
             container = sandbox_info["container"]
@@ -426,14 +425,14 @@ class SandboxController:
         except Exception as e:
             logger.warning(f"Resource violation check failed: {e}")
 
-    async def _check_file_violations(self, sandbox_info: Dict[str, Any]):
+    async def _check_file_violations(self, sandbox_info: dict[str, Any]):
         """Check for unauthorized file access"""
         # This would require more sophisticated monitoring
         # For now, we'll implement basic checks
         pass
 
     async def _report_violation(
-        self, sandbox_info: Dict[str, Any], violation: Dict[str, Any]
+        self, sandbox_info: dict[str, Any], violation: dict[str, Any]
     ):
         """Report violation to monitoring systems"""
         try:
@@ -456,7 +455,7 @@ class SandboxController:
             logger.error(f"Failed to report violation: {e}")
 
     async def _emergency_containment(
-        self, sandbox_info: Dict[str, Any], violation: Dict[str, Any]
+        self, sandbox_info: dict[str, Any], violation: dict[str, Any]
     ):
         """Emergency containment for critical violations"""
         try:
@@ -478,7 +477,7 @@ class SandboxController:
         except Exception as e:
             logger.error(f"Emergency containment failed: {e}")
 
-    async def _take_forensic_snapshot(self, sandbox_info: Dict[str, Any]):
+    async def _take_forensic_snapshot(self, sandbox_info: dict[str, Any]):
         """Take forensic snapshot of container"""
         try:
             container = sandbox_info["container"]
@@ -498,7 +497,7 @@ class SandboxController:
             logger.error(f"Forensic snapshot failed: {e}")
 
     async def _send_to_audit_trail(
-        self, sandbox_info: Dict[str, Any], violation: Dict[str, Any]
+        self, sandbox_info: dict[str, Any], violation: dict[str, Any]
     ):
         """Send violation to audit trail"""
         try:
@@ -520,7 +519,7 @@ class SandboxController:
         except Exception as e:
             logger.error(f"Failed to send audit event: {e}")
 
-    def _extract_resource_usage(self, stats: Dict[str, Any]) -> Dict[str, Any]:
+    def _extract_resource_usage(self, stats: dict[str, Any]) -> dict[str, Any]:
         """Extract resource usage from container stats"""
         try:
             return {
@@ -537,7 +536,7 @@ class SandboxController:
         except Exception:
             return {}
 
-    def _calculate_cpu_percent(self, stats: Dict[str, Any]) -> float:
+    def _calculate_cpu_percent(self, stats: dict[str, Any]) -> float:
         """Calculate CPU usage percentage"""
         try:
             cpu_delta = (
@@ -556,7 +555,7 @@ class SandboxController:
             return 0.0
 
     def _determine_termination_reason(
-        self, exit_code: int, violations: List[Dict[str, Any]]
+        self, exit_code: int, violations: list[dict[str, Any]]
     ) -> str:
         """Determine reason for sandbox termination"""
         if violations:
@@ -567,10 +566,9 @@ class SandboxController:
 
         if exit_code == 0:
             return "normal_completion"
-        elif exit_code == 137:  # SIGKILL
+        if exit_code == 137:  # SIGKILL
             return "timeout_or_killed"
-        else:
-            return "execution_error"
+        return "execution_error"
 
     async def _wait_for_container(self, container):
         """Wait for container to complete"""
@@ -580,7 +578,7 @@ class SandboxController:
                 break
             await asyncio.sleep(0.1)
 
-    async def _cleanup_sandbox(self, sandbox_info: Dict[str, Any]):
+    async def _cleanup_sandbox(self, sandbox_info: dict[str, Any]):
         """Clean up sandbox resources"""
         try:
             container = sandbox_info["container"]

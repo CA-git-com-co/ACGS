@@ -14,13 +14,13 @@ from pathlib import Path
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.shared.multimodal_ai_service import get_multimodal_service
 from services.shared.ai_types import (
-    MultimodalRequest,
-    RequestType,
     ContentType,
     ModelType,
+    MultimodalRequest,
+    RequestType,
 )
+from services.shared.multimodal_ai_service import get_multimodal_service
 
 # Configure logging
 logging.basicConfig(
@@ -69,7 +69,9 @@ async def test_ml_routing_optimizer():
                 priority="high",
             )
 
-            logger.info(f"Processing request {i+1}: {test_case['request_type'].value}")
+            logger.info(
+                f"Processing request {i + 1}: {test_case['request_type'].value}"
+            )
             response = await service.process_request(request)
 
             logger.info(f"  Model used: {response.model_used.value}")
@@ -189,9 +191,8 @@ async def main():
     if success:
         logger.info(f"✅ Test completed successfully in {total_time:.2f} seconds")
         return 0
-    else:
-        logger.error(f"❌ Test failed after {total_time:.2f} seconds")
-        return 1
+    logger.error(f"❌ Test failed after {total_time:.2f} seconds")
+    return 1
 
 
 if __name__ == "__main__":

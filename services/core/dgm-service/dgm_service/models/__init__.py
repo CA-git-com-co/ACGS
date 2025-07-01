@@ -10,13 +10,13 @@ from .metrics import PerformanceMetric
 from .workspace import ImprovementWorkspace
 
 __all__ = [
+    "BanditAlgorithmType",
+    "BanditState",
+    "ComplianceLevel",
+    "ConstitutionalComplianceLog",
     "DGMArchive",
     "ImprovementStatus",
-    "PerformanceMetric",
-    "ConstitutionalComplianceLog",
-    "ComplianceLevel",
-    "BanditState",
-    "BanditAlgorithmType",
     "ImprovementWorkspace",
+    "PerformanceMetric",
     "SystemConfiguration",
 ]

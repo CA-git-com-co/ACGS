@@ -185,7 +185,7 @@ class TestCoverageExpander:
         for i, file_path in enumerate(enhanced_files):
             if Path(self.project_root / file_path).exists():
                 new_name = file_path.replace(
-                    "test_enhanced.py", f"test_enhanced_{i+1}.py"
+                    "test_enhanced.py", f"test_enhanced_{i + 1}.py"
                 )
                 try:
                     subprocess.run(
@@ -260,6 +260,7 @@ class TestCoverageExpander:
                     "--cov-report=json",
                     "-v",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -293,6 +294,7 @@ class TestCoverageExpander:
                     "--cov=services",
                     "-v",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -334,6 +336,7 @@ class TestCoverageExpander:
                         "%{http_code}",
                         f"http://localhost:8005/api/v1/governance/{workflow}/health",
                     ],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=10,
@@ -366,6 +369,7 @@ class TestCoverageExpander:
             # Run Anchor tests
             result = subprocess.run(
                 ["anchor", "test"],
+                check=False,
                 cwd=anchor_path,
                 capture_output=True,
                 text=True,
@@ -399,6 +403,7 @@ class TestCoverageExpander:
                     "-x",
                     "--tb=short",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,

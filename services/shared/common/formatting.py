@@ -44,14 +44,13 @@ def standardize_timestamps(data: Any) -> Any:
     """
     if isinstance(data, datetime):
         return data.isoformat()
-    elif isinstance(data, dict):
+    if isinstance(data, dict):
         return {key: standardize_timestamps(value) for key, value in data.items()}
-    elif isinstance(data, list):
+    if isinstance(data, list):
         return [standardize_timestamps(item) for item in data]
-    elif isinstance(data, tuple):
+    if isinstance(data, tuple):
         return tuple(standardize_timestamps(item) for item in data)
-    else:
-        return data
+    return data
 
 
 def format_datetime(
@@ -79,12 +78,11 @@ def format_datetime(
 
     if format_type == DateTimeFormat.ISO:
         return dt.isoformat()
-    elif format_type == DateTimeFormat.TIMESTAMP:
+    if format_type == DateTimeFormat.TIMESTAMP:
         return str(int(dt.timestamp()))
-    elif format_type == DateTimeFormat.HUMAN:
+    if format_type == DateTimeFormat.HUMAN:
         return dt.strftime("%Y-%m-%d %H:%M:%S timezone.utc")
-    else:
-        return dt.isoformat()
+    return dt.isoformat()
 
 
 def format_response(
@@ -296,20 +294,19 @@ def sanitize_for_json(data: Any) -> Any:
     """
     if isinstance(data, str | int | float | bool | type(None)):
         return data
-    elif isinstance(data, datetime):
+    if isinstance(data, datetime):
         return data.isoformat()
-    elif isinstance(data, Decimal):
+    if isinstance(data, Decimal):
         return float(data)
-    elif isinstance(data, Enum):
+    if isinstance(data, Enum):
         return data.value
-    elif isinstance(data, dict):
+    if isinstance(data, dict):
         return {key: sanitize_for_json(value) for key, value in data.items()}
-    elif isinstance(data, list | tuple):
+    if isinstance(data, list | tuple):
         return [sanitize_for_json(item) for item in data]
-    elif hasattr(data, "__dict__"):
+    if hasattr(data, "__dict__"):
         return sanitize_for_json(data.__dict__)
-    else:
-        return str(data)
+    return str(data)
 
 
 def safe_json_dumps(data: Any, indent: int | None = None) -> str:
@@ -412,11 +409,10 @@ def format_duration(seconds: float) -> str:
     """
     if seconds < 1:
         return f"{seconds * 1000:.1f}ms"
-    elif seconds < 60:
+    if seconds < 60:
         return f"{seconds:.1f}s"
-    elif seconds < 3600:
+    if seconds < 3600:
         minutes = seconds / 60
         return f"{minutes:.1f}m"
-    else:
-        hours = seconds / 3600
-        return f"{hours:.1f}h"
+    hours = seconds / 3600
+    return f"{hours:.1f}h"

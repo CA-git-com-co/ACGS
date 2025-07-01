@@ -7,10 +7,9 @@ Aggregates test coverage reports from all services with constitutional complianc
 import argparse
 import json
 import logging
-import os
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -35,7 +34,7 @@ class CoverageAggregator:
             "ec-service",
         ]
 
-    def aggregate_coverage_reports(self, artifacts_dir: str = ".") -> Dict[str, Any]:
+    def aggregate_coverage_reports(self, artifacts_dir: str = ".") -> dict[str, Any]:
         """Aggregate coverage reports from all services."""
         logger.info("Aggregating coverage reports...")
 
@@ -115,7 +114,7 @@ class CoverageAggregator:
 
     def process_service_coverage(
         self, service_name: str, artifacts_dir: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Process coverage data for a single service."""
         try:
             # Look for coverage artifacts
@@ -133,11 +132,11 @@ class CoverageAggregator:
             test_data = {}
 
             if coverage_file.exists():
-                with open(coverage_file, "r") as f:
+                with open(coverage_file) as f:
                     coverage_data = json.load(f)
 
             if test_report_file.exists():
-                with open(test_report_file, "r") as f:
+                with open(test_report_file) as f:
                     test_data = json.load(f)
 
             # Extract coverage metrics
@@ -158,8 +157,8 @@ class CoverageAggregator:
             return None
 
     def extract_coverage_metrics(
-        self, coverage_data: Dict, test_data: Dict, service_name: str
-    ) -> Dict[str, Any]:
+        self, coverage_data: dict, test_data: dict, service_name: str
+    ) -> dict[str, Any]:
         """Extract coverage metrics from raw data."""
         try:
             # Default values
@@ -252,7 +251,7 @@ class CoverageAggregator:
             logger.error(f"Error extracting coverage metrics: {e}")
             return service_data
 
-    def calculate_quality_score(self, service_data: Dict[str, Any]) -> float:
+    def calculate_quality_score(self, service_data: dict[str, Any]) -> float:
         """Calculate overall quality score for a service."""
         try:
             # Weighted scoring
@@ -298,13 +297,12 @@ class CoverageAggregator:
 
         if service_name in critical_services:
             return 95.0
-        elif service_name == "auth-service":
+        if service_name == "auth-service":
             return 92.0
-        else:
-            return 90.0
+        return 90.0
 
     def validate_constitutional_compliance(
-        self, service_data: Dict[str, Any], service_name: str
+        self, service_data: dict[str, Any], service_name: str
     ) -> bool:
         """Validate constitutional compliance for service coverage."""
         try:
@@ -332,7 +330,7 @@ class CoverageAggregator:
             logger.error(f"Error validating constitutional compliance: {e}")
             return False
 
-    def save_aggregated_report(self, aggregated_data: Dict[str, Any], output_file: str):
+    def save_aggregated_report(self, aggregated_data: dict[str, Any], output_file: str):
         """Save aggregated coverage report to file."""
         try:
             with open(output_file, "w") as f:
@@ -380,9 +378,9 @@ def main():
 
         # Print summary
         overall = aggregated_data["overall"]
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print("ACGS COVERAGE AGGREGATION SUMMARY")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
         print(f"Total Services: {overall['total_services']}")
         print(f"Average Coverage: {overall['average_coverage']:.1f}%")
         print(
@@ -391,7 +389,7 @@ def main():
         print(f"Total Tests: {overall['total_tests']}")
         print(f"Overall Success Rate: {overall['overall_success_rate']:.1%}")
         print(f"Constitutional Hash: {aggregated_data['constitutional_hash']}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
         # Exit with appropriate code
         if overall["services_above_threshold"] == overall["total_services"]:

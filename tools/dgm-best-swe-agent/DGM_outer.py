@@ -303,7 +303,7 @@ def main():
         "--choose_selfimproves_method",
         type=str,
         default="score_child_prop",
-        choices=["random", "score_prop", "score_child_prop" "best"],
+        choices=["random", "score_prop", "score_child_propbest"],
         help="Method to choose self-improve attempts.",
     )
     parser.add_argument(

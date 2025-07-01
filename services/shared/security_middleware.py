@@ -29,7 +29,7 @@ import re
 import secrets
 import time
 from datetime import datetime, timezone
-from typing import Any, Dict, List
+from typing import Any
 from urllib.parse import unquote
 
 from fastapi import Request, Response, status
@@ -407,7 +407,7 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
     Implements CSRF token validation for state-changing operations.
     """
 
-    def __init__(self, app, secret_key: str = None, exempt_paths: List[str] = None):
+    def __init__(self, app, secret_key: str = None, exempt_paths: list[str] = None):
         super().__init__(app)
         self.secret_key = secret_key or os.environ.get(
             "CSRF_SECRET_KEY", secrets.token_urlsafe(32)
@@ -580,9 +580,10 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
             # 3. Rate limiting (if available) - skip for public endpoints
             if self.rate_limiter and not self._is_public_endpoint(request.url.path):
-                rate_limit_allowed, rate_limit_info = (
-                    await self.rate_limiter.check_rate_limit(request)
-                )
+                (
+                    rate_limit_allowed,
+                    rate_limit_info,
+                ) = await self.rate_limiter.check_rate_limit(request)
                 if not rate_limit_allowed:
                     # Serialize datetime objects before logging
                     serializable_rate_limit_info = self._serialize_datetime_objects(
@@ -824,15 +825,14 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         """Recursively convert datetime objects to ISO format strings."""
         if isinstance(obj, datetime):
             return obj.isoformat()
-        elif isinstance(obj, dict):
+        if isinstance(obj, dict):
             return {
                 key: self._serialize_datetime_objects(value)
                 for key, value in obj.items()
             }
-        elif isinstance(obj, list):
+        if isinstance(obj, list):
             return [self._serialize_datetime_objects(item) for item in obj]
-        else:
-            return obj
+        return obj
 
     def _create_rate_limit_error_response(
         self, rate_limit_info: dict[str, Any], correlation_id: str
@@ -1095,7 +1095,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
             headers={"Location": str(https_url), "X-Correlation-ID": correlation_id},
         )
 
-    def _detect_sql_injection(self, request: Request) -> List[str]:
+    def _detect_sql_injection(self, request: Request) -> list[str]:
         """Detect potential SQL injection patterns."""
         sql_patterns = [
             r"(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION)\b)",
@@ -1222,8 +1222,8 @@ def apply_production_security_middleware(
         secret_key=os.environ.get("SESSION_SECRET_KEY", secrets.token_urlsafe(32)),
         max_age=3600,  # 1 hour
         same_site="strict",
-        https_only=not os.environ.get("ENVIRONMENT", "development").lower()
-        in ["development", "dev"],
+        https_only=os.environ.get("ENVIRONMENT", "development").lower()
+        not in ["development", "dev"],
         domain=None,  # Use default domain
     )
 
@@ -1268,7 +1268,7 @@ def create_security_config(
     rate_limit_requests: int = 100,
     rate_limit_window: int = 60,
     enable_threat_detection: bool = True,
-    custom_headers: Dict[str, str] = None,
+    custom_headers: dict[str, str] = None,
 ) -> SecurityConfig:
     """
     Create a security configuration for ACGS-1 services.

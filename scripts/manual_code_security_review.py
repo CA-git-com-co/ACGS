@@ -2,7 +2,7 @@
 """
 ACGS-1 Manual Code Security Review
 
-Performs thorough manual review of critical codebase components focusing on 
+Performs thorough manual review of critical codebase components focusing on
 security-sensitive areas identified in the automated scan.
 """
 
@@ -13,7 +13,7 @@ import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Tuple
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -86,7 +86,7 @@ class ManualCodeSecurityReview:
         os.makedirs("logs", exist_ok=True)
         os.makedirs("reports/security", exist_ok=True)
 
-    def run_review(self) -> Dict[str, Any]:
+    def run_review(self) -> dict[str, Any]:
         """Run comprehensive manual code security review."""
         logger.info(f"🔍 Starting manual code security review: {self.review_id}")
 
@@ -129,7 +129,7 @@ class ManualCodeSecurityReview:
             # Specific authentication security checks
             enhanced_auth_path = self.project_root / "services/shared/enhanced_auth.py"
             if enhanced_auth_path.exists():
-                with open(enhanced_auth_path, "r") as f:
+                with open(enhanced_auth_path) as f:
                     content = f.read()
 
                 # Check for secure password hashing
@@ -218,7 +218,7 @@ class ManualCodeSecurityReview:
                 self.project_root / "services/shared/security_middleware.py"
             )
             if security_middleware_path.exists():
-                with open(security_middleware_path, "r") as f:
+                with open(security_middleware_path) as f:
                     content = f.read()
 
                 # Check for essential security features
@@ -442,12 +442,12 @@ class ManualCodeSecurityReview:
 
     def _analyze_file_security(
         self, file_path: Path, category: str
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Analyze a single file for security issues."""
         findings = []
 
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
                 lines = content.split("\n")
 
@@ -519,7 +519,7 @@ class ManualCodeSecurityReview:
 
     def _check_auth_specific_issues(
         self, content: str, file_path: Path
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Check for authentication-specific security issues."""
         findings = []
 
@@ -541,7 +541,7 @@ class ManualCodeSecurityReview:
 
     def _check_db_specific_issues(
         self, content: str, file_path: Path
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Check for database-specific security issues."""
         findings = []
 

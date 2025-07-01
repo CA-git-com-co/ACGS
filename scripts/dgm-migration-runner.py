@@ -5,18 +5,15 @@ DGM Database Migration Runner
 Comprehensive migration runner with rollback capabilities and data integrity checks.
 """
 
-import asyncio
 import logging
 import os
-import sys
 import subprocess
+import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Any
 
-import asyncpg
 from sqlalchemy import create_engine, text
-from sqlalchemy.exc import SQLAlchemyError
 
 # Configure logging
 logging.basicConfig(
@@ -32,7 +29,7 @@ class DGMMigrationRunner:
         """Initialize migration runner."""
         self.database_url = database_url
         self.engine = None
-        self.migration_history: List[Dict[str, Any]] = []
+        self.migration_history: list[dict[str, Any]] = []
 
     def initialize(self):
         """Initialize database connection."""
@@ -44,7 +41,7 @@ class DGMMigrationRunner:
             logger.error(f"Failed to initialize migration runner: {e}")
             return False
 
-    def check_prerequisites(self) -> Dict[str, Any]:
+    def check_prerequisites(self) -> dict[str, Any]:
         """Check migration prerequisites."""
         checks = {
             "database_connection": False,
@@ -67,7 +64,11 @@ class DGMMigrationRunner:
         # Check Alembic availability
         try:
             result = subprocess.run(
-                ["alembic", "--version"], capture_output=True, text=True, timeout=10
+                ["alembic", "--version"],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
             if result.returncode == 0:
                 checks["alembic_available"] = True
@@ -111,7 +112,7 @@ class DGMMigrationRunner:
 
         return checks
 
-    def create_backup(self, backup_name: Optional[str] = None) -> Dict[str, Any]:
+    def create_backup(self, backup_name: str | None = None) -> dict[str, Any]:
         """Create database backup before migration."""
         if not backup_name:
             backup_name = f"dgm_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
@@ -127,7 +128,7 @@ class DGMMigrationRunner:
         try:
             with self.engine.connect() as conn:
                 # Create backup schema
-                conn.execute(text(f"CREATE SCHEMA IF NOT EXISTS dgm_backups"))
+                conn.execute(text("CREATE SCHEMA IF NOT EXISTS dgm_backups"))
                 conn.execute(
                     text(f"CREATE SCHEMA IF NOT EXISTS dgm_backups.{backup_name}")
                 )
@@ -180,7 +181,7 @@ class DGMMigrationRunner:
 
         return backup_result
 
-    def run_migrations(self) -> Dict[str, Any]:
+    def run_migrations(self) -> dict[str, Any]:
         """Run DGM migrations using Alembic."""
         migration_result = {
             "success": False,
@@ -197,6 +198,7 @@ class DGMMigrationRunner:
             # Run Alembic upgrade
             result = subprocess.run(
                 ["alembic", "-c", "migrations/alembic.ini", "upgrade", "head"],
+                check=False,
                 capture_output=True,
                 text=True,
                 env=env,
@@ -211,6 +213,7 @@ class DGMMigrationRunner:
                 # Get current revision
                 revision_result = subprocess.run(
                     ["alembic", "-c", "migrations/alembic.ini", "current"],
+                    check=False,
                     capture_output=True,
                     text=True,
                     env=env,
@@ -234,7 +237,7 @@ class DGMMigrationRunner:
 
         return migration_result
 
-    def verify_migration(self) -> Dict[str, Any]:
+    def verify_migration(self) -> dict[str, Any]:
         """Verify migration success and data integrity."""
         verification_result = {
             "schema_exists": False,
@@ -324,7 +327,7 @@ class DGMMigrationRunner:
 
         return verification_result
 
-    def rollback_migration(self, target_revision: str = "base") -> Dict[str, Any]:
+    def rollback_migration(self, target_revision: str = "base") -> dict[str, Any]:
         """Rollback migration to specified revision."""
         rollback_result = {
             "success": False,
@@ -344,6 +347,7 @@ class DGMMigrationRunner:
                     "downgrade",
                     target_revision,
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 env=env,
@@ -426,7 +430,7 @@ def main():
             logger.warning(f"  - {error}")
 
     logger.info("🎉 DGM database migration completed successfully!")
-    logger.info(f"📊 Migration Summary:")
+    logger.info("📊 Migration Summary:")
     logger.info(f"  - Schema created: {verification_result['schema_exists']}")
     logger.info(f"  - Tables created: {len(verification_result['tables_created'])}")
     logger.info(f"  - Data integrity: {verification_result['data_integrity']}")

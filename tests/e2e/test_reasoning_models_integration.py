@@ -21,17 +21,15 @@ Formal Verification Comments:
 # sha256: reasoning_models_integration_test_v1.0
 """
 
-import asyncio
-import json
 import logging
 import time
-from typing import Dict, Any, List
-from unittest.mock import Mock, patch, AsyncMock
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any
+from unittest.mock import AsyncMock, patch
 
-import pytest
 import aiohttp
+import pytest
 
 
 class ReasoningModelType(Enum):
@@ -52,7 +50,7 @@ class ConstitutionalDomain(Enum):
 class ReasoningRequest:
     content: str
     domain: ConstitutionalDomain
-    context: Dict[str, Any]
+    context: dict[str, Any]
     reasoning_depth: str = "standard"
     require_citations: bool = True
     max_tokens: int = 2048
@@ -60,11 +58,11 @@ class ReasoningRequest:
 
 @dataclass
 class ReasoningResponse:
-    reasoning_chain: List[str]
+    reasoning_chain: list[str]
     conclusion: str
     confidence_score: float
-    constitutional_compliance: Dict[str, float]
-    citations: List[str]
+    constitutional_compliance: dict[str, float]
+    citations: list[str]
     model_used: ReasoningModelType
     processing_time_ms: float
 
@@ -104,7 +102,7 @@ class VLLMReasoningService:
 
     async def _call_reasoning_model(
         self, model_type: ReasoningModelType, prompt: str, request: ReasoningRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Mock model API call."""
         return {
             "choices": [
@@ -490,7 +488,7 @@ CONFIDENCE: 0.85
             avg_confidence >= 0.5
         ), f"Average confidence too low: {avg_confidence:.2f}"
 
-        logger.info(f"✅ Performance benchmarking completed:")
+        logger.info("✅ Performance benchmarking completed:")
         logger.info(f"  Average duration: {avg_duration:.2f}ms")
         logger.info(f"  Maximum duration: {max_duration:.2f}ms")
         logger.info(f"  Average confidence: {avg_confidence:.2f}")
@@ -582,12 +580,12 @@ CONFIDENCE: 0.85
             # Mock response with compliance scores
             mock_response = f"""
             CONSTITUTIONAL COMPLIANCE:
-            - Privacy: {test_case['expected_privacy_score']}
-            - Transparency: {test_case['expected_transparency_score']}
+            - Privacy: {test_case["expected_privacy_score"]}
+            - Transparency: {test_case["expected_transparency_score"]}
             - Fairness: 0.7
             - Accountability: 0.8
             
-            CONCLUSION: Test case {i+1} analysis
+            CONCLUSION: Test case {i + 1} analysis
             CONFIDENCE: 0.85
             """
 
@@ -619,7 +617,7 @@ CONFIDENCE: 0.85
 
                     assert (
                         abs(privacy_score - test_case["expected_privacy_score"]) < 0.1
-                    ), f"Privacy score mismatch for case {i+1}: {privacy_score} vs {test_case['expected_privacy_score']}"
+                    ), f"Privacy score mismatch for case {i + 1}: {privacy_score} vs {test_case['expected_privacy_score']}"
 
                     assert (
                         abs(
@@ -627,7 +625,7 @@ CONFIDENCE: 0.85
                             - test_case["expected_transparency_score"]
                         )
                         < 0.1
-                    ), f"Transparency score mismatch for case {i+1}: {transparency_score} vs {test_case['expected_transparency_score']}"
+                    ), f"Transparency score mismatch for case {i + 1}: {transparency_score} vs {test_case['expected_transparency_score']}"
 
         logger.info("✅ Constitutional compliance scoring validated")
 
@@ -676,7 +674,7 @@ CONFIDENCE: 0.85
                     if depth == "constitutional":
                         assert (
                             len(response.reasoning_chain) >= 3
-                        ), f"Constitutional depth should have detailed reasoning"
+                        ), "Constitutional depth should have detailed reasoning"
 
                     assert (
                         response.confidence_score > 0
@@ -730,7 +728,7 @@ class TestLiveReasoningModels:
                     else:
                         pytest.skip("NVIDIA model not available")
         except Exception as e:
-            pytest.skip(f"NVIDIA model not accessible: {str(e)}")
+            pytest.skip(f"NVIDIA model not accessible: {e!s}")
 
     @pytest.mark.asyncio
     async def test_live_microsoft_model(self):
@@ -767,4 +765,4 @@ class TestLiveReasoningModels:
                     else:
                         pytest.skip("Microsoft model not available")
         except Exception as e:
-            pytest.skip(f"Microsoft model not accessible: {str(e)}")
+            pytest.skip(f"Microsoft model not accessible: {e!s}")

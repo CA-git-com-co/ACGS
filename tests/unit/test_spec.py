@@ -123,10 +123,9 @@ class TestSpec:
     def platform(self):
         if self.arch == "x86_64":
             return "linux/x86_64"
-        elif self.arch == "arm64":
+        if self.arch == "arm64":
             return "linux/arm64/v8"
-        else:
-            raise ValueError(f"Invalid architecture: {self.arch}")
+        raise ValueError(f"Invalid architecture: {self.arch}")
 
 
 def get_test_specs_from_dataset(
@@ -229,7 +228,7 @@ def make_env_script_list(instance: dict, specs: dict, env_name: str) -> list[str
         reqs_commands.append(
             f"cat <<'{HEREDOC_DELIMITER}' > {path_to_reqs}\n{reqs}\n{HEREDOC_DELIMITER}"
         )
-        if "no_use_env" in specs and specs["no_use_env"]:
+        if specs.get("no_use_env"):
             # `conda create` based installation
             cmd = (
                 f"conda create -c conda-forge -n {env_name} python={specs['python']} -y"

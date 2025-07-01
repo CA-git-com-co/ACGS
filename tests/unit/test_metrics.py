@@ -46,6 +46,7 @@ def test_metrics(tmp_path):
     # 3. Run ns summarize_results {tmp_path}
     result = subprocess.run(
         ["ns", "summarize_results", str(dst)],
+        check=False,
         capture_output=True,
         text=True,
     )
@@ -61,7 +62,7 @@ def test_metrics(tmp_path):
     expected_path = os.path.join(
         os.path.dirname(__file__), "data/eval_outputs/summarize_results_output.txt"
     )
-    with open(expected_path, "r") as f:
+    with open(expected_path) as f:
         expected = f.read()
     assert (
         output_without_last == expected
@@ -72,9 +73,9 @@ def test_metrics(tmp_path):
     metrics_ref_path = os.path.join(
         os.path.dirname(__file__), "data/eval_outputs/eval-results/metrics.json-test"
     )
-    with open(metrics_path, "r") as f:
+    with open(metrics_path) as f:
         metrics = json.load(f)
-    with open(metrics_ref_path, "r") as f:
+    with open(metrics_ref_path) as f:
         metrics_ref = json.load(f)
 
     def check_metrics_equal(metrics1, metrics2, path=""):

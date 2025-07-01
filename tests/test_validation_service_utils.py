@@ -1,7 +1,6 @@
-import types
-import sys
 import re
-import time
+import sys
+import types
 
 import pytest
 
@@ -33,7 +32,7 @@ from services.core.constitutional_ai.ac_service.app.services.constitutional_vali
 )
 
 
-@pytest.fixture()
+@pytest.fixture
 def service():
     return ConstitutionalValidationService()
 

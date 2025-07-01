@@ -6,13 +6,13 @@ providing step-by-step migration instructions and code transformations.
 """
 
 import logging
-from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
-from pathlib import Path
+from datetime import datetime, timezone
 from enum import Enum
+from pathlib import Path
+from typing import Any
 
-from .api_diff import DiffReport, APIChange, ChangeType
+from .api_diff import APIChange, ChangeType, DiffReport
 
 logger = logging.getLogger(__name__)
 
@@ -35,15 +35,15 @@ class MigrationStep:
     step_type: MigrationStepType
     title: str
     description: str
-    code_before: Optional[str] = None
-    code_after: Optional[str] = None
-    commands: List[str] = field(default_factory=list)
-    validation_checks: List[str] = field(default_factory=list)
-    rollback_commands: List[str] = field(default_factory=list)
+    code_before: str | None = None
+    code_after: str | None = None
+    commands: list[str] = field(default_factory=list)
+    validation_checks: list[str] = field(default_factory=list)
+    rollback_commands: list[str] = field(default_factory=list)
     estimated_time_minutes: int = 5
     risk_level: str = "low"  # low, medium, high
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "step_type": self.step_type.value,
@@ -68,8 +68,8 @@ class MigrationScript:
     generated_at: datetime
     title: str
     description: str
-    steps: List[MigrationStep] = field(default_factory=list)
-    prerequisites: List[str] = field(default_factory=list)
+    steps: list[MigrationStep] = field(default_factory=list)
+    prerequisites: list[str] = field(default_factory=list)
     estimated_total_time_minutes: int = 0
     risk_assessment: str = "low"
 
@@ -84,7 +84,7 @@ class MigrationScript:
         elif step.risk_level == "medium" and self.risk_assessment == "low":
             self.risk_assessment = "medium"
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "source_version": self.source_version,
@@ -145,7 +145,7 @@ class MigrationGenerator:
         logger.info(f"Generated migration script with {len(script.steps)} steps")
         return script
 
-    def _generate_prerequisites(self, diff_report: DiffReport) -> List[str]:
+    def _generate_prerequisites(self, diff_report: DiffReport) -> list[str]:
         """Generate list of prerequisites for migration."""
         prerequisites = [
             "Backup current application and database",
@@ -290,7 +290,7 @@ const createdAt = response.createdAt;  // Changed from created_at
                 title=f"Update Endpoint Usage: {change.path}",
                 description=change.description,
                 code_before=f"# Remove calls to {change.old_value}",
-                code_after=f"# Use alternative endpoint or method",
+                code_after="# Use alternative endpoint or method",
                 validation_checks=[
                     "Verify all endpoint calls updated",
                     "Test new endpoint functionality",
@@ -328,7 +328,7 @@ const createdAt = response.createdAt;  // Changed from created_at
                 title="Update API Configuration",
                 description="Update API version and configuration settings",
                 commands=[
-                    f"# Update API version in configuration",
+                    "# Update API version in configuration",
                     f"sed -i 's/api_version: {diff_report.source_version}/api_version: {diff_report.target_version}/g' config.yaml",
                     "# Update client configurations",
                     "# Update load balancer settings if needed",
@@ -399,7 +399,7 @@ const createdAt = response.createdAt;  // Changed from created_at
             )
         )
 
-    def _load_code_templates(self) -> Dict[str, str]:
+    def _load_code_templates(self) -> dict[str, str]:
         """Load code transformation templates."""
         return {
             "field_rename_python": """
@@ -416,7 +416,7 @@ const newField = response.{new_name};
 """,
         }
 
-    def _load_migration_patterns(self) -> Dict[str, Any]:
+    def _load_migration_patterns(self) -> dict[str, Any]:
         """Load common migration patterns."""
         return {
             "snake_to_camel": {

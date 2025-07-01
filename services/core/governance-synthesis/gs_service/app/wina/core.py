@@ -1,5 +1,6 @@
-import numpy as np  # Added for type hinting and example matrix
 from typing import Any
+
+import numpy as np  # Added for type hinting and example matrix
 
 from .models import AnalyzedNeuronActivation, NeuronActivationInput, WINAWeightOutput
 from .svd_utils import apply_svd_transformation  # Added SVD import

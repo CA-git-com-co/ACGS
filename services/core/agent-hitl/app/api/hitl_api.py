@@ -5,23 +5,22 @@ RESTful API for Human-in-the-Loop agent oversight operations.
 """
 
 import logging
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..core.database import get_db
 from ..schemas.hitl_schemas import (
-    HITLEvaluationRequest,
-    HITLDecisionResponse,
     AgentConfidenceProfileResponse,
     AgentConfidenceUpdate,
-    HumanReviewTaskResponse,
-    HumanReviewSubmission,
-    HITLFeedbackCreate,
     HITLDashboardData,
+    HITLDecisionResponse,
+    HITLEvaluationRequest,
+    HITLFeedbackCreate,
     HITLMetrics,
     HITLSearchRequest,
+    HumanReviewSubmission,
+    HumanReviewTaskResponse,
 )
 from ..services.hitl_decision_engine import HITLDecisionEngine
 from ..services.hitl_service import HITLService
@@ -92,7 +91,7 @@ async def evaluate_agent_operation(
         logger.error(f"Operation evaluation failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to evaluate operation: {str(e)}",
+            detail=f"Failed to evaluate operation: {e!s}",
         )
 
 
@@ -188,7 +187,7 @@ async def update_agent_confidence(
         )
 
 
-@router.get("/tasks", response_model=List[HumanReviewTaskResponse])
+@router.get("/tasks", response_model=list[HumanReviewTaskResponse])
 async def get_pending_review_tasks(
     limit: int = 50,
     assigned_to_me: bool = False,
@@ -302,7 +301,7 @@ async def get_hitl_metrics(
         )
 
 
-@router.post("/search", response_model=List[HITLDecisionResponse])
+@router.post("/search", response_model=list[HITLDecisionResponse])
 async def search_decisions(
     search_request: HITLSearchRequest,
     db: AsyncSession = Depends(get_db),

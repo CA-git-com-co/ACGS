@@ -5,10 +5,9 @@ Core decision-making logic for evaluating agent operations.
 """
 
 import asyncio
-import json
 import logging
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Any
 
 import httpx
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,13 +15,12 @@ from sqlalchemy.future import select
 
 from ..core.config import settings
 from ..models.review import (
-    AgentOperationReview,
     AgentConfidenceProfile,
-    ReviewStatus,
+    AgentOperationReview,
     EscalationLevel,
+    ReviewStatus,
     RiskLevel,
 )
-
 
 logger = logging.getLogger(__name__)
 
@@ -49,9 +47,9 @@ class DecisionEngine:
         agent_type: str,
         operation_type: str,
         operation_description: str,
-        operation_context: Dict[str, Any],
-        operation_target: Optional[str] = None,
-        request_metadata: Optional[Dict[str, Any]] = None,
+        operation_context: dict[str, Any],
+        operation_target: str | None = None,
+        request_metadata: dict[str, Any] | None = None,
     ) -> AgentOperationReview:
         """
         Evaluate an agent operation and determine if it requires human review.
@@ -172,9 +170,9 @@ class DecisionEngine:
         agent_id: str,
         agent_type: str,
         operation_type: str,
-        operation_context: Dict[str, Any],
+        operation_context: dict[str, Any],
         agent_profile: AgentConfidenceProfile,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Calculate confidence score for the operation.
 
@@ -247,9 +245,9 @@ class DecisionEngine:
         self,
         operation_type: str,
         operation_description: str,
-        operation_context: Dict[str, Any],
-        operation_target: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        operation_context: dict[str, Any],
+        operation_target: str | None = None,
+    ) -> dict[str, Any]:
         """Assess risk level of the operation."""
         factors = {}
 
@@ -312,8 +310,8 @@ class DecisionEngine:
         self,
         agent_id: str,
         operation_type: str,
-        operation_context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        operation_context: dict[str, Any],
+    ) -> dict[str, Any]:
         """Check operation against constitutional principles."""
         try:
             # Call Constitutional AI service
@@ -346,7 +344,7 @@ class DecisionEngine:
         }
 
     async def _evaluate_context_confidence(
-        self, operation_context: Dict[str, Any], agent_type: str
+        self, operation_context: dict[str, Any], agent_type: str
     ) -> float:
         """Evaluate confidence based on operation context."""
         confidence_adjustment = 0.0
@@ -378,9 +376,9 @@ class DecisionEngine:
         confidence_score: float,
         risk_score: float,
         risk_level: str,
-        policy_violations: List[str],
+        policy_violations: list[str],
         agent_profile: AgentConfidenceProfile,
-    ) -> Tuple[int, Dict[str, str], str]:
+    ) -> tuple[int, dict[str, str], str]:
         """Determine escalation level and decision based on scores."""
 
         # Check for policy violations - always escalate
@@ -410,7 +408,7 @@ class DecisionEngine:
             return (
                 EscalationLevel.LEVEL_4_CONSTITUTIONAL_COUNCIL,
                 {"status": ReviewStatus.ESCALATED.value, "decision": None},
-                f"Critical risk operation requires Constitutional Council review",
+                "Critical risk operation requires Constitutional Council review",
             )
 
         if risk_adjusted_confidence >= settings.ESCALATION_LEVEL_2_THRESHOLD:

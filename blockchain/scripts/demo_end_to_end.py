@@ -360,7 +360,7 @@ class QuantumagiDemo:
             f"\n📊 PGC Performance: {passed_tests}/{len(test_scenarios)} tests passed ({success_rate:.1%})"
         )
         print(
-            f"🎯 Average confidence: {sum(r['confidence'] for r in self.demo_data['compliance_results'])/len(self.demo_data['compliance_results']):.1f}%"
+            f"🎯 Average confidence: {sum(r['confidence'] for r in self.demo_data['compliance_results']) / len(self.demo_data['compliance_results']):.1f}%"
         )
 
         await asyncio.sleep(2)

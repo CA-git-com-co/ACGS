@@ -255,8 +255,7 @@ async def create_ac_amendment(
         result = await handler.process_rapid_amendment(db, amendment, urgency_level)
         if result["success"]:
             return await get_ac_amendment(db, result["amendment_id"])
-        else:
-            raise ValueError(f"Failed to create rapid amendment: {result['error']}")
+        raise ValueError(f"Failed to create rapid amendment: {result['error']}")
 
     # Standard amendment creation with enhanced fields
     db_amendment = models.ACAmendment(

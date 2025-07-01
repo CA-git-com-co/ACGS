@@ -8,10 +8,9 @@ testability, and follow single responsibility principle.
 import hashlib
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from ..schemas import ConstitutionalComplianceRequest
-
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +64,7 @@ class ConstitutionalValidationService:
 
     async def validate_constitutional_compliance(
         self, request: ConstitutionalComplianceRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Main validation entry point with improved structure.
 
@@ -119,13 +118,13 @@ class ConstitutionalValidationService:
 
         return result
 
-    def _generate_validation_id(self, policy: Dict[str, Any]) -> str:
+    def _generate_validation_id(self, policy: dict[str, Any]) -> str:
         """Generate unique validation ID."""
         policy_hash = hashlib.sha256(str(policy).encode()).hexdigest()[:8]
         return f"VAL-{int(time.time())}-{policy_hash}"
 
     async def _log_validation_request(
-        self, validation_id: str, policy: Dict[str, Any], validation_mode: str
+        self, validation_id: str, policy: dict[str, Any], validation_mode: str
     ) -> None:
         """Log validation request for audit trail."""
         if self.audit_logger:
@@ -138,10 +137,10 @@ class ConstitutionalValidationService:
 
     async def _perform_rule_validation(
         self,
-        policy: Dict[str, Any],
-        principles: Optional[List[Dict]] = None,
+        policy: dict[str, Any],
+        principles: list[dict] | None = None,
         validation_mode: str = "comprehensive",
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Perform validation against constitutional rules.
 
@@ -167,9 +166,9 @@ class ConstitutionalValidationService:
 
     def _get_rules_to_check(
         self,
-        principles: Optional[List[Dict]] = None,
+        principles: list[dict] | None = None,
         validation_mode: str = "comprehensive",
-    ) -> List[str]:
+    ) -> list[str]:
         """Determine which rules to check based on request parameters."""
         if principles:
             # If specific principles provided, map them to rule IDs
@@ -177,14 +176,14 @@ class ConstitutionalValidationService:
 
         if validation_mode == "basic":
             return ["CONST-001", "CONST-003"]
-        elif validation_mode == "comprehensive":
+        if validation_mode == "comprehensive":
             return list(self.rule_checks.keys())
-        else:  # detailed
-            return list(self.rule_checks.keys())
+        # detailed
+        return list(self.rule_checks.keys())
 
     async def _validate_single_rule(
-        self, rule_id: str, policy: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, rule_id: str, policy: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Validate policy against a single constitutional rule.
 
@@ -221,7 +220,7 @@ class ConstitutionalValidationService:
         }
 
     async def _handle_violation_detection(
-        self, rule_id: str, compliance_result: Dict[str, Any]
+        self, rule_id: str, compliance_result: dict[str, Any]
     ) -> None:
         """Handle violation detection for non-compliant rules."""
         if self.violation_detector:
@@ -233,8 +232,8 @@ class ConstitutionalValidationService:
                 logger.warning(f"Violation detection failed: {e}")
 
     def _calculate_compliance_metrics(
-        self, validation_results: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, validation_results: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """Calculate overall compliance metrics."""
         if not validation_results:
             return {
@@ -268,10 +267,10 @@ class ConstitutionalValidationService:
 
     async def _perform_formal_verification(
         self,
-        policy: Dict[str, Any],
-        validation_results: List[Dict[str, Any]],
+        policy: dict[str, Any],
+        validation_results: list[dict[str, Any]],
         overall_compliant: bool,
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Perform formal verification if available and applicable."""
         if self.fv_client and overall_compliant:
             try:
@@ -285,14 +284,14 @@ class ConstitutionalValidationService:
     def _build_validation_result(
         self,
         validation_id: str,
-        policy: Dict[str, Any],
-        validation_results: List[Dict[str, Any]],
-        compliance_metrics: Dict[str, Any],
-        formal_verification_results: Optional[Dict[str, Any]],
+        policy: dict[str, Any],
+        validation_results: list[dict[str, Any]],
+        compliance_metrics: dict[str, Any],
+        formal_verification_results: dict[str, Any] | None,
         processing_time: float,
         validation_mode: str,
         include_reasoning: bool,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Build the final validation result response."""
         result = {
             "validation_id": validation_id,
@@ -323,7 +322,7 @@ class ConstitutionalValidationService:
 
         return result
 
-    def _generate_next_steps(self, overall_compliant: bool) -> List[str]:
+    def _generate_next_steps(self, overall_compliant: bool) -> list[str]:
         """Generate recommended next steps based on compliance status."""
         if not overall_compliant:
             return [
@@ -332,15 +331,14 @@ class ConstitutionalValidationService:
                 "Re-validate after modifications",
                 "Consider formal verification",
             ]
-        else:
-            return [
-                "Proceed to policy governance compliance check",
-                "Submit for stakeholder review",
-                "Consider production deployment",
-            ]
+        return [
+            "Proceed to policy governance compliance check",
+            "Submit for stakeholder review",
+            "Consider production deployment",
+        ]
 
     async def _log_validation_result(
-        self, validation_id: str, result: Dict[str, Any]
+        self, validation_id: str, result: dict[str, Any]
     ) -> None:
         """Log validation result for audit trail."""
         if self.audit_logger:
@@ -350,7 +348,7 @@ class ConstitutionalValidationService:
                 logger.warning(f"Audit result logging failed: {e}")
 
     def _calculate_average_severity(
-        self, validation_results: List[Dict[str, Any]]
+        self, validation_results: list[dict[str, Any]]
     ) -> str:
         """Calculate average severity across all validation results."""
         severity_weights = {"low": 1, "medium": 2, "high": 3, "critical": 4}
@@ -366,15 +364,14 @@ class ConstitutionalValidationService:
 
         if average_weight <= 1.5:
             return "low"
-        elif average_weight <= 2.5:
+        if average_weight <= 2.5:
             return "medium"
-        elif average_weight <= 3.5:
+        if average_weight <= 3.5:
             return "high"
-        else:
-            return "critical"
+        return "critical"
 
     # Placeholder validation methods (these would contain the actual validation logic)
-    def _advanced_democratic_check(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def _advanced_democratic_check(self, policy: dict[str, Any]) -> dict[str, Any]:
         """Advanced democratic participation validation."""
         # Placeholder implementation
         return {
@@ -385,7 +382,7 @@ class ConstitutionalValidationService:
             "severity": "low",
         }
 
-    def _advanced_transparency_check(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def _advanced_transparency_check(self, policy: dict[str, Any]) -> dict[str, Any]:
         """Advanced transparency requirement validation."""
         # Placeholder implementation
         return {
@@ -396,7 +393,7 @@ class ConstitutionalValidationService:
             "severity": "low",
         }
 
-    def _advanced_constitutional_check(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def _advanced_constitutional_check(self, policy: dict[str, Any]) -> dict[str, Any]:
         """Advanced constitutional compliance validation."""
         # Placeholder implementation
         return {
@@ -407,7 +404,7 @@ class ConstitutionalValidationService:
             "severity": "low",
         }
 
-    def _advanced_accountability_check(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def _advanced_accountability_check(self, policy: dict[str, Any]) -> dict[str, Any]:
         """Advanced accountability framework validation."""
         # Placeholder implementation
         return {
@@ -418,7 +415,7 @@ class ConstitutionalValidationService:
             "severity": "low",
         }
 
-    def _advanced_rights_check(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def _advanced_rights_check(self, policy: dict[str, Any]) -> dict[str, Any]:
         """Advanced rights protection validation."""
         # Placeholder implementation
         return {

@@ -3,10 +3,9 @@ System monitoring commands for Gemini CLI
 """
 
 import argparse
-from typing import Dict, Any, List
 import asyncio
 from datetime import datetime, timedelta
-import time
+from typing import Any
 
 
 def add_arguments(parser: argparse.ArgumentParser):
@@ -52,7 +51,7 @@ def add_arguments(parser: argparse.ArgumentParser):
     )
 
 
-async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
+async def handle_command(args: argparse.Namespace, client) -> dict[str, Any]:
     """Handle monitor commands"""
 
     if args.monitor_command == "status":
@@ -108,7 +107,7 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
 
         return status
 
-    elif args.monitor_command == "health":
+    if args.monitor_command == "health":
         if args.continuous:
             # Continuous monitoring
             results = []
@@ -127,7 +126,7 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
                     results.append(result)
 
                     # Print intermediate result
-                    print(f"[{i+1}/10] Health check: {health}")
+                    print(f"[{i + 1}/10] Health check: {health}")
 
                     await asyncio.sleep(5)  # Check every 5 seconds
 
@@ -139,28 +138,26 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
                 "checks_performed": len(results),
                 "results": results,
             }
-        else:
-            # Single health check
-            health = client.check_service_health()
+        # Single health check
+        health = client.check_service_health()
 
-            if args.service:
-                if args.service in health:
-                    return {
-                        "service": args.service,
-                        "healthy": health[args.service],
-                        "timestamp": datetime.now().isoformat(),
-                    }
-                else:
-                    return {"error": f"Unknown service: {args.service}"}
+        if args.service:
+            if args.service in health:
+                return {
+                    "service": args.service,
+                    "healthy": health[args.service],
+                    "timestamp": datetime.now().isoformat(),
+                }
+            return {"error": f"Unknown service: {args.service}"}
 
-            return {
-                "health": health,
-                "healthy_services": sum(1 for h in health.values() if h),
-                "total_services": len(health),
-                "timestamp": datetime.now().isoformat(),
-            }
+        return {
+            "health": health,
+            "healthy_services": sum(1 for h in health.values() if h),
+            "total_services": len(health),
+            "timestamp": datetime.now().isoformat(),
+        }
 
-    elif args.monitor_command == "metrics":
+    if args.monitor_command == "metrics":
         # Get metrics (mock data for now)
         period_hours = {"1h": 1, "6h": 6, "24h": 24, "7d": 168}
 
@@ -199,7 +196,7 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
 
         return metrics
 
-    elif args.monitor_command == "alerts":
+    if args.monitor_command == "alerts":
         # Get system alerts (mock data)
         all_alerts = [
             {
@@ -252,7 +249,7 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
             "unacknowledged_count": sum(1 for a in alerts if not a["acknowledged"]),
         }
 
-    elif args.monitor_command == "performance":
+    if args.monitor_command == "performance":
         # Get performance metrics
         perf_data = {"period": "last_24h", "operation_types": {}}
 
@@ -288,5 +285,4 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
 
         return perf_data
 
-    else:
-        return {"error": "Unknown monitor command"}
+    return {"error": "Unknown monitor command"}

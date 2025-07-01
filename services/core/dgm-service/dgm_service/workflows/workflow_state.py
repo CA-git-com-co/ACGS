@@ -6,7 +6,7 @@ import asyncio
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 from uuid import UUID
 
 
@@ -37,15 +37,15 @@ class WorkflowState:
     # Status and timing
     status: WorkflowStatus
     created_at: datetime
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
     timeout: timedelta = field(default_factory=lambda: timedelta(hours=2))
 
     # Data and results
-    input_data: Dict[str, Any] = field(default_factory=dict)
-    output_data: Dict[str, Any] = field(default_factory=dict)
-    result: Optional[Dict[str, Any]] = None
-    error: Optional[str] = None
+    input_data: dict[str, Any] = field(default_factory=dict)
+    output_data: dict[str, Any] = field(default_factory=dict)
+    result: dict[str, Any] | None = None
+    error: str | None = None
 
     # Execution control
     priority: int = 5  # 1-10, higher = more priority
@@ -53,19 +53,19 @@ class WorkflowState:
     max_retries: int = 3
 
     # Progress tracking
-    current_step: Optional[str] = None
-    completed_steps: List[str] = field(default_factory=list)
-    total_steps: Optional[int] = None
+    current_step: str | None = None
+    completed_steps: list[str] = field(default_factory=list)
+    total_steps: int | None = None
     progress_percentage: float = 0.0
 
     # Metadata
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    tags: List[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
+    tags: list[str] = field(default_factory=list)
 
     # Runtime references (not persisted)
-    execution_task: Optional[asyncio.Task] = field(default=None, init=False)
+    execution_task: asyncio.Task | None = field(default=None, init=False)
 
-    def get_elapsed_time(self) -> Optional[timedelta]:
+    def get_elapsed_time(self) -> timedelta | None:
         """Get elapsed execution time."""
         if not self.started_at:
             return None
@@ -73,7 +73,7 @@ class WorkflowState:
         end_time = self.completed_at or datetime.utcnow()
         return end_time - self.started_at
 
-    def get_remaining_time(self) -> Optional[timedelta]:
+    def get_remaining_time(self) -> timedelta | None:
         """Get remaining execution time before timeout."""
         if not self.started_at:
             return self.timeout
@@ -104,7 +104,7 @@ class WorkflowState:
             self.status == WorkflowStatus.FAILED and self.retry_count < self.max_retries
         )
 
-    def update_progress(self, step_name: str, percentage: Optional[float] = None):
+    def update_progress(self, step_name: str, percentage: float | None = None):
         """Update workflow progress."""
         self.current_step = step_name
 
@@ -127,7 +127,7 @@ class WorkflowState:
         if tag not in self.tags:
             self.tags.append(tag)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "workflow_id": str(self.workflow_id),
@@ -183,12 +183,12 @@ class WorkflowStep:
     def __init__(self, name: str, description: str = ""):
         self.name = name
         self.description = description
-        self.started_at: Optional[datetime] = None
-        self.completed_at: Optional[datetime] = None
-        self.error: Optional[str] = None
-        self.result: Optional[Dict[str, Any]] = None
+        self.started_at: datetime | None = None
+        self.completed_at: datetime | None = None
+        self.error: str | None = None
+        self.result: dict[str, Any] | None = None
 
-    async def execute(self, workflow_state: WorkflowState) -> Dict[str, Any]:
+    async def execute(self, workflow_state: WorkflowState) -> dict[str, Any]:
         """Execute the workflow step."""
         self.started_at = datetime.utcnow()
         workflow_state.update_progress(self.name)
@@ -204,17 +204,17 @@ class WorkflowStep:
             self.completed_at = datetime.utcnow()
             raise
 
-    async def _execute_step(self, workflow_state: WorkflowState) -> Dict[str, Any]:
+    async def _execute_step(self, workflow_state: WorkflowState) -> dict[str, Any]:
         """Override this method to implement step logic."""
         raise NotImplementedError("Subclasses must implement _execute_step")
 
-    def get_duration(self) -> Optional[timedelta]:
+    def get_duration(self) -> timedelta | None:
         """Get step execution duration."""
         if not self.started_at or not self.completed_at:
             return None
         return self.completed_at - self.started_at
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert step to dictionary."""
         return {
             "name": self.name,

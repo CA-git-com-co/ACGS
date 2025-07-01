@@ -9,15 +9,12 @@ import json
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional
 
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 import uvicorn
-
-from baseline_metrics_collector import PerformanceBaselineCollector, baseline_collector
+from baseline_metrics_collector import baseline_collector
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -58,7 +55,7 @@ async def dashboard_home(request: Request):
         )
     except Exception as e:
         logger.error(f"Dashboard error: {e}")
-        return HTMLResponse(f"<h1>Dashboard Error</h1><p>{str(e)}</p>", status_code=500)
+        return HTMLResponse(f"<h1>Dashboard Error</h1><p>{e!s}</p>", status_code=500)
 
 
 @app.get("/api/baseline/current")

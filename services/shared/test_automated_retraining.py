@@ -8,16 +8,16 @@ and comprehensive monitoring with constitutional hash integrity.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import sys
-import os
-import numpy as np
 import logging
-from datetime import datetime
+import os
+import sys
+
+import numpy as np
 
 # Add the services directory to the path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from production_ml_optimizer import ProductionMLOptimizer, AutomatedRetrainingManager
+from production_ml_optimizer import AutomatedRetrainingManager, ProductionMLOptimizer
 
 # Configure logging
 logging.basicConfig(
@@ -145,7 +145,7 @@ def test_automated_retraining_execution():
     assert retraining_results.constitutional_hash_verified == True
     assert retraining_results.retraining_duration_seconds > 0
 
-    logger.info(f"  ✅ Retraining completed:")
+    logger.info("  ✅ Retraining completed:")
     logger.info(f"    Duration: {retraining_results.retraining_duration_seconds:.2f}s")
     logger.info(f"    Improvement achieved: {retraining_results.improvement_achieved}")
     logger.info(f"    Deployment approved: {retraining_results.deployment_approved}")
@@ -245,7 +245,7 @@ def test_zero_downtime_deployment():
     # Test zero-downtime deployment
     rollback_required = manager._deploy_with_zero_downtime(test_model, X, y)
 
-    logger.info(f"  ✅ Zero-downtime deployment test:")
+    logger.info("  ✅ Zero-downtime deployment test:")
     logger.info(f"    Rollback required: {rollback_required}")
 
     return not rollback_required  # Success if no rollback required
@@ -283,7 +283,7 @@ def test_retraining_system_status():
         assert capability in capabilities
         assert capabilities[capability] == True
 
-    logger.info(f"  ✅ System status validated:")
+    logger.info("  ✅ System status validated:")
     logger.info(
         f"    Constitutional hash verified: {status['constitutional_hash_verified']}"
     )

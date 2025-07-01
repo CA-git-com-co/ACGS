@@ -182,6 +182,7 @@ class ReorganizationValidator:
         try:
             result = subprocess.run(
                 ["anchor", "build"],
+                check=False,
                 cwd=blockchain_dir,
                 capture_output=True,
                 text=True,
@@ -191,9 +192,8 @@ class ReorganizationValidator:
             if result.returncode == 0:
                 print("✅ Anchor build successful")
                 return True
-            else:
-                self.errors.append(f"Anchor build failed: {result.stderr}")
-                return False
+            self.errors.append(f"Anchor build failed: {result.stderr}")
+            return False
 
         except subprocess.TimeoutExpired:
             self.errors.append("Anchor build timed out")

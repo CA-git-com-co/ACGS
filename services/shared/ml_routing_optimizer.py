@@ -15,25 +15,23 @@ Features:
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import asyncio
 import json
 import logging
-import time
-from dataclasses import dataclass, asdict
+import os
+from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple, Any
-from enum import Enum
+from typing import Any
+
+import joblib
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import StandardScaler
-import joblib
-import os
 
 from services.shared.ai_types import (
+    ContentType,
     ModelType,
     MultimodalRequest,
     RequestType,
-    ContentType,
 )
 
 # Configure logging
@@ -77,7 +75,7 @@ class MLRoutingOptimizer:
 
     def __init__(self, constitutional_hash: str = "cdd01ef066bc6cf2"):
         self.constitutional_hash = constitutional_hash
-        self.performance_history: List[PerformanceMetric] = []
+        self.performance_history: list[PerformanceMetric] = []
         self.models = {}
         self.scalers = {}
         self.model_file_path = "data/ml_routing_models.joblib"
@@ -153,7 +151,7 @@ class MLRoutingOptimizer:
 
     def _get_historical_metrics(
         self, request_type: RequestType, content_type: ContentType
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Get historical performance metrics for similar requests."""
         relevant_metrics = [
             m
@@ -212,7 +210,7 @@ class MLRoutingOptimizer:
 
     def predict_performance(
         self, request: MultimodalRequest, model_type: ModelType
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Predict performance metrics for a request-model combination."""
         features = self._extract_features(request)
         feature_vector = np.array(
@@ -259,7 +257,7 @@ class MLRoutingOptimizer:
 
     def _fallback_prediction(
         self, request: MultimodalRequest, model_type: ModelType
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Fallback prediction based on heuristics."""
         base_predictions = {
             ModelType.FLASH_LITE: {
@@ -295,8 +293,8 @@ class MLRoutingOptimizer:
         return predictions
 
     def select_optimal_model(
-        self, request: MultimodalRequest, available_models: List[ModelType]
-    ) -> Tuple[ModelType, Dict[str, float]]:
+        self, request: MultimodalRequest, available_models: list[ModelType]
+    ) -> tuple[ModelType, dict[str, float]]:
         """Select the optimal model based on ML predictions."""
         best_model = None
         best_score = float("-inf")
@@ -355,7 +353,7 @@ class MLRoutingOptimizer:
         X = np.array(X)
 
         # Train models
-        for metric_name in y.keys():
+        for metric_name in y:
             try:
                 y_values = np.array(y[metric_name])
 
@@ -408,7 +406,7 @@ class MLRoutingOptimizer:
         """Load performance history from disk."""
         try:
             if os.path.exists(self.history_file_path):
-                with open(self.history_file_path, "r") as f:
+                with open(self.history_file_path) as f:
                     data = json.load(f)
 
                 self.performance_history = []
@@ -465,7 +463,7 @@ class MLRoutingOptimizer:
         except Exception as e:
             logger.error(f"Failed to load ML models: {e}")
 
-    def get_performance_analytics(self) -> Dict[str, Any]:
+    def get_performance_analytics(self) -> dict[str, Any]:
         """Get performance analytics and insights."""
         if not self.performance_history:
             return {"message": "No performance data available"}

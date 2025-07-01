@@ -5,13 +5,11 @@ This module provides comprehensive metrics collection for monitoring
 Constitutional Council performance, scalability, and democratic governance workflows.
 """
 
-import asyncio
 import logging
-import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 try:
     from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram
@@ -27,8 +25,6 @@ try:
 except ImportError:
     REDIS_AVAILABLE = False
 
-from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
@@ -64,9 +60,9 @@ class ScalabilityMetric:
     value: float
     unit: str
     timestamp: datetime = field(default_factory=datetime.utcnow)
-    governance_phase: Optional[GovernancePhase] = None
-    amendment_id: Optional[int] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    governance_phase: GovernancePhase | None = None
+    amendment_id: int | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -108,7 +104,7 @@ class ScalabilityMetricsCollector:
     def __init__(self, redis_client=None, prometheus_enabled: bool = True):
         self.redis_client = redis_client
         self.prometheus_enabled = prometheus_enabled and PROMETHEUS_AVAILABLE
-        self.metrics_buffer: List[ScalabilityMetric] = []
+        self.metrics_buffer: list[ScalabilityMetric] = []
         self.max_buffer_size = 1000
 
         if self.prometheus_enabled:
@@ -361,7 +357,7 @@ class ScalabilityMetricsCollector:
 
 
 # Global metrics collector instance
-_metrics_collector: Optional[ScalabilityMetricsCollector] = None
+_metrics_collector: ScalabilityMetricsCollector | None = None
 
 
 def get_metrics_collector() -> ScalabilityMetricsCollector:

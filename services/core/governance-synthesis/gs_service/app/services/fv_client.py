@@ -60,10 +60,10 @@ class FVServiceClient:
                 pass
             return None
         except httpx.RequestError as e:
-            print(f"Request error requesting verification from FV Service: {str(e)}")
+            print(f"Request error requesting verification from FV Service: {e!s}")
             return None
         except Exception as e:  # Catch other potential errors like JSON decoding
-            print(f"Unexpected error during FV request: {str(e)}")
+            print(f"Unexpected error during FV request: {e!s}")
             return None
 
     async def close(self):

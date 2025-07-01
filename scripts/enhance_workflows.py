@@ -323,11 +323,11 @@ class WorkflowEnhancer:
         report = f"""
 # ACGS-PGP Workflow Enhancement Report
 
-**Generated:** {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S timezone.utc')}
+**Generated:** {datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S timezone.utc")}
 
 ## Executive Summary
 
-This report provides a comprehensive analysis of the ACGS-PGP workflow system and presents actionable recommendations for enhancement. The analysis identified {len(analysis_results['identified_issues'])} critical issues and {len(analysis_results['enhancement_opportunities'])} enhancement opportunities.
+This report provides a comprehensive analysis of the ACGS-PGP workflow system and presents actionable recommendations for enhancement. The analysis identified {len(analysis_results["identified_issues"])} critical issues and {len(analysis_results["enhancement_opportunities"])} enhancement opportunities.
 
 ## Current State Analysis
 
@@ -336,11 +336,11 @@ This report provides a comprehensive analysis of the ACGS-PGP workflow system an
 
         for workflow in analysis_results["workflow_types"]:
             report += f"""
-#### {workflow['name']}
-- **Complexity Score:** {workflow['complexity_score']}/10
-- **Reliability Score:** {workflow['reliability_score']}/10
-- **Performance Score:** {workflow['performance_score']}/10
-- **Key Issues:** {', '.join(workflow['issues'][:3])}
+#### {workflow["name"]}
+- **Complexity Score:** {workflow["complexity_score"]}/10
+- **Reliability Score:** {workflow["reliability_score"]}/10
+- **Performance Score:** {workflow["performance_score"]}/10
+- **Key Issues:** {", ".join(workflow["issues"][:3])}
 """
 
         report += """
@@ -356,10 +356,10 @@ This report provides a comprehensive analysis of the ACGS-PGP workflow system an
         ]
         for issue in critical_issues:
             report += f"""
-#### {issue['category']}
-- **Description:** {issue['description']}
-- **Impact:** {issue['impact']}
-- **Recommended Solution:** {issue['solution']}
+#### {issue["category"]}
+- **Description:** {issue["description"]}
+- **Impact:** {issue["impact"]}
+- **Recommended Solution:** {issue["solution"]}
 """
 
         report += """
@@ -375,17 +375,17 @@ This report provides a comprehensive analysis of the ACGS-PGP workflow system an
         ]
         for opportunity in high_priority:
             report += f"""
-#### {opportunity['title']}
-- **Priority:** {opportunity['priority'].upper()}
-- **Effort:** {opportunity['effort'].upper()}
-- **Impact:** {opportunity['impact'].upper()}
-- **Description:** {opportunity['description']}
+#### {opportunity["title"]}
+- **Priority:** {opportunity["priority"].upper()}
+- **Effort:** {opportunity["effort"].upper()}
+- **Impact:** {opportunity["impact"].upper()}
+- **Description:** {opportunity["description"]}
 
 **Key Benefits:**
-{chr(10).join(f"- {benefit}" for benefit in opportunity['benefits'])}
+{chr(10).join(f"- {benefit}" for benefit in opportunity["benefits"])}
 
 **Implementation Steps:**
-{chr(10).join(f"{i+1}. {step}" for i, step in enumerate(opportunity['implementation_steps']))}
+{chr(10).join(f"{i + 1}. {step}" for i, step in enumerate(opportunity["implementation_steps"]))}
 """
 
         report += """
@@ -398,21 +398,21 @@ This report provides a comprehensive analysis of the ACGS-PGP workflow system an
 
         report += f"""
 #### Workflow Execution Times (seconds)
-- **Policy Synthesis:** Avg: {metrics['workflow_execution_times']['policy_synthesis']['avg']}s, P95: {metrics['workflow_execution_times']['policy_synthesis']['p95']}s
-- **Constitutional Amendment:** Avg: {metrics['workflow_execution_times']['constitutional_amendment']['avg']}s, P95: {metrics['workflow_execution_times']['constitutional_amendment']['p95']}s
-- **Formal Verification:** Avg: {metrics['workflow_execution_times']['formal_verification']['avg']}s, P95: {metrics['workflow_execution_times']['formal_verification']['p95']}s
+- **Policy Synthesis:** Avg: {metrics["workflow_execution_times"]["policy_synthesis"]["avg"]}s, P95: {metrics["workflow_execution_times"]["policy_synthesis"]["p95"]}s
+- **Constitutional Amendment:** Avg: {metrics["workflow_execution_times"]["constitutional_amendment"]["avg"]}s, P95: {metrics["workflow_execution_times"]["constitutional_amendment"]["p95"]}s
+- **Formal Verification:** Avg: {metrics["workflow_execution_times"]["formal_verification"]["avg"]}s, P95: {metrics["workflow_execution_times"]["formal_verification"]["p95"]}s
 
 #### Error Rates
-- **Policy Synthesis:** {metrics['error_rates']['policy_synthesis']*100:.1f}%
-- **Constitutional Amendment:** {metrics['error_rates']['constitutional_amendment']*100:.1f}%
-- **Formal Verification:** {metrics['error_rates']['formal_verification']*100:.1f}%
+- **Policy Synthesis:** {metrics["error_rates"]["policy_synthesis"] * 100:.1f}%
+- **Constitutional Amendment:** {metrics["error_rates"]["constitutional_amendment"] * 100:.1f}%
+- **Formal Verification:** {metrics["error_rates"]["formal_verification"] * 100:.1f}%
 
 #### Service Availability
-- **AC Service:** {metrics['service_availability']['ac_service']}%
-- **GS Service:** {metrics['service_availability']['gs_service']}%
-- **FV Service:** {metrics['service_availability']['fv_service']}%
-- **Integrity Service:** {metrics['service_availability']['integrity_service']}%
-- **PGC Service:** {metrics['service_availability']['pgc_service']}%
+- **AC Service:** {metrics["service_availability"]["ac_service"]}%
+- **GS Service:** {metrics["service_availability"]["gs_service"]}%
+- **FV Service:** {metrics["service_availability"]["fv_service"]}%
+- **Integrity Service:** {metrics["service_availability"]["integrity_service"]}%
+- **PGC Service:** {metrics["service_availability"]["pgc_service"]}%
 """
 
         report += """

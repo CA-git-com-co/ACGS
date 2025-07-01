@@ -120,9 +120,8 @@ def apply_direct_fix():
 
         print(f"✅ Direct fix applied successfully! {changes_made} changes made.")
         return True
-    else:
-        print("ℹ️ No changes needed")
-        return True
+    print("ℹ️ No changes needed")
+    return True
 
 
 def create_service_restart_command():
@@ -184,14 +183,12 @@ def test_fix_immediately():
                     if ac_status == "healthy" and integrity_status == "healthy":
                         print("✅ SUCCESS: All dependencies are now healthy!")
                         return True
-                    else:
-                        print(
-                            f"⚠️ Dependencies still unhealthy: AC={ac_status}, Integrity={integrity_status}"
-                        )
-                        return False
-                else:
-                    print(f"❌ GS Service returned HTTP {response.status_code}")
+                    print(
+                        f"⚠️ Dependencies still unhealthy: AC={ac_status}, Integrity={integrity_status}"
+                    )
                     return False
+                print(f"❌ GS Service returned HTTP {response.status_code}")
+                return False
         except Exception as e:
             print(f"❌ Test failed: {e}")
             return False

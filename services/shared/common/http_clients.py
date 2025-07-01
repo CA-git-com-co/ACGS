@@ -68,13 +68,13 @@ class CircuitBreaker:
         """Check if request can be executed based on circuit breaker state."""
         if self.state == CircuitBreakerState.CLOSED:
             return True
-        elif self.state == CircuitBreakerState.OPEN:
+        if self.state == CircuitBreakerState.OPEN:
             if time.time() - self.last_failure_time > self.timeout:
                 self.state = CircuitBreakerState.HALF_OPEN
                 return True
             return False
-        else:  # HALF_OPEN
-            return True
+        # HALF_OPEN
+        return True
 
     def record_success(self):
         # requires: Valid input parameters
@@ -201,7 +201,7 @@ class ACGSHttpClient:
             self.circuit_breaker.record_failure()
             logger.error(f"Request error for {endpoint}: {e}")
             raise ServiceUnavailableError(
-                f"Service unavailable: {str(e)}", "SERVICE_UNAVAILABLE"
+                f"Service unavailable: {e!s}", "SERVICE_UNAVAILABLE"
             )
         except Exception as e:
             self.circuit_breaker.record_failure()

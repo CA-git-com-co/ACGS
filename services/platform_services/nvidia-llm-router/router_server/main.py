@@ -114,11 +114,8 @@ async def get_routing_config() -> dict[str, Any]:
         async with session.get(f"{controller_url}/config") as response:
             if response.status == 200:
                 return await response.json()
-            else:
-                logger.warning(
-                    f"Failed to get config from controller: {response.status}"
-                )
-                return {}
+            logger.warning(f"Failed to get config from controller: {response.status}")
+            return {}
     except Exception as e:
         logger.error(f"Error getting config from controller: {e}")
         return {}
@@ -188,10 +185,9 @@ async def call_nvidia_api(
         ) as response:
             if response.status == 200:
                 return await response.json()
-            else:
-                error_text = await response.text()
-                logger.error(f"NVIDIA API error {response.status}: {error_text}")
-                raise HTTPException(status_code=response.status, detail=error_text)
+            error_text = await response.text()
+            logger.error(f"NVIDIA API error {response.status}: {error_text}")
+            raise HTTPException(status_code=response.status, detail=error_text)
 
     except TimeoutError:
         raise HTTPException(status_code=408, detail="Request timeout")

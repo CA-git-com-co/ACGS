@@ -73,7 +73,7 @@ async def initialize_test_database():
     yield
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_client():
     """Provide a mock client for basic testing."""
 

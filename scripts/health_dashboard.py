@@ -7,7 +7,7 @@ Real-time health monitoring dashboard for constitutional governance system
 import asyncio
 import os
 import sys
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 import aiohttp
@@ -50,10 +50,9 @@ class HealthDashboard:
         """Format response time with color coding."""
         if response_time_ms < 100:
             return f"🟢 {response_time_ms:.1f}ms"
-        elif response_time_ms < 500:
+        if response_time_ms < 500:
             return f"🟡 {response_time_ms:.1f}ms"
-        else:
-            return f"🔴 {response_time_ms:.1f}ms"
+        return f"🔴 {response_time_ms:.1f}ms"
 
     def display_header(self):
         """Display dashboard header."""

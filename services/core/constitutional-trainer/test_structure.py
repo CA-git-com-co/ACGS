@@ -8,7 +8,6 @@ import ast
 import os
 import re
 import sys
-from pathlib import Path
 
 
 def test_file_structure():
@@ -52,7 +51,7 @@ def test_python_syntax():
 
     for file in python_files:
         try:
-            with open(file, "r") as f:
+            with open(file) as f:
                 content = f.read()
 
             # Parse the AST to check syntax
@@ -89,7 +88,7 @@ def test_constitutional_hash_presence():
             continue
 
         try:
-            with open(file, "r") as f:
+            with open(file) as f:
                 content = f.read()
 
             if expected_hash in content:
@@ -117,7 +116,7 @@ def test_import_structure():
 
     for file, expected_imports in files_to_check.items():
         try:
-            with open(file, "r") as f:
+            with open(file) as f:
                 content = f.read()
 
             print(f"📁 {file}:")
@@ -152,7 +151,7 @@ def test_class_definitions():
 
     for file, classes in expected_classes.items():
         try:
-            with open(file, "r") as f:
+            with open(file) as f:
                 content = f.read()
 
             print(f"📁 {file}:")
@@ -173,7 +172,7 @@ def test_api_endpoints():
     print("\n🧪 Testing API Endpoints...")
 
     try:
-        with open("main.py", "r") as f:
+        with open("main.py") as f:
             content = f.read()
 
         expected_endpoints = [
@@ -201,7 +200,7 @@ def test_docker_configuration():
     print("\n🧪 Testing Docker Configuration...")
 
     try:
-        with open("Dockerfile", "r") as f:
+        with open("Dockerfile") as f:
             content = f.read()
 
         required_elements = [
@@ -250,7 +249,7 @@ def test_kubernetes_configuration():
         return False
 
     try:
-        with open(k8s_file, "r") as f:
+        with open(k8s_file) as f:
             content = f.read()
 
         required_resources = [
@@ -295,7 +294,7 @@ def test_requirements():
     print("\n🧪 Testing Requirements...")
 
     try:
-        with open("requirements.txt", "r") as f:
+        with open("requirements.txt") as f:
             content = f.read()
 
         critical_deps = [
@@ -337,7 +336,7 @@ def test_configuration_consistency():
         "Dockerfile",
     ]:
         if os.path.exists(file):
-            with open(file, "r") as f:
+            with open(file) as f:
                 content = f.read()
             if re.search(hash_pattern, content):
                 files_with_hash.append(file)
@@ -350,7 +349,7 @@ def test_configuration_consistency():
 
     for file in ["main.py", "Dockerfile"]:
         if os.path.exists(file):
-            with open(file, "r") as f:
+            with open(file) as f:
                 content = f.read()
             if re.search(port_pattern, content):
                 files_with_port.append(file)

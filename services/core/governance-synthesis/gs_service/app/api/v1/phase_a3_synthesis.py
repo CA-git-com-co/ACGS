@@ -225,23 +225,21 @@ class RiskAssessmentEngine:
         """Get risk level from score."""
         if risk_score < self.risk_thresholds["low"]:
             return "low"
-        elif risk_score < self.risk_thresholds["medium"]:
+        if risk_score < self.risk_thresholds["medium"]:
             return "medium"
-        elif risk_score < self.risk_thresholds["high"]:
+        if risk_score < self.risk_thresholds["high"]:
             return "high"
-        else:
-            return "critical"
+        return "critical"
 
     def _recommend_strategy(self, risk_score: float) -> str:
         """Recommend synthesis strategy based on risk score."""
         if risk_score < self.risk_thresholds["low"]:
             return "standard"
-        elif risk_score < self.risk_thresholds["medium"]:
+        if risk_score < self.risk_thresholds["medium"]:
             return "enhanced_validation"
-        elif risk_score < self.risk_thresholds["high"]:
+        if risk_score < self.risk_thresholds["high"]:
             return "multi_model_consensus"
-        else:
-            return "human_review"
+        return "human_review"
 
 
 class PolicySynthesisEngine:
@@ -348,7 +346,7 @@ class PolicySynthesisEngine:
                 extra={"correlation_id": correlation_id},
                 exc_info=True,
             )
-            raise HTTPException(status_code=500, detail=f"Synthesis failed: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Synthesis failed: {e!s}")
 
     async def _execute_synthesis_strategy(
         self,
@@ -361,14 +359,13 @@ class PolicySynthesisEngine:
 
         if strategy == "standard":
             return await self._standard_synthesis(request, synthesis_id)
-        elif strategy == "enhanced_validation":
+        if strategy == "enhanced_validation":
             return await self._enhanced_validation_synthesis(request, synthesis_id)
-        elif strategy == "multi_model_consensus":
+        if strategy == "multi_model_consensus":
             return await self._multi_model_consensus_synthesis(request, synthesis_id)
-        elif strategy == "human_review":
+        if strategy == "human_review":
             return await self._human_review_synthesis(request, synthesis_id)
-        else:
-            raise ValueError(f"Unknown synthesis strategy: {strategy}")
+        raise ValueError(f"Unknown synthesis strategy: {strategy}")
 
     async def _standard_synthesis(
         self, request: PhaseA3SynthesisRequest, synthesis_id: str
@@ -381,7 +378,7 @@ class PolicySynthesisEngine:
         package acgs.governance.{synthesis_id[:8]}
 
         # Generated policy for: {request.context}
-        # Principles: {', '.join(request.principles[:3])}
+        # Principles: {", ".join(request.principles[:3])}
 
         default allow := false
 
@@ -394,7 +391,7 @@ class PolicySynthesisEngine:
 
         constitutional_compliance if {{
             # Validate against constitutional principles
-            {' and '.join(f'principle_{i}_satisfied' for i in range(min(3, len(request.principles))))}
+            {" and ".join(f"principle_{i}_satisfied" for i in range(min(3, len(request.principles))))}
         }}
 
         governance_rules_satisfied if {{
@@ -447,10 +444,10 @@ class PolicySynthesisEngine:
                 consensus_prompt = f"""
                 Synthesize a governance policy for the following context: {request.context}
 
-                Constitutional Principles: {', '.join(request.principles)}
+                Constitutional Principles: {", ".join(request.principles)}
                 Target Format: {request.target_format}
                 Complexity Level: {request.complexity_level}
-                Constraints: {', '.join(request.constraints or [])}
+                Constraints: {", ".join(request.constraints or [])}
 
                 Generate a comprehensive policy that addresses the context while adhering to the constitutional principles.
                 """
@@ -519,7 +516,7 @@ class PolicySynthesisEngine:
                     request, synthesis_id
                 )
                 result["recommendations"].append(
-                    f"Multi-model consensus failed, used fallback: {str(e)}"
+                    f"Multi-model consensus failed, used fallback: {e!s}"
                 )
                 return result
         else:
@@ -637,8 +634,7 @@ async def synthesize_policy_phase_a3(
                 service_name="gs_service",
                 correlation_id=correlation_id,
             )
-        else:
-            return result
+        return result
 
     except Exception as e:
         logger.error(
@@ -653,8 +649,7 @@ async def synthesize_policy_phase_a3(
                 details={"error": str(e)},
                 correlation_id=correlation_id,
             )
-        else:
-            raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 async def _log_synthesis_metrics(
@@ -703,10 +698,9 @@ async def multi_model_consensus_direct(
                     service_name="gs_service",
                     correlation_id=correlation_id,
                 )
-            else:
-                raise HTTPException(
-                    status_code=503, detail="Multi-model consensus engine not available"
-                )
+            raise HTTPException(
+                status_code=503, detail="Multi-model consensus engine not available"
+            )
 
         # Initialize consensus engine if needed
         if not hasattr(synthesis_engine.consensus_engine, "_initialized"):
@@ -778,8 +772,7 @@ async def multi_model_consensus_direct(
                 service_name="gs_service",
                 correlation_id=correlation_id,
             )
-        else:
-            return response_data
+        return response_data
 
     except Exception as e:
         logger.error(
@@ -795,8 +788,7 @@ async def multi_model_consensus_direct(
                 details={"error": str(e)},
                 correlation_id=correlation_id,
             )
-        else:
-            raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/strategies")

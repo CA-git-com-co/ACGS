@@ -16,7 +16,7 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -35,7 +35,7 @@ class ComplianceAssessment:
             "compliance_matrix": {},
         }
 
-    def assess_owasp_asvs(self) -> Dict[str, Any]:
+    def assess_owasp_asvs(self) -> dict[str, Any]:
         """Assess against OWASP ASVS requirements."""
         logger.info("Assessing OWASP ASVS compliance...")
 
@@ -191,7 +191,7 @@ class ComplianceAssessment:
             "summary": f"{compliant_requirements}/{total_requirements} requirements met",
         }
 
-    def assess_nist_framework(self) -> Dict[str, Any]:
+    def assess_nist_framework(self) -> dict[str, Any]:
         """Assess against NIST Cybersecurity Framework."""
         logger.info("Assessing NIST Cybersecurity Framework compliance...")
 
@@ -330,7 +330,7 @@ class ComplianceAssessment:
             "summary": f"{compliant_controls}/{total_controls} controls implemented",
         }
 
-    def assess_iso27001(self) -> Dict[str, Any]:
+    def assess_iso27001(self) -> dict[str, Any]:
         """Assess against ISO 27001 requirements."""
         logger.info("Assessing ISO 27001 compliance...")
 
@@ -439,7 +439,7 @@ class ComplianceAssessment:
             "summary": f"{compliant_controls}/{total_controls} controls implemented",
         }
 
-    def generate_gap_analysis(self, standards_results: List[Dict]) -> List[Dict]:
+    def generate_gap_analysis(self, standards_results: list[dict]) -> list[dict]:
         """Generate gap analysis from standards assessment."""
         logger.info("Generating gap analysis...")
 
@@ -507,7 +507,7 @@ class ComplianceAssessment:
 
         return gaps
 
-    def generate_recommendations(self, gaps: List[Dict]) -> List[Dict]:
+    def generate_recommendations(self, gaps: list[dict]) -> list[dict]:
         """Generate remediation recommendations."""
         logger.info("Generating remediation recommendations...")
 
@@ -581,7 +581,7 @@ class ComplianceAssessment:
 
         return recommendations
 
-    def run_assessment(self) -> Dict[str, Any]:
+    def run_assessment(self) -> dict[str, Any]:
         """Run complete compliance assessment."""
         logger.info("Starting comprehensive compliance assessment...")
 

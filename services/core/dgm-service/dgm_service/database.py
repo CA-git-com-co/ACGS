@@ -2,13 +2,12 @@
 Database configuration and connection management for DGM Service.
 """
 
-import asyncio
 import logging
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
 import asyncpg
-from sqlalchemy import MetaData, create_engine
+from sqlalchemy import MetaData
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 
@@ -114,7 +113,7 @@ async def init_database():
         conn = await asyncpg.connect(settings.DATABASE_URL)
 
         # Read and execute initialization script
-        with open("scripts/init-db.sql", "r") as f:
+        with open("scripts/init-db.sql") as f:
             init_script = f.read()
 
         await conn.execute(init_script)

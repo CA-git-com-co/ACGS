@@ -11,7 +11,7 @@ Tests the complete cross-domain testing pipeline including:
 
 # Add project root to path for imports
 import sys
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 from unittest.mock import patch
@@ -516,10 +516,12 @@ class TestCrossDomainTestingFramework:
 
         context = {"domain": "healthcare"}
 
-        is_consistent, consistency_score, validation_details = (
-            await healthcare_validator.validate_principle_consistency(
-                healthcare_principle, context
-            )
+        (
+            is_consistent,
+            consistency_score,
+            validation_details,
+        ) = await healthcare_validator.validate_principle_consistency(
+            healthcare_principle, context
         )
 
         assert isinstance(is_consistent, bool)
@@ -548,10 +550,12 @@ class TestCrossDomainTestingFramework:
             "content": "Financial transactions must maintain comprehensive audit trails and risk assessment procedures for SOX compliance.",
         }
 
-        is_consistent, consistency_score, validation_details = (
-            await finance_validator.validate_principle_consistency(
-                finance_principle, context
-            )
+        (
+            is_consistent,
+            consistency_score,
+            validation_details,
+        ) = await finance_validator.validate_principle_consistency(
+            finance_principle, context
         )
 
         assert isinstance(is_consistent, bool)
@@ -614,10 +618,11 @@ class TestCrossDomainTestingFramework:
             method=AnonymizationMethod.K_ANONYMITY, k_value=2
         )
 
-        anonymized_data, metadata = (
-            await research_data_pipeline.anonymize_research_data(
-                sample_results, anonymization_config
-            )
+        (
+            anonymized_data,
+            metadata,
+        ) = await research_data_pipeline.anonymize_research_data(
+            sample_results, anonymization_config
         )
 
         assert len(anonymized_data) == len(sample_results)

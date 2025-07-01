@@ -10,7 +10,6 @@ Provides comprehensive business and technical metrics for all 7 core services:
 """
 
 import time
-from typing import Dict
 
 from prometheus_client import (
     CONTENT_TYPE_LATEST,
@@ -392,7 +391,7 @@ class EnhancedMetricsCollector:
 
 
 # Global metrics collector instances
-_metrics_collectors: Dict[str, EnhancedMetricsCollector] = {}
+_metrics_collectors: dict[str, EnhancedMetricsCollector] = {}
 
 
 def get_metrics_collector(service_name: str) -> EnhancedMetricsCollector:

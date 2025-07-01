@@ -7,18 +7,17 @@ Database models for agent operation reviews and decisions.
 import uuid
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional, Any
+from typing import Any
 
 from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-    Float,
-    Boolean,
-    DateTime,
-    Text,
     JSON,
+    Column,
+    DateTime,
+    Float,
     ForeignKey,
+    Integer,
+    String,
+    Text,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
@@ -124,7 +123,7 @@ class AgentOperationReview(Base):
         "ReviewFeedback", back_populates="review", cascade="all, delete-orphan"
     )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert model to dictionary."""
         return {
             "id": str(self.id),

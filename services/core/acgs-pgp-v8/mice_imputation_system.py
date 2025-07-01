@@ -15,27 +15,26 @@ Key Features:
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import logging
-import numpy as np
-import pandas as pd
-from datetime import datetime
-from typing import Dict, List, Any, Tuple, Optional
-from dataclasses import dataclass, asdict
 import json
+import logging
 import os
 import time
-from sklearn.experimental import enable_iterative_imputer
-from sklearn.impute import IterativeImputer, SimpleImputer, KNNImputer
-from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
-from sklearn.model_selection import train_test_split, cross_val_score
+import warnings
+from dataclasses import asdict, dataclass
+from datetime import datetime
+
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.impute import IterativeImputer, KNNImputer, SimpleImputer
 from sklearn.metrics import (
+    accuracy_score,
     mean_absolute_error,
     mean_squared_error,
     r2_score,
-    accuracy_score,
 )
-from sklearn.preprocessing import StandardScaler, LabelEncoder
-import warnings
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 warnings.filterwarnings("ignore")
 
@@ -103,7 +102,7 @@ class MICEImputationSystem:
 
     def generate_missing_data_scenario(
         self, n_samples: int = 1000, missing_rate: float = 0.15
-    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    ) -> tuple[pd.DataFrame, pd.DataFrame]:
         """Generate dataset with controlled missing values for testing."""
         logger.info(
             f"Generating missing data scenario: {n_samples} samples, {missing_rate:.1%} missing"
@@ -154,7 +153,7 @@ class MICEImputationSystem:
         df_complete: pd.DataFrame,
         df_imputed: pd.DataFrame,
         missing_mask: pd.DataFrame,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Evaluate imputation quality by comparing with true values."""
 
         # Calculate imputation errors only for originally missing values
@@ -194,7 +193,7 @@ class MICEImputationSystem:
 
     def test_prediction_performance(
         self, df_imputed: pd.DataFrame, target_column: str = "constitutional_compliance"
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Test prediction performance with imputed data."""
 
         # Prepare features and target
@@ -226,21 +225,20 @@ class MICEImputationSystem:
 
             accuracy = accuracy_score(y_test, y_pred)
             return {"accuracy": accuracy, "model_type": "classification"}
-        else:
-            # Regression
-            model = RandomForestRegressor(n_estimators=50, random_state=42)
-            model.fit(X_train_scaled, y_train)
-            y_pred = model.predict(X_test_scaled)
+        # Regression
+        model = RandomForestRegressor(n_estimators=50, random_state=42)
+        model.fit(X_train_scaled, y_train)
+        y_pred = model.predict(X_test_scaled)
 
-            mae = mean_absolute_error(y_test, y_pred)
-            rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-            r2 = r2_score(y_test, y_pred)
+        mae = mean_absolute_error(y_test, y_pred)
+        rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+        r2 = r2_score(y_test, y_pred)
 
-            return {"mae": mae, "rmse": rmse, "r2": r2, "model_type": "regression"}
+        return {"mae": mae, "rmse": rmse, "r2": r2, "model_type": "regression"}
 
     def compare_imputation_methods(
         self, df_complete: pd.DataFrame, df_missing: pd.DataFrame
-    ) -> Dict[str, ImputationResults]:
+    ) -> dict[str, ImputationResults]:
         """Compare different imputation methods."""
         logger.info("Comparing imputation methods...")
 
@@ -281,12 +279,11 @@ class MICEImputationSystem:
                             mode_value = df_missing[column].mode()
                             if len(mode_value) > 0:
                                 df_imputed[column].fillna(mode_value[0], inplace=True)
-                else:
-                    # Numeric imputation
-                    if len(numeric_columns) > 0:
-                        df_imputed[numeric_columns] = imputer.fit_transform(
-                            df_missing[numeric_columns]
-                        )
+                # Numeric imputation
+                elif len(numeric_columns) > 0:
+                    df_imputed[numeric_columns] = imputer.fit_transform(
+                        df_missing[numeric_columns]
+                    )
 
                 imputation_time = time.time() - start_time
 
@@ -386,7 +383,7 @@ class MICEImputationSystem:
 
         return results
 
-    def validate_mice_performance(self, results: Dict[str, ImputationResults]) -> bool:
+    def validate_mice_performance(self, results: dict[str, ImputationResults]) -> bool:
         """Validate MICE performance meets requirements."""
         logger.info("Validating MICE performance requirements...")
 
@@ -436,8 +433,8 @@ class MICEImputationSystem:
         return success
 
     def save_imputation_results(
-        self, results: Dict[str, ImputationResults], output_dir: str = "mice_results"
-    ) -> Tuple[str, str]:
+        self, results: dict[str, ImputationResults], output_dir: str = "mice_results"
+    ) -> tuple[str, str]:
         """Save imputation comparison results."""
         logger.info("Saving imputation results...")
 

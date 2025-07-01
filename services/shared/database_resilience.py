@@ -10,17 +10,18 @@ import asyncio
 import logging
 import random
 import time
+from collections.abc import Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Dict, Optional, TypeVar
+from typing import Any, TypeVar
 
 import asyncpg
 from sqlalchemy.exc import (
     DisconnectionError,
     OperationalError,
+    TimeoutError as SQLTimeoutError,
 )
-from sqlalchemy.exc import TimeoutError as SQLTimeoutError
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +84,7 @@ class CircuitBreakerStats:
 
     failure_count: int = 0
     success_count: int = 0
-    last_failure_time: Optional[float] = None
+    last_failure_time: float | None = None
     state_changes: int = 0
     total_calls: int = 0
 
@@ -202,7 +203,7 @@ class CircuitBreaker:
                 self.stats.last_response_times
             )
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get circuit breaker statistics."""
         return {
             "name": self.name,
@@ -320,7 +321,7 @@ class DatabaseResilienceManager:
             self.retry_mechanism.execute, func, *args, **kwargs
         )
 
-    def get_health_status(self) -> Dict[str, Any]:
+    def get_health_status(self) -> dict[str, Any]:
         """Get health status of resilience components."""
         return {
             "service": self.service_name,
@@ -343,7 +344,7 @@ class CircuitBreakerOpenError(Exception):
 
 
 # Global resilience managers for each service
-_resilience_managers: Dict[str, DatabaseResilienceManager] = {}
+_resilience_managers: dict[str, DatabaseResilienceManager] = {}
 
 
 def get_resilience_manager(service_name: str) -> DatabaseResilienceManager:
@@ -354,7 +355,7 @@ def get_resilience_manager(service_name: str) -> DatabaseResilienceManager:
     return _resilience_managers[service_name]
 
 
-def get_all_resilience_stats() -> Dict[str, Any]:
+def get_all_resilience_stats() -> dict[str, Any]:
     """Get resilience statistics for all services."""
     return {
         service_name: manager.get_health_status()

@@ -177,13 +177,12 @@ class StakeholderNotificationService:
         """Send notification via specific channel."""
         if channel == NotificationChannel.EMAIL:
             return await self._send_email_notifications(recipients, subject, body)
-        elif channel == NotificationChannel.WEBSOCKET:
+        if channel == NotificationChannel.WEBSOCKET:
             return await self._send_websocket_notifications(recipients, subject, body)
-        elif channel == NotificationChannel.SMS:
+        if channel == NotificationChannel.SMS:
             return await self._send_sms_notifications(recipients, subject, body)
-        else:
-            logger.warning(f"Channel {channel.value} not implemented")
-            return 0
+        logger.warning(f"Channel {channel.value} not implemented")
+        return 0
 
     async def _send_email_notifications(
         self, recipients: list[str], subject: str, body: str

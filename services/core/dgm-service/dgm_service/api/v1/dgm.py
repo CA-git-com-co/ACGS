@@ -7,7 +7,7 @@ bandit algorithms, performance monitoring, and constitutional compliance.
 
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -15,7 +15,6 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, validator
 
 from ...cache import get_cache_manager
-from ...core.archive_manager import ArchiveManager
 from ...core.bandit_algorithms import BanditAlgorithmManager
 from ...core.dgm_engine import DGMEngine
 from ...core.performance_monitor import PerformanceMonitor
@@ -24,7 +23,6 @@ from ...storage.archive_manager import ArchiveManager as StorageArchiveManager
 from .models import (
     ArchiveListResponse,
     BanditReport,
-    ErrorResponse,
     ImprovementRequest,
     ImprovementResponse,
     PerformanceReport,
@@ -43,7 +41,7 @@ class BanditActionRequest(BaseModel):
     algorithm_type: str = Field(
         default="conservative_bandit", description="Type of bandit algorithm"
     )
-    exploration_rate: Optional[float] = Field(
+    exploration_rate: float | None = Field(
         default=0.1, ge=0.0, le=1.0, description="Exploration rate"
     )
     safety_threshold: float = Field(
@@ -81,7 +79,7 @@ class RewardFeedbackRequest(BaseModel):
     context_key: str = Field(..., description="Context identifier")
     arm_id: str = Field(..., description="Arm identifier that was selected")
     reward: float = Field(..., description="Reward value received")
-    metadata: Optional[Dict[str, Any]] = Field(
+    metadata: dict[str, Any] | None = Field(
         default_factory=dict, description="Additional metadata"
     )
 
@@ -96,9 +94,9 @@ class DGMStatusResponse(BaseModel):
     total_improvements: int
     success_rate: float
     constitutional_compliance_score: float
-    performance_metrics: Dict[str, Any]
-    system_health: Dict[str, Any]
-    last_optimization: Optional[datetime]
+    performance_metrics: dict[str, Any]
+    system_health: dict[str, Any]
+    last_optimization: datetime | None
 
 
 class PerformanceMetricsRequest(BaseModel):
@@ -108,7 +106,7 @@ class PerformanceMetricsRequest(BaseModel):
     start_time: datetime = Field(..., description="Start time for metrics query")
     end_time: datetime = Field(..., description="End time for metrics query")
     aggregation: str = Field(default="avg", description="Aggregation type")
-    service_filter: Optional[str] = Field(None, description="Filter by service name")
+    service_filter: str | None = Field(None, description="Filter by service name")
 
     @validator("aggregation")
     def validate_aggregation(cls, v):
@@ -198,7 +196,7 @@ async def get_dgm_status(
         logger.error(f"Error getting DGM status: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get DGM status: {str(e)}",
+            detail=f"Failed to get DGM status: {e!s}",
         )
 
 
@@ -235,7 +233,7 @@ async def select_bandit_arm(
         logger.error(f"Error selecting bandit arm: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to select bandit arm: {str(e)}",
+            detail=f"Failed to select bandit arm: {e!s}",
         )
 
 
@@ -270,7 +268,7 @@ async def provide_reward_feedback(
         logger.error(f"Error processing reward feedback: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to process reward feedback: {str(e)}",
+            detail=f"Failed to process reward feedback: {e!s}",
         )
 
 
@@ -313,14 +311,14 @@ async def query_performance_metrics(
         logger.error(f"Error querying performance metrics: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to query performance metrics: {str(e)}",
+            detail=f"Failed to query performance metrics: {e!s}",
         )
 
 
 @router.get("/metrics/summary")
 async def get_metrics_summary(
     hours: int = Query(24, ge=1, le=168, description="Hours to include in summary"),
-    service_name: Optional[str] = Query(None, description="Filter by service name"),
+    service_name: str | None = Query(None, description="Filter by service name"),
     performance_monitor: PerformanceMonitor = Depends(get_performance_monitor),
 ):
     """
@@ -358,7 +356,7 @@ async def get_metrics_summary(
         logger.error(f"Error getting metrics summary: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get metrics summary: {str(e)}",
+            detail=f"Failed to get metrics summary: {e!s}",
         )
 
 
@@ -397,7 +395,7 @@ async def optimize_database():
         logger.error(f"Error optimizing database: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to optimize database: {str(e)}",
+            detail=f"Failed to optimize database: {e!s}",
         )
 
 
@@ -425,7 +423,7 @@ async def get_database_optimization_report():
         logger.error(f"Error getting database optimization report: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get database optimization report: {str(e)}",
+            detail=f"Failed to get database optimization report: {e!s}",
         )
 
 
@@ -454,13 +452,13 @@ async def get_cache_statistics():
         logger.error(f"Error getting cache statistics: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get cache statistics: {str(e)}",
+            detail=f"Failed to get cache statistics: {e!s}",
         )
 
 
 @router.post("/cache/clear")
 async def clear_cache(
-    pattern: Optional[str] = Query(None, description="Pattern to match cache keys")
+    pattern: str | None = Query(None, description="Pattern to match cache keys"),
 ):
     """
     Clear cache entries.
@@ -491,7 +489,7 @@ async def clear_cache(
         logger.error(f"Error clearing cache: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to clear cache: {str(e)}",
+            detail=f"Failed to clear cache: {e!s}",
         )
 
 
@@ -529,7 +527,7 @@ async def trigger_improvement(
         logger.error(f"Failed to trigger improvement: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to trigger improvement: {str(e)}",
+            detail=f"Failed to trigger improvement: {e!s}",
         )
 
 
@@ -561,7 +559,7 @@ async def get_improvement_status(
         logger.error(f"Failed to get improvement status: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get improvement status: {str(e)}",
+            detail=f"Failed to get improvement status: {e!s}",
         )
 
 
@@ -569,8 +567,8 @@ async def get_improvement_status(
 async def list_archive_entries(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(50, ge=1, le=1000, description="Page size"),
-    status: Optional[str] = Query(None, description="Filter by status"),
-    min_compliance_score: Optional[float] = Query(
+    status: str | None = Query(None, description="Filter by status"),
+    min_compliance_score: float | None = Query(
         None, ge=0, le=1, description="Minimum compliance score"
     ),
     archive_manager: StorageArchiveManager = Depends(get_archive_manager),
@@ -647,14 +645,14 @@ async def list_archive_entries(
         logger.error(f"Failed to list archive entries: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to list archive entries: {str(e)}",
+            detail=f"Failed to list archive entries: {e!s}",
         )
 
 
 @router.get("/performance", response_model=PerformanceReport)
 async def get_performance_report(
     days: int = Query(7, ge=1, le=365, description="Number of days to include"),
-    service_name: Optional[str] = Query(None, description="Filter by service name"),
+    service_name: str | None = Query(None, description="Filter by service name"),
     performance_monitor: PerformanceMonitor = Depends(get_performance_monitor),
 ):
     """
@@ -677,7 +675,7 @@ async def get_performance_report(
         logger.error(f"Failed to generate performance report: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to generate performance report: {str(e)}",
+            detail=f"Failed to generate performance report: {e!s}",
         )
 
 
@@ -712,7 +710,7 @@ async def rollback_improvement(
         logger.error(f"Failed to rollback improvement: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to rollback improvement: {str(e)}",
+            detail=f"Failed to rollback improvement: {e!s}",
         )
 
 
@@ -740,7 +738,7 @@ async def get_bandit_report(dgm_engine: DGMEngine = Depends(get_dgm_engine)):
         logger.error(f"Failed to get bandit report: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get bandit report: {str(e)}",
+            detail=f"Failed to get bandit report: {e!s}",
         )
 
 
@@ -775,5 +773,5 @@ async def cancel_improvement(
         logger.error(f"Failed to cancel improvement: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to cancel improvement: {str(e)}",
+            detail=f"Failed to cancel improvement: {e!s}",
         )

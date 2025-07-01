@@ -23,12 +23,11 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import numpy as np
 from openai import AsyncOpenAI
 
-from ..models import ConstitutionalPrinciple
 from .constitutional_compliance import ConstitutionalComplianceService
 
 logger = logging.getLogger(__name__)
@@ -62,10 +61,10 @@ class EvaluationRubric:
     """Rubric for evaluating a specific dimension."""
 
     dimension: EvaluationDimension
-    criteria: List[str]
-    scoring_guide: Dict[int, str]  # Score -> Description
+    criteria: list[str]
+    scoring_guide: dict[int, str]  # Score -> Description
     weight: float = 1.0
-    examples: List[Dict[str, Any]] = field(default_factory=list)
+    examples: list[dict[str, Any]] = field(default_factory=list)
 
 
 @dataclass
@@ -74,12 +73,12 @@ class SemanticValidationResult:
 
     policy_id: str
     policy_text: str
-    dimension_scores: Dict[EvaluationDimension, float] = field(default_factory=dict)
-    detailed_feedback: Dict[EvaluationDimension, str] = field(default_factory=dict)
+    dimension_scores: dict[EvaluationDimension, float] = field(default_factory=dict)
+    detailed_feedback: dict[EvaluationDimension, str] = field(default_factory=dict)
     composite_score: float = 0.0
     confidence: float = 0.0
-    violations: List[str] = field(default_factory=list)
-    recommendations: List[str] = field(default_factory=list)
+    violations: list[str] = field(default_factory=list)
+    recommendations: list[str] = field(default_factory=list)
     evaluation_time: float = 0.0
     judge_model: str = ""
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
@@ -106,7 +105,7 @@ class LLMJudgeConfig:
     retry_attempts: int = 3
 
     # Rubric weights
-    dimension_weights: Dict[EvaluationDimension, float] = field(
+    dimension_weights: dict[EvaluationDimension, float] = field(
         default_factory=lambda: {
             EvaluationDimension.CORRECTNESS: 0.20,
             EvaluationDimension.SAFETY: 0.20,
@@ -140,11 +139,11 @@ class LLMAsJudgeFramework:
         self.compliance_service = compliance_service
 
         # Evaluation rubrics
-        self.rubrics: Dict[EvaluationDimension, EvaluationRubric] = {}
+        self.rubrics: dict[EvaluationDimension, EvaluationRubric] = {}
         self._initialize_rubrics()
 
         # Performance tracking
-        self.evaluation_history: List[SemanticValidationResult] = []
+        self.evaluation_history: list[SemanticValidationResult] = []
         self.performance_metrics = {
             "total_evaluations": 0,
             "average_evaluation_time": 0.0,
@@ -256,7 +255,7 @@ class LLMAsJudgeFramework:
         )
 
     async def validate_policy(
-        self, policy_text: str, policy_id: str = None, context: Dict[str, Any] = None
+        self, policy_text: str, policy_id: str = None, context: dict[str, Any] = None
     ) -> SemanticValidationResult:
         """
         Perform comprehensive semantic validation of a policy.
@@ -290,11 +289,11 @@ class LLMAsJudgeFramework:
             )
 
             # Process results
-            for (dimension, _), result in zip(evaluation_tasks, results):
+            for (dimension, _), result in zip(evaluation_tasks, results, strict=False):
                 if isinstance(result, Exception):
                     logger.error(f"Failed to evaluate dimension {dimension}: {result}")
                     dimension_scores[dimension] = 0.0
-                    detailed_feedback[dimension] = f"Evaluation failed: {str(result)}"
+                    detailed_feedback[dimension] = f"Evaluation failed: {result!s}"
                 else:
                     score, feedback = result
                     dimension_scores[dimension] = score
@@ -346,8 +345,8 @@ class LLMAsJudgeFramework:
             )
 
     async def _evaluate_dimension(
-        self, policy_text: str, dimension: EvaluationDimension, context: Dict[str, Any]
-    ) -> Tuple[float, str]:
+        self, policy_text: str, dimension: EvaluationDimension, context: dict[str, Any]
+    ) -> tuple[float, str]:
         """Evaluate a single dimension using LLM judge."""
         rubric = self.rubrics[dimension]
 
@@ -384,7 +383,7 @@ class LLMAsJudgeFramework:
         return final_score, final_feedback
 
     def _create_evaluation_prompt(
-        self, policy_text: str, rubric: EvaluationRubric, context: Dict[str, Any]
+        self, policy_text: str, rubric: EvaluationRubric, context: dict[str, Any]
     ) -> str:
         """Create evaluation prompt for a specific dimension."""
         criteria_text = "\n".join([f"- {criterion}" for criterion in rubric.criteria])
@@ -426,7 +425,7 @@ class LLMAsJudgeFramework:
 
     async def _get_judge_evaluation(
         self, prompt: str, judge_model: JudgeModel
-    ) -> Tuple[float, str]:
+    ) -> tuple[float, str]:
         """Get evaluation from a specific judge model."""
         try:
             response = await self.openai_client.chat.completions.create(
@@ -445,9 +444,9 @@ class LLMAsJudgeFramework:
 
         except Exception as e:
             logger.error(f"Failed to get evaluation from {judge_model.value}: {e}")
-            return 0.0, f"Evaluation failed: {str(e)}"
+            return 0.0, f"Evaluation failed: {e!s}"
 
-    def _parse_judge_response(self, response_text: str) -> Tuple[float, str]:
+    def _parse_judge_response(self, response_text: str) -> tuple[float, str]:
         """Parse judge response to extract score and feedback."""
         try:
             lines = response_text.split("\n")
@@ -479,7 +478,7 @@ class LLMAsJudgeFramework:
             return 0.0, response_text
 
     def _calculate_composite_score(
-        self, dimension_scores: Dict[EvaluationDimension, float]
+        self, dimension_scores: dict[EvaluationDimension, float]
     ) -> float:
         """Calculate weighted composite score."""
         total_score = 0.0
@@ -493,7 +492,7 @@ class LLMAsJudgeFramework:
         return total_score / total_weight if total_weight > 0 else 0.0
 
     def _calculate_confidence(
-        self, dimension_scores: Dict[EvaluationDimension, float]
+        self, dimension_scores: dict[EvaluationDimension, float]
     ) -> float:
         """Calculate confidence in the evaluation."""
         scores = list(dimension_scores.values())
@@ -514,9 +513,9 @@ class LLMAsJudgeFramework:
 
     def _detect_violations(
         self,
-        dimension_scores: Dict[EvaluationDimension, float],
-        detailed_feedback: Dict[EvaluationDimension, str],
-    ) -> List[str]:
+        dimension_scores: dict[EvaluationDimension, float],
+        detailed_feedback: dict[EvaluationDimension, str],
+    ) -> list[str]:
         """Detect violations based on scores and feedback."""
         violations = []
 
@@ -538,10 +537,10 @@ class LLMAsJudgeFramework:
     async def _generate_recommendations(
         self,
         policy_text: str,
-        dimension_scores: Dict[EvaluationDimension, float],
-        violations: List[str],
-        context: Dict[str, Any],
-    ) -> List[str]:
+        dimension_scores: dict[EvaluationDimension, float],
+        violations: list[str],
+        context: dict[str, Any],
+    ) -> list[str]:
         """Generate improvement recommendations."""
         if not violations and all(score >= 0.8 for score in dimension_scores.values()):
             return ["Policy meets high standards across all dimensions"]
@@ -589,7 +588,7 @@ class LLMAsJudgeFramework:
                 + 1
             ) / self.performance_metrics["total_evaluations"]
 
-    def get_performance_metrics(self) -> Dict[str, Any]:
+    def get_performance_metrics(self) -> dict[str, Any]:
         """Get performance metrics for monitoring."""
         return {
             **self.performance_metrics,

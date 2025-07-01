@@ -270,7 +270,7 @@ class GPUAccelerationManager:
 
         except Exception as e:
             logger.error(
-                f"GPU acceleration failed for {processing_task.task_id}: {str(e)}"
+                f"GPU acceleration failed for {processing_task.task_id}: {e!s}"
             )
             return await self._fallback_cpu_processing(processing_task, str(e))
 
@@ -378,9 +378,7 @@ class GPUAccelerationManager:
             return model_handle
 
         except Exception as e:
-            logger.error(
-                f"Failed to load model {model_id} on GPU {device_id}: {str(e)}"
-            )
+            logger.error(f"Failed to load model {model_id} on GPU {device_id}: {e!s}")
             raise
 
     async def _execute_accelerated_task(
@@ -429,7 +427,7 @@ class GPUAccelerationManager:
             return result
 
         except Exception as e:
-            logger.error(f"GPU task execution failed: {str(e)}")
+            logger.error(f"GPU task execution failed: {e!s}")
             return AcceleratedResult(
                 task_id=task.task_id,
                 result_content="",
@@ -492,7 +490,7 @@ class GPUAccelerationManager:
             logger.debug(f"GPU resources cleaned up for task {allocation.task_id}")
 
         except Exception as e:
-            logger.error(f"Error cleaning up GPU resources: {str(e)}")
+            logger.error(f"Error cleaning up GPU resources: {e!s}")
 
     # Helper methods
     async def _is_gpu_available(self, gpu_id: int, task: ConstitutionalTask) -> bool:

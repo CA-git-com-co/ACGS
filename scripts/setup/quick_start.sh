@@ -9,8 +9,6 @@ echo "📋 Checking prerequisites..."
 command -v git >/dev/null 2>&1 || { echo "❌ Git is required but not installed."; exit 1; }
 command -v python3 >/dev/null 2>&1 || { echo "❌ Python 3 is required but not installed."; exit 1; }
 command -v node >/dev/null 2>&1 || { echo "❌ Node.js is required but not installed."; exit 1; }
-command -v docker >/dev/null 2>&1 || { echo "❌ Docker is required but not installed."; exit 1; }
-command -v docker-compose >/dev/null 2>&1 || { echo "❌ Docker Compose is required but not installed."; exit 1; }
 
 echo "✅ Prerequisites check passed"
 
@@ -21,32 +19,42 @@ source venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 
-# Install service-specific dependencies
-for service_dir in services/core/*/; do
-    if [ -f "${service_dir}requirements.txt" ]; then
-        echo "📦 Installing dependencies for ${service_dir}..."
-        pip install -r "${service_dir}requirements.txt"
-    fi
-done
-
 echo "✅ Python environment ready"
 
-# Setup environment variables
-echo "🔧 Setting up environment variables..."
-cp -n config/env/.env.example config/env/.env
-source scripts/set_service_env.sh
+# Setup Node.js environment
+echo "📦 Setting up Node.js environment..."
+npm install
+cd blockchain && npm install && cd ..
 
-echo "✅ Environment variables set"
+echo "✅ Node.js environment ready"
 
-# Start development services
-echo "🚀 Starting development services..."
-cd infrastructure/docker
-docker-compose -f docker-compose.dev.yml up -d
-cd ../..
+# Install Solana CLI (optional)
+echo "🔗 Installing Solana CLI..."
+if ! command -v solana >/dev/null 2>&1; then
+    sh -c "$(curl -sSfL https://release.solana.com/v1.18.22/install)"
+    export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+fi
 
-# Run health check
-echo "🔍 Running health check..."
-./scripts/health_check_all_services.sh
+echo "✅ Solana CLI installed"
 
-echo "🎉 Quick start setup complete! Your development environment is ready."
-echo "To activate the environment in new terminals, run: source venv/bin/activate"
+# Install Anchor (optional)
+echo "⚓ Installing Anchor..."
+if ! command -v anchor >/dev/null 2>&1; then
+    cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
+    avm install latest
+    avm use latest
+fi
+
+echo "✅ Anchor installed"
+
+# Run initial tests
+echo "🧪 Running initial tests..."
+python -m pytest tests/unit/ -v
+cd blockchain && anchor test && cd ..
+
+echo "🎉 Setup complete! You're ready to contribute to ACGS-1!"
+echo ""
+echo "Next steps:"
+echo "1. Read the onboarding guide: docs/CONTRIBUTOR_ONBOARDING.md"
+echo "2. Join our Discord: https://discord.gg/acgs"
+echo "3. Pick your first issue: https://github.com/CA-git-com-co/ACGS/labels/good%20first%20issue"

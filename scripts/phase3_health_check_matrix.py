@@ -17,7 +17,7 @@ import json
 import logging
 import time
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Any
 
 import httpx
 from pydantic import BaseModel
@@ -36,9 +36,9 @@ class HealthCheckResult(BaseModel):
     target_service: str
     status: str
     response_time_ms: float
-    status_code: Optional[int] = None
+    status_code: int | None = None
     constitutional_hash_verified: bool = False
-    error: Optional[str] = None
+    error: str | None = None
     timestamp: datetime
 
 
@@ -57,7 +57,7 @@ class ACGSHealthCheckMatrixTester:
         }
         self.base_url = "http://localhost"
         self.constitutional_hash = "cdd01ef066bc6cf2"
-        self.connectivity_matrix: Dict[str, Dict[str, HealthCheckResult]] = {}
+        self.connectivity_matrix: dict[str, dict[str, HealthCheckResult]] = {}
         self.timeout = 10.0
 
     async def test_health_check_connectivity(
@@ -97,17 +97,16 @@ class ACGSHealthCheckMatrixTester:
                         constitutional_hash_verified=constitutional_hash_verified,
                         timestamp=timestamp,
                     )
-                else:
-                    return HealthCheckResult(
-                        source_service=source,
-                        target_service=target,
-                        status="unhealthy",
-                        response_time_ms=response_time,
-                        status_code=response.status_code,
-                        constitutional_hash_verified=constitutional_hash_verified,
-                        error=f"HTTP {response.status_code}",
-                        timestamp=timestamp,
-                    )
+                return HealthCheckResult(
+                    source_service=source,
+                    target_service=target,
+                    status="unhealthy",
+                    response_time_ms=response_time,
+                    status_code=response.status_code,
+                    constitutional_hash_verified=constitutional_hash_verified,
+                    error=f"HTTP {response.status_code}",
+                    timestamp=timestamp,
+                )
 
         except asyncio.TimeoutError:
             response_time = (time.time() - start_time) * 1000
@@ -130,7 +129,7 @@ class ACGSHealthCheckMatrixTester:
                 timestamp=timestamp,
             )
 
-    async def build_connectivity_matrix(self) -> Dict[str, Any]:
+    async def build_connectivity_matrix(self) -> dict[str, Any]:
         """Build complete 7x7 connectivity matrix (49 tests)"""
         logger.info("🔍 Building health check connectivity matrix (49 tests)...")
 
@@ -180,7 +179,7 @@ class ACGSHealthCheckMatrixTester:
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-    def analyze_connectivity_patterns(self) -> Dict[str, Any]:
+    def analyze_connectivity_patterns(self) -> dict[str, Any]:
         """Analyze connectivity patterns and identify issues"""
         logger.info("📊 Analyzing connectivity patterns...")
 
@@ -275,8 +274,8 @@ class ACGSHealthCheckMatrixTester:
         return analysis
 
     def generate_connectivity_report(
-        self, matrix_data: Dict[str, Any], analysis: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, matrix_data: dict[str, Any], analysis: dict[str, Any]
+    ) -> dict[str, Any]:
         """Generate comprehensive connectivity report"""
         logger.info("📋 Generating connectivity report...")
 
@@ -321,7 +320,7 @@ class ACGSHealthCheckMatrixTester:
 
         return report
 
-    def _generate_recommendations(self, analysis: Dict[str, Any]) -> List[str]:
+    def _generate_recommendations(self, analysis: dict[str, Any]) -> list[str]:
         """Generate recommendations based on analysis"""
         recommendations = []
 
@@ -381,7 +380,7 @@ class ACGSHealthCheckMatrixTester:
         """Verify constitutional hash in response headers"""
         return response.headers.get("x-constitutional-hash") == self.constitutional_hash
 
-    async def run_connectivity_matrix_tests(self) -> Dict[str, Any]:
+    async def run_connectivity_matrix_tests(self) -> dict[str, Any]:
         """Run complete connectivity matrix tests"""
         logger.info("🚀 Starting ACGS-PGP Health Check Connectivity Matrix Tests...")
 
@@ -432,9 +431,8 @@ async def main():
         if results["executive_summary"]["matrix_status"] in ["healthy", "degraded"]:
             print("\n✅ Connectivity matrix tests completed successfully!")
             return 0
-        else:
-            print("\n❌ Critical connectivity issues found. Check results for details.")
-            return 1
+        print("\n❌ Critical connectivity issues found. Check results for details.")
+        return 1
 
     except Exception as e:
         logger.error(f"Connectivity matrix testing failed: {e}")

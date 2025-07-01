@@ -180,7 +180,7 @@ async def run_optimization_algorithm(
 
     except Exception as e:
         logger.error(f"Optimization algorithm failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Optimization failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Optimization failed: {e!s}")
 
 
 @router.get("/optimization/algorithms")
@@ -256,7 +256,7 @@ async def start_real_time_monitoring(
 
     except Exception as e:
         logger.error(f"Real-time monitoring failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Monitoring failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Monitoring failed: {e!s}")
 
 
 @router.get("/monitoring/alerts")
@@ -303,7 +303,7 @@ async def get_active_alerts(
 
     except Exception as e:
         logger.error(f"Failed to get active alerts: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get alerts: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to get alerts: {e!s}")
 
 
 # Task #4: PGC Service Integration Endpoints
@@ -352,7 +352,7 @@ async def execute_pgc_integration(
 
     except Exception as e:
         logger.error(f"PGC integration failed: {e}")
-        raise HTTPException(status_code=500, detail=f"PGC integration failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"PGC integration failed: {e!s}")
 
 
 @router.get("/pgc-integration/status")
@@ -379,9 +379,7 @@ async def get_pgc_integration_status(
 
     except Exception as e:
         logger.error(f"Failed to get PGC integration status: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get PGC status: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to get PGC status: {e!s}")
 
 
 # Task #4: Advanced Analytics and Reporting Endpoints
@@ -484,7 +482,7 @@ async def get_analytics_overview(
 
     except Exception as e:
         logger.error(f"Failed to get analytics overview: {e}")
-        raise HTTPException(status_code=500, detail=f"Analytics failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Analytics failed: {e!s}")
 
 
 @router.get("/analytics/performance-metrics")
@@ -544,7 +542,7 @@ async def get_performance_metrics(
     except Exception as e:
         logger.error(f"Failed to get performance metrics: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Performance metrics failed: {str(e)}"
+            status_code=500, detail=f"Performance metrics failed: {e!s}"
         )
 
 

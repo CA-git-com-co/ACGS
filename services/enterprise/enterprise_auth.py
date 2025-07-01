@@ -61,7 +61,7 @@ class SAMLAuthProvider:
             Version="2.0"
             IssueInstant="{timestamp}"
             Destination="{self.sso_url}"
-            AssertionConsumerServiceURL="{os.getenv('ACGS_BASE_URL')}/auth/saml/acs"
+            AssertionConsumerServiceURL="{os.getenv("ACGS_BASE_URL")}/auth/saml/acs"
             ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST">
             <saml:Issuer>{self.entity_id}</saml:Issuer>
             <samlp:NameIDPolicy Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress" />
@@ -347,12 +347,11 @@ class EnterpriseAuthManager:
         """Determine constitutional clearance level"""
         if "constitutional_admin" in roles:
             return "constitutional_admin"
-        elif "constitutional_reviewer" in roles:
+        if "constitutional_reviewer" in roles:
             return "constitutional_reviewer"
-        elif "policy_creator" in roles:
+        if "policy_creator" in roles:
             return "policy_creator"
-        else:
-            return "basic_user"
+        return "basic_user"
 
     async def _store_user_session(self, user: EnterpriseUser):
         """Store user session in Redis"""

@@ -16,8 +16,8 @@ from typing import Any
 import httpx
 from pydantic import BaseModel, Field, validator
 
-from .models import LSU, Representation, RepresentationSet, RepresentationType
 from ..quantum.qec_engine import QuantumErrorCorrectionEngine, QuantumState
+from .models import LSU, Representation, RepresentationSet, RepresentationType
 
 logger = logging.getLogger(__name__)
 
@@ -204,7 +204,7 @@ class GenerationEngine:
         logger.info(
             f"Generation Engine initialized with config: {self.config.to_dict()}"
         )
-        logger.info(f"Quantum Error Correction Engine initialized with distance 3")
+        logger.info("Quantum Error Correction Engine initialized with distance 3")
 
     async def generate_policy(
         self, request: PolicyGenerationRequest, use_quantum_enhancement: bool = True
@@ -299,8 +299,8 @@ class GenerationEngine:
 
         except Exception as e:
             self._error_count += 1
-            logger.error(f"Policy generation failed: {generation_id} - {str(e)}")
-            raise RuntimeError(f"Policy generation failed: {str(e)}")
+            logger.error(f"Policy generation failed: {generation_id} - {e!s}")
+            raise RuntimeError(f"Policy generation failed: {e!s}")
 
     def _create_initial_lsu(self, request: PolicyGenerationRequest) -> LSU:
         """Create initial LSU from generation request."""
@@ -365,10 +365,10 @@ class GenerationEngine:
 
 ## Constitutional Compliance
 This policy is designed to comply with constitutional principles including:
-{', '.join(request.constitutional_principles) if request.constitutional_principles else 'General constitutional governance'}
+{", ".join(request.constitutional_principles) if request.constitutional_principles else "General constitutional governance"}
 
 ## Stakeholders
-{', '.join(request.stakeholders) if request.stakeholders else 'All governance participants'}
+{", ".join(request.stakeholders) if request.stakeholders else "All governance participants"}
 
 ## Implementation Guidelines
 1. Ensure transparency in all policy applications
@@ -500,9 +500,8 @@ Constitution Hash: {self.config.constitutional_hash}
                     state1, state2
                 )
                 return entanglement
-            else:
-                # Fallback to classical semantic similarity
-                return self._calculate_semantic_entanglement(rep1, rep2)
+            # Fallback to classical semantic similarity
+            return self._calculate_semantic_entanglement(rep1, rep2)
 
         except Exception as e:
             logger.warning(f"Quantum entanglement calculation failed: {e}")
@@ -550,9 +549,8 @@ Constitution Hash: {self.config.constitutional_hash}
             if response.status_code == 200:
                 result = response.json()
                 return result.get("compliance_score", 0.8)
-            else:
-                logger.warning(f"PGC validation failed: {response.status_code}")
-                return representation.validate_constitutional_compliance()
+            logger.warning(f"PGC validation failed: {response.status_code}")
+            return representation.validate_constitutional_compliance()
 
         except Exception as e:
             logger.warning(f"Constitutional validation error: {e}")

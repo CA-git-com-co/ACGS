@@ -368,14 +368,14 @@ class SecurityComplianceValidator:
         """Determine if a test passed based on its results."""
         if "script_exists" in test_result:
             return test_result["script_exists"] and test_result["script_executable"]
-        elif "test_exists" in test_result:
+        if "test_exists" in test_result:
             return test_result["test_exists"] and test_result["locust_implementation"]
-        elif "matrix_exists" in test_result:
+        if "matrix_exists" in test_result:
             return (
                 test_result["matrix_exists"]
                 and len(test_result["required_sections"]) >= 6
             )
-        elif "analysis_exists" in test_result:
+        if "analysis_exists" in test_result:
             return test_result["analysis_exists"] and test_result["service_inventory"]
         return False
 

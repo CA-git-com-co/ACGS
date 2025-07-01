@@ -26,8 +26,8 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 from services.shared.ai_model_service import AIModelService
-from services.shared.deepseek_r1_pilot import DeepSeekR1PilotManager, PilotConfiguration
 from services.shared.deepseek_r1_monitoring import DeepSeekR1Monitor
+from services.shared.deepseek_r1_pilot import DeepSeekR1PilotManager
 
 # Configure logging
 logging.basicConfig(
@@ -358,8 +358,9 @@ class DeepSeekR1PilotTester:
 
         try:
             # Create test metrics with low compliance to trigger alerts
-            from services.shared.deepseek_r1_monitoring import PilotMetrics
             from datetime import datetime, timezone
+
+            from services.shared.deepseek_r1_monitoring import PilotMetrics
 
             low_compliance_metrics = PilotMetrics(
                 timestamp=datetime.now(timezone.utc),

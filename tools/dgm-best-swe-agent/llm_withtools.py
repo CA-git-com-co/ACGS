@@ -18,10 +18,9 @@ def process_tool_call(tools_dict, tool_name, tool_input):
     try:
         if tool_name in tools_dict:
             return tools_dict[tool_name]["function"](**tool_input)
-        else:
-            return f"Error: Tool '{tool_name}' not found"
+        return f"Error: Tool '{tool_name}' not found"
     except Exception as e:
-        return f"Error executing tool '{tool_name}': {str(e)}"
+        return f"Error executing tool '{tool_name}': {e!s}"
 
 
 @backoff.on_exception(
@@ -161,7 +160,7 @@ def convert_tool_info(tool_info, model=None):
             "description": tool_info["description"],
             "input_schema": tool_info["input_schema"],
         }
-    elif model.startswith("o3-"):
+    if model.startswith("o3-"):
         return {
             "type": "function",
             "function": {
@@ -170,8 +169,7 @@ def convert_tool_info(tool_info, model=None):
                 "parameters": tool_info["input_schema"],
             },
         }
-    else:
-        return tool_info
+    return tool_info
 
 
 def convert_block_claude(block):
@@ -195,17 +193,16 @@ def convert_block_claude(block):
 
     if block_type == "text":
         return {"type": "text", "text": text}
-    elif block_type == "tool_use":
+    if block_type == "tool_use":
         # Convert to the manual tool calling format
         return {
             "type": "text",
             "text": f"<tool_use>\n{{'tool_name': {tool_name}, 'tool_input': {tool_input}}}\n</tool_use>",
         }
-    elif block_type == "tool_result":
+    if block_type == "tool_result":
         return {"type": "text", "text": f"Tool Result: {tool_result}"}
-    else:
-        # Fallback if we ever encounter an unknown block type
-        return {"type": "text", "text": str(block)}
+    # Fallback if we ever encounter an unknown block type
+    return {"type": "text", "text": str(block)}
 
 
 def convert_msg_history_claude(msg_history):
@@ -353,10 +350,9 @@ def convert_msg_history(msg_history, model=None):
     """
     if "claude" in model:
         return convert_msg_history_claude(msg_history)
-    elif model.startswith("o3-"):
+    if model.startswith("o3-"):
         return convert_msg_history_openai(msg_history)
-    else:
-        return msg_history
+    return msg_history
 
 
 def chat_with_agent_manualtools(msg, model, msg_history=None, logging=print):

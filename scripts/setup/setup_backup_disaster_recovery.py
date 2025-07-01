@@ -40,9 +40,9 @@ This document outlines the backup and disaster recovery procedures for the ACGS-
 - **Frequency**: Daily at 2:00 AM UTC
 - **Type**: Full PostgreSQL dump with compression
 - **Retention**:
-  - Daily: {self.backup_config['retention']['daily']} days
-  - Weekly: {self.backup_config['retention']['weekly']} weeks
-  - Monthly: {self.backup_config['retention']['monthly']} months
+  - Daily: {self.backup_config["retention"]["daily"]} days
+  - Weekly: {self.backup_config["retention"]["weekly"]} weeks
+  - Monthly: {self.backup_config["retention"]["monthly"]} months
 - **Storage**: Local + S3 with encryption
 
 ### 2. Configuration Backups
@@ -100,14 +100,14 @@ Generated on: {datetime.now().isoformat()}
 set -e
 
 # Configuration
-DB_HOST="{self.backup_config['database']['host']}"
-DB_PORT="{self.backup_config['database']['port']}"
-DB_NAME="{self.backup_config['database']['name']}"
-DB_USER="{self.backup_config['database']['user']}"
+DB_HOST="{self.backup_config["database"]["host"]}"
+DB_PORT="{self.backup_config["database"]["port"]}"
+DB_NAME="{self.backup_config["database"]["name"]}"
+DB_USER="{self.backup_config["database"]["user"]}"
 
-BACKUP_DIR="{self.backup_config['storage']['local_path']}"
-S3_BUCKET="{self.backup_config['storage']['s3_bucket']}"
-RETENTION_DAYS={self.backup_config['retention']['daily']}
+BACKUP_DIR="{self.backup_config["storage"]["local_path"]}"
+S3_BUCKET="{self.backup_config["storage"]["s3_bucket"]}"
+RETENTION_DAYS={self.backup_config["retention"]["daily"]}
 
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 DATE=$(date +"%Y%m%d")
@@ -216,11 +216,11 @@ echo "📊 Backup size: $(du -h $COMPRESSED_FILE | cut -f1)"
 
 set -e
 
-DB_HOST="{self.backup_config['database']['host']}"
-DB_PORT="{self.backup_config['database']['port']}"
-DB_NAME="{self.backup_config['database']['name']}"
-DB_USER="{self.backup_config['database']['user']}"
-BACKUP_DIR="{self.backup_config['storage']['local_path']}"
+DB_HOST="{self.backup_config["database"]["host"]}"
+DB_PORT="{self.backup_config["database"]["port"]}"
+DB_NAME="{self.backup_config["database"]["name"]}"
+DB_USER="{self.backup_config["database"]["user"]}"
+BACKUP_DIR="{self.backup_config["storage"]["local_path"]}"
 
 if [ $# -eq 0 ]; then
     echo "Usage: $0 <backup_file>"
@@ -408,8 +408,8 @@ echo "✅ Database restore completed successfully"
         monitoring_script = f"""#!/bin/bash
 # ACGS-PGP Backup Monitoring and Validation
 
-BACKUP_DIR="{self.backup_config['storage']['local_path']}"
-S3_BUCKET="{self.backup_config['storage']['s3_bucket']}"
+BACKUP_DIR="{self.backup_config["storage"]["local_path"]}"
+S3_BUCKET="{self.backup_config["storage"]["s3_bucket"]}"
 MAX_AGE_HOURS=25  # Alert if no backup in 25 hours
 
 echo "🔍 ACGS-PGP Backup Monitoring"
@@ -482,7 +482,7 @@ fi
 echo -e "\\n📊 Backup Summary:"
 BACKUP_COUNT=$(find $BACKUP_DIR -name "acgs_pgp_db_*.gz*" -type f | wc -l)
 echo "  Total backups: $BACKUP_COUNT"
-echo "  Retention policy: {self.backup_config['retention']['daily']} days"
+echo "  Retention policy: {self.backup_config["retention"]["daily"]} days"
 
 if [ $BACKUP_AGE -le $MAX_AGE_HOURS ] && [ -n "$LATEST_BACKUP" ]; then
     echo "  Status: ✅ Backup system healthy"
@@ -513,7 +513,7 @@ fi
 0 * * * * /path/to/acgs-pgp/monitor_backups.sh >> /var/log/acgs-backup-monitor.log 2>&1
 
 # Weekly backup cleanup and S3 sync
-0 3 * * 0 find {self.backup_config['storage']['local_path']} -name "*.gz*" -mtime +{self.backup_config['retention']['daily']} -delete
+0 3 * * 0 find {self.backup_config["storage"]["local_path"]} -name "*.gz*" -mtime +{self.backup_config["retention"]["daily"]} -delete
 
 # Monthly disaster recovery test (first Sunday of month)
 0 4 1-7 * 0 /path/to/acgs-pgp/test_disaster_recovery.sh >> /var/log/acgs-dr-test.log 2>&1

@@ -304,7 +304,9 @@ class TenantIsolationManager:
 
         # Update Redis cache
         await self.redis_client.setex(
-            f"tenant_metrics:{tenant_id}", 300, json.dumps(metrics)  # 5 minutes
+            f"tenant_metrics:{tenant_id}",
+            300,
+            json.dumps(metrics),  # 5 minutes
         )
 
     async def get_tenant_metrics(self, tenant_id: str) -> dict[str, float] | None:
@@ -409,7 +411,7 @@ class TenantIsolationManager:
             await conn.execute(
                 f"""
                 UPDATE tenants
-                SET {', '.join(update_fields)}
+                SET {", ".join(update_fields)}
                 WHERE tenant_id = ${param_count}
             """,
                 *update_values,

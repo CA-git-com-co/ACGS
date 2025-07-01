@@ -302,8 +302,8 @@ os.environ.setdefault("CONSTITUTIONAL_HASH", "cdd01ef066bc6cf2")
 @pytest.fixture
 def mock_service_registry():
     """Mock service registry fixture."""
-    from unittest.mock import Mock
     import time
+    from unittest.mock import Mock
 
     registry = Mock()
     registry.services = {
@@ -352,7 +352,6 @@ def test_user_data():
     """Test user data fixture."""
     import time
     from dataclasses import dataclass
-    from typing import List
 
     @dataclass
     class TestUser:
@@ -360,7 +359,7 @@ def test_user_data():
         username: str
         email: str
         role: str
-        permissions: List[str]
+        permissions: list[str]
         created_at: float
         is_active: bool = True
 
@@ -389,14 +388,14 @@ def test_policy_data():
     """Test policy data fixture."""
     import time
     from dataclasses import dataclass
-    from typing import List, Dict, Any
+    from typing import Any
 
     @dataclass
     class TestPolicy:
         policy_id: str
         name: str
         description: str
-        rules: List[Dict[str, Any]]
+        rules: list[dict[str, Any]]
         version: str
         constitutional_hash: str
         created_at: float
@@ -424,7 +423,6 @@ def performance_metrics():
     """Performance metrics fixture."""
     import time
     from dataclasses import dataclass
-    from typing import Optional
 
     @dataclass
     class PerformanceMetric:
@@ -433,7 +431,7 @@ def performance_metrics():
         unit: str
         timestamp: float
         service: str
-        threshold: Optional[float] = None
+        threshold: float | None = None
 
     current_time = time.time()
 

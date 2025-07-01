@@ -8,17 +8,16 @@ This test suite validates the MLOps system integration with
 ACGS-PGP constitutional compliance requirements.
 """
 
-import unittest
-import tempfile
-import shutil
 import json
-from datetime import datetime, timezone
+import shutil
+import tempfile
+import unittest
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
-from .mlops_manager import MLOpsManager, MLOpsConfig, DeploymentResult
-from .model_versioning import VersionPolicy, SemanticVersion
 from .deployment_pipeline import DeploymentStatus
+from .mlops_manager import DeploymentResult, MLOpsConfig, MLOpsManager
+from .model_versioning import VersionPolicy
 
 
 class TestMLOpsIntegration(unittest.TestCase):
@@ -60,14 +59,18 @@ class TestMLOpsIntegration(unittest.TestCase):
         import subprocess
 
         # Initialize Git repo
-        subprocess.run(["git", "init"], cwd=self.test_path, capture_output=True)
+        subprocess.run(
+            ["git", "init"], check=False, cwd=self.test_path, capture_output=True
+        )
         subprocess.run(
             ["git", "config", "user.name", "Test User"],
+            check=False,
             cwd=self.test_path,
             capture_output=True,
         )
         subprocess.run(
             ["git", "config", "user.email", "test@example.com"],
+            check=False,
             cwd=self.test_path,
             capture_output=True,
         )
@@ -77,10 +80,14 @@ class TestMLOpsIntegration(unittest.TestCase):
         test_file.write_text("# Test Repository")
 
         subprocess.run(
-            ["git", "add", "README.md"], cwd=self.test_path, capture_output=True
+            ["git", "add", "README.md"],
+            check=False,
+            cwd=self.test_path,
+            capture_output=True,
         )
         subprocess.run(
             ["git", "commit", "-m", "Initial commit"],
+            check=False,
             cwd=self.test_path,
             capture_output=True,
         )
@@ -201,7 +208,6 @@ class TestMLOpsIntegration(unittest.TestCase):
                 self.mlops.deployment_pipeline.validator, "_validate_integration_test"
             ) as mock_integration,
         ):
-
             # Configure mocks to return passing results
             from .deployment_pipeline import ValidationResult
 

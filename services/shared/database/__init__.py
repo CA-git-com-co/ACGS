@@ -30,33 +30,33 @@ from .pool_manager import (
 )
 
 # Export core database components for service compatibility
-__all__ = ["DatabasePoolManager", "ConnectionPool", "PoolConfig", "get_pool_manager"]
+__all__ = ["ConnectionPool", "DatabasePoolManager", "PoolConfig", "get_pool_manager"]
 
 # Add core database components if available
 if _core_database_available:
     __all__.extend(
-        ["Base", "get_async_db", "AsyncSessionLocal", "async_engine", "metadata"]
+        ["AsyncSessionLocal", "Base", "async_engine", "get_async_db", "metadata"]
     )
 
 # Optional imports for components that may not be implemented yet
 try:
     pass
 
-    __all__.extend(["QueryOptimizer", "QueryCache", "QueryMetrics"])
+    __all__.extend(["QueryCache", "QueryMetrics", "QueryOptimizer"])
 except ImportError:
     pass
 
 try:
     pass
 
-    __all__.extend(["DatabaseConnection", "AsyncDatabaseConnection"])
+    __all__.extend(["AsyncDatabaseConnection", "DatabaseConnection"])
 except ImportError:
     pass
 
 try:
     pass
 
-    __all__.extend(["MigrationManager", "Migration"])
+    __all__.extend(["Migration", "MigrationManager"])
 except ImportError:
     pass
 

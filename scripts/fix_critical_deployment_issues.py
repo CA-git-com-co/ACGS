@@ -7,16 +7,14 @@ Addresses:
 3. Service communication validation
 """
 
+import json
+import logging
 import os
 import sys
-import json
 import time
-import logging
-import subprocess
-import urllib.request
 import urllib.error
+import urllib.request
 from pathlib import Path
-from typing import Dict, List, Optional
 
 # Setup logging
 logging.basicConfig(
@@ -180,7 +178,7 @@ if __name__ == "__main__":
             self.print_status(f"Failed to fix security middleware: {e}", "ERROR")
             return False
 
-    def validate_service_communication(self) -> Dict[str, bool]:
+    def validate_service_communication(self) -> dict[str, bool]:
         """Validate that services can communicate properly."""
         self.print_status("Step 3: Validating Service Communication", "INFO")
 
@@ -353,9 +351,8 @@ if __name__ == "__main__":
         if success_count == total_fixes:
             self.print_status("🎉 All critical issues resolved!", "SUCCESS")
             return True
-        else:
-            self.print_status("⚠️ Some issues remain - check fix report", "WARNING")
-            return False
+        self.print_status("⚠️ Some issues remain - check fix report", "WARNING")
+        return False
 
     def generate_fix_report(self):
         """Generate comprehensive fix report."""

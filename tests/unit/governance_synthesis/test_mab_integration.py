@@ -2,12 +2,6 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.core.mab_integration
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance_synthesis.gs_service.app.core.mab_integration import (
-    MABIntegratedGSService,
-)
-
 
 class TestMABIntegratedGSService:
     """Test suite for MABIntegratedGSService."""

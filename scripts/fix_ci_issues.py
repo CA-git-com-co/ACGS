@@ -4,9 +4,6 @@ Fix common CI/CD issues in ACGS workflows.
 """
 
 import os
-import sys
-import subprocess
-import json
 from pathlib import Path
 
 
@@ -119,11 +116,11 @@ def check_workflow_syntax():
         for i, line in enumerate(lines):
             # Check for tabs (should use spaces)
             if "\t" in line:
-                issues.append(f"    Line {i+1}: Contains tabs (use spaces instead)")
+                issues.append(f"    Line {i + 1}: Contains tabs (use spaces instead)")
 
             # Check for trailing whitespace
             if line.rstrip() != line:
-                issues.append(f"    Line {i+1}: Has trailing whitespace")
+                issues.append(f"    Line {i + 1}: Has trailing whitespace")
 
         if issues:
             print(f"  ⚠️  Issues found in {workflow_file.name}:")

@@ -179,9 +179,7 @@ async def sign_audit_log(
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to sign audit log: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to sign audit log: {e!s}")
 
 
 @router.get("/policy-rules/{rule_id}/verify", response_model=IntegrityReport)
@@ -215,7 +213,7 @@ async def verify_policy_rule_integrity(
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Failed to verify policy rule: {str(e)}"
+            status_code=500, detail=f"Failed to verify policy rule: {e!s}"
         )
 
 
@@ -250,7 +248,7 @@ async def verify_audit_log_integrity(
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Failed to verify audit log: {str(e)}"
+            status_code=500, detail=f"Failed to verify audit log: {e!s}"
         )
 
 
@@ -307,7 +305,7 @@ async def batch_verify_audit_logs(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Failed to batch verify audit logs: {str(e)}"
+            status_code=500, detail=f"Failed to batch verify audit logs: {e!s}"
         )
 
 
@@ -384,7 +382,7 @@ async def verify_audit_log_chain_integrity(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Failed to verify chain integrity: {str(e)}"
+            status_code=500, detail=f"Failed to verify chain integrity: {e!s}"
         )
 
 
@@ -509,7 +507,7 @@ async def generate_system_integrity_report(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Failed to generate integrity report: {str(e)}"
+            status_code=500, detail=f"Failed to generate integrity report: {e!s}"
         )
 
 

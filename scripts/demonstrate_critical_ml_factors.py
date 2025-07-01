@@ -4,7 +4,7 @@ Demonstration of Critical ML Success Factors
 
 This script demonstrates the four critical domains for ML success:
 1. Data Excellence (80% of success)
-2. Self-Adaptive Architectures 
+2. Self-Adaptive Architectures
 3. Rigorous Validation
 4. Operational Resilience
 
@@ -15,7 +15,6 @@ and industry best practices.
 import asyncio
 import logging
 import sys
-import numpy as np
 from pathlib import Path
 
 # Add project root to path
@@ -97,15 +96,15 @@ def demonstrate_critical_factors():
         logger.info("-" * 50)
         logger.info("✅ IterativeImputer (MICE) Implementation:")
         logger.info(f"  • Missing value rate: {data_quality.missing_value_rate:.1%}")
-        logger.info(f"  • 15-20% accuracy improvement over mean imputation")
+        logger.info("  • 15-20% accuracy improvement over mean imputation")
 
         logger.info("✅ SMOTE for Imbalanced Data:")
         logger.info(f"  • Class balance ratio: {data_quality.imbalance_ratio:.3f}")
-        logger.info(f"  • Synthetic minority oversampling applied")
+        logger.info("  • Synthetic minority oversampling applied")
 
         logger.info("✅ Data Drift Detection:")
         logger.info(f"  • Drift score: {data_quality.drift_score:.3f}")
-        logger.info(f"  • Kolmogorov-Smirnov statistical testing")
+        logger.info("  • Kolmogorov-Smirnov statistical testing")
 
         logger.info(
             f"📈 Overall Data Quality Score: {data_quality.quality_score:.3f}/1.0"
@@ -117,7 +116,7 @@ def demonstrate_critical_factors():
         logger.info("-" * 50)
         logger.info("✅ Multi-Armed Bandit Optimization:")
         logger.info(f"  • Selected algorithm: {training_result['algorithm']}")
-        logger.info(f"  • Reduces hyperparameter tuning overhead by 60-70%")
+        logger.info("  • Reduces hyperparameter tuning overhead by 60-70%")
 
         logger.info("✅ Dynamic Hyperparameter Optimization:")
         logger.info(
@@ -129,7 +128,7 @@ def demonstrate_critical_factors():
         logger.info(
             f"  • Constitutional hash maintained: {results['constitutional_hash']}"
         )
-        logger.info(f"  • Service-oriented design enables algorithm swapping")
+        logger.info("  • Service-oriented design enables algorithm swapping")
 
         # Domain 3: Rigorous Validation Analysis
         validation = results["validation_results"]
@@ -139,13 +138,13 @@ def demonstrate_critical_factors():
         logger.info(
             f"  • Unbiased performance: {validation.mean_score:.3f} ± {validation.std_score:.3f}"
         )
-        logger.info(f"  • Prevents 5-15% optimistic bias")
+        logger.info("  • Prevents 5-15% optimistic bias")
 
         logger.info("✅ Bootstrap Confidence Intervals:")
         logger.info(
             f"  • 95% CI: [{validation.confidence_interval[0]:.3f}, {validation.confidence_interval[1]:.3f}]"
         )
-        logger.info(f"  • 1000 bootstrap iterations for uncertainty quantification")
+        logger.info("  • 1000 bootstrap iterations for uncertainty quantification")
 
         logger.info("✅ Statistical Significance Testing:")
         logger.info(
@@ -160,7 +159,7 @@ def demonstrate_critical_factors():
         logger.info("-" * 50)
         logger.info("✅ Real-Time Monitoring:")
         logger.info(f"  • Performance alerts generated: {len(alerts)}")
-        logger.info(f"  • Sub-40ms latency monitoring (ACGS-PGP standard)")
+        logger.info("  • Sub-40ms latency monitoring (ACGS-PGP standard)")
 
         if alerts:
             logger.info("✅ Tiered Alerting System:")
@@ -172,8 +171,8 @@ def demonstrate_critical_factors():
                 logger.info(f"    Action: {alert.action_required}")
 
         logger.info("✅ Automated Retraining Pipeline:")
-        logger.info(f"  • Trigger thresholds: 5% warning, 10% critical, 15% emergency")
-        logger.info(f"  • A/B testing framework for model updates")
+        logger.info("  • Trigger thresholds: 5% warning, 10% critical, 15% emergency")
+        logger.info("  • A/B testing framework for model updates")
 
         # Success Factors Summary
         logger.info("\n🎉 SUCCESS FACTORS IMPLEMENTATION SUMMARY")
@@ -299,10 +298,9 @@ async def main():
         logger.info("4. Monitor performance improvements")
 
         return 0
-    else:
-        logger.error("\n❌ DEMONSTRATION FAILED")
-        logger.info("Please check dependencies and try again")
-        return 1
+    logger.error("\n❌ DEMONSTRATION FAILED")
+    logger.info("Please check dependencies and try again")
+    return 1
 
 
 if __name__ == "__main__":

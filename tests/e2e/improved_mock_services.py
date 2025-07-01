@@ -15,7 +15,7 @@ Features:
 
 Usage:
     python tests/e2e/improved_mock_services.py
-    
+
 Formal Verification Comments:
 # requires: Available ports, Python asyncio
 # ensures: Mock services running without conflicts
@@ -23,16 +23,14 @@ Formal Verification Comments:
 """
 
 import asyncio
-import json
 import logging
 import random
 import socket
 import time
 from datetime import datetime, timezone
-from typing import Dict, Any, List, Optional
+from typing import Any
 
 from aiohttp import web
-import aiohttp
 
 # Configure logging
 logging.basicConfig(
@@ -60,7 +58,7 @@ class ImprovedMockACGSServices:
         self.service_ports = {}
         self.runners = []
 
-    def _initialize_constitutional_principles(self) -> List[Dict[str, Any]]:
+    def _initialize_constitutional_principles(self) -> list[dict[str, Any]]:
         """Initialize comprehensive constitutional principles."""
         return [
             {
@@ -193,7 +191,7 @@ class ImprovedMockACGSServices:
             )
 
         except Exception as e:
-            logger.error(f"Registration error: {str(e)}")
+            logger.error(f"Registration error: {e!s}")
             return web.json_response({"error": "Internal server error"}, status=500)
 
     async def auth_login(self, request):
@@ -247,7 +245,7 @@ class ImprovedMockACGSServices:
             )
 
         except Exception as e:
-            logger.error(f"Login error: {str(e)}")
+            logger.error(f"Login error: {e!s}")
             return web.json_response({"error": "Internal server error"}, status=500)
 
     def _calculate_constitutional_compliance(self, content: str) -> float:
@@ -380,7 +378,7 @@ class ImprovedMockACGSServices:
             )
 
         except Exception as e:
-            logger.error(f"Compliance validation error: {str(e)}")
+            logger.error(f"Compliance validation error: {e!s}")
             return web.json_response({"error": "Validation failed"}, status=500)
 
     async def gs_synthesize(self, request):
@@ -434,11 +432,11 @@ class ImprovedMockACGSServices:
             )
 
         except Exception as e:
-            logger.error(f"Policy synthesis error: {str(e)}")
+            logger.error(f"Policy synthesis error: {e!s}")
             return web.json_response({"error": "Synthesis failed"}, status=500)
 
     def _generate_policy_content(
-        self, title: str, domain: str, principles: List[str]
+        self, title: str, domain: str, principles: list[str]
     ) -> str:
         """Generate realistic policy content based on inputs."""
         templates = {
@@ -516,7 +514,7 @@ class ImprovedMockACGSServices:
             return web.json_response({"error": "Invalid or expired token"}, status=401)
 
         except Exception as e:
-            logger.error(f"Profile error: {str(e)}")
+            logger.error(f"Profile error: {e!s}")
             return web.json_response({"error": "Internal server error"}, status=500)
 
     async def ac_principles(self, request):
@@ -537,7 +535,7 @@ class ImprovedMockACGSServices:
                     }
                 )
 
-            elif request.method == "POST":
+            if request.method == "POST":
                 data = await request.json()
                 new_principles = data.get("principles", [])
 
@@ -558,7 +556,7 @@ class ImprovedMockACGSServices:
                 )
 
         except Exception as e:
-            logger.error(f"Principles error: {str(e)}")
+            logger.error(f"Principles error: {e!s}")
             return web.json_response({"error": "Internal server error"}, status=500)
 
     async def gs_policies(self, request):
@@ -576,7 +574,7 @@ class ImprovedMockACGSServices:
             )
 
         except Exception as e:
-            logger.error(f"Policies error: {str(e)}")
+            logger.error(f"Policies error: {e!s}")
             return web.json_response({"error": "Internal server error"}, status=500)
 
     async def generic_status(self, request):
@@ -606,7 +604,7 @@ class ImprovedMockACGSServices:
                 }
             )
 
-        except Exception as e:
+        except Exception:
             return web.json_response({"error": "Processing failed"}, status=500)
 
     async def start_improved_mock_services(self):
@@ -642,7 +640,7 @@ class ImprovedMockACGSServices:
                 logger.info(f"✅ Mock {service['name']} service started on port {port}")
 
             except Exception as e:
-                logger.error(f"❌ Failed to start {service['name']} service: {str(e)}")
+                logger.error(f"❌ Failed to start {service['name']} service: {e!s}")
 
         logger.info("🎉 All improved mock ACGS services are running!")
         logger.info("📊 Service ports:")

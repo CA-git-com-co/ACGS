@@ -38,11 +38,8 @@ class MonitoringIntegrationTest:
                         data = await response.json()
                         logger.info(f"Health check passed: {data.get('status')}")
                         return True
-                    else:
-                        logger.error(
-                            f"Health check failed with status: {response.status}"
-                        )
-                        return False
+                    logger.error(f"Health check failed with status: {response.status}")
+                    return False
         except Exception as e:
             logger.error(f"Health check failed: {e}")
             return False
@@ -75,11 +72,10 @@ class MonitoringIntegrationTest:
 
                         logger.info("All required metrics found in /metrics endpoint")
                         return True
-                    else:
-                        logger.error(
-                            f"Metrics endpoint failed with status: {response.status}"
-                        )
-                        return False
+                    logger.error(
+                        f"Metrics endpoint failed with status: {response.status}"
+                    )
+                    return False
         except Exception as e:
             logger.error(f"Metrics endpoint test failed: {e}")
             return False
@@ -122,11 +118,10 @@ class MonitoringIntegrationTest:
 
                         logger.info("Metrics summary endpoint test passed")
                         return True
-                    else:
-                        logger.error(
-                            f"Metrics summary endpoint failed with status: {response.status}"
-                        )
-                        return False
+                    logger.error(
+                        f"Metrics summary endpoint failed with status: {response.status}"
+                    )
+                    return False
         except Exception as e:
             logger.error(f"Metrics summary endpoint test failed: {e}")
             return False
@@ -152,24 +147,20 @@ class MonitoringIntegrationTest:
                                         "Prometheus is successfully scraping ACGS-PGP v8 metrics"
                                     )
                                     return True
-                                else:
-                                    logger.warning(
-                                        "ACGS-PGP v8 service appears down in Prometheus"
-                                    )
-                                    return False
-                            else:
-                                logger.error(
-                                    "No results found for ACGS-PGP v8 service in Prometheus"
+                                logger.warning(
+                                    "ACGS-PGP v8 service appears down in Prometheus"
                                 )
                                 return False
-                        else:
-                            logger.error(f"Prometheus query failed: {data}")
+                            logger.error(
+                                "No results found for ACGS-PGP v8 service in Prometheus"
+                            )
                             return False
-                    else:
-                        logger.error(
-                            f"Prometheus API request failed with status: {response.status}"
-                        )
+                        logger.error(f"Prometheus query failed: {data}")
                         return False
+                    logger.error(
+                        f"Prometheus API request failed with status: {response.status}"
+                    )
+                    return False
         except Exception as e:
             logger.warning(
                 f"Prometheus scraping test failed (Prometheus may not be running): {e}"
@@ -203,16 +194,14 @@ class MonitoringIntegrationTest:
                                 f"Constitutional compliance metrics found: {found_metrics}"
                             )
                             return True
-                        else:
-                            logger.error(
-                                f"Insufficient constitutional compliance metrics: {found_metrics}"
-                            )
-                            return False
-                    else:
                         logger.error(
-                            f"Failed to get metrics for compliance test: {response.status}"
+                            f"Insufficient constitutional compliance metrics: {found_metrics}"
                         )
                         return False
+                    logger.error(
+                        f"Failed to get metrics for compliance test: {response.status}"
+                    )
+                    return False
         except Exception as e:
             logger.error(f"Constitutional compliance metrics test failed: {e}")
             return False
@@ -253,9 +242,9 @@ class MonitoringIntegrationTest:
         total_tests = len(tests)
         success_rate = (passed_tests / total_tests) * 100
 
-        logger.info(f"\n{'='*50}")
+        logger.info(f"\n{'=' * 50}")
         logger.info("ACGS-PGP v8 Monitoring Integration Test Results")
-        logger.info(f"{'='*50}")
+        logger.info(f"{'=' * 50}")
         logger.info(f"Tests Passed: {passed_tests}/{total_tests}")
         logger.info(f"Success Rate: {success_rate:.1f}%")
         logger.info("Constitutional Hash: cdd01ef066bc6cf2")

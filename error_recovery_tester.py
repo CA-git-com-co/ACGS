@@ -5,17 +5,15 @@ Tests error handling scenarios, recovery mechanisms, circuit breakers,
 and system resilience under failure conditions.
 """
 
-import os
-import sys
 import json
-import time
 import random
-import threading
-from pathlib import Path
-from typing import Dict, List, Any, Optional
+import sys
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from enum import Enum
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
+from typing import Any
 
 # Add project paths
 project_root = Path(__file__).parent
@@ -39,8 +37,8 @@ class ErrorTestResult:
     recovery_mechanisms_tested: int
     recovery_mechanisms_working: int
     resilience_score: float  # 0-100
-    details: Dict[str, Any]
-    error_message: Optional[str] = None
+    details: dict[str, Any]
+    error_message: str | None = None
 
 
 class ErrorRecoveryTester:
@@ -663,7 +661,7 @@ class ErrorRecoveryTester:
                 str(e),
             )
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Run all error handling and recovery tests."""
         print("Starting Error Handling and Recovery Testing...")
         print("=" * 60)
@@ -693,7 +691,7 @@ class ErrorRecoveryTester:
                     0,
                     0.0,
                     {},
-                    f"Test execution failed: {str(e)}",
+                    f"Test execution failed: {e!s}",
                 )
                 self.log_result(error_result)
 

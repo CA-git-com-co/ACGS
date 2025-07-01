@@ -24,8 +24,8 @@ api_router.include_router(
 
 __all__ = [
     "api_router",
-    "dgm_router",
     "constitutional_router",
+    "dgm_router",
     "health_router",
     "integration_router",
 ]

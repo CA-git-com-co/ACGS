@@ -418,7 +418,6 @@ class WINARegoSynthesizer:
             and hasattr(wina_synthesis_result.original_result, "generated_rules")
             and wina_synthesis_result.original_result.generated_rules
         ):
-
             # Extract Rego from generated rules
             rules = wina_synthesis_result.original_result.generated_rules
             if isinstance(rules, list) and rules:

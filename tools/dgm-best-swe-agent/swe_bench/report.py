@@ -90,7 +90,7 @@ def run_evals(
         output_dir
     )  # switch dir so that things will be saved in the specified output_dir
     run_evals_cmd = f"""
-python {os.path.join(root_dir, './swe_bench/SWE-bench/swebench/harness/run_evaluation.py')}
+python {os.path.join(root_dir, "./swe_bench/SWE-bench/swebench/harness/run_evaluation.py")}
     --dataset_name {dataset_name}
     --predictions_path {predictions_jsonl}
     --max_workers {num_eval_procs}

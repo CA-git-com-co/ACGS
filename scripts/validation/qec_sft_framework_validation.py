@@ -12,12 +12,12 @@ Constitutional Hash: cdd01ef066bc6cf2
 import asyncio
 import json
 import logging
-import math
-import numpy as np
 import time
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional, Tuple
 from pathlib import Path
+from typing import Any
+
+import numpy as np
 
 # Configure logging
 logging.basicConfig(
@@ -47,7 +47,7 @@ class QECSFTFrameworkValidator:
         self.stabilizer_count = 64  # Number of stabilizer operators
         self.syndrome_threshold = 0.1  # Error detection threshold
 
-    async def validate_qec_sft_framework(self) -> Dict[str, Any]:
+    async def validate_qec_sft_framework(self) -> dict[str, Any]:
         """Validate the complete QEC-SFT framework."""
         logger.info("🔬 Starting QEC-SFT Framework Validation")
         logger.info(f"📜 Constitutional Hash: {self.constitutional_hash}")
@@ -91,7 +91,7 @@ class QECSFTFrameworkValidator:
             self.validation_results["error"] = str(e)
             raise
 
-    async def _validate_semantic_hilbert_space(self) -> Dict[str, Any]:
+    async def _validate_semantic_hilbert_space(self) -> dict[str, Any]:
         """Validate the semantic Hilbert space implementation."""
         logger.info("🌌 Validating Semantic Hilbert Space Implementation")
 
@@ -251,7 +251,7 @@ class QECSFTFrameworkValidator:
 
         return np.dot(v1, v2) / (norm1 * norm2)
 
-    async def _test_stabilizer_execution(self) -> Dict[str, Any]:
+    async def _test_stabilizer_execution(self) -> dict[str, Any]:
         """Test the stabilizer execution environment."""
         logger.info("🔧 Testing Stabilizer Execution Environment")
 
@@ -411,7 +411,7 @@ class QECSFTFrameworkValidator:
         return corrected_state
 
     def _apply_error_correction(
-        self, noisy_state: np.ndarray, stabilizers: List[np.ndarray]
+        self, noisy_state: np.ndarray, stabilizers: list[np.ndarray]
     ) -> np.ndarray:
         """Apply error correction using multiple stabilizers."""
         corrected_state = noisy_state.copy()
@@ -422,7 +422,7 @@ class QECSFTFrameworkValidator:
 
         return corrected_state
 
-    async def _validate_syndrome_diagnostics(self) -> Dict[str, Any]:
+    async def _validate_syndrome_diagnostics(self) -> dict[str, Any]:
         """Validate the syndrome diagnostic engine."""
         logger.info("🔍 Validating Syndrome Diagnostic Engine")
 
@@ -608,14 +608,13 @@ class QECSFTFrameworkValidator:
         # Simple classification based on difference patterns
         if np.std(difference) > 0.15:
             return "noise_corruption"
-        elif np.mean(np.abs(difference)) > 0.1:
+        if np.mean(np.abs(difference)) > 0.1:
             return "semantic_drift"
-        elif np.min(difference) < -0.05:
+        if np.min(difference) < -0.05:
             return "constitutional_violation"
-        else:
-            return "no_error"
+        return "no_error"
 
-    def _calculate_false_positive_rate(self, diagnostic_tests: List[Dict]) -> float:
+    def _calculate_false_positive_rate(self, diagnostic_tests: list[dict]) -> float:
         """Calculate false positive rate from diagnostic tests."""
         false_positives = sum(
             1
@@ -629,7 +628,7 @@ class QECSFTFrameworkValidator:
 
         return false_positives / max(total_negatives, 1)
 
-    def _calculate_false_negative_rate(self, diagnostic_tests: List[Dict]) -> float:
+    def _calculate_false_negative_rate(self, diagnostic_tests: list[dict]) -> float:
         """Calculate false negative rate from diagnostic tests."""
         false_negatives = sum(
             1
@@ -643,7 +642,7 @@ class QECSFTFrameworkValidator:
 
         return false_negatives / max(total_positives, 1)
 
-    async def _validate_theoretical_framework(self) -> Dict[str, Any]:
+    async def _validate_theoretical_framework(self) -> dict[str, Any]:
         """Validate the theoretical framework empirically."""
         logger.info("🧮 Validating Theoretical Framework")
 
@@ -836,7 +835,7 @@ class QECSFTFrameworkValidator:
 
         return noisy_state
 
-    async def _measure_production_performance(self) -> Dict[str, Any]:
+    async def _measure_production_performance(self) -> dict[str, Any]:
         """Measure QEC-SFT performance under production load."""
         logger.info("⚡ Measuring Production Performance")
 
@@ -894,7 +893,7 @@ class QECSFTFrameworkValidator:
         )
         return performance_results
 
-    async def _assess_production_readiness(self) -> Dict[str, Any]:
+    async def _assess_production_readiness(self) -> dict[str, Any]:
         """Assess overall production readiness of QEC-SFT framework."""
         logger.info("🎯 Assessing Production Readiness")
 

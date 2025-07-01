@@ -12,7 +12,7 @@ import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -54,7 +54,7 @@ class QuickSecurityAssessment:
         os.makedirs("logs", exist_ok=True)
         os.makedirs("reports/security", exist_ok=True)
 
-    def run_assessment(self) -> Dict[str, Any]:
+    def run_assessment(self) -> dict[str, Any]:
         """Run quick security assessment."""
         logger.info(f"🔍 Starting quick security assessment: {self.assessment_id}")
 
@@ -91,7 +91,7 @@ class QuickSecurityAssessment:
                 full_path = self.project_root / report_path
                 if full_path.exists():
                     try:
-                        with open(full_path, "r") as f:
+                        with open(full_path) as f:
                             report_data = json.load(f)
 
                         # Extract findings from comprehensive security analysis
@@ -184,7 +184,7 @@ class QuickSecurityAssessment:
 
                 # Check middleware content for key features
                 try:
-                    with open(security_middleware_path, "r") as f:
+                    with open(security_middleware_path) as f:
                         content = f.read()
 
                     security_features = [
@@ -428,7 +428,7 @@ class QuickSecurityAssessment:
                 full_path = self.project_root / report_path
                 if full_path.exists():
                     try:
-                        with open(full_path, "r") as f:
+                        with open(full_path) as f:
                             report_data = json.load(f)
 
                         # Extract vulnerability count if available

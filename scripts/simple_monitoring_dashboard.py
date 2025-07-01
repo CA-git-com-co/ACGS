@@ -5,15 +5,15 @@ Provides a web-based dashboard to monitor all 7 core services
 """
 
 import asyncio
-import json
 import time
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Any
+
 import aiohttp
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
-from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 
 app = FastAPI(
     title="ACGS-1 Monitoring Dashboard",
@@ -75,7 +75,7 @@ metrics_data = {
 }
 
 
-async def check_service_health(service_id: str, service_config: Dict) -> Dict[str, Any]:
+async def check_service_health(service_id: str, service_config: dict) -> dict[str, Any]:
     """Check health of a single service"""
     try:
         async with aiohttp.ClientSession(
@@ -94,14 +94,13 @@ async def check_service_health(service_id: str, service_config: Dict) -> Dict[st
                         "details": health_data,
                         "last_check": datetime.now().isoformat(),
                     }
-                else:
-                    return {
-                        "status": "unhealthy",
-                        "response_time_ms": round(response_time, 2),
-                        "http_status": response.status,
-                        "error": f"HTTP {response.status}",
-                        "last_check": datetime.now().isoformat(),
-                    }
+                return {
+                    "status": "unhealthy",
+                    "response_time_ms": round(response_time, 2),
+                    "http_status": response.status,
+                    "error": f"HTTP {response.status}",
+                    "last_check": datetime.now().isoformat(),
+                }
     except Exception as e:
         return {
             "status": "error",

@@ -376,7 +376,7 @@ async def main():
         print("✅ Database maintenance completed")
         print("📊 Benchmark Results:")
         for operation, duration in benchmarks.items():
-            print(f"   - {operation}: {duration*1000:.2f}ms")
+            print(f"   - {operation}: {duration * 1000:.2f}ms")
         print("=" * 60)
 
     except Exception as e:

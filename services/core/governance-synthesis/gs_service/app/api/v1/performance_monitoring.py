@@ -107,7 +107,7 @@ async def get_performance_metrics(
         logger.error("Failed to get performance metrics", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve performance metrics: {str(e)}",
+            detail=f"Failed to retrieve performance metrics: {e!s}",
         )
 
 
@@ -180,7 +180,7 @@ async def get_system_health() -> SystemHealthResponse:
         logger.error("Failed to get system health", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve system health: {str(e)}",
+            detail=f"Failed to retrieve system health: {e!s}",
         )
 
 
@@ -222,14 +222,14 @@ async def get_performance_bottlenecks(
         logger.error("Failed to get performance bottlenecks", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve performance bottlenecks: {str(e)}",
+            detail=f"Failed to retrieve performance bottlenecks: {e!s}",
         )
 
 
 @router.get("/latency-profile")
 @security_required(required_roles=["admin", "monitor"])
 async def get_latency_profile(
-    operation: str | None = Query(None, description="Specific operation to profile")
+    operation: str | None = Query(None, description="Specific operation to profile"),
 ) -> dict[str, Any]:
     """
     Get detailed latency profiling information.
@@ -296,7 +296,7 @@ async def get_latency_profile(
         logger.error("Failed to get latency profile", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve latency profile: {str(e)}",
+            detail=f"Failed to retrieve latency profile: {e!s}",
         )
 
 
@@ -331,7 +331,7 @@ async def configure_alert(alert_config: AlertConfiguration) -> dict[str, Any]:
         logger.error("Failed to configure alert", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to configure alert: {str(e)}",
+            detail=f"Failed to configure alert: {e!s}",
         )
 
 
@@ -352,7 +352,7 @@ async def get_prometheus_metrics() -> str:
         logger.error("Failed to get Prometheus metrics", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve Prometheus metrics: {str(e)}",
+            detail=f"Failed to retrieve Prometheus metrics: {e!s}",
         )
 
 
@@ -442,11 +442,10 @@ def _calculate_performance_grade(profile: dict[str, Any]) -> str:
 
     if p95_latency < 10:
         return "A"
-    elif p95_latency < 25:
+    if p95_latency < 25:
         return "B"
-    elif p95_latency < 50:
+    if p95_latency < 50:
         return "C"
-    elif p95_latency < 100:
+    if p95_latency < 100:
         return "D"
-    else:
-        return "F"
+    return "F"

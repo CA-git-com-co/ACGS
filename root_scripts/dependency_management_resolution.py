@@ -14,22 +14,19 @@ Key objectives:
 - Preserve multi-model LLM support (Qwen3, DeepSeek)
 """
 
-import os
-import sys
 import json
-import subprocess
 import logging
-from pathlib import Path
+import subprocess
+import sys
 from datetime import datetime
-from typing import Dict, List, Set, Tuple
-import re
+from pathlib import Path
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
         logging.FileHandler(
-            f'dependency_resolution_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log'
+            f"dependency_resolution_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
         ),
         logging.StreamHandler(),
     ],
@@ -51,7 +48,7 @@ class DependencyResolver:
             "consolidation_results": {},
         }
 
-    def analyze_python_dependencies(self) -> Dict[str, List[str]]:
+    def analyze_python_dependencies(self) -> dict[str, list[str]]:
         """Analyze Python dependency conflicts"""
         logger.info("Analyzing Python dependencies...")
 
@@ -69,7 +66,7 @@ class DependencyResolver:
 
         for req_file in req_files:
             try:
-                with open(req_file, "r") as f:
+                with open(req_file) as f:
                     for line in f:
                         line = line.strip()
                         if line and not line.startswith("#") and "==" in line:
@@ -130,7 +127,7 @@ class DependencyResolver:
             return False
 
     def _update_service_otel_deps(
-        self, service_dir: Path, otel_versions: Dict[str, str]
+        self, service_dir: Path, otel_versions: dict[str, str]
     ):
         """Update OpenTelemetry dependencies for a service"""
         req_file = service_dir / "requirements.txt"

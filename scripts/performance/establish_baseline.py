@@ -8,7 +8,6 @@ import asyncio
 import json
 import logging
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 
 # Add the infrastructure monitoring path to sys.path
@@ -240,7 +239,7 @@ class BaselineEstablisher:
 ## Baseline Information
 - **Baseline ID**: {baseline.baseline_id}
 - **Version**: {baseline.version}
-- **Created**: {baseline.created_at.strftime('%Y-%m-%d %H:%M:%S UTC')}
+- **Created**: {baseline.created_at.strftime("%Y-%m-%d %H:%M:%S UTC")}
 - **Duration**: {baseline.measurement_duration_hours} hours
 - **Samples**: {baseline.sample_count}
 - **Constitutional Hash**: `{baseline.constitutional_hash}`
@@ -249,10 +248,10 @@ class BaselineEstablisher:
 
 | Metric | Value | Target | Status |
 |--------|-------|--------|--------|
-| Avg Response Time | {baseline.overall_avg_response_time:.2f}ms | <500ms | {'✅' if baseline.overall_avg_response_time < 500 else '❌'} |
-| Error Rate | {baseline.overall_error_rate:.2f}% | <1% | {'✅' if baseline.overall_error_rate < 1 else '❌'} |
+| Avg Response Time | {baseline.overall_avg_response_time:.2f}ms | <500ms | {"✅" if baseline.overall_avg_response_time < 500 else "❌"} |
+| Error Rate | {baseline.overall_error_rate:.2f}% | <1% | {"✅" if baseline.overall_error_rate < 1 else "❌"} |
 | Throughput | {baseline.overall_throughput:.2f} RPS | - | - |
-| Constitutional Compliance | {baseline.overall_constitutional_compliance*100:.1f}% | >95% | {'✅' if baseline.overall_constitutional_compliance > 0.95 else '❌'} |
+| Constitutional Compliance | {baseline.overall_constitutional_compliance * 100:.1f}% | >95% | {"✅" if baseline.overall_constitutional_compliance > 0.95 else "❌"} |
 
 ## Service Performance Details
 
@@ -268,7 +267,7 @@ class BaselineEstablisher:
 | P99 Response Time | {metrics.p99_response_time:.2f}ms |
 | Error Rate | {metrics.error_rate_percent:.2f}% |
 | Uptime | {metrics.uptime_percent:.2f}% |
-| Constitutional Compliance | {metrics.constitutional_compliance_rate*100:.1f}% |
+| Constitutional Compliance | {metrics.constitutional_compliance_rate * 100:.1f}% |
 | Avg Throughput | {metrics.avg_throughput:.2f} RPS |
 
 """
@@ -277,9 +276,9 @@ class BaselineEstablisher:
         sla_compliance = self.check_sla_compliance(baseline)
         report += f"""## SLA Compliance Summary
 
-- **Response Time SLA**: {'✅ PASS' if sla_compliance['response_time_sla'] else '❌ FAIL'}
-- **Error Rate SLA**: {'✅ PASS' if sla_compliance['error_rate_sla'] else '❌ FAIL'}
-- **Constitutional Compliance SLA**: {'✅ PASS' if sla_compliance['constitutional_compliance_sla'] else '❌ FAIL'}
+- **Response Time SLA**: {"✅ PASS" if sla_compliance["response_time_sla"] else "❌ FAIL"}
+- **Error Rate SLA**: {"✅ PASS" if sla_compliance["error_rate_sla"] else "❌ FAIL"}
+- **Constitutional Compliance SLA**: {"✅ PASS" if sla_compliance["constitutional_compliance_sla"] else "❌ FAIL"}
 
 ## Recommendations
 
@@ -482,7 +481,7 @@ async def main():
         print(f"Avg Response Time: {baseline.overall_avg_response_time:.2f}ms")
         print(f"Error Rate: {baseline.overall_error_rate:.2f}%")
         print(
-            f"Constitutional Compliance: {baseline.overall_constitutional_compliance*100:.1f}%"
+            f"Constitutional Compliance: {baseline.overall_constitutional_compliance * 100:.1f}%"
         )
         print("=" * 60)
 

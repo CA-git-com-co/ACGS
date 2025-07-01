@@ -4,13 +4,13 @@ ACGS Simple Audit Engine with File-based Persistence
 Implements audit trail storage with cryptographic hash chaining
 """
 
-import json
 import hashlib
-import time
+import json
 import os
+import time
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, asdict
+from typing import Any
 
 
 @dataclass
@@ -22,13 +22,13 @@ class AuditEvent:
     service_name: str
     event_type: str
     constitutional_hash: str
-    user_id: Optional[str]
-    session_id: Optional[str]
-    request_data: Dict[str, Any]
-    response_data: Dict[str, Any]
+    user_id: str | None
+    session_id: str | None
+    request_data: dict[str, Any]
+    response_data: dict[str, Any]
     compliance_score: float
     latency_ms: float
-    previous_hash: Optional[str]
+    previous_hash: str | None
     event_hash: str
 
 
@@ -47,7 +47,7 @@ class SimpleAuditEngine:
                 pass  # Create empty file
 
     def generate_event_hash(
-        self, event_data: Dict[str, Any], previous_hash: Optional[str] = None
+        self, event_data: dict[str, Any], previous_hash: str | None = None
     ) -> str:
         """Generate cryptographic hash for audit event chaining"""
         hash_input = {
@@ -62,10 +62,10 @@ class SimpleAuditEngine:
         hash_string = json.dumps(hash_input, sort_keys=True)
         return hashlib.sha256(hash_string.encode()).hexdigest()
 
-    def get_last_event_hash(self) -> Optional[str]:
+    def get_last_event_hash(self) -> str | None:
         """Get the hash of the last audit event for chaining"""
         try:
-            with open(self.audit_file, "r") as f:
+            with open(self.audit_file) as f:
                 lines = f.readlines()
                 if lines:
                     last_event = json.loads(lines[-1].strip())
@@ -74,7 +74,7 @@ class SimpleAuditEngine:
             pass
         return None
 
-    def store_audit_event(self, event_data: Dict[str, Any]) -> str:
+    def store_audit_event(self, event_data: dict[str, Any]) -> str:
         """Store audit event with cryptographic hash chaining"""
         # Get previous hash for chaining
         previous_hash = self.get_last_event_hash()
@@ -115,15 +115,15 @@ class SimpleAuditEngine:
 
     def query_audit_events(
         self,
-        service_name: Optional[str] = None,
-        event_type: Optional[str] = None,
+        service_name: str | None = None,
+        event_type: str | None = None,
         limit: int = 100,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Query audit events with filtering"""
         events = []
 
         try:
-            with open(self.audit_file, "r") as f:
+            with open(self.audit_file) as f:
                 for line in f:
                     if line.strip():
                         event = json.loads(line.strip())
@@ -143,7 +143,7 @@ class SimpleAuditEngine:
 
         return list(reversed(events))  # Return most recent first
 
-    def generate_compliance_report(self) -> Dict[str, Any]:
+    def generate_compliance_report(self) -> dict[str, Any]:
         """Generate compliance report from audit data"""
         events = self.query_audit_events(limit=10000)
 
@@ -191,7 +191,7 @@ class SimpleAuditEngine:
             ),
         }
 
-    def verify_chain_integrity(self) -> Dict[str, Any]:
+    def verify_chain_integrity(self) -> dict[str, Any]:
         """Verify cryptographic hash chain integrity"""
         events = self.query_audit_events(limit=1000)
 
@@ -300,7 +300,7 @@ def test_audit_engine():
     if integrity["broken_links"]:
         print(f"  ⚠️ Broken Links Found: {len(integrity['broken_links'])}")
     else:
-        print(f"  ✅ Chain integrity verified")
+        print("  ✅ Chain integrity verified")
 
     print("\n✅ Simple Audit Engine: OPERATIONAL")
 

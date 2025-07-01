@@ -1,15 +1,15 @@
+import enum
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
 import pytest
 import pytest_asyncio
-from fastapi import FastAPI, Depends, Query, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, Query, status
 from fastapi.testclient import TestClient
 from sqlalchemy import Column, DateTime, Enum, Float, Integer, String, select
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.pool import StaticPool
-import enum
 
 Base = declarative_base()
 

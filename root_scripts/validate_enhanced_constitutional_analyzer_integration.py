@@ -216,13 +216,12 @@ class EnhancedConstitutionalAnalyzerValidator:
                         "status": result_data.get("status", "unknown"),
                         "details": result_data,
                     }
-                else:
-                    return {
-                        "success": False,
-                        "response_time_ms": round(response_time, 2),
-                        "error": f"HTTP {response.status}",
-                        "details": await response.text(),
-                    }
+                return {
+                    "success": False,
+                    "response_time_ms": round(response_time, 2),
+                    "error": f"HTTP {response.status}",
+                    "details": await response.text(),
+                }
 
         except Exception as e:
             return {
@@ -264,13 +263,12 @@ class EnhancedConstitutionalAnalyzerValidator:
                         "constitutional_hash": result_data.get("constitutional_hash"),
                         "details": result_data,
                     }
-                else:
-                    return {
-                        "success": False,
-                        "response_time_ms": round(response_time, 2),
-                        "error": f"HTTP {response.status}",
-                        "details": await response.text(),
-                    }
+                return {
+                    "success": False,
+                    "response_time_ms": round(response_time, 2),
+                    "error": f"HTTP {response.status}",
+                    "details": await response.text(),
+                }
 
         except Exception as e:
             return {
@@ -312,13 +310,12 @@ class EnhancedConstitutionalAnalyzerValidator:
                         "compliance_status": result_data.get("compliance_status"),
                         "details": result_data,
                     }
-                else:
-                    return {
-                        "success": False,
-                        "response_time_ms": round(response_time, 2),
-                        "error": f"HTTP {response.status}",
-                        "details": await response.text(),
-                    }
+                return {
+                    "success": False,
+                    "response_time_ms": round(response_time, 2),
+                    "error": f"HTTP {response.status}",
+                    "details": await response.text(),
+                }
 
         except Exception as e:
             return {
@@ -486,7 +483,7 @@ class EnhancedConstitutionalAnalyzerValidator:
                     performance_metrics["total_requests"] += 1
 
             except Exception as e:
-                logger.warning(f"Performance test request {i+1} failed: {e}")
+                logger.warning(f"Performance test request {i + 1} failed: {e}")
 
         # Calculate metrics
         if performance_metrics["response_times"]:
@@ -659,10 +656,9 @@ async def main():
     # Return exit code based on results
     if results["overall_status"] == "READY_FOR_PRODUCTION":
         return 0
-    elif results["overall_status"] == "NEEDS_OPTIMIZATION":
+    if results["overall_status"] == "NEEDS_OPTIMIZATION":
         return 1
-    else:
-        return 2
+    return 2
 
 
 if __name__ == "__main__":

@@ -2,8 +2,6 @@
 Unit tests for services.core.constitutional-ai.ac_service.app.middleware.enhanced_security
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.constitutional_ai.ac_service.app.middleware.enhanced_security import (
     EnhancedSecurityMiddleware,
 )

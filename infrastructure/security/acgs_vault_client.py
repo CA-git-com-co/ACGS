@@ -5,13 +5,12 @@ Service-specific Vault client for secure secrets management across all ACGS serv
 """
 
 import asyncio
-import json
 import logging
 import os
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Any
+from typing import Any
 
 import hvac
 from prometheus_client import CollectorRegistry, Counter, Histogram
@@ -30,9 +29,9 @@ class ServiceVaultConfig:
 
     service_name: str
     vault_url: str = "http://localhost:8200"
-    vault_role_id: Optional[str] = None
-    vault_secret_id: Optional[str] = None
-    vault_token: Optional[str] = None
+    vault_role_id: str | None = None
+    vault_secret_id: str | None = None
+    vault_token: str | None = None
 
     # Service-specific configuration
     kv_mount_point: str = "acgs-secrets"
@@ -49,14 +48,14 @@ class ACGSVaultClient:
 
     def __init__(self, config: ServiceVaultConfig):
         self.config = config
-        self.client: Optional[hvac.Client] = None
+        self.client: hvac.Client | None = None
 
         # Metrics
         self.registry = CollectorRegistry()
         self.setup_metrics()
 
         # Cache for frequently accessed secrets
-        self.secret_cache: Dict[str, Dict] = {}
+        self.secret_cache: dict[str, dict] = {}
         self.cache_ttl = 300  # 5 minutes
 
         logger.info(f"ACGS Vault Client initialized for {config.service_name}")
@@ -192,7 +191,7 @@ class ACGSVaultClient:
 
     async def get_secret(
         self, secret_path: str, use_cache: bool = True
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Get a secret from Vault."""
         start_time = time.time()
 
@@ -251,8 +250,8 @@ class ACGSVaultClient:
             return None
 
     async def get_database_credentials(
-        self, role_name: Optional[str] = None
-    ) -> Optional[Dict[str, str]]:
+        self, role_name: str | None = None
+    ) -> dict[str, str] | None:
         """Get dynamic database credentials."""
         start_time = time.time()
 
@@ -296,8 +295,8 @@ class ACGSVaultClient:
             return None
 
     async def get_certificate(
-        self, common_name: Optional[str] = None, role_name: str = "service-cert"
-    ) -> Optional[Dict[str, str]]:
+        self, common_name: str | None = None, role_name: str = "service-cert"
+    ) -> dict[str, str] | None:
         """Get a TLS certificate from Vault PKI."""
         start_time = time.time()
 
@@ -340,7 +339,7 @@ class ACGSVaultClient:
             )
             return None
 
-    async def store_secret(self, secret_path: str, secret_data: Dict[str, Any]) -> bool:
+    async def store_secret(self, secret_path: str, secret_data: dict[str, Any]) -> bool:
         """Store a secret in Vault (if service has write permissions)."""
         start_time = time.time()
 
@@ -392,7 +391,7 @@ class ACGSVaultClient:
             )
             return False
 
-    async def get_service_config(self) -> Dict[str, Any]:
+    async def get_service_config(self) -> dict[str, Any]:
         """Get service-specific configuration from Vault."""
         try:
             service_config_path = f"{self.config.service_name}/config"
@@ -410,7 +409,7 @@ class ACGSVaultClient:
             )
             return self.get_default_service_config()
 
-    def get_default_service_config(self) -> Dict[str, Any]:
+    def get_default_service_config(self) -> dict[str, Any]:
         """Get default service configuration."""
         return {
             "service_name": self.config.service_name,
@@ -442,7 +441,7 @@ class ACGSVaultClient:
         self.secret_cache.clear()
         logger.info(f"Cleared secret cache for {self.config.service_name}")
 
-    def get_client_status(self) -> Dict[str, Any]:
+    def get_client_status(self) -> dict[str, Any]:
         """Get Vault client status."""
         try:
             return {

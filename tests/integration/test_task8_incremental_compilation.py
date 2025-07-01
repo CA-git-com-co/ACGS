@@ -102,11 +102,10 @@ class Task8IntegrationTester:
                     {"response_time_ms": response.elapsed.total_seconds() * 1000},
                 )
                 return True
-            else:
-                self.log_test_result(
-                    test_name, False, f"OPA server unhealthy: {response.status_code}"
-                )
-                return False
+            self.log_test_result(
+                test_name, False, f"OPA server unhealthy: {response.status_code}"
+            )
+            return False
 
         except Exception as e:
             self.log_test_result(test_name, False, f"OPA server connection failed: {e}")
@@ -130,13 +129,12 @@ class Task8IntegrationTester:
                     {"server_info": server_info},
                 )
                 return True
-            else:
-                self.log_test_result(
-                    test_name,
-                    False,
-                    f"Failed to get server info: {response.status_code}",
-                )
-                return False
+            self.log_test_result(
+                test_name,
+                False,
+                f"Failed to get server info: {response.status_code}",
+            )
+            return False
 
         except Exception as e:
             self.log_test_result(test_name, False, f"Server info request failed: {e}")
@@ -199,11 +197,10 @@ class Task8IntegrationTester:
                     {"initialization_time_ms": init_time},
                 )
                 return True
-            else:
-                self.log_test_result(
-                    test_name, False, "OPA client initialized but health check failed"
-                )
-                return False
+            self.log_test_result(
+                test_name, False, "OPA client initialized but health check failed"
+            )
+            return False
 
         except Exception as e:
             self.log_test_result(
@@ -748,13 +745,12 @@ class Task8IntegrationTester:
                 )
 
                 return has_expected_fields
-            else:
-                self.log_test_result(
-                    test_name,
-                    True,  # Accept auth errors as valid
-                    f"Metrics API accessible: {response.status_code}",
-                )
-                return True
+            self.log_test_result(
+                test_name,
+                True,  # Accept auth errors as valid
+                f"Metrics API accessible: {response.status_code}",
+            )
+            return True
 
         except Exception as e:
             self.log_test_result(test_name, False, f"Metrics API test failed: {e}")
@@ -796,13 +792,12 @@ class Task8IntegrationTester:
                 )
 
                 return has_expected_fields
-            else:
-                self.log_test_result(
-                    test_name,
-                    True,  # Accept auth errors as valid
-                    f"Status API accessible: {response.status_code}",
-                )
-                return True
+            self.log_test_result(
+                test_name,
+                True,  # Accept auth errors as valid
+                f"Status API accessible: {response.status_code}",
+            )
+            return True
 
         except Exception as e:
             self.log_test_result(test_name, False, f"Status API test failed: {e}")
@@ -849,7 +844,7 @@ async def run_task8_integration_tests():
         print("📊 TASK 8 INTEGRATION TEST SUMMARY")
         print("=" * 80)
         print(f"Tests Passed: {passed}/{total}")
-        print(f"Success Rate: {(passed/total)*100:.1f}%")
+        print(f"Success Rate: {(passed / total) * 100:.1f}%")
 
         if passed == total:
             print("🎉 All Task 8 enhanced incremental compilation tests passed!")

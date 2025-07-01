@@ -2,20 +2,18 @@
 Gemini CLI Tools Manager
 """
 
-import os
+import asyncio
 import json
 import logging
-from typing import Dict, List, Any, Optional
-from pathlib import Path
-import aiohttp
-import asyncio
-
-import sys
 import os
+import sys
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import aiohttp
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from gemini_config import GeminiConfig
-
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +25,7 @@ class ToolManager:
         self.config = config
         self.enabled_tools = self._get_enabled_tools()
 
-    def _get_enabled_tools(self) -> List[str]:
+    def _get_enabled_tools(self) -> list[str]:
         """Get list of enabled tools"""
         tools = []
         if self.config.tools.file_system:
@@ -47,8 +45,8 @@ class ToolManager:
         return tools
 
     async def execute_tool(
-        self, tool_name: str, parameters: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, tool_name: str, parameters: dict[str, Any]
+    ) -> dict[str, Any]:
         """Execute a tool with given parameters"""
         if tool_name not in self.enabled_tools:
             return {"error": f"Tool '{tool_name}' is not enabled"}
@@ -56,26 +54,25 @@ class ToolManager:
         try:
             if tool_name == "file_system":
                 return await self._execute_file_system(parameters)
-            elif tool_name == "web_fetch":
+            if tool_name == "web_fetch":
                 return await self._execute_web_fetch(parameters)
-            elif tool_name == "web_search":
+            if tool_name == "web_search":
                 return await self._execute_web_search(parameters)
-            elif tool_name == "shell_execution":
+            if tool_name == "shell_execution":
                 return await self._execute_shell(parameters)
-            elif tool_name == "memory":
+            if tool_name == "memory":
                 return await self._execute_memory(parameters)
-            elif tool_name == "multi_file_read":
+            if tool_name == "multi_file_read":
                 return await self._execute_multi_file_read(parameters)
-            elif tool_name == "sandbox_execution":
+            if tool_name == "sandbox_execution":
                 return await self._execute_sandbox(parameters)
-            else:
-                return {"error": f"Unknown tool: {tool_name}"}
+            return {"error": f"Unknown tool: {tool_name}"}
 
         except Exception as e:
             logger.error(f"Tool execution failed: {e}")
             return {"error": str(e)}
 
-    async def _execute_file_system(self, params: Dict) -> Dict:
+    async def _execute_file_system(self, params: dict) -> dict:
         """Execute file system operations"""
         operation = params.get("operation")
 
@@ -84,17 +81,16 @@ class ToolManager:
             if path.exists():
                 content = path.read_text()
                 return {"path": str(path), "content": content, "size": len(content)}
-            else:
-                return {"error": f"File not found: {path}"}
+            return {"error": f"File not found: {path}"}
 
-        elif operation == "write":
+        if operation == "write":
             path = Path(params.get("path"))
             content = params.get("content", "")
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content)
             return {"path": str(path), "written": len(content), "status": "success"}
 
-        elif operation == "list":
+        if operation == "list":
             path = Path(params.get("path", "."))
             if path.is_dir():
                 items = []
@@ -107,13 +103,11 @@ class ToolManager:
                         }
                     )
                 return {"path": str(path), "items": items, "count": len(items)}
-            else:
-                return {"error": f"Not a directory: {path}"}
+            return {"error": f"Not a directory: {path}"}
 
-        else:
-            return {"error": f"Unknown file system operation: {operation}"}
+        return {"error": f"Unknown file system operation: {operation}"}
 
-    async def _execute_web_fetch(self, params: Dict) -> Dict:
+    async def _execute_web_fetch(self, params: dict) -> dict:
         """Fetch content from web URL"""
         url = params.get("url")
         if not url:
@@ -133,7 +127,7 @@ class ToolManager:
             except aiohttp.ClientError as e:
                 return {"error": f"Failed to fetch URL: {e}"}
 
-    async def _execute_web_search(self, params: Dict) -> Dict:
+    async def _execute_web_search(self, params: dict) -> dict:
         """Execute web search (placeholder)"""
         query = params.get("query")
         if not query:
@@ -157,7 +151,7 @@ class ToolManager:
             "total_results": 2,
         }
 
-    async def _execute_shell(self, params: Dict) -> Dict:
+    async def _execute_shell(self, params: dict) -> dict:
         """Execute shell command"""
         import subprocess
 
@@ -172,7 +166,12 @@ class ToolManager:
 
         try:
             result = subprocess.run(
-                command, shell=True, capture_output=True, text=True, timeout=60
+                command,
+                check=False,
+                shell=True,
+                capture_output=True,
+                text=True,
+                timeout=60,
             )
 
             return {
@@ -188,7 +187,7 @@ class ToolManager:
         except Exception as e:
             return {"error": f"Command execution failed: {e}"}
 
-    async def _execute_memory(self, params: Dict) -> Dict:
+    async def _execute_memory(self, params: dict) -> dict:
         """Execute memory operations"""
         operation = params.get("operation")
         memory_file = Path.home() / ".gemini_cli" / "memory.json"
@@ -212,7 +211,7 @@ class ToolManager:
 
             return {"operation": "save", "key": key, "status": "success"}
 
-        elif operation == "load":
+        if operation == "load":
             key = params.get("key")
 
             if not memory_file.exists():
@@ -223,15 +222,12 @@ class ToolManager:
             if key:
                 if key in memory:
                     return {"operation": "load", "key": key, "value": memory[key]}
-                else:
-                    return {"error": f"Key not found: {key}"}
-            else:
-                return {"operation": "load", "memory": memory}
+                return {"error": f"Key not found: {key}"}
+            return {"operation": "load", "memory": memory}
 
-        else:
-            return {"error": f"Unknown memory operation: {operation}"}
+        return {"error": f"Unknown memory operation: {operation}"}
 
-    async def _execute_multi_file_read(self, params: Dict) -> Dict:
+    async def _execute_multi_file_read(self, params: dict) -> dict:
         """Read multiple files"""
         paths = params.get("paths", [])
         results = {}
@@ -249,7 +245,7 @@ class ToolManager:
 
         return {"files_read": len(results), "results": results, "errors": errors}
 
-    async def _execute_sandbox(self, params: Dict) -> Dict:
+    async def _execute_sandbox(self, params: dict) -> dict:
         """Execute code in ACGS sandbox"""
         # This integrates with ACGS sandbox service
         from acgs_client import ACGSClient
@@ -269,7 +265,7 @@ class ToolManager:
 
         return result
 
-    def get_tool_schema(self, tool_name: str) -> Dict:
+    def get_tool_schema(self, tool_name: str) -> dict:
         """Get schema for a tool"""
         schemas = {
             "file_system": {

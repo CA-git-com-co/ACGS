@@ -9,15 +9,14 @@ avoids poor-performing algorithms.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import logging
-import numpy as np
-import pandas as pd
-from datetime import datetime
-from typing import Dict, List, Tuple
-from dataclasses import dataclass, asdict
 import json
+import logging
 import os
 import warnings
+from dataclasses import asdict, dataclass
+from datetime import datetime
+
+import numpy as np
 
 warnings.filterwarnings("ignore")
 
@@ -43,8 +42,8 @@ class EfficiencyDemonstrationResults:
     performance_improvement: float
 
     # Algorithm selection stats
-    algorithm_usage_naive: Dict[str, int]
-    algorithm_usage_bandit: Dict[str, int]
+    algorithm_usage_naive: dict[str, int]
+    algorithm_usage_bandit: dict[str, int]
     best_algorithm_identified: str
     worst_algorithm_avoided: str
 
@@ -72,7 +71,7 @@ class BanditEfficiencyDemonstrator:
         self.epsilon = 0.1
         self.learning_rate = 0.95  # How quickly bandit learns
 
-    def simulate_algorithm_execution(self, algorithm: str) -> Tuple[float, float]:
+    def simulate_algorithm_execution(self, algorithm: str) -> tuple[float, float]:
         """Simulate algorithm execution with realistic performance."""
 
         perf = self.algorithm_performance[algorithm]
@@ -89,14 +88,14 @@ class BanditEfficiencyDemonstrator:
 
     def simulate_naive_approach(
         self, n_requests: int = 100
-    ) -> Tuple[float, float, Dict[str, int]]:
+    ) -> tuple[float, float, dict[str, int]]:
         """Simulate naive approach that tries all algorithms equally."""
         logger.info(f"Simulating naive approach for {n_requests} requests...")
 
         algorithms = list(self.algorithm_performance.keys())
         total_time = 0
         total_performance = 0
-        algorithm_usage = {alg: 0 for alg in algorithms}
+        algorithm_usage = dict.fromkeys(algorithms, 0)
 
         for request_num in range(n_requests):
             # Naive approach: cycle through all algorithms
@@ -118,13 +117,13 @@ class BanditEfficiencyDemonstrator:
 
     def simulate_bandit_approach(
         self, n_requests: int = 100
-    ) -> Tuple[float, float, Dict[str, int]]:
+    ) -> tuple[float, float, dict[str, int]]:
         """Simulate bandit approach that learns and optimizes over time."""
         logger.info(f"Simulating bandit approach for {n_requests} requests...")
 
         algorithms = list(self.algorithm_performance.keys())
         algorithm_rewards = {alg: [] for alg in algorithms}
-        algorithm_usage = {alg: 0 for alg in algorithms}
+        algorithm_usage = dict.fromkeys(algorithms, 0)
 
         total_time = 0
         total_performance = 0
@@ -185,10 +184,10 @@ class BanditEfficiencyDemonstrator:
         self,
         naive_time: float,
         naive_perf: float,
-        naive_usage: Dict[str, int],
+        naive_usage: dict[str, int],
         bandit_time: float,
         bandit_perf: float,
-        bandit_usage: Dict[str, int],
+        bandit_usage: dict[str, int],
     ) -> EfficiencyDemonstrationResults:
         """Analyze efficiency gains from bandit approach."""
         logger.info("Analyzing efficiency gains...")
@@ -230,7 +229,7 @@ class BanditEfficiencyDemonstrator:
             timestamp=datetime.now().isoformat(),
         )
 
-        logger.info(f"✅ Analysis complete:")
+        logger.info("✅ Analysis complete:")
         logger.info(f"  - Efficiency gain: {efficiency_gain:.1f}%")
         logger.info(f"  - Performance improvement: {performance_improvement:.1f}%")
         logger.info(f"  - Best algorithm: {best_algorithm}")
@@ -242,7 +241,7 @@ class BanditEfficiencyDemonstrator:
         self,
         results: EfficiencyDemonstrationResults,
         output_dir: str = "bandit_efficiency_demo",
-    ) -> Tuple[str, str]:
+    ) -> tuple[str, str]:
         """Save demonstration results."""
         logger.info("Saving demonstration results...")
 
@@ -378,9 +377,9 @@ class BanditEfficiencyDemonstrator:
             # Configuration
             f.write("\n## ⚙️ Configuration Details\n\n")
             f.write(f"- **Constitutional Hash:** {results.constitutional_hash}\n")
-            f.write(f"- **Epsilon Strategy:** 0.1 with decay\n")
-            f.write(f"- **Learning Rate:** 0.95\n")
-            f.write(f"- **Algorithm Pool:** 4 algorithms (RF, XGB, LGB, NN)\n")
+            f.write("- **Epsilon Strategy:** 0.1 with decay\n")
+            f.write("- **Learning Rate:** 0.95\n")
+            f.write("- **Algorithm Pool:** 4 algorithms (RF, XGB, LGB, NN)\n")
 
         logger.info(f"✅ Demonstration results saved to {output_dir}/")
         return json_path, report_path

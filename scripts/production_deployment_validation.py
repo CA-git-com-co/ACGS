@@ -5,15 +5,15 @@ Comprehensive pre-deployment validation for blue-green production deployment
 """
 
 import asyncio
-import aiohttp
 import json
-import time
-import subprocess
 import os
-import shutil
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Tuple
+import subprocess
+import time
 from dataclasses import dataclass
+from datetime import datetime
+from typing import Any
+
+import aiohttp
 
 # Configuration
 SERVICES = {
@@ -146,7 +146,7 @@ class ProductionDeploymentValidator:
                     os.path.exists(script) and os.access(script, os.X_OK)
                 )
 
-        except Exception as e:
+        except Exception:
             backup_checks.append(False)
 
         passed_checks = sum(backup_checks)
@@ -173,6 +173,7 @@ class ProductionDeploymentValidator:
             # Run security audit
             result = subprocess.run(
                 ["pnpm", "audit", "--json"],
+                check=False,
                 capture_output=True,
                 text=True,
                 cwd="/home/ubuntu/ACGS",
@@ -225,6 +226,7 @@ class ProductionDeploymentValidator:
             # Check constitutional hash in all services
             result = subprocess.run(
                 ["grep", "-r", CONSTITUTIONAL_HASH, "/home/ubuntu/ACGS/services/"],
+                check=False,
                 capture_output=True,
                 text=True,
             )
@@ -315,7 +317,7 @@ class ProductionDeploymentValidator:
             critical=False,
         )
 
-    async def run_comprehensive_validation(self) -> Dict[str, Any]:
+    async def run_comprehensive_validation(self) -> dict[str, Any]:
         """Run all pre-deployment validation checks."""
         print("🚀 Starting ACGS-PGP Production Deployment Validation")
         print("=" * 60)
@@ -369,9 +371,9 @@ class ProductionDeploymentValidator:
 
         return report
 
-    def display_results(self, report: Dict[str, Any]):
+    def display_results(self, report: dict[str, Any]):
         """Display validation results."""
-        print(f"\n📊 PRODUCTION DEPLOYMENT VALIDATION RESULTS")
+        print("\n📊 PRODUCTION DEPLOYMENT VALIDATION RESULTS")
         print("=" * 60)
         print(f"Overall Score: {report['overall_score']:.1f}%")
         print(
@@ -379,7 +381,7 @@ class ProductionDeploymentValidator:
         )
         print(f"Constitutional Hash: {report['constitutional_hash']}")
 
-        print(f"\n🔍 DETAILED RESULTS")
+        print("\n🔍 DETAILED RESULTS")
         print("-" * 40)
         for result in self.results:
             status_icon = {"PASS": "✅", "FAIL": "❌", "WARNING": "⚠️"}.get(
@@ -390,7 +392,7 @@ class ProductionDeploymentValidator:
                 f"{status_icon} {critical_icon} {result.check_name:30} | {result.score:5.1f}% | {result.details}"
             )
 
-        print(f"\n📈 SUMMARY")
+        print("\n📈 SUMMARY")
         print("-" * 40)
         print(f"Total Checks: {report['summary']['total_checks']}")
         print(f"Passed: {report['summary']['passed_checks']}")
@@ -400,14 +402,14 @@ class ProductionDeploymentValidator:
         )
 
         if report["deployment_ready"]:
-            print(f"\n🎉 PRODUCTION DEPLOYMENT APPROVED")
+            print("\n🎉 PRODUCTION DEPLOYMENT APPROVED")
             print("✅ All critical validation checks passed")
             print("✅ System health score meets requirements")
             print("✅ Security posture validated")
             print("✅ Constitutional integrity verified")
             print("✅ Backup and rollback systems ready")
         else:
-            print(f"\n⚠️ PRODUCTION DEPLOYMENT REQUIRES ATTENTION")
+            print("\n⚠️ PRODUCTION DEPLOYMENT REQUIRES ATTENTION")
             failed_checks = [r for r in self.results if r.status == "FAIL"]
             for check in failed_checks:
                 print(f"❌ {check.check_name}: {check.details}")
@@ -427,7 +429,7 @@ async def main():
         json.dump(report, f, indent=2, default=str)
 
     print(
-        f"\n📄 Validation report saved to: /home/ubuntu/ACGS/production_deployment_validation_report.json"
+        "\n📄 Validation report saved to: /home/ubuntu/ACGS/production_deployment_validation_report.json"
     )
 
     # Exit with appropriate code

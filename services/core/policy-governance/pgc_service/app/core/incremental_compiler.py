@@ -849,7 +849,7 @@ class IncrementalCompiler:
         # Determine rollback points
         rollback_points = {}
         for policy_id in target_policies:
-            if policy_id in self.version_history and self.version_history[policy_id]:
+            if self.version_history.get(policy_id):
                 rollback_points[policy_id] = self.version_history[policy_id][-1]
 
         # Estimate deployment time

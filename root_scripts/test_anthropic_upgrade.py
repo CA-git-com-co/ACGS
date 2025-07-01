@@ -95,8 +95,7 @@ class AnthropicUpgradeValidator:
                         "bedrock_client_created": True,
                         "expected_auth_error": str(e),
                     }
-                else:
-                    raise e
+                raise e
 
         except Exception as e:
             return {"status": "error", "error": str(e), "error_type": type(e).__name__}
@@ -128,8 +127,7 @@ class AnthropicUpgradeValidator:
                         "vertex_client_created": True,
                         "expected_auth_error": str(e),
                     }
-                else:
-                    raise e
+                raise e
 
         except Exception as e:
             return {"status": "error", "error": str(e), "error_type": type(e).__name__}

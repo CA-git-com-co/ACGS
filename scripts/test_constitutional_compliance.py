@@ -7,10 +7,10 @@ Confirm constitutional compliance validation (hash: cdd01ef066bc6cf2) across all
 
 import asyncio
 import json
-import time
-from typing import List, Dict, Any
-import httpx
 from datetime import datetime
+from typing import Any
+
+import httpx
 
 # Expected constitutional hash
 EXPECTED_CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -38,7 +38,7 @@ class ConstitutionalComplianceTester:
 
     async def test_service_constitutional_hash(
         self, service_name: str, service_url: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test constitutional hash validation for a specific service."""
         print(f"⚖️ Testing constitutional hash validation for {service_name}...")
 
@@ -104,7 +104,7 @@ class ConstitutionalComplianceTester:
 
         return test_results
 
-    async def test_constitutional_policy_validation(self) -> Dict[str, Any]:
+    async def test_constitutional_policy_validation(self) -> dict[str, Any]:
         """Test constitutional policy validation with various scenarios."""
         print("📋 Testing constitutional policy validation scenarios...")
 
@@ -241,7 +241,7 @@ class ConstitutionalComplianceTester:
             except Exception as e:
                 test_result["error"] = str(e)
                 self.results["errors"].append(
-                    f"Policy test {test_case['name']} failed: {str(e)}"
+                    f"Policy test {test_case['name']} failed: {e!s}"
                 )
 
             policy_tests.append(test_result)
@@ -254,7 +254,7 @@ class ConstitutionalComplianceTester:
             / len(policy_tests),
         }
 
-    async def test_cross_service_compliance(self) -> Dict[str, Any]:
+    async def test_cross_service_compliance(self) -> dict[str, Any]:
         """Test constitutional compliance across multiple services."""
         print("🔗 Testing cross-service constitutional compliance...")
 
@@ -270,7 +270,7 @@ class ConstitutionalComplianceTester:
 
         return cross_service_results
 
-    async def _test_auth_service_compliance(self) -> Dict[str, Any]:
+    async def _test_auth_service_compliance(self) -> dict[str, Any]:
         """Test Auth Service constitutional compliance."""
         try:
             # Test token generation includes constitutional hash
@@ -292,16 +292,15 @@ class ConstitutionalComplianceTester:
                         else 0.0
                     ),
                 }
-            else:
-                return {
-                    "error": f"Token generation failed: {response.status_code}",
-                    "compliance_score": 0.0,
-                }
+            return {
+                "error": f"Token generation failed: {response.status_code}",
+                "compliance_score": 0.0,
+            }
 
         except Exception as e:
             return {"error": str(e), "compliance_score": 0.0}
 
-    async def _test_ac_service_compliance(self) -> Dict[str, Any]:
+    async def _test_ac_service_compliance(self) -> dict[str, Any]:
         """Test AC Service constitutional compliance."""
         try:
             response = await self.client.get(f"{SERVICES['ac_service']}/health")
@@ -320,16 +319,15 @@ class ConstitutionalComplianceTester:
                         else 0.0
                     ),
                 }
-            else:
-                return {
-                    "error": f"Health check failed: {response.status_code}",
-                    "compliance_score": 0.0,
-                }
+            return {
+                "error": f"Health check failed: {response.status_code}",
+                "compliance_score": 0.0,
+            }
 
         except Exception as e:
             return {"error": str(e), "compliance_score": 0.0}
 
-    async def run_comprehensive_compliance_test(self) -> Dict[str, Any]:
+    async def run_comprehensive_compliance_test(self) -> dict[str, Any]:
         """Run comprehensive constitutional compliance testing."""
         print("🧪 Starting comprehensive constitutional compliance testing...")
         self.results["test_start"] = datetime.utcnow().isoformat()
@@ -398,20 +396,22 @@ async def main():
         print("🎯 CONSTITUTIONAL COMPLIANCE TEST RESULTS")
         print("=" * 80)
 
-        print(f"\n📊 Overall Summary:")
+        print("\n📊 Overall Summary:")
         summary = results["summary"]
         print(
-            f"  • Overall Compliance Score: {summary['overall_compliance_score']*100:.1f}%"
+            f"  • Overall Compliance Score: {summary['overall_compliance_score'] * 100:.1f}%"
         )
-        print(f"  • Hash Validation Score: {summary['hash_validation_score']*100:.1f}%")
         print(
-            f"  • Policy Validation Score: {summary['policy_validation_score']*100:.1f}%"
+            f"  • Hash Validation Score: {summary['hash_validation_score'] * 100:.1f}%"
         )
-        print(f"  • Cross-Service Score: {summary['cross_service_score']*100:.1f}%")
+        print(
+            f"  • Policy Validation Score: {summary['policy_validation_score'] * 100:.1f}%"
+        )
+        print(f"  • Cross-Service Score: {summary['cross_service_score'] * 100:.1f}%")
         print(f"  • Expected Hash: {summary['constitutional_hash_expected']}")
         print(f"  • Total Errors: {summary['total_errors']}")
 
-        print(f"\n🔍 Hash Validation Results:")
+        print("\n🔍 Hash Validation Results:")
         for service, result in results["hash_validation"].items():
             status = (
                 "✅"
@@ -419,39 +419,39 @@ async def main():
                 else "⚠️" if result["compliance_score"] > 0 else "❌"
             )
             print(
-                f"  • {service}: {status} Score: {result['compliance_score']*100:.0f}%"
+                f"  • {service}: {status} Score: {result['compliance_score'] * 100:.0f}%"
             )
             if result["hash_found"]:
                 print(
                     f"    Hash: {result['hash_value']} {'✅' if result['hash_matches'] else '❌'}"
                 )
 
-        print(f"\n📋 Policy Validation Results:")
+        print("\n📋 Policy Validation Results:")
         policy_results = results["policy_tests"]
         print(
             f"  • Tests Passed: {policy_results['passed_tests']}/{policy_results['total_tests']}"
         )
-        print(f"  • Compliance Rate: {policy_results['compliance_rate']*100:.1f}%")
+        print(f"  • Compliance Rate: {policy_results['compliance_rate'] * 100:.1f}%")
 
         for test in policy_results["test_results"]:
             status = "✅" if test["passed"] else "❌"
             print(f"    {status} {test['test_name']}: {test['description']}")
 
-        print(f"\n🔗 Cross-Service Compliance:")
+        print("\n🔗 Cross-Service Compliance:")
         for service, result in results["compliance_tests"].items():
             score = result.get("compliance_score", 0)
             status = "✅" if score == 1.0 else "⚠️" if score > 0 else "❌"
-            print(f"  • {service}: {status} Score: {score*100:.0f}%")
+            print(f"  • {service}: {status} Score: {score * 100:.0f}%")
 
         if results["errors"]:
-            print(f"\n❌ Errors Encountered:")
+            print("\n❌ Errors Encountered:")
             for error in results["errors"][:5]:
                 print(f"  • {error}")
 
         # Save detailed results
         with open("constitutional_compliance_results.json", "w") as f:
             json.dump(results, f, indent=2)
-        print(f"\n💾 Detailed results saved to: constitutional_compliance_results.json")
+        print("\n💾 Detailed results saved to: constitutional_compliance_results.json")
 
     except Exception as e:
         print(f"❌ Compliance test execution failed: {e}")

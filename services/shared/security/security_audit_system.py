@@ -16,20 +16,20 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio
+import hashlib
 import json
 import logging
 import os
 import time
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional, Set, Tuple
-from dataclasses import dataclass, asdict
 from enum import Enum
-import hashlib
-import subprocess
-import psutil
 
 # import aiofiles  # Removed to avoid dependency issues
 from pathlib import Path
+from typing import Any
+
+import psutil
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +80,7 @@ class AuditFinding:
     description: str
     affected_component: str
     remediation: str
-    compliance_impact: List[ComplianceStandard]
+    compliance_impact: list[ComplianceStandard]
     risk_score: float
     constitutional_hash: str = "cdd01ef066bc6cf2"
 
@@ -95,8 +95,8 @@ class ComplianceAssessment:
     passed_controls: int
     failed_controls: int
     total_controls: int
-    findings: List[AuditFinding]
-    recommendations: List[str]
+    findings: list[AuditFinding]
+    recommendations: list[str]
     next_assessment_due: datetime
 
 
@@ -104,12 +104,12 @@ class SecurityAuditSystem:
     """Comprehensive security audit and compliance monitoring system."""
 
     def __init__(self):
-        self.audit_findings: List[AuditFinding] = []
-        self.compliance_assessments: Dict[ComplianceStandard, ComplianceAssessment] = {}
+        self.audit_findings: list[AuditFinding] = []
+        self.compliance_assessments: dict[ComplianceStandard, ComplianceAssessment] = {}
         self.audit_config = self._load_audit_config()
         self.monitoring_active = False
 
-    def _load_audit_config(self) -> Dict[str, Any]:
+    def _load_audit_config(self) -> dict[str, Any]:
         """Load audit configuration."""
         return {
             "audit_interval_hours": 24,
@@ -201,7 +201,7 @@ class SecurityAuditSystem:
                 logger.error(f"Error in metrics collector: {e}")
                 await asyncio.sleep(60)
 
-    async def perform_security_audit(self) -> Dict[str, Any]:
+    async def perform_security_audit(self) -> dict[str, Any]:
         """Perform comprehensive security audit."""
         logger.info("Starting comprehensive security audit")
         audit_start = datetime.now(timezone.utc)
@@ -266,7 +266,7 @@ class SecurityAuditSystem:
         )
         return audit_results
 
-    async def _audit_authentication(self) -> List[AuditFinding]:
+    async def _audit_authentication(self) -> list[AuditFinding]:
         """Audit authentication mechanisms."""
         findings = []
 
@@ -314,7 +314,7 @@ class SecurityAuditSystem:
 
         return findings
 
-    async def _audit_input_validation(self) -> List[AuditFinding]:
+    async def _audit_input_validation(self) -> list[AuditFinding]:
         """Audit input validation mechanisms."""
         findings = []
 
@@ -346,7 +346,7 @@ class SecurityAuditSystem:
 
         return findings
 
-    async def _audit_encryption(self) -> List[AuditFinding]:
+    async def _audit_encryption(self) -> list[AuditFinding]:
         """Audit encryption implementation."""
         findings = []
 
@@ -374,7 +374,7 @@ class SecurityAuditSystem:
 
         return findings
 
-    async def _audit_configuration(self) -> List[AuditFinding]:
+    async def _audit_configuration(self) -> list[AuditFinding]:
         """Audit system configuration."""
         findings = []
 
@@ -388,7 +388,7 @@ class SecurityAuditSystem:
         for config_file in config_files:
             if os.path.exists(config_file):
                 try:
-                    with open(config_file, "r") as f:
+                    with open(config_file) as f:
                         content = f.read()
                         if "password" in content.lower() or "secret" in content.lower():
                             findings.append(
@@ -410,7 +410,7 @@ class SecurityAuditSystem:
 
         return findings
 
-    async def _audit_network_security(self) -> List[AuditFinding]:
+    async def _audit_network_security(self) -> list[AuditFinding]:
         """Audit network security configuration."""
         findings = []
 
@@ -450,7 +450,7 @@ class SecurityAuditSystem:
 
         return findings
 
-    async def _audit_data_protection(self) -> List[AuditFinding]:
+    async def _audit_data_protection(self) -> list[AuditFinding]:
         """Audit data protection measures."""
         findings = []
 
@@ -462,7 +462,7 @@ class SecurityAuditSystem:
         for config_file in db_config_files:
             if os.path.exists(config_file):
                 try:
-                    with open(config_file, "r") as f:
+                    with open(config_file) as f:
                         content = f.read()
                         if "ssl" in content.lower() or "tls" in content.lower():
                             encryption_found = True
@@ -491,7 +491,7 @@ class SecurityAuditSystem:
 
         return findings
 
-    async def _audit_constitutional_compliance(self) -> List[AuditFinding]:
+    async def _audit_constitutional_compliance(self) -> list[AuditFinding]:
         """Audit constitutional compliance."""
         findings = []
 
@@ -509,7 +509,7 @@ class SecurityAuditSystem:
                         if file.endswith(".py"):
                             file_path = os.path.join(root, file)
                             try:
-                                with open(file_path, "r") as f:
+                                with open(file_path) as f:
                                     content = f.read()
                                     if expected_hash in content:
                                         constitutional_validation_found = True
@@ -542,7 +542,7 @@ class SecurityAuditSystem:
 
         return findings
 
-    def _generate_audit_summary(self, findings: List[AuditFinding]) -> Dict[str, Any]:
+    def _generate_audit_summary(self, findings: list[AuditFinding]) -> dict[str, Any]:
         """Generate audit summary from findings."""
         severity_counts = {}
         for severity in AuditSeverity:
@@ -571,7 +571,7 @@ class SecurityAuditSystem:
             "low_findings": severity_counts.get("low", 0),
         }
 
-    async def _process_audit_alerts(self, findings: List[AuditFinding]):
+    async def _process_audit_alerts(self, findings: list[AuditFinding]):
         """Process audit findings and generate alerts."""
         critical_findings = [
             f for f in findings if f.severity == AuditSeverity.CRITICAL
@@ -591,7 +591,7 @@ class SecurityAuditSystem:
                 f"HIGH SECURITY ALERT: {len(high_findings)} high severity findings detected"
             )
 
-    async def _save_audit_report(self, audit_results: Dict[str, Any]):
+    async def _save_audit_report(self, audit_results: dict[str, Any]):
         """Save audit report to file."""
         reports_dir = Path("reports/security_audits")
         reports_dir.mkdir(parents=True, exist_ok=True)
@@ -632,7 +632,7 @@ class SecurityAuditSystem:
 
         return assessment
 
-    async def scan_vulnerabilities(self) -> Dict[str, Any]:
+    async def scan_vulnerabilities(self) -> dict[str, Any]:
         """Perform vulnerability scanning."""
         logger.info("Starting vulnerability scan")
 
@@ -650,7 +650,7 @@ class SecurityAuditSystem:
 
         return scan_results
 
-    async def collect_security_metrics(self) -> Dict[str, Any]:
+    async def collect_security_metrics(self) -> dict[str, Any]:
         """Collect security metrics."""
         metrics = {
             "timestamp": datetime.now(timezone.utc),

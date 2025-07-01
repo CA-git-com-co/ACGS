@@ -14,6 +14,8 @@ from datetime import datetime
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from .services.human_escalation_system import EscalationLevel
 from .services.human_in_the_loop_sampler import (
     HITLSamplingConfig,
@@ -22,7 +24,6 @@ from .services.human_in_the_loop_sampler import (
     UncertaintyAssessment,
     UncertaintyDimension,
 )
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class TestHITLSamplingConfig:

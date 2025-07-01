@@ -9,16 +9,17 @@ Integrates with existing ACGS-PGP production dashboard while maintaining
 sub-40ms update performance and constitutional compliance.
 """
 
-import logging
-import json
-import time
 import asyncio
-from datetime import datetime, timezone, timedelta
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Callable
-from collections import deque
+import json
+import logging
 import threading
+import time
+from collections import deque
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -29,9 +30,9 @@ class MetricPoint:
 
     timestamp: datetime
     value: float
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "timestamp": self.timestamp.isoformat(),
@@ -45,27 +46,27 @@ class DashboardMetrics:
     """Container for all dashboard metrics."""
 
     # Performance metrics
-    prediction_accuracy: List[MetricPoint] = field(default_factory=list)
-    response_times: List[MetricPoint] = field(default_factory=list)
-    cost_efficiency: List[MetricPoint] = field(default_factory=list)
-    constitutional_compliance: List[MetricPoint] = field(default_factory=list)
+    prediction_accuracy: list[MetricPoint] = field(default_factory=list)
+    response_times: list[MetricPoint] = field(default_factory=list)
+    cost_efficiency: list[MetricPoint] = field(default_factory=list)
+    constitutional_compliance: list[MetricPoint] = field(default_factory=list)
 
     # System health metrics
-    cpu_usage: List[MetricPoint] = field(default_factory=list)
-    memory_usage: List[MetricPoint] = field(default_factory=list)
-    active_connections: List[MetricPoint] = field(default_factory=list)
-    error_rate: List[MetricPoint] = field(default_factory=list)
+    cpu_usage: list[MetricPoint] = field(default_factory=list)
+    memory_usage: list[MetricPoint] = field(default_factory=list)
+    active_connections: list[MetricPoint] = field(default_factory=list)
+    error_rate: list[MetricPoint] = field(default_factory=list)
 
     # MLOps specific metrics
-    model_versions_deployed: List[MetricPoint] = field(default_factory=list)
-    deployment_success_rate: List[MetricPoint] = field(default_factory=list)
-    artifact_storage_usage: List[MetricPoint] = field(default_factory=list)
+    model_versions_deployed: list[MetricPoint] = field(default_factory=list)
+    deployment_success_rate: list[MetricPoint] = field(default_factory=list)
+    artifact_storage_usage: list[MetricPoint] = field(default_factory=list)
 
     # Constitutional compliance
     constitutional_hash: str = "cdd01ef066bc6cf2"
     last_updated: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "prediction_accuracy": [p.to_dict() for p in self.prediction_accuracy],
@@ -118,7 +119,7 @@ class MetricsCollector:
         self.collection_interval = 1.0  # seconds
 
         # Metric sources (can be extended)
-        self.metric_sources: Dict[str, Callable] = {}
+        self.metric_sources: dict[str, Callable] = {}
 
         # Performance tracking
         self.collection_times = deque(maxlen=100)
@@ -204,7 +205,7 @@ class MetricsCollector:
             self._trim_metric_points()
 
     def _process_source_metrics(
-        self, source_name: str, metrics_data: Dict[str, Any], timestamp: datetime
+        self, source_name: str, metrics_data: dict[str, Any], timestamp: datetime
     ) -> None:
         """Process metrics from a specific source."""
 
@@ -315,7 +316,7 @@ class MetricsCollector:
         with self._metrics_lock:
             return self.metrics
 
-    def get_performance_stats(self) -> Dict[str, Any]:
+    def get_performance_stats(self) -> dict[str, Any]:
         """Get collection performance statistics."""
         if not self.collection_times:
             return {"no_data": True}
@@ -364,8 +365,8 @@ class DashboardServer:
     async def start_server(self) -> None:
         """Start the dashboard server."""
         try:
-            from aiohttp import web, WSMsgType
             import aiohttp_cors
+            from aiohttp import WSMsgType, web
 
             app = web.Application()
 
@@ -476,7 +477,7 @@ class DashboardServer:
 
     async def websocket_handler(self, request) -> "web.WebSocketResponse":
         """WebSocket handler for real-time updates."""
-        from aiohttp import web, WSMsgType
+        from aiohttp import WSMsgType, web
 
         ws = web.WebSocketResponse()
         await ws.prepare(request)
@@ -758,7 +759,7 @@ class MonitoringDashboard:
     def register_mlops_metrics_source(self, mlops_manager) -> None:
         """Register MLOps manager as metrics source."""
 
-        def collect_mlops_metrics() -> Dict[str, Any]:
+        def collect_mlops_metrics() -> dict[str, Any]:
             """Collect metrics from MLOps manager."""
             try:
                 dashboard_data = mlops_manager.get_mlops_dashboard()
@@ -797,7 +798,7 @@ class MonitoringDashboard:
 
         logger.info("Monitoring dashboard stopped")
 
-    def get_dashboard_status(self) -> Dict[str, Any]:
+    def get_dashboard_status(self) -> dict[str, Any]:
         """Get comprehensive dashboard status."""
 
         performance_stats = self.metrics_collector.get_performance_stats()

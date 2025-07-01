@@ -50,7 +50,7 @@ class ProductionDatabaseConfig:
             return True
 
         except Exception as e:
-            print(f"  ❌ Database connection failed: {str(e)}")
+            print(f"  ❌ Database connection failed: {e!s}")
             return False
 
     def create_production_env_file(self):
@@ -119,6 +119,7 @@ IDLE_IN_TRANSACTION_SESSION_TIMEOUT=60000
                     "alembic",
                     "current",
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -138,6 +139,7 @@ IDLE_IN_TRANSACTION_SESSION_TIMEOUT=60000
                     "upgrade",
                     "head",
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=120,
@@ -147,16 +149,15 @@ IDLE_IN_TRANSACTION_SESSION_TIMEOUT=60000
                 print("  ✅ Database migrations completed successfully")
                 print(f"  📝 Migration output: {result.stdout}")
                 return True
-            else:
-                print("  ❌ Database migrations failed")
-                print(f"  📝 Error: {result.stderr}")
-                return False
+            print("  ❌ Database migrations failed")
+            print(f"  📝 Error: {result.stderr}")
+            return False
 
         except subprocess.TimeoutExpired:
             print("  ❌ Migration timeout - database may be slow")
             return False
         except Exception as e:
-            print(f"  ❌ Migration error: {str(e)}")
+            print(f"  ❌ Migration error: {e!s}")
             return False
 
     def create_database_monitoring_script(self):

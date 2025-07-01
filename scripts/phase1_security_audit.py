@@ -102,7 +102,9 @@ class SecurityAuditor:
                     str(req_file),
                     "--format=json",
                 ]
-                result = subprocess.run(cmd, capture_output=True, text=True)
+                result = subprocess.run(
+                    cmd, check=False, capture_output=True, text=True
+                )
 
                 if result.returncode == 0:
                     licenses_data = json.loads(result.stdout)
@@ -184,7 +186,9 @@ class SecurityAuditor:
                     str(req_file),
                     "--json",
                 ]
-                result = subprocess.run(cmd, capture_output=True, text=True)
+                result = subprocess.run(
+                    cmd, check=False, capture_output=True, text=True
+                )
 
                 if result.stdout:
                     try:
@@ -222,15 +226,14 @@ class SecurityAuditor:
             word in advisory for word in ["critical", "remote code execution", "rce"]
         ):
             return "CRITICAL"
-        elif any(
+        if any(
             word in advisory
             for word in ["high", "privilege escalation", "sql injection"]
         ):
             return "HIGH"
-        elif any(word in advisory for word in ["medium", "denial of service", "dos"]):
+        if any(word in advisory for word in ["medium", "denial of service", "dos"]):
             return "MEDIUM"
-        else:
-            return "LOW"
+        return "LOW"
 
     def scan_dependencies(self) -> dict:
         """Comprehensive dependency scanning."""
@@ -250,7 +253,7 @@ class SecurityAuditor:
 
             # Run pip-audit
             cmd = [sys.executable, "-m", "pip_audit", "--desc", "--format=json"]
-            result = subprocess.run(cmd, capture_output=True, text=True)
+            result = subprocess.run(cmd, check=False, capture_output=True, text=True)
 
             if result.returncode == 0 and result.stdout:
                 audit_data = json.loads(result.stdout)

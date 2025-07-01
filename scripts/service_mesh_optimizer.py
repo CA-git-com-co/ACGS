@@ -131,7 +131,7 @@ class ServiceMeshOptimizer:
                     service.response_time = response_time
                     service.consecutive_failures = 0
                     logger.debug(
-                        f"✅ {service.name} healthy ({response_time*1000:.1f}ms)"
+                        f"✅ {service.name} healthy ({response_time * 1000:.1f}ms)"
                     )
                 else:
                     self._mark_service_unhealthy(service, f"HTTP {response.status}")
@@ -186,14 +186,14 @@ class ServiceMeshOptimizer:
         if self.config.strategy == "least_connections":
             # For now, use response time as proxy for load
             return min(healthy_services, key=lambda s: s.response_time)
-        elif self.config.strategy == "weighted":
+        if self.config.strategy == "weighted":
             # Use service priorities as weights
             return min(
                 healthy_services, key=lambda s: self.service_priorities.get(s.name, 10)
             )
-        else:  # round_robin
-            # Simple round-robin based on last check time
-            return min(healthy_services, key=lambda s: s.last_check)
+        # round_robin
+        # Simple round-robin based on last check time
+        return min(healthy_services, key=lambda s: s.last_check)
 
     async def configure_haproxy(self):
         """Configure HAProxy with current service health status."""
@@ -231,7 +231,7 @@ class ServiceMeshOptimizer:
 
             config_lines.append(f"backend {backend_name}")
             config_lines.append(
-                f"    description \"{service_name.replace('_', ' ').title()}\""
+                f'    description "{service_name.replace("_", " ").title()}"'
             )
             config_lines.append("    balance leastconn")
             config_lines.append("    option httpchk GET /health")

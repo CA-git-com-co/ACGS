@@ -18,13 +18,12 @@ Based on modern observability practices and AI governance requirements.
 """
 
 import asyncio
-import json
 import logging
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 import numpy as np
 from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram
@@ -76,24 +75,24 @@ class Alert:
     metric_name: str = ""
     metric_value: float = 0.0
     threshold: float = 0.0
-    labels: Dict[str, str] = field(default_factory=dict)
-    annotations: Dict[str, str] = field(default_factory=dict)
+    labels: dict[str, str] = field(default_factory=dict)
+    annotations: dict[str, str] = field(default_factory=dict)
 
     # Timing
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    resolved_at: Optional[datetime] = None
+    resolved_at: datetime | None = None
 
     # Correlation
-    correlation_id: Optional[str] = None
-    parent_alert_id: Optional[str] = None
-    related_alerts: Set[str] = field(default_factory=set)
+    correlation_id: str | None = None
+    parent_alert_id: str | None = None
+    related_alerts: set[str] = field(default_factory=set)
 
     # Escalation
     escalation_level: int = 0
-    escalated_at: Optional[datetime] = None
-    acknowledged_by: Optional[str] = None
-    acknowledged_at: Optional[datetime] = None
+    escalated_at: datetime | None = None
+    acknowledged_by: str | None = None
+    acknowledged_at: datetime | None = None
 
 
 @dataclass
@@ -113,20 +112,20 @@ class AlertRule:
     duration: int  # seconds
 
     # Composite conditions
-    composite_conditions: List[Dict[str, Any]] = field(default_factory=list)
+    composite_conditions: list[dict[str, Any]] = field(default_factory=list)
     correlation_window: int = 300  # seconds
 
     # Routing
-    notification_channels: List[str] = field(default_factory=list)
-    escalation_rules: List[Dict[str, Any]] = field(default_factory=list)
+    notification_channels: list[str] = field(default_factory=list)
+    escalation_rules: list[dict[str, Any]] = field(default_factory=list)
 
     # Suppression
-    suppression_rules: List[Dict[str, Any]] = field(default_factory=list)
+    suppression_rules: list[dict[str, Any]] = field(default_factory=list)
     cooldown_period: int = 300  # seconds
 
     # Metadata
     enabled: bool = True
-    tags: Set[str] = field(default_factory=set)
+    tags: set[str] = field(default_factory=set)
 
 
 @dataclass
@@ -153,10 +152,10 @@ class GovernanceAlertingConfig:
     alert_retention_days: int = 30
 
     # Notification
-    default_notification_channels: List[str] = field(
+    default_notification_channels: list[str] = field(
         default_factory=lambda: ["slack", "email"]
     )
-    emergency_notification_channels: List[str] = field(
+    emergency_notification_channels: list[str] = field(
         default_factory=lambda: ["pagerduty", "sms"]
     )
 
@@ -174,13 +173,13 @@ class GovernanceAlertingSystem:
         self.config = config
 
         # Alert storage
-        self.active_alerts: Dict[str, Alert] = {}
-        self.alert_history: List[Alert] = []
-        self.alert_rules: Dict[str, AlertRule] = {}
+        self.active_alerts: dict[str, Alert] = {}
+        self.alert_history: list[Alert] = []
+        self.alert_rules: dict[str, AlertRule] = {}
 
         # Correlation tracking
-        self.correlation_groups: Dict[str, Set[str]] = {}
-        self.pattern_cache: Dict[str, Any] = {}
+        self.correlation_groups: dict[str, set[str]] = {}
+        self.pattern_cache: dict[str, Any] = {}
 
         # Performance metrics
         self.registry = CollectorRegistry()
@@ -393,22 +392,22 @@ class GovernanceAlertingSystem:
         else:
             await self._resolve_alert_if_exists(rule.rule_id)
 
-    async def _get_metric_value(self, metric_query: str) -> Optional[float]:
+    async def _get_metric_value(self, metric_query: str) -> float | None:
         """Get metric value from monitoring system."""
         # This would integrate with Prometheus API
         # For demonstration, return simulated values
 
         if "constitutional_compliance_score" in metric_query:
             return np.random.uniform(0.6, 0.95)
-        elif "safety_violations" in metric_query:
+        if "safety_violations" in metric_query:
             return np.random.uniform(0.0, 0.15)
-        elif "mab_performance" in metric_query:
+        if "mab_performance" in metric_query:
             return np.random.uniform(-0.3, 0.1)
-        elif "cpu_usage" in metric_query:
+        if "cpu_usage" in metric_query:
             return np.random.uniform(60, 95)
-        elif "memory_usage" in metric_query:
+        if "memory_usage" in metric_query:
             return np.random.uniform(70, 90)
-        elif "response_time" in metric_query:
+        if "response_time" in metric_query:
             return np.random.uniform(0.5, 3.0)
 
         return None
@@ -417,15 +416,15 @@ class GovernanceAlertingSystem:
         """Check if value meets threshold condition."""
         if comparison == ">":
             return value > threshold
-        elif comparison == "<":
+        if comparison == "<":
             return value < threshold
-        elif comparison == ">=":
+        if comparison == ">=":
             return value >= threshold
-        elif comparison == "<=":
+        if comparison == "<=":
             return value <= threshold
-        elif comparison == "==":
+        if comparison == "==":
             return abs(value - threshold) < 1e-6
-        elif comparison == "!=":
+        if comparison == "!=":
             return abs(value - threshold) >= 1e-6
 
         return False
@@ -479,7 +478,7 @@ class GovernanceAlertingSystem:
         logger.warning(f"Alert triggered: {alert.name} (ID: {alert_id})")
 
     async def _trigger_composite_alert(
-        self, rule: AlertRule, conditions_met: List[bool]
+        self, rule: AlertRule, conditions_met: list[bool]
     ):
         """Trigger a composite alert."""
         alert_id = f"composite_{rule.rule_id}_{int(time.time())}"
@@ -523,7 +522,7 @@ class GovernanceAlertingSystem:
         if alert:
             await self._resolve_alert(alert.alert_id)
 
-    def _find_active_alert_for_rule(self, rule_id: str) -> Optional[Alert]:
+    def _find_active_alert_for_rule(self, rule_id: str) -> Alert | None:
         """Find active alert for a specific rule."""
         for alert in self.active_alerts.values():
             if (
@@ -619,7 +618,7 @@ class GovernanceAlertingSystem:
             if len(alerts) >= 2:
                 await self._create_correlation_group(alerts)
 
-    async def _create_correlation_group(self, alerts: List[Alert]):
+    async def _create_correlation_group(self, alerts: list[Alert]):
         """Create correlation group for related alerts."""
         correlation_id = f"corr_{int(time.time())}_{len(alerts)}"
 
@@ -679,7 +678,7 @@ class GovernanceAlertingSystem:
 
         logger.info(f"Cleaned up {len(old_correlations)} old correlation groups")
 
-    def get_alert_statistics(self) -> Dict[str, Any]:
+    def get_alert_statistics(self) -> dict[str, Any]:
         """Get comprehensive alert statistics."""
         active_by_severity = {}
         active_by_category = {}

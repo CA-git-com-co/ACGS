@@ -7,13 +7,10 @@ Validates production readiness including performance, security, monitoring, and 
 import asyncio
 import json
 import logging
-import os
-import subprocess
 import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional
 
 import aiohttp
 
@@ -229,7 +226,7 @@ class ECServiceProductionValidator:
 
                     assert (
                         response.status == 200
-                    ), f"Performance test request {i+1} failed"
+                    ), f"Performance test request {i + 1} failed"
 
                 await asyncio.sleep(0.1)  # Small delay between requests
 
@@ -532,7 +529,7 @@ class ECServiceProductionValidator:
         # Print summary
         self.print_readiness_summary(report)
 
-    def print_readiness_summary(self, report: Dict):
+    def print_readiness_summary(self, report: dict):
         """Print production readiness summary."""
         readiness = report["production_readiness"]
 

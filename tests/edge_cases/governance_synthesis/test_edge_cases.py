@@ -3,9 +3,9 @@ Edge case tests for governance-synthesis
 """
 
 import asyncio
+
 import httpx
 import pytest
-from unittest.mock import Mock, patch, AsyncMock
 
 
 class TestEdgeCases:

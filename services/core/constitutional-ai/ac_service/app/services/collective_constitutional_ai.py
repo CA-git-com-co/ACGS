@@ -604,7 +604,7 @@ class CollectiveConstitutionalAI:
 
         for i, content in enumerate(high_consensus_content):
             synthesized_text += (
-                f"({i+1}) {content[:100]}{'...' if len(content) > 100 else ''}; "
+                f"({i + 1}) {content[:100]}{'...' if len(content) > 100 else ''}; "
             )
 
         synthesized_text += (

@@ -2,14 +2,9 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.services.performance_monitor
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.governance_synthesis.gs_service.app.services.performance_monitor import (
-    PerformanceMetrics,
-    LatencyProfile,
-    PerformanceProfiler,
-    SystemResourceMonitor,
     PerformanceMonitor,
+    PerformanceProfiler,
 )
 
 

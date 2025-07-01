@@ -17,16 +17,15 @@ Features:
 
 import hashlib
 import json
-import time
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any
 
 import structlog
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding, rsa
 
 logger = structlog.get_logger(__name__)
@@ -101,31 +100,31 @@ class AuditEvent:
     timestamp: datetime
     event_type: AuditEventType
     service_name: str
-    user_id: Optional[str]
-    session_id: Optional[str]
-    ip_address: Optional[str]
-    user_agent: Optional[str]
+    user_id: str | None
+    session_id: str | None
+    ip_address: str | None
+    user_agent: str | None
     resource: str
     action: str
     result: str
-    details: Dict[str, Any]
+    details: dict[str, Any]
     data_classification: DataClassification
-    compliance_frameworks: List[ComplianceFramework]
+    compliance_frameworks: list[ComplianceFramework]
     retention_policy: RetentionPolicy
     privacy_impact: bool
     constitutional_impact: bool
 
     # Integrity fields
-    content_hash: Optional[str] = None
-    digital_signature: Optional[str] = None
-    chain_hash: Optional[str] = None
+    content_hash: str | None = None
+    digital_signature: str | None = None
+    chain_hash: str | None = None
 
     # Compliance fields
-    gdpr_lawful_basis: Optional[str] = None
-    data_subject_id: Optional[str] = None
-    processing_purpose: Optional[str] = None
+    gdpr_lawful_basis: str | None = None
+    data_subject_id: str | None = None
+    processing_purpose: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "event_id": self.event_id,
@@ -166,7 +165,7 @@ class ComplianceRule:
     validation_logic: str
     severity: str  # LOW, MEDIUM, HIGH, CRITICAL
     remediation_guidance: str
-    applicable_events: List[AuditEventType]
+    applicable_events: list[AuditEventType]
 
 
 @dataclass
@@ -181,7 +180,7 @@ class ComplianceViolation:
     severity: str
     description: str
     remediation_required: bool
-    remediation_deadline: Optional[datetime]
+    remediation_deadline: datetime | None
     status: str  # OPEN, IN_PROGRESS, RESOLVED, ACCEPTED_RISK
 
 
@@ -190,13 +189,13 @@ class AuditComplianceManager:
 
     def __init__(
         self,
-        signing_key: Optional[rsa.RSAPrivateKey] = None,
-        verification_key: Optional[rsa.RSAPublicKey] = None,
+        signing_key: rsa.RSAPrivateKey | None = None,
+        verification_key: rsa.RSAPublicKey | None = None,
     ):
         """Initialize audit compliance manager."""
-        self.audit_events: List[AuditEvent] = []
-        self.compliance_rules: Dict[str, ComplianceRule] = {}
-        self.violations: List[ComplianceViolation] = []
+        self.audit_events: list[AuditEvent] = []
+        self.compliance_rules: dict[str, ComplianceRule] = {}
+        self.violations: list[ComplianceViolation] = []
         self.chain_hash = "0" * 64  # Genesis hash
 
         # Cryptographic keys for digital signatures
@@ -291,19 +290,19 @@ class AuditComplianceManager:
         resource: str,
         action: str,
         result: str,
-        user_id: Optional[str] = None,
-        session_id: Optional[str] = None,
-        ip_address: Optional[str] = None,
-        user_agent: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None,
+        user_id: str | None = None,
+        session_id: str | None = None,
+        ip_address: str | None = None,
+        user_agent: str | None = None,
+        details: dict[str, Any] | None = None,
         data_classification: DataClassification = DataClassification.INTERNAL,
-        compliance_frameworks: Optional[List[ComplianceFramework]] = None,
+        compliance_frameworks: list[ComplianceFramework] | None = None,
         retention_policy: RetentionPolicy = RetentionPolicy.YEARS_7,
         privacy_impact: bool = False,
         constitutional_impact: bool = False,
-        gdpr_lawful_basis: Optional[str] = None,
-        data_subject_id: Optional[str] = None,
-        processing_purpose: Optional[str] = None,
+        gdpr_lawful_basis: str | None = None,
+        data_subject_id: str | None = None,
+        processing_purpose: str | None = None,
     ) -> str:
         """Log comprehensive audit event."""
 
@@ -376,7 +375,7 @@ class AuditComplianceManager:
         data_classification: DataClassification,
         privacy_impact: bool,
         constitutional_impact: bool,
-    ) -> List[ComplianceFramework]:
+    ) -> list[ComplianceFramework]:
         """Determine applicable compliance frameworks."""
         frameworks = [ComplianceFramework.ISO_27001, ComplianceFramework.SOC_2]
 
@@ -514,21 +513,21 @@ class AuditComplianceManager:
 
         if rule.rule_id == "GDPR_001":
             return event.gdpr_lawful_basis is not None
-        elif rule.rule_id == "GDPR_002":
+        if rule.rule_id == "GDPR_002":
             return event.action == "data_subject_access_request"
-        elif rule.rule_id == "SOX_001":
+        if rule.rule_id == "SOX_001":
             return (
                 event.data_classification == DataClassification.FINANCIAL
                 and event.user_id is not None
             )
-        elif rule.rule_id == "CONST_001":
+        if rule.rule_id == "CONST_001":
             return event.constitutional_impact
 
         return True  # Default to compliant
 
     def generate_compliance_report(
         self, framework: ComplianceFramework, start_date: datetime, end_date: datetime
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate compliance report for specific framework."""
 
         # Filter events by framework and date range
@@ -593,8 +592,8 @@ class AuditComplianceManager:
         }
 
     def _generate_compliance_recommendations(
-        self, framework: ComplianceFramework, violations: List[ComplianceViolation]
-    ) -> List[str]:
+        self, framework: ComplianceFramework, violations: list[ComplianceViolation]
+    ) -> list[str]:
         """Generate compliance recommendations."""
         recommendations = []
 
@@ -654,7 +653,7 @@ class AuditComplianceManager:
             return f"{parts[0]}.{parts[1]}.{parts[2]}.0"
         return "anonymized"
 
-    def _anonymize_details(self, details: Dict[str, Any]) -> Dict[str, Any]:
+    def _anonymize_details(self, details: dict[str, Any]) -> dict[str, Any]:
         """Anonymize details dictionary."""
         anonymized = {}
 
@@ -675,7 +674,7 @@ audit_compliance_manager = None
 
 
 def initialize_audit_compliance_manager(
-    signing_key: Optional[rsa.RSAPrivateKey] = None,
+    signing_key: rsa.RSAPrivateKey | None = None,
 ):
     """Initialize the global audit compliance manager."""
     global audit_compliance_manager
@@ -693,12 +692,12 @@ def get_audit_compliance_manager() -> AuditComplianceManager:
 __all__ = [
     "AuditComplianceManager",
     "AuditEvent",
+    "AuditEventType",
+    "ComplianceFramework",
     "ComplianceRule",
     "ComplianceViolation",
-    "ComplianceFramework",
-    "AuditEventType",
     "DataClassification",
     "RetentionPolicy",
-    "initialize_audit_compliance_manager",
     "get_audit_compliance_manager",
+    "initialize_audit_compliance_manager",
 ]

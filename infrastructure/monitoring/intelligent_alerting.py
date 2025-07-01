@@ -5,20 +5,18 @@ Enterprise-grade alerting system with ML-based anomaly detection and automated r
 """
 
 import asyncio
+import hashlib
 import json
 import logging
-import time
-import subprocess
 import os
-import hashlib
+import time
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Callable, Union
+from typing import Any
+
 import httpx
-import yaml
-from dataclasses import dataclass, asdict
-from prometheus_client import CollectorRegistry, Gauge, Counter, Histogram
+from prometheus_client import CollectorRegistry, Counter, Histogram
 from prometheus_client.gateway import push_to_gateway
 
 # Configure logging
@@ -66,14 +64,14 @@ class Alert:
     message: str
     source: str
     timestamp: datetime
-    labels: Dict[str, str]
-    annotations: Dict[str, str]
+    labels: dict[str, str]
+    annotations: dict[str, str]
     remediation_attempted: bool = False
     remediation_success: bool = False
     escalation_level: int = 0
-    last_notification: Optional[datetime] = None
-    acknowledgment_time: Optional[datetime] = None
-    resolution_time: Optional[datetime] = None
+    last_notification: datetime | None = None
+    acknowledgment_time: datetime | None = None
+    resolution_time: datetime | None = None
 
 
 @dataclass
@@ -84,7 +82,7 @@ class RemediationAction:
     command: str
     timeout: int = 300
     retry_count: int = 3
-    conditions: List[str] = None
+    conditions: list[str] = None
     escalation_delay: int = 300
     requires_approval: bool = False
     impact_level: str = "low"  # low, medium, high, critical
@@ -97,10 +95,10 @@ class RemediationResult:
     action_name: str
     status: RemediationStatus
     start_time: datetime
-    end_time: Optional[datetime]
+    end_time: datetime | None
     output: str
-    error: Optional[str]
-    exit_code: Optional[int]
+    error: str | None
+    exit_code: int | None
 
 
 class IntelligentAlertManager:
@@ -110,17 +108,17 @@ class IntelligentAlertManager:
 
     def __init__(self, config_path: str = "config/intelligent_alerting.json"):
         self.config = self._load_config(config_path)
-        self.active_alerts: Dict[str, Alert] = {}
-        self.alert_history: List[Alert] = []
-        self.remediation_actions: Dict[str, RemediationAction] = {}
-        self.notification_channels: Dict[str, Dict] = {}
-        self.escalation_policies: Dict[str, Dict] = {}
-        self.remediation_history: List[RemediationResult] = []
+        self.active_alerts: dict[str, Alert] = {}
+        self.alert_history: list[Alert] = []
+        self.remediation_actions: dict[str, RemediationAction] = {}
+        self.notification_channels: dict[str, dict] = {}
+        self.escalation_policies: dict[str, dict] = {}
+        self.remediation_history: list[RemediationResult] = []
 
         # State tracking
-        self.last_notification_times: Dict[str, datetime] = {}
-        self.suppressed_alerts: Dict[str, datetime] = {}
-        self.running_remediations: Dict[str, asyncio.Task] = {}
+        self.last_notification_times: dict[str, datetime] = {}
+        self.suppressed_alerts: dict[str, datetime] = {}
+        self.running_remediations: dict[str, asyncio.Task] = {}
 
         # Metrics
         self.registry = CollectorRegistry()
@@ -155,16 +153,16 @@ class IntelligentAlertManager:
 
         logger.info("Intelligent Alert Manager initialized")
 
-    def _load_config(self, config_path: str) -> Dict[str, Any]:
+    def _load_config(self, config_path: str) -> dict[str, Any]:
         """Load configuration from file"""
         try:
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 return json.load(f)
         except FileNotFoundError:
             logger.warning(f"Config file {config_path} not found, using defaults")
             return self._get_default_config()
 
-    def _get_default_config(self) -> Dict[str, Any]:
+    def _get_default_config(self) -> dict[str, Any]:
         """Get default configuration"""
         return {
             "alert_retention_days": 30,
@@ -280,8 +278,8 @@ class IntelligentAlertManager:
         severity: AlertSeverity,
         message: str,
         source: str,
-        labels: Optional[Dict[str, str]] = None,
-        annotations: Optional[Dict[str, str]] = None,
+        labels: dict[str, str] | None = None,
+        annotations: dict[str, str] | None = None,
     ) -> Alert:
         """Create a new alert"""
         alert_id = await self.generate_alert_id(name, source)
@@ -537,7 +535,7 @@ class IntelligentAlertManager:
             if alert.id in self.running_remediations:
                 del self.running_remediations[alert.id]
 
-    def _get_remediation_action(self, alert: Alert) -> Optional[RemediationAction]:
+    def _get_remediation_action(self, alert: Alert) -> RemediationAction | None:
         """Get appropriate remediation action for alert"""
         # Map alert types to remediation actions
         action_mapping = {
@@ -557,7 +555,7 @@ class IntelligentAlertManager:
         # Default action based on severity
         if alert.severity == AlertSeverity.CRITICAL:
             return self.remediation_actions.get("service_restart")
-        elif alert.severity == AlertSeverity.HIGH:
+        if alert.severity == AlertSeverity.HIGH:
             return self.remediation_actions.get("health_check")
 
         return None
@@ -648,14 +646,14 @@ class IntelligentAlertManager:
         await self._send_slack_notification_with_payload(approval_message)
         logger.info(f"Remediation approval requested for alert {alert.id}")
 
-    async def _send_slack_notification_with_payload(self, payload: Dict[str, Any]):
+    async def _send_slack_notification_with_payload(self, payload: dict[str, Any]):
         """Send custom Slack notification"""
         webhook_url = self.config["webhook_endpoints"].get("slack")
         if not webhook_url:
             return
 
         slack_payload = {
-            "text": f"🔧 Remediation Approval Required",
+            "text": "🔧 Remediation Approval Required",
             "attachments": [
                 {
                     "color": "warning",
@@ -747,7 +745,7 @@ class IntelligentAlertManager:
             # Schedule escalation
             asyncio.create_task(self._delayed_escalation(alert, delay, channels))
 
-    async def _delayed_escalation(self, alert: Alert, delay: int, channels: List[str]):
+    async def _delayed_escalation(self, alert: Alert, delay: int, channels: list[str]):
         """Execute delayed escalation"""
         await asyncio.sleep(delay)
 
@@ -851,16 +849,16 @@ class IntelligentAlertManager:
         logger.info(f"Alert {alert_id} acknowledged by {acknowledged_by}")
         return True
 
-    async def get_active_alerts(self) -> List[Alert]:
+    async def get_active_alerts(self) -> list[Alert]:
         """Get all active alerts"""
         return list(self.active_alerts.values())
 
-    async def get_alert_history(self, hours: int = 24) -> List[Alert]:
+    async def get_alert_history(self, hours: int = 24) -> list[Alert]:
         """Get alert history for specified hours"""
         cutoff_time = datetime.now() - timedelta(hours=hours)
         return [alert for alert in self.alert_history if alert.timestamp >= cutoff_time]
 
-    async def get_remediation_history(self, hours: int = 24) -> List[RemediationResult]:
+    async def get_remediation_history(self, hours: int = 24) -> list[RemediationResult]:
         """Get remediation history for specified hours"""
         cutoff_time = datetime.now() - timedelta(hours=hours)
         return [

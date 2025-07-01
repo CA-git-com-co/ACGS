@@ -4,15 +4,15 @@ Redis Cache Optimization for ACGS-2
 Implements high-performance caching with >85% hit rate target
 """
 
-import json
-import time
-import hashlib
-import logging
-from typing import Any, Dict, Optional, Union
-from datetime import datetime, timedelta
-import redis
 import asyncio
+import hashlib
+import json
+import logging
+from datetime import datetime, timedelta
 from functools import wraps
+from typing import Any
+
+import redis
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +94,7 @@ class ACGSCacheManager:
         key_hash = hashlib.sha256(identifier.encode()).hexdigest()[:16]
         return f"{prefix}{key_hash}"
 
-    def get(self, cache_type: str, identifier: str) -> Optional[Dict[str, Any]]:
+    def get(self, cache_type: str, identifier: str) -> dict[str, Any] | None:
         """Get item from cache with performance tracking."""
         try:
             cache_key = self._generate_cache_key(cache_type, identifier)
@@ -114,9 +114,8 @@ class ACGSCacheManager:
                         return None
 
                 return data
-            else:
-                self.metrics["misses"] += 1
-                return None
+            self.metrics["misses"] += 1
+            return None
 
         except Exception as e:
             self.metrics["errors"] += 1
@@ -127,8 +126,8 @@ class ACGSCacheManager:
         self,
         cache_type: str,
         identifier: str,
-        data: Dict[str, Any],
-        custom_ttl: Optional[int] = None,
+        data: dict[str, Any],
+        custom_ttl: int | None = None,
     ) -> bool:
         """Set item in cache with optimization."""
         try:
@@ -201,7 +200,7 @@ class ACGSCacheManager:
         except Exception as e:
             logger.error(f"Cache size management error for {cache_type}: {e}")
 
-    def get_cache_stats(self) -> Dict[str, Any]:
+    def get_cache_stats(self) -> dict[str, Any]:
         """Get comprehensive cache statistics."""
         try:
             redis_info = self.redis_client.info()
@@ -291,7 +290,7 @@ cache_manager = ACGSCacheManager()
 
 
 def cache_result(
-    cache_type: str, ttl: Optional[int] = None, key_func: Optional[callable] = None
+    cache_type: str, ttl: int | None = None, key_func: callable | None = None
 ):
     """Decorator for caching function results."""
 
@@ -337,7 +336,6 @@ def cache_result(
         # Return appropriate wrapper based on function type
         if asyncio.iscoroutinefunction(func):
             return async_wrapper
-        else:
-            return sync_wrapper
+        return sync_wrapper
 
     return decorator

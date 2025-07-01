@@ -25,7 +25,7 @@ import logging
 import random
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, Dict, List
+from typing import Any
 
 from locust import HttpUser, between, task
 
@@ -43,9 +43,9 @@ class LoadTestScenario:
     target_users: int
     spawn_rate: int
     duration_seconds: int
-    endpoints: List[Dict[str, Any]]
-    test_data: Dict[str, Any] = field(default_factory=dict)
-    success_criteria: Dict[str, float] = field(default_factory=dict)
+    endpoints: list[dict[str, Any]]
+    test_data: dict[str, Any] = field(default_factory=dict)
+    success_criteria: dict[str, float] = field(default_factory=dict)
 
 
 class ACGSHealthCheckUser(HttpUser):
@@ -359,8 +359,8 @@ LOAD_TEST_SCENARIOS = {
 
 
 def create_load_test_report(
-    scenario_name: str, stats: Dict[str, Any]
-) -> Dict[str, Any]:
+    scenario_name: str, stats: dict[str, Any]
+) -> dict[str, Any]:
     """Create comprehensive load test report."""
     scenario = LOAD_TEST_SCENARIOS.get(scenario_name, {})
 
@@ -382,9 +382,9 @@ def create_load_test_report(
     if hasattr(scenario, "success_criteria"):
         for criterion, target in scenario.success_criteria.items():
             actual = stats.get(criterion, 0)
-            if criterion.endswith("_rate") and actual < target:
-                criteria_met = False
-            elif criterion.endswith("_percentile") and actual > target:
+            if (criterion.endswith("_rate") and actual < target) or (
+                criterion.endswith("_percentile") and actual > target
+            ):
                 criteria_met = False
 
     report["criteria_met"] = criteria_met

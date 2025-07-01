@@ -4,9 +4,10 @@ Provides democratic governance mechanisms for challenging algorithmic decisions
 """
 
 # from .core.auth import get_current_user_placeholder as get_current_user, require_integrity_admin, require_auditor
-from app import crud, schemas
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app import crud, schemas
 
 from .database import get_async_db
 
@@ -100,7 +101,7 @@ async def create_appeal(
         return appeal
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error creating appeal: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error creating appeal: {e!s}")
 
 
 @router.get(
@@ -149,9 +150,7 @@ async def get_appeals(
         return schemas.AppealList(appeals=appeals, total=total)
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error retrieving appeals: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Error retrieving appeals: {e!s}")
 
 
 @router.get(
@@ -185,9 +184,7 @@ async def get_appeal(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error retrieving appeal: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Error retrieving appeal: {e!s}")
 
 
 @router.patch(
@@ -228,7 +225,7 @@ async def update_appeal(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error updating appeal: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error updating appeal: {e!s}")
 
 
 @router.post(
@@ -270,9 +267,7 @@ async def escalate_appeal(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error escalating appeal: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Error escalating appeal: {e!s}")
 
 
 # --- Dispute Resolution Endpoints ---
@@ -320,7 +315,7 @@ async def create_dispute_resolution(
         raise
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Error creating dispute resolution: {str(e)}"
+            status_code=500, detail=f"Error creating dispute resolution: {e!s}"
         )
 
 
@@ -362,7 +357,7 @@ async def get_dispute_resolutions(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Error retrieving dispute resolutions: {str(e)}"
+            status_code=500, detail=f"Error retrieving dispute resolutions: {e!s}"
         )
 
 
@@ -390,7 +385,7 @@ async def get_dispute_resolution(
         raise
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Error retrieving dispute resolution: {str(e)}"
+            status_code=500, detail=f"Error retrieving dispute resolution: {e!s}"
         )
 
 
@@ -433,7 +428,7 @@ async def update_dispute_resolution(
         raise
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Error updating dispute resolution: {str(e)}"
+            status_code=500, detail=f"Error updating dispute resolution: {e!s}"
         )
 
 
@@ -476,7 +471,7 @@ async def explain_decision(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Error generating explanation: {str(e)}"
+            status_code=500, detail=f"Error generating explanation: {e!s}"
         )
 
 
@@ -512,5 +507,5 @@ async def get_rule_provenance(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Error retrieving rule provenance: {str(e)}"
+            status_code=500, detail=f"Error retrieving rule provenance: {e!s}"
         )

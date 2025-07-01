@@ -2,10 +2,9 @@
 Integration tests for integration
 """
 
+from unittest.mock import AsyncMock
+
 import pytest
-import asyncio
-from unittest.mock import AsyncMock, patch
-import httpx
 
 
 class TestComponentIntegration:

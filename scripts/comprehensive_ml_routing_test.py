@@ -16,13 +16,13 @@ from pathlib import Path
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.shared.multimodal_ai_service import get_multimodal_service
 from services.shared.ai_types import (
-    MultimodalRequest,
-    RequestType,
     ContentType,
     ModelType,
+    MultimodalRequest,
+    RequestType,
 )
+from services.shared.multimodal_ai_service import get_multimodal_service
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -258,9 +258,8 @@ async def test_ml_optimization():
 
             return True
 
-        else:
-            logger.error("❌ ML models failed to train")
-            return False
+        logger.error("❌ ML models failed to train")
+        return False
 
     except Exception as e:
         logger.error(f"❌ ML optimization test failed: {e}")
@@ -278,9 +277,8 @@ async def main():
     if success:
         logger.info("\n🎊 ML Routing Optimization Implementation Complete!")
         return 0
-    else:
-        logger.error("\n❌ ML Routing Optimization Test Failed!")
-        return 1
+    logger.error("\n❌ ML Routing Optimization Test Failed!")
+    return 1
 
 
 if __name__ == "__main__":

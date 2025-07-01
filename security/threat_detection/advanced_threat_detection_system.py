@@ -4,16 +4,14 @@ ACGS Advanced Threat Detection System
 Implements enterprise-grade threat detection with behavioral analytics and automated response
 """
 
-import json
-import time
-import hashlib
-import statistics
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone, timedelta
-from enum import Enum
-import logging
 import asyncio
+import json
+import logging
+import time
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -49,13 +47,13 @@ class ThreatEvent:
     threat_type: ThreatType
     threat_level: ThreatLevel
     source_ip: str
-    user_id: Optional[str]
+    user_id: str | None
     service_name: str
     description: str
-    indicators: List[str]
+    indicators: list[str]
     confidence_score: float
     constitutional_hash: str
-    raw_data: Dict[str, Any]
+    raw_data: dict[str, Any]
 
 
 @dataclass
@@ -65,7 +63,7 @@ class ThreatResponse:
     response_id: str
     threat_event_id: str
     action_type: str  # "block", "alert", "quarantine", "investigate"
-    action_details: Dict[str, Any]
+    action_details: dict[str, Any]
     executed_at: str
     success: bool
     constitutional_compliance: bool
@@ -81,7 +79,7 @@ class AdvancedThreatDetectionSystem:
         self.threat_rules = self.initialize_threat_rules()
         self.response_actions = []
 
-    def initialize_threat_rules(self) -> Dict[str, Any]:
+    def initialize_threat_rules(self) -> dict[str, Any]:
         """Initialize threat detection rules"""
         return {
             "brute_force": {
@@ -111,8 +109,8 @@ class AdvancedThreatDetectionSystem:
         }
 
     async def analyze_security_events(
-        self, events: List[Dict[str, Any]]
-    ) -> List[ThreatEvent]:
+        self, events: list[dict[str, Any]]
+    ) -> list[ThreatEvent]:
         """Analyze security events for potential threats"""
         print("🔍 Analyzing security events for threats...")
 
@@ -155,7 +153,7 @@ class AdvancedThreatDetectionSystem:
         print(f"  🚨 Detected {len(detected_threats)} potential threats")
         return detected_threats
 
-    def detect_brute_force(self, event: Dict[str, Any]) -> Optional[ThreatEvent]:
+    def detect_brute_force(self, event: dict[str, Any]) -> ThreatEvent | None:
         """Detect brute force attacks"""
         if event.get("event_type") != "authentication_failure":
             return None
@@ -194,7 +192,7 @@ class AdvancedThreatDetectionSystem:
 
         return None
 
-    def detect_anomalous_access(self, event: Dict[str, Any]) -> Optional[ThreatEvent]:
+    def detect_anomalous_access(self, event: dict[str, Any]) -> ThreatEvent | None:
         """Detect anomalous access patterns"""
         user_id = event.get("user_id")
         if not user_id:
@@ -253,7 +251,7 @@ class AdvancedThreatDetectionSystem:
 
         return None
 
-    def detect_data_exfiltration(self, event: Dict[str, Any]) -> Optional[ThreatEvent]:
+    def detect_data_exfiltration(self, event: dict[str, Any]) -> ThreatEvent | None:
         """Detect potential data exfiltration"""
         if event.get("event_type") != "data_access":
             return None
@@ -312,8 +310,8 @@ class AdvancedThreatDetectionSystem:
         return None
 
     def detect_constitutional_violation(
-        self, event: Dict[str, Any]
-    ) -> Optional[ThreatEvent]:
+        self, event: dict[str, Any]
+    ) -> ThreatEvent | None:
         """Detect constitutional compliance violations"""
         constitutional_compliance = event.get("constitutional_compliance_score", 1.0)
         constitutional_hash = event.get("constitutional_hash", "")
@@ -365,7 +363,7 @@ class AdvancedThreatDetectionSystem:
 
         return None
 
-    def detect_insider_threat(self, event: Dict[str, Any]) -> Optional[ThreatEvent]:
+    def detect_insider_threat(self, event: dict[str, Any]) -> ThreatEvent | None:
         """Detect insider threats"""
         user_id = event.get("user_id")
         if not user_id:
@@ -446,7 +444,7 @@ class AdvancedThreatDetectionSystem:
         self.response_actions.append(response)
         return response
 
-    def determine_response_action(self, threat: ThreatEvent) -> Dict[str, Any]:
+    def determine_response_action(self, threat: ThreatEvent) -> dict[str, Any]:
         """Determine appropriate response action for threat"""
         if threat.threat_level == ThreatLevel.CRITICAL:
             return {
@@ -458,7 +456,7 @@ class AdvancedThreatDetectionSystem:
                     "reason": "Critical threat detected",
                 },
             }
-        elif threat.threat_level == ThreatLevel.HIGH:
+        if threat.threat_level == ThreatLevel.HIGH:
             return {
                 "type": "quarantine",
                 "details": {
@@ -467,7 +465,7 @@ class AdvancedThreatDetectionSystem:
                     "reason": "High-risk threat detected",
                 },
             }
-        elif threat.threat_level == ThreatLevel.MEDIUM:
+        if threat.threat_level == ThreatLevel.MEDIUM:
             return {
                 "type": "alert",
                 "details": {
@@ -476,14 +474,13 @@ class AdvancedThreatDetectionSystem:
                     "reason": "Medium-risk threat detected",
                 },
             }
-        else:
-            return {
-                "type": "investigate",
-                "details": {
-                    "log_for_investigation": True,
-                    "reason": "Low-risk threat detected",
-                },
-            }
+        return {
+            "type": "investigate",
+            "details": {
+                "log_for_investigation": True,
+                "reason": "Low-risk threat detected",
+            },
+        }
 
     async def execute_response_action(self, response: ThreatResponse):
         """Execute the actual response action"""
@@ -503,7 +500,7 @@ class AdvancedThreatDetectionSystem:
             print(f"🚨 Alerting security team about user {details.get('monitor_user')}")
         elif action_type == "investigate":
             # Simulate investigation logging
-            print(f"🔍 Logging threat for investigation")
+            print("🔍 Logging threat for investigation")
 
     def is_recent_event(self, timestamp: str, minutes: int) -> bool:
         """Check if event is within specified time window"""
@@ -514,7 +511,7 @@ class AdvancedThreatDetectionSystem:
         except:
             return False
 
-    def update_user_baseline(self, user_id: str, event: Dict[str, Any]):
+    def update_user_baseline(self, user_id: str, event: dict[str, Any]):
         """Update user behavioral baseline"""
         if user_id not in self.user_baselines:
             self.user_baselines[user_id] = {
@@ -546,7 +543,7 @@ class AdvancedThreatDetectionSystem:
         if action and action not in baseline["typical_actions"]:
             baseline["typical_actions"].append(action)
 
-    def generate_threat_intelligence_report(self) -> Dict[str, Any]:
+    def generate_threat_intelligence_report(self) -> dict[str, Any]:
         """Generate comprehensive threat intelligence report"""
         if not self.threat_events:
             return {
@@ -635,7 +632,7 @@ async def test_advanced_threat_detection():
     # Analyze events for threats
     threats = await detection_system.analyze_security_events(test_events)
 
-    print(f"\n🚨 Threat Detection Results:")
+    print("\n🚨 Threat Detection Results:")
     for threat in threats:
         print(f"  {threat.threat_type.value.upper()}: {threat.threat_level.value}")
         print(f"    Description: {threat.description}")
@@ -651,7 +648,7 @@ async def test_advanced_threat_detection():
     print("📊 Generating threat intelligence report...")
     report = detection_system.generate_threat_intelligence_report()
 
-    print(f"\n📈 Threat Intelligence Summary:")
+    print("\n📈 Threat Intelligence Summary:")
     print(f"  Total Threats: {report['total_threats']}")
     print(f"  Response Actions: {report['response_actions_executed']}")
     print(f"  System Status: {report['system_status']}")
@@ -663,7 +660,7 @@ async def test_advanced_threat_detection():
         json.dump(report, f, indent=2, default=str)
 
     print(f"\n📄 Report saved: threat_intelligence_report_{timestamp}.json")
-    print(f"\n✅ Advanced Threat Detection System: OPERATIONAL")
+    print("\n✅ Advanced Threat Detection System: OPERATIONAL")
 
 
 if __name__ == "__main__":

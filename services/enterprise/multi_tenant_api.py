@@ -287,9 +287,7 @@ async def create_tenant(
         )
     except Exception as e:
         logger.error(f"Failed to create tenant: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to create tenant: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to create tenant: {e!s}")
 
 
 @app.get("/api/v1/tenants", response_model=list[TenantResponse])
@@ -316,7 +314,7 @@ async def list_tenants(
         ]
     except Exception as e:
         logger.error(f"Failed to list tenants: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to list tenants: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to list tenants: {e!s}")
 
 
 @app.get("/api/v1/tenants/{tenant_id}", response_model=TenantResponse)
@@ -343,7 +341,7 @@ async def get_tenant(tenant_id: str, manager=Depends(get_tenant_manager)):
         raise
     except Exception as e:
         logger.error(f"Failed to get tenant {tenant_id}: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get tenant: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to get tenant: {e!s}")
 
 
 @app.put("/api/v1/tenants/{tenant_id}", response_model=TenantResponse)
@@ -376,9 +374,7 @@ async def update_tenant(
         raise
     except Exception as e:
         logger.error(f"Failed to update tenant {tenant_id}: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to update tenant: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to update tenant: {e!s}")
 
 
 @app.delete("/api/v1/tenants/{tenant_id}")
@@ -394,9 +390,7 @@ async def delete_tenant(tenant_id: str, manager=Depends(get_tenant_manager)):
         raise
     except Exception as e:
         logger.error(f"Failed to delete tenant {tenant_id}: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to delete tenant: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to delete tenant: {e!s}")
 
 
 @app.get("/api/v1/tenants/{tenant_id}/metrics", response_model=TenantMetricsResponse)
@@ -423,7 +417,7 @@ async def get_tenant_metrics(tenant_id: str, manager=Depends(get_tenant_manager)
     except Exception as e:
         logger.error(f"Failed to get metrics for tenant {tenant_id}: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to get tenant metrics: {str(e)}"
+            status_code=500, detail=f"Failed to get tenant metrics: {e!s}"
         )
 
 
@@ -445,7 +439,7 @@ async def validate_tenant_limits(
     except Exception as e:
         logger.error(f"Failed to validate limits for tenant {tenant_id}: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to validate tenant limits: {str(e)}"
+            status_code=500, detail=f"Failed to validate tenant limits: {e!s}"
         )
 
 

@@ -7,7 +7,6 @@ from argparse import ArgumentParser
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-import docker
 from swebench.harness.constants import (
     APPLY_PATCH_FAIL,
     APPLY_PATCH_PASS,
@@ -20,6 +19,7 @@ from swebench.harness.test_spec import TestSpec, make_test_spec
 from swebench.harness.utils import load_swebench_dataset, str2bool
 from tqdm import tqdm
 
+import docker
 from polyglot.docker_build import (
     BuildImageError,
     build_container,
@@ -140,8 +140,7 @@ def run_instance(
                     f"{APPLY_PATCH_FAIL}:\n{val.output.decode('utf-8')}",
                     logger,
                 )
-            else:
-                logger.info(f"{APPLY_PATCH_PASS}:\n{val.output.decode('utf-8')}")
+            logger.info(f"{APPLY_PATCH_PASS}:\n{val.output.decode('utf-8')}")
         else:
             logger.info(f"{APPLY_PATCH_PASS}:\n{val.output.decode('utf-8')}")
 
@@ -227,7 +226,7 @@ def run_instance(
         if rm_image:
             remove_image(client, test_spec.instance_image_key, logger)
         close_logger(logger)
-    return
+    return None
 
 
 def run_instances(
@@ -264,7 +263,7 @@ def run_instances(
         for tag in i.tags
         if tag in instance_image_ids
     }
-    if not force_rebuild and len(existing_images):
+    if not force_rebuild and existing_images:
         print(
             f"Found {len(existing_images)} existing instance images. Will reuse them."
         )
@@ -532,15 +531,14 @@ def main(
     if predictions_path == "gold":
         print("Using gold predictions - ignoring predictions_path")
         predictions = get_gold_predictions(dataset_name, split)
+    elif predictions_path.endswith(".json"):
+        with open(predictions_path) as f:
+            predictions = json.load(f)
+    elif predictions_path.endswith(".jsonl"):
+        with open(predictions_path) as f:
+            predictions = [json.loads(line) for line in f]
     else:
-        if predictions_path.endswith(".json"):
-            with open(predictions_path) as f:
-                predictions = json.load(f)
-        elif predictions_path.endswith(".jsonl"):
-            with open(predictions_path) as f:
-                predictions = [json.loads(line) for line in f]
-        else:
-            raise ValueError('Predictions path must be "gold", .json, or .jsonl')
+        raise ValueError('Predictions path must be "gold", .json, or .jsonl')
     predictions = {pred[KEY_INSTANCE_ID]: pred for pred in predictions}
 
     # get dataset from predictions

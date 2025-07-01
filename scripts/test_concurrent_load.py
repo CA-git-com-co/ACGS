@@ -6,13 +6,13 @@ Load test system with multiple concurrent agent operations across all services.
 """
 
 import asyncio
-import time
-import statistics
 import json
-import uuid
-from typing import List, Dict, Any
-import httpx
+import statistics
+import time
 from datetime import datetime
+from typing import Any
+
+import httpx
 
 # Service endpoints
 SERVICES = {
@@ -36,7 +36,7 @@ class ConcurrentLoadTester:
 
     async def test_auth_service_load(
         self, concurrent_requests: int, duration_seconds: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test Auth Service under concurrent load."""
         print(
             f"🔐 Testing Auth Service with {concurrent_requests} concurrent requests for {duration_seconds}s..."
@@ -90,7 +90,7 @@ class ConcurrentLoadTester:
 
     async def test_hitl_service_load(
         self, concurrent_requests: int, duration_seconds: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test HITL Service under concurrent load."""
         print(
             f"🤖 Testing HITL Service with {concurrent_requests} concurrent requests for {duration_seconds}s..."
@@ -137,7 +137,7 @@ class ConcurrentLoadTester:
 
     async def test_ac_service_load(
         self, concurrent_requests: int, duration_seconds: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test Constitutional AI Service under concurrent load."""
         print(
             f"⚖️ Testing Constitutional AI Service with {concurrent_requests} concurrent requests for {duration_seconds}s..."
@@ -168,7 +168,7 @@ class ConcurrentLoadTester:
 
     async def _run_concurrent_test(
         self, request_func, concurrent_requests: int, duration_seconds: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Run a concurrent test with the given request function."""
         start_time = time.time()
         all_results = []
@@ -215,7 +215,7 @@ class ConcurrentLoadTester:
             ],  # First 10 errors
         }
 
-    def _calculate_latency_metrics(self, latencies: List[float]) -> Dict[str, float]:
+    def _calculate_latency_metrics(self, latencies: list[float]) -> dict[str, float]:
         """Calculate latency statistics."""
         if not latencies:
             return {}
@@ -234,7 +234,7 @@ class ConcurrentLoadTester:
 
     async def test_mixed_workload(
         self, concurrent_requests: int, duration_seconds: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test mixed workload across all services."""
         print(
             f"🔄 Testing mixed workload with {concurrent_requests} concurrent requests for {duration_seconds}s..."
@@ -287,7 +287,7 @@ class ConcurrentLoadTester:
             make_mixed_request, concurrent_requests, duration_seconds
         )
 
-    async def run_comprehensive_load_test(self) -> Dict[str, Any]:
+    async def run_comprehensive_load_test(self) -> dict[str, Any]:
         """Run comprehensive load testing across all services."""
         print("🚀 Starting comprehensive concurrent load testing...")
         self.results["test_start"] = datetime.utcnow().isoformat()
@@ -361,19 +361,19 @@ async def main():
         print("🎯 CONCURRENT LOAD TEST RESULTS")
         print("=" * 80)
 
-        print(f"\n📊 Overall Summary:")
+        print("\n📊 Overall Summary:")
         summary = results["summary"]
         print(f"  • Total Requests: {summary['total_requests']}")
         print(f"  • Successful Requests: {summary['successful_requests']}")
-        print(f"  • Overall Success Rate: {summary['overall_success_rate']*100:.1f}%")
+        print(f"  • Overall Success Rate: {summary['overall_success_rate'] * 100:.1f}%")
         print(f"  • Average RPS: {summary['average_rps']:.1f}")
         print(f"  • Test Duration: {summary['test_duration']}s")
         print(f"  • Total Errors: {summary['total_errors']}")
 
-        print(f"\n🔧 Service Performance:")
+        print("\n🔧 Service Performance:")
         for service_name, perf in results["service_performance"].items():
             print(f"\n  {service_name.upper()}:")
-            print(f"    • Success Rate: {perf.get('success_rate', 0)*100:.1f}%")
+            print(f"    • Success Rate: {perf.get('success_rate', 0) * 100:.1f}%")
             print(f"    • Requests/sec: {perf.get('requests_per_second', 0):.1f}")
 
             latency = perf.get("latency_metrics", {})
@@ -385,9 +385,9 @@ async def main():
             if perf.get("errors"):
                 print(f"    • Sample Errors: {perf['errors'][:2]}")
 
-        print(f"\n🔄 Mixed Workload Test:")
+        print("\n🔄 Mixed Workload Test:")
         mixed = results["concurrent_tests"]["mixed_workload"]
-        print(f"  • Success Rate: {mixed.get('success_rate', 0)*100:.1f}%")
+        print(f"  • Success Rate: {mixed.get('success_rate', 0) * 100:.1f}%")
         print(f"  • Requests/sec: {mixed.get('requests_per_second', 0):.1f}")
 
         mixed_latency = mixed.get("latency_metrics", {})
@@ -398,7 +398,7 @@ async def main():
         # Save detailed results
         with open("concurrent_load_test_results.json", "w") as f:
             json.dump(results, f, indent=2)
-        print(f"\n💾 Detailed results saved to: concurrent_load_test_results.json")
+        print("\n💾 Detailed results saved to: concurrent_load_test_results.json")
 
     except Exception as e:
         print(f"❌ Load test execution failed: {e}")

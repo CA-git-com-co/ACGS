@@ -16,26 +16,24 @@ Features:
 
 Usage:
     python nano-vllm-service.py
-    
+
     # Or with uvicorn directly:
     uvicorn nano-vllm-service:app --host 0.0.0.0 --port 8000
 """
 
-import asyncio
 import logging
 import os
 import signal
 import sys
 import time
 from contextlib import asynccontextmanager
-from typing import Dict, List, Any, Optional
+from typing import Any
 
-import uvicorn
-from fastapi import FastAPI, HTTPException, BackgroundTasks
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
 import structlog
+import uvicorn
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
 
 # Import our Nano-vLLM components
 try:
@@ -50,9 +48,9 @@ except ImportError as e:
 
 try:
     from nano_vllm_integration import (
+        ConstitutionalDomain,
         NanoVLLMReasoningService,
         ReasoningRequest,
-        ConstitutionalDomain,
         create_nano_vllm_reasoning_service,
     )
 
@@ -90,7 +88,7 @@ logging.basicConfig(
 logger = structlog.get_logger(__name__)
 
 # Global service instance
-reasoning_service: Optional[NanoVLLMReasoningService] = None
+reasoning_service: NanoVLLMReasoningService | None = None
 
 
 # =============================================================================
@@ -109,7 +107,7 @@ class ChatCompletionRequest(BaseModel):
     """OpenAI-compatible chat completion request."""
 
     model: str = Field(default="nano-vllm", description="Model identifier")
-    messages: List[ChatMessage] = Field(..., description="List of chat messages")
+    messages: list[ChatMessage] = Field(..., description="List of chat messages")
     max_tokens: int = Field(default=512, description="Maximum tokens to generate")
     temperature: float = Field(default=0.7, description="Sampling temperature")
     top_p: float = Field(default=0.9, description="Top-p sampling parameter")
@@ -121,7 +119,7 @@ class ConstitutionalReasoningRequest(BaseModel):
 
     content: str = Field(..., description="Content to analyze")
     domain: str = Field(..., description="Constitutional domain")
-    context: Dict[str, Any] = Field(
+    context: dict[str, Any] = Field(
         default_factory=dict, description="Additional context"
     )
     reasoning_depth: str = Field(default="standard", description="Reasoning depth")
@@ -136,7 +134,7 @@ class HealthResponse(BaseModel):
     healthy: bool = Field(..., description="Health status")
     timestamp: float = Field(..., description="Check timestamp")
     version: str = Field(default="1.0.0", description="Service version")
-    models: Dict[str, Any] = Field(default_factory=dict, description="Model status")
+    models: dict[str, Any] = Field(default_factory=dict, description="Model status")
 
 
 # =============================================================================
@@ -211,10 +209,9 @@ async def health_check():
                 timestamp=time.time(),
                 models=health.get("models", {}),
             )
-        else:
-            return HealthResponse(
-                status="no_service", healthy=False, timestamp=time.time(), models={}
-            )
+        return HealthResponse(
+            status="no_service", healthy=False, timestamp=time.time(), models={}
+        )
     except Exception as e:
         logger.error(f"Health check failed: {e}")
         return HealthResponse(
@@ -288,8 +285,7 @@ async def chat_completions(request: ChatCompletionRequest):
             )
 
             return response
-        else:
-            raise HTTPException(status_code=503, detail="No reasoning models available")
+        raise HTTPException(status_code=503, detail="No reasoning models available")
 
     except Exception as e:
         logger.error(f"Chat completion failed: {e}")

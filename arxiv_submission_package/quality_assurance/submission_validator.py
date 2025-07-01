@@ -6,16 +6,13 @@ This module provides comprehensive validation and quality checks for academic
 paper submissions, ensuring compliance with arXiv and journal requirements.
 """
 
-import os
-import re
 import json
-import subprocess
 import logging
-from pathlib import Path
-from typing import Dict, List, Tuple, Optional, Any
-from dataclasses import dataclass, asdict
+import re
+from dataclasses import dataclass
 from datetime import datetime
-import hashlib
+from pathlib import Path
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -29,7 +26,7 @@ class ValidationResult:
     check_name: str
     status: str  # PASS, FAIL, WARNING
     message: str
-    details: Optional[Dict[str, Any]] = None
+    details: dict[str, Any] | None = None
     timestamp: str = None
 
     def __post_init__(self):
@@ -42,10 +39,10 @@ class SubmissionReport:
     """Comprehensive submission validation report."""
 
     submission_path: str
-    validation_results: List[ValidationResult]
+    validation_results: list[ValidationResult]
     overall_status: str
     compliance_score: float
-    recommendations: List[str]
+    recommendations: list[str]
     timestamp: str = None
 
     def __post_init__(self):
@@ -58,8 +55,8 @@ class SubmissionValidator:
 
     def __init__(self, submission_path: str):
         self.submission_path = Path(submission_path)
-        self.results: List[ValidationResult] = []
-        self.recommendations: List[str] = []
+        self.results: list[ValidationResult] = []
+        self.recommendations: list[str] = []
 
     def validate_submission(self) -> SubmissionReport:
         """Run comprehensive validation on academic submission."""
@@ -129,7 +126,7 @@ class SubmissionValidator:
 
         try:
             # Check for common LaTeX issues
-            with open(main_tex, "r", encoding="utf-8") as f:
+            with open(main_tex, encoding="utf-8") as f:
                 content = f.read()
 
             issues = []
@@ -177,7 +174,7 @@ class SubmissionValidator:
                 ValidationResult(
                     check_name="LaTeX Syntax",
                     status="FAIL",
-                    message=f"LaTeX validation error: {str(e)}",
+                    message=f"LaTeX validation error: {e!s}",
                 )
             )
 
@@ -200,7 +197,7 @@ class SubmissionValidator:
             issues = []
 
             for bib_file in bib_files:
-                with open(bib_file, "r", encoding="utf-8") as f:
+                with open(bib_file, encoding="utf-8") as f:
                     content = f.read()
 
                 # Count bibliography entries
@@ -252,7 +249,7 @@ class SubmissionValidator:
                 ValidationResult(
                     check_name="Bibliography",
                     status="FAIL",
-                    message=f"Bibliography validation error: {str(e)}",
+                    message=f"Bibliography validation error: {e!s}",
                 )
             )
 
@@ -283,7 +280,7 @@ class SubmissionValidator:
         try:
             main_tex = self.submission_path / "main.tex"
             if main_tex.exists():
-                with open(main_tex, "r", encoding="utf-8") as f:
+                with open(main_tex, encoding="utf-8") as f:
                     content = f.read()
 
                 # Check figure references
@@ -331,7 +328,7 @@ class SubmissionValidator:
                 ValidationResult(
                     check_name="Figures",
                     status="FAIL",
-                    message=f"Figure validation error: {str(e)}",
+                    message=f"Figure validation error: {e!s}",
                 )
             )
 
@@ -345,7 +342,7 @@ class SubmissionValidator:
         )
         if total_size > 50 * 1024 * 1024:  # 50MB
             compliance_issues.append(
-                f"Submission size ({total_size/1024/1024:.1f}MB) exceeds arXiv limit"
+                f"Submission size ({total_size / 1024 / 1024:.1f}MB) exceeds arXiv limit"
             )
 
         # Check for prohibited file types
@@ -362,7 +359,7 @@ class SubmissionValidator:
         # Check main.tex structure
         main_tex = self.submission_path / "main.tex"
         if main_tex.exists():
-            with open(main_tex, "r", encoding="utf-8") as f:
+            with open(main_tex, encoding="utf-8") as f:
                 content = f.read()
 
             # Check for required elements
@@ -409,7 +406,7 @@ class SubmissionValidator:
             return
 
         try:
-            with open(main_tex, "r", encoding="utf-8") as f:
+            with open(main_tex, encoding="utf-8") as f:
                 content = f.read()
 
             quality_issues = []
@@ -477,7 +474,7 @@ class SubmissionValidator:
                 ValidationResult(
                     check_name="Content Quality",
                     status="FAIL",
-                    message=f"Content quality validation error: {str(e)}",
+                    message=f"Content quality validation error: {e!s}",
                 )
             )
 
@@ -488,7 +485,7 @@ class SubmissionValidator:
             return
 
         try:
-            with open(main_tex, "r", encoding="utf-8") as f:
+            with open(main_tex, encoding="utf-8") as f:
                 content = f.read()
 
             accessibility_issues = []
@@ -552,7 +549,7 @@ class SubmissionValidator:
                 ValidationResult(
                     check_name="Accessibility",
                     status="FAIL",
-                    message=f"Accessibility validation error: {str(e)}",
+                    message=f"Accessibility validation error: {e!s}",
                 )
             )
 
@@ -578,7 +575,7 @@ class SubmissionValidator:
         # Check for data availability mentions
         main_tex = self.submission_path / "main.tex"
         if main_tex.exists():
-            with open(main_tex, "r", encoding="utf-8") as f:
+            with open(main_tex, encoding="utf-8") as f:
                 content = f.read()
 
             # Check for reproducibility keywords
@@ -637,7 +634,7 @@ class SubmissionValidator:
             )
         )
 
-    def _calculate_overall_status(self) -> Tuple[str, float]:
+    def _calculate_overall_status(self) -> tuple[str, float]:
         """Calculate overall validation status and compliance score."""
         if not self.results:
             return "UNKNOWN", 0.0
@@ -703,9 +700,9 @@ def generate_validation_report(
     report_content += f"""## Summary
 
 - **Total Checks**: {len(report.validation_results)}
-- **Passed**: {sum(1 for r in report.validation_results if r.status == 'PASS')}
-- **Warnings**: {sum(1 for r in report.validation_results if r.status == 'WARNING')}
-- **Failed**: {sum(1 for r in report.validation_results if r.status == 'FAIL')}
+- **Passed**: {sum(1 for r in report.validation_results if r.status == "PASS")}
+- **Warnings**: {sum(1 for r in report.validation_results if r.status == "WARNING")}
+- **Failed**: {sum(1 for r in report.validation_results if r.status == "FAIL")}
 - **Compliance Score**: {report.compliance_score:.1f}%
 
 ---

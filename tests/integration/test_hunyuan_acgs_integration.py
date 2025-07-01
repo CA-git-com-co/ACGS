@@ -7,13 +7,10 @@ constitutional governance framework, ensuring compliance with
 constitutional hash cdd01ef066bc6cf2 and performance targets.
 """
 
-import unittest
 import time
+import unittest
+
 import requests
-import json
-import subprocess
-from typing import Dict, Any, List
-from pathlib import Path
 
 
 class TestHunyuanACGSIntegration(unittest.TestCase):
@@ -185,7 +182,7 @@ class TestHunyuanACGSIntegration(unittest.TestCase):
                     f"Translation missing expected keywords: {test_case['expected_keywords']}",
                 )
 
-                print(f"✓ Translation {i+1} completed in {response_time:.1f}ms")
+                print(f"✓ Translation {i + 1} completed in {response_time:.1f}ms")
                 print(f"  Found keywords: {found_keywords}")
 
     def test_cross_cultural_analysis(self):
@@ -313,7 +310,6 @@ class TestHunyuanACGSIntegration(unittest.TestCase):
         print("\n=== Testing Performance Under Load ===")
 
         import concurrent.futures
-        import threading
 
         def make_request():
             payload = {

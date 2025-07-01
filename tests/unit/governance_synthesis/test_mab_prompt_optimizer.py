@@ -2,18 +2,11 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.core.mab_prompt_optimizer
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.governance_synthesis.gs_service.app.core.mab_prompt_optimizer import (
-    MABAlgorithm,
-    PromptTemplate,
-    MABConfig,
-    RewardComponents,
     MABAlgorithmBase,
+    MABPromptOptimizer,
     ThompsonSamplingMAB,
     UCBAlgorithm,
-    RewardFunction,
-    MABPromptOptimizer,
 )
 
 

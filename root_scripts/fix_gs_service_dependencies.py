@@ -100,8 +100,7 @@ class GSServiceDependencyFixer:
                 if response.status_code == 200:
                     print("✅ GS Service configuration reloaded successfully")
                     return True
-                else:
-                    print(f"⚠️ Config reload endpoint returned {response.status_code}")
+                print(f"⚠️ Config reload endpoint returned {response.status_code}")
         except Exception as e:
             print(f"⚠️ Config reload not available: {e}")
 
@@ -122,14 +121,11 @@ class GSServiceDependencyFixer:
                     print("📊 GS Service Health Status:")
                     print(json.dumps(health_data, indent=2))
                     return health_data
-                else:
-                    print(
-                        f"❌ GS Service health check failed: HTTP {response.status_code}"
-                    )
-                    return {
-                        "status": "unhealthy",
-                        "error": f"HTTP {response.status_code}",
-                    }
+                print(f"❌ GS Service health check failed: HTTP {response.status_code}")
+                return {
+                    "status": "unhealthy",
+                    "error": f"HTTP {response.status_code}",
+                }
         except Exception as e:
             print(f"❌ GS Service health check failed: {e}")
             return {"status": "unreachable", "error": str(e)}

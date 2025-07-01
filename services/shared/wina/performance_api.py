@@ -275,7 +275,7 @@ async def get_health_status(
     except Exception as e:
         logger.error(f"Health status check failed: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Health status check failed: {str(e)}"
+            status_code=500, detail=f"Health status check failed: {e!s}"
         )
 
 
@@ -294,7 +294,7 @@ async def get_realtime_metrics(
     except Exception as e:
         logger.error(f"Real-time metrics retrieval failed: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Real-time metrics retrieval failed: {str(e)}"
+            status_code=500, detail=f"Real-time metrics retrieval failed: {e!s}"
         )
 
 
@@ -352,7 +352,7 @@ async def get_metrics_summary(
     except Exception as e:
         logger.error(f"Metrics summary retrieval failed: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Metrics summary retrieval failed: {str(e)}"
+            status_code=500, detail=f"Metrics summary retrieval failed: {e!s}"
         )
 
 
@@ -386,11 +386,11 @@ async def generate_performance_report(
             # sha256: func_hash
             if isinstance(obj, datetime):
                 return obj.isoformat()
-            elif isinstance(obj, dict):
+            if isinstance(obj, dict):
                 return {k: convert_datetime(v) for k, v in obj.items()}
-            elif isinstance(obj, list):
+            if isinstance(obj, list):
                 return [convert_datetime(item) for item in obj]
-            elif isinstance(obj, tuple):
+            if isinstance(obj, tuple):
                 return tuple(convert_datetime(item) for item in obj)
             return obj
 
@@ -406,7 +406,7 @@ async def generate_performance_report(
     except Exception as e:
         logger.error(f"Performance report generation failed: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Performance report generation failed: {str(e)}"
+            status_code=500, detail=f"Performance report generation failed: {e!s}"
         )
 
 
@@ -427,7 +427,7 @@ async def get_prometheus_metrics(
     except Exception as e:
         logger.error(f"Prometheus metrics export failed: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Prometheus metrics export failed: {str(e)}"
+            status_code=500, detail=f"Prometheus metrics export failed: {e!s}"
         )
 
 
@@ -478,9 +478,7 @@ async def get_recent_alerts(
 
     except Exception as e:
         logger.error(f"Alerts retrieval failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Alerts retrieval failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Alerts retrieval failed: {e!s}")
 
 
 # Metrics recording endpoints
@@ -515,9 +513,7 @@ async def record_neuron_activation_metrics(
 
     except Exception as e:
         logger.error(f"Neuron activation metrics recording failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Metrics recording failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Metrics recording failed: {e!s}")
 
 
 @router.post("/metrics/svd-transformation")
@@ -548,9 +544,7 @@ async def record_svd_transformation_metrics(
 
     except Exception as e:
         logger.error(f"SVD transformation metrics recording failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Metrics recording failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Metrics recording failed: {e!s}")
 
 
 @router.post("/metrics/dynamic-gating")
@@ -582,9 +576,7 @@ async def record_dynamic_gating_metrics(
 
     except Exception as e:
         logger.error(f"Dynamic gating metrics recording failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Metrics recording failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Metrics recording failed: {e!s}")
 
 
 @router.post("/metrics/constitutional-compliance")
@@ -615,9 +607,7 @@ async def record_constitutional_compliance_metrics(
 
     except Exception as e:
         logger.error(f"Constitutional compliance metrics recording failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Metrics recording failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Metrics recording failed: {e!s}")
 
 
 @router.post("/metrics/learning-feedback")
@@ -648,9 +638,7 @@ async def record_learning_feedback_metrics(
 
     except Exception as e:
         logger.error(f"Learning feedback metrics recording failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Metrics recording failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Metrics recording failed: {e!s}")
 
 
 @router.post("/metrics/integration")
@@ -682,9 +670,7 @@ async def record_integration_metrics(
 
     except Exception as e:
         logger.error(f"Integration metrics recording failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Metrics recording failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Metrics recording failed: {e!s}")
 
 
 @router.post("/metrics/system-health")
@@ -712,9 +698,7 @@ async def record_system_health_metrics(
 
     except Exception as e:
         logger.error(f"System health metrics recording failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Metrics recording failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Metrics recording failed: {e!s}")
 
 
 # Configuration endpoints
@@ -746,7 +730,7 @@ async def get_monitoring_configuration(
     except Exception as e:
         logger.error(f"Configuration retrieval failed: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Configuration retrieval failed: {str(e)}"
+            status_code=500, detail=f"Configuration retrieval failed: {e!s}"
         )
 
 
@@ -785,7 +769,7 @@ async def update_monitoring_configuration(
     except Exception as e:
         logger.error(f"Configuration update failed: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Configuration update failed: {str(e)}"
+            status_code=500, detail=f"Configuration update failed: {e!s}"
         )
 
 
@@ -800,9 +784,7 @@ async def start_monitoring(
 
     except Exception as e:
         logger.error(f"Monitoring start failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Monitoring start failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Monitoring start failed: {e!s}")
 
 
 @router.post("/monitoring/stop")
@@ -816,7 +798,7 @@ async def stop_monitoring(
 
     except Exception as e:
         logger.error(f"Monitoring stop failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Monitoring stop failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Monitoring stop failed: {e!s}")
 
 
 # Add the router to the main API

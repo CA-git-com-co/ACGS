@@ -2,16 +2,6 @@
 Unit tests for services.core.constitutional-ai.ac_service.app.services.human_in_the_loop_sampler
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.constitutional_ai.ac_service.app.services.human_in_the_loop_sampler import (
-    UncertaintyDimension,
-    SamplingTrigger,
-    UncertaintyAssessment,
-    HITLSamplingConfig,
-    HumanInTheLoopSampler,
-)
-
 
 class TestUncertaintyDimension:
     """Test suite for UncertaintyDimension."""

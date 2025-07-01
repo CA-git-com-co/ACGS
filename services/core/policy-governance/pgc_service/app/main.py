@@ -8,11 +8,10 @@ import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
-
 # Import standardized security middleware
 try:
-    import sys
     import os
+    import sys
     from pathlib import Path
 
     # Add project root to path
@@ -20,12 +19,12 @@ try:
     sys.path.insert(0, str(project_root))
 
     from services.shared.security.standardized_security import (
+        CONSTITUTIONAL_HASH,
         apply_standardized_security,
         create_health_endpoint_response,
-        validate_policy_input,
-        validate_governance_input,
         create_security_headers,
-        CONSTITUTIONAL_HASH,
+        validate_governance_input,
+        validate_policy_input,
     )
 
     SECURITY_MIDDLEWARE_AVAILABLE = True
@@ -49,22 +48,21 @@ except ImportError as e:
 
     CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
-from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
-from starlette.responses import PlainTextResponse
+import os
 
 # Import optimized governance engine
 import sys
-import os
+
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
+from starlette.responses import PlainTextResponse
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from optimized_governance_engine import (
-    get_governance_engine,
     PolicyValidationRequest,
-    PolicyValidationResponse,
-    ValidationResult,
+    get_governance_engine,
 )
 
 # Service configuration
@@ -105,9 +103,9 @@ app = FastAPI(
 # Apply standardized security middleware
 if SECURITY_MIDDLEWARE_AVAILABLE:
     app = apply_standardized_security(app, "pgc_service", SERVICE_VERSION)
-    print(f"✅ Standardized security middleware applied to pgc service")
+    print("✅ Standardized security middleware applied to pgc service")
 else:
-    print(f"⚠️ Security middleware not available for pgc service")
+    print("⚠️ Security middleware not available for pgc service")
 
 
 # Add secure CORS middleware with environment-based configuration

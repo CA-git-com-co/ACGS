@@ -12,7 +12,6 @@ import logging
 import sys
 import time
 from pathlib import Path
-from typing import Dict
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -36,8 +35,8 @@ class DatabaseResilienceTestSuite:
     """Comprehensive test suite for database resilience components."""
 
     def __init__(self):
-        self.test_results: Dict[str, bool] = {}
-        self.test_details: Dict[str, str] = {}
+        self.test_results: dict[str, bool] = {}
+        self.test_details: dict[str, str] = {}
 
     async def run_all_tests(self) -> bool:
         """Run all resilience tests."""
@@ -94,9 +93,8 @@ class DatabaseResilienceTestSuite:
         if success_rate >= 90:
             logger.info("🎉 Database resilience tests PASSED!")
             return True
-        else:
-            logger.error("💥 Database resilience tests FAILED!")
-            return False
+        logger.error("💥 Database resilience tests FAILED!")
+        return False
 
     async def test_retry_mechanism(self) -> bool:
         """Test retry mechanism with exponential backoff."""
@@ -120,11 +118,10 @@ class DatabaseResilienceTestSuite:
             if result == "success" and attempt_count == 3:
                 logger.info("  ✓ Retry mechanism working correctly")
                 return True
-            else:
-                self.test_details["retry_mechanism"] = (
-                    f"Expected 3 attempts, got {attempt_count}"
-                )
-                return False
+            self.test_details["retry_mechanism"] = (
+                f"Expected 3 attempts, got {attempt_count}"
+            )
+            return False
 
         except Exception as e:
             self.test_details["retry_mechanism"] = str(e)
@@ -158,11 +155,10 @@ class DatabaseResilienceTestSuite:
             if circuit_breaker.state == CircuitBreakerState.OPEN:
                 logger.info("  ✓ Circuit breaker state transitions working")
                 return True
-            else:
-                self.test_details["circuit_breaker"] = (
-                    f"Circuit breaker state: {circuit_breaker.state}"
-                )
-                return False
+            self.test_details["circuit_breaker"] = (
+                f"Circuit breaker state: {circuit_breaker.state}"
+            )
+            return False
 
         except Exception as e:
             self.test_details["circuit_breaker"] = str(e)
@@ -190,9 +186,8 @@ class DatabaseResilienceTestSuite:
             if client.pool_config["pool_size"] >= 20:
                 logger.info("  ✓ Connection pool configuration is correct")
                 return True
-            else:
-                self.test_details["connection_pooling"] = "Pool size too small"
-                return False
+            self.test_details["connection_pooling"] = "Pool size too small"
+            return False
 
         except Exception as e:
             self.test_details["connection_pooling"] = str(e)
@@ -220,14 +215,10 @@ class DatabaseResilienceTestSuite:
                 if "service" in health_status and "resilience" in health_status:
                     logger.info("  ✓ Health check structure is correct")
                     return True
-                else:
-                    self.test_details["database_client"] = (
-                        "Health check structure invalid"
-                    )
-                    return False
-            else:
-                self.test_details["database_client"] = "Invalid database URL"
+                self.test_details["database_client"] = "Health check structure invalid"
                 return False
+            self.test_details["database_client"] = "Invalid database URL"
+            return False
 
         except Exception as e:
             self.test_details["database_client"] = str(e)
@@ -250,12 +241,10 @@ class DatabaseResilienceTestSuite:
                 if "status" in summary:
                     logger.info("  ✓ Metrics summary generation working")
                     return True
-                else:
-                    self.test_details["monitoring"] = "Metrics summary invalid"
-                    return False
-            else:
-                self.test_details["monitoring"] = "Metrics structure invalid"
+                self.test_details["monitoring"] = "Metrics summary invalid"
                 return False
+            self.test_details["monitoring"] = "Metrics structure invalid"
+            return False
 
         except Exception as e:
             self.test_details["monitoring"] = str(e)
@@ -289,11 +278,10 @@ class DatabaseResilienceTestSuite:
                     f"  ✓ Load test passed: {successful_operations}/100 operations in {total_time:.2f}s"
                 )
                 return True
-            else:
-                self.test_details["load_testing"] = (
-                    f"Only {successful_operations}/100 operations succeeded in {total_time:.2f}s"
-                )
-                return False
+            self.test_details["load_testing"] = (
+                f"Only {successful_operations}/100 operations succeeded in {total_time:.2f}s"
+            )
+            return False
 
         except Exception as e:
             self.test_details["load_testing"] = str(e)
@@ -322,9 +310,8 @@ class DatabaseResilienceTestSuite:
             if result == "recovered":
                 logger.info("  ✓ Failover and recovery working")
                 return True
-            else:
-                self.test_details["failover"] = "Recovery failed"
-                return False
+            self.test_details["failover"] = "Recovery failed"
+            return False
 
         except Exception as e:
             self.test_details["failover"] = str(e)
@@ -342,10 +329,9 @@ async def main():
             logger.info("\n🎉 All database resilience tests completed successfully!")
             logger.info("✅ System is ready for >99.9% availability targets")
             return 0
-        else:
-            logger.error("\n💥 Some database resilience tests failed!")
-            logger.error("❌ System may not meet availability targets")
-            return 1
+        logger.error("\n💥 Some database resilience tests failed!")
+        logger.error("❌ System may not meet availability targets")
+        return 1
 
     except Exception as e:
         logger.error(f"Test suite execution failed: {e}")

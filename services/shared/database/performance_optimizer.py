@@ -243,8 +243,7 @@ class DatabasePerformanceOptimizer:
                 if cached_result is not None:
                     self.metrics.cache_hits += 1
                     return cached_result
-                else:
-                    self.metrics.cache_misses += 1
+                self.metrics.cache_misses += 1
 
             # Execute database query
             async with self.db_engine.begin() as conn:
@@ -781,10 +780,9 @@ class IntelligentCacheManager:
 
                 # Deserialize and return
                 return json.loads(cached_data)
-            else:
-                # Update access patterns
-                await self._update_access_pattern(key, "miss")
-                return None
+            # Update access patterns
+            await self._update_access_pattern(key, "miss")
+            return None
 
         except Exception as e:
             logger.error(f"Smart cache get error for key {key}: {e}")

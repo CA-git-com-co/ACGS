@@ -67,7 +67,7 @@ class PerformanceOptimizer:
                 )  # Convert to milliseconds
 
             except Exception as e:
-                print(f"⚠️ Request {i+1} failed: {str(e)}")
+                print(f"⚠️ Request {i + 1} failed: {e!s}")
                 continue
 
         if response_times:
@@ -79,15 +79,14 @@ class PerformanceOptimizer:
                 "success_rate": (success_count / iterations) * 100,
                 "total_requests": iterations,
             }
-        else:
-            return {
-                "avg_response_time": 0,
-                "min_response_time": 0,
-                "max_response_time": 0,
-                "median_response_time": 0,
-                "success_rate": 0,
-                "total_requests": iterations,
-            }
+        return {
+            "avg_response_time": 0,
+            "min_response_time": 0,
+            "max_response_time": 0,
+            "median_response_time": 0,
+            "success_rate": 0,
+            "total_requests": iterations,
+        }
 
     async def test_database_query_performance(self) -> dict[str, dict[str, float]]:
         """Test database query performance across services"""

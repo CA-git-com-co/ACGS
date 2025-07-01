@@ -11,17 +11,15 @@ Implements comprehensive operational excellence including:
 Target: 99.9% uptime with <1 hour MTTR for incidents
 """
 
-import os
-import sys
-import logging
 import asyncio
 import json
+import logging
+import os
+import sys
 import time
-import yaml
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Any
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -77,9 +75,9 @@ class OperationalExcellenceImplementor:
         }
 
         # Operational metrics
-        self.operational_metrics: List[OperationalMetric] = []
+        self.operational_metrics: list[OperationalMetric] = []
 
-    async def implement_operational_excellence(self) -> Dict[str, Any]:
+    async def implement_operational_excellence(self) -> dict[str, Any]:
         """Implement comprehensive operational excellence."""
         logger.info("🎯 Implementing operational excellence...")
 
@@ -128,7 +126,7 @@ class OperationalExcellenceImplementor:
             excellence_results["errors"].append(str(e))
             return excellence_results
 
-    async def _implement_backup_disaster_recovery(self) -> Dict[str, Any]:
+    async def _implement_backup_disaster_recovery(self) -> dict[str, Any]:
         """Implement automated backup and disaster recovery procedures."""
         logger.info("💾 Implementing backup and disaster recovery...")
 
@@ -333,7 +331,7 @@ echo "✅ Disaster recovery completed successfully"
             logger.error(f"Backup and disaster recovery implementation failed: {e}")
             raise
 
-    async def _deploy_chaos_engineering(self) -> Dict[str, Any]:
+    async def _deploy_chaos_engineering(self) -> dict[str, Any]:
         """Deploy chaos engineering practices."""
         logger.info("🔥 Deploying chaos engineering...")
 
@@ -389,7 +387,7 @@ echo "✅ Disaster recovery completed successfully"
             logger.error(f"Chaos engineering deployment failed: {e}")
             raise
 
-    async def _implement_performance_regression_testing(self) -> Dict[str, Any]:
+    async def _implement_performance_regression_testing(self) -> dict[str, Any]:
         """Implement regular performance regression testing."""
         logger.info("📈 Implementing performance regression testing...")
 
@@ -429,7 +427,7 @@ echo "✅ Disaster recovery completed successfully"
             logger.error(f"Performance regression testing implementation failed: {e}")
             raise
 
-    async def _implement_incident_response_automation(self) -> Dict[str, Any]:
+    async def _implement_incident_response_automation(self) -> dict[str, Any]:
         """Implement automated incident response."""
         logger.info("🚨 Implementing incident response automation...")
 
@@ -500,7 +498,7 @@ echo "✅ Disaster recovery completed successfully"
             logger.error(f"Incident response automation implementation failed: {e}")
             raise
 
-    async def _calculate_operational_metrics(self) -> Dict[str, Any]:
+    async def _calculate_operational_metrics(self) -> dict[str, Any]:
         """Calculate operational excellence metrics."""
         logger.info("📊 Calculating operational metrics...")
 
@@ -563,7 +561,7 @@ echo "✅ Disaster recovery completed successfully"
             logger.error(f"Operational metrics calculation failed: {e}")
             raise
 
-    async def _generate_operational_excellence_report(self, results: Dict[str, Any]):
+    async def _generate_operational_excellence_report(self, results: dict[str, Any]):
         """Generate comprehensive operational excellence report."""
         report_path = self.project_root / "operational_excellence_report.json"
 

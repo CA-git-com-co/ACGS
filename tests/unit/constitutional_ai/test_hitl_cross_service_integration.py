@@ -2,11 +2,8 @@
 Unit tests for services.core.constitutional-ai.ac_service.app.services.hitl_cross_service_integration
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.constitutional_ai.ac_service.app.services.hitl_cross_service_integration import (
     CrossServiceConfidenceMetrics,
-    HITLCrossServiceIntegrator,
 )
 
 

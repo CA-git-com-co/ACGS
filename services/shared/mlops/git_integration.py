@@ -8,13 +8,13 @@ This module integrates with the ACGS-PGP system to provide full
 traceability from code changes to model deployments.
 """
 
+import json
 import logging
 import subprocess
-import json
-from datetime import datetime, timezone
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Any
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -36,9 +36,9 @@ class CommitInfo:
     timestamp: datetime
     message: str
     branch: str
-    files_changed: List[str]
+    files_changed: list[str]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "hash": self.hash,
@@ -62,7 +62,7 @@ class TagInfo:
     timestamp: datetime
     message: str
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "name": self.name,
@@ -98,7 +98,7 @@ class GitIntegration:
         git_dir = self.repo_path / ".git"
         return git_dir.exists()
 
-    def _run_git_command(self, command: List[str]) -> str:
+    def _run_git_command(self, command: list[str]) -> str:
         """Run Git command and return output."""
         try:
             result = subprocess.run(
@@ -198,7 +198,7 @@ class GitIntegration:
             raise GitError(f"Failed to get commit info for {commit_hash}: {e}")
 
     def create_tag(
-        self, tag_name: str, message: str, commit_hash: Optional[str] = None
+        self, tag_name: str, message: str, commit_hash: str | None = None
     ) -> TagInfo:
         """
         Create a Git tag for model version tracking.
@@ -284,7 +284,7 @@ class GitIntegration:
         except Exception as e:
             raise GitError(f"Failed to get tag info for {tag_name}: {e}")
 
-    def list_tags(self, pattern: Optional[str] = None) -> List[TagInfo]:
+    def list_tags(self, pattern: str | None = None) -> list[TagInfo]:
         """List all tags, optionally filtered by pattern."""
         try:
             # Get tag list
@@ -309,7 +309,7 @@ class GitIntegration:
         except Exception as e:
             raise GitError(f"Failed to list tags: {e}")
 
-    def get_changes_since_commit(self, commit_hash: str) -> List[str]:
+    def get_changes_since_commit(self, commit_hash: str) -> list[str]:
         """Get list of files changed since a specific commit."""
         try:
             changed_files = self._run_git_command(
@@ -329,7 +329,7 @@ class GitIntegration:
         except GitError:
             return False
 
-    def get_repository_info(self) -> Dict[str, Any]:
+    def get_repository_info(self) -> dict[str, Any]:
         """Get general repository information."""
         try:
             current_commit = self.get_current_commit()
@@ -372,7 +372,7 @@ class GitTracker:
         logger.info("GitTracker initialized")
 
     def track_model_version(
-        self, model_name: str, version: str, performance_metrics: Dict[str, float]
+        self, model_name: str, version: str, performance_metrics: dict[str, float]
     ) -> TagInfo:
         """
         Create Git tag for model version with metadata.
@@ -402,12 +402,12 @@ class GitTracker:
 
         return self.git.create_tag(tag_name, message)
 
-    def get_model_version_history(self, model_name: str) -> List[TagInfo]:
+    def get_model_version_history(self, model_name: str) -> list[TagInfo]:
         """Get version history for a specific model."""
         pattern = f"{model_name}-v*"
         return self.git.list_tags(pattern)
 
-    def validate_deployment_readiness(self) -> Dict[str, Any]:
+    def validate_deployment_readiness(self) -> dict[str, Any]:
         """
         Validate that repository is ready for deployment.
 

@@ -116,11 +116,8 @@ class RecoveryStrategyDispatcher:
         # Select strategy based on attempt number
         if attempts == 0:
             return strategy_config.strategy
-        else:
-            # Use fallback strategy for subsequent attempts
-            return (
-                strategy_config.fallback_strategy or RecoveryStrategy.ESCALATE_TO_HUMAN
-            )
+        # Use fallback strategy for subsequent attempts
+        return strategy_config.fallback_strategy or RecoveryStrategy.ESCALATE_TO_HUMAN
 
     def execute_recovery_strategy(
         self,
@@ -252,28 +249,27 @@ class RecoveryStrategyDispatcher:
         if strategy == RecoveryStrategy.SIMPLIFIED_SYNTAX_PROMPT:
             return self._execute_simplified_syntax_strategy(original_input)
 
-        elif strategy == RecoveryStrategy.EXPLICIT_DISAMBIGUATION:
+        if strategy == RecoveryStrategy.EXPLICIT_DISAMBIGUATION:
             return self._execute_disambiguation_strategy(
                 original_input, failure_context
             )
 
-        elif strategy == RecoveryStrategy.MULTI_MODEL_CONSENSUS:
+        if strategy == RecoveryStrategy.MULTI_MODEL_CONSENSUS:
             return self._execute_consensus_strategy(original_input)
 
-        elif strategy == RecoveryStrategy.ENHANCED_CONTEXT_PROMPT:
+        if strategy == RecoveryStrategy.ENHANCED_CONTEXT_PROMPT:
             return self._execute_enhanced_context_strategy(original_input)
 
-        elif strategy == RecoveryStrategy.DECOMPOSE_PRINCIPLE:
+        if strategy == RecoveryStrategy.DECOMPOSE_PRINCIPLE:
             return self._execute_decomposition_strategy(original_input)
 
-        elif strategy == RecoveryStrategy.HUMAN_CLARIFICATION:
+        if strategy == RecoveryStrategy.HUMAN_CLARIFICATION:
             return self._execute_human_clarification_strategy(original_input)
 
-        elif strategy == RecoveryStrategy.ESCALATE_TO_HUMAN:
+        if strategy == RecoveryStrategy.ESCALATE_TO_HUMAN:
             return self._execute_human_escalation_strategy(original_input)
 
-        else:
-            return self._execute_default_strategy(original_input)
+        return self._execute_default_strategy(original_input)
 
     def _execute_simplified_syntax_strategy(
         self, original_input: dict[str, Any]

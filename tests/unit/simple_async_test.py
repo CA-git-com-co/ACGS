@@ -12,7 +12,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -43,22 +43,22 @@ class SimpleAsyncJob:
 
     job_id: str
     job_type: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     priority: JobPriority = JobPriority.NORMAL
     status: JobStatus = JobStatus.PENDING
     created_at: datetime = field(default_factory=datetime.now)
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
     processing_time: float = 0.0
-    result: Optional[Dict[str, Any]] = None
-    error_message: Optional[str] = None
+    result: dict[str, Any] | None = None
+    error_message: str | None = None
 
 
 class SimpleAsyncProcessor:
     """Simple async processor for testing."""
 
     def __init__(self):
-        self.jobs: Dict[str, SimpleAsyncJob] = {}
+        self.jobs: dict[str, SimpleAsyncJob] = {}
         self.job_queue = asyncio.Queue()
         self.workers = []
         self.is_running = False
@@ -71,7 +71,7 @@ class SimpleAsyncProcessor:
     async def submit_job(
         self,
         job_type: str,
-        payload: Dict[str, Any],
+        payload: dict[str, Any],
         priority: JobPriority = JobPriority.NORMAL,
     ) -> str:
         """Submit a job for processing."""
@@ -187,11 +187,11 @@ class SimpleAsyncProcessor:
 
             logger.error(f"Job {job_id} failed: {e}")
 
-    async def get_job_status(self, job_id: str) -> Optional[SimpleAsyncJob]:
+    async def get_job_status(self, job_id: str) -> SimpleAsyncJob | None:
         """Get job status."""
         return self.jobs.get(job_id)
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get processing metrics."""
         total_jobs = self.metrics["jobs_processed"] + self.metrics["jobs_failed"]
         avg_processing_time = (
@@ -216,8 +216,8 @@ class SimpleAsyncProcessor:
 
     # Job handlers
     async def _handle_constitutional_compliance(
-        self, payload: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, payload: dict[str, Any]
+    ) -> dict[str, Any]:
         """Handle constitutional compliance checking."""
         await asyncio.sleep(0.1)  # Simulate processing
         return {
@@ -227,7 +227,7 @@ class SimpleAsyncProcessor:
             "processing_type": "constitutional_compliance",
         }
 
-    async def _handle_policy_synthesis(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_policy_synthesis(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Handle policy synthesis."""
         await asyncio.sleep(0.3)  # Simulate LLM processing
         return {
@@ -237,8 +237,8 @@ class SimpleAsyncProcessor:
         }
 
     async def _handle_governance_workflow(
-        self, payload: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, payload: dict[str, Any]
+    ) -> dict[str, Any]:
         """Handle governance workflow processing."""
         await asyncio.sleep(0.2)
         return {
@@ -248,8 +248,8 @@ class SimpleAsyncProcessor:
         }
 
     async def _handle_performance_monitoring(
-        self, payload: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, payload: dict[str, Any]
+    ) -> dict[str, Any]:
         """Handle performance monitoring."""
         await asyncio.sleep(0.05)
         return {
@@ -259,7 +259,7 @@ class SimpleAsyncProcessor:
             "processing_type": "performance_monitoring",
         }
 
-    async def _handle_data_export(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_data_export(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Handle data export."""
         await asyncio.sleep(0.5)  # Simulate file generation
         return {
@@ -372,7 +372,7 @@ async def run_async_processing_test():
 
         # Metrics
         metrics = processor.get_metrics()
-        print(f"\n📈 Processing Metrics:")
+        print("\n📈 Processing Metrics:")
         print("-" * 30)
         print(f"Total Jobs: {metrics['total_jobs']}")
         print(f"Successful: {metrics['jobs_processed']}")

@@ -5,13 +5,12 @@ Addresses minor issues, code quality improvements, documentation gaps,
 and ensures consistency with established patterns.
 """
 
-import os
-import sys
 import json
+import sys
 import time
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
 # Add project paths
 project_root = Path(__file__).parent
@@ -23,10 +22,10 @@ class MinorResolutionResult:
     issue_id: str
     status: str  # RESOLVED, PARTIAL, FAILED, SKIPPED
     resolution_time: float
-    actions_taken: List[str]
+    actions_taken: list[str]
     verification_passed: bool
-    remaining_work: List[str]
-    details: Dict[str, Any]
+    remaining_work: list[str]
+    details: dict[str, Any]
 
 
 class MinorIssueResolver:
@@ -34,7 +33,7 @@ class MinorIssueResolver:
         self.project_root = project_root
         self.resolution_results = []
 
-    def load_minor_issues(self) -> List[Dict[str, Any]]:
+    def load_minor_issues(self) -> list[dict[str, Any]]:
         """Load minor issues from the analysis results."""
         issue_file = self.project_root / "issue_analysis_results.json"
 
@@ -42,7 +41,7 @@ class MinorIssueResolver:
             print("❌ Issue analysis results not found. Run issue_analyzer.py first.")
             return []
 
-        with open(issue_file, "r") as f:
+        with open(issue_file) as f:
             data = json.load(f)
 
         # Filter for minor issues
@@ -55,7 +54,7 @@ class MinorIssueResolver:
         print(f"📋 Found {len(minor_issues)} minor issues to resolve")
         return minor_issues
 
-    def improve_code_quality(self, issue: Dict[str, Any]) -> MinorResolutionResult:
+    def improve_code_quality(self, issue: dict[str, Any]) -> MinorResolutionResult:
         """Improve code quality and consistency."""
         start_time = time.time()
         actions_taken = []
@@ -387,7 +386,7 @@ python -m pytest --cov=services --cov-report=html
         except Exception:
             return False
 
-    def resolve_minor_issues(self) -> Dict[str, Any]:
+    def resolve_minor_issues(self) -> dict[str, Any]:
         """Resolve all minor issues."""
         print("Starting Minor Issue Resolution and Code Quality Improvement...")
         print("=" * 60)
@@ -401,7 +400,7 @@ python -m pytest --cov=services --cov-report=html
             "category": "MAINTAINABILITY",
         }
 
-        print(f"\n🔧 Improving code quality and consistency...")
+        print("\n🔧 Improving code quality and consistency...")
         result = self.improve_code_quality(generic_issue)
         self.resolution_results.append(result)
 
@@ -443,9 +442,9 @@ python -m pytest --cov=services --cov-report=html
             resolved_count += 1
 
             print(f"✅ {minor_result.issue_id}: RESOLVED (0.100s)")
-            print(f"   Actions: 2")
-            print(f"   Verified: ✓")
-            print(f"   Remaining: 1")
+            print("   Actions: 2")
+            print("   Verified: ✓")
+            print("   Remaining: 1")
 
         # Generate summary
         total_issues = len(minor_issues) + 1  # +1 for code quality

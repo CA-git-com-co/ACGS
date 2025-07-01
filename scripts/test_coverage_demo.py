@@ -3,9 +3,9 @@
 Test coverage demonstration script.
 """
 
+import os
 import subprocess
 import sys
-import os
 
 
 def run_coverage_test():
@@ -64,6 +64,7 @@ def test_divide_numbers():
                 "--cov-report=html:coverage_demo_html",
                 "-v",
             ],
+            check=False,
             capture_output=True,
             text=True,
         )

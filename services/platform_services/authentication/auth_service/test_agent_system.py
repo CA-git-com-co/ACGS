@@ -7,16 +7,13 @@ Tests agent creation, authentication, and basic operations.
 """
 
 import asyncio
-import json
 import sys
-from datetime import datetime
-from typing import Dict, Any
 
 # Add the app directory to the path
 sys.path.append("app")
 
 from app.models.agent import AgentStatus, AgentType
-from app.schemas.agent import AgentCreate, AgentUpdate, AgentStatusUpdate
+from app.schemas.agent import AgentCreate, AgentStatusUpdate, AgentUpdate
 from app.services.agent_service import AgentService
 
 
@@ -122,7 +119,7 @@ async def test_agent_creation():
             db=db, agent_data=agent_data, created_by_user_id=1, client_ip="127.0.0.1"
         )
 
-        print(f"✅ Agent created successfully:")
+        print("✅ Agent created successfully:")
         print(f"   - Agent ID: {agent.agent_id}")
         print(f"   - Name: {agent.name}")
         print(f"   - Type: {agent.agent_type}")
@@ -191,7 +188,7 @@ async def test_agent_update():
             updated_by_user_id=1,
         )
 
-        print(f"✅ Agent updated successfully:")
+        print("✅ Agent updated successfully:")
         print(f"   - Name: {updated_agent.name}")
         print(f"   - Description: {updated_agent.description}")
         print(f"   - Capabilities: {updated_agent.capabilities}")

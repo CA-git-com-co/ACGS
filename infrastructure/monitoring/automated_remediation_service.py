@@ -16,15 +16,13 @@ import json
 import logging
 import os
 import subprocess
-import time
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from enum import Enum
+from typing import Any
 
 import aiohttp
-import yaml
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import BackgroundTasks, FastAPI
 from pydantic import BaseModel
 
 # Configure logging
@@ -71,8 +69,8 @@ class RemediationRule:
     max_attempts: int = 3
     cooldown_minutes: int = 5
     escalate_after_attempts: int = 2
-    script_path: Optional[str] = None
-    parameters: Dict[str, Any] = None
+    script_path: str | None = None
+    parameters: dict[str, Any] = None
 
 
 class AlertWebhook(BaseModel):
@@ -80,10 +78,10 @@ class AlertWebhook(BaseModel):
 
     receiver: str
     status: str
-    alerts: List[Dict[str, Any]]
-    groupLabels: Dict[str, str]
-    commonLabels: Dict[str, str]
-    commonAnnotations: Dict[str, str]
+    alerts: list[dict[str, Any]]
+    groupLabels: dict[str, str]
+    commonLabels: dict[str, str]
+    commonAnnotations: dict[str, str]
     externalURL: str
     version: str
     groupKey: str
@@ -100,7 +98,7 @@ class AutomatedRemediationService:
         )
 
         # Track remediation attempts
-        self.remediation_history: Dict[str, List[datetime]] = {}
+        self.remediation_history: dict[str, list[datetime]] = {}
         self.escalated_alerts: set = set()
 
         # Load remediation rules
@@ -111,7 +109,7 @@ class AutomatedRemediationService:
 
         logger.info("Automated Remediation Service initialized")
 
-    def _load_remediation_rules(self) -> List[RemediationRule]:
+    def _load_remediation_rules(self) -> list[RemediationRule]:
         """Load remediation rules from configuration."""
         rules = [
             # Service restart rules
@@ -220,7 +218,7 @@ class AutomatedRemediationService:
                 ],
             }
 
-    async def _process_alert(self, alert: Dict[str, Any]):
+    async def _process_alert(self, alert: dict[str, Any]):
         """Process a single alert for potential remediation."""
         try:
             alert_name = alert.get("labels", {}).get("alertname", "Unknown")
@@ -268,7 +266,7 @@ class AutomatedRemediationService:
 
     def _find_matching_rule(
         self, alert_name: str, service: str
-    ) -> Optional[RemediationRule]:
+    ) -> RemediationRule | None:
         """Find the best matching remediation rule."""
         # First try exact match
         for rule in self.rules:
@@ -309,7 +307,7 @@ class AutomatedRemediationService:
         return True
 
     async def _execute_remediation(
-        self, rule: RemediationRule, alert: Dict[str, Any]
+        self, rule: RemediationRule, alert: dict[str, Any]
     ) -> bool:
         """Execute the specified remediation action."""
         try:
@@ -317,22 +315,21 @@ class AutomatedRemediationService:
 
             if rule.action == RemediationAction.RESTART_SERVICE:
                 return await self._restart_service(service)
-            elif rule.action == RemediationAction.RESTART_CONTAINER:
+            if rule.action == RemediationAction.RESTART_CONTAINER:
                 return await self._restart_container(service)
-            elif rule.action == RemediationAction.CLEAR_CACHE:
+            if rule.action == RemediationAction.CLEAR_CACHE:
                 return await self._clear_cache(service)
-            elif rule.action == RemediationAction.SCALE_UP:
+            if rule.action == RemediationAction.SCALE_UP:
                 return await self._scale_service(service, "up")
-            elif rule.action == RemediationAction.SCALE_DOWN:
+            if rule.action == RemediationAction.SCALE_DOWN:
                 return await self._scale_service(service, "down")
-            elif rule.action == RemediationAction.RUN_SCRIPT:
+            if rule.action == RemediationAction.RUN_SCRIPT:
                 return await self._run_script(rule.script_path, rule.parameters)
-            elif rule.action == RemediationAction.ESCALATE_TO_HUMAN:
+            if rule.action == RemediationAction.ESCALATE_TO_HUMAN:
                 await self._escalate_to_human(alert, rule, 0)
                 return True
-            else:
-                logger.warning(f"Unknown remediation action: {rule.action}")
-                return False
+            logger.warning(f"Unknown remediation action: {rule.action}")
+            return False
 
         except Exception as e:
             logger.error(f"Error executing remediation: {e}")
@@ -358,6 +355,7 @@ class AutomatedRemediationService:
                 # Kill the service process
                 result = subprocess.run(
                     service_commands[service],
+                    check=False,
                     shell=True,
                     capture_output=True,
                     text=True,
@@ -370,9 +368,8 @@ class AutomatedRemediationService:
                 # The service should be restarted by systemd or supervisor
                 logger.info(f"Service restart command executed for {service}")
                 return True
-            else:
-                logger.warning(f"No restart command configured for service: {service}")
-                return False
+            logger.warning(f"No restart command configured for service: {service}")
+            return False
 
         except Exception as e:
             logger.error(f"Error restarting service {service}: {e}")
@@ -385,6 +382,7 @@ class AutomatedRemediationService:
 
             result = subprocess.run(
                 f"docker restart {service}",
+                check=False,
                 shell=True,
                 capture_output=True,
                 text=True,
@@ -394,9 +392,8 @@ class AutomatedRemediationService:
             if result.returncode == 0:
                 logger.info(f"Container {service} restarted successfully")
                 return True
-            else:
-                logger.error(f"Failed to restart container {service}: {result.stderr}")
-                return False
+            logger.error(f"Failed to restart container {service}: {result.stderr}")
+            return False
 
         except Exception as e:
             logger.error(f"Error restarting container {service}: {e}")
@@ -440,7 +437,7 @@ class AutomatedRemediationService:
             logger.error(f"Error scaling service {service}: {e}")
             return False
 
-    async def _run_script(self, script_path: str, parameters: Dict[str, Any]) -> bool:
+    async def _run_script(self, script_path: str, parameters: dict[str, Any]) -> bool:
         """Run a custom remediation script."""
         try:
             if not script_path or not os.path.exists(script_path):
@@ -451,6 +448,7 @@ class AutomatedRemediationService:
 
             result = subprocess.run(
                 [script_path] + [str(v) for v in (parameters or {}).values()],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=300,
@@ -459,16 +457,15 @@ class AutomatedRemediationService:
             if result.returncode == 0:
                 logger.info(f"Script {script_path} executed successfully")
                 return True
-            else:
-                logger.error(f"Script {script_path} failed: {result.stderr}")
-                return False
+            logger.error(f"Script {script_path} failed: {result.stderr}")
+            return False
 
         except Exception as e:
             logger.error(f"Error running script {script_path}: {e}")
             return False
 
     async def _escalate_to_human(
-        self, alert: Dict[str, Any], rule: RemediationRule, attempts: int
+        self, alert: dict[str, Any], rule: RemediationRule, attempts: int
     ):
         """Escalate alert to human operators."""
         try:
@@ -500,7 +497,7 @@ class AutomatedRemediationService:
         except Exception as e:
             logger.error(f"Error escalating alert: {e}")
 
-    async def _handle_resolved_alert(self, alert: Dict[str, Any]):
+    async def _handle_resolved_alert(self, alert: dict[str, Any]):
         """Handle resolved alerts."""
         try:
             alert_name = alert.get("labels", {}).get("alertname", "Unknown")

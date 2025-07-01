@@ -4,13 +4,11 @@ Implements advanced health checks, monitoring, and alerting capabilities.
 """
 
 import asyncio
-import json
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from enum import Enum
-from typing import Dict, List, Optional
 
 import aiohttp
 from prometheus_client import (
@@ -64,8 +62,8 @@ class HealthCheck:
     critical_threshold: float = 0.5
 
     # State tracking
-    last_check_time: Optional[datetime] = None
-    last_status: Optional[HealthStatus] = None
+    last_check_time: datetime | None = None
+    last_status: HealthStatus | None = None
     consecutive_failures: int = 0
 
 
@@ -90,9 +88,9 @@ class HealthMonitor:
         self.setup_metrics()
 
         # Health tracking
-        self.health_checks: Dict[str, HealthCheck] = {}
-        self.health_metrics: Dict[str, HealthMetrics] = {}
-        self.alert_history: List[Dict] = []
+        self.health_checks: dict[str, HealthCheck] = {}
+        self.health_metrics: dict[str, HealthMetrics] = {}
+        self.alert_history: list[dict] = []
 
         # Service endpoints
         self.service_endpoints = {
@@ -247,7 +245,6 @@ class HealthMonitor:
                         or (current_time - health_check.last_check_time).total_seconds()
                         >= health_check.interval_seconds
                     ):
-
                         await self.run_health_check(health_check)
 
                 await asyncio.sleep(5)  # Check every 5 seconds for due health checks
@@ -305,7 +302,7 @@ class HealthMonitor:
             logger.error(f"Health check {health_check.check_id} failed: {e}")
             await self.handle_health_check_failure(health_check, str(e))
 
-    async def check_api_endpoint(self, health_check: HealthCheck) -> Dict:
+    async def check_api_endpoint(self, health_check: HealthCheck) -> dict:
         """Check API endpoint health."""
         async with aiohttp.ClientSession() as session:
             start_time = time.time()
@@ -322,12 +319,11 @@ class HealthMonitor:
                             "response_time_ms": response_time,
                             "details": {"status_code": response.status},
                         }
-                    else:
-                        return {
-                            "status": HealthStatus.DEGRADED,
-                            "response_time_ms": response_time,
-                            "details": {"status_code": response.status},
-                        }
+                    return {
+                        "status": HealthStatus.DEGRADED,
+                        "response_time_ms": response_time,
+                        "details": {"status_code": response.status},
+                    }
 
             except Exception as e:
                 return {
@@ -336,7 +332,7 @@ class HealthMonitor:
                     "details": {"error": str(e)},
                 }
 
-    async def check_health_endpoint(self, health_check: HealthCheck) -> Dict:
+    async def check_health_endpoint(self, health_check: HealthCheck) -> dict:
         """Check dedicated health endpoint."""
         async with aiohttp.ClientSession() as session:
             start_time = time.time()
@@ -356,18 +352,16 @@ class HealthMonitor:
                                 "response_time_ms": response_time,
                                 "details": data,
                             }
-                        else:
-                            return {
-                                "status": HealthStatus.DEGRADED,
-                                "response_time_ms": response_time,
-                                "details": data,
-                            }
-                    else:
                         return {
-                            "status": HealthStatus.UNHEALTHY,
+                            "status": HealthStatus.DEGRADED,
                             "response_time_ms": response_time,
-                            "details": {"status_code": response.status},
+                            "details": data,
                         }
+                    return {
+                        "status": HealthStatus.UNHEALTHY,
+                        "response_time_ms": response_time,
+                        "details": {"status_code": response.status},
+                    }
 
             except Exception as e:
                 return {
@@ -376,7 +370,7 @@ class HealthMonitor:
                     "details": {"error": str(e)},
                 }
 
-    async def check_evolution_api(self, health_check: HealthCheck) -> Dict:
+    async def check_evolution_api(self, health_check: HealthCheck) -> dict:
         """Check evolution API functionality."""
         async with aiohttp.ClientSession() as session:
             start_time = time.time()
@@ -397,12 +391,11 @@ class HealthMonitor:
                             "response_time_ms": response_time,
                             "details": {"api_functional": True},
                         }
-                    else:
-                        return {
-                            "status": HealthStatus.DEGRADED,
-                            "response_time_ms": response_time,
-                            "details": {"unexpected_status": response.status},
-                        }
+                    return {
+                        "status": HealthStatus.DEGRADED,
+                        "response_time_ms": response_time,
+                        "details": {"unexpected_status": response.status},
+                    }
 
             except Exception as e:
                 return {
@@ -411,7 +404,7 @@ class HealthMonitor:
                     "details": {"error": str(e)},
                 }
 
-    async def check_ac_service(self, health_check: HealthCheck) -> Dict:
+    async def check_ac_service(self, health_check: HealthCheck) -> dict:
         """Check AC Service integration."""
         async with aiohttp.ClientSession() as session:
             start_time = time.time()
@@ -428,12 +421,11 @@ class HealthMonitor:
                             "response_time_ms": response_time,
                             "details": {"ac_service_available": True},
                         }
-                    else:
-                        return {
-                            "status": HealthStatus.DEGRADED,
-                            "response_time_ms": response_time,
-                            "details": {"ac_service_status": response.status},
-                        }
+                    return {
+                        "status": HealthStatus.DEGRADED,
+                        "response_time_ms": response_time,
+                        "details": {"ac_service_status": response.status},
+                    }
 
             except Exception as e:
                 return {
@@ -442,7 +434,7 @@ class HealthMonitor:
                     "details": {"error": str(e)},
                 }
 
-    async def check_pgc_service(self, health_check: HealthCheck) -> Dict:
+    async def check_pgc_service(self, health_check: HealthCheck) -> dict:
         """Check PGC Service integration."""
         async with aiohttp.ClientSession() as session:
             start_time = time.time()
@@ -459,12 +451,11 @@ class HealthMonitor:
                             "response_time_ms": response_time,
                             "details": {"pgc_service_available": True},
                         }
-                    else:
-                        return {
-                            "status": HealthStatus.DEGRADED,
-                            "response_time_ms": response_time,
-                            "details": {"pgc_service_status": response.status},
-                        }
+                    return {
+                        "status": HealthStatus.DEGRADED,
+                        "response_time_ms": response_time,
+                        "details": {"pgc_service_status": response.status},
+                    }
 
             except Exception as e:
                 return {
@@ -473,7 +464,7 @@ class HealthMonitor:
                     "details": {"error": str(e)},
                 }
 
-    async def check_security_layers(self, health_check: HealthCheck) -> Dict:
+    async def check_security_layers(self, health_check: HealthCheck) -> dict:
         """Check 4-layer security architecture."""
         start_time = time.time()
 
@@ -525,7 +516,7 @@ class HealthMonitor:
                 "details": {"error": str(e)},
             }
 
-    async def check_evolution_engine(self, health_check: HealthCheck) -> Dict:
+    async def check_evolution_engine(self, health_check: HealthCheck) -> dict:
         """Check evolution engine health."""
         start_time = time.time()
 
@@ -554,7 +545,7 @@ class HealthMonitor:
                 "details": {"error": str(e)},
             }
 
-    async def check_human_workflow(self, health_check: HealthCheck) -> Dict:
+    async def check_human_workflow(self, health_check: HealthCheck) -> dict:
         """Check human approval workflow health."""
         start_time = time.time()
 
@@ -583,7 +574,7 @@ class HealthMonitor:
                 "details": {"error": str(e)},
             }
 
-    def update_health_metrics(self, check_id: str, result: Dict):
+    def update_health_metrics(self, check_id: str, result: dict):
         """Update health metrics for a component."""
         status = result["status"]
         response_time = result.get("response_time_ms", 0.0)
@@ -672,7 +663,7 @@ class HealthMonitor:
             except Exception as e:
                 logger.error(f"Error in metrics updater: {e}")
 
-    def get_overall_health(self) -> Dict:
+    def get_overall_health(self) -> dict:
         """Get overall health status."""
         if not self.health_metrics:
             return {

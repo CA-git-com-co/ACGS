@@ -10,24 +10,13 @@ Success Criteria: >95% constitutional compliance, ≤2s response time, >95% test
 """
 
 import asyncio
-import json
 import logging
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
-import unittest
-from unittest.mock import AsyncMock, MagicMock, patch
+from typing import Any
 
 import httpx
-import pytest
-from fastapi.testclient import TestClient
-
-from services.core.acge.acge_prototype import (
-    ACGEPrototype,
-    ACGEConfig,
-    ConstitutionalRequest,
-)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -81,7 +70,7 @@ class ACGETestFramework:
 
         logger.info("ACGE testing framework initialized")
 
-    def _load_constitutional_test_cases(self) -> List[Dict[str, Any]]:
+    def _load_constitutional_test_cases(self) -> list[dict[str, Any]]:
         """Load constitutional test cases for validation."""
 
         return [
@@ -162,7 +151,7 @@ class ACGETestFramework:
             },
         ]
 
-    async def run_comprehensive_test_suite(self) -> Dict[str, Any]:
+    async def run_comprehensive_test_suite(self) -> dict[str, Any]:
         """Run comprehensive ACGE test suite."""
 
         test_start = time.time()
@@ -199,7 +188,7 @@ class ACGETestFramework:
                     overall_results["overall_success"] = False
 
             except Exception as e:
-                logger.error(f"{category_name} failed: {str(e)}")
+                logger.error(f"{category_name} failed: {e!s}")
                 overall_results["test_categories"][category_name] = {
                     "success": False,
                     "error": str(e),
@@ -218,7 +207,7 @@ class ACGETestFramework:
         logger.info(f"ACGE test suite completed in {test_duration:.2f}s")
         return overall_results
 
-    async def _run_constitutional_compliance_tests(self) -> Dict[str, Any]:
+    async def _run_constitutional_compliance_tests(self) -> dict[str, Any]:
         """Run constitutional compliance tests."""
 
         compliance_results = {
@@ -355,7 +344,7 @@ class ACGETestFramework:
         return compliance_results
 
     def _validate_compliance_expectations(
-        self, test_case: Dict[str, Any], result: Dict[str, Any]
+        self, test_case: dict[str, Any], result: dict[str, Any]
     ) -> bool:
         """Validate compliance expectations for test case."""
 
@@ -380,7 +369,7 @@ class ACGETestFramework:
 
         return True
 
-    async def _run_performance_tests(self) -> Dict[str, Any]:
+    async def _run_performance_tests(self) -> dict[str, Any]:
         """Run performance tests for ACGE."""
 
         performance_results = {
@@ -432,7 +421,7 @@ class ACGETestFramework:
 
         return performance_results
 
-    async def _run_integration_tests(self) -> Dict[str, Any]:
+    async def _run_integration_tests(self) -> dict[str, Any]:
         """Run integration tests with ACGS-PGP services."""
 
         integration_results = {
@@ -475,7 +464,7 @@ class ACGETestFramework:
 
         return integration_results
 
-    async def _run_load_tests(self) -> Dict[str, Any]:
+    async def _run_load_tests(self) -> dict[str, Any]:
         """Run load tests for ACGE."""
 
         load_results = {
@@ -543,7 +532,7 @@ class ACGETestFramework:
 
         return load_results
 
-    async def _run_security_tests(self) -> Dict[str, Any]:
+    async def _run_security_tests(self) -> dict[str, Any]:
         """Run security tests for ACGE."""
 
         security_results = {
@@ -582,8 +571,8 @@ class ACGETestFramework:
         return security_results
 
     async def _evaluate_success_criteria(
-        self, test_results: Dict[str, Any]
-    ) -> Dict[str, bool]:
+        self, test_results: dict[str, Any]
+    ) -> dict[str, bool]:
         """Evaluate overall success criteria."""
 
         success_criteria = {}
@@ -632,7 +621,7 @@ async def main():
     results = await test_framework.run_comprehensive_test_suite()
 
     # Print results
-    print(f"ACGE Test Suite Results:")
+    print("ACGE Test Suite Results:")
     print(f"Overall Success: {results['overall_success']}")
     print(f"Test Duration: {results['test_duration_seconds']:.2f}s")
 

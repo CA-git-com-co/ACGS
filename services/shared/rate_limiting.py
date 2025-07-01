@@ -242,9 +242,8 @@ class RateLimiter:
         if blocked_until:
             if time.time() < float(blocked_until):
                 return True
-            else:
-                # Block expired, remove it
-                await self.redis_client.delete(block_key)
+            # Block expired, remove it
+            await self.redis_client.delete(block_key)
 
         return False
 

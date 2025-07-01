@@ -113,7 +113,7 @@ def test_fidelity_thresholds():
         else:
             level = "red (CRITICAL)"
 
-        print(f"Score: {score:.2f} ({score*100:.1f}%) → Alert Level: {level}")
+        print(f"Score: {score:.2f} ({score * 100:.1f}%) → Alert Level: {level}")
 
 
 def simulate_fidelity_history():
@@ -162,7 +162,7 @@ def simulate_fidelity_history():
 
         # Calculate average
         avg_score = sum(entry["score"] for entry in history) / len(history)
-        print(f"Average score: {avg_score:.3f} ({avg_score*100:.1f}%)")
+        print(f"Average score: {avg_score:.3f} ({avg_score * 100:.1f}%)")
 
 
 if __name__ == "__main__":

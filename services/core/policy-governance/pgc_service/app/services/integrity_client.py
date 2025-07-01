@@ -65,12 +65,12 @@ class IntegrityServiceClient:
             return []
         except httpx.RequestError as e:
             print(
-                f"Integrity Client: Request error listing verified policy rules: {str(e)}"
+                f"Integrity Client: Request error listing verified policy rules: {e!s}"
             )
             return []
         except Exception as e:  # Catch other potential errors like JSON decoding
             print(
-                f"Integrity Client: Unexpected error listing verified policy rules: {str(e)}"
+                f"Integrity Client: Unexpected error listing verified policy rules: {e!s}"
             )
             return []
 

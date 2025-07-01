@@ -5,16 +5,11 @@ Comprehensive test suite for the Darwin Gödel Machine Engine core functionality
 including improvement proposal generation, execution, and safety mechanisms.
 """
 
-from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
 import pytest
-from dgm_service.core.bandit_algorithm import BanditAlgorithm
-from dgm_service.core.constitutional_validator import ConstitutionalValidator
 from dgm_service.core.dgm_engine import DGMEngine
-from dgm_service.core.performance_monitor import PerformanceMonitor
-from dgm_service.storage.archive_manager import ArchiveManager
 
 
 @pytest.mark.unit

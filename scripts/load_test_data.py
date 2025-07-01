@@ -163,7 +163,7 @@ class TestDataLoader:
                     )
 
             except Exception as e:
-                print(f"  ❌ Error creating principle {principle['name']}: {str(e)}")
+                print(f"  ❌ Error creating principle {principle['name']}: {e!s}")
 
         return created_principles
 
@@ -210,7 +210,7 @@ class TestDataLoader:
                     print(f"  ❌ Failed to create meta-rule: {response.status_code}")
 
             except Exception as e:
-                print(f"  ❌ Error creating meta-rule: {str(e)}")
+                print(f"  ❌ Error creating meta-rule: {e!s}")
 
     async def load_environmental_factors(self):
         """Load environmental factors for contextual analysis"""

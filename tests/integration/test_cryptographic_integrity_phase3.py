@@ -5,7 +5,7 @@ Tests digital signatures, key management, Merkle trees, and RFC 3161 timestampin
 
 import json
 import sys
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 # Add the src directory to Python path for imports

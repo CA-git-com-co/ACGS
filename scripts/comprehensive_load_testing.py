@@ -21,16 +21,15 @@ Constitutional Hash: cdd01ef066bc6cf2
 import asyncio
 import json
 import logging
+import statistics
+import sys
 import time
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, asdict
-import aiohttp
-import statistics
+from typing import Any
 
-import sys
-import os
+import aiohttp
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -49,7 +48,7 @@ class LoadTestRequest:
     content: str
     request_type: str
     priority: str
-    expected_model: Optional[str] = None
+    expected_model: str | None = None
     content_type: str = "text_only"
 
 
@@ -65,7 +64,7 @@ class LoadTestResult:
     confidence_score: float
     cost_estimate: float
     cache_hit: bool
-    error: Optional[str] = None
+    error: str | None = None
 
 
 @dataclass
@@ -82,7 +81,7 @@ class LoadTestSummary:
     constitutional_compliance_rate: float
     cache_hit_rate: float
     requests_per_second: float
-    model_distribution: Dict[str, int]
+    model_distribution: dict[str, int]
     error_rate: float
 
 
@@ -156,13 +155,13 @@ class ComprehensiveLoadTester:
 
     async def execute_load_test(
         self, concurrent_requests: int = 1000, duration_seconds: int = 300
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute comprehensive load test with specified parameters."""
 
-        logger.info(f"🚀 Starting Comprehensive Load Test")
+        logger.info("🚀 Starting Comprehensive Load Test")
         logger.info(f"   Concurrent Requests: {concurrent_requests}")
         logger.info(f"   Duration: {duration_seconds} seconds")
-        logger.info(f"   Target Models: 3 (DeepSeek R1, Flash Full, Flash Lite)")
+        logger.info("   Target Models: 3 (DeepSeek R1, Flash Full, Flash Lite)")
         logger.info("=" * 70)
 
         start_time = time.time()
@@ -179,7 +178,7 @@ class ComprehensiveLoadTester:
             batch_start = time.time()
 
             logger.info(
-                f"Processing batch {i//batch_size + 1}/{(len(test_requests) + batch_size - 1)//batch_size}"
+                f"Processing batch {i // batch_size + 1}/{(len(test_requests) + batch_size - 1) // batch_size}"
             )
 
             # Execute batch concurrently
@@ -193,7 +192,7 @@ class ComprehensiveLoadTester:
 
             # Check if duration exceeded
             if time.time() - start_time > duration_seconds:
-                logger.info(f"Duration limit reached, stopping test")
+                logger.info("Duration limit reached, stopping test")
                 break
 
             # Small delay between batches to prevent overwhelming
@@ -226,7 +225,7 @@ class ComprehensiveLoadTester:
 
         return report
 
-    def _generate_test_requests(self, count: int) -> List[LoadTestRequest]:
+    def _generate_test_requests(self, count: int) -> list[LoadTestRequest]:
         """Generate test requests for load testing."""
 
         requests = []
@@ -259,8 +258,8 @@ class ComprehensiveLoadTester:
         return requests
 
     async def _execute_batch(
-        self, batch: List[LoadTestRequest]
-    ) -> List[LoadTestResult]:
+        self, batch: list[LoadTestRequest]
+    ) -> list[LoadTestResult]:
         """Execute a batch of requests concurrently."""
 
         tasks = [self._execute_single_request(request) for request in batch]
@@ -314,7 +313,6 @@ class ComprehensiveLoadTester:
                     json=payload,
                     timeout=aiohttp.ClientTimeout(total=30),
                 ) as response:
-
                     response_time = (time.time() - start_time) * 1000
 
                     if response.status == 200:
@@ -336,19 +334,18 @@ class ComprehensiveLoadTester:
                                 "cache_hit", False
                             ),
                         )
-                    else:
-                        error_text = await response.text()
-                        return LoadTestResult(
-                            request_id=request.request_id,
-                            success=False,
-                            response_time_ms=response_time,
-                            model_used="error",
-                            constitutional_compliance=False,
-                            confidence_score=0.0,
-                            cost_estimate=0.0,
-                            cache_hit=False,
-                            error=f"HTTP {response.status}: {error_text}",
-                        )
+                    error_text = await response.text()
+                    return LoadTestResult(
+                        request_id=request.request_id,
+                        success=False,
+                        response_time_ms=response_time,
+                        model_used="error",
+                        constitutional_compliance=False,
+                        confidence_score=0.0,
+                        cost_estimate=0.0,
+                        cache_hit=False,
+                        error=f"HTTP {response.status}: {error_text}",
+                    )
 
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
@@ -365,7 +362,7 @@ class ComprehensiveLoadTester:
             )
 
     def _analyze_results(
-        self, results: List[LoadTestResult], total_time: float
+        self, results: list[LoadTestResult], total_time: float
     ) -> LoadTestSummary:
         """Analyze load test results and generate summary."""
 
@@ -443,8 +440,8 @@ class ComprehensiveLoadTester:
         )
 
     def _analyze_model_performance(
-        self, results: List[LoadTestResult]
-    ) -> Dict[str, Any]:
+        self, results: list[LoadTestResult]
+    ) -> dict[str, Any]:
         """Analyze performance by model type."""
 
         model_stats = {}
@@ -494,8 +491,8 @@ class ComprehensiveLoadTester:
         return model_performance
 
     def _analyze_cost_performance(
-        self, results: List[LoadTestResult]
-    ) -> Dict[str, Any]:
+        self, results: list[LoadTestResult]
+    ) -> dict[str, Any]:
         """Analyze cost performance and savings."""
 
         successful_results = [r for r in results if r.success]
@@ -557,8 +554,8 @@ class ComprehensiveLoadTester:
         }
 
     def _analyze_compliance_performance(
-        self, results: List[LoadTestResult]
-    ) -> Dict[str, Any]:
+        self, results: list[LoadTestResult]
+    ) -> dict[str, Any]:
         """Analyze constitutional compliance performance."""
 
         successful_results = [r for r in results if r.success]
@@ -606,8 +603,8 @@ class ComprehensiveLoadTester:
         }
 
     def _analyze_cache_performance(
-        self, results: List[LoadTestResult]
-    ) -> Dict[str, Any]:
+        self, results: list[LoadTestResult]
+    ) -> dict[str, Any]:
         """Analyze cache performance."""
 
         successful_results = [r for r in results if r.success]
@@ -645,7 +642,7 @@ class ComprehensiveLoadTester:
             "meets_80_target": cache_hit_rate >= 80.0,
         }
 
-    def _generate_recommendations(self, summary: LoadTestSummary) -> List[str]:
+    def _generate_recommendations(self, summary: LoadTestSummary) -> list[str]:
         """Generate performance recommendations based on test results."""
 
         recommendations = []
@@ -704,7 +701,7 @@ class ComprehensiveLoadTester:
 
         return recommendations
 
-    def print_load_test_report(self, report: Dict[str, Any]):
+    def print_load_test_report(self, report: dict[str, Any]):
         """Print formatted load test report."""
 
         print("\n" + "=" * 80)
@@ -720,7 +717,7 @@ class ComprehensiveLoadTester:
         print(f"Processed Requests: {info['actual_requests_processed']}")
         print(f"Constitutional Hash: {info['constitutional_hash']}")
 
-        print(f"\n📊 PERFORMANCE SUMMARY")
+        print("\n📊 PERFORMANCE SUMMARY")
         print(
             f"Success Rate: {((summary['successful_requests'] / summary['total_requests']) * 100):.1f}%"
         )
@@ -729,29 +726,29 @@ class ComprehensiveLoadTester:
         print(f"P95 Response Time: {summary['p95_response_time_ms']:.1f}ms")
         print(f"P99 Response Time: {summary['p99_response_time_ms']:.1f}ms")
 
-        print(f"\n💰 COST ANALYSIS")
+        print("\n💰 COST ANALYSIS")
         cost_analysis = report["cost_analysis"]
         print(f"Total Cost: ${cost_analysis['total_cost']:.6f}")
         print(f"Avg Cost/Request: ${cost_analysis['avg_cost_per_request']:.6f}")
         print(f"Potential Savings: {cost_analysis['potential_savings_percent']:.1f}%")
 
-        print(f"\n🏛️ CONSTITUTIONAL COMPLIANCE")
+        print("\n🏛️ CONSTITUTIONAL COMPLIANCE")
         compliance = report["compliance_analysis"]
         print(f"Compliance Rate: {compliance['overall_compliance_rate']:.1f}%")
         print(f"Meets 95% Target: {'✅' if compliance['meets_95_target'] else '❌'}")
         print(f"Avg Confidence: {compliance['avg_confidence_score']:.2f}")
 
-        print(f"\n💾 CACHE PERFORMANCE")
+        print("\n💾 CACHE PERFORMANCE")
         cache = report["cache_analysis"]
         print(f"Cache Hit Rate: {cache['overall_cache_hit_rate']:.1f}%")
         print(f"Meets 80% Target: {'✅' if cache['meets_80_target'] else '❌'}")
 
-        print(f"\n🤖 MODEL DISTRIBUTION")
+        print("\n🤖 MODEL DISTRIBUTION")
         for model, count in summary["model_distribution"].items():
             percentage = (count / summary["successful_requests"]) * 100
             print(f"  {model}: {count} requests ({percentage:.1f}%)")
 
-        print(f"\n🎯 RECOMMENDATIONS")
+        print("\n🎯 RECOMMENDATIONS")
         for i, rec in enumerate(report["recommendations"], 1):
             print(f"  {i}. {rec}")
 

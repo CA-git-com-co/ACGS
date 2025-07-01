@@ -10,7 +10,6 @@ import logging
 import time
 import uuid
 from datetime import datetime, timezone
-from typing import Dict, List, Optional
 
 import aiohttp
 import pytest
@@ -180,9 +179,9 @@ class ECServiceIntegrationTester:
         session: aiohttp.ClientSession,
         method: str,
         url: str,
-        json_data: Optional[Dict] = None,
+        json_data: dict | None = None,
         expected_status: int = 200,
-    ) -> Dict:
+    ) -> dict:
         """Test a specific API endpoint."""
         start_time = time.time()
 
@@ -293,7 +292,7 @@ class ECServiceIntegrationTester:
 
                 # Validate security execution
                 assert "success" in security_data
-                logger.info(f"✓ Security architecture test passed")
+                logger.info("✓ Security architecture test passed")
 
     async def test_constitutional_compliance(self):
         """Test constitutional compliance integration."""
@@ -539,7 +538,6 @@ class ECServiceIntegrationTester:
         }
 
         # Save report
-        import os
 
         report_dir = Path(__file__).parent.parent.parent / "reports/integration"
         report_dir.mkdir(parents=True, exist_ok=True)

@@ -8,7 +8,7 @@ in the Darwin Gödel Machine Service ecosystem.
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 from uuid import uuid4
 
 
@@ -64,12 +64,12 @@ class DGMEvent:
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     source_service: str = "dgm-service"
     priority: EventPriority = EventPriority.NORMAL
-    correlation_id: Optional[str] = None
-    user_id: Optional[str] = None
-    session_id: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    correlation_id: str | None = None
+    user_id: str | None = None
+    session_id: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert event to dictionary for serialization."""
         return {
             "event_id": self.event_id,
@@ -84,7 +84,7 @@ class DGMEvent:
             "data": self._get_data(),
         }
 
-    def _get_data(self) -> Dict[str, Any]:
+    def _get_data(self) -> dict[str, Any]:
         """Get event-specific data. Override in subclasses."""
         return {}
 
@@ -95,15 +95,15 @@ class ImprovementEvent(DGMEvent):
 
     improvement_id: str = None
     strategy: str = None
-    target_services: List[str] = field(default_factory=list)
-    expected_improvement: Optional[float] = None
-    actual_improvement: Optional[float] = None
+    target_services: list[str] = field(default_factory=list)
+    expected_improvement: float | None = None
+    actual_improvement: float | None = None
     risk_level: str = None
-    execution_time: Optional[float] = None
+    execution_time: float | None = None
     rollback_available: bool = False
-    constitutional_compliance_score: Optional[float] = None
+    constitutional_compliance_score: float | None = None
 
-    def _get_data(self) -> Dict[str, Any]:
+    def _get_data(self) -> dict[str, Any]:
         return {
             "improvement_id": self.improvement_id,
             "strategy": self.strategy,
@@ -124,14 +124,14 @@ class PerformanceEvent(DGMEvent):
     metric_name: str = None
     metric_value: float = None
     service_name: str = None
-    baseline_value: Optional[float] = None
-    threshold_value: Optional[float] = None
-    improvement_percentage: Optional[float] = None
+    baseline_value: float | None = None
+    threshold_value: float | None = None
+    improvement_percentage: float | None = None
     alert_level: str = None
     measurement_window: str = None
-    tags: Dict[str, str] = field(default_factory=dict)
+    tags: dict[str, str] = field(default_factory=dict)
 
-    def _get_data(self) -> Dict[str, Any]:
+    def _get_data(self) -> dict[str, Any]:
         return {
             "metric_name": self.metric_name,
             "metric_value": self.metric_value,
@@ -154,12 +154,12 @@ class ConstitutionalEvent(DGMEvent):
     constitutional_hash: str = None
     validator_version: str = None
     assessment_type: str = None  # proposal, execution, monitoring
-    violations: List[Dict[str, Any]] = field(default_factory=list)
-    recommendations: List[str] = field(default_factory=list)
+    violations: list[dict[str, Any]] = field(default_factory=list)
+    recommendations: list[str] = field(default_factory=list)
     remediation_required: bool = False
-    governance_principles: List[str] = field(default_factory=list)
+    governance_principles: list[str] = field(default_factory=list)
 
-    def _get_data(self) -> Dict[str, Any]:
+    def _get_data(self) -> dict[str, Any]:
         return {
             "improvement_id": self.improvement_id,
             "compliance_score": self.compliance_score,
@@ -182,13 +182,13 @@ class BanditEvent(DGMEvent):
     arm_pulls: int = None
     arm_rewards: float = None
     arm_success_rate: float = None
-    exploration_parameter: Optional[float] = None
-    confidence_bound: Optional[float] = None
+    exploration_parameter: float | None = None
+    confidence_bound: float | None = None
     total_pulls: int = None
     average_reward: float = None
     action_taken: str = None  # explore, exploit
 
-    def _get_data(self) -> Dict[str, Any]:
+    def _get_data(self) -> dict[str, Any]:
         return {
             "algorithm_type": self.algorithm_type,
             "arm_name": self.arm_name,

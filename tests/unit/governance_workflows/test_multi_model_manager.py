@@ -2,11 +2,7 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.workflows.multi_model_manager
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.governance_synthesis.gs_service.app.workflows.multi_model_manager import (
-    CircuitBreakerState,
-    CircuitBreakerConfig,
     ModelHealthMetrics,
     ModelPerformanceTracker,
     MultiModelManager,

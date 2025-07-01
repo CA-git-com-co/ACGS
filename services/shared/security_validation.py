@@ -3,13 +3,13 @@ Comprehensive Input Validation Module for ACGS-2
 Implements security-hardened input validation to prevent injection attacks.
 """
 
-import re
 import html
 import json
 import logging
-from typing import Any, Dict, List, Optional, Union
+import re
+from typing import Any
+
 from fastapi import HTTPException, Request
-from fastapi.security import HTTPBearer
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
 
@@ -93,7 +93,7 @@ class SecurityInputValidator:
 
     def validate_input(
         self, input_data: Any, input_type: str = "general"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Comprehensive input validation.
 
@@ -200,25 +200,24 @@ class SecurityInputValidator:
         if input_type == "email":
             # Basic email sanitization
             return re.sub(r"[^a-zA-Z0-9@._-]", "", input_str)
-        elif input_type == "username":
+        if input_type == "username":
             # Allow alphanumeric and basic punctuation
             return re.sub(r"[^a-zA-Z0-9._-]", "", input_str)
-        elif input_type == "html":
+        if input_type == "html":
             # HTML escape
             return html.escape(input_str)
-        else:
-            # General sanitization - remove dangerous characters and script tags
-            sanitized = re.sub(
-                r"<script[^>]*>.*?</script>",
-                "",
-                input_str,
-                flags=re.IGNORECASE | re.DOTALL,
-            )
-            sanitized = re.sub(r"</?script[^>]*>", "", sanitized, flags=re.IGNORECASE)
-            sanitized = re.sub(r'[<>"\'`]', "", sanitized)
-            return sanitized
+        # General sanitization - remove dangerous characters and script tags
+        sanitized = re.sub(
+            r"<script[^>]*>.*?</script>",
+            "",
+            input_str,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+        sanitized = re.sub(r"</?script[^>]*>", "", sanitized, flags=re.IGNORECASE)
+        sanitized = re.sub(r'[<>"\'`]', "", sanitized)
+        return sanitized
 
-    def validate_json_input(self, json_str: str) -> Dict[str, Any]:
+    def validate_json_input(self, json_str: str) -> dict[str, Any]:
         """Validate JSON input for injection attacks."""
         result = {
             "is_valid": True,
@@ -269,7 +268,7 @@ class SecurityInputValidator:
 
         except json.JSONDecodeError as e:
             result["is_valid"] = False
-            result["violations"].append(f"Invalid JSON format: {str(e)}")
+            result["violations"].append(f"Invalid JSON format: {e!s}")
             result["risk_level"] = "MEDIUM"
 
         return result
@@ -279,7 +278,7 @@ class SecurityInputValidator:
 security_validator = SecurityInputValidator()
 
 
-def validate_user_input(input_data: Any, input_type: str = "general") -> Dict[str, Any]:
+def validate_user_input(input_data: Any, input_type: str = "general") -> dict[str, Any]:
     """
     Main function for validating user input.
 
@@ -299,7 +298,7 @@ class SecurityValidationMiddleware(BaseHTTPMiddleware):
     Validates request bodies, query parameters, and path parameters.
     """
 
-    def __init__(self, app, exempt_paths: Optional[List[str]] = None):
+    def __init__(self, app, exempt_paths: list[str] | None = None):
         super().__init__(app)
         self.exempt_paths = exempt_paths or [
             "/health",
@@ -456,7 +455,7 @@ def create_security_validation_dependency():
     Use this for endpoints that need custom validation logic.
     """
 
-    def validate_input_dependency(input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def validate_input_dependency(input_data: dict[str, Any]) -> dict[str, Any]:
         """Dependency function for input validation."""
         validator = SecurityInputValidator()
 

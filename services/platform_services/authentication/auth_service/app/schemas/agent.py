@@ -6,9 +6,9 @@ Provides validation, serialization, and documentation for agent-related operatio
 """
 
 from datetime import datetime
-from typing import Dict, List, Optional, Any
+from typing import Any
 
-from pydantic import BaseModel, Field, validator, EmailStr
+from pydantic import BaseModel, EmailStr, Field, validator
 
 from ..models.agent import AgentStatus, AgentType
 
@@ -25,7 +25,7 @@ class AgentBase(BaseModel):
     name: str = Field(
         ..., min_length=1, max_length=255, description="Agent display name"
     )
-    description: Optional[str] = Field(
+    description: str | None = Field(
         None, max_length=1000, description="Agent description"
     )
     agent_type: AgentType = Field(
@@ -39,32 +39,32 @@ class AgentCreate(AgentBase):
 
     # Ownership
     owner_user_id: int = Field(..., description="ID of the user who owns this agent")
-    responsible_team: Optional[str] = Field(
+    responsible_team: str | None = Field(
         None, max_length=100, description="Team responsible for agent"
     )
-    contact_email: Optional[EmailStr] = Field(
+    contact_email: EmailStr | None = Field(
         None, description="Contact email for agent issues"
     )
 
     # Capabilities and permissions
-    capabilities: List[str] = Field(
+    capabilities: list[str] = Field(
         default_factory=list, description="List of agent capabilities"
     )
-    permissions: List[str] = Field(
+    permissions: list[str] = Field(
         default_factory=list, description="Specific permissions granted to agent"
     )
-    role_assignments: List[str] = Field(
+    role_assignments: list[str] = Field(
         default_factory=list, description="Roles assigned to agent"
     )
 
     # Access control
-    allowed_services: List[str] = Field(
+    allowed_services: list[str] = Field(
         default_factory=list, description="Services agent can access"
     )
-    allowed_operations: List[str] = Field(
+    allowed_operations: list[str] = Field(
         default_factory=list, description="Operations agent can perform"
     )
-    ip_whitelist: Optional[List[str]] = Field(None, description="Allowed IP addresses")
+    ip_whitelist: list[str] | None = Field(None, description="Allowed IP addresses")
 
     # Resource limits
     max_requests_per_minute: int = Field(
@@ -73,7 +73,7 @@ class AgentCreate(AgentBase):
     max_concurrent_operations: int = Field(
         default=5, ge=1, le=100, description="Max concurrent operations"
     )
-    resource_quota: Optional[Dict[str, Any]] = Field(
+    resource_quota: dict[str, Any] | None = Field(
         None, description="Resource quotas (CPU, memory, etc.)"
     )
 
@@ -86,11 +86,11 @@ class AgentCreate(AgentBase):
     )
 
     # Configuration and metadata
-    configuration: Optional[Dict[str, Any]] = Field(
+    configuration: dict[str, Any] | None = Field(
         None, description="Agent-specific configuration"
     )
-    metadata: Optional[Dict[str, Any]] = Field(None, description="Additional metadata")
-    tags: List[str] = Field(default_factory=list, description="Searchable tags")
+    metadata: dict[str, Any] | None = Field(None, description="Additional metadata")
+    tags: list[str] = Field(default_factory=list, description="Searchable tags")
 
     @validator("agent_id")
     def validate_agent_id(cls, v):
@@ -114,38 +114,38 @@ class AgentCreate(AgentBase):
 class AgentUpdate(BaseModel):
     """Schema for updating an existing agent."""
 
-    name: Optional[str] = Field(None, min_length=1, max_length=255)
-    description: Optional[str] = Field(None, max_length=1000)
-    agent_type: Optional[AgentType] = None
-    version: Optional[str] = None
+    name: str | None = Field(None, min_length=1, max_length=255)
+    description: str | None = Field(None, max_length=1000)
+    agent_type: AgentType | None = None
+    version: str | None = None
 
     # Ownership
-    responsible_team: Optional[str] = Field(None, max_length=100)
-    contact_email: Optional[EmailStr] = None
+    responsible_team: str | None = Field(None, max_length=100)
+    contact_email: EmailStr | None = None
 
     # Capabilities and permissions
-    capabilities: Optional[List[str]] = None
-    permissions: Optional[List[str]] = None
-    role_assignments: Optional[List[str]] = None
+    capabilities: list[str] | None = None
+    permissions: list[str] | None = None
+    role_assignments: list[str] | None = None
 
     # Access control
-    allowed_services: Optional[List[str]] = None
-    allowed_operations: Optional[List[str]] = None
-    ip_whitelist: Optional[List[str]] = None
+    allowed_services: list[str] | None = None
+    allowed_operations: list[str] | None = None
+    ip_whitelist: list[str] | None = None
 
     # Resource limits
-    max_requests_per_minute: Optional[int] = Field(None, ge=1, le=10000)
-    max_concurrent_operations: Optional[int] = Field(None, ge=1, le=100)
-    resource_quota: Optional[Dict[str, Any]] = None
+    max_requests_per_minute: int | None = Field(None, ge=1, le=10000)
+    max_concurrent_operations: int | None = Field(None, ge=1, le=100)
+    resource_quota: dict[str, Any] | None = None
 
     # Constitutional compliance
-    compliance_level: Optional[str] = None
-    requires_human_approval: Optional[bool] = None
+    compliance_level: str | None = None
+    requires_human_approval: bool | None = None
 
     # Configuration and metadata
-    configuration: Optional[Dict[str, Any]] = None
-    metadata: Optional[Dict[str, Any]] = None
-    tags: Optional[List[str]] = None
+    configuration: dict[str, Any] | None = None
+    metadata: dict[str, Any] | None = None
+    tags: list[str] | None = None
 
     @validator("compliance_level")
     def validate_compliance_level(cls, v):
@@ -165,30 +165,30 @@ class AgentResponse(AgentBase):
 
     # Timestamps
     created_at: datetime
-    activated_at: Optional[datetime] = None
-    suspended_at: Optional[datetime] = None
-    retired_at: Optional[datetime] = None
-    last_activity_at: Optional[datetime] = None
+    activated_at: datetime | None = None
+    suspended_at: datetime | None = None
+    retired_at: datetime | None = None
+    last_activity_at: datetime | None = None
 
     # Ownership
     owner_user_id: int
-    responsible_team: Optional[str] = None
-    contact_email: Optional[str] = None
+    responsible_team: str | None = None
+    contact_email: str | None = None
 
     # Capabilities and permissions
-    capabilities: List[str]
-    permissions: List[str]
-    role_assignments: List[str]
+    capabilities: list[str]
+    permissions: list[str]
+    role_assignments: list[str]
 
     # Access control
-    allowed_services: List[str]
-    allowed_operations: List[str]
-    ip_whitelist: Optional[List[str]] = None
+    allowed_services: list[str]
+    allowed_operations: list[str]
+    ip_whitelist: list[str] | None = None
 
     # Resource limits
     max_requests_per_minute: int
     max_concurrent_operations: int
-    resource_quota: Optional[Dict[str, Any]] = None
+    resource_quota: dict[str, Any] | None = None
 
     # Constitutional compliance
     constitutional_hash: str
@@ -199,13 +199,13 @@ class AgentResponse(AgentBase):
     total_operations: int
     successful_operations: int
     failed_operations: int
-    last_error: Optional[str] = None
-    last_error_at: Optional[datetime] = None
+    last_error: str | None = None
+    last_error_at: datetime | None = None
 
     # Configuration and metadata
-    configuration: Optional[Dict[str, Any]] = None
-    metadata: Optional[Dict[str, Any]] = None
-    tags: List[str]
+    configuration: dict[str, Any] | None = None
+    metadata: dict[str, Any] | None = None
+    tags: list[str]
 
     class Config:
         from_attributes = True
@@ -215,7 +215,7 @@ class AgentStatusUpdate(BaseModel):
     """Schema for updating agent status."""
 
     status: AgentStatus = Field(..., description="New agent status")
-    reason: Optional[str] = Field(
+    reason: str | None = Field(
         None, max_length=500, description="Reason for status change"
     )
 
@@ -231,7 +231,7 @@ class AgentCredentials(BaseModel):
 
     agent_id: str
     api_key: str = Field(..., description="API key for agent authentication")
-    expires_at: Optional[datetime] = Field(None, description="API key expiration")
+    expires_at: datetime | None = Field(None, description="API key expiration")
 
     class Config:
         # Don't include this in logs or responses by default
@@ -250,10 +250,10 @@ class AgentSessionResponse(BaseModel):
     started_at: datetime
     last_activity_at: datetime
     expires_at: datetime
-    ended_at: Optional[datetime] = None
-    client_ip: Optional[str] = None
+    ended_at: datetime | None = None
+    client_ip: str | None = None
     is_active: bool
-    termination_reason: Optional[str] = None
+    termination_reason: str | None = None
 
     class Config:
         from_attributes = True
@@ -266,11 +266,11 @@ class AgentAuditLogResponse(BaseModel):
     agent_id: str
     event_type: str
     event_description: str
-    performed_by_user_id: Optional[int] = None
-    performed_by_system: Optional[str] = None
+    performed_by_user_id: int | None = None
+    performed_by_system: str | None = None
     timestamp: datetime
-    old_values: Optional[Dict[str, Any]] = None
-    new_values: Optional[Dict[str, Any]] = None
+    old_values: dict[str, Any] | None = None
+    new_values: dict[str, Any] | None = None
     constitutional_hash: str
     compliance_verified: bool
 
@@ -281,7 +281,7 @@ class AgentAuditLogResponse(BaseModel):
 class AgentListResponse(BaseModel):
     """Schema for paginated agent list response."""
 
-    agents: List[AgentResponse]
+    agents: list[AgentResponse]
     total: int
     page: int
     page_size: int
@@ -291,17 +291,13 @@ class AgentListResponse(BaseModel):
 class AgentSearchRequest(BaseModel):
     """Schema for agent search request."""
 
-    query: Optional[str] = Field(None, description="Search query")
-    status: Optional[List[AgentStatus]] = Field(None, description="Filter by status")
-    agent_type: Optional[List[AgentType]] = Field(
-        None, description="Filter by agent type"
-    )
-    owner_user_id: Optional[int] = Field(None, description="Filter by owner")
-    tags: Optional[List[str]] = Field(None, description="Filter by tags")
-    capabilities: Optional[List[str]] = Field(
-        None, description="Filter by capabilities"
-    )
-    compliance_level: Optional[List[str]] = Field(
+    query: str | None = Field(None, description="Search query")
+    status: list[AgentStatus] | None = Field(None, description="Filter by status")
+    agent_type: list[AgentType] | None = Field(None, description="Filter by agent type")
+    owner_user_id: int | None = Field(None, description="Filter by owner")
+    tags: list[str] | None = Field(None, description="Filter by tags")
+    capabilities: list[str] | None = Field(None, description="Filter by capabilities")
+    compliance_level: list[str] | None = Field(
         None, description="Filter by compliance level"
     )
 
@@ -325,11 +321,9 @@ class AgentOperationRequest(BaseModel):
     """Schema for agent operation requests."""
 
     operation: str = Field(..., description="Operation to perform")
-    parameters: Optional[Dict[str, Any]] = Field(
-        None, description="Operation parameters"
-    )
-    context: Optional[Dict[str, Any]] = Field(None, description="Operation context")
-    requires_approval: Optional[bool] = Field(
+    parameters: dict[str, Any] | None = Field(None, description="Operation parameters")
+    context: dict[str, Any] | None = Field(None, description="Operation context")
+    requires_approval: bool | None = Field(
         None, description="Override approval requirement"
     )
 
@@ -341,11 +335,11 @@ class AgentOperationResponse(BaseModel):
     agent_id: str
     operation: str
     status: str  # pending, approved, rejected, completed, failed
-    result: Optional[Dict[str, Any]] = None
-    error: Optional[str] = None
+    result: dict[str, Any] | None = None
+    error: str | None = None
     created_at: datetime
-    completed_at: Optional[datetime] = None
-    approved_by: Optional[int] = None  # User ID who approved
+    completed_at: datetime | None = None
+    approved_by: int | None = None  # User ID who approved
 
     class Config:
         from_attributes = True

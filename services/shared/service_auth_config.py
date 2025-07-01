@@ -209,10 +209,10 @@ def get_workflow_permissions(
 
 # Export configuration
 __all__ = [
-    "ACGSService",
-    "SERVICE_PERMISSIONS",
-    "SERVICE_ENDPOINTS",
-    "ServiceAuthConfig",
     "GOVERNANCE_WORKFLOW_PERMISSIONS",
+    "SERVICE_ENDPOINTS",
+    "SERVICE_PERMISSIONS",
+    "ACGSService",
+    "ServiceAuthConfig",
     "get_workflow_permissions",
 ]

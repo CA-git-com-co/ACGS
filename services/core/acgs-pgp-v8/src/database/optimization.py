@@ -5,17 +5,14 @@ Implements connection pooling optimization, query performance monitoring,
 and database-specific optimizations for production workloads.
 """
 
-import asyncio
 import logging
 import time
-from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
+from datetime import datetime
+from typing import Any
 
 import asyncpg
-import psutil
-from sqlalchemy import event, text
+from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.pool import Pool
@@ -70,9 +67,9 @@ class DatabaseOptimizer:
         self.slow_query_threshold = slow_query_threshold
 
         # Performance tracking
-        self.pool_metrics: Dict[str, ConnectionPoolMetrics] = {}
-        self.query_metrics: Dict[str, QueryPerformanceMetrics] = {}
-        self.connection_checkout_times: Dict[int, float] = {}
+        self.pool_metrics: dict[str, ConnectionPoolMetrics] = {}
+        self.query_metrics: dict[str, QueryPerformanceMetrics] = {}
+        self.connection_checkout_times: dict[int, float] = {}
 
         # Optimization settings
         self.optimized_settings = {
@@ -228,18 +225,17 @@ class DatabaseOptimizer:
 
         if statement_upper.startswith("SELECT"):
             return "SELECT"
-        elif statement_upper.startswith("INSERT"):
+        if statement_upper.startswith("INSERT"):
             return "INSERT"
-        elif statement_upper.startswith("UPDATE"):
+        if statement_upper.startswith("UPDATE"):
             return "UPDATE"
-        elif statement_upper.startswith("DELETE"):
+        if statement_upper.startswith("DELETE"):
             return "DELETE"
-        elif statement_upper.startswith("CREATE"):
+        if statement_upper.startswith("CREATE"):
             return "CREATE"
-        elif statement_upper.startswith("ALTER"):
+        if statement_upper.startswith("ALTER"):
             return "ALTER"
-        else:
-            return "OTHER"
+        return "OTHER"
 
     async def create_performance_indexes(self, connection_url: str):
         """Create performance-optimized indexes for ACGS-PGP v8."""
@@ -343,22 +339,22 @@ class DatabaseOptimizer:
         finally:
             await conn.close()
 
-    def get_pool_metrics(self) -> Dict[str, ConnectionPoolMetrics]:
+    def get_pool_metrics(self) -> dict[str, ConnectionPoolMetrics]:
         """Get current connection pool metrics."""
         return self.pool_metrics.copy()
 
-    def get_query_metrics(self) -> Dict[str, QueryPerformanceMetrics]:
+    def get_query_metrics(self) -> dict[str, QueryPerformanceMetrics]:
         """Get current query performance metrics."""
         return self.query_metrics.copy()
 
-    def get_slow_queries(self, limit: int = 10) -> List[QueryPerformanceMetrics]:
+    def get_slow_queries(self, limit: int = 10) -> list[QueryPerformanceMetrics]:
         """Get slowest queries by average execution time."""
         sorted_queries = sorted(
             self.query_metrics.values(), key=lambda x: x.avg_time, reverse=True
         )
         return sorted_queries[:limit]
 
-    def get_performance_summary(self) -> Dict[str, Any]:
+    def get_performance_summary(self) -> dict[str, Any]:
         """Get comprehensive performance summary."""
         total_queries = sum(m.execution_count for m in self.query_metrics.values())
         total_time = sum(m.total_time for m in self.query_metrics.values())

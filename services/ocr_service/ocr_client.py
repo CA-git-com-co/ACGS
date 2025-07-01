@@ -11,7 +11,7 @@ import json
 import logging
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 from urllib.parse import urlparse
 
 import requests
@@ -60,11 +60,11 @@ class OCRClient:
 
     def __init__(
         self,
-        host: Optional[str] = None,
-        port: Optional[int] = None,
-        health_port: Optional[int] = None,
+        host: str | None = None,
+        port: int | None = None,
+        health_port: int | None = None,
         timeout: int = 30,
-        model: Optional[str] = None,
+        model: str | None = None,
     ):
         """
         Initialize the OCR client with service connection details.
@@ -93,7 +93,7 @@ class OCRClient:
         logger.debug(f"OCR client initialized with API endpoint: {self.endpoint}")
         logger.debug(f"Health check endpoint: {self.health_endpoint}")
 
-    def check_health(self) -> Tuple[bool, Optional[str]]:
+    def check_health(self) -> tuple[bool, str | None]:
         """
         Check if the OCR service is healthy.
 
@@ -104,12 +104,9 @@ class OCRClient:
             response = requests.get(self.health_endpoint, timeout=self.timeout)
             if response.status_code == 200:
                 return True, None
-            else:
-                error_msg = (
-                    f"Health check failed with status code: {response.status_code}"
-                )
-                logger.warning(error_msg)
-                return False, error_msg
+            error_msg = f"Health check failed with status code: {response.status_code}"
+            logger.warning(error_msg)
+            return False, error_msg
         except requests.exceptions.ConnectionError as e:
             error_msg = f"Connection error during health check: {e}"
             logger.warning(error_msg)
@@ -139,7 +136,7 @@ class OCRClient:
         except:
             return False
 
-    def encode_image(self, image_path: Union[str, Path]) -> str:
+    def encode_image(self, image_path: str | Path) -> str:
         """
         Encode an image file to base64.
 
@@ -156,12 +153,12 @@ class OCRClient:
             image_path = Path(image_path)
             with open(image_path, "rb") as image_file:
                 return base64.b64encode(image_file.read()).decode("utf-8")
-        except (IOError, OSError) as e:
+        except OSError as e:
             error_msg = f"Failed to read image file {image_path}: {e}"
             logger.error(error_msg)
             raise OCRRequestException(error_msg)
 
-    def _prepare_image_url(self, image_data: Union[str, Path, bytes]) -> str:
+    def _prepare_image_url(self, image_data: str | Path | bytes) -> str:
         """
         Prepare the image URL for the OCR request.
 
@@ -186,18 +183,16 @@ class OCRClient:
                     # Local file
                     image_base64 = self.encode_image(path)
                     return f"data:image/jpeg;base64,{image_base64}"
-                else:
-                    error_msg = f"Image file not found: {path}"
-                    logger.error(error_msg)
-                    raise OCRRequestException(error_msg)
-            elif isinstance(image_data, bytes):
+                error_msg = f"Image file not found: {path}"
+                logger.error(error_msg)
+                raise OCRRequestException(error_msg)
+            if isinstance(image_data, bytes):
                 # Raw bytes
                 image_base64 = base64.b64encode(image_data).decode("utf-8")
                 return f"data:image/jpeg;base64,{image_base64}"
-            else:
-                error_msg = f"Unsupported image data type: {type(image_data)}"
-                logger.error(error_msg)
-                raise OCRRequestException(error_msg)
+            error_msg = f"Unsupported image data type: {type(image_data)}"
+            logger.error(error_msg)
+            raise OCRRequestException(error_msg)
         except Exception as e:
             if isinstance(e, OCRRequestException):
                 raise
@@ -207,10 +202,10 @@ class OCRClient:
 
     def extract_text(
         self,
-        image_data: Union[str, Path, bytes],
+        image_data: str | Path | bytes,
         prompt: str = "Extract all text from this image.",
-        model: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        model: str | None = None,
+    ) -> dict[str, Any]:
         """
         Extract text from an image using the OCR service.
 
@@ -266,14 +261,13 @@ class OCRClient:
                         "usage": result.get("usage", {}),
                     },
                 }
-            else:
-                error_msg = "No content in OCR response"
-                logger.warning(f"{error_msg}: {result}")
-                return {
-                    "success": False,
-                    "error": error_msg,
-                    "raw_response": result,
-                }
+            error_msg = "No content in OCR response"
+            logger.warning(f"{error_msg}: {result}")
+            return {
+                "success": False,
+                "error": error_msg,
+                "raw_response": result,
+            }
 
         except OCRRequestException:
             # Re-raise existing OCRRequestException
@@ -301,10 +295,10 @@ class OCRClient:
 
     def analyze_document(
         self,
-        image_data: Union[str, Path, bytes],
+        image_data: str | Path | bytes,
         document_type: str = "general",
-        model: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        model: str | None = None,
+    ) -> dict[str, Any]:
         """
         Perform document analysis with the OCR service.
 

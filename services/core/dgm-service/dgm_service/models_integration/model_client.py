@@ -6,15 +6,9 @@ import asyncio
 import logging
 import time
 from abc import ABC, abstractmethod
+from collections.abc import AsyncGenerator
 from dataclasses import dataclass
-from typing import Any, AsyncGenerator, Dict, List, Optional
-
-from tenacity import (
-    retry,
-    retry_if_exception_type,
-    stop_after_attempt,
-    wait_exponential,
-)
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -24,12 +18,12 @@ class ModelRequest:
     """Model request data structure."""
 
     prompt: str
-    system_prompt: Optional[str] = None
+    system_prompt: str | None = None
     max_tokens: int = 1000
     temperature: float = 0.7
     top_p: float = 0.9
-    stop_sequences: Optional[List[str]] = None
-    metadata: Optional[Dict[str, Any]] = None
+    stop_sequences: list[str] | None = None
+    metadata: dict[str, Any] | None = None
 
 
 @dataclass
@@ -38,10 +32,10 @@ class ModelResponse:
 
     content: str
     model: str
-    usage: Dict[str, int]
+    usage: dict[str, int]
     finish_reason: str
     response_time: float
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
 
 
 class ModelClient(ABC):
@@ -69,7 +63,7 @@ class ModelClient(ABC):
         # Rate limiting
         self.rate_limit_requests = rate_limit_requests
         self.rate_limit_window = rate_limit_window
-        self.request_times: List[float] = []
+        self.request_times: list[float] = []
 
         # Usage tracking
         self.total_requests = 0
@@ -146,12 +140,12 @@ class ModelClient(ABC):
         if not 0 <= request.top_p <= 1:
             raise ValueError("top_p must be between 0 and 1")
 
-    def _calculate_cost(self, usage: Dict[str, int]) -> float:
+    def _calculate_cost(self, usage: dict[str, int]) -> float:
         """Calculate cost based on token usage."""
         # This would be implemented by subclasses with provider-specific pricing
         return 0.0
 
-    def get_usage_stats(self) -> Dict[str, Any]:
+    def get_usage_stats(self) -> dict[str, Any]:
         """Get usage statistics."""
         return {
             "total_requests": self.total_requests,

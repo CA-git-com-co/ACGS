@@ -43,7 +43,7 @@ async def test_governance_workflows():
                     else:
                         workflow_results[workflow_name] = f"⚠️ HTTP {response.status}"
             except Exception as e:
-                workflow_results[workflow_name] = f"❌ {str(e)}"
+                workflow_results[workflow_name] = f"❌ {e!s}"
 
     for workflow, status in workflow_results.items():
         print(f"  {status} {workflow}")

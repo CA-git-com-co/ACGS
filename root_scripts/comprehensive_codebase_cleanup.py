@@ -41,6 +41,7 @@ class CodebaseCleanup:
 
             result = subprocess.run(
                 cmd,
+                check=False,
                 shell=True,
                 cwd=cwd,
                 capture_output=capture_output,
@@ -200,7 +201,7 @@ class CodebaseCleanup:
 
         # Update Python dependencies (safely)
         logger.info("  📦 Checking Python dependencies...")
-        requirements_files = list(Path(".").rglob("requirements*.txt"))
+        requirements_files = list(Path().rglob("requirements*.txt"))
         dependency_tasks.append(
             f"✅ Found {len(requirements_files)} requirements files"
         )
@@ -331,7 +332,7 @@ class CodebaseCleanup:
             "total_tasks_attempted": total_tasks,
             "successful_tasks": successful_tasks,
             "success_rate": (
-                f"{(successful_tasks/total_tasks*100):.1f}%"
+                f"{(successful_tasks / total_tasks * 100):.1f}%"
                 if total_tasks > 0
                 else "0%"
             ),
@@ -378,7 +379,7 @@ class CodebaseCleanup:
                 )
             except Exception as e:
                 logger.error(f"❌ {task_name} failed: {e}")
-                self.report["errors"].append(f"{task_name}: {str(e)}")
+                self.report["errors"].append(f"{task_name}: {e!s}")
 
         # Generate final report
         report_file = self.generate_report()

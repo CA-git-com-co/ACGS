@@ -16,19 +16,16 @@ Features:
 """
 
 import asyncio
+import hashlib
 import json
 import logging
 import time
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
-from dataclasses import dataclass, asdict
-import hashlib
+from typing import Any
 
-import asyncpg
-import psutil
-from sqlalchemy import create_engine, text
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import create_async_engine
 
 # Configure logging
 logging.basicConfig(
@@ -49,10 +46,10 @@ class QueryPerformanceMetrics:
     min_time_ms: float
     max_time_ms: float
     rows_returned: int
-    tables_accessed: List[str]
-    indexes_used: List[str]
+    tables_accessed: list[str]
+    indexes_used: list[str]
     optimization_score: float
-    recommendations: List[str]
+    recommendations: list[str]
 
 
 @dataclass
@@ -60,7 +57,7 @@ class IndexRecommendation:
     """Database index recommendation."""
 
     table_name: str
-    columns: List[str]
+    columns: list[str]
     index_type: str  # btree, gin, gist, hash
     estimated_benefit: float
     creation_sql: str
@@ -76,7 +73,7 @@ class OptimizationResult:
     performance_improvement: float
     optimization_type: str
     applied: bool
-    rollback_sql: Optional[str] = None
+    rollback_sql: str | None = None
 
 
 class DatabaseQueryOptimizer:
@@ -87,9 +84,9 @@ class DatabaseQueryOptimizer:
         self.database_url = database_url
         self.engine = None
         self.async_engine = None
-        self.query_metrics: Dict[str, QueryPerformanceMetrics] = {}
-        self.index_recommendations: List[IndexRecommendation] = []
-        self.optimization_results: List[OptimizationResult] = []
+        self.query_metrics: dict[str, QueryPerformanceMetrics] = {}
+        self.index_recommendations: list[IndexRecommendation] = []
+        self.optimization_results: list[OptimizationResult] = []
 
         # Performance thresholds
         self.slow_query_threshold_ms = 100
@@ -112,7 +109,7 @@ class DatabaseQueryOptimizer:
             version = result.scalar()
             logger.info(f"Connected to database: {version}")
 
-    async def analyze_query_performance(self) -> Dict[str, Any]:
+    async def analyze_query_performance(self) -> dict[str, Any]:
         """Comprehensive query performance analysis."""
         logger.info("🔍 Starting comprehensive query performance analysis...")
 
@@ -153,7 +150,7 @@ class DatabaseQueryOptimizer:
         logger.info(f"✅ Query performance analysis completed in {analysis_time:.2f}s")
         return analysis_result
 
-    async def _collect_query_statistics(self) -> Dict[str, Any]:
+    async def _collect_query_statistics(self) -> dict[str, Any]:
         """Collect comprehensive query statistics."""
         logger.info("📊 Collecting query statistics...")
 
@@ -215,7 +212,7 @@ class DatabaseQueryOptimizer:
                 "query_details": processed_stats,
             }
 
-    async def _analyze_slow_queries(self) -> Dict[str, Any]:
+    async def _analyze_slow_queries(self) -> dict[str, Any]:
         """Analyze slow queries and generate optimization recommendations."""
         logger.info("🐌 Analyzing slow queries...")
 
@@ -244,7 +241,7 @@ class DatabaseQueryOptimizer:
             ),
         }
 
-    async def _analyze_index_usage(self) -> Dict[str, Any]:
+    async def _analyze_index_usage(self) -> dict[str, Any]:
         """Analyze index usage and identify unused or missing indexes."""
         logger.info("📇 Analyzing index usage...")
 
@@ -291,7 +288,7 @@ class DatabaseQueryOptimizer:
                 ],
             }
 
-    async def _detect_n_plus_one_queries(self) -> Dict[str, Any]:
+    async def _detect_n_plus_one_queries(self) -> dict[str, Any]:
         """Detect N+1 query patterns."""
         logger.info("🔍 Detecting N+1 query patterns...")
 
@@ -333,7 +330,7 @@ class DatabaseQueryOptimizer:
             ),
         }
 
-    async def _analyze_table_statistics(self) -> Dict[str, Any]:
+    async def _analyze_table_statistics(self) -> dict[str, Any]:
         """Analyze table statistics and health."""
         logger.info("📋 Analyzing table statistics...")
 
@@ -385,7 +382,7 @@ class DatabaseQueryOptimizer:
                 ],
             }
 
-    async def _generate_optimization_recommendations(self) -> List[Dict[str, Any]]:
+    async def _generate_optimization_recommendations(self) -> list[dict[str, Any]]:
         """Generate comprehensive optimization recommendations."""
         logger.info("💡 Generating optimization recommendations...")
 
@@ -428,7 +425,7 @@ class DatabaseQueryOptimizer:
 
         return recommendations[:20]  # Top 20 recommendations
 
-    def _extract_tables_from_query(self, query: str) -> List[str]:
+    def _extract_tables_from_query(self, query: str) -> list[str]:
         """Extract table names from SQL query."""
         # Simple regex-based extraction (could be improved with SQL parser)
         import re
@@ -454,7 +451,7 @@ class DatabaseQueryOptimizer:
 
     async def _generate_query_recommendations(
         self, metric: QueryPerformanceMetrics
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate specific recommendations for a query."""
         recommendations = []
 
@@ -472,7 +469,7 @@ class DatabaseQueryOptimizer:
 
         return recommendations
 
-    async def _identify_missing_indexes(self) -> List[Dict[str, Any]]:
+    async def _identify_missing_indexes(self) -> list[dict[str, Any]]:
         """Identify missing indexes based on query patterns."""
         missing_indexes = []
 
@@ -509,7 +506,7 @@ class DatabaseQueryOptimizer:
         return normalized.strip()
 
     def _is_likely_n_plus_one_pattern(
-        self, pattern: str, queries: List[QueryPerformanceMetrics]
+        self, pattern: str, queries: list[QueryPerformanceMetrics]
     ) -> bool:
         """Check if query pattern indicates N+1 problem."""
         # Simple heuristics for N+1 detection
@@ -524,7 +521,7 @@ class DatabaseQueryOptimizer:
 
         return False
 
-    def _generate_performance_summary(self) -> Dict[str, Any]:
+    def _generate_performance_summary(self) -> dict[str, Any]:
         """Generate performance summary."""
         total_queries = len(self.query_metrics)
         slow_queries = sum(
@@ -565,14 +562,13 @@ class DatabaseQueryOptimizer:
 
         if slow_percentage < 0.05:
             return "A"
-        elif slow_percentage < 0.10:
+        if slow_percentage < 0.10:
             return "B"
-        elif slow_percentage < 0.20:
+        if slow_percentage < 0.20:
             return "C"
-        elif slow_percentage < 0.30:
+        if slow_percentage < 0.30:
             return "D"
-        else:
-            return "F"
+        return "F"
 
     async def close(self):
         """Close database connections."""
@@ -604,8 +600,8 @@ async def main():
 
         # Print summary
         summary = analysis_result["performance_summary"]
-        print(f"\n🎯 ACGS-1 Query Performance Analysis Summary")
-        print(f"=" * 50)
+        print("\n🎯 ACGS-1 Query Performance Analysis Summary")
+        print("=" * 50)
         print(f"Total Queries Analyzed: {summary['total_queries_analyzed']}")
         print(
             f"Slow Queries: {summary['slow_queries_count']} ({summary['slow_query_percentage']}%)"

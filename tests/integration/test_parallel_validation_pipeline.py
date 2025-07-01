@@ -237,7 +237,6 @@ async def test_parallel_validation_performance():
                 "src.backend.fv_service.app.services.ac_client.ac_service_client"
             ) as mock_ac,
         ):
-
             # Mock responses
             mock_integrity.get_policy_rules_by_ids = AsyncMock(
                 return_value=[
@@ -334,7 +333,6 @@ async def test_concurrent_request_handling():
                 "src.backend.fv_service.app.services.ac_client.ac_service_client"
             ) as mock_ac,
         ):
-
             mock_integrity.get_policy_rules_by_ids = AsyncMock(
                 return_value=[MagicMock(id=1, content="test_rule")]
             )
@@ -481,7 +479,6 @@ async def test_constitutional_validation_integration():
                 "src.backend.fv_service.app.services.ac_client.ac_service_client"
             ) as mock_ac,
         ):
-
             mock_integrity.get_policy_rules_by_ids = AsyncMock(
                 return_value=[MagicMock(id=1, content="test_rule")]
             )

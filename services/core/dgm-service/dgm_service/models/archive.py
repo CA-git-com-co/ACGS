@@ -3,9 +3,7 @@ Archive model for DGM improvements.
 """
 
 import enum
-from datetime import datetime
-from typing import Any, Dict, Optional
-from uuid import UUID
+from typing import Any
 
 from sqlalchemy import JSON, Column, DateTime, Enum, Numeric, String, Text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
@@ -65,7 +63,7 @@ class DGMArchive(Base):
             f"<DGMArchive(improvement_id={self.improvement_id}, status={self.status})>"
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "id": str(self.id),

@@ -315,9 +315,8 @@ class WINAEnforcementOptimizer:
             if datetime.now() - timestamp < self.cache_ttl:
                 logger.debug(f"Cache hit for enforcement context: {cache_key}")
                 return result
-            else:
-                # Remove expired entry
-                del self._enforcement_cache[cache_key]
+            # Remove expired entry
+            del self._enforcement_cache[cache_key]
 
         return None
 
@@ -347,25 +346,24 @@ class WINAEnforcementOptimizer:
                 and wina_insights.get("constitutional_risk", 0) > 0.5
             ):
                 return EnforcementStrategy.CONSTITUTIONAL_PRIORITY
-            elif (
+            if (
                 has_performance_constraints
                 and wina_insights.get("performance_benefit", 0)
                 > self.performance_improvement_threshold
             ):
                 return EnforcementStrategy.PERFORMANCE_FOCUSED
-            elif (
+            if (
                 is_high_priority
                 and wina_insights.get("optimization_potential", 0) > 0.7
             ):
                 return EnforcementStrategy.WINA_OPTIMIZED
-            elif wina_insights.get("adaptive_recommendation", False):
+            if wina_insights.get("adaptive_recommendation", False):
                 return EnforcementStrategy.ADAPTIVE
-            else:
-                return (
-                    EnforcementStrategy.WINA_OPTIMIZED
-                    if self.enable_wina
-                    else EnforcementStrategy.STANDARD
-                )
+            return (
+                EnforcementStrategy.WINA_OPTIMIZED
+                if self.enable_wina
+                else EnforcementStrategy.STANDARD
+            )
 
         except Exception as e:
             logger.warning(f"Strategy selection failed: {e}. Using standard strategy.")
@@ -514,7 +512,7 @@ class WINAEnforcementOptimizer:
             logger.error(f"Enforcement strategy execution failed: {e}")
             return {
                 "decision": "deny",
-                "reason": f"Enforcement execution failed: {str(e)}",
+                "reason": f"Enforcement execution failed: {e!s}",
                 "confidence_score": 0.0,
                 "opa_evaluation_time_ms": 0.0,
             }
@@ -745,7 +743,7 @@ class WINAEnforcementOptimizer:
             logger.error(f"OPA response processing failed: {e}")
             return {
                 "decision": "deny",
-                "reason": f"Response processing failed: {str(e)}",
+                "reason": f"Response processing failed: {e!s}",
                 "confidence_score": 0.0,
             }
 
@@ -960,10 +958,9 @@ class WINAEnforcementOptimizer:
         # Simple heuristic based on context complexity and policy count
         if len(policies) > 10:
             return 0.8
-        elif len(policies) > 5:
+        if len(policies) > 5:
             return 0.6
-        else:
-            return 0.4
+        return 0.4
 
     async def _get_baseline_enforcement_time(
         self, context: EnforcementContext

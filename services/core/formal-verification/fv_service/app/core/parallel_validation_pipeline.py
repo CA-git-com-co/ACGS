@@ -577,7 +577,7 @@ class ParallelValidationPipeline:
             return VerificationResponse(
                 results=[],
                 overall_status="error",
-                summary_message=f"Verification failed: {str(e)}",
+                summary_message=f"Verification failed: {e!s}",
             )
 
     async def _update_resource_metrics(self):
@@ -598,13 +598,10 @@ class ParallelValidationPipeline:
                 )
 
                 # Update peak concurrent validations
-                if (
-                    current_metrics.active_tasks
-                    > self.pipeline_metrics["concurrent_validations_peak"]
-                ):
-                    self.pipeline_metrics["concurrent_validations_peak"] = (
-                        current_metrics.active_tasks
-                    )
+                self.pipeline_metrics["concurrent_validations_peak"] = max(
+                    self.pipeline_metrics["concurrent_validations_peak"],
+                    current_metrics.active_tasks,
+                )
 
     async def _check_adaptive_scaling(self):
         # requires: Valid input parameters
@@ -806,13 +803,11 @@ class ParallelValidationPipeline:
             and self.federated_coordinator
             and len(request.policy_rule_refs) >= 5
         ):
-
             return await self._process_federated_parallel_verification(
                 request, request_id, constitutional_context
             )
-        else:
-            # Use standard parallel processing
-            return await self._process_parallel_verification(request, request_id)
+        # Use standard parallel processing
+        return await self._process_parallel_verification(request, request_id)
 
     async def _process_federated_parallel_verification(
         self,
@@ -982,8 +977,7 @@ class ParallelValidationPipeline:
             aggregated_result = await task_manager.get_batch_results(batch_id)
             if aggregated_result:
                 return aggregated_result.individual_results
-            else:
-                return []
+            return []
 
         except Exception as e:
             logger.error(f"Celery batch execution failed: {e}")
@@ -1097,8 +1091,7 @@ class ParallelValidationPipeline:
                     "counter_example": result.counter_example,
                     "confidence_score": 0.9 if result.status == "verified" else 0.7,
                 }
-            else:
-                return {"status": "error", "error": "No verification results"}
+            return {"status": "error", "error": "No verification results"}
 
         except Exception as e:
             logger.error(f"Policy verification task failed: {e}")
@@ -1167,7 +1160,7 @@ class ParallelValidationPipeline:
             return VerificationResponse(
                 results=[],
                 overall_status="error",
-                summary_message=f"Sequential verification failed: {str(e)}",
+                summary_message=f"Sequential verification failed: {e!s}",
             )
 
     def _convert_to_verification_response(

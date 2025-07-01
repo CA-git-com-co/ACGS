@@ -553,7 +553,7 @@ class WorkflowOrchestrator:
             if step.status == WorkflowStatus.IN_PROGRESS:
                 current_step = step.step_name
                 break
-            elif step.status == WorkflowStatus.PENDING:
+            if step.status == WorkflowStatus.PENDING:
                 next_step = step.step_name
                 break
 
@@ -593,7 +593,7 @@ class WorkflowOrchestrator:
                         # Step failed after max retries
                         workflow.status = WorkflowStatus.FAILED
                         break
-                    elif not success:
+                    if not success:
                         # Retry step
                         step.retry_count += 1
                         continue
@@ -665,10 +665,9 @@ class WorkflowOrchestrator:
             if result.get("success", False):
                 step.status = WorkflowStatus.COMPLETED
                 return True
-            else:
-                step.status = WorkflowStatus.FAILED
-                step.error_message = result.get("error", "Step execution failed")
-                return False
+            step.status = WorkflowStatus.FAILED
+            step.error_message = result.get("error", "Step execution failed")
+            return False
 
         except Exception as e:
             step.status = WorkflowStatus.FAILED
@@ -689,24 +688,23 @@ class WorkflowOrchestrator:
                 return await self.service_integrator.call_gs_service(
                     "create_policy_draft", workflow.input_data
                 )
-            elif "stakeholder_review" in step.step_id:
+            if "stakeholder_review" in step.step_id:
                 return await self.service_integrator.call_gs_service(
                     "initiate_stakeholder_review", {"workflow_id": workflow.workflow_id}
                 )
-            elif "public_comment" in step.step_id:
+            if "public_comment" in step.step_id:
                 return await self.service_integrator.call_gs_service(
                     "open_public_comment", {"workflow_id": workflow.workflow_id}
                 )
-            elif "voting" in step.step_id:
+            if "voting" in step.step_id:
                 return await self.service_integrator.call_gs_service(
                     "initiate_voting", {"workflow_id": workflow.workflow_id}
                 )
-            elif "implementation" in step.step_id:
+            if "implementation" in step.step_id:
                 return await self.service_integrator.call_pgc_service(
                     "implement_policy", {"workflow_id": workflow.workflow_id}
                 )
-            else:
-                return {"success": False, "error": "Unknown policy creation step"}
+            return {"success": False, "error": "Unknown policy creation step"}
         except Exception as e:
             return {"success": False, "error": str(e)}
 
@@ -719,24 +717,23 @@ class WorkflowOrchestrator:
                 return await self.service_integrator.call_ac_service(
                     "initiate_validation", workflow.input_data
                 )
-            elif "constitutional_analysis" in step.step_id:
+            if "constitutional_analysis" in step.step_id:
                 return await self.service_integrator.call_ac_service(
                     "analyze_constitutional_compliance",
                     {"workflow_id": workflow.workflow_id},
                 )
-            elif "compliance_assessment" in step.step_id:
+            if "compliance_assessment" in step.step_id:
                 return await self.service_integrator.call_ac_service(
                     "assess_compliance", {"workflow_id": workflow.workflow_id}
                 )
-            elif "enforcement_recommendation" in step.step_id:
+            if "enforcement_recommendation" in step.step_id:
                 return await self.service_integrator.call_pgc_service(
                     "recommend_enforcement", {"workflow_id": workflow.workflow_id}
                 )
-            else:
-                return {
-                    "success": False,
-                    "error": "Unknown constitutional compliance step",
-                }
+            return {
+                "success": False,
+                "error": "Unknown constitutional compliance step",
+            }
         except Exception as e:
             return {"success": False, "error": str(e)}
 
@@ -749,20 +746,19 @@ class WorkflowOrchestrator:
                 return await self.service_integrator.call_pgc_service(
                     "setup_monitoring", workflow.input_data
                 )
-            elif "violation_detection" in step.step_id:
+            if "violation_detection" in step.step_id:
                 return await self.service_integrator.call_pgc_service(
                     "detect_violations", {"workflow_id": workflow.workflow_id}
                 )
-            elif "impact_assessment" in step.step_id:
+            if "impact_assessment" in step.step_id:
                 return await self.service_integrator.call_pgc_service(
                     "assess_impact", {"workflow_id": workflow.workflow_id}
                 )
-            elif "remediation_action" in step.step_id:
+            if "remediation_action" in step.step_id:
                 return await self.service_integrator.call_pgc_service(
                     "execute_remediation", {"workflow_id": workflow.workflow_id}
                 )
-            else:
-                return {"success": False, "error": "Unknown policy enforcement step"}
+            return {"success": False, "error": "Unknown policy enforcement step"}
         except Exception as e:
             return {"success": False, "error": str(e)}
 
@@ -775,24 +771,23 @@ class WorkflowOrchestrator:
                 return await self.performance_monitor.start_monitoring(
                     workflow.input_data
                 )
-            elif "bottleneck_analysis" in step.step_id:
+            if "bottleneck_analysis" in step.step_id:
                 return await self.performance_monitor.analyze_bottlenecks(
                     workflow.workflow_id
                 )
-            elif "optimization_planning" in step.step_id:
+            if "optimization_planning" in step.step_id:
                 return await self.performance_monitor.plan_optimization(
                     workflow.workflow_id
                 )
-            elif "optimization_implementation" in step.step_id:
+            if "optimization_implementation" in step.step_id:
                 return await self.performance_monitor.implement_optimization(
                     workflow.workflow_id
                 )
-            elif "performance_reporting" in step.step_id:
+            if "performance_reporting" in step.step_id:
                 return await self.performance_monitor.generate_report(
                     workflow.workflow_id
                 )
-            else:
-                return {"success": False, "error": "Unknown WINA oversight step"}
+            return {"success": False, "error": "Unknown WINA oversight step"}
         except Exception as e:
             return {"success": False, "error": str(e)}
 
@@ -805,20 +800,19 @@ class WorkflowOrchestrator:
                 return await self.service_integrator.call_integrity_service(
                     "collect_audit_data", workflow.input_data
                 )
-            elif "audit_analysis" in step.step_id:
+            if "audit_analysis" in step.step_id:
                 return await self.service_integrator.call_integrity_service(
                     "analyze_audit_data", {"workflow_id": workflow.workflow_id}
                 )
-            elif "transparency_assessment" in step.step_id:
+            if "transparency_assessment" in step.step_id:
                 return await self.service_integrator.call_integrity_service(
                     "assess_transparency", {"workflow_id": workflow.workflow_id}
                 )
-            elif "public_reporting" in step.step_id:
+            if "public_reporting" in step.step_id:
                 return await self.service_integrator.call_integrity_service(
                     "generate_public_report", {"workflow_id": workflow.workflow_id}
                 )
-            else:
-                return {"success": False, "error": "Unknown audit/transparency step"}
+            return {"success": False, "error": "Unknown audit/transparency step"}
         except Exception as e:
             return {"success": False, "error": str(e)}
 

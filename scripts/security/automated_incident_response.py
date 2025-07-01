@@ -4,9 +4,7 @@ Automated Incident Response System
 Handles security incident detection, classification, and initial response.
 """
 
-import json
 import time
-import logging
 from datetime import datetime
 from enum import Enum
 

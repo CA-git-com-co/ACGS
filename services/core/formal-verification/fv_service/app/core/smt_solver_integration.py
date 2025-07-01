@@ -1,11 +1,11 @@
 import logging
 import re
-from typing import List, Dict, Any, Optional
+from typing import Any
 
 import z3
 
 from ..schemas import SMTSolverInput, SMTSolverOutput
-from .policy_smt_compiler import PolicySMTCompiler, SMTConstraint, PolicyType
+from .policy_smt_compiler import PolicySMTCompiler, SMTConstraint
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -24,8 +24,8 @@ class Z3SMTSolverClient:
         self.solver = z3.Solver()
         self.context_vars = {}  # Store Z3 variables for reuse
         self.policy_compiler = PolicySMTCompiler()
-        self.constitutional_constraints: List[SMTConstraint] = []
-        self.formal_properties: List[SMTConstraint] = []
+        self.constitutional_constraints: list[SMTConstraint] = []
+        self.formal_properties: list[SMTConstraint] = []
 
     async def check_satisfiability(
         self, solver_input: SMTSolverInput
@@ -77,25 +77,24 @@ class Z3SMTSolverClient:
                     is_unsatisfiable=False,
                     counter_example=counter_example,
                 )
-            elif result == z3.unsat:
+            if result == z3.unsat:
                 # UNSAT means obligations ARE entailed
                 logger.info("Verification PASSED - obligations are entailed")
                 return SMTSolverOutput(is_satisfiable=False, is_unsatisfiable=True)
-            else:
-                # Unknown result
-                logger.warning("Z3 returned unknown result")
-                return SMTSolverOutput(
-                    is_satisfiable=False,
-                    is_unsatisfiable=False,
-                    error_message="Z3 solver returned unknown result - verification inconclusive",
-                )
-
-        except Exception as e:
-            logger.error(f"Error in Z3 verification: {str(e)}")
+            # Unknown result
+            logger.warning("Z3 returned unknown result")
             return SMTSolverOutput(
                 is_satisfiable=False,
                 is_unsatisfiable=False,
-                error_message=f"Z3 solver error: {str(e)}",
+                error_message="Z3 solver returned unknown result - verification inconclusive",
+            )
+
+        except Exception as e:
+            logger.error(f"Error in Z3 verification: {e!s}")
+            return SMTSolverOutput(
+                is_satisfiable=False,
+                is_unsatisfiable=False,
+                error_message=f"Z3 solver error: {e!s}",
             )
 
     async def verify_policy_compliance(
@@ -103,7 +102,7 @@ class Z3SMTSolverClient:
         policy_content: str,
         policy_id: str,
         constitutional_principles_file: str = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Enhanced policy verification with constitutional compliance checking.
 
@@ -181,7 +180,7 @@ class Z3SMTSolverClient:
                 "formal_properties_verified": False,
             }
 
-    def _check_constitutional_compliance(self) -> Dict[str, Any]:
+    def _check_constitutional_compliance(self) -> dict[str, Any]:
         """Check compliance with constitutional principles."""
         try:
             compliance_results = {}
@@ -217,7 +216,7 @@ class Z3SMTSolverClient:
             logger.error(f"Constitutional compliance check failed: {e}")
             return {"overall_compliant": False, "error": str(e)}
 
-    def _verify_formal_properties(self) -> Dict[str, Any]:
+    def _verify_formal_properties(self) -> dict[str, Any]:
         """Verify formal properties (correctness, consistency, completeness)."""
         try:
             property_results = {}
@@ -251,7 +250,7 @@ class Z3SMTSolverClient:
             logger.error(f"Formal properties verification failed: {e}")
             return {"all_properties_verified": False, "error": str(e)}
 
-    def _generate_verification_recommendations(self, result) -> List[str]:
+    def _generate_verification_recommendations(self, result) -> list[str]:
         """Generate recommendations based on verification results."""
         recommendations = []
 
@@ -290,7 +289,7 @@ class Z3SMTSolverClient:
 
         return recommendations
 
-    def _extract_model_info(self, model) -> Dict[str, Any]:
+    def _extract_model_info(self, model) -> dict[str, Any]:
         """Extract useful information from Z3 model."""
         try:
             model_info = {}
@@ -319,7 +318,7 @@ class Z3SMTSolverClient:
                 if constraint is not None:
                     constraints.append(constraint)
             except Exception as e:
-                logger.warning(f"Failed to parse Datalog rule '{rule}': {str(e)}")
+                logger.warning(f"Failed to parse Datalog rule '{rule}': {e!s}")
 
         return constraints
 
@@ -359,12 +358,10 @@ class Z3SMTSolverClient:
                     z3.And(*body_preds) if len(body_preds) > 1 else body_preds[0]
                 )
                 return z3.Implies(body_conjunction, head_pred)
-            else:
-                # Fact (no body)
-                return head_pred
-        else:
-            # Simple fact
-            return self._parse_predicate(rule.rstrip("."))
+            # Fact (no body)
+            return head_pred
+        # Simple fact
+        return self._parse_predicate(rule.rstrip("."))
 
     def _parse_predicate(self, predicate: str) -> z3.BoolRef | None:
         """
@@ -389,12 +386,11 @@ class Z3SMTSolverClient:
                 self.context_vars[var_name] = z3.Bool(var_name)
 
             return self.context_vars[var_name]
-        else:
-            # Simple predicate without parentheses
-            var_name = f"{predicate}_{hash(predicate) % 10000}"
-            if var_name not in self.context_vars:
-                self.context_vars[var_name] = z3.Bool(var_name)
-            return self.context_vars[var_name]
+        # Simple predicate without parentheses
+        var_name = f"{predicate}_{hash(predicate) % 10000}"
+        if var_name not in self.context_vars:
+            self.context_vars[var_name] = z3.Bool(var_name)
+        return self.context_vars[var_name]
 
     def _convert_obligations_to_z3(self, obligations: list[str]) -> list[z3.BoolRef]:
         """
@@ -408,7 +404,7 @@ class Z3SMTSolverClient:
                 if constraint is not None:
                     constraints.append(constraint)
             except Exception as e:
-                logger.warning(f"Failed to parse obligation '{obligation}': {str(e)}")
+                logger.warning(f"Failed to parse obligation '{obligation}': {e!s}")
 
         return constraints
 
@@ -429,23 +425,22 @@ class Z3SMTSolverClient:
                 self.context_vars[var_name] = z3.Bool(var_name)
             return self.context_vars[var_name]
 
-        elif "protect_sensitive_data" in obligation:
+        if "protect_sensitive_data" in obligation:
             # Create constraint for data protection
             var_name = f"data_protected_{hash(obligation) % 10000}"
             if var_name not in self.context_vars:
                 self.context_vars[var_name] = z3.Bool(var_name)
             return self.context_vars[var_name]
 
-        elif "generic_obligation" in obligation:
+        if "generic_obligation" in obligation:
             # Generic obligation
             var_name = f"generic_compliance_{hash(obligation) % 10000}"
             if var_name not in self.context_vars:
                 self.context_vars[var_name] = z3.Bool(var_name)
             return self.context_vars[var_name]
 
-        else:
-            # Default: treat as boolean predicate
-            return self._parse_predicate(obligation)
+        # Default: treat as boolean predicate
+        return self._parse_predicate(obligation)
 
     def _extract_counter_example(self, model: z3.ModelRef) -> str:
         """
@@ -459,11 +454,10 @@ class Z3SMTSolverClient:
 
             if counter_parts:
                 return f"Counter-example: {', '.join(counter_parts[:5])}"  # Limit to first 5 for readability
-            else:
-                return "Counter-example found but no variable assignments available"
+            return "Counter-example found but no variable assignments available"
 
         except Exception as e:
-            return f"Counter-example extraction failed: {str(e)}"
+            return f"Counter-example extraction failed: {e!s}"
 
 
 class MockSMTSolverClient:
@@ -508,15 +502,13 @@ class MockSMTSolverClient:
                     is_unsatisfiable=False,
                     counter_example=counter_example,
                 )
-            else:
-                # (Rules AND NOT Obligation) is UNSAT => Obligation IS Entailed (Verification Passes)
-                return SMTSolverOutput(is_satisfiable=False, is_unsatisfiable=True)
-        else:
-            return SMTSolverOutput(
-                is_satisfiable=False,
-                is_unsatisfiable=False,
-                error_message=error_message,
-            )
+            # (Rules AND NOT Obligation) is UNSAT => Obligation IS Entailed (Verification Passes)
+            return SMTSolverOutput(is_satisfiable=False, is_unsatisfiable=True)
+        return SMTSolverOutput(
+            is_satisfiable=False,
+            is_unsatisfiable=False,
+            error_message=error_message,
+        )
 
 
 # Global instances for use
@@ -527,7 +519,7 @@ try:
     logger.info("Z3 SMT Solver initialized successfully")
 except Exception as e:
     # Fallback to mock if Z3 is not available
-    logger.warning(f"Z3 not available, falling back to mock: {str(e)}")
+    logger.warning(f"Z3 not available, falling back to mock: {e!s}")
     mock_smt_solver_client = MockSMTSolverClient()
     smt_solver_client = mock_smt_solver_client
 

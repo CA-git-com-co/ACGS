@@ -10,7 +10,6 @@ the critical OWASP-recommended security headers.
 """
 
 import logging
-import os
 import sys
 from pathlib import Path
 
@@ -94,7 +93,7 @@ def apply_security_headers_to_service(service_name: str, service_path: str) -> b
 
     try:
         # Read current content
-        with open(full_path, "r") as f:
+        with open(full_path) as f:
             content = f.read()
 
         # Check if security headers middleware is already present
@@ -121,7 +120,7 @@ def apply_security_headers_to_service(service_name: str, service_path: str) -> b
                         break
                     j += 1
                 break
-            elif "@app.middleware" in line:
+            if "@app.middleware" in line:
                 # Insert before existing middleware
                 insert_index = i
                 break
@@ -175,15 +174,14 @@ def main():
     logger.info("🔒 SECURITY HEADERS MIDDLEWARE APPLICATION SUMMARY")
     logger.info("=" * 60)
     logger.info(f"✅ Services updated: {success_count}/{total_services}")
-    logger.info(f"🎯 Success rate: {(success_count/total_services)*100:.1f}%")
+    logger.info(f"🎯 Success rate: {(success_count / total_services) * 100:.1f}%")
 
     if success_count == total_services:
         logger.info("🎉 All services updated successfully!")
         logger.info("🔄 Please restart services to apply security headers")
         return 0
-    else:
-        logger.warning("⚠️ Some services could not be updated")
-        return 1
+    logger.warning("⚠️ Some services could not be updated")
+    return 1
 
 
 if __name__ == "__main__":

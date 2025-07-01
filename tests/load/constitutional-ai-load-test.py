@@ -7,16 +7,17 @@ with realistic constitutional AI workloads to validate performance,
 stability, and compliance scoring under sustained load.
 """
 
-import asyncio
-import aiohttp
-import json
-import time
-import statistics
-from dataclasses import dataclass, field
-from typing import List, Dict, Any, Optional
-from datetime import datetime, timedelta
 import argparse
+import asyncio
+import json
 import logging
+import statistics
+import time
+from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Any
+
+import aiohttp
 
 # Configure logging
 logging.basicConfig(
@@ -49,8 +50,8 @@ class TestResult:
     response_time: float
     status_code: int
     success: bool
-    compliance_score: Optional[float] = None
-    error_message: Optional[str] = None
+    compliance_score: float | None = None
+    error_message: str | None = None
 
 
 @dataclass
@@ -60,11 +61,11 @@ class LoadTestResults:
     total_requests: int = 0
     successful_requests: int = 0
     failed_requests: int = 0
-    response_times: List[float] = field(default_factory=list)
-    compliance_scores: List[float] = field(default_factory=list)
-    errors: List[str] = field(default_factory=list)
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
+    response_times: list[float] = field(default_factory=list)
+    compliance_scores: list[float] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    start_time: datetime | None = None
+    end_time: datetime | None = None
 
 
 class ConstitutionalAILoadTester:
@@ -73,7 +74,7 @@ class ConstitutionalAILoadTester:
     def __init__(self, config: LoadTestConfig):
         self.config = config
         self.results = LoadTestResults()
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.session: aiohttp.ClientSession | None = None
 
         # Constitutional reasoning test scenarios
         self.constitutional_scenarios = [
@@ -156,7 +157,7 @@ class ConstitutionalAILoadTester:
             await self.session.close()
 
     async def test_constitutional_reasoning(
-        self, scenario: Dict[str, Any]
+        self, scenario: dict[str, Any]
     ) -> TestResult:
         """Test constitutional reasoning endpoint."""
         start_time = time.time()
@@ -181,16 +182,15 @@ class ConstitutionalAILoadTester:
                         success=True,
                         compliance_score=compliance_score,
                     )
-                else:
-                    error_text = await response.text()
-                    return TestResult(
-                        endpoint="constitutional-reasoning",
-                        request_time=start_time,
-                        response_time=response_time,
-                        status_code=response.status,
-                        success=False,
-                        error_message=f"HTTP {response.status}: {error_text}",
-                    )
+                error_text = await response.text()
+                return TestResult(
+                    endpoint="constitutional-reasoning",
+                    request_time=start_time,
+                    response_time=response_time,
+                    status_code=response.status,
+                    success=False,
+                    error_message=f"HTTP {response.status}: {error_text}",
+                )
 
         except Exception as e:
             response_time = time.time() - start_time
@@ -203,7 +203,7 @@ class ConstitutionalAILoadTester:
                 error_message=str(e),
             )
 
-    async def test_chat_completion(self, scenario: Dict[str, Any]) -> TestResult:
+    async def test_chat_completion(self, scenario: dict[str, Any]) -> TestResult:
         """Test chat completion endpoint."""
         start_time = time.time()
 
@@ -232,16 +232,15 @@ class ConstitutionalAILoadTester:
                         status_code=response.status,
                         success=True,
                     )
-                else:
-                    error_text = await response.text()
-                    return TestResult(
-                        endpoint="chat-completions",
-                        request_time=start_time,
-                        response_time=response_time,
-                        status_code=response.status,
-                        success=False,
-                        error_message=f"HTTP {response.status}: {error_text}",
-                    )
+                error_text = await response.text()
+                return TestResult(
+                    endpoint="chat-completions",
+                    request_time=start_time,
+                    response_time=response_time,
+                    status_code=response.status,
+                    success=False,
+                    error_message=f"HTTP {response.status}: {error_text}",
+                )
 
         except Exception as e:
             response_time = time.time() - start_time
@@ -333,7 +332,7 @@ class ConstitutionalAILoadTester:
         await asyncio.sleep(delay)
         await self.worker(worker_id, int(duration))
 
-    def analyze_results(self) -> Dict[str, Any]:
+    def analyze_results(self) -> dict[str, Any]:
         """Analyze and summarize test results."""
         if not self.results.response_times:
             return {"error": "No successful requests recorded"}
@@ -399,7 +398,7 @@ class ConstitutionalAILoadTester:
 
         return analysis
 
-    def _percentile(self, data: List[float], percentile: int) -> float:
+    def _percentile(self, data: list[float], percentile: int) -> float:
         """Calculate percentile of data."""
         if not data:
             return 0.0

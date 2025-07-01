@@ -4,13 +4,8 @@ Comprehensive test coverage analysis for ACGS-2 system.
 Analyzes test gaps, identifies critical components, and provides recommendations.
 """
 
-import os
-import sys
 import json
-import ast
 from pathlib import Path
-from collections import defaultdict
-from typing import Dict, List, Set, Tuple
 
 
 class TestCoverageAnalyzer:
@@ -22,7 +17,7 @@ class TestCoverageAnalyzer:
         self.test_files = {}
         self.service_files = {}
 
-    def analyze_service_structure(self) -> Dict:
+    def analyze_service_structure(self) -> dict:
         """Analyze the service directory structure and identify key components."""
         print("Analyzing service structure...")
 
@@ -100,7 +95,7 @@ class TestCoverageAnalyzer:
 
         return structure
 
-    def analyze_test_structure(self) -> Dict:
+    def analyze_test_structure(self) -> dict:
         """Analyze the test directory structure and categorize tests."""
         print("Analyzing test structure...")
 
@@ -133,8 +128,8 @@ class TestCoverageAnalyzer:
         return test_structure
 
     def identify_coverage_gaps(
-        self, service_structure: Dict, test_structure: Dict
-    ) -> Dict:
+        self, service_structure: dict, test_structure: dict
+    ) -> dict:
         """Identify gaps in test coverage by comparing services to tests."""
         print("Identifying coverage gaps...")
 
@@ -188,7 +183,7 @@ class TestCoverageAnalyzer:
 
         return gaps
 
-    def analyze_wina_components(self) -> Dict:
+    def analyze_wina_components(self) -> dict:
         """Specifically analyze WINA optimization components."""
         print("Analyzing WINA components...")
 
@@ -241,7 +236,7 @@ class TestCoverageAnalyzer:
 
         return wina_analysis
 
-    def generate_recommendations(self, gaps: Dict, wina_analysis: Dict) -> List[str]:
+    def generate_recommendations(self, gaps: dict, wina_analysis: dict) -> list[str]:
         """Generate specific recommendations for improving test coverage."""
         recommendations = []
 
@@ -295,7 +290,7 @@ class TestCoverageAnalyzer:
 
         return recommendations
 
-    def run_analysis(self) -> Dict:
+    def run_analysis(self) -> dict:
         """Run the complete test coverage analysis."""
         print("Starting comprehensive test coverage analysis...")
         print("=" * 60)

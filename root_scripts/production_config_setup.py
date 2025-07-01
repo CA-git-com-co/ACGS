@@ -160,7 +160,11 @@ class ProductionConfigManager:
         try:
             # Check if alembic is available
             result = subprocess.run(
-                ["alembic", "current"], capture_output=True, text=True, cwd="."
+                ["alembic", "current"],
+                check=False,
+                capture_output=True,
+                text=True,
+                cwd=".",
             )
 
             if result.returncode == 0:
@@ -169,6 +173,7 @@ class ProductionConfigManager:
                 # Check migration status
                 history_result = subprocess.run(
                     ["alembic", "history", "--verbose"],
+                    check=False,
                     capture_output=True,
                     text=True,
                     cwd=".",
@@ -177,14 +182,12 @@ class ProductionConfigManager:
                 if "head" in history_result.stdout:
                     print("✅ Database migrations are up to date")
                     return True
-                else:
-                    print("⚠️ Database migrations may need to be applied")
-                    self.config_issues.append("database_migrations")
-                    return False
-            else:
-                print("❌ Alembic not available or configured")
-                self.config_issues.append("alembic_setup")
+                print("⚠️ Database migrations may need to be applied")
+                self.config_issues.append("database_migrations")
                 return False
+            print("❌ Alembic not available or configured")
+            self.config_issues.append("alembic_setup")
+            return False
 
         except FileNotFoundError:
             print("❌ Alembic not installed")
@@ -198,7 +201,7 @@ class ProductionConfigManager:
         try:
             # Check Docker
             docker_result = subprocess.run(
-                ["docker", "--version"], capture_output=True, text=True
+                ["docker", "--version"], check=False, capture_output=True, text=True
             )
 
             if docker_result.returncode == 0:
@@ -206,20 +209,21 @@ class ProductionConfigManager:
 
                 # Check Docker Compose
                 compose_result = subprocess.run(
-                    ["docker-compose", "--version"], capture_output=True, text=True
+                    ["docker-compose", "--version"],
+                    check=False,
+                    capture_output=True,
+                    text=True,
                 )
 
                 if compose_result.returncode == 0:
                     print("✅ Docker Compose is available")
                     return True
-                else:
-                    print("❌ Docker Compose not available")
-                    self.config_issues.append("docker_compose_missing")
-                    return False
-            else:
-                print("❌ Docker not available")
-                self.config_issues.append("docker_missing")
+                print("❌ Docker Compose not available")
+                self.config_issues.append("docker_compose_missing")
                 return False
+            print("❌ Docker not available")
+            self.config_issues.append("docker_missing")
+            return False
 
         except FileNotFoundError:
             print("❌ Docker not installed")
@@ -259,13 +263,12 @@ class ProductionConfigManager:
             print("3. Configure LLM API keys")
             print("4. Test service connectivity")
             return False
-        else:
-            print("✅ Production configuration is ready!")
-            print("\n📋 Next Steps:")
-            print("1. Review .env.production file")
-            print("2. Start services: docker-compose up -d")
-            print("3. Run integration tests: python test_service_integration.py")
-            return True
+        print("✅ Production configuration is ready!")
+        print("\n📋 Next Steps:")
+        print("1. Review .env.production file")
+        print("2. Start services: docker-compose up -d")
+        print("3. Run integration tests: python test_service_integration.py")
+        return True
 
 
 def main():

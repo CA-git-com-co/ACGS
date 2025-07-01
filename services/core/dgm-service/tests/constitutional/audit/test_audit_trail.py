@@ -8,7 +8,6 @@ and constitutional compliance tracking throughout DGM operations.
 import hashlib
 import json
 from datetime import datetime, timedelta
-from unittest.mock import AsyncMock, patch
 from uuid import uuid4
 
 import pytest

@@ -13,6 +13,7 @@ from datetime import datetime
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
+
 from .services.automated_resolution_engine import (
     AutomatedResolutionEngine,
     ResolutionResult,
@@ -490,7 +491,6 @@ class TestConflictResolutionOrchestrator:
                 with patch.object(
                     orchestrator.auditor, "log_conflict_detection"
                 ) as mock_audit:
-
                     # Setup mocks
                     mock_detect.return_value = [
                         ConflictDetectionResult(

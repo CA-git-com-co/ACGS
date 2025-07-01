@@ -6,30 +6,29 @@ Business logic for Human-in-the-Loop agent oversight operations.
 
 import logging
 from datetime import datetime, timezone
-from typing import List, Optional
 
+from sqlalchemy import and_, desc, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import and_, desc, func
 
 from ..models.hitl_models import (
-    HITLDecision,
     AgentConfidenceProfile,
-    HumanReviewTask,
-    HITLFeedback,
     DecisionStatus,
+    HITLDecision,
+    HITLFeedback,
+    HumanReviewTask,
     ReviewTaskStatus,
 )
 from ..schemas.hitl_schemas import (
-    HITLDecisionResponse,
     AgentConfidenceProfileResponse,
     AgentConfidenceUpdate,
-    HumanReviewTaskResponse,
-    HumanReviewSubmission,
-    HITLFeedbackCreate,
     HITLDashboardData,
+    HITLDecisionResponse,
+    HITLFeedbackCreate,
     HITLMetrics,
     HITLSearchRequest,
+    HumanReviewSubmission,
+    HumanReviewTaskResponse,
 )
 
 logger = logging.getLogger(__name__)
@@ -43,7 +42,7 @@ class HITLService:
 
     async def get_decision(
         self, db: AsyncSession, decision_id: str
-    ) -> Optional[HITLDecisionResponse]:
+    ) -> HITLDecisionResponse | None:
         """Get a specific HITL decision."""
         try:
             result = await db.execute(
@@ -61,7 +60,7 @@ class HITLService:
 
     async def get_agent_confidence_profile(
         self, db: AsyncSession, agent_id: str
-    ) -> Optional[AgentConfidenceProfileResponse]:
+    ) -> AgentConfidenceProfileResponse | None:
         """Get agent confidence profile."""
         try:
             result = await db.execute(
@@ -81,7 +80,7 @@ class HITLService:
 
     async def update_agent_confidence(
         self, db: AsyncSession, agent_id: str, confidence_update: AgentConfidenceUpdate
-    ) -> Optional[AgentConfidenceProfile]:
+    ) -> AgentConfidenceProfile | None:
         """Update agent confidence based on operation outcome."""
         try:
             # Get or create confidence profile
@@ -138,7 +137,7 @@ class HITLService:
         limit: int = 50,
         assigned_to_me: bool = False,
         priority_min: int = 1,
-    ) -> List[HumanReviewTaskResponse]:
+    ) -> list[HumanReviewTaskResponse]:
         """Get pending human review tasks."""
         try:
             query = (
@@ -166,7 +165,7 @@ class HITLService:
 
     async def submit_human_review(
         self, db: AsyncSession, task_id: str, review_submission: HumanReviewSubmission
-    ) -> Optional[HumanReviewTask]:
+    ) -> HumanReviewTask | None:
         """Submit human review for a task."""
         try:
             # Get the task
@@ -376,7 +375,7 @@ class HITLService:
 
     async def search_decisions(
         self, db: AsyncSession, search_request: HITLSearchRequest
-    ) -> List[HITLDecisionResponse]:
+    ) -> list[HITLDecisionResponse]:
         """Search HITL decisions with filtering."""
         try:
             query = select(HITLDecision)

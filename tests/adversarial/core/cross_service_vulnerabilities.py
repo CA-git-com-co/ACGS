@@ -8,7 +8,7 @@ vulnerabilities in the ACGS-PGP microservices architecture.
 import json
 import logging
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 import aiohttp
 
@@ -118,36 +118,35 @@ class CrossServiceVulnerabilityScanner:
             return await self._test_service_authentication_bypass(
                 available_services, service_endpoints
             )
-        elif vector == "inter_service_data_injection":
+        if vector == "inter_service_data_injection":
             return await self._test_inter_service_data_injection(
                 available_services, service_endpoints
             )
-        elif vector == "service_mesh_exploitation":
+        if vector == "service_mesh_exploitation":
             return await self._test_service_mesh_exploitation(
                 available_services, service_endpoints
             )
-        elif vector == "api_gateway_bypass":
+        if vector == "api_gateway_bypass":
             return await self._test_api_gateway_bypass(
                 available_services, service_endpoints
             )
-        elif vector == "service_discovery_manipulation":
+        if vector == "service_discovery_manipulation":
             return await self._test_service_discovery_manipulation(
                 available_services, service_endpoints
             )
-        elif vector == "load_balancer_exploitation":
+        if vector == "load_balancer_exploitation":
             return await self._test_load_balancer_exploitation(
                 available_services, service_endpoints
             )
-        elif vector == "circuit_breaker_bypass":
+        if vector == "circuit_breaker_bypass":
             return await self._test_circuit_breaker_bypass(
                 available_services, service_endpoints
             )
-        elif vector == "service_impersonation":
+        if vector == "service_impersonation":
             return await self._test_service_impersonation(
                 available_services, service_endpoints
             )
-        else:
-            return []
+        return []
 
     async def _test_service_authentication_bypass(
         self, available_services: list[str], service_endpoints: dict[str, str]
@@ -190,7 +189,6 @@ class CrossServiceVulnerabilityScanner:
                             headers=payload,
                             timeout=10,
                         ) as response:
-
                             execution_time = (time.time() - start_time) * 1000
 
                             # Check if bypass was successful (should be blocked)
@@ -269,7 +267,6 @@ class CrossServiceVulnerabilityScanner:
                             json=injection_request,
                             timeout=10,
                         ) as response:
-
                             execution_time = (time.time() - start_time) * 1000
 
                             if response.status == 200:
@@ -344,7 +341,6 @@ class CrossServiceVulnerabilityScanner:
                             headers=payload,
                             timeout=10,
                         ) as response:
-
                             execution_time = (time.time() - start_time) * 1000
 
                             if response.status == 200:

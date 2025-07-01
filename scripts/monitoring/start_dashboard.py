@@ -10,10 +10,10 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import logging
-import os
 import sys
-import yaml
 from pathlib import Path
+
+import yaml
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -69,7 +69,7 @@ class DashboardStarter:
             logger.info("📋 Using default configuration")
             self.config = self._get_default_config()
         else:
-            with open(self.config_path, "r") as f:
+            with open(self.config_path) as f:
                 self.config = yaml.safe_load(f)
             logger.info(f"✅ Configuration loaded from {self.config_path}")
 

@@ -13,7 +13,7 @@ import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -55,7 +55,7 @@ class FocusedSecurityScanner:
         os.makedirs("logs", exist_ok=True)
         os.makedirs("reports/security", exist_ok=True)
 
-    def run_focused_scan(self) -> Dict[str, Any]:
+    def run_focused_scan(self) -> dict[str, Any]:
         """Run focused security scan on critical components."""
         logger.info(f"🔍 Starting focused security scan: {self.scan_id}")
 
@@ -98,7 +98,9 @@ class FocusedSecurityScanner:
                     "-q",  # Quiet mode for faster execution
                 ]
 
-                result = subprocess.run(cmd, capture_output=True, text=True)
+                result = subprocess.run(
+                    cmd, check=False, capture_output=True, text=True
+                )
 
                 if result.stdout:
                     try:
@@ -164,7 +166,7 @@ class FocusedSecurityScanner:
 
             cmd = ["/home/dislove/.local/bin/safety", "check", "--json"]
             result = subprocess.run(
-                cmd, cwd=self.project_root, capture_output=True, text=True
+                cmd, check=False, cwd=self.project_root, capture_output=True, text=True
             )
 
             findings = []
@@ -407,7 +409,7 @@ class FocusedSecurityScanner:
                 config_path = self.project_root / config_file
                 if config_path.exists():
                     try:
-                        with open(config_path, "r") as f:
+                        with open(config_path) as f:
                             content = f.read().lower()
 
                             for pattern in secret_patterns:
@@ -633,7 +635,7 @@ if __name__ == "__main__":
                 config_path = self.project_root / config_file
                 if config_path.exists():
                     try:
-                        with open(config_path, "r") as f:
+                        with open(config_path) as f:
                             content = f.read().lower()
 
                             for pattern in secret_patterns:
@@ -661,7 +663,7 @@ if __name__ == "__main__":
             )
             if security_middleware_path.exists():
                 try:
-                    with open(security_middleware_path, "r") as f:
+                    with open(security_middleware_path) as f:
                         content = f.read()
 
                         # Check for weak session settings

@@ -5,13 +5,12 @@ Provides continuous learning and adaptation capabilities for WINA optimization
 with feedback integration and constitutional compliance learning.
 """
 
-import asyncio
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional, Callable
+from datetime import datetime
 from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +42,7 @@ class FeedbackSignal:
     feedback_type: FeedbackType
     source: str
     value: float
-    context: Dict[str, Any]
+    context: dict[str, Any]
     timestamp: datetime = field(default_factory=datetime.now)
     processed: bool = False
 
@@ -54,7 +53,7 @@ class LearningUpdate:
 
     update_id: str
     strategy_used: LearningStrategy
-    parameters_updated: List[str]
+    parameters_updated: list[str]
     improvement_score: float
     constitutional_impact: float
     confidence: float
@@ -69,7 +68,7 @@ class WINALearningSystem:
     while maintaining constitutional compliance constraints.
     """
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         """
         Initialize WINA learning system.
 
@@ -83,9 +82,9 @@ class WINALearningSystem:
         )
 
         # Learning state
-        self.feedback_queue: List[FeedbackSignal] = []
-        self.learning_history: List[LearningUpdate] = []
-        self.adaptation_parameters: Dict[str, float] = {}
+        self.feedback_queue: list[FeedbackSignal] = []
+        self.learning_history: list[LearningUpdate] = []
+        self.adaptation_parameters: dict[str, float] = {}
 
         # Performance tracking
         self.total_feedback_processed = 0
@@ -102,7 +101,7 @@ class WINALearningSystem:
 
     async def process_feedback_signal(
         self, feedback: FeedbackSignal
-    ) -> Optional[LearningUpdate]:
+    ) -> LearningUpdate | None:
         """
         Process a feedback signal and generate learning updates.
 
@@ -145,7 +144,7 @@ class WINALearningSystem:
 
     async def _constitutional_guided_learning(
         self, feedback: FeedbackSignal
-    ) -> Optional[LearningUpdate]:
+    ) -> LearningUpdate | None:
         """Constitutional-guided learning strategy."""
         try:
             # Prioritize constitutional compliance in learning
@@ -183,7 +182,7 @@ class WINALearningSystem:
 
     async def _reinforcement_learning(
         self, feedback: FeedbackSignal
-    ) -> Optional[LearningUpdate]:
+    ) -> LearningUpdate | None:
         """Reinforcement learning strategy."""
         try:
             # Use feedback value as reward signal
@@ -225,7 +224,7 @@ class WINALearningSystem:
 
     async def _default_learning(
         self, feedback: FeedbackSignal
-    ) -> Optional[LearningUpdate]:
+    ) -> LearningUpdate | None:
         """Default learning strategy."""
         try:
             # Simple adaptive learning
@@ -254,10 +253,9 @@ class WINALearningSystem:
         try:
             if feedback.feedback_type == FeedbackType.CONSTITUTIONAL:
                 return LearningStrategy.CONSTITUTIONAL_GUIDED
-            elif feedback.feedback_type == FeedbackType.PERFORMANCE:
+            if feedback.feedback_type == FeedbackType.PERFORMANCE:
                 return LearningStrategy.REINFORCEMENT
-            else:
-                return LearningStrategy.SUPERVISED
+            return LearningStrategy.SUPERVISED
 
         except Exception as e:
             logger.error(f"Learning strategy selection failed: {e}")
@@ -302,7 +300,7 @@ class WINALearningSystem:
         except Exception as e:
             logger.error(f"Failed to apply learning update: {e}")
 
-    def get_learning_summary(self) -> Dict[str, Any]:
+    def get_learning_summary(self) -> dict[str, Any]:
         """Get summary of learning system performance."""
         try:
             adaptation_rate = (
@@ -335,8 +333,8 @@ class WINALearningSystem:
             return {"error": str(e)}
 
     async def batch_process_feedback(
-        self, feedback_batch: List[FeedbackSignal]
-    ) -> List[LearningUpdate]:
+        self, feedback_batch: list[FeedbackSignal]
+    ) -> list[LearningUpdate]:
         """Process multiple feedback signals in batch."""
         try:
             updates = []
@@ -361,7 +359,7 @@ class WINALearningSystem:
         feedback_type: FeedbackType,
         source: str,
         value: float,
-        context: Dict[str, Any] = None,
+        context: dict[str, Any] = None,
     ) -> FeedbackSignal:
         """Create a new feedback signal."""
         return FeedbackSignal(
@@ -377,7 +375,7 @@ class WINALearningSystem:
 _learning_system_instance = None
 
 
-async def get_wina_learning_system(config: Dict[str, Any] = None) -> WINALearningSystem:
+async def get_wina_learning_system(config: dict[str, Any] = None) -> WINALearningSystem:
     """
     Get or create the global WINA learning system instance.
 

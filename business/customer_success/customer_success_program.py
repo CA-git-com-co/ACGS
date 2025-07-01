@@ -5,12 +5,11 @@ Comprehensive customer success framework for enterprise ACGS deployments
 """
 
 import json
-import time
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone, timedelta
-from enum import Enum
 import logging
+from dataclasses import asdict, dataclass
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -48,8 +47,8 @@ class CustomerProfile:
     renewal_date: str
     primary_contact: str
     technical_contact: str
-    constitutional_use_cases: List[str]
-    success_criteria: List[str]
+    constitutional_use_cases: list[str]
+    success_criteria: list[str]
     constitutional_hash: str
 
 
@@ -60,8 +59,8 @@ class CustomerHealthMetrics:
     customer_id: str
     health_status: CustomerHealthStatus
     health_score: float
-    usage_metrics: Dict[str, float]
-    adoption_metrics: Dict[str, float]
+    usage_metrics: dict[str, float]
+    adoption_metrics: dict[str, float]
     satisfaction_score: float
     constitutional_compliance_rate: float
     support_ticket_count: int
@@ -77,11 +76,11 @@ class OnboardingPlan:
     onboarding_stage: OnboardingStage
     start_date: str
     target_completion_date: str
-    milestones: List[Dict[str, Any]]
+    milestones: list[dict[str, Any]]
     assigned_csm: str
     constitutional_governance_scope: str
-    success_criteria: List[str]
-    risks_and_mitigation: List[Dict[str, str]]
+    success_criteria: list[str]
+    risks_and_mitigation: list[dict[str, str]]
 
 
 class CustomerSuccessProgram:
@@ -94,7 +93,7 @@ class CustomerSuccessProgram:
         self.onboarding_plans = {}
         self.success_playbooks = {}
 
-    async def develop_customer_success_program(self) -> Dict[str, Any]:
+    async def develop_customer_success_program(self) -> dict[str, Any]:
         """Develop comprehensive customer success program"""
         print("🎯 ACGS Customer Success Program Development")
         print("=" * 45)
@@ -120,12 +119,12 @@ class CustomerSuccessProgram:
         # Generate sample customer journey
         sample_journey = await self.generate_sample_customer_journey()
 
-        print(f"\n📊 Customer Success Program Summary:")
+        print("\n📊 Customer Success Program Summary:")
         print(f"  Success Framework Components: {len(success_framework['components'])}")
         print(f"  Onboarding Stages: {len(onboarding_process['stages'])}")
         print(f"  Health Monitoring Metrics: {len(health_monitoring['metrics'])}")
         print(f"  Success Playbooks: {len(success_playbooks)}")
-        print(f"  Constitutional Compliance Focus: ✅ Integrated")
+        print("  Constitutional Compliance Focus: ✅ Integrated")
 
         return {
             "development_timestamp": datetime.now(timezone.utc).isoformat(),
@@ -139,7 +138,7 @@ class CustomerSuccessProgram:
             "sample_journey": sample_journey,
         }
 
-    async def define_customer_success_framework(self) -> Dict[str, Any]:
+    async def define_customer_success_framework(self) -> dict[str, Any]:
         """Define comprehensive customer success framework"""
         print("  🎯 Defining customer success framework...")
 
@@ -240,7 +239,7 @@ class CustomerSuccessProgram:
 
         return framework
 
-    async def create_customer_onboarding_process(self) -> Dict[str, Any]:
+    async def create_customer_onboarding_process(self) -> dict[str, Any]:
         """Create comprehensive customer onboarding process"""
         print("  🚀 Creating customer onboarding process...")
 
@@ -414,7 +413,7 @@ class CustomerSuccessProgram:
 
         return onboarding_process
 
-    async def establish_customer_health_monitoring(self) -> Dict[str, Any]:
+    async def establish_customer_health_monitoring(self) -> dict[str, Any]:
         """Establish comprehensive customer health monitoring system"""
         print("  📊 Establishing customer health monitoring...")
 
@@ -523,11 +522,11 @@ class CustomerSuccessProgram:
         print(
             f"    ✅ Health metrics defined: {sum(len(category) for category in health_metrics.values())}"
         )
-        print(f"    ✅ Automated monitoring and alerting configured")
+        print("    ✅ Automated monitoring and alerting configured")
 
         return health_monitoring
 
-    async def develop_customer_success_playbooks(self) -> Dict[str, Any]:
+    async def develop_customer_success_playbooks(self) -> dict[str, Any]:
         """Develop comprehensive customer success playbooks"""
         print("  📖 Developing customer success playbooks...")
 
@@ -637,7 +636,7 @@ class CustomerSuccessProgram:
 
         return playbooks
 
-    async def create_expansion_retention_strategies(self) -> Dict[str, Any]:
+    async def create_expansion_retention_strategies(self) -> dict[str, Any]:
         """Create expansion and retention strategies"""
         print("  📈 Creating expansion and retention strategies...")
 
@@ -745,7 +744,7 @@ class CustomerSuccessProgram:
             "constitutional_integration": "Constitutional governance value maximization drives both expansion and retention",
         }
 
-    async def implement_customer_success_metrics(self) -> Dict[str, Any]:
+    async def implement_customer_success_metrics(self) -> dict[str, Any]:
         """Implement comprehensive customer success metrics"""
         print("  📊 Implementing customer success metrics...")
 
@@ -810,7 +809,7 @@ class CustomerSuccessProgram:
             "constitutional_focus": "Constitutional governance success is primary measure of customer success",
         }
 
-    async def generate_sample_customer_journey(self) -> Dict[str, Any]:
+    async def generate_sample_customer_journey(self) -> dict[str, Any]:
         """Generate sample customer journey for demonstration"""
         print("  🗺️ Generating sample customer journey...")
 
@@ -961,7 +960,7 @@ class CustomerSuccessProgram:
             },
         }
 
-        print(f"    ✅ Sample customer journey created")
+        print("    ✅ Sample customer journey created")
         print(f"    ✅ Health score: {sample_health.health_score}/100")
         print(
             f"    ✅ Constitutional compliance: {sample_health.constitutional_compliance_rate:.1%}"
@@ -986,7 +985,7 @@ async def test_customer_success_program():
         json.dump(results, f, indent=2, default=str)
 
     print(f"\n📄 Detailed results saved: customer_success_program_{timestamp}.json")
-    print(f"\n✅ Customer Success Program: DEVELOPED")
+    print("\n✅ Customer Success Program: DEVELOPED")
 
 
 if __name__ == "__main__":

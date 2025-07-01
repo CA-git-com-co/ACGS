@@ -7,15 +7,15 @@ Unified test runner for all ACGS-1 test suites with coverage reporting,
 performance metrics, and detailed analysis.
 """
 
-import os
-import sys
-import json
-import subprocess
 import argparse
+import json
 import logging
-from pathlib import Path
+import os
+import subprocess
+import sys
 from datetime import datetime
-from typing import Dict, List, Any
+from pathlib import Path
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -39,7 +39,7 @@ class ComprehensiveTestRunner:
             "summary": {},
         }
 
-    def run_unit_tests(self) -> Dict[str, Any]:
+    def run_unit_tests(self) -> dict[str, Any]:
         """Run unit tests with coverage"""
         logger.info("🧪 Running unit tests...")
 
@@ -58,6 +58,7 @@ class ComprehensiveTestRunner:
                     "--cov-report=json:tests/coverage/unit_coverage.json",
                     "--tb=short",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -76,7 +77,7 @@ class ComprehensiveTestRunner:
             logger.error(f"❌ Unit tests failed: {e}")
             return {"status": "ERROR", "error": str(e)}
 
-    def run_integration_tests(self) -> Dict[str, Any]:
+    def run_integration_tests(self) -> dict[str, Any]:
         """Run integration tests"""
         logger.info("🔗 Running integration tests...")
 
@@ -92,6 +93,7 @@ class ComprehensiveTestRunner:
                     "integration",
                     "--tb=short",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -109,7 +111,7 @@ class ComprehensiveTestRunner:
             logger.error(f"❌ Integration tests failed: {e}")
             return {"status": "ERROR", "error": str(e)}
 
-    def run_e2e_tests(self) -> Dict[str, Any]:
+    def run_e2e_tests(self) -> dict[str, Any]:
         """Run end-to-end tests"""
         logger.info("🎯 Running end-to-end tests...")
 
@@ -125,6 +127,7 @@ class ComprehensiveTestRunner:
                     "e2e",
                     "--tb=short",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -142,7 +145,7 @@ class ComprehensiveTestRunner:
             logger.error(f"❌ E2E tests failed: {e}")
             return {"status": "ERROR", "error": str(e)}
 
-    def run_performance_tests(self) -> Dict[str, Any]:
+    def run_performance_tests(self) -> dict[str, Any]:
         """Run performance tests"""
         logger.info("⚡ Running performance tests...")
 
@@ -158,6 +161,7 @@ class ComprehensiveTestRunner:
                     "performance",
                     "--tb=short",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -175,7 +179,7 @@ class ComprehensiveTestRunner:
             logger.error(f"❌ Performance tests failed: {e}")
             return {"status": "ERROR", "error": str(e)}
 
-    def run_security_tests(self) -> Dict[str, Any]:
+    def run_security_tests(self) -> dict[str, Any]:
         """Run security tests"""
         logger.info("🔒 Running security tests...")
 
@@ -191,6 +195,7 @@ class ComprehensiveTestRunner:
                     "security",
                     "--tb=short",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -208,14 +213,14 @@ class ComprehensiveTestRunner:
             logger.error(f"❌ Security tests failed: {e}")
             return {"status": "ERROR", "error": str(e)}
 
-    def run_blockchain_tests(self) -> Dict[str, Any]:
+    def run_blockchain_tests(self) -> dict[str, Any]:
         """Run blockchain/Anchor tests"""
         logger.info("⛓️ Running blockchain tests...")
 
         try:
             # Check if Anchor is available
             anchor_check = subprocess.run(
-                ["anchor", "--version"], capture_output=True, text=True
+                ["anchor", "--version"], check=False, capture_output=True, text=True
             )
 
             if anchor_check.returncode != 0:
@@ -223,6 +228,7 @@ class ComprehensiveTestRunner:
 
             result = subprocess.run(
                 ["anchor", "test"],
+                check=False,
                 cwd=self.project_root / "blockchain",
                 capture_output=True,
                 text=True,
@@ -261,6 +267,7 @@ class ComprehensiveTestRunner:
                     "--tb=no",
                     "-q",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -270,7 +277,7 @@ class ComprehensiveTestRunner:
             # Parse coverage results
             coverage_file = self.project_root / "tests" / "coverage" / "coverage.json"
             if coverage_file.exists():
-                with open(coverage_file, "r") as f:
+                with open(coverage_file) as f:
                     coverage_data = json.load(f)
 
                 self.test_results["coverage"] = {
@@ -298,7 +305,7 @@ class ComprehensiveTestRunner:
             logger.error(f"❌ Coverage report generation failed: {e}")
             self.test_results["coverage"] = {"error": str(e)}
 
-    def run_all_tests(self, test_types: List[str] = None):
+    def run_all_tests(self, test_types: list[str] = None):
         """Run all specified test types"""
         if test_types is None:
             test_types = [

@@ -8,11 +8,11 @@ analyzes version adoption patterns, and implements improvements.
 
 import json
 import logging
-from datetime import datetime, timezone, timedelta
-from pathlib import Path
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass
 import random
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -46,7 +46,7 @@ class SupportTicket:
     description: str
     version_related: bool
     timestamp: datetime
-    resolution_time_hours: Optional[float] = None
+    resolution_time_hours: float | None = None
     resolved: bool = False
 
 
@@ -73,12 +73,12 @@ class FeedbackCollectionManager:
     """
 
     def __init__(self):
-        self.client_feedback: List[ClientFeedback] = []
-        self.support_tickets: List[SupportTicket] = []
-        self.version_adoption: List[VersionAdoptionMetric] = []
-        self.improvements_implemented: List[Dict[str, Any]] = []
+        self.client_feedback: list[ClientFeedback] = []
+        self.support_tickets: list[SupportTicket] = []
+        self.version_adoption: list[VersionAdoptionMetric] = []
+        self.improvements_implemented: list[dict[str, Any]] = []
 
-    def collect_comprehensive_feedback(self) -> Dict[str, Any]:
+    def collect_comprehensive_feedback(self) -> dict[str, Any]:
         """Collect and analyze comprehensive feedback."""
         logger.info("📋 Starting comprehensive feedback collection and analysis...")
 
@@ -408,7 +408,7 @@ class FeedbackCollectionManager:
 
     def _generate_feedback_report(
         self, start_time: datetime, end_time: datetime, duration: float
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate comprehensive feedback analysis report."""
         # Calculate feedback statistics
         total_feedback = len(self.client_feedback)
@@ -556,7 +556,7 @@ def main():
     improvements = report["improvements_implemented"]
     print(f"🔧 Improvements Implemented: {len(improvements)}")
 
-    print(f"\n🎯 SUCCESS CRITERIA:")
+    print("\n🎯 SUCCESS CRITERIA:")
     criteria = report["success_criteria"]
     for criterion, passed in criteria.items():
         status = "PASS" if passed else "FAIL"

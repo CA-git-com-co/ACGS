@@ -2,12 +2,9 @@
 Unit tests for services.core.policy-governance.pgc_service.app.telemetry
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.policy_governance.pgc_service.app.telemetry import (
-    TelemetryManager,
-    NoOpTelemetry,
     NoOpSpan,
+    TelemetryManager,
 )
 
 

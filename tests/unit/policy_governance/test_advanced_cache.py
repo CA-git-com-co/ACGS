@@ -2,8 +2,6 @@
 Unit tests for services.core.policy-governance.pgc_service.app.services.advanced_cache
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.policy_governance.pgc_service.app.services.advanced_cache import (
     CacheEntry,
     MultiTierCache,

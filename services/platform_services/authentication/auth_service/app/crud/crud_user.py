@@ -75,7 +75,7 @@ async def update_user(db: AsyncSession, *, db_obj: User, obj_in: UserUpdate) -> 
         exclude_unset=True
     )  # Use model_dump for Pydantic V2
 
-    if "password" in update_data and update_data["password"]:
+    if update_data.get("password"):
         hashed_password = get_password_hash(update_data["password"])
         db_obj.hashed_password = hashed_password
         del update_data["password"]

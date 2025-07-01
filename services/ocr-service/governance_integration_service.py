@@ -5,8 +5,8 @@ Provides high-level integration between OCR processing and governance workflows
 """
 
 import logging
-from typing import Dict, List, Any, Optional
 from datetime import datetime
+from typing import Any
 
 try:
     from .advanced_document_processor import (
@@ -14,19 +14,18 @@ try:
         ProcessedDocument,
     )
     from .governance_document_validator import (
-        GovernanceDocumentValidator,
         DocumentType,
-        ValidationLevel,
         DocumentValidationReport,
+        GovernanceDocumentValidator,
+        ValidationLevel,
     )
     from .ocr_integration import EnhancedOCRIntegration
 except ImportError:
-    from advanced_document_processor import AdvancedDocumentProcessor, ProcessedDocument
+    from advanced_document_processor import AdvancedDocumentProcessor
     from governance_document_validator import (
-        GovernanceDocumentValidator,
         DocumentType,
+        GovernanceDocumentValidator,
         ValidationLevel,
-        DocumentValidationReport,
     )
     from ocr_integration import EnhancedOCRIntegration
 
@@ -53,7 +52,7 @@ class GovernanceIntegrationService:
         document_type: str = "general",
         validation_level: str = "standard",
         include_validation: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Complete governance document processing pipeline
 
@@ -110,7 +109,7 @@ class GovernanceIntegrationService:
                     )
 
                 except Exception as e:
-                    logger.warning(f"Validation failed: {str(e)}")
+                    logger.warning(f"Validation failed: {e!s}")
                     validation_report = None
 
             # Step 4: Compile results
@@ -170,14 +169,14 @@ class GovernanceIntegrationService:
             return result
 
         except Exception as e:
-            logger.error(f"Error in governance document processing: {str(e)}")
+            logger.error(f"Error in governance document processing: {e!s}")
             return {
                 "success": False,
                 "error": str(e),
                 "processing_time": (datetime.now() - start_time).total_seconds(),
             }
 
-    def analyze_document_authenticity(self, image_data: Any) -> Dict[str, Any]:
+    def analyze_document_authenticity(self, image_data: Any) -> dict[str, Any]:
         """
         Specialized analysis for document authenticity
 
@@ -242,7 +241,7 @@ class GovernanceIntegrationService:
             }
 
         except Exception as e:
-            logger.error(f"Error in authenticity analysis: {str(e)}")
+            logger.error(f"Error in authenticity analysis: {e!s}")
             return {
                 "success": False,
                 "error": str(e),
@@ -251,7 +250,7 @@ class GovernanceIntegrationService:
 
     def extract_governance_metadata(
         self, image_data: Any, document_type: str = "general"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Extract governance-specific metadata from document
 
@@ -308,7 +307,7 @@ class GovernanceIntegrationService:
             }
 
         except Exception as e:
-            logger.error(f"Error extracting governance metadata: {str(e)}")
+            logger.error(f"Error extracting governance metadata: {e!s}")
             return {
                 "success": False,
                 "error": str(e),
@@ -316,8 +315,8 @@ class GovernanceIntegrationService:
             }
 
     def _generate_authenticity_recommendations(
-        self, authenticity_factors: Dict[str, Any]
-    ) -> List[str]:
+        self, authenticity_factors: dict[str, Any]
+    ) -> list[str]:
         """Generate recommendations based on authenticity analysis"""
         recommendations = []
 

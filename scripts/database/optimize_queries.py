@@ -5,9 +5,9 @@ Implements query optimization strategies and indexing.
 """
 
 import asyncio
-import asyncpg
 import logging
-from typing import List, Dict, Any
+
+import asyncpg
 
 logger = logging.getLogger(__name__)
 

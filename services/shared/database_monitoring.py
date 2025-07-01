@@ -11,7 +11,7 @@ import json
 import logging
 import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from .database_resilience import get_all_resilience_stats
 from .enhanced_database_client import _database_clients
@@ -42,7 +42,7 @@ class DatabaseMetrics:
 
     # Health metrics
     uptime_percentage: float = 100.0
-    last_health_check: Optional[float] = None
+    last_health_check: float | None = None
     health_check_failures: int = 0
 
     # Timestamp
@@ -54,7 +54,7 @@ class DatabaseMonitor:
 
     def __init__(self, monitoring_interval: int = 30):
         self.monitoring_interval = monitoring_interval
-        self.metrics_history: List[DatabaseMetrics] = []
+        self.metrics_history: list[DatabaseMetrics] = []
         self.max_history_size = 1000  # Keep last 1000 metrics snapshots
         self.is_monitoring = False
         self._monitoring_task = None
@@ -255,11 +255,11 @@ class DatabaseMonitor:
             else:
                 logger.warning(f"WARNING ALERT: {alert['message']}")
 
-    def get_current_metrics(self) -> Optional[DatabaseMetrics]:
+    def get_current_metrics(self) -> DatabaseMetrics | None:
         """Get the most recent metrics."""
         return self.metrics_history[-1] if self.metrics_history else None
 
-    def get_metrics_summary(self, last_n: int = 10) -> Dict[str, Any]:
+    def get_metrics_summary(self, last_n: int = 10) -> dict[str, Any]:
         """Get summary of recent metrics."""
         if not self.metrics_history:
             return {"status": "no_data"}
@@ -303,10 +303,9 @@ class DatabaseMonitor:
 
             return json.dumps(metrics_data, indent=2)
 
-        else:
-            raise ValueError(f"Unsupported export format: {format}")
+        raise ValueError(f"Unsupported export format: {format}")
 
-    async def generate_health_report(self) -> Dict[str, Any]:
+    async def generate_health_report(self) -> dict[str, Any]:
         """Generate comprehensive health report."""
         current_metrics = self.get_current_metrics()
         metrics_summary = self.get_metrics_summary()
@@ -337,7 +336,7 @@ class DatabaseMonitor:
 
 
 # Global database monitor instance
-_database_monitor: Optional[DatabaseMonitor] = None
+_database_monitor: DatabaseMonitor | None = None
 
 
 def get_database_monitor() -> DatabaseMonitor:

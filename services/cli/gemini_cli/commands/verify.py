@@ -3,10 +3,9 @@ Policy verification commands for Gemini CLI
 """
 
 import argparse
-from typing import Dict, Any
-import asyncio
-from pathlib import Path
 import json
+from pathlib import Path
+from typing import Any
 
 
 def add_arguments(parser: argparse.ArgumentParser):
@@ -54,7 +53,7 @@ def add_arguments(parser: argparse.ArgumentParser):
     )
 
 
-async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
+async def handle_command(args: argparse.Namespace, client) -> dict[str, Any]:
     """Handle verify commands"""
 
     if args.verify_command == "policy":
@@ -83,7 +82,7 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
 
         return result
 
-    elif args.verify_command == "constitutional":
+    if args.verify_command == "constitutional":
         # Parse parameters if provided
         parameters = {}
         if args.params and args.params.exists():
@@ -105,7 +104,7 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
             "constitutional_hash": result.get("constitutional_hash"),
         }
 
-    elif args.verify_command == "risk":
+    if args.verify_command == "risk":
         # Read operation file
         if not args.operation.exists():
             return {"error": f"Operation file not found: {args.operation}"}
@@ -147,7 +146,7 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
 
         return risk_analysis
 
-    elif args.verify_command == "batch":
+    if args.verify_command == "batch":
         # Read batch file
         if not args.batch_file.exists():
             return {"error": f"Batch file not found: {args.batch_file}"}
@@ -196,20 +195,18 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
             "results": results,
         }
 
-    else:
-        return {"error": "Unknown verify command"}
+    return {"error": "Unknown verify command"}
 
 
-async def process_batch_item(client, item: Dict) -> Dict:
+async def process_batch_item(client, item: dict) -> dict:
     """Process a single batch verification item"""
     try:
         if item["type"] == "policy":
             return client.verify_policy(item["policy"], item.get("context", {}))
-        elif item["type"] == "constitutional":
+        if item["type"] == "constitutional":
             return client.check_constitutional_compliance(
                 item["action"], item.get("parameters", {})
             )
-        else:
-            return {"error": f"Unknown verification type: {item['type']}"}
+        return {"error": f"Unknown verification type: {item['type']}"}
     except Exception as e:
         return {"error": str(e)}

@@ -9,6 +9,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 import pytest_asyncio
+
 from services.core.generation_engine.engine import (
     GenerationConfig,
     GenerationEngine,

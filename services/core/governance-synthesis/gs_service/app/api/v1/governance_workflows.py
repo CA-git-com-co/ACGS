@@ -182,10 +182,9 @@ async def create_workflow(
                     service_name="gs_service",
                     correlation_id=correlation_id,
                 )
-            else:
-                raise HTTPException(
-                    status_code=503, detail="Workflow orchestrator not available"
-                )
+            raise HTTPException(
+                status_code=503, detail="Workflow orchestrator not available"
+            )
 
         # Convert string workflow type to enum
         try:
@@ -231,8 +230,7 @@ async def create_workflow(
                 service_name="gs_service",
                 correlation_id=correlation_id,
             )
-        else:
-            return response_data
+        return response_data
 
     except HTTPException:
         raise
@@ -249,8 +247,7 @@ async def create_workflow(
                 details={"error": str(e)},
                 correlation_id=correlation_id,
             )
-        else:
-            raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/workflows", response_model=WorkflowListResponse)
@@ -286,10 +283,9 @@ async def list_workflows(
                     service_name="gs_service",
                     correlation_id=correlation_id,
                 )
-            else:
-                raise HTTPException(
-                    status_code=503, detail="Workflow orchestrator not available"
-                )
+            raise HTTPException(
+                status_code=503, detail="Workflow orchestrator not available"
+            )
 
         # Convert string filters to enums
         status_filter = None
@@ -343,8 +339,7 @@ async def list_workflows(
                 service_name="gs_service",
                 correlation_id=correlation_id,
             )
-        else:
-            return response_data
+        return response_data
 
     except HTTPException:
         raise
@@ -361,8 +356,7 @@ async def list_workflows(
                 details={"error": str(e)},
                 correlation_id=correlation_id,
             )
-        else:
-            raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/workflows/{workflow_id}", response_model=WorkflowResponse)
@@ -382,10 +376,9 @@ async def get_workflow_status(workflow_id: str, http_request: Request):
                     service_name="gs_service",
                     correlation_id=correlation_id,
                 )
-            else:
-                raise HTTPException(
-                    status_code=503, detail="Workflow orchestrator not available"
-                )
+            raise HTTPException(
+                status_code=503, detail="Workflow orchestrator not available"
+            )
 
         workflow_status = await orchestrator.get_workflow_status(workflow_id)
 
@@ -402,8 +395,7 @@ async def get_workflow_status(workflow_id: str, http_request: Request):
                 service_name="gs_service",
                 correlation_id=correlation_id,
             )
-        else:
-            return response_data
+        return response_data
 
     except HTTPException:
         raise
@@ -420,8 +412,7 @@ async def get_workflow_status(workflow_id: str, http_request: Request):
                 details={"error": str(e)},
                 correlation_id=correlation_id,
             )
-        else:
-            raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/workflows/{workflow_id}/start")
@@ -441,10 +432,9 @@ async def start_workflow(workflow_id: str, http_request: Request):
                     service_name="gs_service",
                     correlation_id=correlation_id,
                 )
-            else:
-                raise HTTPException(
-                    status_code=503, detail="Workflow orchestrator not available"
-                )
+            raise HTTPException(
+                status_code=503, detail="Workflow orchestrator not available"
+            )
 
         success = await orchestrator.start_workflow(workflow_id)
 
@@ -466,8 +456,7 @@ async def start_workflow(workflow_id: str, http_request: Request):
                 service_name="gs_service",
                 correlation_id=correlation_id,
             )
-        else:
-            return response_data
+        return response_data
 
     except HTTPException:
         raise
@@ -484,8 +473,7 @@ async def start_workflow(workflow_id: str, http_request: Request):
                 details={"error": str(e)},
                 correlation_id=correlation_id,
             )
-        else:
-            raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/workflows/{workflow_id}/cancel")
@@ -505,10 +493,9 @@ async def cancel_workflow(workflow_id: str, http_request: Request):
                     service_name="gs_service",
                     correlation_id=correlation_id,
                 )
-            else:
-                raise HTTPException(
-                    status_code=503, detail="Workflow orchestrator not available"
-                )
+            raise HTTPException(
+                status_code=503, detail="Workflow orchestrator not available"
+            )
 
         success = await orchestrator.cancel_workflow(workflow_id)
 
@@ -530,8 +517,7 @@ async def cancel_workflow(workflow_id: str, http_request: Request):
                 service_name="gs_service",
                 correlation_id=correlation_id,
             )
-        else:
-            return response_data
+        return response_data
 
     except HTTPException:
         raise
@@ -548,8 +534,7 @@ async def cancel_workflow(workflow_id: str, http_request: Request):
                 details={"error": str(e)},
                 correlation_id=correlation_id,
             )
-        else:
-            raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/workflows/types")
@@ -653,10 +638,9 @@ async def get_workflow_metrics(http_request: Request):
                     service_name="gs_service",
                     correlation_id=correlation_id,
                 )
-            else:
-                raise HTTPException(
-                    status_code=503, detail="Workflow orchestrator not available"
-                )
+            raise HTTPException(
+                status_code=503, detail="Workflow orchestrator not available"
+            )
 
         metrics = await orchestrator.get_performance_metrics()
 
@@ -668,8 +652,7 @@ async def get_workflow_metrics(http_request: Request):
                 service_name="gs_service",
                 correlation_id=correlation_id,
             )
-        else:
-            return response_data
+        return response_data
 
     except Exception as e:
         logger.error(
@@ -685,8 +668,7 @@ async def get_workflow_metrics(http_request: Request):
                 details={"error": str(e)},
                 correlation_id=correlation_id,
             )
-        else:
-            raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 async def _log_workflow_creation(

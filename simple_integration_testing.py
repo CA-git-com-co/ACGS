@@ -3,15 +3,15 @@
 ACGS-1 Simple Integration Testing - End-to-End Workflow Validation
 ================================================================
 
-This script validates that all services communicate properly and governance 
+This script validates that all services communicate properly and governance
 workflows function correctly after the reorganization.
 """
 
 import json
-import time
 import logging
+import time
+
 import requests
-from typing import Dict, List, Any, Optional
 
 # Configure logging
 logging.basicConfig(
@@ -554,15 +554,14 @@ def main():
             for i, rec in enumerate(report["recommendations"], 1):
                 logger.info(f"{i}. {rec}")
 
-        logger.info(f"\n📄 Detailed report saved to: integration_test_report.json")
+        logger.info("\n📄 Detailed report saved to: integration_test_report.json")
 
         # Exit with appropriate code
         if report["summary"]["success_rate"] >= 80:
             logger.info("✅ Integration testing completed successfully!")
             return 0
-        else:
-            logger.error("❌ Integration testing completed with significant issues")
-            return 1
+        logger.error("❌ Integration testing completed with significant issues")
+        return 1
 
     except Exception as e:
         logger.error(f"Integration testing failed: {e}")

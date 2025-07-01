@@ -3,8 +3,7 @@ ACGS-1 Security Configuration
 Enhanced security settings for production deployment
 """
 
-import os
-from typing import Dict, Any
+from typing import Any
 
 # Security Headers
 SECURITY_HEADERS = {
@@ -48,7 +47,7 @@ SECURITY_LOG_LEVEL = "INFO"
 SECURITY_LOG_FILE = "/var/log/acgs/security.log"
 
 
-def get_security_config() -> Dict[str, Any]:
+def get_security_config() -> dict[str, Any]:
     """Get security configuration"""
     return {
         "headers": SECURITY_HEADERS,

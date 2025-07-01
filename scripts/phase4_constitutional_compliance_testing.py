@@ -16,8 +16,8 @@ import asyncio
 import json
 import logging
 import time
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Any, Optional
+from datetime import datetime, timezone
+from typing import Any
 
 import httpx
 from pydantic import BaseModel
@@ -37,9 +37,9 @@ class ComplianceTestResult(BaseModel):
     compliance_score: float
     constitutional_hash_verified: bool
     response_time_ms: float
-    details: Dict[str, Any]
+    details: dict[str, Any]
     timestamp: datetime
-    error: Optional[str] = None
+    error: str | None = None
 
 
 class ACGSConstitutionalComplianceTester:
@@ -56,9 +56,9 @@ class ACGSConstitutionalComplianceTester:
         self.constitutional_hash = "cdd01ef066bc6cf2"
         self.compliance_threshold = 0.95  # 95% compliance target
         self.emergency_rto_target = 1800  # 30 minutes in seconds
-        self.test_results: List[ComplianceTestResult] = []
+        self.test_results: list[ComplianceTestResult] = []
 
-    async def test_constitutional_hash_consistency(self) -> Dict[str, Any]:
+    async def test_constitutional_hash_consistency(self) -> dict[str, Any]:
         """Test constitutional hash consistency across all services"""
         logger.info("🔍 Testing constitutional hash consistency...")
 
@@ -117,7 +117,7 @@ class ACGSConstitutionalComplianceTester:
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-    async def test_dgm_safety_patterns(self) -> Dict[str, Any]:
+    async def test_dgm_safety_patterns(self) -> dict[str, Any]:
         """Test DGM safety patterns: sandbox + human review + rollback"""
         logger.info("🛡️ Testing DGM safety patterns...")
 
@@ -144,7 +144,7 @@ class ACGSConstitutionalComplianceTester:
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-    async def _test_sandbox_environment(self) -> Dict[str, Any]:
+    async def _test_sandbox_environment(self) -> dict[str, Any]:
         """Test sandbox environment isolation"""
         try:
             # Test sandbox isolation with FV service
@@ -176,19 +176,18 @@ class ACGSConstitutionalComplianceTester:
                         )
                         == self.constitutional_hash,
                     }
-                else:
-                    return {
-                        "status": "failed",
-                        "error": f"Sandbox test failed: HTTP {response.status_code}",
-                    }
+                return {
+                    "status": "failed",
+                    "error": f"Sandbox test failed: HTTP {response.status_code}",
+                }
 
         except Exception as e:
             return {
                 "status": "failed",
-                "error": f"Sandbox environment test failed: {str(e)}",
+                "error": f"Sandbox environment test failed: {e!s}",
             }
 
-    async def _test_human_review_interface(self) -> Dict[str, Any]:
+    async def _test_human_review_interface(self) -> dict[str, Any]:
         """Test human review interface availability"""
         try:
             # Test human review interface with AC service
@@ -220,11 +219,10 @@ class ACGSConstitutionalComplianceTester:
                         )
                         == self.constitutional_hash,
                     }
-                else:
-                    return {
-                        "status": "failed",
-                        "error": f"Human review interface test failed: HTTP {response.status_code}",
-                    }
+                return {
+                    "status": "failed",
+                    "error": f"Human review interface test failed: HTTP {response.status_code}",
+                }
 
         except Exception as e:
             return {
@@ -234,7 +232,7 @@ class ACGSConstitutionalComplianceTester:
                 "error": str(e),
             }
 
-    async def _test_rollback_mechanisms(self) -> Dict[str, Any]:
+    async def _test_rollback_mechanisms(self) -> dict[str, Any]:
         """Test automatic rollback mechanisms"""
         try:
             # Test rollback capability with Integrity service
@@ -261,11 +259,10 @@ class ACGSConstitutionalComplianceTester:
                         )
                         == self.constitutional_hash,
                     }
-                else:
-                    return {
-                        "status": "failed",
-                        "error": f"Rollback mechanism test failed: HTTP {response.status_code}",
-                    }
+                return {
+                    "status": "failed",
+                    "error": f"Rollback mechanism test failed: HTTP {response.status_code}",
+                }
 
         except Exception as e:
             return {
@@ -275,7 +272,7 @@ class ACGSConstitutionalComplianceTester:
                 "error": str(e),
             }
 
-    async def test_compliance_accuracy(self) -> Dict[str, Any]:
+    async def test_compliance_accuracy(self) -> dict[str, Any]:
         """Test constitutional compliance accuracy (>95% target)"""
         logger.info("📊 Testing constitutional compliance accuracy...")
 
@@ -362,7 +359,7 @@ class ACGSConstitutionalComplianceTester:
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-    async def test_emergency_shutdown(self) -> Dict[str, Any]:
+    async def test_emergency_shutdown(self) -> dict[str, Any]:
         """Test emergency shutdown procedures (<30min RTO)"""
         logger.info("🚨 Testing emergency shutdown procedures...")
 
@@ -419,7 +416,7 @@ class ACGSConstitutionalComplianceTester:
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
-    async def run_constitutional_compliance_tests(self) -> Dict[str, Any]:
+    async def run_constitutional_compliance_tests(self) -> dict[str, Any]:
         """Run comprehensive constitutional compliance and DGM safety tests"""
         logger.info(
             "🚀 Starting ACGS-PGP Constitutional Compliance & DGM Safety Tests..."
@@ -493,18 +490,17 @@ async def main():
             f"Constitutional Compliance: {results['summary']['constitutional_compliance'].upper()}"
         )
         print(f"Constitutional Hash: {results['constitutional_hash']}")
-        print(f"Compliance Threshold: {results['compliance_threshold']*100}%")
+        print(f"Compliance Threshold: {results['compliance_threshold'] * 100}%")
         print(f"Emergency RTO Target: {results['emergency_rto_target']}s")
         print("=" * 80)
 
         if results["overall_status"] == "passed":
             print("✅ Constitutional compliance and DGM safety tests passed!")
             return 0
-        else:
-            print(
-                "❌ Some constitutional compliance tests failed. Check results for details."
-            )
-            return 1
+        print(
+            "❌ Some constitutional compliance tests failed. Check results for details."
+        )
+        return 1
 
     except Exception as e:
         logger.error(f"Constitutional compliance testing failed: {e}")

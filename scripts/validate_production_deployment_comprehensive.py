@@ -69,7 +69,11 @@ class ProductionValidator:
         try:
             # Check cluster info
             result = subprocess.run(
-                ["kubectl", "cluster-info"], capture_output=True, text=True, timeout=30
+                ["kubectl", "cluster-info"],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=30,
             )
 
             if result.returncode == 0:
@@ -86,6 +90,7 @@ class ProductionValidator:
             # Check node status
             result = subprocess.run(
                 ["kubectl", "get", "nodes", "-o", "json"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -111,7 +116,7 @@ class ProductionValidator:
         except Exception as e:
             self.results["checks"]["kubernetes_cluster"] = {
                 "status": "FAIL",
-                "message": f"Error checking cluster: {str(e)}",
+                "message": f"Error checking cluster: {e!s}",
             }
 
     async def check_service_health(self):
@@ -153,7 +158,7 @@ class ProductionValidator:
                 except Exception as e:
                     self.results["checks"][f"{service_name}_health"] = {
                         "status": "FAIL",
-                        "message": f"Health check error: {str(e)}",
+                        "message": f"Health check error: {e!s}",
                     }
 
     async def check_response_times(self):
@@ -220,6 +225,7 @@ class ProductionValidator:
         try:
             result = subprocess.run(
                 ["kubectl", "get", "hpa", "-n", "acgs-pgp", "-o", "json"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -246,7 +252,7 @@ class ProductionValidator:
         except Exception as e:
             self.results["checks"]["autoscaling"] = {
                 "status": "FAIL",
-                "message": f"Error checking HPA: {str(e)}",
+                "message": f"Error checking HPA: {e!s}",
             }
 
     async def check_monitoring_stack(self):
@@ -267,6 +273,7 @@ class ProductionValidator:
                     "-o",
                     "json",
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -296,6 +303,7 @@ class ProductionValidator:
                     "-o",
                     "json",
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -315,7 +323,7 @@ class ProductionValidator:
         except Exception as e:
             self.results["checks"]["monitoring"] = {
                 "status": "FAIL",
-                "message": f"Error checking monitoring: {str(e)}",
+                "message": f"Error checking monitoring: {e!s}",
             }
 
     async def check_sla_compliance(self):

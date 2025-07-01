@@ -12,19 +12,19 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio
+import json
 import logging
 import sys
 import time
-import json
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from services.shared.ai_types import ContentType, MultimodalRequest, RequestType
 from services.shared.multi_level_cache import get_cache_manager
 from services.shared.multimodal_ai_service import get_multimodal_service
-from services.shared.ai_types import MultimodalRequest, RequestType, ContentType
 
 # Configure logging
 logging.basicConfig(
@@ -50,7 +50,7 @@ class ProductionCacheOptimizer:
 
         logger.info("✅ Cache optimizer initialized")
 
-    async def analyze_cache_performance(self) -> Dict[str, Any]:
+    async def analyze_cache_performance(self) -> dict[str, Any]:
         """Analyze current cache performance."""
         logger.info("📊 Analyzing cache performance...")
 
@@ -101,7 +101,7 @@ class ProductionCacheOptimizer:
             logger.error(f"❌ Cache performance analysis failed: {e}")
             return {"error": str(e)}
 
-    async def optimize_ttl_values(self) -> Dict[str, Any]:
+    async def optimize_ttl_values(self) -> dict[str, Any]:
         """Optimize cache TTL values based on usage patterns."""
         logger.info("⏰ Optimizing cache TTL values...")
 
@@ -171,7 +171,7 @@ class ProductionCacheOptimizer:
             logger.error(f"❌ TTL optimization failed: {e}")
             return {"error": str(e)}
 
-    async def _analyze_request_patterns(self) -> Dict[str, float]:
+    async def _analyze_request_patterns(self) -> dict[str, float]:
         """Analyze request patterns to inform TTL optimization."""
 
         # Simulate request pattern analysis
@@ -184,7 +184,7 @@ class ProductionCacheOptimizer:
 
         return patterns
 
-    async def implement_cache_warming(self) -> Dict[str, Any]:
+    async def implement_cache_warming(self) -> dict[str, Any]:
         """Implement cache warming strategies."""
         logger.info("🔥 Implementing cache warming strategies...")
 
@@ -236,7 +236,7 @@ class ProductionCacheOptimizer:
             logger.error(f"❌ Cache warming failed: {e}")
             return {"error": str(e)}
 
-    async def optimize_cache_promotion(self) -> Dict[str, Any]:
+    async def optimize_cache_promotion(self) -> dict[str, Any]:
         """Optimize cache promotion algorithms."""
         logger.info("📈 Optimizing cache promotion algorithms...")
 
@@ -286,7 +286,7 @@ class ProductionCacheOptimizer:
             logger.error(f"❌ Cache promotion optimization failed: {e}")
             return {"error": str(e)}
 
-    async def run_comprehensive_optimization(self) -> Dict[str, Any]:
+    async def run_comprehensive_optimization(self) -> dict[str, Any]:
         """Run comprehensive cache optimization."""
         logger.info("🚀 Running comprehensive cache optimization...")
         logger.info("=" * 60)

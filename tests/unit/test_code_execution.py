@@ -16,7 +16,6 @@ import os
 import re
 
 import pytest
-
 from nemo_skills.code_execution import (
     extract_code_output,
     extract_code_to_execute,
@@ -272,7 +271,7 @@ def test_few_shots(
                     )
                 session_id = None
                 for code_snippet, (expected_output, expected_error) in zip(
-                    code_snippets, expected_outputs
+                    code_snippets, expected_outputs, strict=False
                 ):
                     if not expected_error:
                         expected_error = None

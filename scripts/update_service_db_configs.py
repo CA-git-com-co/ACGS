@@ -9,7 +9,7 @@ for >1000 concurrent users and >99.9% availability.
 
 import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import yaml
 
@@ -101,7 +101,7 @@ class ServiceConfigUpdater:
             if env_path.exists():
                 try:
                     # Read existing content
-                    with open(env_path, "r") as f:
+                    with open(env_path) as f:
                         lines = f.readlines()
 
                     # Update database-related environment variables
@@ -172,7 +172,7 @@ class ServiceConfigUpdater:
                 continue  # Skip docker-compose files
 
             try:
-                with open(yaml_file, "r") as f:
+                with open(yaml_file) as f:
                     data = yaml.safe_load(f)
 
                 if data and self.update_yaml_database_config(data, config):
@@ -187,7 +187,7 @@ class ServiceConfigUpdater:
 
         return updated
 
-    def update_yaml_database_config(self, data: Dict[str, Any], config) -> bool:
+    def update_yaml_database_config(self, data: dict[str, Any], config) -> bool:
         """Update database configuration in YAML data."""
         updated = False
 
@@ -253,7 +253,7 @@ class ServiceConfigUpdater:
             docker_path = service_dir / docker_file
             if docker_path.exists():
                 try:
-                    with open(docker_path, "r") as f:
+                    with open(docker_path) as f:
                         content = f.read()
 
                     # Update environment variables in Docker files

@@ -2,25 +2,25 @@
 Monitoring and Telemetry for Gemini CLI
 """
 
-import os
-import time
-import logging
 import json
-from typing import Dict, Any, Optional
-from datetime import datetime, timedelta
+import logging
+import os
 import threading
-from dataclasses import dataclass, asdict
+import time
+from dataclasses import asdict, dataclass
+from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 # OpenTelemetry imports (optional)
 try:
     from opentelemetry import trace
-    from opentelemetry.exporter.prometheus import PrometheusMetricReader
-    from opentelemetry.sdk.metrics import MeterProvider
-    from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
     from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import (
         OTLPMetricExporter,
     )
+    from opentelemetry.exporter.prometheus import PrometheusMetricReader
+    from opentelemetry.sdk.metrics import MeterProvider
+    from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 
     OTEL_AVAILABLE = True
 except ImportError:
@@ -28,7 +28,7 @@ except ImportError:
 
 # Prometheus client (optional)
 try:
-    from prometheus_client import Counter, Histogram, Gauge, start_http_server
+    from prometheus_client import Counter, Gauge, Histogram, start_http_server
 
     PROMETHEUS_AVAILABLE = True
 except ImportError:
@@ -45,13 +45,13 @@ class OperationMetrics:
     operation_id: str
     operation_type: str
     start_time: float
-    end_time: Optional[float] = None
+    end_time: float | None = None
     status: str = "running"
-    error: Optional[str] = None
-    agent_id: Optional[str] = None
-    duration_ms: Optional[float] = None
+    error: str | None = None
+    agent_id: str | None = None
+    duration_ms: float | None = None
 
-    def complete(self, status: str = "completed", error: Optional[str] = None):
+    def complete(self, status: str = "completed", error: str | None = None):
         """Mark operation as complete"""
         self.end_time = time.time()
         self.status = status
@@ -237,7 +237,7 @@ class GeminiCLIMonitoring:
         except Exception as e:
             logger.debug(f"Error collecting system metrics: {e}")
 
-    def _log_metrics(self, metrics: Dict[str, Any]):
+    def _log_metrics(self, metrics: dict[str, Any]):
         """Log metrics to file"""
         if not self.metrics_file:
             return
@@ -249,7 +249,7 @@ class GeminiCLIMonitoring:
             logger.debug(f"Error writing metrics to file: {e}")
 
     def start_operation(
-        self, operation_id: str, operation_type: str, agent_id: Optional[str] = None
+        self, operation_id: str, operation_type: str, agent_id: str | None = None
     ) -> OperationMetrics:
         """Start tracking an operation"""
         if not self.enabled:
@@ -277,7 +277,7 @@ class GeminiCLIMonitoring:
         return metrics
 
     def complete_operation(
-        self, operation_id: str, status: str = "completed", error: Optional[str] = None
+        self, operation_id: str, status: str = "completed", error: str | None = None
     ):
         """Complete an operation"""
         if not self.enabled or operation_id not in self.active_operations:
@@ -327,13 +327,13 @@ class GeminiCLIMonitoring:
 
         logger.debug(f"Completed operation: {operation_id} ({status})")
 
-    def get_operation_metrics(self, operation_id: str) -> Optional[OperationMetrics]:
+    def get_operation_metrics(self, operation_id: str) -> OperationMetrics | None:
         """Get metrics for a specific operation"""
         return self.metrics_storage.get(operation_id) or self.active_operations.get(
             operation_id
         )
 
-    def get_session_stats(self) -> Dict[str, Any]:
+    def get_session_stats(self) -> dict[str, Any]:
         """Get current session statistics"""
         stats = self.session_stats.copy()
         stats["uptime_seconds"] = time.time() - stats["start_time"]
@@ -344,8 +344,8 @@ class GeminiCLIMonitoring:
         return stats
 
     def get_performance_summary(
-        self, operation_type: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, operation_type: str | None = None
+    ) -> dict[str, Any]:
         """Get performance summary"""
         completed_ops = [
             m
@@ -387,8 +387,7 @@ class GeminiCLIMonitoring:
 
         if format_type == "json":
             return json.dumps(data, indent=2)
-        else:
-            return str(data)
+        return str(data)
 
     def cleanup(self):
         """Cleanup monitoring resources"""
@@ -409,7 +408,7 @@ def get_monitoring(config=None) -> GeminiCLIMonitoring:
     return _monitoring_instance
 
 
-def monitor_operation(operation_type: str, agent_id: Optional[str] = None):
+def monitor_operation(operation_type: str, agent_id: str | None = None):
     """Decorator for monitoring operations"""
 
     def decorator(func):

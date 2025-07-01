@@ -21,16 +21,11 @@ Formal Verification Comments:
 # sha256: multimodal_vl_integration_test_v1.0
 """
 
-import asyncio
-import base64
-import json
+import io
 import logging
 import time
-from typing import Dict, Any, List
-from unittest.mock import Mock, patch, AsyncMock
 from dataclasses import dataclass
 from enum import Enum
-import io
 
 import pytest
 from PIL import Image
@@ -63,7 +58,7 @@ class MultimodalRequest:
     image_path: str = None
     analysis_type: VisionAnalysisType = VisionAnalysisType.POLICY_DOCUMENT
     domain: MultimodalDomain = MultimodalDomain.DOCUMENT_ANALYSIS
-    constitutional_focus: List[str] = None
+    constitutional_focus: list[str] = None
     max_tokens: int = 512
     temperature: float = 0.1
 
@@ -72,9 +67,9 @@ class MultimodalRequest:
 class MultimodalResponse:
     visual_analysis: str
     text_analysis: str
-    constitutional_assessment: Dict[str, float]
-    key_findings: List[str]
-    recommendations: List[str]
+    constitutional_assessment: dict[str, float]
+    key_findings: list[str]
+    recommendations: list[str]
     confidence_score: float
     processing_time_ms: float
     model_used: str
@@ -456,7 +451,7 @@ class TestMultimodalVLIntegration:
             start_time = time.time()
 
             response = await self.service.analyze_policy_document(
-                text_content=f"{sample_policy_text} - Test iteration {i+1}",
+                text_content=f"{sample_policy_text} - Test iteration {i + 1}",
                 image_path=None,
             )
 
@@ -492,7 +487,7 @@ class TestMultimodalVLIntegration:
             avg_confidence >= 0.7
         ), f"Average confidence too low: {avg_confidence:.2f}"
 
-        logger.info(f"✅ Multimodal performance benchmarking completed:")
+        logger.info("✅ Multimodal performance benchmarking completed:")
         logger.info(f"  Average duration: {avg_duration:.2f}ms")
         logger.info(f"  Maximum duration: {max_duration:.2f}ms")
         logger.info(f"  Average confidence: {avg_confidence:.2f}")
@@ -601,7 +596,7 @@ class TestLiveMultimodalVL:
                     else:
                         pytest.skip("Multimodal VL model not available")
         except Exception as e:
-            pytest.skip(f"Multimodal VL model not accessible: {str(e)}")
+            pytest.skip(f"Multimodal VL model not accessible: {e!s}")
 
     @pytest.mark.asyncio
     async def test_live_multimodal_constitutional_analysis(self):
@@ -653,4 +648,4 @@ class TestLiveMultimodalVL:
                     else:
                         pytest.skip("Multimodal model request failed")
         except Exception as e:
-            pytest.skip(f"Live constitutional analysis test failed: {str(e)}")
+            pytest.skip(f"Live constitutional analysis test failed: {e!s}")

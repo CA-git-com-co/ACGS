@@ -5,10 +5,10 @@ Validates comprehensive constitutional rule sets
 """
 
 import json
+import os
 import subprocess
 import tempfile
-import os
-from typing import Dict, Any, List
+from typing import Any
 
 
 class ConstitutionalPolicyTester:
@@ -21,8 +21,8 @@ class ConstitutionalPolicyTester:
         self.constitutional_hash = "cdd01ef066bc6cf2"
 
     def run_opa_eval(
-        self, input_data: Dict[str, Any], query: str = "data.acgs.constitutional"
-    ) -> Dict[str, Any]:
+        self, input_data: dict[str, Any], query: str = "data.acgs.constitutional"
+    ) -> dict[str, Any]:
         """Run OPA evaluation with input data"""
         try:
             # Create temporary input file
@@ -45,20 +45,21 @@ class ConstitutionalPolicyTester:
                 query,
             ]
 
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+            result = subprocess.run(
+                cmd, check=False, capture_output=True, text=True, timeout=10
+            )
 
             # Clean up
             os.unlink(input_file)
 
             if result.returncode == 0:
                 return json.loads(result.stdout)
-            else:
-                return {"error": result.stderr}
+            return {"error": result.stderr}
 
         except Exception as e:
             return {"error": str(e)}
 
-    def test_safety_policies(self) -> List[Dict[str, Any]]:
+    def test_safety_policies(self) -> list[dict[str, Any]]:
         """Test safety policy compliance"""
         test_cases = [
             {
@@ -128,7 +129,7 @@ class ConstitutionalPolicyTester:
 
         return results
 
-    def test_fairness_policies(self) -> List[Dict[str, Any]]:
+    def test_fairness_policies(self) -> list[dict[str, Any]]:
         """Test fairness policy compliance"""
         test_cases = [
             {
@@ -187,7 +188,7 @@ class ConstitutionalPolicyTester:
 
         return results
 
-    def test_constitutional_compliance(self) -> List[Dict[str, Any]]:
+    def test_constitutional_compliance(self) -> list[dict[str, Any]]:
         """Test overall constitutional compliance"""
         test_cases = [
             {
@@ -255,7 +256,7 @@ class ConstitutionalPolicyTester:
 
         return results
 
-    def run_comprehensive_test_suite(self) -> Dict[str, Any]:
+    def run_comprehensive_test_suite(self) -> dict[str, Any]:
         """Run comprehensive constitutional policy test suite"""
         print("🏛️ ACGS Constitutional Policies Test Suite")
         print("=" * 50)
@@ -306,7 +307,7 @@ class ConstitutionalPolicyTester:
         # Summary
         success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
 
-        print(f"\n📊 Test Suite Summary:")
+        print("\n📊 Test Suite Summary:")
         print(f"  Total Tests: {total_tests}")
         print(f"  Passed: {passed_tests}")
         print(f"  Failed: {failed_tests}")
@@ -326,7 +327,7 @@ class ConstitutionalPolicyTester:
             "test_suites": test_suites,
         }
 
-    def run_mock_validation(self) -> Dict[str, Any]:
+    def run_mock_validation(self) -> dict[str, Any]:
         """Run mock validation when OPA is not available"""
         print("\n🔄 Running mock constitutional policy validation...")
 
@@ -370,7 +371,7 @@ def main():
     with open("constitutional_policy_test_results.json", "w") as f:
         json.dump(results, f, indent=2)
 
-    print(f"\n📄 Results saved to: constitutional_policy_test_results.json")
+    print("\n📄 Results saved to: constitutional_policy_test_results.json")
 
     return 0 if results["overall_status"] == "PASS" else 1
 

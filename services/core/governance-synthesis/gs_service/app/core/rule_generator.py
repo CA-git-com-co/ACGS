@@ -56,7 +56,6 @@ async def generate_rules_from_principles(
     datalog_predicate_schema: dict[str, str] | None = None,  # Added from issue
     few_shot_examples: list[dict[str, str]] | None = None,  # Added from issue
 ) -> list[GeneratedRuleInfo]:
-
     all_generated_rules: list[GeneratedRuleInfo] = []
 
     for principle in principles:

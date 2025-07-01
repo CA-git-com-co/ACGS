@@ -453,16 +453,15 @@ class PublicConsultationService:
 
         if "suggest" in content_lower or "recommend" in content_lower:
             return FeedbackType.SUGGESTION
-        elif "concern" in content_lower or "worry" in content_lower:
+        if "concern" in content_lower or "worry" in content_lower:
             return FeedbackType.CONCERN
-        elif "question" in content_lower or "?" in content:
+        if "question" in content_lower or "?" in content:
             return FeedbackType.QUESTION
-        elif sentiment_score > 0.6:
+        if sentiment_score > 0.6:
             return FeedbackType.SUPPORT
-        elif sentiment_score < 0.4:
+        if sentiment_score < 0.4:
             return FeedbackType.OPPOSE
-        else:
-            return FeedbackType.NEUTRAL
+        return FeedbackType.NEUTRAL
 
     async def _verify_submitter_email(self, email: str) -> bool:
         """Verify submitter email address."""

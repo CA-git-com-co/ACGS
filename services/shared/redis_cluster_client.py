@@ -11,7 +11,7 @@ import json
 import logging
 import pickle
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from redis.asyncio.cluster import RedisCluster
 from redis.exceptions import (
@@ -56,7 +56,7 @@ class RedisClusterClient:
     def __init__(
         self,
         service_name: str,
-        cluster_nodes: List[Dict[str, Union[str, int]]] = None,
+        cluster_nodes: list[dict[str, str | int]] = None,
         config: CacheConfig = None,
     ):
         self.service_name = service_name
@@ -212,7 +212,7 @@ class RedisClusterClient:
         if last_exception:
             raise last_exception
 
-    async def get(self, key: str, prefix: str = None) -> Optional[Any]:
+    async def get(self, key: str, prefix: str = None) -> Any | None:
         """Get value from cache."""
         cache_key = self._generate_key(key, prefix)
 
@@ -311,7 +311,7 @@ class RedisClusterClient:
 
     async def increment(
         self, key: str, amount: int = 1, prefix: str = None
-    ) -> Optional[int]:
+    ) -> int | None:
         """Increment numeric value."""
         cache_key = self._generate_key(key, prefix)
 
@@ -342,7 +342,7 @@ class RedisClusterClient:
             logger.error(f"Failed to set hash field {cache_key}:{field}: {e}")
             return False
 
-    async def hash_get(self, key: str, field: str, prefix: str = None) -> Optional[Any]:
+    async def hash_get(self, key: str, field: str, prefix: str = None) -> Any | None:
         """Get field from hash."""
         cache_key = self._generate_key(key, prefix)
 
@@ -398,7 +398,7 @@ class RedisClusterClient:
 
     async def list_pop(
         self, key: str, prefix: str = None, left: bool = True
-    ) -> Optional[Any]:
+    ) -> Any | None:
         """Pop value from list."""
         cache_key = self._generate_key(key, prefix)
 
@@ -417,7 +417,7 @@ class RedisClusterClient:
             logger.error(f"Failed to pop from list {cache_key}: {e}")
             return None
 
-    async def get_cluster_info(self) -> Dict[str, Any]:
+    async def get_cluster_info(self) -> dict[str, Any]:
         """Get cluster information and health status."""
         try:
             if not self._is_connected:
@@ -458,7 +458,7 @@ class RedisClusterClient:
 
 
 # Global Redis clients for each service
-_redis_clients: Dict[str, RedisClusterClient] = {}
+_redis_clients: dict[str, RedisClusterClient] = {}
 
 
 async def get_redis_client(service_name: str) -> RedisClusterClient:

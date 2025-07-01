@@ -14,11 +14,9 @@ import json
 import logging
 import time
 from datetime import datetime, timezone
-from typing import Any, Dict, List
+from typing import Any
 
 import httpx
-import pytest
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -59,7 +57,7 @@ class ACGEPrototypeTestingExecution:
             "integration_results": {},
         }
 
-    async def execute_comprehensive_testing(self) -> Dict[str, Any]:
+    async def execute_comprehensive_testing(self) -> dict[str, Any]:
         """Execute comprehensive ACGE prototype testing."""
 
         logger.info("🧪 Starting ACGE Prototype Comprehensive Testing...")
@@ -95,7 +93,7 @@ class ACGEPrototypeTestingExecution:
                     logger.info(f"✅ {category_name} PASSED ({category_duration:.2f}s)")
 
             except Exception as e:
-                logger.error(f"❌ {category_name} ERROR: {str(e)}")
+                logger.error(f"❌ {category_name} ERROR: {e!s}")
                 self.test_results["test_categories"][category_name] = {
                     "success": False,
                     "error": str(e),
@@ -114,7 +112,7 @@ class ACGEPrototypeTestingExecution:
         logger.info(f"🏁 ACGE Testing Complete: {total_duration:.2f}s")
         return self.test_results
 
-    async def _test_constitutional_compliance(self) -> Dict[str, Any]:
+    async def _test_constitutional_compliance(self) -> dict[str, Any]:
         """Test constitutional compliance with trained model."""
 
         compliance_results = {
@@ -246,7 +244,7 @@ class ACGEPrototypeTestingExecution:
 
         return compliance_results
 
-    async def _test_performance_benchmarks(self) -> Dict[str, Any]:
+    async def _test_performance_benchmarks(self) -> dict[str, Any]:
         """Test performance benchmarks for response time and throughput."""
 
         performance_results = {
@@ -309,7 +307,7 @@ class ACGEPrototypeTestingExecution:
 
         return performance_results
 
-    async def _test_service_integration(self) -> Dict[str, Any]:
+    async def _test_service_integration(self) -> dict[str, Any]:
         """Test integration with all 7 ACGS-PGP services."""
 
         integration_results = {
@@ -361,7 +359,7 @@ class ACGEPrototypeTestingExecution:
 
         return integration_results
 
-    async def _test_load_throughput(self) -> Dict[str, Any]:
+    async def _test_load_throughput(self) -> dict[str, Any]:
         """Test load handling and throughput capabilities."""
 
         load_results = {
@@ -433,8 +431,8 @@ class ACGEPrototypeTestingExecution:
         return load_results
 
     async def _make_load_test_request(
-        self, client: httpx.AsyncClient, request_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, client: httpx.AsyncClient, request_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Make individual load test request."""
 
         try:
@@ -455,7 +453,7 @@ class ACGEPrototypeTestingExecution:
         except Exception as e:
             return {"success": False, "error": str(e), "response_time_ms": 0}
 
-    async def _test_end_to_end_workflows(self) -> Dict[str, Any]:
+    async def _test_end_to_end_workflows(self) -> dict[str, Any]:
         """Test end-to-end governance workflows."""
 
         workflow_results = {"success": True, "workflow_tests": []}
@@ -481,7 +479,7 @@ class ACGEPrototypeTestingExecution:
 
         return workflow_results
 
-    async def _assess_production_readiness(self) -> Dict[str, Any]:
+    async def _assess_production_readiness(self) -> dict[str, Any]:
         """Assess overall production readiness."""
 
         readiness_assessment = {
@@ -535,7 +533,7 @@ async def main():
         json.dump(results, f, indent=2)
 
     # Print summary
-    print(f"\n🧪 ACGE Prototype Testing Results:")
+    print("\n🧪 ACGE Prototype Testing Results:")
     print(
         f"Overall Success: {'✅ PASSED' if results['overall_success'] else '❌ FAILED'}"
     )

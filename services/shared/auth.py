@@ -81,8 +81,7 @@ def verify_token_and_get_payload(token_str: str) -> TokenPayload:
             # For access tokens, we could check revocation here if needed
             # For now, we'll trust the token if it's valid and not expired
             return token_payload
-        else:
-            raise credentials_exception
+        raise credentials_exception
 
     except JWTError:
         raise credentials_exception
@@ -258,8 +257,7 @@ class AuthServiceClient:
             if response.status_code == 200:
                 user_data = response.json()
                 return User(**user_data)
-            else:
-                return None
+            return None
 
         except Exception:
             return None

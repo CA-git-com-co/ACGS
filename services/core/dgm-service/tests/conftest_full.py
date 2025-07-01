@@ -8,15 +8,15 @@ for comprehensive testing of the Darwin Gödel Machine Service.
 import asyncio
 import os
 import tempfile
+from collections.abc import AsyncGenerator
 from datetime import datetime, timedelta
-from typing import Any, AsyncGenerator, Dict, Optional
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 
 import httpx
 import pytest
 from dgm_service.auth.auth_client import AuthClient
-from dgm_service.config import settings
 from dgm_service.core.archive_manager import ArchiveManager
 from dgm_service.core.constitutional_validator import ConstitutionalValidator
 from dgm_service.core.dgm_engine import DGMEngine
@@ -25,14 +25,6 @@ from dgm_service.database import Base, get_db
 
 # Import DGM service components
 from dgm_service.main import app
-from dgm_service.models import (
-    BanditState,
-    ConstitutionalComplianceLog,
-    DGMArchive,
-    ImprovementWorkspace,
-    PerformanceMetric,
-    SystemConfiguration,
-)
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -308,7 +300,7 @@ class TestDataFactory:
     """Factory for creating test data objects."""
 
     @staticmethod
-    def create_dgm_archive(**kwargs) -> Dict[str, Any]:
+    def create_dgm_archive(**kwargs) -> dict[str, Any]:
         """Create DGM archive test data."""
         defaults = {
             "id": str(uuid4()),
@@ -326,7 +318,7 @@ class TestDataFactory:
         return defaults
 
     @staticmethod
-    def create_performance_metric(**kwargs) -> Dict[str, Any]:
+    def create_performance_metric(**kwargs) -> dict[str, Any]:
         """Create performance metric test data."""
         defaults = {
             "id": str(uuid4()),

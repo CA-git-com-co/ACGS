@@ -6,19 +6,18 @@ principles with Qiskit for semantic fault tolerance in policy generation.
 """
 
 import logging
-import math
-import numpy as np
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
-from datetime import datetime
+from typing import Any
+
+import numpy as np
 
 # Quantum computing dependencies
 try:
-    from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
-    from qiskit.quantum_info import Statevector, partial_trace, entropy
-    from qiskit.circuit.library import QFT
-    from qiskit_aer import AerSimulator
     import cirq
+    from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
+    from qiskit.circuit.library import QFT
+    from qiskit.quantum_info import Statevector, entropy, partial_trace
+    from qiskit_aer import AerSimulator
 
     QUANTUM_AVAILABLE = True
 except ImportError:
@@ -35,10 +34,10 @@ class QuantumState:
 
     amplitudes: np.ndarray = field(default_factory=lambda: np.array([1.0, 0.0]))
     phases: np.ndarray = field(default_factory=lambda: np.array([0.0, 0.0]))
-    entanglement_map: Dict[str, float] = field(default_factory=dict)
+    entanglement_map: dict[str, float] = field(default_factory=dict)
     coherence_time: float = 1.0
-    error_syndrome: List[int] = field(default_factory=list)
-    correction_history: List[str] = field(default_factory=list)
+    error_syndrome: list[int] = field(default_factory=list)
+    correction_history: list[str] = field(default_factory=list)
 
     def __post_init__(self):
         """Normalize quantum state after initialization."""
@@ -75,8 +74,8 @@ class StabilizerCode:
     n_qubits: int  # Total number of qubits
     k_logical: int  # Number of logical qubits
     distance: int  # Code distance
-    stabilizer_generators: List[str]  # Pauli string generators
-    logical_operators: List[str]  # Logical X and Z operators
+    stabilizer_generators: list[str]  # Pauli string generators
+    logical_operators: list[str]  # Logical X and Z operators
 
     def __post_init__(self):
         """Validate stabilizer code parameters."""
@@ -135,7 +134,7 @@ class QuantumErrorCorrectionEngine:
             f"Quantum Error Correction Engine initialized with distance {code_distance}"
         )
 
-    def _initialize_stabilizer_codes(self) -> Dict[str, StabilizerCode]:
+    def _initialize_stabilizer_codes(self) -> dict[str, StabilizerCode]:
         """Initialize quantum stabilizer codes for different use cases."""
         codes = {}
 
@@ -304,7 +303,7 @@ class QuantumErrorCorrectionEngine:
 
     def detect_errors(
         self, quantum_state: QuantumState, code_name: str = "five_qubit"
-    ) -> List[int]:
+    ) -> list[int]:
         """
         Detect errors in quantum state using stabilizer measurements.
 
@@ -373,7 +372,7 @@ class QuantumErrorCorrectionEngine:
     def correct_errors(
         self,
         quantum_state: QuantumState,
-        syndrome: List[int],
+        syndrome: list[int],
         code_name: str = "five_qubit",
     ) -> bool:
         """
@@ -417,8 +416,8 @@ class QuantumErrorCorrectionEngine:
         return False
 
     def _syndrome_to_correction(
-        self, syndrome: List[int], code: StabilizerCode
-    ) -> Optional[str]:
+        self, syndrome: list[int], code: StabilizerCode
+    ) -> str | None:
         """Map error syndrome to correction operation."""
         # Syndrome lookup table for common codes
         syndrome_table = {
@@ -534,7 +533,7 @@ class QuantumErrorCorrectionEngine:
 
         return float(entanglement)
 
-    def get_correction_statistics(self) -> Dict[str, Any]:
+    def get_correction_statistics(self) -> dict[str, Any]:
         """Get quantum error correction statistics."""
         total = self.correction_stats["total_corrections"]
         success_rate = self.correction_stats["successful_corrections"] / max(1, total)

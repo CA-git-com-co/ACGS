@@ -200,7 +200,7 @@ async def get_monitoring_dashboard(
     except Exception as e:
         logger.error(f"Failed to generate monitoring dashboard: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Dashboard generation failed: {str(e)}"
+            status_code=500, detail=f"Dashboard generation failed: {e!s}"
         )
 
 
@@ -245,7 +245,7 @@ async def get_wina_metrics():
     except Exception as e:
         logger.error(f"Failed to collect WINA metrics: {e}")
         raise HTTPException(
-            status_code=500, detail=f"WINA metrics collection failed: {str(e)}"
+            status_code=500, detail=f"WINA metrics collection failed: {e!s}"
         )
 
 
@@ -283,7 +283,7 @@ async def get_system_metrics():
     except Exception as e:
         logger.error(f"Failed to collect system metrics: {e}")
         raise HTTPException(
-            status_code=500, detail=f"System metrics collection failed: {str(e)}"
+            status_code=500, detail=f"System metrics collection failed: {e!s}"
         )
 
 
@@ -321,7 +321,7 @@ async def get_active_alerts():
 
     except Exception as e:
         logger.error(f"Failed to retrieve active alerts: {e}")
-        raise HTTPException(status_code=500, detail=f"Alert retrieval failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Alert retrieval failed: {e!s}")
 
 
 @router.get("/health")
@@ -349,7 +349,7 @@ async def monitoring_health_check():
     except Exception as e:
         logger.error(f"Monitoring health check failed: {e}")
         raise HTTPException(
-            status_code=503, detail=f"Monitoring system unhealthy: {str(e)}"
+            status_code=503, detail=f"Monitoring system unhealthy: {e!s}"
         )
 
 
@@ -429,15 +429,13 @@ async def _check_active_alerts(
             operator = rule["operator"]
 
             triggered = False
-            if operator == ">" and metric_value > threshold:
-                triggered = True
-            elif operator == "<" and metric_value < threshold:
-                triggered = True
-            elif operator == ">=" and metric_value >= threshold:
-                triggered = True
-            elif operator == "<=" and metric_value <= threshold:
-                triggered = True
-            elif operator == "==" and metric_value == threshold:
+            if (
+                (operator == ">" and metric_value > threshold)
+                or (operator == "<" and metric_value < threshold)
+                or (operator == ">=" and metric_value >= threshold)
+                or (operator == "<=" and metric_value <= threshold)
+                or (operator == "==" and metric_value == threshold)
+            ):
                 triggered = True
 
             if triggered:

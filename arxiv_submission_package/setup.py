@@ -5,10 +5,10 @@ Setup script for Academic Submission System.
 This script configures the package for installation and distribution.
 """
 
-import os
 import sys
 from pathlib import Path
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
 
 # Ensure we're in the right directory
 if not Path("quality_assurance").exists():
@@ -21,7 +21,7 @@ def get_version():
     """Extract version from package __init__.py."""
     init_file = Path("quality_assurance") / "__init__.py"
     if init_file.exists():
-        with open(init_file, "r") as f:
+        with open(init_file) as f:
             for line in f:
                 if line.startswith("__version__"):
                     return line.split("=")[1].strip().strip("\"'")
@@ -33,7 +33,7 @@ def get_long_description():
     """Get long description from README file."""
     readme_file = Path("README.md")
     if readme_file.exists():
-        with open(readme_file, "r", encoding="utf-8") as f:
+        with open(readme_file, encoding="utf-8") as f:
             return f.read()
     return "Academic Submission System for validating and optimizing academic papers."
 
@@ -43,7 +43,7 @@ def get_requirements():
     """Get requirements from requirements.txt."""
     req_file = Path("requirements.txt")
     if req_file.exists():
-        with open(req_file, "r") as f:
+        with open(req_file) as f:
             return [
                 line.strip() for line in f if line.strip() and not line.startswith("#")
             ]
@@ -55,7 +55,7 @@ def get_test_requirements():
     """Get test requirements from requirements-test.txt."""
     req_file = Path("requirements-test.txt")
     if req_file.exists():
-        with open(req_file, "r") as f:
+        with open(req_file) as f:
             return [
                 line.strip() for line in f if line.strip() and not line.startswith("#")
             ]

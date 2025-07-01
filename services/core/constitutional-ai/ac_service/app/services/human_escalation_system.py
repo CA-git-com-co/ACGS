@@ -244,7 +244,7 @@ class HumanEscalationSystem:
             logger.error(f"Escalation evaluation failed: {e}")
             # In case of error, escalate for safety
             return await self._create_emergency_escalation(
-                db, conflict, f"Evaluation error: {str(e)}"
+                db, conflict, f"Evaluation error: {e!s}"
             )
 
     async def _check_escalation_rule(

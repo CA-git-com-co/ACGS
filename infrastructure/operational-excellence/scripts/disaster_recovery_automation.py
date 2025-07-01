@@ -7,13 +7,9 @@ Implements automated backup, recovery, and business continuity procedures
 import asyncio
 import json
 import logging
-import os
-import shutil
-import subprocess
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Optional
 
 import yaml
 
@@ -36,10 +32,10 @@ class DisasterRecoveryAutomation:
         self.backup_base_path = Path("/backups")
         self.backup_base_path.mkdir(exist_ok=True)
 
-    def _load_config(self, config_path: str) -> Dict:
+    def _load_config(self, config_path: str) -> dict:
         """Load disaster recovery configuration"""
         if config_path and Path(config_path).exists():
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 return yaml.safe_load(f)
 
         # Default configuration
@@ -59,7 +55,7 @@ class DisasterRecoveryAutomation:
             }
         }
 
-    async def execute_backup(self) -> Dict:
+    async def execute_backup(self) -> dict:
         """Execute comprehensive backup procedure"""
         backup_id = f"backup-{int(time.time())}"
         logger.info(f"Starting backup procedure: {backup_id}")
@@ -120,7 +116,7 @@ class DisasterRecoveryAutomation:
 
     async def execute_recovery(
         self, backup_id: str = None, recovery_type: str = "full"
-    ) -> Dict:
+    ) -> dict:
         """Execute disaster recovery procedure"""
         logger.info(f"Starting disaster recovery: {self.recovery_id}")
 
@@ -206,7 +202,7 @@ class DisasterRecoveryAutomation:
 
         return recovery_result
 
-    async def _backup_databases(self) -> Dict:
+    async def _backup_databases(self) -> dict:
         """Backup all databases"""
         db_backup_result = {"success": True, "databases": {}, "errors": []}
 
@@ -240,11 +236,11 @@ class DisasterRecoveryAutomation:
 
             except Exception as e:
                 db_backup_result["success"] = False
-                db_backup_result["errors"].append(f"{db['name']}: {str(e)}")
+                db_backup_result["errors"].append(f"{db['name']}: {e!s}")
 
         return db_backup_result
 
-    async def _backup_postgresql(self, db_name: str, backup_path: Path) -> Dict:
+    async def _backup_postgresql(self, db_name: str, backup_path: Path) -> dict:
         """Backup PostgreSQL database"""
         try:
             timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
@@ -275,7 +271,7 @@ class DisasterRecoveryAutomation:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _backup_redis(self, db_name: str, backup_path: Path) -> Dict:
+    async def _backup_redis(self, db_name: str, backup_path: Path) -> dict:
         """Backup Redis database"""
         try:
             timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
@@ -299,7 +295,7 @@ class DisasterRecoveryAutomation:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _backup_configurations(self) -> Dict:
+    async def _backup_configurations(self) -> dict:
         """Backup configuration files"""
         try:
             config_backup_path = self.backup_base_path / "configurations"
@@ -313,7 +309,7 @@ class DisasterRecoveryAutomation:
 
             # Create dummy backup archive
             with open(backup_archive, "w") as f:
-                f.write(f"# Configuration backup\n")
+                f.write("# Configuration backup\n")
                 f.write(f"# Created: {datetime.utcnow().isoformat()}\n")
 
             return {
@@ -326,7 +322,7 @@ class DisasterRecoveryAutomation:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _backup_application_data(self) -> Dict:
+    async def _backup_application_data(self) -> dict:
         """Backup application data"""
         try:
             app_backup_path = self.backup_base_path / "application_data"
@@ -340,7 +336,7 @@ class DisasterRecoveryAutomation:
 
             # Create dummy backup archive
             with open(backup_archive, "w") as f:
-                f.write(f"# Application data backup\n")
+                f.write("# Application data backup\n")
                 f.write(f"# Created: {datetime.utcnow().isoformat()}\n")
 
             return {
@@ -353,7 +349,7 @@ class DisasterRecoveryAutomation:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _backup_secrets(self) -> Dict:
+    async def _backup_secrets(self) -> dict:
         """Backup secrets and certificates"""
         try:
             secrets_backup_path = self.backup_base_path / "secrets"
@@ -367,7 +363,7 @@ class DisasterRecoveryAutomation:
 
             # Create dummy encrypted backup
             with open(backup_archive, "w") as f:
-                f.write(f"# Encrypted secrets backup\n")
+                f.write("# Encrypted secrets backup\n")
                 f.write(f"# Created: {datetime.utcnow().isoformat()}\n")
 
             return {
@@ -380,7 +376,7 @@ class DisasterRecoveryAutomation:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _verify_backup_integrity(self, backup_id: str) -> Dict:
+    async def _verify_backup_integrity(self, backup_id: str) -> dict:
         """Verify backup integrity"""
         try:
             # Simulate backup verification
@@ -397,7 +393,7 @@ class DisasterRecoveryAutomation:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _cleanup_old_backups(self) -> Dict:
+    async def _cleanup_old_backups(self) -> dict:
         """Cleanup old backups based on retention policy"""
         try:
             retention_days = self.config["disaster_recovery"]["backup"][
@@ -418,7 +414,7 @@ class DisasterRecoveryAutomation:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _pre_recovery_validation(self, backup_id: str) -> Dict:
+    async def _pre_recovery_validation(self, backup_id: str) -> dict:
         """Validate backup before recovery"""
         try:
             # Simulate pre-recovery validation
@@ -435,7 +431,7 @@ class DisasterRecoveryAutomation:
         except Exception as e:
             return {"success": False, "errors": [str(e)]}
 
-    async def _stop_services_gracefully(self) -> Dict:
+    async def _stop_services_gracefully(self) -> dict:
         """Stop all services gracefully"""
         try:
             # Simulate graceful service shutdown
@@ -451,7 +447,7 @@ class DisasterRecoveryAutomation:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _restore_data(self, backup_id: str, recovery_type: str) -> Dict:
+    async def _restore_data(self, backup_id: str, recovery_type: str) -> dict:
         """Restore data from backup"""
         try:
             # Simulate data restoration
@@ -468,7 +464,7 @@ class DisasterRecoveryAutomation:
         except Exception as e:
             return {"success": False, "errors": [str(e)]}
 
-    async def _restore_configurations(self, backup_id: str) -> Dict:
+    async def _restore_configurations(self, backup_id: str) -> dict:
         """Restore configuration files"""
         try:
             # Simulate configuration restoration
@@ -479,7 +475,7 @@ class DisasterRecoveryAutomation:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _start_services(self) -> Dict:
+    async def _start_services(self) -> dict:
         """Start all services"""
         try:
             # Simulate service startup
@@ -490,7 +486,7 @@ class DisasterRecoveryAutomation:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _post_recovery_validation(self) -> Dict:
+    async def _post_recovery_validation(self) -> dict:
         """Validate system after recovery"""
         try:
             # Simulate post-recovery validation
@@ -507,7 +503,7 @@ class DisasterRecoveryAutomation:
         except Exception as e:
             return {"success": False, "errors": [str(e)]}
 
-    async def _save_backup_metadata(self, backup_result: Dict):
+    async def _save_backup_metadata(self, backup_result: dict):
         """Save backup metadata"""
         metadata_dir = Path("/tmp/backup_metadata")
         metadata_dir.mkdir(exist_ok=True)
@@ -518,7 +514,7 @@ class DisasterRecoveryAutomation:
 
         logger.info(f"Backup metadata saved to {metadata_file}")
 
-    async def _save_recovery_results(self, recovery_result: Dict):
+    async def _save_recovery_results(self, recovery_result: dict):
         """Save recovery results"""
         results_dir = Path("/tmp/recovery_results")
         results_dir.mkdir(exist_ok=True)

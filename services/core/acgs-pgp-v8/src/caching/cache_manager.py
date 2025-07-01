@@ -13,7 +13,7 @@ from typing import Any
 
 import redis.asyncio as redis
 
-from .enhanced_cache import EnhancedCacheManager, CacheStrategy
+from .enhanced_cache import EnhancedCacheManager
 
 logger = logging.getLogger(__name__)
 

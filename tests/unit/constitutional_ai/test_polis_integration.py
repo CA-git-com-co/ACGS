@@ -2,17 +2,6 @@
 Unit tests for services.core.constitutional-ai.ac_service.app.integrations.polis_integration
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.constitutional_ai.ac_service.app.integrations.polis_integration import (
-    ConversationStatus,
-    ParticipantRole,
-    ConstitutionalTopic,
-    StakeholderGroup,
-    DemocraticMetrics,
-    PolisIntegration,
-)
-
 
 class TestConversationStatus:
     """Test suite for ConversationStatus."""

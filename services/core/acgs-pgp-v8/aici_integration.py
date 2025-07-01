@@ -5,12 +5,10 @@ Integrates AICI token-level control with ACGS-PGP's constitutional governance sy
 Maintains constitutional hash integrity: cdd01ef066bc6cf2
 """
 
-import asyncio
 import logging
-from typing import Dict, List, Optional
 
-from services.shared.acgs_cache_integration import ACGSCacheClient
 from services.core.acgs_pgp_v8.config import settings
+from services.shared.acgs_cache_integration import ACGSCacheClient
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +21,7 @@ class AICIConstitutionalIntegration:
         self.constitutional_hash = settings.CONSTITUTIONAL_HASH
         self.compliance_threshold = settings.COMPLIANCE_THRESHOLD
 
-    async def initialize_controller(self, model_id: str) -> Dict:
+    async def initialize_controller(self, model_id: str) -> dict:
         """Initialize AICI controller with constitutional parameters."""
         logger.info(f"Initializing AICI controller for model {model_id}")
 

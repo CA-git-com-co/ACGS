@@ -146,7 +146,7 @@ def test_service_imports():
         except Exception as e:
             import_time = time.time() - start_time
             print(f"  ❌ Setup failed after {import_time:.2f}s")
-            print(f"  Error: {str(e)}")
+            print(f"  Error: {e!s}")
             results[service_name] = f"setup_error: {str(e)[:50]}"
 
     return results
@@ -183,15 +183,14 @@ def main():
             success_count += 1
 
     print(
-        f"\nSuccess Rate: {success_count}/{len(results)} ({success_count/len(results)*100:.1f}%)"
+        f"\nSuccess Rate: {success_count}/{len(results)} ({success_count / len(results) * 100:.1f}%)"
     )
 
     if success_count == len(results):
         print("🎉 All services imported successfully!")
         return 0
-    else:
-        print("⚠️  Some services failed to import")
-        return 1
+    print("⚠️  Some services failed to import")
+    return 1
 
 
 if __name__ == "__main__":

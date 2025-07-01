@@ -114,10 +114,9 @@ async def enable_mfa(
             )
 
             return {"message": "MFA enabled successfully"}
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Failed to enable MFA"
-            )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Failed to enable MFA"
+        )
 
     except HTTPException:
         await security_audit.log_event(
@@ -172,10 +171,9 @@ async def disable_mfa(
             )
 
             return {"message": "MFA disabled successfully"}
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Failed to disable MFA"
-            )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Failed to disable MFA"
+        )
 
     except HTTPException:
         await security_audit.log_event(

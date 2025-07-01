@@ -4,11 +4,9 @@ ACGS-PGP Metrics Endpoint Analysis Script
 Analyzes all 7 core services to identify metrics endpoints returning JSON fallback format
 """
 
-import asyncio
 import json
 import subprocess
 import sys
-import time
 from datetime import datetime
 from pathlib import Path
 
@@ -104,8 +102,8 @@ class MetricsAnalyzer:
 
     def check_metrics_endpoint(self, port, timeout=5):
         """Check metrics endpoint format"""
-        import urllib.request
         import urllib.error
+        import urllib.request
 
         metrics_url = f"http://127.0.0.1:{port}/metrics"
 
@@ -220,19 +218,19 @@ class MetricsAnalyzer:
         print(f"⚠️ Errors/Not Running: {len(errors)}/7 services")
 
         if prometheus_format:
-            print(f"\n✅ Services with proper Prometheus format:")
+            print("\n✅ Services with proper Prometheus format:")
             for service_id in prometheus_format:
                 port = self.results[service_id]["port"]
                 print(f"   - {service_id} (port {port})")
 
         if json_fallback:
-            print(f"\n❌ Services with JSON fallback format (NEED FIXING):")
+            print("\n❌ Services with JSON fallback format (NEED FIXING):")
             for service_id in json_fallback:
                 port = self.results[service_id]["port"]
                 print(f"   - {service_id} (port {port})")
 
         if errors:
-            print(f"\n⚠️ Services with errors or not running:")
+            print("\n⚠️ Services with errors or not running:")
             for service_id in errors:
                 port = self.results[service_id]["port"]
                 error = self.results[service_id]["metrics_analysis"].get(
@@ -257,16 +255,15 @@ class MetricsAnalyzer:
                 indent=2,
             )
 
-        print(f"\n📄 Detailed report saved to: metrics_analysis_report.json")
+        print("\n📄 Detailed report saved to: metrics_analysis_report.json")
 
         if len(json_fallback) > 0:
             print(
                 f"\n🔧 Next Steps: Convert {len(json_fallback)} services from JSON to Prometheus format"
             )
             return False
-        else:
-            print(f"\n🎉 All services are using proper Prometheus format!")
-            return True
+        print("\n🎉 All services are using proper Prometheus format!")
+        return True
 
 
 def main():

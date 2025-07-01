@@ -175,7 +175,7 @@ class OpenRouterClient:
             )
 
             # Parse response
-            if "choices" in response_data and response_data["choices"]:
+            if response_data.get("choices"):
                 content = response_data["choices"][0]["message"]["content"]
                 usage = response_data.get("usage", {})
 
@@ -202,8 +202,7 @@ class OpenRouterClient:
                         "provider": response_data.get("provider", {}),
                     },
                 )
-            else:
-                raise ValueError("Invalid response format from OpenRouter API")
+            raise ValueError("Invalid response format from OpenRouter API")
 
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
@@ -235,7 +234,7 @@ class OpenRouterClient:
                 async with self.session.request(method, url, **kwargs) as response:
                     if response.status == 200:
                         return await response.json()
-                    elif response.status == 429:  # Rate limit
+                    if response.status == 429:  # Rate limit
                         if attempt < max_retries:
                             wait_time = 2**attempt
                             logger.warning(
@@ -245,21 +244,19 @@ class OpenRouterClient:
                             )
                             await asyncio.sleep(wait_time)
                             continue
-                        else:
-                            raise aiohttp.ClientResponseError(
-                                request_info=response.request_info,
-                                history=response.history,
-                                status=response.status,
-                                message="Rate limit exceeded",
-                            )
-                    else:
-                        error_text = await response.text()
                         raise aiohttp.ClientResponseError(
                             request_info=response.request_info,
                             history=response.history,
                             status=response.status,
-                            message=f"HTTP {response.status}: {error_text}",
+                            message="Rate limit exceeded",
                         )
+                    error_text = await response.text()
+                    raise aiohttp.ClientResponseError(
+                        request_info=response.request_info,
+                        history=response.history,
+                        status=response.status,
+                        message=f"HTTP {response.status}: {error_text}",
+                    )
 
             except TimeoutError:
                 if attempt < max_retries:
@@ -271,8 +268,7 @@ class OpenRouterClient:
                     )
                     await asyncio.sleep(wait_time)
                     continue
-                else:
-                    raise
+                raise
             except Exception as e:
                 if attempt < max_retries:
                     wait_time = 2**attempt
@@ -283,8 +279,7 @@ class OpenRouterClient:
                     )
                     await asyncio.sleep(wait_time)
                     continue
-                else:
-                    raise
+                raise
 
         raise Exception("Max retries exceeded")
 

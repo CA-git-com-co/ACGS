@@ -6,15 +6,15 @@ Comprehensive testing for API functionality, performance, and ACGS integration
 
 import asyncio
 import json
-import time
-import requests
-import aiohttp
-import pytest
-from typing import Dict, List, Any
 import logging
-from datetime import datetime
 import os
 import sys
+import time
+from datetime import datetime
+from typing import Any
+
+import aiohttp
+import requests
 
 # Add project root to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -25,7 +25,7 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
         logging.FileHandler(
-            f'logs/kimi-test-{datetime.now().strftime("%Y%m%d-%H%M%S")}.log'
+            f"logs/kimi-test-{datetime.now().strftime('%Y%m%d-%H%M%S')}.log"
         ),
         logging.StreamHandler(),
     ],
@@ -484,7 +484,7 @@ def calculate_average(numbers):
             )
             return False
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Run all tests and return results"""
         logger.info("Starting Kimi-Dev-72B integration test suite...")
 

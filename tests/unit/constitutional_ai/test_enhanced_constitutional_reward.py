@@ -2,12 +2,7 @@
 Unit tests for services.core.constitutional-ai.ac_service.app.services.enhanced_constitutional_reward
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.constitutional_ai.ac_service.app.services.enhanced_constitutional_reward import (
-    ConstitutionalDimension,
-    ConstitutionalEvaluation,
-    ConstitutionalRewardConfig,
     EnhancedConstitutionalReward,
 )
 

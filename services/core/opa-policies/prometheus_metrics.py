@@ -5,20 +5,17 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio
-import json
 import time
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional
+from datetime import datetime
 
 import httpx
 from prometheus_client import (
-    Counter,
-    Histogram,
-    Gauge,
-    Info,
     CollectorRegistry,
+    Counter,
+    Gauge,
+    Histogram,
+    Info,
     generate_latest,
-    CONTENT_TYPE_LATEST,
 )
 
 
@@ -150,21 +147,20 @@ class PolicyEngineMetricsCollector:
             registry=self.registry,
         )
 
-    async def collect_policy_engine_metrics(self) -> Optional[Dict]:
+    async def collect_policy_engine_metrics(self) -> dict | None:
         """Collect metrics from policy engine service"""
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
                 response = await client.get(f"{self.policy_engine_url}/v1/metrics")
                 if response.status_code == 200:
                     return response.json()
-                else:
-                    print(f"Failed to collect metrics: HTTP {response.status_code}")
-                    return None
+                print(f"Failed to collect metrics: HTTP {response.status_code}")
+                return None
         except Exception as e:
             print(f"Error collecting metrics: {e}")
             return None
 
-    async def collect_health_metrics(self) -> Optional[Dict]:
+    async def collect_health_metrics(self) -> dict | None:
         """Collect health information from policy engine"""
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
@@ -173,13 +169,12 @@ class PolicyEngineMetricsCollector:
                 )
                 if response.status_code == 200:
                     return response.json()
-                else:
-                    return None
+                return None
         except Exception as e:
             print(f"Error collecting health metrics: {e}")
             return None
 
-    def update_prometheus_metrics(self, metrics: Dict, health: Optional[Dict] = None):
+    def update_prometheus_metrics(self, metrics: dict, health: dict | None = None):
         """Update Prometheus metrics with collected data"""
         timestamp = time.time()
 
@@ -259,7 +254,7 @@ class PolicyEngineMetricsCollector:
         if len(self.historical_data) > self.max_history_points:
             self.historical_data = self.historical_data[-self.max_history_points :]
 
-    def analyze_performance_trends(self, window_minutes: int = 30) -> Dict:
+    def analyze_performance_trends(self, window_minutes: int = 30) -> dict:
         """Analyze performance trends over time window"""
         if not self.historical_data:
             return {"error": "No historical data available"}
@@ -330,7 +325,7 @@ class PolicyEngineMetricsCollector:
 
         return trends
 
-    def validate_slo_compliance(self, metrics: Dict) -> Dict:
+    def validate_slo_compliance(self, metrics: dict) -> dict:
         """Validate current metrics against SLO targets"""
         slo_results = {"compliant": True, "violations": [], "warnings": []}
 
@@ -442,7 +437,7 @@ class MetricsValidationSuite:
         self.prometheus_url = prometheus_url
         self.collector = PolicyEngineMetricsCollector(policy_engine_url, prometheus_url)
 
-    async def validate_metrics_availability(self) -> Dict:
+    async def validate_metrics_availability(self) -> dict:
         """Validate that all expected metrics are available"""
         print("🔍 Validating metrics availability...")
 
@@ -466,7 +461,7 @@ class MetricsValidationSuite:
                 print(f"   ✅ Policy engine metrics: {len(metrics)} fields")
             else:
                 results["details"]["policy_engine"] = "Failed to retrieve"
-                print(f"   ❌ Policy engine metrics: unavailable")
+                print("   ❌ Policy engine metrics: unavailable")
         except Exception as e:
             results["details"]["policy_engine"] = str(e)
             print(f"   ❌ Policy engine metrics: {e}")
@@ -480,7 +475,7 @@ class MetricsValidationSuite:
                 print(f"   ✅ Health endpoint: {health.get('status')}")
             else:
                 results["details"]["health"] = health or "No response"
-                print(f"   ❌ Health endpoint: unhealthy or unavailable")
+                print("   ❌ Health endpoint: unhealthy or unavailable")
         except Exception as e:
             results["details"]["health"] = str(e)
             print(f"   ❌ Health endpoint: {e}")
@@ -495,9 +490,9 @@ class MetricsValidationSuite:
                     data = response.json()
                     if data.get("status") == "success":
                         results["prometheus_scraping"] = True
-                        print(f"   ✅ Prometheus: accessible")
+                        print("   ✅ Prometheus: accessible")
                     else:
-                        print(f"   ⚠️  Prometheus: query failed")
+                        print("   ⚠️  Prometheus: query failed")
                 else:
                     print(f"   ⚠️  Prometheus: HTTP {response.status_code}")
         except Exception as e:
@@ -506,7 +501,7 @@ class MetricsValidationSuite:
 
         return results
 
-    async def run_performance_regression_test(self, duration_seconds: int = 30) -> Dict:
+    async def run_performance_regression_test(self, duration_seconds: int = 30) -> dict:
         """Run a performance test and check for regressions"""
         print(f"🚀 Running {duration_seconds}s performance regression test...")
 
@@ -584,8 +579,7 @@ class MetricsValidationSuite:
             )
 
             return results
-        else:
-            return {"error": "No successful requests", "passed": False}
+        return {"error": "No successful requests", "passed": False}
 
 
 if __name__ == "__main__":

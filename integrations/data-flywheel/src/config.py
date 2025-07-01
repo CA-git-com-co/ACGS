@@ -177,8 +177,7 @@ class LLMJudgeConfig(NIMConfig):
                     "api_key": self.api_key,
                 },
             }
-        else:
-            return self.model_name
+        return self.model_name
 
     @classmethod
     def from_json(cls, data: dict) -> "LLMJudgeConfig":

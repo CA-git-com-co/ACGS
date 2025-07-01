@@ -5,8 +5,6 @@ Tests individual components in isolation
 """
 
 import unittest
-import asyncio
-from unittest.mock import Mock, patch, AsyncMock
 
 
 class TestAuthService(unittest.TestCase):

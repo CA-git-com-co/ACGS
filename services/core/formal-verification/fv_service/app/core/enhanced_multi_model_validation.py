@@ -360,17 +360,16 @@ class EnhancedMultiModelValidator:
         """Execute a specific cross-model validation rule."""
         if rule.validation_function == "validate_policy_principle_consistency":
             return await self._validate_policy_principle_consistency(context)
-        elif rule.validation_function == "validate_coverage_completeness":
+        if rule.validation_function == "validate_coverage_completeness":
             return await self._validate_coverage_completeness(context)
-        elif rule.validation_function == "validate_semantic_coherence":
+        if rule.validation_function == "validate_semantic_coherence":
             return await self._validate_semantic_coherence(context)
-        elif rule.validation_function == "validate_safety_conflicts":
+        if rule.validation_function == "validate_safety_conflicts":
             return await self._validate_safety_conflicts(context)
-        elif rule.validation_function == "validate_regulatory_compliance":
+        if rule.validation_function == "validate_regulatory_compliance":
             return await self._validate_regulatory_compliance(context)
-        else:
-            logger.warning(f"Unknown validation function: {rule.validation_function}")
-            return []
+        logger.warning(f"Unknown validation function: {rule.validation_function}")
+        return []
 
     async def _validate_policy_principle_consistency(
         self, context: ValidationContext

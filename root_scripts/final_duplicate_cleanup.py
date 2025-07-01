@@ -5,10 +5,9 @@ ACGS-1 Final Duplicate Cleanup
 This script handles the remaining duplicate directories and files that need consolidation.
 """
 
-import os
 import shutil
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 
 class FinalDuplicateCleanup:
@@ -240,7 +239,7 @@ class FinalDuplicateCleanup:
             return True
 
         except Exception as e:
-            self.log_action(f"ERROR during final cleanup: {str(e)}")
+            self.log_action(f"ERROR during final cleanup: {e!s}")
             print(f"❌ Final cleanup failed: {e}")
             return False
 

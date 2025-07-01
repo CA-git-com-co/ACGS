@@ -12,19 +12,13 @@ from ...crud_gs import (
     create_direct_policy,
     create_policy_from_template_logic,
     create_policy_template,
-)
-from ...crud_gs import delete_policy as delete_policy_crud
-from ...crud_gs import (
+    delete_policy as delete_policy_crud,
     delete_policy_template,
     get_policies,
     get_policy,
     get_policy_template,
     get_policy_templates,
-)
-from ...crud_gs import (
     update_policy as update_policy_crud,  # Goes up 3 levels from v1 to app for crud_gs
-)
-from ...crud_gs import (
     update_policy_template,
 )
 
@@ -108,7 +102,6 @@ async def api_delete_policy_template(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="PolicyTemplate not found"
         )
-    return None  # For 204 No Content
 
 
 # --- Policy Instance Endpoints ---
@@ -231,4 +224,3 @@ async def api_delete_policy(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Policy not found"
         )
-    return None

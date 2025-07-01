@@ -5,9 +5,10 @@ Implements fallback mechanisms and service degradation patterns to maintain syst
 
 import asyncio
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any
 
 from prometheus_client import Counter, Gauge
 
@@ -39,8 +40,8 @@ class DegradationConfig:
     """Configuration for graceful degradation."""
 
     service_name: str
-    degradation_thresholds: Dict[str, float]  # metric_name -> threshold
-    fallback_strategies: Dict[DegradationLevel, List[FallbackStrategy]]
+    degradation_thresholds: dict[str, float]  # metric_name -> threshold
+    fallback_strategies: dict[DegradationLevel, list[FallbackStrategy]]
     constitutional_compliance_required: bool = True
     emergency_mode_timeout: float = 300.0  # 5 minutes
 
@@ -70,12 +71,12 @@ class GracefulDegradationManager:
     def __init__(self, config: DegradationConfig):
         self.config = config
         self.current_level = DegradationLevel.NORMAL
-        self.degradation_start_time: Optional[float] = None
+        self.degradation_start_time: float | None = None
 
         # Fallback data storage
-        self.cached_responses: Dict[str, Any] = {}
-        self.default_responses: Dict[str, Any] = {}
-        self.queued_requests: List[Dict[str, Any]] = []
+        self.cached_responses: dict[str, Any] = {}
+        self.default_responses: dict[str, Any] = {}
+        self.queued_requests: list[dict[str, Any]] = []
 
         self.setup_metrics()
         self.setup_default_responses()
@@ -273,7 +274,7 @@ class GracefulDegradationManager:
     async def handle_request_with_degradation(
         self,
         request_type: str,
-        request_data: Dict[str, Any],
+        request_data: dict[str, Any],
         original_handler: Callable,
     ) -> Any:
         """Handle a request with degradation strategies applied."""
@@ -281,15 +282,14 @@ class GracefulDegradationManager:
             # Check if we should use fallback based on current degradation level
             if self.current_level == DegradationLevel.EMERGENCY:
                 return await self.get_emergency_response(request_type, request_data)
-            elif self.current_level == DegradationLevel.MINIMAL:
+            if self.current_level == DegradationLevel.MINIMAL:
                 return await self.get_minimal_response(request_type, request_data)
-            elif self.current_level == DegradationLevel.REDUCED:
+            if self.current_level == DegradationLevel.REDUCED:
                 return await self.get_reduced_response(
                     request_type, request_data, original_handler
                 )
-            else:
-                # Normal operation
-                return await original_handler(request_data)
+            # Normal operation
+            return await original_handler(request_data)
 
         except Exception as e:
             logger.error(f"Error in degraded request handling: {e}")
@@ -297,7 +297,7 @@ class GracefulDegradationManager:
             return await self.get_emergency_response(request_type, request_data)
 
     async def get_emergency_response(
-        self, request_type: str, request_data: Dict[str, Any]
+        self, request_type: str, request_data: dict[str, Any]
     ) -> Any:
         """Get emergency fallback response."""
         if request_type in self.default_responses:
@@ -316,7 +316,7 @@ class GracefulDegradationManager:
         }
 
     async def get_minimal_response(
-        self, request_type: str, request_data: Dict[str, Any]
+        self, request_type: str, request_data: dict[str, Any]
     ) -> Any:
         """Get minimal functionality response."""
         # Check cache first
@@ -333,14 +333,15 @@ class GracefulDegradationManager:
     async def get_reduced_response(
         self,
         request_type: str,
-        request_data: Dict[str, Any],
+        request_data: dict[str, Any],
         original_handler: Callable,
     ) -> Any:
         """Get reduced functionality response."""
         try:
             # Try original handler with timeout
             response = await asyncio.wait_for(
-                original_handler(request_data), timeout=5.0  # Reduced timeout
+                original_handler(request_data),
+                timeout=5.0,  # Reduced timeout
             )
 
             # Cache successful response
@@ -361,7 +362,7 @@ class GracefulDegradationManager:
             logger.warning(f"Timeout in reduced mode for {request_type}")
             return await self.get_minimal_response(request_type, request_data)
 
-    def get_degradation_status(self) -> Dict[str, Any]:
+    def get_degradation_status(self) -> dict[str, Any]:
         """Get current degradation status."""
         return {
             "service_name": self.config.service_name,

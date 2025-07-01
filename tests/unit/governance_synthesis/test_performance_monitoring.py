@@ -2,14 +2,6 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.api.v1.performance_monitoring
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance_synthesis.gs_service.app.api.v1.performance_monitoring import (
-    PerformanceMetricsResponse,
-    SystemHealthResponse,
-    AlertConfiguration,
-)
-
 
 class TestPerformanceMetricsResponse:
     """Test suite for PerformanceMetricsResponse."""

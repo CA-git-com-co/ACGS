@@ -177,13 +177,12 @@ class PatternBasedSafetyValidator(SafetyValidator):
             else:
                 passed = True
                 message = "Unsafe pattern not found. Assertion passed."
-        else:  # Pattern indicates a required safe construct, so NOT finding it is a failure.
-            if not match_found:
-                passed = False
-                message = f"Required safe pattern '{pattern}' NOT found. Severity: {assertion.severity}."
-            else:
-                passed = True
-                message = "Required safe pattern found. Assertion passed."
+        elif not match_found:
+            passed = False
+            message = f"Required safe pattern '{pattern}' NOT found. Severity: {assertion.severity}."
+        else:
+            passed = True
+            message = "Required safe pattern found. Assertion passed."
 
         return passed, message
 

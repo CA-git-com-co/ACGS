@@ -241,18 +241,18 @@ class AlertManager:
             alert_triggered = False
 
             if (
-                threshold.comparison == "gt"
-                and metric_value > threshold.threshold_value
-            ):
-                alert_triggered = True
-            elif (
-                threshold.comparison == "lt"
-                and metric_value < threshold.threshold_value
-            ):
-                alert_triggered = True
-            elif (
-                threshold.comparison == "eq"
-                and metric_value == threshold.threshold_value
+                (
+                    threshold.comparison == "gt"
+                    and metric_value > threshold.threshold_value
+                )
+                or (
+                    threshold.comparison == "lt"
+                    and metric_value < threshold.threshold_value
+                )
+                or (
+                    threshold.comparison == "eq"
+                    and metric_value == threshold.threshold_value
+                )
             ):
                 alert_triggered = True
 

@@ -121,6 +121,7 @@ class PerformanceOptimizer:
                     start = time.time()
                     result = subprocess.run(
                         ["curl", "-s", "-f", f"http://localhost:{port}/health"],
+                        check=False,
                         capture_output=True,
                         timeout=5,
                     )
@@ -212,6 +213,7 @@ class PerformanceOptimizer:
                             "%{http_code}",
                             f"http://localhost:8005{endpoint}",
                         ],
+                        check=False,
                         capture_output=True,
                         timeout=10,
                     )
@@ -328,6 +330,7 @@ class PerformanceOptimizer:
         try:
             result = subprocess.run(
                 ["curl", "-s", "-f", "http://localhost:8005/health"],
+                check=False,
                 capture_output=True,
                 timeout=5,
             )
@@ -348,7 +351,9 @@ class PerformanceOptimizer:
         # Check service resource usage
         try:
             # Get process information for services
-            result = subprocess.run(["ps", "aux"], capture_output=True, text=True)
+            result = subprocess.run(
+                ["ps", "aux"], check=False, capture_output=True, text=True
+            )
 
             if result.returncode == 0:
                 # Parse process information for Python services
@@ -367,7 +372,9 @@ class PerformanceOptimizer:
 
         # Check disk I/O
         try:
-            result = subprocess.run(["df", "-h", "."], capture_output=True, text=True)
+            result = subprocess.run(
+                ["df", "-h", "."], check=False, capture_output=True, text=True
+            )
 
             if result.returncode == 0:
                 lines = result.stdout.strip().split("\n")
@@ -385,7 +392,9 @@ class PerformanceOptimizer:
 
         # Check memory usage
         try:
-            result = subprocess.run(["free", "-m"], capture_output=True, text=True)
+            result = subprocess.run(
+                ["free", "-m"], check=False, capture_output=True, text=True
+            )
 
             if result.returncode == 0:
                 lines = result.stdout.strip().split("\n")

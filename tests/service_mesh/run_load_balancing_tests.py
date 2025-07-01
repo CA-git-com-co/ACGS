@@ -151,7 +151,11 @@ class LoadBalancingTestRunner:
         try:
             # Run tests
             result = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=300  # 5 minute timeout
+                cmd,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=300,  # 5 minute timeout
             )
 
             # Parse results
@@ -169,16 +173,15 @@ class LoadBalancingTestRunner:
                     "stdout": result.stdout,
                     "stderr": result.stderr,
                 }
-            else:
-                return {
-                    "success": result.returncode == 0,
-                    "passed": 0,
-                    "failed": 0,
-                    "total": 0,
-                    "duration": 0,
-                    "stdout": result.stdout,
-                    "stderr": result.stderr,
-                }
+            return {
+                "success": result.returncode == 0,
+                "passed": 0,
+                "failed": 0,
+                "total": 0,
+                "duration": 0,
+                "stdout": result.stdout,
+                "stderr": result.stderr,
+            }
 
         except subprocess.TimeoutExpired:
             return {
@@ -219,7 +222,7 @@ class LoadBalancingTestRunner:
         print(f"   Total Tests: {total_tests}")
         print(f"   Passed: {total_passed}")
         print(f"   Failed: {total_failed}")
-        print(f"   Success Rate: {(total_passed/max(total_tests, 1)*100):.1f}%")
+        print(f"   Success Rate: {(total_passed / max(total_tests, 1) * 100):.1f}%")
 
         # Performance targets validation
         print("\n🎯 Performance Targets:")

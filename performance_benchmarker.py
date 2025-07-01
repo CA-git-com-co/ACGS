@@ -5,17 +5,15 @@ Tests performance against established targets including O(1) lookups,
 request-scoped caching effectiveness, and overall system latency under load.
 """
 
-import os
-import sys
-import json
-import time
-import statistics
-import threading
 import concurrent.futures
-from pathlib import Path
-from typing import Dict, List, Any, Optional
+import json
+import statistics
+import sys
+import time
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+from typing import Any
 
 # Add project paths
 project_root = Path(__file__).parent
@@ -36,12 +34,12 @@ class BenchmarkResult:
     test_name: str
     status: BenchmarkStatus
     execution_time: float
-    target_metrics: Dict[str, float]
-    actual_metrics: Dict[str, float]
+    target_metrics: dict[str, float]
+    actual_metrics: dict[str, float]
     meets_targets: bool
-    load_conditions: Dict[str, Any]
-    performance_details: Dict[str, Any]
-    error_message: Optional[str] = None
+    load_conditions: dict[str, Any]
+    performance_details: dict[str, Any]
+    error_message: str | None = None
 
 
 class PerformanceBenchmarker:
@@ -90,10 +88,9 @@ class PerformanceBenchmarker:
         ):
             return actual <= target
         # For throughput and hit rate metrics, actual should be >= target
-        else:
-            return actual >= target
+        return actual >= target
 
-    def _measure_latency_stats(self, latencies: List[float]) -> Dict[str, float]:
+    def _measure_latency_stats(self, latencies: list[float]) -> dict[str, float]:
         """Calculate latency statistics from a list of latencies in seconds."""
         if not latencies:
             return {}
@@ -113,7 +110,7 @@ class PerformanceBenchmarker:
             ),
         }
 
-    def _percentile(self, data: List[float], percentile: float) -> float:
+    def _percentile(self, data: list[float], percentile: float) -> float:
         """Calculate percentile of data."""
         if not data:
             return 0.0
@@ -121,10 +118,9 @@ class PerformanceBenchmarker:
         index = (percentile / 100) * (len(sorted_data) - 1)
         if index.is_integer():
             return sorted_data[int(index)]
-        else:
-            lower = sorted_data[int(index)]
-            upper = sorted_data[int(index) + 1]
-            return lower + (upper - lower) * (index - int(index))
+        lower = sorted_data[int(index)]
+        upper = sorted_data[int(index) + 1]
+        return lower + (upper - lower) * (index - int(index))
 
     def benchmark_o1_lookup_performance(self) -> BenchmarkResult:
         """Benchmark O(1) lookup operations under various load conditions."""
@@ -191,7 +187,9 @@ class PerformanceBenchmarker:
                 {"test_sizes": test_sizes, "lookups_per_size": 1000},
                 {
                     "latency_stats": latency_stats,
-                    "throughput_by_size": dict(zip(test_sizes, throughput_results)),
+                    "throughput_by_size": dict(
+                        zip(test_sizes, throughput_results, strict=False)
+                    ),
                     "total_operations": len(all_latencies),
                 },
             )
@@ -317,7 +315,7 @@ class PerformanceBenchmarker:
         start_time = time.time()
         try:
 
-            def worker_task(worker_id: int, operations: int) -> Dict[str, Any]:
+            def worker_task(worker_id: int, operations: int) -> dict[str, Any]:
                 """Worker function for concurrent load testing."""
                 latencies = []
                 lookup_table = {f"key_{i}": f"value_{i}" for i in range(1000)}
@@ -425,8 +423,9 @@ class PerformanceBenchmarker:
         """Benchmark memory usage efficiency."""
         start_time = time.time()
         try:
-            import psutil
             import gc
+
+            import psutil
 
             # Get initial memory usage
             process = psutil.Process()
@@ -509,7 +508,7 @@ class PerformanceBenchmarker:
                 str(e),
             )
 
-    def run_all_benchmarks(self) -> Dict[str, Any]:
+    def run_all_benchmarks(self) -> dict[str, Any]:
         """Run all performance benchmarks."""
         print("Starting Performance Benchmarking...")
         print("Performance Targets:")
@@ -540,7 +539,7 @@ class PerformanceBenchmarker:
                     False,
                     {},
                     {},
-                    f"Benchmark execution failed: {str(e)}",
+                    f"Benchmark execution failed: {e!s}",
                 )
                 self.log_result(error_result)
 

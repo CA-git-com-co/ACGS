@@ -443,11 +443,11 @@ class QuantumagiEventMonitor:
 
         if "constitution" in data_str.lower():
             return "constitution_initialized"
-        elif "policy" in data_str.lower():
+        if "policy" in data_str.lower():
             return "policy_proposed"
-        elif "vote" in data_str.lower():
+        if "vote" in data_str.lower():
             return "vote_cast"
-        elif "compliance" in data_str.lower():
+        if "compliance" in data_str.lower():
             return "compliance_check_performed"
 
         return None

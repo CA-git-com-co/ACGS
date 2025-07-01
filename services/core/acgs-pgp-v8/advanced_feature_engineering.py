@@ -12,20 +12,19 @@ Implements comprehensive feature engineering including:
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
+import json
 import logging
+import os
+import warnings
+from dataclasses import asdict, dataclass
+from datetime import datetime
+
 import numpy as np
 import pandas as pd
-from datetime import datetime
-from typing import Dict, List, Tuple, Any
-from dataclasses import dataclass, asdict
-import json
-import os
-from sklearn.preprocessing import PolynomialFeatures, StandardScaler
-from sklearn.feature_selection import SelectKBest, f_regression, f_classif
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.feature_selection import SelectKBest, f_classif, f_regression
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
-from sklearn.metrics import mean_absolute_error, accuracy_score
-import warnings
+from sklearn.preprocessing import PolynomialFeatures
 
 warnings.filterwarnings("ignore")
 
@@ -51,8 +50,8 @@ class FeatureEngineeringResults:
 
     # Feature selection results
     features_after_selection: int
-    selected_feature_names: List[str]
-    feature_importance_scores: Dict[str, float]
+    selected_feature_names: list[str]
+    feature_importance_scores: dict[str, float]
 
     # Performance metrics
     baseline_performance: float
@@ -61,7 +60,7 @@ class FeatureEngineeringResults:
 
     # Correlation analysis
     max_correlation: float
-    high_correlation_pairs: List[Tuple[str, str, float]]
+    high_correlation_pairs: list[tuple[str, str, float]]
 
     # Processing metrics
     processing_time_seconds: float
@@ -154,7 +153,7 @@ class AdvancedFeatureEngineering:
         return X_cyclical
 
     def apply_target_encoding(
-        self, X: pd.DataFrame, y: pd.Series, categorical_cols: List[str] = None
+        self, X: pd.DataFrame, y: pd.Series, categorical_cols: list[str] = None
     ) -> pd.DataFrame:
         """Apply target encoding to categorical variables."""
         logger.info("Applying target encoding...")
@@ -200,7 +199,7 @@ class AdvancedFeatureEngineering:
 
     def select_best_features(
         self, X: pd.DataFrame, y: pd.Series, task_type: str = "regression"
-    ) -> Tuple[pd.DataFrame, List[str], Dict[str, float]]:
+    ) -> tuple[pd.DataFrame, list[str], dict[str, float]]:
         """Select best features using SelectKBest."""
         logger.info(f"Selecting best {self.k_best_features} features...")
 
@@ -230,7 +229,7 @@ class AdvancedFeatureEngineering:
         selected_features = [
             numeric_cols[i] for i in range(len(numeric_cols)) if selected_mask[i]
         ]
-        feature_scores = dict(zip(numeric_cols, selector.scores_))
+        feature_scores = dict(zip(numeric_cols, selector.scores_, strict=False))
 
         # Create DataFrame with selected features
         X_selected_df = pd.DataFrame(
@@ -250,7 +249,7 @@ class AdvancedFeatureEngineering:
 
     def analyze_feature_importance(
         self, X: pd.DataFrame, y: pd.Series, task_type: str = "regression"
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Analyze feature importance using Random Forest."""
         logger.info("Analyzing feature importance...")
 
@@ -270,7 +269,7 @@ class AdvancedFeatureEngineering:
         model.fit(X_numeric, y)
 
         # Get feature importances
-        importances = dict(zip(numeric_cols, model.feature_importances_))
+        importances = dict(zip(numeric_cols, model.feature_importances_, strict=False))
 
         # Sort by importance
         sorted_importances = dict(
@@ -283,7 +282,7 @@ class AdvancedFeatureEngineering:
 
     def analyze_correlations(
         self, X: pd.DataFrame
-    ) -> Tuple[float, List[Tuple[str, str, float]]]:
+    ) -> tuple[float, list[tuple[str, str, float]]]:
         """Analyze feature correlations."""
         logger.info("Analyzing feature correlations...")
 
@@ -316,7 +315,7 @@ class AdvancedFeatureEngineering:
 
     def generate_sample_dataset(
         self, n_samples: int = 1000
-    ) -> Tuple[pd.DataFrame, pd.Series]:
+    ) -> tuple[pd.DataFrame, pd.Series]:
         """Generate sample dataset for feature engineering testing."""
         logger.info(f"Generating sample dataset with {n_samples} samples...")
 
@@ -429,7 +428,7 @@ class AdvancedFeatureEngineering:
             timestamp=datetime.now().isoformat(),
         )
 
-        logger.info(f"✅ Feature engineering pipeline complete!")
+        logger.info("✅ Feature engineering pipeline complete!")
         logger.info(f"  - Original features: {original_features}")
         logger.info(f"  - Final features: {len(X_selected.columns)}")
         logger.info(f"  - Performance improvement: {performance_improvement:.1f}%")
@@ -494,7 +493,7 @@ class AdvancedFeatureEngineering:
         self,
         results: FeatureEngineeringResults,
         output_dir: str = "feature_engineering_results",
-    ) -> Tuple[str, str]:
+    ) -> tuple[str, str]:
         """Save feature engineering results."""
         logger.info("Saving feature engineering results...")
 
@@ -531,13 +530,13 @@ class AdvancedFeatureEngineering:
             f.write(
                 f"- **Generated:** {results.polynomial_features_generated} features\n"
             )
-            f.write(f"- **Configuration:** degree=2, interaction_only=True\n\n")
+            f.write("- **Configuration:** degree=2, interaction_only=True\n\n")
 
             f.write("### 2. Cyclical Features\n")
             f.write(
                 f"- **Generated:** {results.cyclical_features_generated} features\n"
             )
-            f.write(f"- **Transformations:** sin/cos for time-based variables\n\n")
+            f.write("- **Transformations:** sin/cos for time-based variables\n\n")
 
             f.write("### 3. Target Encoding\n")
             f.write(
@@ -613,7 +612,7 @@ class AdvancedFeatureEngineering:
                 f.write("- ❌ No performance improvement\n")
 
             f.write(
-                f"\n**Overall Success Rate:** {criteria_met}/{total_criteria} ({criteria_met/total_criteria*100:.0f}%)\n\n"
+                f"\n**Overall Success Rate:** {criteria_met}/{total_criteria} ({criteria_met / total_criteria * 100:.0f}%)\n\n"
             )
 
             # Configuration Details

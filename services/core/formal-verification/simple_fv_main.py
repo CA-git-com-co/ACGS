@@ -4,9 +4,10 @@ Simple Formal Verification Service for ACGS-1
 Provides basic formal verification capabilities without external dependencies
 """
 
+import hashlib
 import logging
 import time
-import hashlib
+
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 

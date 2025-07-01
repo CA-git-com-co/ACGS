@@ -182,10 +182,9 @@ class ConstitutionalComplianceValidator:
                         recommendations=result_data.get("recommendations", []),
                         timestamp=result_data.get("timestamp", ""),
                     )
-                else:
-                    self.logger.error(
-                        f"AC Service validation failed: {response.status_code}"
-                    )
+                self.logger.error(
+                    f"AC Service validation failed: {response.status_code}"
+                )
 
         except Exception as e:
             self.logger.error(f"Error validating principle {principle.value}: {e}")

@@ -16,7 +16,7 @@ import json
 import logging
 import time
 from datetime import datetime, timezone
-from typing import Dict, Any
+from typing import Any
 
 import httpx
 
@@ -42,7 +42,7 @@ class Priority1Validator:
         }
         self.constitutional_hash = "cdd01ef066bc6cf2"
 
-    async def test_service_health(self, service_key: str) -> Dict[str, Any]:
+    async def test_service_health(self, service_key: str) -> dict[str, Any]:
         """Test individual service health"""
         service = self.services[service_key]
         url = f"http://localhost:{service['port']}/health"
@@ -81,7 +81,7 @@ class Priority1Validator:
 
         return result
 
-    async def test_authentication_functionality(self) -> Dict[str, Any]:
+    async def test_authentication_functionality(self) -> dict[str, Any]:
         """Test authentication service JWT functionality"""
         logger.info("🔐 Testing authentication functionality...")
 
@@ -141,7 +141,7 @@ class Priority1Validator:
 
         return auth_test
 
-    async def test_missing_services_functionality(self) -> Dict[str, Any]:
+    async def test_missing_services_functionality(self) -> dict[str, Any]:
         """Test gs-service and pgc-service functionality"""
         logger.info("🔧 Testing missing services functionality...")
 
@@ -198,7 +198,7 @@ class Priority1Validator:
 
         return missing_services_test
 
-    async def calculate_new_system_score(self, all_results: Dict[str, Any]) -> float:
+    async def calculate_new_system_score(self, all_results: dict[str, Any]) -> float:
         """Calculate new system score after Priority 1 fixes"""
         logger.info("📊 Calculating new system score...")
 
@@ -253,7 +253,7 @@ class Priority1Validator:
 
         return weighted_score
 
-    async def run_priority1_validation(self) -> Dict[str, Any]:
+    async def run_priority1_validation(self) -> dict[str, Any]:
         """Run comprehensive Priority 1 validation"""
         logger.info("🚀 Starting Priority 1 validation check...")
 
@@ -367,7 +367,7 @@ async def main():
 
         # Authentication test
         auth = results["authentication_test"]
-        print(f"\nAUTHENTICATION SERVICE:")
+        print("\nAUTHENTICATION SERVICE:")
         print(f"  Service Accessible: {'✅' if auth['service_accessible'] else '❌'}")
         print(f"  Token Generation: {'✅' if auth['token_generation'] else '❌'}")
         print(f"  Token Validation: {'✅' if auth['token_validation'] else '❌'}")
@@ -377,7 +377,7 @@ async def main():
 
         # Missing services test
         missing = results["missing_services_test"]
-        print(f"\nMISSING SERVICES:")
+        print("\nMISSING SERVICES:")
         print(
             f"  GS Service: {'✅' if missing['gs_service']['accessible'] and missing['gs_service']['api_functional'] else '❌'}"
         )
@@ -389,7 +389,7 @@ async def main():
         )
 
         # Overall status
-        print(f"\nOVERALL STATUS:")
+        print("\nOVERALL STATUS:")
         print(
             f"  Priority 1 Success: {'✅ YES' if results['summary']['priority1_success'] else '❌ NO'}"
         )
@@ -408,9 +408,8 @@ async def main():
                     "📈 Significant improvement achieved - continue with Priority 2 items"
                 )
             return 0
-        else:
-            print("⚠️ Some Priority 1 issues remain")
-            return 1
+        print("⚠️ Some Priority 1 issues remain")
+        return 1
 
     except Exception as e:
         logger.error(f"Priority 1 validation failed: {e}")

@@ -16,7 +16,6 @@ import asyncio
 import json
 import logging
 import time
-from typing import Dict
 
 import httpx
 
@@ -58,7 +57,7 @@ class SecurityMiddlewareValidator:
         self.total_tests = 0
         self.passed_tests = 0
 
-    async def validate_all_services(self) -> Dict:
+    async def validate_all_services(self) -> dict:
         """Validate security middleware across all services."""
         logger.info("🔒 Starting security middleware validation")
 
@@ -105,7 +104,7 @@ class SecurityMiddlewareValidator:
 
         return summary
 
-    async def _validate_service(self, service_id: str, service_config: Dict) -> Dict:
+    async def _validate_service(self, service_id: str, service_config: dict) -> dict:
         """Validate security middleware for a specific service."""
         base_url = f"http://localhost:{service_config['port']}"
         tests_passed = 0
@@ -165,7 +164,7 @@ class SecurityMiddlewareValidator:
 
     async def _test_security_headers(
         self, client: httpx.AsyncClient, base_url: str
-    ) -> Dict:
+    ) -> dict:
         """Test security headers presence."""
         try:
             response = await client.get(f"{base_url}/health")
@@ -193,7 +192,7 @@ class SecurityMiddlewareValidator:
 
     async def _test_rate_limiting(
         self, client: httpx.AsyncClient, base_url: str
-    ) -> Dict:
+    ) -> dict:
         """Test rate limiting functionality."""
         try:
             # Make multiple rapid requests to trigger rate limiting
@@ -227,7 +226,7 @@ class SecurityMiddlewareValidator:
 
     async def _test_sql_injection_detection(
         self, client: httpx.AsyncClient, base_url: str
-    ) -> Dict:
+    ) -> dict:
         """Test SQL injection detection."""
         try:
             # Test with SQL injection payload
@@ -253,7 +252,7 @@ class SecurityMiddlewareValidator:
 
     async def _test_path_traversal_detection(
         self, client: httpx.AsyncClient, base_url: str
-    ) -> Dict:
+    ) -> dict:
         """Test path traversal detection."""
         try:
             # Test with path traversal payload
@@ -279,7 +278,7 @@ class SecurityMiddlewareValidator:
 
     async def _test_cors_configuration(
         self, client: httpx.AsyncClient, base_url: str
-    ) -> Dict:
+    ) -> dict:
         """Test CORS configuration."""
         try:
             # Test OPTIONS request (CORS preflight)
@@ -309,7 +308,7 @@ class SecurityMiddlewareValidator:
         except Exception as e:
             return {"passed": False, "error": str(e)}
 
-    def _generate_validation_summary(self, validation_time: float) -> Dict:
+    def _generate_validation_summary(self, validation_time: float) -> dict:
         """Generate validation summary."""
         service_scores = []
         for service_id, result in self.validation_results.items():
@@ -338,7 +337,7 @@ class SecurityMiddlewareValidator:
             ],
         }
 
-    async def _save_validation_report(self, summary: Dict):
+    async def _save_validation_report(self, summary: dict):
         """Save validation report to file."""
         report_path = "security_middleware_validation_report.json"
 

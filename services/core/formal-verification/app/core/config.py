@@ -4,8 +4,6 @@ Formal Verification Service Configuration
 Manages configuration for formal verification and validation engine.
 """
 
-import os
-from typing import List, Dict, Optional
 from pydantic import BaseSettings, Field
 
 
@@ -66,7 +64,7 @@ class Settings(BaseSettings):
     PROOFS_DIRECTORY: str = Field(default="/app/proofs", env="PROOFS_DIRECTORY")
 
     # Constitutional principles definitions
-    CONSTITUTIONAL_PRINCIPLES: Dict[str, Dict] = Field(
+    CONSTITUTIONAL_PRINCIPLES: dict[str, dict] = Field(
         default={
             "non_maleficence": {
                 "id": "principle_001",
@@ -107,7 +105,7 @@ class Settings(BaseSettings):
     )
 
     # Verification performance targets
-    VERIFICATION_PERFORMANCE_TARGETS: Dict[str, int] = Field(
+    VERIFICATION_PERFORMANCE_TARGETS: dict[str, int] = Field(
         default={
             "simple_policy_verification_ms": 100,
             "complex_policy_verification_ms": 500,
@@ -117,7 +115,7 @@ class Settings(BaseSettings):
     )
 
     # Policy verification rules
-    POLICY_VERIFICATION_RULES: Dict[str, Dict] = Field(
+    POLICY_VERIFICATION_RULES: dict[str, dict] = Field(
         default={
             "consistency": {
                 "description": "No contradictory policies exist",

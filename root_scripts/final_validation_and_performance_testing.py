@@ -17,24 +17,23 @@ Key validation criteria:
 - Constitutional compliance >95% accuracy
 """
 
-import os
-import sys
-import json
-import time
 import asyncio
-import subprocess
+import json
 import logging
-import httpx
-from pathlib import Path
+import subprocess
+import sys
+import time
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from pathlib import Path
+
+import httpx
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
         logging.FileHandler(
-            f'final_validation_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log'
+            f"final_validation_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
         ),
         logging.StreamHandler(),
     ],
@@ -146,6 +145,7 @@ class FinalValidator:
                     "--tb=no",
                     "-q",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -155,7 +155,7 @@ class FinalValidator:
             # Parse coverage results
             coverage_file = self.project_root / "tests/coverage/coverage.json"
             if coverage_file.exists():
-                with open(coverage_file, "r") as f:
+                with open(coverage_file) as f:
                     coverage_data = json.load(f)
 
                 total_coverage = coverage_data.get("totals", {}).get(
@@ -172,9 +172,8 @@ class FinalValidator:
 
                 logger.info(f"Test coverage: {total_coverage:.1f}% (target: >80%)")
                 return meets_target
-            else:
-                logger.warning("Coverage report not found")
-                return False
+            logger.warning("Coverage report not found")
+            return False
 
         except subprocess.TimeoutExpired:
             logger.warning("Test coverage validation timed out")
@@ -202,6 +201,7 @@ class FinalValidator:
                     "-o",
                     "security_scan_results.json",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -210,7 +210,7 @@ class FinalValidator:
             # Parse bandit results
             bandit_file = self.project_root / "security_scan_results.json"
             if bandit_file.exists():
-                with open(bandit_file, "r") as f:
+                with open(bandit_file) as f:
                     bandit_data = json.load(f)
 
                 high_severity = len(
@@ -237,6 +237,7 @@ class FinalValidator:
             # Rust security scan with cargo audit
             cargo_audit_result = subprocess.run(
                 ["cargo", "audit", "--json"],
+                check=False,
                 cwd=self.project_root / "blockchain",
                 capture_output=True,
                 text=True,
@@ -269,7 +270,7 @@ class FinalValidator:
         try:
             # Check Solana CLI version
             solana_result = subprocess.run(
-                ["solana", "--version"], capture_output=True, text=True
+                ["solana", "--version"], check=False, capture_output=True, text=True
             )
 
             if solana_result.returncode != 0:
@@ -279,6 +280,7 @@ class FinalValidator:
             # Check Anchor version
             anchor_result = subprocess.run(
                 ["anchor", "--version"],
+                check=False,
                 cwd=self.project_root / "blockchain",
                 capture_output=True,
                 text=True,
@@ -291,6 +293,7 @@ class FinalValidator:
             # Validate program builds
             build_result = subprocess.run(
                 ["anchor", "build"],
+                check=False,
                 cwd=self.project_root / "blockchain",
                 capture_output=True,
                 text=True,
@@ -301,7 +304,7 @@ class FinalValidator:
             constitution_file = self.project_root / "blockchain/constitution_data.json"
             constitution_valid = False
             if constitution_file.exists():
-                with open(constitution_file, "r") as f:
+                with open(constitution_file) as f:
                     constitution_data = json.load(f)
                     constitution_hash = constitution_data.get("constitution_hash")
                     constitution_valid = constitution_hash == "cdd01ef066bc6cf2"

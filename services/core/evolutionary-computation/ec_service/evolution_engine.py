@@ -4,14 +4,13 @@ Implements human-controlled evolution framework with constitutional compliance.
 """
 
 import asyncio
-import json
 import logging
 import time
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import aiohttp
 from prometheus_client import Counter, Gauge, Histogram
@@ -60,17 +59,17 @@ class EvolutionRequest:
     evolution_id: str
     evolution_type: EvolutionType
     description: str
-    proposed_changes: Dict[str, Any]
+    proposed_changes: dict[str, Any]
     requester_id: str
     target_service: str
 
     # Risk assessment
-    risk_level: Optional[RiskLevel] = None
-    impact_assessment: Optional[Dict[str, Any]] = None
+    risk_level: RiskLevel | None = None
+    impact_assessment: dict[str, Any] | None = None
 
     # Constitutional compliance
     constitutional_compliance_required: bool = True
-    constitutional_validation_score: Optional[float] = None
+    constitutional_validation_score: float | None = None
 
     # Metadata
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
@@ -95,7 +94,7 @@ class EvolutionEvaluation:
     recommendation: str  # approve, review, reject
 
     # Detailed analysis
-    analysis_details: Dict[str, Any]
+    analysis_details: dict[str, Any]
     evaluation_timestamp: datetime = field(
         default_factory=lambda: datetime.now(timezone.utc)
     )
@@ -107,7 +106,7 @@ class HumanReviewTask:
 
     task_id: str
     evolution_id: str
-    reviewer_id: Optional[str] = None
+    reviewer_id: str | None = None
 
     # Task details
     task_type: str = "evolution_review"
@@ -115,14 +114,14 @@ class HumanReviewTask:
     description: str = ""
 
     # Review data
-    review_data: Dict[str, Any] = field(default_factory=dict)
-    decision: Optional[str] = None
-    justification: Optional[str] = None
+    review_data: dict[str, Any] = field(default_factory=dict)
+    decision: str | None = None
+    justification: str | None = None
 
     # Timestamps
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    assigned_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    assigned_at: datetime | None = None
+    completed_at: datetime | None = None
 
 
 class EvolutionEngine:
@@ -132,9 +131,9 @@ class EvolutionEngine:
         self.setup_metrics()
 
         # Evolution tracking
-        self.active_evolutions: Dict[str, EvolutionRequest] = {}
-        self.pending_reviews: Dict[str, HumanReviewTask] = {}
-        self.evolution_history: List[Dict[str, Any]] = []
+        self.active_evolutions: dict[str, EvolutionRequest] = {}
+        self.pending_reviews: dict[str, HumanReviewTask] = {}
+        self.evolution_history: list[dict[str, Any]] = []
 
         # Configuration
         self.auto_approval_threshold = 0.95
@@ -591,7 +590,7 @@ class EvolutionEngine:
             }
         )
 
-    def get_evolution_status(self, evolution_id: str) -> Optional[Dict[str, Any]]:
+    def get_evolution_status(self, evolution_id: str) -> dict[str, Any] | None:
         """Get status of an evolution request."""
         if evolution_id in self.active_evolutions:
             request = self.active_evolutions[evolution_id]
@@ -610,7 +609,7 @@ class EvolutionEngine:
 
         return None
 
-    def get_pending_reviews(self) -> List[Dict[str, Any]]:
+    def get_pending_reviews(self) -> list[dict[str, Any]]:
         """Get list of pending human review tasks."""
         return [
             {

@@ -18,14 +18,14 @@ from .svd_utils import (
 )
 
 __all__ = [
-    "NeuronActivationInput",
     "AnalyzedNeuronActivation",
-    "WINAWeightOutput",
     "BatchWINAWeightOutput",
-    "GatingThresholdConfig",
     "GatingDecision",
+    "GatingThresholdConfig",
+    "NeuronActivationInput",
+    "WINAWeightOutput",
     "analyze_neuron_activations",
     "calculate_wina_weights",
-    "reconstruct_from_svd",
     "determine_gating_decision",
+    "reconstruct_from_svd",
 ]

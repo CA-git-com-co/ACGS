@@ -339,12 +339,11 @@ class ErrorPredictionModel:
         """Recommend synthesis strategy based on predictions."""
         if overall_risk < 0.3:
             return "standard_synthesis"
-        elif overall_risk < 0.6:
+        if overall_risk < 0.6:
             return "enhanced_validation"
-        elif overall_risk < 0.8:
+        if overall_risk < 0.8:
             return "multi_model_consensus"
-        else:
-            return "human_review_required"
+        return "human_review_required"
 
     def _calculate_prediction_confidence(
         self, features: dict[str, float], predictions: dict[FailureType, float]

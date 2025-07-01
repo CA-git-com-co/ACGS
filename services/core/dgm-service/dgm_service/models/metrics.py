@@ -3,7 +3,7 @@ Performance metrics model for DGM service.
 """
 
 import enum
-from typing import Any, Dict
+from typing import Any
 
 from sqlalchemy import JSON, Column, DateTime, Enum, Integer, Numeric, String
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
@@ -77,7 +77,7 @@ class PerformanceMetric(Base):
     def __repr__(self):
         return f"<PerformanceMetric(name={self.metric_name}, type={self.metric_type}, value={self.value})>"
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "id": str(self.id),

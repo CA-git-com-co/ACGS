@@ -6,12 +6,12 @@ This module provides specialized compliance checking for various academic
 venues including arXiv, IEEE, ACM, and other major publishers.
 """
 
-import re
 import json
-from pathlib import Path
-from typing import Dict, List, Any, Optional
+import re
 from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 
 @dataclass
@@ -24,7 +24,7 @@ class ComplianceRule:
     description: str
     severity: str  # CRITICAL, WARNING, INFO
     check_function: str
-    parameters: Dict[str, Any] = None
+    parameters: dict[str, Any] = None
 
 
 @dataclass
@@ -34,7 +34,7 @@ class ComplianceResult:
     rule_id: str
     status: str  # PASS, FAIL, WARNING
     message: str
-    details: Optional[Dict[str, Any]] = None
+    details: dict[str, Any] | None = None
 
 
 class ComplianceChecker:
@@ -43,7 +43,7 @@ class ComplianceChecker:
     def __init__(self):
         self.rules = self._load_compliance_rules()
 
-    def _load_compliance_rules(self) -> Dict[str, List[ComplianceRule]]:
+    def _load_compliance_rules(self) -> dict[str, list[ComplianceRule]]:
         """Load compliance rules for different venues."""
         return {
             "arxiv": [
@@ -141,7 +141,7 @@ class ComplianceChecker:
 
     def check_compliance(
         self, submission_path: str, venue: str = "arxiv"
-    ) -> List[ComplianceResult]:
+    ) -> list[ComplianceResult]:
         """Check compliance for a specific venue."""
         submission_path = Path(submission_path)
         results = []
@@ -164,7 +164,7 @@ class ComplianceChecker:
                     ComplianceResult(
                         rule_id=rule.rule_id,
                         status="FAIL",
-                        message=f"Check execution error: {str(e)}",
+                        message=f"Check execution error: {e!s}",
                     )
                 )
 
@@ -197,22 +197,21 @@ class ComplianceChecker:
             return ComplianceResult(
                 rule_id=rule.rule_id,
                 status="PASS",
-                message=f"File size OK ({total_size/1024/1024:.1f}MB)",
+                message=f"File size OK ({total_size / 1024 / 1024:.1f}MB)",
                 details={
                     "size_mb": total_size / 1024 / 1024,
                     "limit_mb": max_size / 1024 / 1024,
                 },
             )
-        else:
-            return ComplianceResult(
-                rule_id=rule.rule_id,
-                status="FAIL",
-                message=f"File size exceeds limit ({total_size/1024/1024:.1f}MB > {max_size/1024/1024}MB)",
-                details={
-                    "size_mb": total_size / 1024 / 1024,
-                    "limit_mb": max_size / 1024 / 1024,
-                },
-            )
+        return ComplianceResult(
+            rule_id=rule.rule_id,
+            status="FAIL",
+            message=f"File size exceeds limit ({total_size / 1024 / 1024:.1f}MB > {max_size / 1024 / 1024}MB)",
+            details={
+                "size_mb": total_size / 1024 / 1024,
+                "limit_mb": max_size / 1024 / 1024,
+            },
+        )
 
     def check_prohibited_files(
         self, rule: ComplianceRule, submission_path: Path
@@ -230,13 +229,12 @@ class ComplianceChecker:
                 status="PASS",
                 message="No prohibited file types found",
             )
-        else:
-            return ComplianceResult(
-                rule_id=rule.rule_id,
-                status="FAIL",
-                message=f"Prohibited files found: {[str(f) for f in prohibited_files]}",
-                details={"prohibited_files": [str(f) for f in prohibited_files]},
-            )
+        return ComplianceResult(
+            rule_id=rule.rule_id,
+            status="FAIL",
+            message=f"Prohibited files found: {[str(f) for f in prohibited_files]}",
+            details={"prohibited_files": [str(f) for f in prohibited_files]},
+        )
 
     def check_required_elements(
         self, rule: ComplianceRule, submission_path: Path
@@ -248,7 +246,7 @@ class ComplianceChecker:
                 rule_id=rule.rule_id, status="FAIL", message="main.tex not found"
             )
 
-        with open(main_tex, "r", encoding="utf-8") as f:
+        with open(main_tex, encoding="utf-8") as f:
             content = f.read()
 
         missing_elements = []
@@ -269,12 +267,11 @@ class ComplianceChecker:
                 message=f"Missing required elements: {missing_elements}",
                 details={"missing_elements": missing_elements},
             )
-        else:
-            return ComplianceResult(
-                rule_id=rule.rule_id,
-                status="PASS",
-                message="All required elements present",
-            )
+        return ComplianceResult(
+            rule_id=rule.rule_id,
+            status="PASS",
+            message="All required elements present",
+        )
 
     def check_bibliography_format(
         self, rule: ComplianceRule, submission_path: Path
@@ -291,7 +288,7 @@ class ComplianceChecker:
 
         issues = []
         for bib_file in bib_files:
-            with open(bib_file, "r", encoding="utf-8") as f:
+            with open(bib_file, encoding="utf-8") as f:
                 content = f.read()
 
             # Check for common formatting issues
@@ -308,10 +305,9 @@ class ComplianceChecker:
                 message=f"Bibliography formatting issues: {issues}",
                 details={"issues": issues},
             )
-        else:
-            return ComplianceResult(
-                rule_id=rule.rule_id, status="PASS", message="Bibliography format OK"
-            )
+        return ComplianceResult(
+            rule_id=rule.rule_id, status="PASS", message="Bibliography format OK"
+        )
 
     def check_ieee_template(
         self, rule: ComplianceRule, submission_path: Path
@@ -323,7 +319,7 @@ class ComplianceChecker:
                 rule_id=rule.rule_id, status="FAIL", message="main.tex not found"
             )
 
-        with open(main_tex, "r", encoding="utf-8") as f:
+        with open(main_tex, encoding="utf-8") as f:
             content = f.read()
 
         ieee_indicators = [
@@ -340,12 +336,11 @@ class ComplianceChecker:
             return ComplianceResult(
                 rule_id=rule.rule_id, status="PASS", message="IEEE template detected"
             )
-        else:
-            return ComplianceResult(
-                rule_id=rule.rule_id,
-                status="FAIL",
-                message="IEEE template not detected",
-            )
+        return ComplianceResult(
+            rule_id=rule.rule_id,
+            status="FAIL",
+            message="IEEE template not detected",
+        )
 
     def check_page_limit(
         self, rule: ComplianceRule, submission_path: Path
@@ -381,12 +376,11 @@ class ComplianceChecker:
                 message=f"Potentially low-resolution figures: {low_res_figures}",
                 details={"low_res_figures": low_res_figures},
             )
-        else:
-            return ComplianceResult(
-                rule_id=rule.rule_id,
-                status="PASS",
-                message="Figure quality check passed",
-            )
+        return ComplianceResult(
+            rule_id=rule.rule_id,
+            status="PASS",
+            message="Figure quality check passed",
+        )
 
     def check_acm_template(
         self, rule: ComplianceRule, submission_path: Path
@@ -398,7 +392,7 @@ class ComplianceChecker:
                 rule_id=rule.rule_id, status="FAIL", message="main.tex not found"
             )
 
-        with open(main_tex, "r", encoding="utf-8") as f:
+        with open(main_tex, encoding="utf-8") as f:
             content = f.read()
 
         acm_indicators = [
@@ -415,10 +409,9 @@ class ComplianceChecker:
             return ComplianceResult(
                 rule_id=rule.rule_id, status="PASS", message="ACM template detected"
             )
-        else:
-            return ComplianceResult(
-                rule_id=rule.rule_id, status="FAIL", message="ACM template not detected"
-            )
+        return ComplianceResult(
+            rule_id=rule.rule_id, status="FAIL", message="ACM template not detected"
+        )
 
     def check_ccs_concepts(
         self, rule: ComplianceRule, submission_path: Path
@@ -430,7 +423,7 @@ class ComplianceChecker:
                 rule_id=rule.rule_id, status="FAIL", message="main.tex not found"
             )
 
-        with open(main_tex, "r", encoding="utf-8") as f:
+        with open(main_tex, encoding="utf-8") as f:
             content = f.read()
 
         ccs_indicators = [r"\\ccsdesc", r"\\begin\{CCSXML\}", r"CCS concepts"]
@@ -443,10 +436,9 @@ class ComplianceChecker:
             return ComplianceResult(
                 rule_id=rule.rule_id, status="PASS", message="CCS concepts found"
             )
-        else:
-            return ComplianceResult(
-                rule_id=rule.rule_id, status="FAIL", message="CCS concepts not found"
-            )
+        return ComplianceResult(
+            rule_id=rule.rule_id, status="FAIL", message="CCS concepts not found"
+        )
 
     def check_keywords(
         self, rule: ComplianceRule, submission_path: Path
@@ -458,7 +450,7 @@ class ComplianceChecker:
                 rule_id=rule.rule_id, status="FAIL", message="main.tex not found"
             )
 
-        with open(main_tex, "r", encoding="utf-8") as f:
+        with open(main_tex, encoding="utf-8") as f:
             content = f.read()
 
         keyword_indicators = [r"\\keywords\{", r"\\begin\{keywords\}", r"Keywords:"]
@@ -471,14 +463,13 @@ class ComplianceChecker:
             return ComplianceResult(
                 rule_id=rule.rule_id, status="PASS", message="Keywords found"
             )
-        else:
-            return ComplianceResult(
-                rule_id=rule.rule_id, status="WARNING", message="Keywords not found"
-            )
+        return ComplianceResult(
+            rule_id=rule.rule_id, status="WARNING", message="Keywords not found"
+        )
 
 
 def generate_compliance_report(
-    results: List[ComplianceResult], venue: str, output_path: str = None
+    results: list[ComplianceResult], venue: str, output_path: str = None
 ) -> str:
     """Generate a compliance report."""
     if output_path is None:

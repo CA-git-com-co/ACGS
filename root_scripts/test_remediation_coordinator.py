@@ -27,7 +27,7 @@ class TestRemediationCoordinator:
     """Coordinates systematic test remediation and execution."""
 
     def __init__(self):
-        self.project_root = Path(".")
+        self.project_root = Path()
         self.results = {
             "execution_id": f"test_remediation_{int(time.time())}",
             "start_time": datetime.now().isoformat(),
@@ -103,7 +103,7 @@ class TestRemediationCoordinator:
                 cmd[0] = str(venv_python)
 
             result = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=300, env=env
+                cmd, check=False, capture_output=True, text=True, timeout=300, env=env
             )
 
             return {

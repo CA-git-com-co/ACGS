@@ -572,7 +572,7 @@ class ViolationAuditService:
             del protected_data["email"]
 
         # Hash user IDs for privacy
-        if "user_id" in protected_data and protected_data["user_id"]:
+        if protected_data.get("user_id"):
             protected_data["user_id_hash"] = hash(protected_data["user_id"])
             del protected_data["user_id"]
 
@@ -584,18 +584,17 @@ class ViolationAuditService:
         """Get start time for analytics period."""
         if period == AnalyticsPeriod.HOUR:
             return end_time - timedelta(hours=1)
-        elif period == AnalyticsPeriod.DAY:
+        if period == AnalyticsPeriod.DAY:
             return end_time - timedelta(days=1)
-        elif period == AnalyticsPeriod.WEEK:
+        if period == AnalyticsPeriod.WEEK:
             return end_time - timedelta(weeks=1)
-        elif period == AnalyticsPeriod.MONTH:
+        if period == AnalyticsPeriod.MONTH:
             return end_time - timedelta(days=30)
-        elif period == AnalyticsPeriod.QUARTER:
+        if period == AnalyticsPeriod.QUARTER:
             return end_time - timedelta(days=90)
-        elif period == AnalyticsPeriod.YEAR:
+        if period == AnalyticsPeriod.YEAR:
             return end_time - timedelta(days=365)
-        else:
-            return end_time - timedelta(days=1)
+        return end_time - timedelta(days=1)
 
     async def _get_top_violation_sources(
         self, start_time: datetime, end_time: datetime, db: AsyncSession

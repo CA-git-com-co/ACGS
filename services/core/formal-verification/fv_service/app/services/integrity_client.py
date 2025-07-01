@@ -40,12 +40,10 @@ class IntegrityServiceClient:
             )
             return None
         except httpx.RequestError as e:
-            print(f"Integrity Client: Request error fetching rule {rule_id}: {str(e)}")
+            print(f"Integrity Client: Request error fetching rule {rule_id}: {e!s}")
             return None
         except Exception as e:
-            print(
-                f"Integrity Client: Unexpected error fetching rule {rule_id}: {str(e)}"
-            )
+            print(f"Integrity Client: Unexpected error fetching rule {rule_id}: {e!s}")
             return None
 
     async def get_policy_rules_by_ids(
@@ -91,12 +89,12 @@ class IntegrityServiceClient:
             return None
         except httpx.RequestError as e:
             print(
-                f"Integrity Client: Request error updating status for rule {rule_id}: {str(e)}"
+                f"Integrity Client: Request error updating status for rule {rule_id}: {e!s}"
             )
             return None
         except Exception as e:
             print(
-                f"Integrity Client: Unexpected error updating rule status {rule_id}: {str(e)}"
+                f"Integrity Client: Unexpected error updating rule status {rule_id}: {e!s}"
             )
             return None
 

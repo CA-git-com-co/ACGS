@@ -536,14 +536,13 @@ Respond in JSON format with the following structure:
             if json_match:
                 json_str = json_match.group()
                 return json.loads(json_str)
-            else:
-                # Fallback parsing
-                return {
-                    "compliance_score": 0.8,
-                    "confidence": 0.7,
-                    "violations": [],
-                    "recommendations": ["Review LLM response format"],
-                }
+            # Fallback parsing
+            return {
+                "compliance_score": 0.8,
+                "confidence": 0.7,
+                "violations": [],
+                "recommendations": ["Review LLM response format"],
+            }
 
         except Exception as e:
             logger.error(f"Error parsing LLM response: {e}")

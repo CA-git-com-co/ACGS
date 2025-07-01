@@ -11,14 +11,15 @@ Sets up monitoring infrastructure for ACGS-2 services including:
 Target: All services report healthy status and alerts trigger within 1 minute
 """
 
+import json
+import logging
 import os
 import sys
-import logging
-import json
 import time
-import yaml
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
+
+import yaml
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -45,7 +46,7 @@ class MonitoringSetup:
             "policy-engine": {"port": 8181, "health_path": "/health"},
         }
 
-    def setup_monitoring_infrastructure(self) -> Dict[str, Any]:
+    def setup_monitoring_infrastructure(self) -> dict[str, Any]:
         """Set up complete monitoring infrastructure."""
         logger.info("🚀 Setting up basic monitoring infrastructure...")
 
@@ -93,7 +94,7 @@ class MonitoringSetup:
             setup_results["errors"].append(str(e))
             return setup_results
 
-    def _setup_health_checks(self) -> Dict[str, Any]:
+    def _setup_health_checks(self) -> dict[str, Any]:
         """Setup health check configurations."""
         logger.info("🏥 Setting up health checks...")
 
@@ -146,7 +147,7 @@ class MonitoringSetup:
             logger.error(f"Health check setup failed: {e}")
             raise
 
-    def _setup_metrics_collection(self) -> Dict[str, Any]:
+    def _setup_metrics_collection(self) -> dict[str, Any]:
         """Setup metrics collection infrastructure."""
         logger.info("📊 Setting up metrics collection...")
 
@@ -209,7 +210,7 @@ class MonitoringSetup:
             logger.error(f"Metrics collection setup failed: {e}")
             raise
 
-    def _setup_alerting(self) -> Dict[str, Any]:
+    def _setup_alerting(self) -> dict[str, Any]:
         """Setup alerting rules and configuration."""
         logger.info("🚨 Setting up alerting...")
 
@@ -329,7 +330,7 @@ class MonitoringSetup:
             logger.error(f"Alerting setup failed: {e}")
             raise
 
-    def _setup_dashboards(self) -> Dict[str, Any]:
+    def _setup_dashboards(self) -> dict[str, Any]:
         """Setup monitoring dashboards."""
         logger.info("📈 Setting up monitoring dashboards...")
 
@@ -442,7 +443,7 @@ class MonitoringSetup:
             logger.error(f"Dashboard setup failed: {e}")
             raise
 
-    def _create_monitoring_startup_script(self) -> Dict[str, Any]:
+    def _create_monitoring_startup_script(self) -> dict[str, Any]:
         """Create monitoring startup script."""
         logger.info("🚀 Creating monitoring startup script...")
 
@@ -509,7 +510,7 @@ wait
             logger.error(f"Startup script creation failed: {e}")
             raise
 
-    def _generate_setup_report(self, results: Dict[str, Any]):
+    def _generate_setup_report(self, results: dict[str, Any]):
         """Generate monitoring setup report."""
         report_path = self.project_root / "monitoring_setup_report.json"
 
@@ -576,7 +577,7 @@ def main():
         print("✅ Alert configuration for critical failures")
         print("✅ Alert response time <1 minute")
 
-        print(f"\n🚀 To start monitoring: ./scripts/monitoring/start_monitoring.sh")
+        print("\n🚀 To start monitoring: ./scripts/monitoring/start_monitoring.sh")
     else:
         print("❌ Monitoring setup failed!")
         for error in results["errors"]:

@@ -349,9 +349,9 @@ async def test_full_integration_suite():
     async with ACGSIntegrationTester() as tester:
         results = await tester.run_comprehensive_test_suite()
 
-        print(f"\n{'='*50}")
+        print(f"\n{'=' * 50}")
         print("ACGS-1 Integration Test Suite Results")
-        print(f"{'='*50}")
+        print(f"{'=' * 50}")
         print(f"Total Tests: {results['summary']['total_tests']}")
         print(f"Passed: {results['summary']['passed_tests']}")
         print(f"Failed: {results['summary']['failed_tests']}")

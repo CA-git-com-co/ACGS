@@ -33,9 +33,9 @@ try:
     from .langgraph_config import get_langgraph_config
     from .performance_optimizer import OptimizationStrategy, get_performance_optimizer
     from .redis_cache import get_cache
-    from .weighted_consensus_engine import ConsensusStrategy as WConsensusStrategy
-    from .weighted_consensus_engine import TieBreakingStrategy as WTieBreakingStrategy
     from .weighted_consensus_engine import (
+        ConsensusStrategy as WConsensusStrategy,
+        TieBreakingStrategy as WTieBreakingStrategy,
         get_consensus_engine,
     )
 except ImportError:
@@ -48,9 +48,9 @@ except ImportError:
     )
     from langgraph_config import get_langgraph_config
     from redis_cache import get_cache
-    from weighted_consensus_engine import ConsensusStrategy as WConsensusStrategy
-    from weighted_consensus_engine import TieBreakingStrategy as WTieBreakingStrategy
     from weighted_consensus_engine import (
+        ConsensusStrategy as WConsensusStrategy,
+        TieBreakingStrategy as WTieBreakingStrategy,
         get_consensus_engine,
     )
 
@@ -1098,17 +1098,14 @@ REASONING: <brief explanation>
 
         if "qwen3_235b" in model_id_lower or "qwen3-235b" in model_id_lower:
             return self.model_weights.get("qwen3_235b", 0.25)
-        elif "qwen3_32b" in model_id_lower or "qwen3-32b" in model_id_lower:
+        if "qwen3_32b" in model_id_lower or "qwen3-32b" in model_id_lower:
             return self.model_weights.get("qwen3_32b", 0.20)
-        elif (
-            "deepseek_chat_v3" in model_id_lower or "deepseek-chat-v3" in model_id_lower
-        ):
+        if "deepseek_chat_v3" in model_id_lower or "deepseek-chat-v3" in model_id_lower:
             return self.model_weights.get("deepseek_chat_v3", 0.20)
-        elif "deepseek_r1" in model_id_lower or "deepseek-r1" in model_id_lower:
+        if "deepseek_r1" in model_id_lower or "deepseek-r1" in model_id_lower:
             return self.model_weights.get("deepseek_r1", 0.10)
-        else:
-            # Use metadata weight if available, otherwise default
-            return result.metadata.get("weight", 0.05) if result.metadata else 0.05
+        # Use metadata weight if available, otherwise default
+        return result.metadata.get("weight", 0.05) if result.metadata else 0.05
 
     def _confidence_based_consensus(
         self, results: list[ModelResult]

@@ -7,12 +7,13 @@ solver integration, cryptographic signature validation, and a blockchain-based
 audit trail.
 """
 
+import hashlib
 import logging
 import time
-import hashlib
+
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from z3 import Solver, Int, Bool, sat
+from z3 import Int, Solver, sat
 
 # Configure logging
 logging.basicConfig(
@@ -192,8 +193,7 @@ async def solve_z3(request: Request):
     s.add(y > 10)
     if s.check() == sat:
         return {"status": "sat", "model": s.model().sexpr()}
-    else:
-        return {"status": "unsat"}
+    return {"status": "unsat"}
 
 
 if __name__ == "__main__":

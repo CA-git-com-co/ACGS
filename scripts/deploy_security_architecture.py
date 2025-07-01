@@ -81,7 +81,7 @@ class SecurityArchitectureDeployment:
         # Check Docker availability for sandboxing
         try:
             result = subprocess.run(
-                ["docker", "--version"], capture_output=True, text=True
+                ["docker", "--version"], check=False, capture_output=True, text=True
             )
             if result.returncode == 0:
                 logger.info("✓ Docker is available for sandboxing")
@@ -93,7 +93,7 @@ class SecurityArchitectureDeployment:
         # Check if gVisor is available
         try:
             result = subprocess.run(
-                ["runsc", "--version"], capture_output=True, text=True
+                ["runsc", "--version"], check=False, capture_output=True, text=True
             )
             if result.returncode == 0:
                 logger.info("✓ gVisor (runsc) is available")
@@ -165,7 +165,7 @@ class SecurityArchitectureDeployment:
 
     async def create_gvisor_sandbox_script(self):
         """Create gVisor sandbox startup script."""
-        script_content = f"""#!/bin/bash
+        script_content = """#!/bin/bash
 # gVisor Sandbox Startup Script for ACGS EC Service
 
 SANDBOX_ID=$1
@@ -206,7 +206,7 @@ rm -rf "$SANDBOX_DIR"
 
     async def create_docker_sandbox_script(self):
         """Create Docker sandbox startup script."""
-        script_content = f"""#!/bin/bash
+        script_content = """#!/bin/bash
 # Docker Sandbox Startup Script for ACGS EC Service
 
 SANDBOX_ID=$1
@@ -265,7 +265,7 @@ echo "Sandbox $SANDBOX_ID execution completed"
         # Create OPA configuration
         opa_config = {
             "server": {
-                "addr": f'0.0.0.0:{self.deployment_config["opa_port"]}',
+                "addr": f"0.0.0.0:{self.deployment_config['opa_port']}",
                 "diagnostic_addr": "0.0.0.0:8282",
             },
             "storage": {
@@ -516,7 +516,7 @@ rate_limit_exceeded if {
                 },
                 "layer2_policy": {
                     "enabled": True,
-                    "opa_endpoint": f'http://localhost:{self.deployment_config["opa_port"]}',
+                    "opa_endpoint": f"http://localhost:{self.deployment_config['opa_port']}",
                     "policies_path": "infrastructure/security/policies",
                 },
                 "layer3_auth": {

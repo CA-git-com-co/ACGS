@@ -130,7 +130,7 @@ async def oversight_coordinator():
 
     coordinator = WINAECOversightCoordinator(enable_wina=True)
     await coordinator.initialize_constitutional_principles()
-    yield coordinator
+    return coordinator
 
 
 @pytest.fixture

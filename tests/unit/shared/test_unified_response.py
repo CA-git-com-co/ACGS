@@ -16,30 +16,29 @@ Target: >90% test coverage for unified response module
 import json
 import uuid
 from datetime import datetime, timezone
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pytest
 from fastapi import Request
 
 from services.shared.response.unified_response import (
-    UnifiedResponse,
-    ResponseBuilder,
     PaginationMetadata,
+    ResponseBuilder,
     ResponseMetadata,
-    ResponseStatus,
     UnifiedJSONResponse,
-    create_auth_response_builder,
+    UnifiedResponse,
     create_ac_response_builder,
-    create_integrity_response_builder,
+    create_auth_response_builder,
+    create_dgm_response_builder,
+    create_ec_response_builder,
     create_fv_response_builder,
     create_gs_response_builder,
-    create_pgc_response_builder,
-    create_ec_response_builder,
-    create_dgm_response_builder,
-    get_response_builder,
-    validate_response_format,
-    migrate_legacy_response,
+    create_integrity_response_builder,
     create_legacy_response,
+    create_pgc_response_builder,
+    get_response_builder,
+    migrate_legacy_response,
+    validate_response_format,
 )
 
 

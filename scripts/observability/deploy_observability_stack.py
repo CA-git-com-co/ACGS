@@ -6,12 +6,8 @@ Deploy and configure the complete observability stack with constitutional compli
 
 import argparse
 import asyncio
-import json
 import logging
-import os
 import subprocess
-import sys
-import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -127,9 +123,8 @@ class ObservabilityStackDeployer:
                 logger.info("✅ Observability stack deployment completed successfully")
                 await self.print_deployment_summary()
                 return True
-            else:
-                logger.error("❌ Deployment verification failed")
-                return False
+            logger.error("❌ Deployment verification failed")
+            return False
 
         except Exception as e:
             logger.error(f"Deployment failed: {e}")
@@ -142,7 +137,7 @@ class ObservabilityStackDeployer:
         try:
             # Check Docker
             result = subprocess.run(
-                ["docker", "--version"], capture_output=True, text=True
+                ["docker", "--version"], check=False, capture_output=True, text=True
             )
             if result.returncode != 0:
                 logger.error("Docker is not installed or not running")
@@ -150,7 +145,10 @@ class ObservabilityStackDeployer:
 
             # Check Docker Compose
             result = subprocess.run(
-                ["docker-compose", "--version"], capture_output=True, text=True
+                ["docker-compose", "--version"],
+                check=False,
+                capture_output=True,
+                text=True,
             )
             if result.returncode != 0:
                 logger.error("Docker Compose is not installed")
@@ -364,14 +362,15 @@ class ObservabilityStackDeployer:
                 component,
             ]
 
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+            result = subprocess.run(
+                cmd, check=False, capture_output=True, text=True, timeout=300
+            )
 
             if result.returncode == 0:
                 logger.info(f"✅ {component} deployed successfully")
                 return True
-            else:
-                logger.error(f"❌ Failed to deploy {component}: {result.stderr}")
-                return False
+            logger.error(f"❌ Failed to deploy {component}: {result.stderr}")
+            return False
 
         except subprocess.TimeoutExpired:
             logger.error(f"❌ Deployment of {component} timed out")
@@ -468,14 +467,13 @@ class ObservabilityStackDeployer:
                 "--format",
                 "{{.Status}}",
             ]
-            result = subprocess.run(cmd, capture_output=True, text=True)
+            result = subprocess.run(cmd, check=False, capture_output=True, text=True)
 
             if result.returncode == 0 and "Up" in result.stdout:
                 logger.debug(f"✅ {component} is running")
                 return True
-            else:
-                logger.warning(f"❌ {component} is not running properly")
-                return False
+            logger.warning(f"❌ {component} is not running properly")
+            return False
 
         except Exception as e:
             logger.error(f"Error checking health of {component}: {e}")
@@ -512,24 +510,24 @@ class ObservabilityStackDeployer:
 
     async def print_deployment_summary(self):
         """Print deployment summary."""
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print("ACGS OBSERVABILITY STACK DEPLOYMENT SUMMARY")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
         print(f"Constitutional Hash: {self.constitutional_hash}")
         print(f"Deployment Time: {datetime.now(timezone.utc).isoformat()}")
-        print(f"\nACCESS URLS:")
-        print(f"  Grafana Dashboard:     http://localhost:3000")
-        print(f"  Prometheus:            http://localhost:9090")
-        print(f"  Jaeger UI:             http://localhost:16686")
-        print(f"  AlertManager:          http://localhost:9093")
-        print(f"  Constitutional Monitor: http://localhost:8111")
-        print(f"  Observability Dashboard: http://localhost:8112")
-        print(f"\nCREDENTIALS:")
-        print(f"  Grafana: admin / acgs_observability_admin")
-        print(f"\nCOMPONENTS DEPLOYED:")
+        print("\nACCESS URLS:")
+        print("  Grafana Dashboard:     http://localhost:3000")
+        print("  Prometheus:            http://localhost:9090")
+        print("  Jaeger UI:             http://localhost:16686")
+        print("  AlertManager:          http://localhost:9093")
+        print("  Constitutional Monitor: http://localhost:8111")
+        print("  Observability Dashboard: http://localhost:8112")
+        print("\nCREDENTIALS:")
+        print("  Grafana: admin / acgs_observability_admin")
+        print("\nCOMPONENTS DEPLOYED:")
         for component in self.stack_components:
             print(f"  ✅ {component}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
 
 def main():

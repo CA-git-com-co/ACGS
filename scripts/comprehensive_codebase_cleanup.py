@@ -12,15 +12,12 @@ Categories of cleanup:
 4. State & Task Documents
 """
 
-import os
 import json
-import shutil
 import logging
+import re
+import shutil
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import List, Dict, Set
-import subprocess
-import re
 
 # Configure logging
 logging.basicConfig(

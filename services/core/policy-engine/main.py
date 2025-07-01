@@ -4,19 +4,18 @@ ACGS-1 Lite Policy Engine Service
 Provides real-time constitutional policy decisions with OPA integration
 """
 
-import asyncio
 import json
 import logging
 import time
 import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 import aioredis
 import pybreaker
 import uvicorn
-from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_client import Counter, Gauge, Histogram, generate_latest
 from pydantic import BaseModel, Field
@@ -56,23 +55,21 @@ CACHE_HIT_RATE = Gauge("policy_cache_hit_rate", "Policy evaluation cache hit rat
 class PolicyEvaluationRequest(BaseModel):
     action: str = Field(..., description="Action to evaluate")
     agent_id: str = Field(..., description="Agent identifier")
-    input_data: Dict[str, Any] = Field(
+    input_data: dict[str, Any] = Field(
         default_factory=dict, description="Input data for evaluation"
     )
-    context: Optional[Dict[str, Any]] = Field(
+    context: dict[str, Any] | None = Field(
         default_factory=dict, description="Additional context"
     )
 
 
 class PolicyEvaluationResponse(BaseModel):
     allow: bool = Field(..., description="Whether the action is allowed")
-    violations: List[str] = Field(
+    violations: list[str] = Field(
         default_factory=list, description="List of policy violations"
     )
-    reason: Optional[str] = Field(None, description="Reason for the decision")
-    confidence_score: Optional[float] = Field(
-        None, description="Confidence score (0-1)"
-    )
+    reason: str | None = Field(None, description="Reason for the decision")
+    confidence_score: float | None = Field(None, description="Confidence score (0-1)")
     evaluation_time_ms: int = Field(..., description="Evaluation time in milliseconds")
     cache_hit: bool = Field(..., description="Whether result came from cache")
     policy_version: str = Field(..., description="Version of policies used")
@@ -82,14 +79,14 @@ class HealthResponse(BaseModel):
     status: str
     timestamp: str
     version: str
-    dependencies: Dict[str, str]
+    dependencies: dict[str, str]
 
 
 # Policy Engine Service
 class PolicyEngineService:
     def __init__(self):
-        self.redis_client: Optional[aioredis.Redis] = None
-        self.opa_session: Optional[aiohttp.ClientSession] = None
+        self.redis_client: aioredis.Redis | None = None
+        self.opa_session: aiohttp.ClientSession | None = None
         self.opa_url = "http://opa:8181"
         self.cache_ttl = 300  # 5 minutes
         self.version = "1.0.0"
@@ -215,7 +212,7 @@ class PolicyEngineService:
             return PolicyEvaluationResponse(
                 allow=False,
                 violations=["evaluation_error"],
-                reason=f"Policy evaluation failed: {str(e)}",
+                reason=f"Policy evaluation failed: {e!s}",
                 confidence_score=0.0,
                 evaluation_time_ms=int((time.time() - start_time) * 1000),
                 cache_hit=False,
@@ -282,7 +279,7 @@ class PolicyEngineService:
         key_str = json.dumps(key_data, sort_keys=True)
         return f"policy_eval:{hash(key_str)}"
 
-    async def _get_cached_result(self, cache_key: str) -> Optional[Dict[str, Any]]:
+    async def _get_cached_result(self, cache_key: str) -> dict[str, Any] | None:
         """Get cached evaluation result"""
         try:
             if not self.redis_client:
@@ -409,8 +406,7 @@ async def readiness_check():
     health = await policy_service.get_health()
     if health.status == "healthy":
         return {"status": "ready"}
-    else:
-        raise HTTPException(status_code=503, detail="Service not ready")
+    raise HTTPException(status_code=503, detail="Service not ready")
 
 
 if __name__ == "__main__":

@@ -11,23 +11,23 @@ Target: 60-70% efficiency gain through intelligent algorithm selection.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import logging
-import numpy as np
-import pandas as pd
-from datetime import datetime
-from typing import Dict, List, Tuple, Any
-from dataclasses import dataclass, asdict
 import json
+import logging
 import os
 import time
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.metrics import mean_absolute_error, r2_score
-from sklearn.preprocessing import StandardScaler
-from sklearn.neural_network import MLPRegressor
-import xgboost as xgb
-import lightgbm as lgb
 import warnings
+from dataclasses import asdict, dataclass
+from datetime import datetime
+
+import lightgbm as lgb
+import numpy as np
+import pandas as pd
+import xgboost as xgb
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import r2_score
+from sklearn.model_selection import train_test_split
+from sklearn.neural_network import MLPRegressor
+from sklearn.preprocessing import StandardScaler
 
 warnings.filterwarnings("ignore")
 
@@ -43,9 +43,9 @@ class BanditResults:
     """Results from multi-armed bandit algorithm selection."""
 
     # Algorithm performance tracking
-    algorithm_rewards: Dict[str, List[float]]
-    algorithm_counts: Dict[str, int]
-    algorithm_avg_rewards: Dict[str, float]
+    algorithm_rewards: dict[str, list[float]]
+    algorithm_counts: dict[str, int]
+    algorithm_avg_rewards: dict[str, float]
 
     # Selection statistics
     total_selections: int
@@ -93,7 +93,7 @@ class MultiArmedBanditSelector:
 
         # Initialize bandit state
         self.algorithm_rewards = {name: [] for name in self.algorithms.keys()}
-        self.algorithm_counts = {name: 0 for name in self.algorithms.keys()}
+        self.algorithm_counts = dict.fromkeys(self.algorithms.keys(), 0)
         self.total_selections = 0
         self.exploration_selections = 0
         self.exploitation_selections = 0
@@ -119,7 +119,7 @@ class MultiArmedBanditSelector:
 
         return algorithm
 
-    def _calculate_average_rewards(self) -> Dict[str, float]:
+    def _calculate_average_rewards(self) -> dict[str, float]:
         """Calculate average rewards for each algorithm."""
         avg_rewards = {}
         for algorithm in self.algorithms.keys():
@@ -140,7 +140,7 @@ class MultiArmedBanditSelector:
         X_test: np.ndarray,
         y_train: np.ndarray,
         y_test: np.ndarray,
-    ) -> Tuple[float, float]:
+    ) -> tuple[float, float]:
         """Train algorithm and return performance and training time."""
 
         start_time = time.time()
@@ -164,7 +164,7 @@ class MultiArmedBanditSelector:
 
     def generate_test_dataset(
         self, n_samples: int = 1000
-    ) -> Tuple[pd.DataFrame, pd.Series]:
+    ) -> tuple[pd.DataFrame, pd.Series]:
         """Generate test dataset for bandit evaluation."""
         logger.info(f"Generating test dataset with {n_samples} samples...")
 
@@ -201,7 +201,7 @@ class MultiArmedBanditSelector:
 
     def run_baseline_comparison(
         self, X: pd.DataFrame, y: pd.Series
-    ) -> Tuple[float, float]:
+    ) -> tuple[float, float]:
         """Run baseline comparison using all algorithms sequentially."""
         logger.info("Running baseline comparison (all algorithms)...")
 
@@ -240,7 +240,7 @@ class MultiArmedBanditSelector:
 
     def run_bandit_selection(
         self, X: pd.DataFrame, y: pd.Series, n_rounds: int = 20
-    ) -> Tuple[float, float]:
+    ) -> tuple[float, float]:
         """Run bandit-based algorithm selection."""
         logger.info(f"Running bandit selection for {n_rounds} rounds...")
 
@@ -275,7 +275,7 @@ class MultiArmedBanditSelector:
 
             if round_num % 5 == 0:
                 logger.info(
-                    f"  Round {round_num+1}: {selected_algorithm} -> {performance:.3f}"
+                    f"  Round {round_num + 1}: {selected_algorithm} -> {performance:.3f}"
                 )
 
         avg_bandit_performance = np.mean(bandit_performances)
@@ -328,7 +328,7 @@ class MultiArmedBanditSelector:
             timestamp=datetime.now().isoformat(),
         )
 
-        logger.info(f"✅ Analysis complete:")
+        logger.info("✅ Analysis complete:")
         logger.info(f"  - Efficiency gain: {efficiency_gain:.1f}%")
         logger.info(f"  - Performance improvement: {performance_improvement:.1f}%")
         logger.info(f"  - Best algorithm: {best_algorithm}")
@@ -337,7 +337,7 @@ class MultiArmedBanditSelector:
 
     def save_bandit_results(
         self, results: BanditResults, output_dir: str = "bandit_results"
-    ) -> Tuple[str, str]:
+    ) -> tuple[str, str]:
         """Save bandit selection results."""
         logger.info("Saving bandit selection results...")
 
@@ -467,7 +467,7 @@ class MultiArmedBanditSelector:
                 f.write("- ❌ Bandit selection failed\n")
 
             f.write(
-                f"\n**Overall Success Rate:** {criteria_met}/{total_criteria} ({criteria_met/total_criteria*100:.0f}%)\n\n"
+                f"\n**Overall Success Rate:** {criteria_met}/{total_criteria} ({criteria_met / total_criteria * 100:.0f}%)\n\n"
             )
 
             # Configuration Details
@@ -475,7 +475,7 @@ class MultiArmedBanditSelector:
             f.write("### Epsilon-Greedy Strategy\n")
             f.write(f"- **Epsilon (ε):** {results.exploration_rate}\n")
             f.write(
-                f"- **Strategy:** Epsilon-greedy with {results.exploration_rate*100:.0f}% exploration\n\n"
+                f"- **Strategy:** Epsilon-greedy with {results.exploration_rate * 100:.0f}% exploration\n\n"
             )
 
             f.write("### Available Algorithms\n")
@@ -484,9 +484,9 @@ class MultiArmedBanditSelector:
             f.write("- **LightGBM:** n_estimators=50, verbose=-1\n")
             f.write("- **Neural Network:** hidden_layer_sizes=(100,), max_iter=200\n\n")
 
-            f.write(f"### Constitutional Compliance\n")
+            f.write("### Constitutional Compliance\n")
             f.write(f"- **Hash:** {results.constitutional_hash}\n")
-            f.write(f"- **Integrity:** ✅ Verified\n\n")
+            f.write("- **Integrity:** ✅ Verified\n\n")
 
             # Recommendations
             f.write("## 💡 Recommendations\n\n")

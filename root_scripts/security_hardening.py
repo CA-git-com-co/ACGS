@@ -82,7 +82,7 @@ class SecurityHardener:
                     self.security_issues.append("Invalid JWT tokens accepted")
 
         except Exception as e:
-            print(f"❌ Authentication security test failed: {str(e)}")
+            print(f"❌ Authentication security test failed: {e!s}")
             security_tests["auth_test_error"] = False
 
         return security_tests
@@ -155,7 +155,7 @@ class SecurityHardener:
                         self.security_issues.append(f"XSS vulnerability: {payload}")
 
         except Exception as e:
-            print(f"❌ Input validation test failed: {str(e)}")
+            print(f"❌ Input validation test failed: {e!s}")
             validation_tests["validation_test_error"] = False
 
         return validation_tests
@@ -196,7 +196,7 @@ class SecurityHardener:
                 self.security_issues.append("Rate limiting not implemented")
 
         except Exception as e:
-            print(f"❌ Rate limiting test failed: {str(e)}")
+            print(f"❌ Rate limiting test failed: {e!s}")
             rate_limit_tests["rate_limit_test_error"] = False
 
         return rate_limit_tests

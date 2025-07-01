@@ -134,15 +134,13 @@ class ACGSRedisCache:
                 if cached_data:
                     self.metrics["cache_hits"] += 1
                     return json.loads(cached_data)
-            else:
-                # Fallback to memory cache
-                if cache_key in self._memory_cache:
-                    entry = self._memory_cache[cache_key]
-                    if entry["expires"] > time.time():
-                        self.metrics["cache_hits"] += 1
-                        return entry["data"]
-                    else:
-                        del self._memory_cache[cache_key]
+            # Fallback to memory cache
+            elif cache_key in self._memory_cache:
+                entry = self._memory_cache[cache_key]
+                if entry["expires"] > time.time():
+                    self.metrics["cache_hits"] += 1
+                    return entry["data"]
+                del self._memory_cache[cache_key]
 
             self.metrics["cache_misses"] += 1
             return None
@@ -204,12 +202,11 @@ class ACGSRedisCache:
                 if deleted:
                     self.metrics["cache_deletes"] += 1
                 return bool(deleted)
-            else:
-                if cache_key in self._memory_cache:
-                    del self._memory_cache[cache_key]
-                    self.metrics["cache_deletes"] += 1
-                    return True
-                return False
+            if cache_key in self._memory_cache:
+                del self._memory_cache[cache_key]
+                self.metrics["cache_deletes"] += 1
+                return True
+            return False
 
         except Exception as e:
             logger.error(f"Cache delete error for {cache_key}: {e}")
@@ -226,16 +223,13 @@ class ACGSRedisCache:
                     self.metrics["cache_deletes"] += deleted
                     return deleted
                 return 0
-            else:
-                # Memory cache pattern matching
-                pattern_key = f"acgs1:{service}:{pattern}"
-                matching_keys = [
-                    k for k in self._memory_cache.keys() if pattern_key in k
-                ]
-                for key in matching_keys:
-                    del self._memory_cache[key]
-                self.metrics["cache_deletes"] += len(matching_keys)
-                return len(matching_keys)
+            # Memory cache pattern matching
+            pattern_key = f"acgs1:{service}:{pattern}"
+            matching_keys = [k for k in self._memory_cache.keys() if pattern_key in k]
+            for key in matching_keys:
+                del self._memory_cache[key]
+            self.metrics["cache_deletes"] += len(matching_keys)
+            return len(matching_keys)
 
         except Exception as e:
             logger.error(f"Cache pattern invalidation error: {e}")

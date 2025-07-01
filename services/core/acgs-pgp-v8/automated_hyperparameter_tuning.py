@@ -14,24 +14,25 @@ Target: 10-15% performance improvement through optimal hyperparameters.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import logging
-import numpy as np
-import pandas as pd
-from datetime import datetime
-from typing import Dict, List, Tuple, Any
-from dataclasses import dataclass, asdict
 import json
+import logging
 import os
 import time
+import warnings
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from typing import Any
+
+import lightgbm as lgb
+import numpy as np
 import optuna
+import pandas as pd
+import xgboost as xgb
 from optuna.samplers import TPESampler
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import r2_score
 from sklearn.model_selection import cross_val_score, train_test_split
-from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.preprocessing import StandardScaler
-import xgboost as xgb
-import lightgbm as lgb
-import warnings
 
 warnings.filterwarnings("ignore")
 
@@ -48,7 +49,7 @@ class HyperparameterTuningResults:
 
     # Optimization results
     algorithm_name: str
-    best_parameters: Dict[str, Any]
+    best_parameters: dict[str, Any]
     best_score: float
     baseline_score: float
     improvement_percent: float
@@ -61,7 +62,7 @@ class HyperparameterTuningResults:
     # Cross-validation results
     cv_mean_score: float
     cv_std_score: float
-    cv_scores: List[float]
+    cv_scores: list[float]
 
     # Performance validation
     test_score: float
@@ -86,7 +87,7 @@ class AutomatedHyperparameterTuner:
 
     def define_parameter_space(
         self, algorithm: str, trial: optuna.Trial
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Define hyperparameter search space for different algorithms."""
 
         if algorithm == "random_forest":
@@ -101,7 +102,7 @@ class AutomatedHyperparameterTuner:
                 "bootstrap": trial.suggest_categorical("bootstrap", [True, False]),
             }
 
-        elif algorithm == "xgboost":
+        if algorithm == "xgboost":
             return {
                 "n_estimators": trial.suggest_int("n_estimators", 50, 300, step=50),
                 "max_depth": trial.suggest_int("max_depth", 3, 10),
@@ -114,7 +115,7 @@ class AutomatedHyperparameterTuner:
                 "reg_lambda": trial.suggest_float("reg_lambda", 1e-8, 10.0, log=True),
             }
 
-        elif algorithm == "lightgbm":
+        if algorithm == "lightgbm":
             return {
                 "n_estimators": trial.suggest_int("n_estimators", 50, 300, step=50),
                 "max_depth": trial.suggest_int("max_depth", 3, 15),
@@ -128,10 +129,9 @@ class AutomatedHyperparameterTuner:
                 "reg_lambda": trial.suggest_float("reg_lambda", 1e-8, 10.0, log=True),
             }
 
-        else:
-            raise ValueError(f"Unsupported algorithm: {algorithm}")
+        raise ValueError(f"Unsupported algorithm: {algorithm}")
 
-    def create_model(self, algorithm: str, params: Dict[str, Any]):
+    def create_model(self, algorithm: str, params: dict[str, Any]):
         """Create model instance with given parameters."""
 
         if algorithm == "random_forest":
@@ -139,18 +139,17 @@ class AutomatedHyperparameterTuner:
                 random_state=self.random_state, n_jobs=-1, **params
             )
 
-        elif algorithm == "xgboost":
+        if algorithm == "xgboost":
             return xgb.XGBRegressor(
                 random_state=self.random_state, n_jobs=-1, verbosity=0, **params
             )
 
-        elif algorithm == "lightgbm":
+        if algorithm == "lightgbm":
             return lgb.LGBMRegressor(
                 random_state=self.random_state, n_jobs=-1, verbose=-1, **params
             )
 
-        else:
-            raise ValueError(f"Unsupported algorithm: {algorithm}")
+        raise ValueError(f"Unsupported algorithm: {algorithm}")
 
     def objective_function(
         self, trial: optuna.Trial, algorithm: str, X: np.ndarray, y: np.ndarray
@@ -294,7 +293,7 @@ class AutomatedHyperparameterTuner:
             timestamp=datetime.now().isoformat(),
         )
 
-        logger.info(f"✅ Optimization complete:")
+        logger.info("✅ Optimization complete:")
         logger.info(f"  - Best score: {best_score:.3f}")
         logger.info(f"  - Improvement: {improvement:.1f}%")
         logger.info(f"  - Target achieved: {target_achieved}")
@@ -303,7 +302,7 @@ class AutomatedHyperparameterTuner:
 
     def generate_test_dataset(
         self, n_samples: int = 1000
-    ) -> Tuple[pd.DataFrame, pd.Series]:
+    ) -> tuple[pd.DataFrame, pd.Series]:
         """Generate test dataset for hyperparameter tuning."""
         logger.info(f"Generating test dataset with {n_samples} samples...")
 
@@ -345,7 +344,7 @@ class AutomatedHyperparameterTuner:
         self,
         results: HyperparameterTuningResults,
         output_dir: str = "hyperparameter_tuning_results",
-    ) -> Tuple[str, str]:
+    ) -> tuple[str, str]:
         """Save hyperparameter tuning results."""
         logger.info("Saving hyperparameter tuning results...")
 
@@ -460,7 +459,7 @@ class AutomatedHyperparameterTuner:
                 f.write("- ❌ Test set validation failed\n")
 
             f.write(
-                f"\n**Overall Success Rate:** {criteria_met}/{total_criteria} ({criteria_met/total_criteria*100:.0f}%)\n\n"
+                f"\n**Overall Success Rate:** {criteria_met}/{total_criteria} ({criteria_met / total_criteria * 100:.0f}%)\n\n"
             )
 
             # Technical Details
@@ -468,9 +467,9 @@ class AutomatedHyperparameterTuner:
             f.write("### Optuna Configuration\n")
             f.write("- **Sampler:** Tree-structured Parzen Estimator (TPE)\n")
             f.write(f"- **Number of Trials:** {results.total_trials}\n")
-            f.write(f"- **Cross-Validation Folds:** 5\n")
-            f.write(f"- **Scoring Metric:** R² Score\n")
-            f.write(f"- **Random State:** 42\n\n")
+            f.write("- **Cross-Validation Folds:** 5\n")
+            f.write("- **Scoring Metric:** R² Score\n")
+            f.write("- **Random State:** 42\n\n")
 
             f.write("### Parameter Search Space\n")
             if results.algorithm_name == "random_forest":
@@ -498,9 +497,9 @@ class AutomatedHyperparameterTuner:
                 f.write("- **reg_alpha:** 1e-8 to 10.0 (log scale)\n")
                 f.write("- **reg_lambda:** 1e-8 to 10.0 (log scale)\n")
 
-            f.write(f"\n### Constitutional Compliance\n")
+            f.write("\n### Constitutional Compliance\n")
             f.write(f"- **Hash:** {results.constitutional_hash}\n")
-            f.write(f"- **Integrity:** ✅ Verified\n\n")
+            f.write("- **Integrity:** ✅ Verified\n\n")
 
             # Recommendations
             f.write("## 💡 Recommendations\n\n")
@@ -546,7 +545,9 @@ def main():
         all_results = []
 
         for algorithm in algorithms:
-            logger.info(f"\n🔧 Step 2.{len(all_results)+1}: Optimizing {algorithm}...")
+            logger.info(
+                f"\n🔧 Step 2.{len(all_results) + 1}: Optimizing {algorithm}..."
+            )
 
             # Optimize hyperparameters
             results = tuner.optimize_hyperparameters(algorithm, X_scaled, y)

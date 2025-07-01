@@ -18,17 +18,14 @@ Features:
 """
 
 import ast
-import inspect
 import json
 import subprocess
 import time
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
-from dataclasses import dataclass, field
+from typing import Any
 
-import pytest
-from hypothesis import given, strategies as st
 import structlog
 
 logger = structlog.get_logger(__name__)
@@ -40,11 +37,11 @@ class CoverageGap:
 
     file_path: str
     function_name: str
-    line_numbers: List[int]
+    line_numbers: list[int]
     gap_type: str  # 'uncovered_lines', 'missing_branch', 'edge_case'
     complexity_score: int
     priority: str  # 'high', 'medium', 'low'
-    suggested_tests: List[str] = field(default_factory=list)
+    suggested_tests: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -55,9 +52,9 @@ class TestCase:
     test_function: str
     test_type: str  # 'unit', 'property', 'edge_case'
     target_function: str
-    test_data: Dict[str, Any]
-    assertions: List[str]
-    mocks_needed: List[str] = field(default_factory=list)
+    test_data: dict[str, Any]
+    assertions: list[str]
+    mocks_needed: list[str] = field(default_factory=list)
 
 
 class UnitTestCoverageExpander:
@@ -66,9 +63,9 @@ class UnitTestCoverageExpander:
     def __init__(self, project_root: Path):
         """Initialize test coverage expander."""
         self.project_root = project_root
-        self.coverage_gaps: List[CoverageGap] = []
-        self.generated_tests: List[TestCase] = []
-        self.coverage_data: Dict[str, Any] = {}
+        self.coverage_gaps: list[CoverageGap] = []
+        self.generated_tests: list[TestCase] = []
+        self.coverage_data: dict[str, Any] = {}
 
         # Test generation configuration
         self.config = {
@@ -81,7 +78,7 @@ class UnitTestCoverageExpander:
             "enable_mutation_testing": True,
         }
 
-    async def expand_test_coverage(self) -> Dict[str, Any]:
+    async def expand_test_coverage(self) -> dict[str, Any]:
         """Expand unit test coverage across all services."""
         logger.info("🧪 Starting comprehensive unit test coverage expansion...")
 
@@ -135,7 +132,7 @@ class UnitTestCoverageExpander:
 
         return results
 
-    async def _analyze_current_coverage(self) -> Dict[str, Any]:
+    async def _analyze_current_coverage(self) -> dict[str, Any]:
         """Analyze current test coverage."""
         logger.info("📊 Analyzing current test coverage...")
 
@@ -152,6 +149,7 @@ class UnitTestCoverageExpander:
                     "--tb=no",
                     "-q",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -161,7 +159,7 @@ class UnitTestCoverageExpander:
             # Load coverage data
             coverage_file = self.project_root / "coverage.json"
             if coverage_file.exists():
-                with open(coverage_file, "r") as f:
+                with open(coverage_file) as f:
                     self.coverage_data = json.load(f)
 
             # Analyze coverage by service
@@ -217,7 +215,7 @@ class UnitTestCoverageExpander:
             logger.error(f"Coverage analysis failed: {e}")
             return {"error": str(e)}
 
-    async def _identify_coverage_gaps(self) -> List[CoverageGap]:
+    async def _identify_coverage_gaps(self) -> list[CoverageGap]:
         """Identify specific coverage gaps that need testing."""
         logger.info("🔍 Identifying coverage gaps...")
 
@@ -262,7 +260,7 @@ class UnitTestCoverageExpander:
         self.coverage_gaps = gaps
         return gaps
 
-    async def _generate_tests_for_gaps(self) -> List[TestCase]:
+    async def _generate_tests_for_gaps(self) -> list[TestCase]:
         """Generate tests to fill coverage gaps."""
         logger.info("🏗️ Generating tests for coverage gaps...")
 
@@ -285,7 +283,7 @@ class UnitTestCoverageExpander:
         self.generated_tests.extend(generated_tests)
         return generated_tests
 
-    async def _create_property_based_tests(self) -> List[TestCase]:
+    async def _create_property_based_tests(self) -> list[TestCase]:
         """Create property-based tests using Hypothesis."""
         logger.info("🔬 Creating property-based tests...")
 
@@ -302,7 +300,7 @@ class UnitTestCoverageExpander:
 
         return property_tests
 
-    async def _generate_edge_case_tests(self) -> List[TestCase]:
+    async def _generate_edge_case_tests(self) -> list[TestCase]:
         """Generate comprehensive edge case tests."""
         logger.info("⚡ Generating edge case tests...")
 
@@ -328,7 +326,7 @@ class UnitTestCoverageExpander:
 
         return edge_case_tests
 
-    async def _create_test_infrastructure(self) -> Dict[str, Any]:
+    async def _create_test_infrastructure(self) -> dict[str, Any]:
         """Create test fixtures, factories, and infrastructure."""
         logger.info("🏭 Creating test infrastructure...")
 
@@ -357,7 +355,7 @@ class UnitTestCoverageExpander:
 
         return infrastructure
 
-    async def _validate_generated_tests(self) -> Dict[str, Any]:
+    async def _validate_generated_tests(self) -> dict[str, Any]:
         """Validate that generated tests are correct and useful."""
         logger.info("✅ Validating generated tests...")
 
@@ -394,10 +392,10 @@ class UnitTestCoverageExpander:
                 return parts[service_idx + 2]  # services/core/service_name
         return "unknown"
 
-    def _analyze_code_structure(self, file_path: str) -> Dict[str, Any]:
+    def _analyze_code_structure(self, file_path: str) -> dict[str, Any]:
         """Analyze code structure to understand functions and complexity."""
         try:
-            with open(self.project_root / file_path, "r") as f:
+            with open(self.project_root / file_path) as f:
                 code = f.read()
 
             tree = ast.parse(code)
@@ -428,17 +426,17 @@ class UnitTestCoverageExpander:
         complexity = 1  # Base complexity
 
         for child in ast.walk(node):
-            if isinstance(child, (ast.If, ast.While, ast.For, ast.AsyncFor)):
-                complexity += 1
-            elif isinstance(child, ast.ExceptHandler):
-                complexity += 1
-            elif isinstance(child, (ast.And, ast.Or)):
+            if (
+                isinstance(child, (ast.If, ast.While, ast.For, ast.AsyncFor))
+                or isinstance(child, ast.ExceptHandler)
+                or isinstance(child, (ast.And, ast.Or))
+            ):
                 complexity += 1
 
         return complexity
 
     def _calculate_gap_priority(
-        self, function_info: Dict[str, Any], uncovered_lines: List[int]
+        self, function_info: dict[str, Any], uncovered_lines: list[int]
     ) -> str:
         """Calculate priority for covering a gap."""
         complexity = function_info.get("complexity", 1)
@@ -446,12 +444,11 @@ class UnitTestCoverageExpander:
 
         if complexity > 5 or uncovered_count > 10:
             return "high"
-        elif complexity > 2 or uncovered_count > 5:
+        if complexity > 2 or uncovered_count > 5:
             return "medium"
-        else:
-            return "low"
+        return "low"
 
-    def _suggest_tests_for_function(self, function_info: Dict[str, Any]) -> List[str]:
+    def _suggest_tests_for_function(self, function_info: dict[str, Any]) -> list[str]:
         """Suggest test types for a function."""
         suggestions = ["test_normal_case"]
 
@@ -466,7 +463,7 @@ class UnitTestCoverageExpander:
 
         return suggestions
 
-    def _generate_basic_unit_tests(self, gap: CoverageGap) -> List[TestCase]:
+    def _generate_basic_unit_tests(self, gap: CoverageGap) -> list[TestCase]:
         """Generate basic unit tests for a coverage gap."""
         tests = []
 
@@ -491,7 +488,7 @@ def {test_name}():
         tests.append(test)
         return tests
 
-    def _generate_error_condition_tests(self, gap: CoverageGap) -> List[TestCase]:
+    def _generate_error_condition_tests(self, gap: CoverageGap) -> list[TestCase]:
         """Generate tests for error conditions."""
         tests = []
 
@@ -516,7 +513,7 @@ def {test_name}():
         tests.append(test)
         return tests
 
-    def _generate_boundary_tests(self, gap: CoverageGap) -> List[TestCase]:
+    def _generate_boundary_tests(self, gap: CoverageGap) -> list[TestCase]:
         """Generate boundary condition tests."""
         tests = []
 
@@ -540,7 +537,7 @@ def {test_name}():
         tests.append(test)
         return tests
 
-    def _create_property_test(self, gap: CoverageGap) -> Optional[TestCase]:
+    def _create_property_test(self, gap: CoverageGap) -> TestCase | None:
         """Create a property-based test."""
         test_name = f"test_{gap.function_name}_property"
         test_function = f"""
@@ -562,7 +559,7 @@ def {test_name}(text_input, int_input):
 
     def _create_edge_case_test(
         self, gap: CoverageGap, edge_case: str
-    ) -> Optional[TestCase]:
+    ) -> TestCase | None:
         """Create an edge case test."""
         test_name = f"test_{gap.function_name}_{edge_case}"
         test_function = f"""
@@ -581,19 +578,19 @@ def {test_name}():
             assertions=["assert True"],
         )
 
-    def _create_test_fixtures(self) -> List[str]:
+    def _create_test_fixtures(self) -> list[str]:
         """Create test fixtures."""
         return ["sample_user_fixture", "sample_policy_fixture", "mock_database_fixture"]
 
-    def _create_test_factories(self) -> List[str]:
+    def _create_test_factories(self) -> list[str]:
         """Create test factories."""
         return ["UserFactory", "PolicyFactory", "GovernanceActionFactory"]
 
-    def _create_test_mocks(self) -> List[str]:
+    def _create_test_mocks(self) -> list[str]:
         """Create test mocks."""
         return ["MockAuthService", "MockDatabase", "MockExternalAPI"]
 
-    def _create_test_data_sets(self) -> List[str]:
+    def _create_test_data_sets(self) -> list[str]:
         """Create test data sets."""
         return ["valid_policies", "invalid_inputs", "edge_case_data"]
 
@@ -615,7 +612,7 @@ def {test_name}():
         improvement = min(95.0, (test_count / gap_count) * 10)
         return round(improvement, 2)
 
-    async def _save_expansion_results(self, results: Dict[str, Any]):
+    async def _save_expansion_results(self, results: dict[str, Any]):
         """Save expansion results to file."""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"test_coverage_expansion_{timestamp}.json"
@@ -676,8 +673,8 @@ async def main():
         results = await expander.expand_test_coverage()
 
         # Print summary
-        print(f"\n🧪 ACGS-1 Unit Test Coverage Expansion Summary")
-        print(f"=" * 60)
+        print("\n🧪 ACGS-1 Unit Test Coverage Expansion Summary")
+        print("=" * 60)
         print(f"Coverage Gaps Identified: {results['coverage_gaps']}")
         print(f"Tests Generated: {results['generated_tests']}")
         print(f"Property Tests: {results['property_tests']}")

@@ -67,16 +67,17 @@ def start_docker_services():
         ]
 
         print(f"   📋 Running: {' '.join(cmd)}")
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+        result = subprocess.run(
+            cmd, check=False, capture_output=True, text=True, timeout=120
+        )
 
         if result.returncode == 0:
             print("   ✅ Docker services started successfully")
             return True
-        else:
-            print("   ❌ Docker services failed to start:")
-            print(f"   STDOUT: {result.stdout}")
-            print(f"   STDERR: {result.stderr}")
-            return False
+        print("   ❌ Docker services failed to start:")
+        print(f"   STDOUT: {result.stdout}")
+        print(f"   STDERR: {result.stderr}")
+        return False
 
     except subprocess.TimeoutExpired:
         print("   ❌ Docker services startup timed out")
@@ -233,9 +234,7 @@ async def generate_deployment_report(healthy_services, integration_tests):
     report = {
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
         "deployment_status": deployment_status,
-        "services": {
-            service: service in healthy_services for service in SERVICES.keys()
-        },
+        "services": {service: service in healthy_services for service in SERVICES},
         "integration_tests": integration_tests,
         "service_health_rate": service_health,
         "integration_functional": integration_health,

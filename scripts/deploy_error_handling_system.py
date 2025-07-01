@@ -8,7 +8,6 @@ import asyncio
 import json
 import logging
 import os
-import subprocess
 import sys
 from pathlib import Path
 
@@ -262,13 +261,13 @@ class ErrorHandlingDeployment:
 
         for service_name, config in startup_scripts.items():
             script_content = f"""#!/bin/bash
-# {config['description']} Startup Script
+# {config["description"]} Startup Script
 
 cd {self.project_root}
 export PYTHONPATH=$PYTHONPATH:{self.project_root}
 
-echo "Starting {config['description']}..."
-python3 {config['script']}
+echo "Starting {config["description"]}..."
+python3 {config["script"]}
 """
 
             script_path = scripts_dir / f"start_{service_name}.sh"
@@ -370,12 +369,12 @@ if __name__ == "__main__":
         print("\n" + "=" * 60)
         print("ACGS ERROR HANDLING SYSTEM DEPLOYMENT SUMMARY")
         print("=" * 60)
-        print(f"✓ Error tracking system deployed")
-        print(f"✓ Circuit breakers and retry mechanisms ready")
-        print(f"✓ Graceful degradation strategies configured")
-        print(f"✓ NATS error event publishing enabled")
-        print(f"✓ SLA validation and monitoring deployed")
-        print(f"✓ Grafana dashboard configuration ready")
+        print("✓ Error tracking system deployed")
+        print("✓ Circuit breakers and retry mechanisms ready")
+        print("✓ Graceful degradation strategies configured")
+        print("✓ NATS error event publishing enabled")
+        print("✓ SLA validation and monitoring deployed")
+        print("✓ Grafana dashboard configuration ready")
         print("\nMonitoring Endpoints:")
         print(
             f"  - Error Tracker Metrics: http://localhost:{self.deployment_config['error_tracker_port']}/metrics"

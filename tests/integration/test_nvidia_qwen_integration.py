@@ -10,6 +10,7 @@ for constitutional governance tasks in the ACGS-PGP framework.
 import asyncio
 import logging
 import os
+
 import pytest
 
 # Add the backend path to sys.path for imports
@@ -93,9 +94,8 @@ async def test_basic_reasoning():
                 print(f"\n📊 Token Usage: {response.token_usage}")
 
             return True
-        else:
-            print(f"❌ Reasoning request failed: {response.error_message}")
-            return False
+        print(f"❌ Reasoning request failed: {response.error_message}")
+        return False
 
     except Exception as e:
         print(f"❌ Error in basic reasoning test: {e}")
@@ -148,9 +148,8 @@ async def test_constitutional_compliance():
             )
 
             return True
-        else:
-            print(f"❌ Compliance analysis failed: {response.error_message}")
-            return False
+        print(f"❌ Compliance analysis failed: {response.error_message}")
+        return False
 
     except Exception as e:
         print(f"❌ Error in compliance analysis test: {e}")
@@ -215,9 +214,8 @@ async def test_policy_synthesis():
             )
 
             return True
-        else:
-            print(f"❌ Policy synthesis failed: {response.error_message}")
-            return False
+        print(f"❌ Policy synthesis failed: {response.error_message}")
+        return False
 
     except Exception as e:
         print(f"❌ Error in policy synthesis test: {e}")
@@ -298,7 +296,7 @@ async def run_comprehensive_test():
         status = "✅ PASS" if result else "❌ FAIL"
         print(f"   {test_name}: {status}")
 
-    print(f"\nOverall: {passed}/{total} tests passed ({passed/total*100:.1f}%)")
+    print(f"\nOverall: {passed}/{total} tests passed ({passed / total * 100:.1f}%)")
 
     if passed == total:
         print("🎉 All tests passed! NVIDIA Qwen integration is working correctly.")

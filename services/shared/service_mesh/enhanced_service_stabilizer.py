@@ -541,7 +541,6 @@ class EnhancedServiceStabilizer:
         """Attempt to recover failed services."""
         for service_type, health in self.service_health.items():
             if health.status == "unhealthy" and health.consecutive_failures >= 5:
-
                 logger.info(f"Attempting recovery for {service_type.value}")
 
                 # Simple recovery attempt - just retry health check

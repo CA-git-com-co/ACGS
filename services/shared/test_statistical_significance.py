@@ -8,11 +8,11 @@ and deployment criteria enforcement with p<0.05 significance threshold.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import sys
-import os
-import numpy as np
 import logging
-from datetime import datetime
+import os
+import sys
+
+import numpy as np
 
 # Add the services directory to the path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -79,7 +79,7 @@ def test_paired_t_test():
     # Paired t-test
     paired_test = tester.paired_t_test(model_1_scores, model_2_scores)
 
-    logger.info(f"  📊 Paired t-test results:")
+    logger.info("  📊 Paired t-test results:")
     logger.info(f"    t-statistic: {paired_test.test_statistic:.3f}")
     logger.info(f"    p-value: {paired_test.p_value:.4f}")
     logger.info(f"    Significant: {paired_test.is_significant}")
@@ -119,7 +119,7 @@ def test_mcnemar_test():
         model_1_predictions, model_2_predictions, true_labels
     )
 
-    logger.info(f"  📊 McNemar's test results:")
+    logger.info("  📊 McNemar's test results:")
     logger.info(f"    Test statistic: {mcnemar_test.test_statistic:.3f}")
     logger.info(f"    p-value: {mcnemar_test.p_value:.4f}")
     logger.info(f"    Significant: {mcnemar_test.is_significant}")
@@ -149,7 +149,7 @@ def test_model_comparison():
         baseline_score=0.5,
     )
 
-    logger.info(f"  📊 Model comparison results:")
+    logger.info("  📊 Model comparison results:")
     logger.info(f"    Paired test p-value: {comparison.paired_t_test.p_value:.4f}")
     logger.info(
         f"    Paired test significant: {comparison.paired_t_test.is_significant}"
@@ -194,14 +194,14 @@ def test_production_ml_optimizer_integration():
 
     # Check baseline comparison
     baseline_test = validation_results["baseline_comparison"]
-    logger.info(f"  📊 Baseline comparison:")
+    logger.info("  📊 Baseline comparison:")
     logger.info(f"    p-value: {baseline_test.p_value:.4f}")
     logger.info(f"    Significant: {baseline_test.is_significant}")
     logger.info(f"    Effect size: {baseline_test.effect_size:.3f}")
 
     # Check deployment criteria
     criteria = validation_results["deployment_criteria"]
-    logger.info(f"  🎯 Deployment criteria:")
+    logger.info("  🎯 Deployment criteria:")
     for criterion, met in criteria.items():
         logger.info(f"    {criterion}: {met}")
 
@@ -232,7 +232,7 @@ def test_deployment_criteria_enforcement():
         model_good, X_good, y_good, baseline_score=0.5
     )
 
-    logger.info(f"  ✅ Good model validation:")
+    logger.info("  ✅ Good model validation:")
     logger.info(f"    Decision: {validation_good['deployment_decision']}")
     logger.info(
         f"    Statistical significance: {validation_good['deployment_criteria']['statistical_significance']}"
@@ -257,7 +257,7 @@ def test_deployment_criteria_enforcement():
         model_marginal, X_marginal, y_marginal, baseline_score=0.5
     )
 
-    logger.info(f"  ⚠️ Marginal model validation:")
+    logger.info("  ⚠️ Marginal model validation:")
     logger.info(f"    Decision: {validation_marginal['deployment_decision']}")
     logger.info(
         f"    Statistical significance: {validation_marginal['deployment_criteria']['statistical_significance']}"

@@ -7,12 +7,9 @@ all critical functionality is preserved.
 """
 
 import json
-import os
-import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 
 class CleanupValidator:
@@ -246,7 +243,7 @@ class CleanupValidator:
         latest_report = max(cleanup_reports, key=lambda p: p.stat().st_mtime)
 
         try:
-            with open(latest_report, "r") as f:
+            with open(latest_report) as f:
                 cleanup_data = json.load(f)
 
             self.validation_results["cleanup_summary"] = {

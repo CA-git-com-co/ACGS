@@ -223,7 +223,6 @@ class ACGSServiceOrchestrator:
             self.config.enable_health_monitoring
             or self.config.enable_performance_monitoring
         ):
-
             stabilization_config = StabilizationConfig(
                 level=StabilizationLevel.ENTERPRISE,
                 health_check_interval=self.config.health_check_interval_seconds,
@@ -366,7 +365,6 @@ class ACGSServiceOrchestrator:
             avg_availability >= self.config.target_availability_percent
             and avg_response_time <= self.config.target_response_time_ms
         ):
-
             # System is healthy
             await self._emit_event(
                 "system_healthy",

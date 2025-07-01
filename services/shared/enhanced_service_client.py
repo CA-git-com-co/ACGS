@@ -149,16 +149,15 @@ class EnhancedServiceClient:
 
         if method == RequestMethod.GET:
             return await self.http_client.get(**request_kwargs)
-        elif method == RequestMethod.POST:
+        if method == RequestMethod.POST:
             return await self.http_client.post(**request_kwargs)
-        elif method == RequestMethod.PUT:
+        if method == RequestMethod.PUT:
             return await self.http_client.put(**request_kwargs)
-        elif method == RequestMethod.DELETE:
+        if method == RequestMethod.DELETE:
             return await self.http_client.delete(**request_kwargs)
-        elif method == RequestMethod.PATCH:
+        if method == RequestMethod.PATCH:
             return await self.http_client.patch(**request_kwargs)
-        else:
-            raise ValueError(f"Unsupported HTTP method: {method}")
+        raise ValueError(f"Unsupported HTTP method: {method}")
 
     async def call_service(
         self,
@@ -263,7 +262,7 @@ class EnhancedServiceClient:
             service_info.update_metrics(response_time, False)
             circuit_breaker.record_failure()
 
-            error_message = f"Service call failed: {str(e)}"
+            error_message = f"Service call failed: {e!s}"
             logger.error(f"Failed to call {service_name}{endpoint}: {error_message}")
 
             return ServiceCallResult(
@@ -343,7 +342,7 @@ class EnhancedServiceClient:
                 processed_results.append(
                     ServiceCallResult(
                         success=False,
-                        error=f"Batch call exception: {str(result)}",
+                        error=f"Batch call exception: {result!s}",
                         service_name=calls[i].get("service_name", "unknown"),
                         endpoint=calls[i].get("endpoint", "unknown"),
                     )
@@ -423,8 +422,8 @@ async def call_service(
 # Export main functions and classes
 __all__ = [
     "EnhancedServiceClient",
-    "ServiceCallResult",
     "RequestMethod",
-    "enhanced_service_client",
+    "ServiceCallResult",
     "call_service",
+    "enhanced_service_client",
 ]

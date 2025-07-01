@@ -18,15 +18,13 @@ PRESERVATION REQUIREMENTS:
 - Recent backups (within 30 days)
 """
 
-import os
-import json
-import shutil
 import hashlib
-from datetime import datetime, timedelta
-from pathlib import Path
-from typing import Dict, List, Set, Tuple
+import json
 import logging
 import re
+import shutil
+from datetime import datetime, timedelta
+from pathlib import Path
 
 # Configure logging
 logging.basicConfig(
@@ -141,7 +139,7 @@ class ComprehensiveDuplicateCleanup:
 
         return False
 
-    def find_timestamped_duplicates(self) -> List[Tuple[str, List[Path]]]:
+    def find_timestamped_duplicates(self) -> list[tuple[str, list[Path]]]:
         """Find timestamped duplicate files"""
         duplicates = []
 
@@ -173,7 +171,7 @@ class ComprehensiveDuplicateCleanup:
 
         return duplicates
 
-    def find_old_backups(self) -> List[Path]:
+    def find_old_backups(self) -> list[Path]:
         """Find backup directories older than 30 days"""
         old_backups = []
         backup_dir = self.project_root / "backups"
@@ -197,7 +195,7 @@ class ComprehensiveDuplicateCleanup:
 
         return old_backups
 
-    def find_redundant_docker_compose(self) -> List[Path]:
+    def find_redundant_docker_compose(self) -> list[Path]:
         """Find redundant docker-compose files"""
         redundant_files = []
 
@@ -210,7 +208,7 @@ class ComprehensiveDuplicateCleanup:
 
         return redundant_files
 
-    def cleanup_build_artifacts(self) -> List[Path]:
+    def cleanup_build_artifacts(self) -> list[Path]:
         """Remove build artifacts and temporary files"""
         removed_files = []
 
@@ -238,7 +236,7 @@ class ComprehensiveDuplicateCleanup:
 
         return removed_files
 
-    def cleanup_specific_root_files(self) -> List[Path]:
+    def cleanup_specific_root_files(self) -> list[Path]:
         """Remove specific files identified in root directory"""
         removed_files = []
 
@@ -291,7 +289,7 @@ class ComprehensiveDuplicateCleanup:
 
         return removed_files
 
-    def consolidate_logs_directory(self) -> List[Path]:
+    def consolidate_logs_directory(self) -> list[Path]:
         """Clean up and organize logs directory"""
         removed_files = []
         logs_dir = self.project_root / "logs"
@@ -351,7 +349,7 @@ class ComprehensiveDuplicateCleanup:
         logger.info(f"Created cleanup backup directory: {backup_dir}")
         return backup_dir
 
-    def execute_cleanup(self) -> Dict:
+    def execute_cleanup(self) -> dict:
         """Execute the comprehensive cleanup"""
         logger.info("Starting comprehensive duplicate and outdated file cleanup")
 

@@ -12,19 +12,19 @@ from .providers import CacheProvider, DatabaseProvider, ServiceProvider
 from .registry import ServiceRegistry as DIServiceRegistry
 
 __all__ = [
+    "CacheInterface",
+    "CacheProvider",
     "DIContainer",
-    "Scope",
+    "DIServiceRegistry",
+    "DatabaseInterface",
+    "DatabaseProvider",
     "LifecycleManager",
+    "Scope",
+    "ServiceInterface",
+    "ServiceProvider",
     "get_container",
     "inject",
     "injectable",
     "singleton",
     "transient",
-    "ServiceInterface",
-    "DatabaseInterface",
-    "CacheInterface",
-    "ServiceProvider",
-    "DatabaseProvider",
-    "CacheProvider",
-    "DIServiceRegistry",
 ]

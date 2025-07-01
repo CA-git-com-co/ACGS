@@ -18,19 +18,17 @@ Version: 1.0.0
 Date: 2025-06-24
 """
 
-import os
-import sys
+import argparse
 import json
+import logging
+import os
 import shutil
 import subprocess
-import logging
-import argparse
-from pathlib import Path
+import sys
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Dict, List, Tuple, Optional, Any
-from dataclasses import dataclass, asdict
-import hashlib
-import time
+from pathlib import Path
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -47,10 +45,10 @@ class FileOperation:
 
     operation_type: str  # move, copy, delete, create
     source_path: str
-    destination_path: Optional[str]
+    destination_path: str | None
     timestamp: str
     success: bool = False
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 @dataclass
@@ -60,9 +58,9 @@ class ServiceStatus:
     service_name: str
     port: int
     status: str  # running, stopped, error
-    pid: Optional[int] = None
-    health_check_url: Optional[str] = None
-    last_check: Optional[str] = None
+    pid: int | None = None
+    health_check_url: str | None = None
+    last_check: str | None = None
 
 
 @dataclass
@@ -71,12 +69,12 @@ class PhaseResult:
 
     phase_name: str
     start_time: str
-    end_time: Optional[str]
+    end_time: str | None
     success: bool
-    operations: List[FileOperation]
-    errors: List[str]
-    warnings: List[str]
-    metrics: Dict[str, Any]
+    operations: list[FileOperation]
+    errors: list[str]
+    warnings: list[str]
+    metrics: dict[str, Any]
 
 
 class ACGSReorganizationPlan:
@@ -92,8 +90,8 @@ class ACGSReorganizationPlan:
         self.dry_run = dry_run
         self.backup_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.backup_dir = self.project_root / "backups" / self.backup_timestamp
-        self.operations_log: List[FileOperation] = []
-        self.phase_results: List[PhaseResult] = []
+        self.operations_log: list[FileOperation] = []
+        self.phase_results: list[PhaseResult] = []
 
         # Critical preservation targets
         self.constitution_hash = "cdd01ef066bc6cf2"
@@ -154,7 +152,7 @@ class ACGSReorganizationPlan:
             f"Operation: {operation.operation_type} {operation.source_path} -> {operation.destination_path}"
         )
 
-    def check_service_health(self, service: Dict[str, Any]) -> ServiceStatus:
+    def check_service_health(self, service: dict[str, Any]) -> ServiceStatus:
         """Check if a service is running and healthy."""
         service_name = service["name"]
         port = service["port"]
@@ -162,7 +160,11 @@ class ACGSReorganizationPlan:
         try:
             # Check if port is in use
             result = subprocess.run(
-                ["netstat", "-tlnp"], capture_output=True, text=True, timeout=10
+                ["netstat", "-tlnp"],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
 
             port_in_use = f":{port}" in result.stdout
@@ -172,6 +174,7 @@ class ACGSReorganizationPlan:
             if port_in_use:
                 pid_result = subprocess.run(
                     ["lsof", "-ti", f":{port}"],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=5,
@@ -215,7 +218,7 @@ class ACGSReorganizationPlan:
             for file_name in search_files:
                 file_path = blockchain_dir / file_name
                 if file_path.exists():
-                    with open(file_path, "r") as f:
+                    with open(file_path) as f:
                         content = f.read()
                         if self.constitution_hash in content:
                             logger.info(
@@ -562,7 +565,7 @@ echo "Rollback completed. Please verify system functionality."
                 {},
             )
 
-    def _determine_file_destination(self, file_path: Path) -> Optional[Path]:
+    def _determine_file_destination(self, file_path: Path) -> Path | None:
         """Determine the appropriate destination for a file based on its type."""
         file_name = file_path.name.lower()
 
@@ -574,10 +577,9 @@ echo "Rollback completed. Please verify system functionality."
         if any(ext in file_name for ext in [".yml", ".yaml", ".json", ".toml", ".ini"]):
             if "docker" in file_name:
                 return self.project_root / "infrastructure" / "docker" / file_path.name
-            elif any(env in file_name for env in ["prod", "staging", "dev"]):
+            if any(env in file_name for env in ["prod", "staging", "dev"]):
                 return self.project_root / "config" / "environments" / file_path.name
-            else:
-                return self.project_root / "config" / file_path.name
+            return self.project_root / "config" / file_path.name
 
         # Script files
         if file_name.endswith(".sh") or file_name.endswith(".py"):
@@ -594,7 +596,7 @@ echo "Rollback completed. Please verify system functionality."
         # Default to archive for unclassified files
         return self.project_root / "archive" / "unclassified" / file_path.name
 
-    def run_comprehensive_validation(self) -> Dict[str, Any]:
+    def run_comprehensive_validation(self) -> dict[str, Any]:
         """Run comprehensive validation of system functionality."""
         logger.info("Running comprehensive validation...")
 
@@ -697,9 +699,9 @@ echo "Rollback completed. Please verify system functionality."
 
         if phase_name == "preparation" or phase_name == "1":
             return self.phase_1_preparation_and_analysis()
-        elif phase_name == "cleanup" or phase_name == "2":
+        if phase_name == "cleanup" or phase_name == "2":
             return self.phase_2_root_directory_cleanup()
-        elif phase_name == "validation":
+        if phase_name == "validation":
             # Run validation and return as phase result
             validation = self.run_comprehensive_validation()
             return PhaseResult(
@@ -716,20 +718,19 @@ echo "Rollback completed. Please verify system functionality."
                 warnings=[],
                 metrics=validation,
             )
-        else:
-            logger.error(f"Unknown phase: {phase_name}")
-            return PhaseResult(
-                phase_name=phase_name,
-                start_time=datetime.now().isoformat(),
-                end_time=datetime.now().isoformat(),
-                success=False,
-                operations=[],
-                errors=[f"Unknown phase: {phase_name}"],
-                warnings=[],
-                metrics={},
-            )
+        logger.error(f"Unknown phase: {phase_name}")
+        return PhaseResult(
+            phase_name=phase_name,
+            start_time=datetime.now().isoformat(),
+            end_time=datetime.now().isoformat(),
+            success=False,
+            operations=[],
+            errors=[f"Unknown phase: {phase_name}"],
+            warnings=[],
+            metrics={},
+        )
 
-    def execute_all_phases(self) -> List[PhaseResult]:
+    def execute_all_phases(self) -> list[PhaseResult]:
         """Execute all phases of the reorganization plan."""
         logger.info("=== STARTING COMPREHENSIVE REORGANIZATION ===")
 
@@ -756,7 +757,7 @@ echo "Rollback completed. Please verify system functionality."
 
         return results
 
-    def generate_execution_report(self) -> Dict[str, Any]:
+    def generate_execution_report(self) -> dict[str, Any]:
         """Generate a comprehensive execution report."""
         logger.info("Generating execution report...")
 
@@ -791,7 +792,7 @@ echo "Rollback completed. Please verify system functionality."
 
         return report
 
-    def _generate_recommendations(self) -> List[str]:
+    def _generate_recommendations(self) -> list[str]:
         """Generate recommendations based on execution results."""
         recommendations = []
 

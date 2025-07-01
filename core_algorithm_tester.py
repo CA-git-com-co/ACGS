@@ -4,14 +4,12 @@ Core Algorithm Testing Framework for ACGS-2
 Tests constitutional AI processing, policy governance, and Darwin Gödel Machine mechanisms.
 """
 
-import os
-import sys
 import json
+import sys
 import time
-import traceback
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
 # Add project paths
 project_root = Path(__file__).parent
@@ -25,8 +23,8 @@ class TestResult:
     test_name: str
     status: str  # PASS, FAIL, SKIP, ERROR
     execution_time: float
-    details: Dict[str, Any]
-    error_message: Optional[str] = None
+    details: dict[str, Any]
+    error_message: str | None = None
 
 
 class CoreAlgorithmTester:
@@ -87,7 +85,7 @@ class CoreAlgorithmTester:
                     __import__(module_name)
                     importable_modules += 1
                 except Exception as e:
-                    import_errors.append(f"{module_name}: {str(e)}")
+                    import_errors.append(f"{module_name}: {e!s}")
 
             return TestResult(
                 "constitutional_ai_imports",
@@ -370,7 +368,7 @@ class CoreAlgorithmTester:
                 "edge_cases_handling", "ERROR", time.time() - start_time, {}, str(e)
             )
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Run all core algorithm tests."""
         print("Starting Core Algorithm Testing...")
         print("=" * 50)
@@ -395,7 +393,7 @@ class CoreAlgorithmTester:
                     "ERROR",
                     0.0,
                     {},
-                    f"Test execution failed: {str(e)}",
+                    f"Test execution failed: {e!s}",
                 )
                 self.log_result(error_result)
 

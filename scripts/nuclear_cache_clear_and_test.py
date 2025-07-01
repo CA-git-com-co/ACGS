@@ -31,7 +31,7 @@ async def nuclear_cache_clear():
         # Step 1: Redis FLUSHALL (all databases)
         logger.info("🧹 Step 1: Redis FLUSHALL...")
         result = subprocess.run(
-            ["redis-cli", "FLUSHALL"], capture_output=True, text=True
+            ["redis-cli", "FLUSHALL"], check=False, capture_output=True, text=True
         )
         if result.returncode == 0:
             logger.info("✅ Redis FLUSHALL completed")
@@ -42,7 +42,10 @@ async def nuclear_cache_clear():
         logger.info("🧹 Step 2: Clearing all Redis databases...")
         for db in range(16):
             result = subprocess.run(
-                ["redis-cli", "-n", str(db), "FLUSHDB"], capture_output=True, text=True
+                ["redis-cli", "-n", str(db), "FLUSHDB"],
+                check=False,
+                capture_output=True,
+                text=True,
             )
             if result.returncode == 0:
                 logger.info(f"✅ Cleared Redis DB {db}")
@@ -52,6 +55,7 @@ async def nuclear_cache_clear():
         try:
             subprocess.run(
                 ["sudo", "systemctl", "restart", "redis"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -96,10 +100,10 @@ async def verify_fix_working():
     try:
         # Import fresh modules
         from services.shared.multimodal_ai_service import (
-            get_multimodal_service,
+            ContentType,
             MultimodalRequest,
             RequestType,
-            ContentType,
+            get_multimodal_service,
         )
 
         service = await get_multimodal_service()
@@ -144,6 +148,7 @@ async def run_integration_test():
         # Run the integration test
         result = subprocess.run(
             ["python", "scripts/test_deepseek_r1_integration.py"],
+            check=False,
             cwd="/home/ubuntu/ACGS",
             capture_output=True,
             text=True,
@@ -170,19 +175,17 @@ async def run_integration_test():
             if success_rate and "100.0%" in success_rate:
                 logger.info("🎉 ACHIEVED 100% SUCCESS RATE!")
                 return True
-            else:
-                logger.warning(f"⚠️ Success rate not 100%: {success_rate}")
+            logger.warning(f"⚠️ Success rate not 100%: {success_rate}")
 
-                # Show some debug output
-                logger.info("Debug output from integration test:")
-                for line in output_lines[-20:]:  # Last 20 lines
-                    if line.strip():
-                        logger.info(f"   {line}")
+            # Show some debug output
+            logger.info("Debug output from integration test:")
+            for line in output_lines[-20:]:  # Last 20 lines
+                if line.strip():
+                    logger.info(f"   {line}")
 
-                return False
-        else:
-            logger.error(f"❌ Integration test failed: {result.stderr}")
             return False
+        logger.error(f"❌ Integration test failed: {result.stderr}")
+        return False
 
     except Exception as e:
         logger.error(f"❌ Integration test execution failed: {e}")
@@ -236,11 +239,10 @@ async def main():
 
         logger.info("\n🚀 ACGS-PGP System Status: PRODUCTION READY")
         return 0
-    else:
-        logger.error("❌ FAILED to achieve 100% production readiness")
-        logger.error("   Integration test not passing at 100% rate")
-        logger.error("   Manual investigation required")
-        return 1
+    logger.error("❌ FAILED to achieve 100% production readiness")
+    logger.error("   Integration test not passing at 100% rate")
+    logger.error("   Manual investigation required")
+    return 1
 
 
 if __name__ == "__main__":

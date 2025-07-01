@@ -2,15 +2,9 @@
 Unit tests for services.core.constitutional-ai.ac_service.app.core.amendment_state_machine
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.constitutional_ai.ac_service.app.core.amendment_state_machine import (
-    AmendmentState,
-    AmendmentEvent,
-    StateTransition,
-    WorkflowContext,
-    WorkflowEvent,
     AmendmentStateMachine,
+    WorkflowEvent,
 )
 
 

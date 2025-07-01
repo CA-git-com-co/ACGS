@@ -5,15 +5,13 @@ Systematically fixes import path issues in test files that use hyphens instead o
 """
 
 import os
-import re
-from pathlib import Path
 
 
 def fix_import_paths(file_path):
     """Fix import paths in a single file."""
     print(f"Fixing imports in: {file_path}")
 
-    with open(file_path, "r") as f:
+    with open(file_path) as f:
         content = f.read()
 
     # Define the replacements for hyphened directory names
@@ -46,9 +44,8 @@ def fix_import_paths(file_path):
             f.write(content)
         print(f"  ✅ Fixed imports in {file_path}")
         return True
-    else:
-        print(f"  ⏭️  No changes needed in {file_path}")
-        return False
+    print(f"  ⏭️  No changes needed in {file_path}")
+    return False
 
 
 def find_test_files_with_import_issues():
@@ -72,7 +69,7 @@ def find_test_files_with_import_issues():
 
                         # Check if file contains problematic imports
                         try:
-                            with open(file_path, "r") as f:
+                            with open(file_path) as f:
                                 content = f.read()
 
                             # Look for hyphened imports
@@ -122,7 +119,7 @@ def main():
         if fix_import_paths(file_path):
             fixed_count += 1
 
-    print(f"\n📊 Summary:")
+    print("\n📊 Summary:")
     print(f"  📁 Files scanned: {len(files_with_issues)}")
     print(f"  ✅ Files fixed: {fixed_count}")
     print(f"  ⏭️  Files unchanged: {len(files_with_issues) - fixed_count}")

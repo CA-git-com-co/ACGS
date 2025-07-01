@@ -4,13 +4,11 @@ Enhanced file system operations with security controls
 """
 
 import asyncio
-import json
-import os
-import logging
-from pathlib import Path
-from typing import Dict, List, Optional, Any
 import hashlib
+import logging
 import mimetypes
+from pathlib import Path
+from typing import Any
 
 # Simplified MCP implementation for filesystem operations
 logger = logging.getLogger(__name__)
@@ -60,7 +58,7 @@ class FilesystemMCPServer:
         except Exception:
             return False
 
-    def get_file_info(self, path: Path) -> Dict[str, Any]:
+    def get_file_info(self, path: Path) -> dict[str, Any]:
         """Get file information"""
         stat = path.stat()
         mime_type, _ = mimetypes.guess_type(str(path))
@@ -80,7 +78,7 @@ class FilesystemMCPServer:
         """Calculate SHA256 hash of content"""
         return hashlib.sha256(content).hexdigest()
 
-    async def list_directory(self, path_str: str, pattern: str = "*") -> Dict[str, Any]:
+    async def list_directory(self, path_str: str, pattern: str = "*") -> dict[str, Any]:
         """List directory contents"""
         try:
             path = Path(path_str)
@@ -116,7 +114,7 @@ class FilesystemMCPServer:
             logger.error(f"Error listing directory {path_str}: {e}")
             return {"error": str(e)}
 
-    async def read_file(self, path_str: str, encoding: str = "utf-8") -> Dict[str, Any]:
+    async def read_file(self, path_str: str, encoding: str = "utf-8") -> dict[str, Any]:
         """Read file content"""
         try:
             path = Path(path_str)
@@ -148,17 +146,16 @@ class FilesystemMCPServer:
                     "size": len(content),
                     "hash": content_hash,
                 }
-            else:
-                content = path.read_text(encoding=encoding)
-                content_hash = self.calculate_hash(content.encode(encoding))
-                return {
-                    "path": str(path),
-                    "content": content,
-                    "encoding": encoding,
-                    "size": len(content),
-                    "hash": content_hash,
-                    "lines": content.count("\n") + 1,
-                }
+            content = path.read_text(encoding=encoding)
+            content_hash = self.calculate_hash(content.encode(encoding))
+            return {
+                "path": str(path),
+                "content": content,
+                "encoding": encoding,
+                "size": len(content),
+                "hash": content_hash,
+                "lines": content.count("\n") + 1,
+            }
 
         except Exception as e:
             logger.error(f"Error reading file {path_str}: {e}")
@@ -170,7 +167,7 @@ class FilesystemMCPServer:
         content: str,
         encoding: str = "utf-8",
         create_dirs: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Write content to file"""
         try:
             path = Path(path_str)
@@ -209,7 +206,7 @@ class FilesystemMCPServer:
 
     async def search_files(
         self, query: str, path_str: str = None, case_sensitive: bool = False
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Search for files containing query"""
         try:
             search_path = Path(path_str) if path_str else self.root_path
@@ -270,7 +267,7 @@ class FilesystemMCPServer:
             logger.error(f"Error searching files: {e}")
             return {"error": str(e)}
 
-    async def get_file_stats(self, path_str: str) -> Dict[str, Any]:
+    async def get_file_stats(self, path_str: str) -> dict[str, Any]:
         """Get detailed file statistics"""
         try:
             path = Path(path_str)
@@ -328,8 +325,8 @@ class FilesystemMCPServer:
             return {"error": str(e)}
 
     async def handle_request(
-        self, method: str, params: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, method: str, params: dict[str, Any]
+    ) -> dict[str, Any]:
         """Handle MCP requests"""
         try:
             if method == "list_directory":
@@ -337,12 +334,12 @@ class FilesystemMCPServer:
                     params.get("path", "."), params.get("pattern", "*")
                 )
 
-            elif method == "read_file":
+            if method == "read_file":
                 return await self.read_file(
                     params["path"], params.get("encoding", "utf-8")
                 )
 
-            elif method == "write_file":
+            if method == "write_file":
                 return await self.write_file(
                     params["path"],
                     params["content"],
@@ -350,18 +347,17 @@ class FilesystemMCPServer:
                     params.get("create_dirs", True),
                 )
 
-            elif method == "search_files":
+            if method == "search_files":
                 return await self.search_files(
                     params["query"],
                     params.get("path"),
                     params.get("case_sensitive", False),
                 )
 
-            elif method == "get_file_stats":
+            if method == "get_file_stats":
                 return await self.get_file_stats(params["path"])
 
-            else:
-                return {"error": f"Unknown method: {method}"}
+            return {"error": f"Unknown method: {method}"}
 
         except Exception as e:
             logger.error(f"Error handling request {method}: {e}")

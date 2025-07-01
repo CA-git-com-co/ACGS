@@ -110,9 +110,8 @@ class IntrusionDetectionSystem:
                 minutes=self.block_duration_minutes
             ):
                 return True
-            else:
-                # Block expired, remove it
-                del self.blocked_ips[ip_address]
+            # Block expired, remove it
+            del self.blocked_ips[ip_address]
         return False
 
     def block_ip(self, ip_address: str, duration_minutes: int = None):

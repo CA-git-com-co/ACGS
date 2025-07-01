@@ -3,7 +3,6 @@ FastAPI dependencies for authentication and authorization.
 """
 
 import logging
-from typing import List, Optional
 
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -11,10 +10,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from .auth_client import AuthClient
 from .models import (
     AuthContext,
-    AuthenticationError,
-    AuthorizationError,
     DGMPermissions,
-    InsufficientPermissionsError,
     User,
 )
 
@@ -34,7 +30,7 @@ async def get_auth_client() -> AuthClient:
 
 async def get_current_user(
     request: Request,
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security),
+    credentials: HTTPAuthorizationCredentials | None = Depends(security),
     auth_client: AuthClient = Depends(get_auth_client),
 ) -> User:
     """
@@ -107,7 +103,7 @@ async def get_current_user(
 
 async def get_auth_context(
     user: User = Depends(get_current_user),
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security),
+    credentials: HTTPAuthorizationCredentials | None = Depends(security),
 ) -> AuthContext:
     """
     Get authentication context with user and permissions.
@@ -159,7 +155,7 @@ def require_dgm_permission(permission: DGMPermissions):
     return require_permission(permission.value)
 
 
-def require_any_permission(permissions: List[str]):
+def require_any_permission(permissions: list[str]):
     """
     Dependency factory for requiring any of the specified permissions.
     """
@@ -207,9 +203,9 @@ def optional_auth():
     """
 
     async def optional_auth_dependency(
-        credentials: Optional[HTTPAuthorizationCredentials] = Depends(security),
+        credentials: HTTPAuthorizationCredentials | None = Depends(security),
         auth_client: AuthClient = Depends(get_auth_client),
-    ) -> Optional[User]:
+    ) -> User | None:
         if not credentials:
             return None
 

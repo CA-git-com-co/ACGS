@@ -5,17 +5,16 @@ Tests security measures including input validation, authentication/authorization
 vulnerability scanning, and penetration testing scenarios.
 """
 
-import os
-import sys
-import json
-import time
-import re
 import hashlib
+import json
+import re
 import secrets
-from pathlib import Path
-from typing import Dict, List, Any, Optional
+import sys
+import time
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+from typing import Any
 
 # Add project paths
 project_root = Path(__file__).parent
@@ -40,9 +39,9 @@ class SecurityTestResult:
     security_checks_passed: int
     total_security_checks: int
     risk_level: str  # LOW, MEDIUM, HIGH, CRITICAL
-    security_details: Dict[str, Any]
-    recommendations: List[str]
-    error_message: Optional[str] = None
+    security_details: dict[str, Any]
+    recommendations: list[str]
+    error_message: str | None = None
 
 
 class SecurityValidator:
@@ -240,22 +239,21 @@ class SecurityValidator:
             for keyword in ["script", "javascript", "onerror", "onload"]
         ):
             return "XSS"
-        elif any(
+        if any(
             keyword in input_data.lower()
             for keyword in ["drop", "union", "select", "insert", "delete"]
         ):
             return "SQL_Injection"
-        elif any(
+        if any(
             keyword in input_data.lower()
             for keyword in ["rm", "del", "cat", "whoami", "passwd"]
         ):
             return "Command_Injection"
-        elif ".." in input_data:
+        if ".." in input_data:
             return "Path_Traversal"
-        elif len(input_data) > 1000:
+        if len(input_data) > 1000:
             return "Buffer_Overflow"
-        else:
-            return "Unknown"
+        return "Unknown"
 
     def test_authentication_security(self) -> SecurityTestResult:
         """Test authentication security measures."""
@@ -334,7 +332,7 @@ class SecurityValidator:
                 str(e),
             )
 
-    def _test_password_strength(self) -> Dict[str, Any]:
+    def _test_password_strength(self) -> dict[str, Any]:
         """Test password strength requirements."""
         weak_passwords = [
             "password",
@@ -393,7 +391,7 @@ class SecurityValidator:
 
         return has_upper and has_lower and has_digit and has_special
 
-    def _test_session_management(self) -> Dict[str, Any]:
+    def _test_session_management(self) -> dict[str, Any]:
         """Test session management security."""
         # Simulate session token generation and validation
         session_tokens = []
@@ -430,7 +428,7 @@ class SecurityValidator:
             ),
         }
 
-    def _test_brute_force_protection(self) -> Dict[str, Any]:
+    def _test_brute_force_protection(self) -> dict[str, Any]:
         """Test brute force attack protection."""
         # Simulate multiple failed login attempts
         failed_attempts = {}
@@ -473,7 +471,7 @@ class SecurityValidator:
             ),
         }
 
-    def _test_token_security(self) -> Dict[str, Any]:
+    def _test_token_security(self) -> dict[str, Any]:
         """Test security token implementation."""
         # Test JWT-like token structure
         header = {"alg": "HS256", "typ": "JWT"}
@@ -659,7 +657,7 @@ class SecurityValidator:
         allowed_resources = access_matrix.get(user_role, [])
         return resource in allowed_resources
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Run all security validation tests."""
         print("Starting Security Hardening Validation...")
         print("=" * 60)
@@ -687,7 +685,7 @@ class SecurityValidator:
                     "UNKNOWN",
                     {},
                     [],
-                    f"Test execution failed: {str(e)}",
+                    f"Test execution failed: {e!s}",
                 )
                 self.log_result(error_result)
 

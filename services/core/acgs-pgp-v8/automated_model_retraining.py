@@ -14,21 +14,20 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import logging
-import json
-import numpy as np
-import pandas as pd
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Callable, Union
-from dataclasses import dataclass, asdict
-from enum import Enum
 import warnings
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from enum import Enum
+from typing import Any
+
+import numpy as np
 
 warnings.filterwarnings("ignore")
 
 # Import Phase 1 and Phase 2 frameworks
-from event_driven_drift_detection import EventDrivenDriftDetector, DriftEvent
 from event_driven_data_quality import EventDrivenDataQualityFramework, QualityEvent
-from nats_event_broker import NATSEventBroker, ACGSEvent
+from event_driven_drift_detection import DriftEvent, EventDrivenDriftDetector
+from nats_event_broker import ACGSEvent, NATSEventBroker
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +65,7 @@ class ModelMetadata:
     status: ModelStatus
     created_at: str
     last_updated: str
-    performance_metrics: Dict[str, float]
+    performance_metrics: dict[str, float]
     constitutional_compliance_score: float
     constitutional_hash: str
 
@@ -78,11 +77,11 @@ class RetrainingRequest:
     request_id: str
     model_id: str
     trigger_type: RetrainingTrigger
-    trigger_data: Dict[str, Any]
+    trigger_data: dict[str, Any]
     priority: str  # LOW, MEDIUM, HIGH, CRITICAL
     requested_at: str
     constitutional_hash: str
-    compliance_requirements: Dict[str, Any]
+    compliance_requirements: dict[str, Any]
 
 
 @dataclass
@@ -96,7 +95,7 @@ class RetrainingResult:
     performance_improvement: float
     compliance_score: float
     training_duration_seconds: float
-    validation_metrics: Dict[str, float]
+    validation_metrics: dict[str, float]
     constitutional_hash: str
     completed_at: str
 
@@ -106,7 +105,7 @@ class PerformanceDegradationDetector:
 
     def __init__(self):
         self.constitutional_hash = "cdd01ef066bc6cf2"
-        self.performance_history: Dict[str, List[Dict[str, Any]]] = {}
+        self.performance_history: dict[str, list[dict[str, Any]]] = {}
 
         # Performance thresholds
         self.thresholds = {
@@ -123,11 +122,11 @@ class PerformanceDegradationDetector:
             "consecutive_violations": 3,  # Number of consecutive violations to trigger
         }
 
-        logger.info(f"Performance Degradation Detector initialized")
+        logger.info("Performance Degradation Detector initialized")
 
     async def check_performance_degradation(
-        self, model_id: str, current_metrics: Dict[str, float]
-    ) -> Optional[Dict[str, Any]]:
+        self, model_id: str, current_metrics: dict[str, float]
+    ) -> dict[str, Any] | None:
         """Check if model performance has degraded."""
 
         # Initialize history for new models
@@ -215,7 +214,7 @@ class PerformanceDegradationDetector:
         # Trigger if multiple metrics show degradation
         return violations >= 2
 
-    def _calculate_historical_average(self, model_id: str) -> Dict[str, float]:
+    def _calculate_historical_average(self, model_id: str) -> dict[str, float]:
         """Calculate historical average performance."""
 
         history = self.performance_history[model_id]
@@ -260,12 +259,11 @@ class PerformanceDegradationDetector:
 
         if max_degradation > 0.3:
             return "CRITICAL"
-        elif max_degradation > 0.2:
+        if max_degradation > 0.2:
             return "HIGH"
-        elif max_degradation > 0.1:
+        if max_degradation > 0.1:
             return "MEDIUM"
-        else:
-            return "LOW"
+        return "LOW"
 
 
 class ConstitutionalComplianceValidator:
@@ -303,11 +301,11 @@ class ConstitutionalComplianceValidator:
             },
         }
 
-        logger.info(f"Constitutional Compliance Validator initialized")
+        logger.info("Constitutional Compliance Validator initialized")
 
     async def validate_model_compliance(
-        self, model_id: str, model_metrics: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, model_id: str, model_metrics: dict[str, Any]
+    ) -> dict[str, Any]:
         """Validate constitutional compliance of a model."""
 
         # Simulate compliance scoring (in production, would use actual validation)
@@ -373,9 +371,9 @@ class AutomatedRetrainingOrchestrator:
         self.compliance_validator = ConstitutionalComplianceValidator()
 
         # Model registry
-        self.model_registry: Dict[str, ModelMetadata] = {}
-        self.retraining_queue: List[RetrainingRequest] = []
-        self.active_retraining: Dict[str, RetrainingRequest] = {}
+        self.model_registry: dict[str, ModelMetadata] = {}
+        self.retraining_queue: list[RetrainingRequest] = []
+        self.active_retraining: dict[str, RetrainingRequest] = {}
 
         # Retraining configuration
         self.retraining_config = {
@@ -385,7 +383,7 @@ class AutomatedRetrainingOrchestrator:
             "deployment_timeout_seconds": 600,  # 10 minutes
         }
 
-        logger.info(f"Automated Retraining Orchestrator initialized")
+        logger.info("Automated Retraining Orchestrator initialized")
 
     async def initialize(self):
         """Initialize the retraining orchestrator."""
@@ -459,7 +457,7 @@ class AutomatedRetrainingOrchestrator:
 
             await self._queue_retraining_request(retraining_request)
 
-    async def _handle_performance_event(self, event_data: Dict[str, Any], msg):
+    async def _handle_performance_event(self, event_data: dict[str, Any], msg):
         """Handle performance degradation events."""
 
         model_id = event_data.get("model_id", "unknown")
@@ -548,7 +546,7 @@ class AutomatedRetrainingOrchestrator:
 
                 if not compliance_result["compliant"]:
                     logger.error(
-                        f"❌ Retraining blocked: Constitutional compliance violation"
+                        "❌ Retraining blocked: Constitutional compliance violation"
                     )
                     await self._complete_retraining(
                         request,
@@ -614,7 +612,7 @@ class AutomatedRetrainingOrchestrator:
 
     async def _validate_retrained_model(
         self, request: RetrainingRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate the retrained model."""
         logger.info(f"🔍 Validating retrained model: {request.model_id}")
         await asyncio.sleep(1)  # Simulate validation time
@@ -632,7 +630,7 @@ class AutomatedRetrainingOrchestrator:
 
     async def _deploy_retrained_model(
         self, request: RetrainingRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Deploy the retrained model."""
         logger.info(f"🚀 Deploying retrained model: {request.model_id}")
         await asyncio.sleep(1)  # Simulate deployment time

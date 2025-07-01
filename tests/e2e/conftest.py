@@ -25,7 +25,7 @@ import logging
 import os
 import time
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 from unittest.mock import Mock, patch
 
 import pytest
@@ -108,7 +108,7 @@ def performance_monitor():
                 {"operation": operation, "cost_sol": cost_sol, "timestamp": time.time()}
             )
 
-        def get_summary(self) -> Dict[str, Any]:
+        def get_summary(self) -> dict[str, Any]:
             """Get performance summary."""
             self.metrics["test_duration"] = time.time() - self.start_time
 
@@ -328,7 +328,7 @@ def service_health_checker(test_config, performance_monitor):
 
         def check_service_health(
             self, service_name: str, mock_response: bool = True
-        ) -> Dict[str, Any]:
+        ) -> dict[str, Any]:
             """Check health of a specific service."""
             service_config = self.config["services"].get(service_name)
             if not service_config:
@@ -356,35 +356,34 @@ def service_health_checker(test_config, performance_monitor):
                     "response_time_ms": response_time,
                     "url": f"{service_config['base_url']}/health",
                 }
-            else:
-                # Actual service call (if services are running)
-                try:
-                    response = requests.get(
-                        f"{service_config['base_url']}/health", timeout=5
-                    )
-                    response_time = (time.time() - start_time) * 1000
-                    self.monitor.record_response_time(
-                        f"{service_name}_health", response_time
-                    )
+            # Actual service call (if services are running)
+            try:
+                response = requests.get(
+                    f"{service_config['base_url']}/health", timeout=5
+                )
+                response_time = (time.time() - start_time) * 1000
+                self.monitor.record_response_time(
+                    f"{service_name}_health", response_time
+                )
 
-                    return {
-                        "status": (
-                            "healthy" if response.status_code == 200 else "unhealthy"
-                        ),
-                        "service": service_name,
-                        "response_time_ms": response_time,
-                        "status_code": response.status_code,
-                        "url": f"{service_config['base_url']}/health",
-                    }
-                except Exception as e:
-                    return {
-                        "status": "error",
-                        "service": service_name,
-                        "error": str(e),
-                        "url": f"{service_config['base_url']}/health",
-                    }
+                return {
+                    "status": (
+                        "healthy" if response.status_code == 200 else "unhealthy"
+                    ),
+                    "service": service_name,
+                    "response_time_ms": response_time,
+                    "status_code": response.status_code,
+                    "url": f"{service_config['base_url']}/health",
+                }
+            except Exception as e:
+                return {
+                    "status": "error",
+                    "service": service_name,
+                    "error": str(e),
+                    "url": f"{service_config['base_url']}/health",
+                }
 
-        def check_all_services(self, mock_response: bool = True) -> Dict[str, Any]:
+        def check_all_services(self, mock_response: bool = True) -> dict[str, Any]:
             """Check health of all services."""
             results = {}
             for service_name in self.config["services"].keys():
@@ -419,7 +418,7 @@ def compliance_validator(constitutional_principles):
         def __init__(self, principles):
             self.principles = principles
 
-        def validate_content(self, content: str) -> Dict[str, Any]:
+        def validate_content(self, content: str) -> dict[str, Any]:
             """Validate content against constitutional principles."""
             content_lower = content.lower()
             principle_scores = {}

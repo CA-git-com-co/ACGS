@@ -7,19 +7,16 @@ Implements comprehensive monitoring with intelligent alerting and automated reme
 import asyncio
 import json
 import logging
-import smtplib
 import time
 from datetime import datetime, timedelta
-from email.mime.text import MIMEText
 from pathlib import Path
-from typing import Dict, List, Optional
 
 import aiohttp
 import yaml
 from prometheus_client import (
     CollectorRegistry,
-    Gauge,
     Counter,
+    Gauge,
     Histogram,
     start_http_server,
 )
@@ -52,10 +49,10 @@ class EnterpriseMonitoringSystem:
             {"name": "ec-service", "port": 8006, "critical": True},
         ]
 
-    def _load_config(self, config_path: str) -> Dict:
+    def _load_config(self, config_path: str) -> dict:
         """Load monitoring configuration"""
         if config_path and Path(config_path).exists():
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 return yaml.safe_load(f)
 
         # Default configuration
@@ -312,7 +309,7 @@ class EnterpriseMonitoringSystem:
                 logger.error(f"Constitutional compliance loop error: {e}")
                 await asyncio.sleep(300)
 
-    async def _check_service_health(self, service: Dict) -> Dict:
+    async def _check_service_health(self, service: dict) -> dict:
         """Check health of a specific service"""
         try:
             start_time = time.time()
@@ -333,17 +330,16 @@ class EnterpriseMonitoringSystem:
                             "response_time": response_time,
                             "details": data,
                         }
-                    else:
-                        return {
-                            "healthy": False,
-                            "response_time": response_time,
-                            "error": f"HTTP {response.status}",
-                        }
+                    return {
+                        "healthy": False,
+                        "response_time": response_time,
+                        "error": f"HTTP {response.status}",
+                    }
 
         except Exception as e:
             return {"healthy": False, "response_time": None, "error": str(e)}
 
-    async def _collect_system_metrics(self) -> Dict:
+    async def _collect_system_metrics(self) -> dict:
         """Collect system-level metrics"""
         try:
             # Simulate system metrics collection
@@ -360,7 +356,7 @@ class EnterpriseMonitoringSystem:
             logger.error(f"System metrics collection error: {e}")
             return {}
 
-    async def _collect_application_metrics(self) -> Dict:
+    async def _collect_application_metrics(self) -> dict:
         """Collect application-level metrics"""
         try:
             # Simulate application metrics collection
@@ -437,7 +433,7 @@ class EnterpriseMonitoringSystem:
             logger.error(f"Error rate SLA calculation error: {e}")
             return 0.0
 
-    async def _check_constitutional_compliance(self) -> Dict:
+    async def _check_constitutional_compliance(self) -> dict:
         """Check constitutional compliance"""
         try:
             # Simulate constitutional compliance check
@@ -488,7 +484,7 @@ class EnterpriseMonitoringSystem:
 
             logger.warning(f"Alert fired: {alert['id']} - {message}")
 
-    def _is_duplicate_alert(self, new_alert: Dict) -> bool:
+    def _is_duplicate_alert(self, new_alert: dict) -> bool:
         """Check if alert is a duplicate of recent alerts"""
         cutoff_time = datetime.utcnow() - timedelta(minutes=15)
 
@@ -506,7 +502,7 @@ class EnterpriseMonitoringSystem:
 
         return False
 
-    async def _send_alert_notification(self, alert: Dict):
+    async def _send_alert_notification(self, alert: dict):
         """Send alert notification via email/webhook"""
         try:
             escalation_level = alert["escalation_level"]
@@ -523,7 +519,7 @@ class EnterpriseMonitoringSystem:
         except Exception as e:
             logger.error(f"Alert notification error: {e}")
 
-    async def _trigger_automated_remediation(self, alert: Dict):
+    async def _trigger_automated_remediation(self, alert: dict):
         """Trigger automated remediation for known issues"""
         try:
             if alert["type"] == "service_down":

@@ -4,13 +4,11 @@ Z3 SMT Solver Service
 Core service for formal verification using Z3 theorem prover.
 """
 
+import hashlib
 import logging
 import time
-import hashlib
-from typing import Dict, List, Optional, Any, Tuple
-from datetime import datetime, timedelta
+from typing import Any
 
-import z3
 from z3 import *
 
 from ..core.config import settings
@@ -31,14 +29,14 @@ class Z3SolverService:
     """
 
     def __init__(self):
-        self.solver_cache: Dict[str, Dict[str, Any]] = {}
-        self.proof_cache: Dict[str, str] = {}
+        self.solver_cache: dict[str, dict[str, Any]] = {}
+        self.proof_cache: dict[str, str] = {}
 
     def verify_policy_consistency(
         self,
-        policies: List[Dict[str, Any]],
-        constitutional_principles: Optional[List[Dict[str, Any]]] = None,
-    ) -> Dict[str, Any]:
+        policies: list[dict[str, Any]],
+        constitutional_principles: list[dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
         """
         Verify that a set of policies is consistent and complies with constitutional principles.
 
@@ -145,10 +143,10 @@ class Z3SolverService:
 
     def verify_single_policy(
         self,
-        policy: Dict[str, Any],
-        existing_policies: Optional[List[Dict[str, Any]]] = None,
-        constitutional_principles: Optional[List[Dict[str, Any]]] = None,
-    ) -> Dict[str, Any]:
+        policy: dict[str, Any],
+        existing_policies: list[dict[str, Any]] | None = None,
+        constitutional_principles: list[dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
         """
         Verify a single policy against existing policies and constitutional principles.
 
@@ -186,8 +184,8 @@ class Z3SolverService:
         return full_result
 
     def verify_constitutional_compliance(
-        self, policy: Dict[str, Any], principle_id: str
-    ) -> Dict[str, Any]:
+        self, policy: dict[str, Any], principle_id: str
+    ) -> dict[str, Any]:
         """
         Verify that a policy complies with a specific constitutional principle.
 
@@ -274,8 +272,8 @@ class Z3SolverService:
             }
 
     def _policy_to_z3_constraint(
-        self, policy: Dict[str, Any], policy_index: int
-    ) -> Tuple[Optional[Any], Dict[str, Any]]:
+        self, policy: dict[str, Any], policy_index: int
+    ) -> tuple[Any | None, dict[str, Any]]:
         """
         Convert a policy definition to Z3 constraint.
 
@@ -303,7 +301,7 @@ class Z3SolverService:
 
                 # Add condition logic based on type
                 if condition.get("type") == "agent_type":
-                    agent_type_var = String(f"agent_type")
+                    agent_type_var = String("agent_type")
                     variables["agent_type"] = agent_type_var
                     # In a real implementation, you'd have proper string constraints
 
@@ -350,8 +348,8 @@ class Z3SolverService:
             return None, {}
 
     def _principle_to_z3_constraint(
-        self, principle: Dict[str, Any]
-    ) -> Tuple[Optional[Any], Dict[str, Any]]:
+        self, principle: dict[str, Any]
+    ) -> tuple[Any | None, dict[str, Any]]:
         """
         Convert a constitutional principle to Z3 constraint.
 
@@ -376,7 +374,7 @@ class Z3SolverService:
                 constraint = Implies(harmful_action, Not(action_permitted))
                 return constraint, variables
 
-            elif "not override" in formal_spec.lower():
+            if "not override" in formal_spec.lower():
                 # Human autonomy: don't override human decisions
                 human_decision = Bool("human_decision")
                 agent_override = Bool("agent_override")
@@ -386,7 +384,7 @@ class Z3SolverService:
                 constraint = Implies(human_decision, Not(agent_override))
                 return constraint, variables
 
-            elif "auditable" in formal_spec.lower():
+            if "auditable" in formal_spec.lower():
                 # Transparency: actions must be auditable
                 agent_action = Bool("agent_action")
                 action_auditable = Bool("action_auditable")
@@ -400,7 +398,7 @@ class Z3SolverService:
                 )
                 return constraint, variables
 
-            elif "necessary" in formal_spec.lower():
+            if "necessary" in formal_spec.lower():
                 # Least privilege: permissions must be necessary
                 has_permission = Bool("has_permission")
                 permission_necessary = Bool("permission_necessary")
@@ -410,7 +408,7 @@ class Z3SolverService:
                 constraint = Implies(has_permission, permission_necessary)
                 return constraint, variables
 
-            elif "protected" in formal_spec.lower():
+            if "protected" in formal_spec.lower():
                 # Data protection: sensitive data must be protected
                 sensitive_data = Bool("sensitive_data")
                 data_protected = Bool("data_protected")
@@ -432,8 +430,8 @@ class Z3SolverService:
             return None, {}
 
     def _identify_policy_conflicts(
-        self, solver: Solver, constraints: List[Any], policies: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
+        self, solver: Solver, constraints: list[Any], policies: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         """Identify specific policy conflicts causing inconsistency."""
         conflicts = []
 
@@ -483,7 +481,7 @@ class Z3SolverService:
 
         return conflicts
 
-    def _get_solver_statistics(self, solver: Solver) -> Dict[str, Any]:
+    def _get_solver_statistics(self, solver: Solver) -> dict[str, Any]:
         """Get solver performance statistics."""
         try:
             stats = solver.statistics()
@@ -497,8 +495,8 @@ class Z3SolverService:
             return {}
 
     def _model_to_dict(
-        self, model: ModelRef, variables: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, model: ModelRef, variables: dict[str, Any]
+    ) -> dict[str, Any]:
         """Convert Z3 model to dictionary."""
         result = {}
         try:

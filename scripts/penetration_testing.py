@@ -2,7 +2,7 @@
 """
 ACGS-1 Penetration Testing
 
-Automated penetration testing suite for ACGS-1 services focusing on 
+Automated penetration testing suite for ACGS-1 services focusing on
 common web application vulnerabilities and security misconfigurations.
 """
 
@@ -10,10 +10,10 @@ import json
 import logging
 import os
 import sys
-import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any
+
 import requests
 import urllib3
 
@@ -95,7 +95,7 @@ class PenetrationTesting:
         os.makedirs("logs", exist_ok=True)
         os.makedirs("reports/security", exist_ok=True)
 
-    def run_penetration_tests(self) -> Dict[str, Any]:
+    def run_penetration_tests(self) -> dict[str, Any]:
         """Run comprehensive penetration tests."""
         logger.info(f"🔍 Starting penetration testing: {self.test_id}")
 

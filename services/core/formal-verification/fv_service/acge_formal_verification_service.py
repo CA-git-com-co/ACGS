@@ -3,40 +3,33 @@ ACGE Phase 2 Enhanced Formal Verification Service
 Constitutional compliance formal verification with ACGE integration and Z3 theorem proving
 """
 
-import asyncio
 import hashlib
 import logging
-import time
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
-
-import httpx
-from fastapi import FastAPI, HTTPException, Request, Response, Depends, status
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from prometheus_client import Counter, Histogram, Gauge
-from pydantic import BaseModel, Field
+import os
 
 # Import existing FV service components
 import sys
-import os
+import time
+from datetime import datetime, timezone
+from typing import Any
+
+import httpx
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from prometheus_client import Counter, Gauge, Histogram
+from pydantic import BaseModel, Field
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from app.core.constitutional_verification_engine import (
-    ConstitutionalVerificationEngine,
     ConstitutionalProperty,
-    VerificationLevel,
+    ConstitutionalVerificationEngine,
     ProofType,
+    VerificationLevel,
 )
 from app.core.tiered_validation import TieredValidationPipeline
-from app.schemas import VerificationRequest, VerificationResponse
 
 # ACGE integration
-from services.platform.authentication.auth_service.acge_integration import (
-    ACGEAuthIntegration,
-    constitutional_auth_dependency,
-)
 
 # Service configuration
 SERVICE_NAME = "acgs-fv-service-acge"
@@ -87,7 +80,7 @@ class ACGEFormalVerificationRequest(BaseModel):
     """Enhanced formal verification request with ACGE integration."""
 
     policy_content: str = Field(..., description="Policy content to verify")
-    constitutional_properties: List[str] = Field(
+    constitutional_properties: list[str] = Field(
         default=[], description="Constitutional properties to verify"
     )
     verification_level: str = Field("standard", description="Verification rigor level")
@@ -110,10 +103,10 @@ class ACGEFormalVerificationResponse(BaseModel):
 
     verified: bool
     constitutional_compliance_score: float
-    formal_proof: Dict[str, Any] = {}
-    z3_verification_result: Dict[str, Any] = {}
-    acge_analysis: Dict[str, Any] = {}
-    verification_metrics: Dict[str, Any] = {}
+    formal_proof: dict[str, Any] = {}
+    z3_verification_result: dict[str, Any] = {}
+    acge_analysis: dict[str, Any] = {}
+    verification_metrics: dict[str, Any] = {}
     constitutional_hash_verified: bool
     processing_time_ms: float
     timestamp: str
@@ -216,7 +209,7 @@ class ACGEFormalVerificationService:
 
     async def _perform_z3_verification(
         self, request: ACGEFormalVerificationRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Perform Z3 SMT solver verification."""
         start_time = time.time()
 
@@ -287,7 +280,7 @@ class ACGEFormalVerificationService:
 
     async def _validate_with_acge(
         self, request: ACGEFormalVerificationRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate formal verification with ACGE model."""
         start_time = time.time()
 
@@ -338,15 +331,14 @@ class ACGEFormalVerificationService:
                     "acge_model_version": acge_result.get("model_version", "acge-v2"),
                     "validation_time_ms": validation_time,
                 }
-            else:
-                logger.warning(f"ACGE validation failed: {response.status_code}")
-                return {
-                    "compliance_score": 0.5,
-                    "compliant": False,
-                    "error": f"ACGE model error: {response.status_code}",
-                    "validation_time_ms": validation_time,
-                    "fallback": True,
-                }
+            logger.warning(f"ACGE validation failed: {response.status_code}")
+            return {
+                "compliance_score": 0.5,
+                "compliant": False,
+                "error": f"ACGE model error: {response.status_code}",
+                "validation_time_ms": validation_time,
+                "fallback": True,
+            }
 
         except Exception as e:
             validation_time = (time.time() - start_time) * 1000
@@ -360,8 +352,8 @@ class ACGEFormalVerificationService:
             }
 
     async def _generate_formal_proof(
-        self, request: ACGEFormalVerificationRequest, z3_result: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, request: ACGEFormalVerificationRequest, z3_result: dict[str, Any]
+    ) -> dict[str, Any]:
         """Generate formal mathematical proof."""
         start_time = time.time()
 
@@ -419,8 +411,8 @@ class ACGEFormalVerificationService:
 
     def _calculate_compliance_score(
         self,
-        z3_result: Dict[str, Any],
-        acge_result: Dict[str, Any],
+        z3_result: dict[str, Any],
+        acge_result: dict[str, Any],
         constitutional_hash_valid: bool,
     ) -> float:
         """Calculate overall constitutional compliance score."""
@@ -443,7 +435,7 @@ class ACGEFormalVerificationService:
             logger.error(f"Compliance score calculation failed: {e}")
             return 0.0
 
-    async def get_service_status(self) -> Dict[str, Any]:
+    async def get_service_status(self) -> dict[str, Any]:
         """Get formal verification service status."""
         try:
             # Check ACGE model connectivity
@@ -573,7 +565,7 @@ async def verify_constitutional_compliance(request: ACGEFormalVerificationReques
 @app.post("/api/v1/verify/generate-formal-proof")
 async def generate_formal_proof(
     property_specification: str,
-    policy_constraints: List[str] = [],
+    policy_constraints: list[str] = [],
     proof_type: str = "constitutional_compliance",
 ):
     """Generate formal mathematical proof using Z3 theorem prover."""
@@ -606,7 +598,7 @@ if __name__ == "__main__":
 
     logger.info(f"🚀 Starting {SERVICE_NAME} v{SERVICE_VERSION}")
     logger.info(f"🏛️ Constitutional Hash: {CONSTITUTIONAL_HASH}")
-    logger.info(f"🔬 Z3 Formal Verification: Enabled")
+    logger.info("🔬 Z3 Formal Verification: Enabled")
     logger.info(f"🤖 ACGE Integration: {'Enabled' if ACGE_ENABLED else 'Disabled'}")
 
     uvicorn.run(app, host="0.0.0.0", port=SERVICE_PORT)

@@ -10,16 +10,15 @@ while maintaining integration with existing ACGS-PGP services.
 """
 
 import logging
-import json
-from datetime import datetime, timezone
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
-from .model_versioning import ModelVersionManager, MLOpsModelVersion, VersionPolicy
-from .git_integration import GitTracker
 from .artifact_storage import ArtifactManager
 from .deployment_pipeline import DeploymentPipeline, DeploymentStatus
+from .git_integration import GitTracker
+from .model_versioning import MLOpsModelVersion, ModelVersionManager, VersionPolicy
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +48,7 @@ class MLOpsConfig:
     artifact_retention_days: int = 90
 
     # Deployment configuration
-    staging_validation_config: Dict[str, Any] = field(
+    staging_validation_config: dict[str, Any] = field(
         default_factory=lambda: {
             "constitutional_compliance": {"threshold": 0.95},
             "performance_metrics": {
@@ -66,7 +65,7 @@ class MLOpsConfig:
         }
     )
 
-    production_promotion_config: Dict[str, Any] = field(
+    production_promotion_config: dict[str, Any] = field(
         default_factory=lambda: {
             "blue_green_deployment": True,
             "traffic_shift_percentage": [10, 50, 100],
@@ -79,7 +78,7 @@ class MLOpsConfig:
     constitutional_hash: str = "cdd01ef066bc6cf2"
 
     # Performance targets
-    performance_targets: Dict[str, float] = field(
+    performance_targets: dict[str, float] = field(
         default_factory=lambda: {
             "response_time_ms": 2000,
             "constitutional_compliance": 0.95,
@@ -96,7 +95,7 @@ class DeploymentResult:
 
     deployment_id: str
     model_version: MLOpsModelVersion
-    artifact_ids: Dict[str, str]
+    artifact_ids: dict[str, str]
     git_tag: str
     deployment_status: DeploymentStatus
 
@@ -106,16 +105,16 @@ class DeploymentResult:
 
     # Timestamps
     started_at: datetime
-    completed_at: Optional[datetime] = None
+    completed_at: datetime | None = None
 
     # Performance metrics
-    final_performance_metrics: Dict[str, float] = field(default_factory=dict)
+    final_performance_metrics: dict[str, float] = field(default_factory=dict)
 
     # Constitutional compliance
     constitutional_hash: str = "cdd01ef066bc6cf2"
     constitutional_compliance_verified: bool = False
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "deployment_id": self.deployment_id,
@@ -143,7 +142,7 @@ class MLOpsManager:
     Git integration, and deployment pipelines with constitutional compliance.
     """
 
-    def __init__(self, config: Optional[MLOpsConfig] = None):
+    def __init__(self, config: MLOpsConfig | None = None):
         self.config = config or MLOpsConfig()
 
         # Ensure storage directories exist
@@ -190,12 +189,12 @@ class MLOpsManager:
     def create_model_version(
         self,
         model_name: str,
-        model_path: Union[str, Path],
-        config_path: Union[str, Path],
-        performance_metrics: Dict[str, float],
+        model_path: str | Path,
+        config_path: str | Path,
+        performance_metrics: dict[str, float],
         version_policy: VersionPolicy = VersionPolicy.PATCH,
-        parent_version: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        parent_version: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> MLOpsModelVersion:
         """
         Create a new model version with full MLOps integration.
@@ -287,8 +286,8 @@ class MLOpsManager:
         model_name: str,
         model_version: str,
         skip_staging: bool = False,
-        custom_validation_config: Optional[Dict[str, Any]] = None,
-        custom_promotion_config: Optional[Dict[str, Any]] = None,
+        custom_validation_config: dict[str, Any] | None = None,
+        custom_promotion_config: dict[str, Any] | None = None,
     ) -> DeploymentResult:
         """
         Deploy a model through the complete MLOps pipeline.
@@ -470,18 +469,16 @@ class MLOpsManager:
                         f"Successfully rolled back {model_name} to version {previous_version.version}"
                     )
                     return True
-                else:
-                    logger.error(f"Failed to rollback deployment for {model_name}")
-                    return False
-            else:
-                logger.warning(f"No active deployment found for {model_name}")
-                return True  # Version rollback succeeded even if no deployment found
+                logger.error(f"Failed to rollback deployment for {model_name}")
+                return False
+            logger.warning(f"No active deployment found for {model_name}")
+            return True  # Version rollback succeeded even if no deployment found
 
         except Exception as e:
             logger.error(f"Rollback failed for {model_name}: {e}")
             return False
 
-    def get_model_status(self, model_name: str) -> Dict[str, Any]:
+    def get_model_status(self, model_name: str) -> dict[str, Any]:
         """Get comprehensive status for a model."""
 
         # Get latest version
@@ -516,7 +513,7 @@ class MLOpsManager:
             "performance_targets": self.config.performance_targets,
         }
 
-    def get_mlops_dashboard(self) -> Dict[str, Any]:
+    def get_mlops_dashboard(self) -> dict[str, Any]:
         """Get comprehensive MLOps dashboard data."""
 
         # Get statistics from all components

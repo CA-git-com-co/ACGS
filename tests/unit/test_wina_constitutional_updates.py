@@ -5,7 +5,7 @@ This module tests the WINA-informed constitutional principle update functionalit
 including analysis, proposal, approval, and monitoring workflows.
 """
 
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 import pytest
 
@@ -294,7 +294,8 @@ class TestWINAConstitutionalUpdateService:
 
         # Monitor performance
         monitoring_results = await update_service.monitor_update_performance(
-            update, monitoring_duration=60  # 1 minute for testing
+            update,
+            monitoring_duration=60,  # 1 minute for testing
         )
 
         # Verify monitoring results

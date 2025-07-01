@@ -11,9 +11,9 @@ from .metrics import DGMMetrics, MetricsCollector
 from .performance_tracker import PerformanceTracker
 
 __all__ = [
-    "MetricsCollector",
+    "AlertManager",
     "DGMMetrics",
     "HealthMonitor",
+    "MetricsCollector",
     "PerformanceTracker",
-    "AlertManager",
 ]

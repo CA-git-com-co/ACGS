@@ -7,15 +7,13 @@ Comprehensive test coverage tracking and visualization with constitutional compl
 import asyncio
 import json
 import logging
-import os
 import subprocess
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Any
 
-import aiohttp
 from prometheus_client import (
     CollectorRegistry,
     Counter,
@@ -64,7 +62,7 @@ class TestCoverageReport:
     constitutional_coverage: float
 
     # File-level coverage
-    file_coverage: Dict[str, float] = field(default_factory=dict)
+    file_coverage: dict[str, float] = field(default_factory=dict)
 
     # Constitutional compliance
     constitutional_hash: str = CONSTITUTIONAL_HASH
@@ -106,13 +104,13 @@ class TestCoverageDashboard:
         }
 
         # Coverage reports
-        self.coverage_reports: Dict[str, TestCoverageReport] = {}
-        self.historical_coverage: Dict[str, List[TestCoverageReport]] = {
+        self.coverage_reports: dict[str, TestCoverageReport] = {}
+        self.historical_coverage: dict[str, list[TestCoverageReport]] = {
             service: [] for service in self.services.keys()
         }
 
         # Test suite metrics
-        self.test_suite_metrics: List[TestSuiteMetrics] = []
+        self.test_suite_metrics: list[TestSuiteMetrics] = []
 
         # Coverage thresholds
         self.coverage_thresholds = {
@@ -185,7 +183,7 @@ class TestCoverageDashboard:
 
     async def collect_coverage_data(
         self, service_name: str
-    ) -> Optional[TestCoverageReport]:
+    ) -> TestCoverageReport | None:
         """Collect test coverage data for a service."""
         try:
             service_config = self.services.get(service_name)
@@ -249,9 +247,7 @@ class TestCoverageDashboard:
             logger.error(f"Error collecting coverage data for {service_name}: {e}")
             return None
 
-    async def run_coverage_analysis(
-        self, service_path: str
-    ) -> Optional[Dict[str, Any]]:
+    async def run_coverage_analysis(self, service_path: str) -> dict[str, Any] | None:
         """Run coverage analysis for a service."""
         try:
             # Check if service path exists
@@ -274,6 +270,7 @@ class TestCoverageDashboard:
 
             result = subprocess.run(
                 cmd,
+                check=False,
                 capture_output=True,
                 text=True,
                 cwd=service_path,
@@ -292,7 +289,7 @@ class TestCoverageDashboard:
             # Try to read test report
             test_report_file = Path(service_path) / "test_report.json"
             if test_report_file.exists():
-                with open(test_report_file, "r") as f:
+                with open(test_report_file) as f:
                     test_data = json.load(f)
                     coverage_data.update(await self.parse_test_report(test_data))
 
@@ -309,7 +306,7 @@ class TestCoverageDashboard:
             logger.error(f"Error running coverage analysis for {service_path}: {e}")
             return self.generate_mock_coverage_data()
 
-    def generate_mock_coverage_data(self) -> Dict[str, Any]:
+    def generate_mock_coverage_data(self) -> dict[str, Any]:
         """Generate mock coverage data for demonstration."""
         import random
 
@@ -360,12 +357,12 @@ class TestCoverageDashboard:
             },
         }
 
-    async def parse_coverage_file(self, coverage_file: Path) -> Dict[str, Any]:
+    async def parse_coverage_file(self, coverage_file: Path) -> dict[str, Any]:
         """Parse coverage file (simplified implementation)."""
         # This is a simplified parser - in practice, you'd use coverage.py API
         return {}
 
-    async def parse_test_report(self, test_data: Dict) -> Dict[str, Any]:
+    async def parse_test_report(self, test_data: dict) -> dict[str, Any]:
         """Parse test report data."""
         try:
             summary = test_data.get("summary", {})
@@ -466,7 +463,7 @@ class TestCoverageDashboard:
 
     async def run_test_suite(
         self, service_name: str, suite_type: str = "unit"
-    ) -> Optional[TestSuiteMetrics]:
+    ) -> TestSuiteMetrics | None:
         """Run test suite for a service."""
         try:
             start_time = time.time()
@@ -567,7 +564,7 @@ class TestCoverageDashboard:
                 await asyncio.sleep(1200)
 
     async def analyze_coverage_trends(
-        self, service_name: str, reports: List[TestCoverageReport]
+        self, service_name: str, reports: list[TestCoverageReport]
     ):
         """Analyze coverage trends for a service."""
         try:
@@ -614,7 +611,7 @@ class TestCoverageDashboard:
                 logger.error(f"Error in report generation loop: {e}")
                 await asyncio.sleep(7200)
 
-    async def generate_comprehensive_report(self) -> Dict[str, Any]:
+    async def generate_comprehensive_report(self) -> dict[str, Any]:
         """Generate comprehensive coverage report."""
         try:
             report = {
@@ -671,7 +668,7 @@ class TestCoverageDashboard:
             logger.error(f"Error generating comprehensive report: {e}")
             return {}
 
-    async def save_coverage_report(self, report: Dict[str, Any]):
+    async def save_coverage_report(self, report: dict[str, Any]):
         """Save coverage report to file."""
         try:
             # Create reports directory
@@ -692,7 +689,7 @@ class TestCoverageDashboard:
         except Exception as e:
             logger.error(f"Error saving coverage report: {e}")
 
-    def get_dashboard_status(self) -> Dict[str, Any]:
+    def get_dashboard_status(self) -> dict[str, Any]:
         """Get test coverage dashboard status."""
         return {
             "services_monitored": len(self.services),

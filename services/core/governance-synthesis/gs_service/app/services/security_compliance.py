@@ -193,9 +193,8 @@ class RateLimiter:
                         blocked=True,
                         reset_time=self.blocked_ips[identifier],
                     )
-                else:
-                    # Unblock IP
-                    del self.blocked_ips[identifier]
+                # Unblock IP
+                del self.blocked_ips[identifier]
 
             # Initialize or clean old requests
             if identifier not in self.requests:
@@ -397,7 +396,7 @@ class JWTManager:
         except jwt.InvalidTokenError as e:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=f"Invalid token: {str(e)}",
+                detail=f"Invalid token: {e!s}",
             )
 
     def revoke_token(self, token: str):
@@ -651,13 +650,13 @@ class SecurityComplianceService:
                 )
             return self.input_validator.sanitize_input(data)
 
-        elif isinstance(data, dict):
+        if isinstance(data, dict):
             return {
                 key: self.validate_input_data(value, input_type)
                 for key, value in data.items()
             }
 
-        elif isinstance(data, list):
+        if isinstance(data, list):
             return [self.validate_input_data(item, input_type) for item in data]
 
         return data
@@ -685,12 +684,11 @@ class SecurityComplianceService:
         # Calculate score based on severity of issues
         if critical_issues > 0:
             return max(0.0, 50.0 - (critical_issues * 10))
-        elif high_issues > 0:
+        if high_issues > 0:
             return max(50.0, 80.0 - (high_issues * 5))
-        elif total_issues > 0:
+        if total_issues > 0:
             return max(80.0, 95.0 - (total_issues * 2))
-        else:
-            return 100.0
+        return 100.0
 
     def get_security_summary(self) -> dict[str, Any]:
         """Get security compliance summary."""

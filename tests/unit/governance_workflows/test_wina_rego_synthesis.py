@@ -2,14 +2,8 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.core.wina_rego_synthesis
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.governance_synthesis.gs_service.app.core.wina_rego_synthesis import (
-    WINARegoSynthesisMetrics,
-    WINARegoSynthesisResult,
     WINARegoSynthesizer,
-    WINARegoSynthesisIntegration,
-    PolicySuggestion,
 )
 
 

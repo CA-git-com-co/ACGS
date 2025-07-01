@@ -488,7 +488,7 @@ class EnhancedGovernanceSynthesis:
                 # For now, we'll create a placeholder implementation
                 langgraph_result = {
                     "policy_content": f"""
-                    package {request.context_data.get('target_system', 'acgs')}.governance
+                    package {request.context_data.get("target_system", "acgs")}.governance
 
                     # Generated policy for: {request.synthesis_goal}
                     default allow := false
@@ -597,13 +597,12 @@ class EnhancedGovernanceSynthesis:
 
             tasks = [synthesize_with_semaphore(request) for request in requests]
             return await asyncio.gather(*tasks, return_exceptions=True)
-        else:
-            # Sequential processing
-            results = []
-            for request in requests:
-                result = await self.synthesize_policy(request)
-                results.append(result)
-            return results
+        # Sequential processing
+        results = []
+        for request in requests:
+            result = await self.synthesize_policy(request)
+            results.append(result)
+        return results
 
     def _update_metrics(
         self, synthesis_time_ms: float, validation_time_ms: float, success: bool

@@ -274,9 +274,8 @@ class GovernanceSessionManager:
             session = self._sessions[session_id]
             if session.is_active and session.idle_seconds < self.session_ttl:
                 return session
-            else:
-                # Remove expired session
-                del self._sessions[session_id]
+            # Remove expired session
+            del self._sessions[session_id]
 
         # Try to load from Redis
         if self.redis_client:

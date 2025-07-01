@@ -10,7 +10,7 @@ import json
 import logging
 import time
 from dataclasses import asdict, dataclass
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -154,7 +154,6 @@ class ACGSHealthMonitor:
                 async with aiohttp.ClientSession(
                     timeout=aiohttp.ClientTimeout(total=self.config.get("timeout", 10))
                 ) as session:
-
                     for service_name, config in self.services.items():
                         result = await self._check_service_health(
                             session, service_name, config
@@ -201,15 +200,14 @@ class ACGSHealthMonitor:
                             "url": url,
                         },
                     )
-                else:
-                    return HealthCheckResult(
-                        service_name=service_name,
-                        status=HealthStatus.UNHEALTHY,
-                        response_time_ms=response_time_ms,
-                        timestamp=datetime.now(timezone.utc),
-                        details={"http_status": response.status, "url": url},
-                        error_message=f"HTTP {response.status}",
-                    )
+                return HealthCheckResult(
+                    service_name=service_name,
+                    status=HealthStatus.UNHEALTHY,
+                    response_time_ms=response_time_ms,
+                    timestamp=datetime.now(timezone.utc),
+                    details={"http_status": response.status, "url": url},
+                    error_message=f"HTTP {response.status}",
+                )
 
         except Exception as e:
             response_time_ms = (time.time() - start_time) * 1000
@@ -336,7 +334,7 @@ class ACGSHealthMonitor:
             await self._create_alert(
                 AlertSeverity.CRITICAL,
                 "postgresql",
-                f"PostgreSQL database is unhealthy: {str(e)}",
+                f"PostgreSQL database is unhealthy: {e!s}",
                 {"database": config["database"]},
             )
 
@@ -389,7 +387,7 @@ class ACGSHealthMonitor:
             await self._create_alert(
                 AlertSeverity.CRITICAL,
                 "redis",
-                f"Redis cache is unhealthy: {str(e)}",
+                f"Redis cache is unhealthy: {e!s}",
                 {"host": config["host"]},
             )
 
@@ -577,7 +575,7 @@ class ACGSHealthMonitor:
             await self._create_alert(
                 AlertSeverity.HIGH,
                 "solana_network",
-                f"Solana network connectivity issues: {str(e)}",
+                f"Solana network connectivity issues: {e!s}",
                 {"rpc_url": self.blockchain["solana_rpc"]},
             )
 

@@ -106,12 +106,11 @@ async def detect_threat(
                 },
                 message="Threat detected and assessed",
             )
-        else:
-            return ThreatDetectionResponse(
-                threat_detected=False,
-                threat_assessment=None,
-                message="No threats detected",
-            )
+        return ThreatDetectionResponse(
+            threat_detected=False,
+            threat_assessment=None,
+            message="No threats detected",
+        )
 
     except Exception as e:
         logger.error(f"Threat detection failed: {e}")
@@ -138,12 +137,11 @@ async def mitigate_threat(
                 message="Threat mitigated successfully",
                 data=mitigation_result,
             )
-        else:
-            return SecurityResponse(
-                success=False,
-                message="Failed to mitigate threat",
-                data=mitigation_result,
-            )
+        return SecurityResponse(
+            success=False,
+            message="Failed to mitigate threat",
+            data=mitigation_result,
+        )
 
     except Exception as e:
         logger.error(f"Threat mitigation failed: {e}")
@@ -406,12 +404,11 @@ async def security_health_check(
                 "message": "Security manager is operational",
                 "data": health_status,
             }
-        else:
-            return {
-                "status": "unhealthy",
-                "message": "Security manager has issues",
-                "data": health_status,
-            }
+        return {
+            "status": "unhealthy",
+            "message": "Security manager has issues",
+            "data": health_status,
+        }
 
     except Exception as e:
         logger.error(f"Security health check failed: {e}")

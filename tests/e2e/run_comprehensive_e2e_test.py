@@ -38,12 +38,13 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
+
+from modules.blockchain_integration import ACGSBlockchainIntegration
+from modules.service_integration import ACGSServiceIntegration
 
 # Import test modules
 from test_comprehensive_end_to_end import ACGSEndToEndTestSuite
-from modules.blockchain_integration import ACGSBlockchainIntegration
-from modules.service_integration import ACGSServiceIntegration
 
 # Configure logging
 logging.basicConfig(
@@ -149,7 +150,7 @@ class ComprehensiveTestRunner:
             return overall_success
 
         except Exception as e:
-            logger.error(f"❌ Test execution failed: {str(e)}")
+            logger.error(f"❌ Test execution failed: {e!s}")
             return False
 
     async def _run_service_integration_tests(self) -> bool:
@@ -177,7 +178,7 @@ class ComprehensiveTestRunner:
             return success
 
         except Exception as e:
-            logger.error(f"❌ Service integration test error: {str(e)}")
+            logger.error(f"❌ Service integration test error: {e!s}")
             return False
 
     async def _run_blockchain_integration_tests(self) -> bool:
@@ -205,7 +206,7 @@ class ComprehensiveTestRunner:
             return success
 
         except Exception as e:
-            logger.error(f"❌ Blockchain integration test error: {str(e)}")
+            logger.error(f"❌ Blockchain integration test error: {e!s}")
             return False
 
     async def _run_end_to_end_tests(self) -> bool:
@@ -237,7 +238,7 @@ class ComprehensiveTestRunner:
             return e2e_success
 
         except Exception as e:
-            logger.error(f"❌ End-to-end test error: {str(e)}")
+            logger.error(f"❌ End-to-end test error: {e!s}")
             return False
 
     async def _run_performance_tests(self) -> bool:
@@ -276,7 +277,7 @@ class ComprehensiveTestRunner:
             return True
 
         except Exception as e:
-            logger.error(f"❌ Performance testing error: {str(e)}")
+            logger.error(f"❌ Performance testing error: {e!s}")
             return False
 
     async def _run_security_tests(self) -> bool:
@@ -320,7 +321,7 @@ class ComprehensiveTestRunner:
             return True
 
         except Exception as e:
-            logger.error(f"❌ Security testing error: {str(e)}")
+            logger.error(f"❌ Security testing error: {e!s}")
             return False
 
     async def _generate_comprehensive_report(self):
@@ -360,7 +361,7 @@ class ComprehensiveTestRunner:
             # Additional formats could be implemented here (HTML, Markdown)
 
         except Exception as e:
-            logger.error(f"❌ Report generation failed: {str(e)}")
+            logger.error(f"❌ Report generation failed: {e!s}")
 
     def _calculate_overall_success(self) -> bool:
         """Calculate overall test success."""
@@ -396,7 +397,7 @@ class ComprehensiveTestRunner:
             count += 1
         return count
 
-    def _extract_key_metrics(self) -> Dict[str, Any]:
+    def _extract_key_metrics(self) -> dict[str, Any]:
         """Extract key metrics from all test results."""
         return {
             "service_success_rate": self.test_results.get("service_integration", {})

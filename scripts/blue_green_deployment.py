@@ -9,8 +9,7 @@ import json
 import logging
 import time
 from pathlib import Path
-from typing import Any, Dict, List
-
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -44,7 +43,7 @@ class BlueGreenDeployer:
 
     async def deploy_blue_green_system(
         self, target_environment: str = "green", image_tag: str = "latest"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Deploy new version to target environment"""
         logger.info(
             f"🚀 Starting Blue-Green Deployment to {target_environment} environment"
@@ -129,7 +128,7 @@ class BlueGreenDeployer:
 
             return {"status": "failed", "error": str(e), "results": results}
 
-    async def pre_deployment_validation(self) -> Dict[str, Any]:
+    async def pre_deployment_validation(self) -> dict[str, Any]:
         """Validate system state before deployment"""
         logger.info("🔍 Performing pre-deployment validation...")
 
@@ -176,7 +175,7 @@ class BlueGreenDeployer:
 
         return validation
 
-    async def get_current_deployment_state(self) -> Dict[str, Any]:
+    async def get_current_deployment_state(self) -> dict[str, Any]:
         """Get current active environment and deployment state"""
         logger.info("📊 Checking current deployment state...")
 
@@ -213,7 +212,7 @@ class BlueGreenDeployer:
 
     async def deploy_to_environment(
         self, environment: str, image_tag: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Deploy services to target environment"""
         logger.info(
             f"🚀 Deploying to {environment} environment with tag {image_tag}..."
@@ -265,7 +264,7 @@ class BlueGreenDeployer:
             logger.error(f"Error deploying to {environment}: {e}")
             return {"status": "error", "error": str(e)}
 
-    async def comprehensive_health_check(self, environment: str) -> Dict[str, Any]:
+    async def comprehensive_health_check(self, environment: str) -> dict[str, Any]:
         """Perform comprehensive health check on environment"""
         logger.info(f"🏥 Performing health check on {environment} environment...")
 
@@ -328,7 +327,7 @@ class BlueGreenDeployer:
 
     async def validate_constitutional_compliance(
         self, environment: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate constitutional compliance in target environment"""
         logger.info(
             f"🏛️ Validating constitutional compliance in {environment} environment..."
@@ -381,7 +380,7 @@ class BlueGreenDeployer:
             logger.error(f"Error validating constitutional compliance: {e}")
             return {"status": "error", "error": str(e), "overall_compliance": "invalid"}
 
-    async def validate_performance(self, environment: str) -> Dict[str, Any]:
+    async def validate_performance(self, environment: str) -> dict[str, Any]:
         """Validate performance metrics in target environment"""
         logger.info(f"📊 Validating performance in {environment} environment...")
 
@@ -450,7 +449,7 @@ class BlueGreenDeployer:
 
         return performance_results
 
-    def should_switch_traffic(self, results: Dict[str, Any]) -> bool:
+    def should_switch_traffic(self, results: dict[str, Any]) -> bool:
         """Determine if traffic should be switched based on validation results"""
 
         # Check health
@@ -476,7 +475,7 @@ class BlueGreenDeployer:
 
         return health_ok and compliance_ok and performance_ok
 
-    async def switch_traffic(self, from_env: str, to_env: str) -> Dict[str, Any]:
+    async def switch_traffic(self, from_env: str, to_env: str) -> dict[str, Any]:
         """Switch traffic from one environment to another"""
         logger.info(f"🔄 Switching traffic from {from_env} to {to_env}...")
 
@@ -537,7 +536,7 @@ class BlueGreenDeployer:
             logger.error(f"Error switching traffic: {e}")
             return {"status": "error", "error": str(e)}
 
-    async def run_kubectl_command(self, args: List[str]) -> Dict[str, Any]:
+    async def run_kubectl_command(self, args: list[str]) -> dict[str, Any]:
         """Run kubectl command and return result"""
         cmd = ["kubectl"] + args
 
@@ -565,7 +564,7 @@ class BlueGreenDeployer:
 
     async def check_service_endpoint(
         self, service_name: str, namespace: str, port: int, path: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Check service endpoint health"""
         try:
             # Use kubectl port-forward to check endpoint
@@ -598,7 +597,7 @@ class BlueGreenDeployer:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def get_environment_status(self, environment: str) -> Dict[str, Any]:
+    async def get_environment_status(self, environment: str) -> dict[str, Any]:
         """Get detailed status of an environment"""
         namespace = self.namespaces[environment]
 
@@ -615,13 +614,12 @@ class BlueGreenDeployer:
                     "deployments": len(deployments.get("items", [])),
                     "namespace": namespace,
                 }
-            else:
-                return {"status": "error", "error": result["stderr"]}
+            return {"status": "error", "error": result["stderr"]}
 
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def get_traffic_split(self) -> Dict[str, Any]:
+    async def get_traffic_split(self) -> dict[str, Any]:
         """Get current traffic split configuration"""
         try:
             result = await self.run_kubectl_command(
@@ -648,7 +646,7 @@ class BlueGreenDeployer:
         except Exception as e:
             return {"error": str(e)}
 
-    async def verify_traffic_switch(self, target_env: str) -> Dict[str, Any]:
+    async def verify_traffic_switch(self, target_env: str) -> dict[str, Any]:
         """Verify that traffic has been switched to target environment"""
         try:
             # Check active environment configuration
@@ -675,7 +673,7 @@ class BlueGreenDeployer:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def post_deployment_validation(self, environment: str) -> Dict[str, Any]:
+    async def post_deployment_validation(self, environment: str) -> dict[str, Any]:
         """Perform post-deployment validation"""
         logger.info(f"✅ Performing post-deployment validation for {environment}...")
 
@@ -696,7 +694,7 @@ class BlueGreenDeployer:
 
         return validation
 
-    async def cleanup_old_environment(self, old_environment: str) -> Dict[str, Any]:
+    async def cleanup_old_environment(self, old_environment: str) -> dict[str, Any]:
         """Clean up old environment after successful deployment"""
         logger.info(f"🧹 Cleaning up {old_environment} environment...")
 
@@ -731,7 +729,7 @@ class BlueGreenDeployer:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def emergency_rollback(self, rollback_environment: str) -> Dict[str, Any]:
+    async def emergency_rollback(self, rollback_environment: str) -> dict[str, Any]:
         """Emergency rollback to previous environment"""
         logger.warning(f"🚨 Performing emergency rollback to {rollback_environment}...")
 
@@ -766,7 +764,7 @@ class BlueGreenDeployer:
             logger.error(f"Emergency rollback failed: {e}")
             return {"status": "failed", "error": str(e)}
 
-    def generate_deployment_summary(self, results: Dict[str, Any]) -> Dict[str, Any]:
+    def generate_deployment_summary(self, results: dict[str, Any]) -> dict[str, Any]:
         """Generate deployment summary"""
         summary = {
             "validations_passed": 0,

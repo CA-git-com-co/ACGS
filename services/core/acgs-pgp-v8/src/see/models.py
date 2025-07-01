@@ -79,7 +79,7 @@ class Stabilizer(BaseModel):
         memory_limit = self.config.get("memory_limit", "512MB")
         if memory_limit.endswith("GB"):
             return int(memory_limit[:-2]) * 1024
-        elif memory_limit.endswith("MB"):
+        if memory_limit.endswith("MB"):
             return int(memory_limit[:-2])
         return 512  # Default
 

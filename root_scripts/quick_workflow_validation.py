@@ -58,14 +58,13 @@ def check_workflow_triggers():
     print("=" * 20)
     print(f"Total Workflows: {total_workflows}")
     print(f"Properly Configured: {properly_configured}")
-    print(f"Success Rate: {(properly_configured/total_workflows*100):.1f}%")
+    print(f"Success Rate: {(properly_configured / total_workflows * 100):.1f}%")
 
     if properly_configured >= total_workflows * 0.85:  # 85% threshold
         print("🎉 TRIGGER CONFIGURATION: SUCCESS!")
         return True
-    else:
-        print("⚠️ TRIGGER CONFIGURATION: NEEDS IMPROVEMENT")
-        return False
+    print("⚠️ TRIGGER CONFIGURATION: NEEDS IMPROVEMENT")
+    return False
 
 
 def check_secret_scanning():
@@ -93,12 +92,10 @@ def check_secret_scanning():
         if len(tools_found) >= 3:
             print("🎉 SECRET SCANNING: SUCCESS!")
             return True
-        else:
-            print("⚠️ SECRET SCANNING: PARTIAL")
-            return False
-    else:
-        print("❌ Secret scanning workflow not found")
+        print("⚠️ SECRET SCANNING: PARTIAL")
         return False
+    print("❌ Secret scanning workflow not found")
+    return False
 
 
 def check_configuration_cleanup():
@@ -126,9 +123,8 @@ def check_configuration_cleanup():
     if removed and validation_created and json_valid:
         print("🎉 CONFIGURATION CLEANUP: SUCCESS!")
         return True
-    else:
-        print("⚠️ CONFIGURATION CLEANUP: PARTIAL")
-        return False
+    print("⚠️ CONFIGURATION CLEANUP: PARTIAL")
+    return False
 
 
 def main():
@@ -170,10 +166,9 @@ def main():
         print(f"   Improvement: +{new_score - previous_score:.1f}%")
 
         return 0
-    else:
-        print("\n⚠️ CI/CD PIPELINE OPTIMIZATION: NEEDS IMPROVEMENT")
-        print("   Some fixes require attention")
-        return 1
+    print("\n⚠️ CI/CD PIPELINE OPTIMIZATION: NEEDS IMPROVEMENT")
+    print("   Some fixes require attention")
+    return 1
 
 
 if __name__ == "__main__":

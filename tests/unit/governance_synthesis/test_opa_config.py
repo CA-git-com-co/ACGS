@@ -2,15 +2,9 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.config.opa_config
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.governance_synthesis.gs_service.app.config.opa_config import (
-    OPAMode,
-    OPAServerConfig,
-    OPAPerformanceConfig,
-    OPAPolicyConfig,
-    OPASecurityConfig,
     OPAConfig,
+    OPAServerConfig,
 )
 
 

@@ -96,9 +96,12 @@ class TypeAnnotationAnalyzer:
                     suggestions[param_name] = "Response"
                 elif param_name.endswith("_id"):
                     suggestions[param_name] = "str"
-                elif param_name in ["limit", "offset", "page", "size"]:
-                    suggestions[param_name] = "int"
-                elif param_name in ["skip", "take"]:
+                elif param_name in [
+                    "limit",
+                    "offset",
+                    "page",
+                    "size",
+                ] or param_name in ["skip", "take"]:
                     suggestions[param_name] = "int"
                 elif "config" in param_name.lower():
                     suggestions[param_name] = "Dict[str, Any]"
@@ -216,7 +219,7 @@ class TypeAnnotationAnalyzer:
             )
 
         except Exception as e:
-            error_msg = f"Error processing {file_path}: {str(e)}"
+            error_msg = f"Error processing {file_path}: {e!s}"
             result.errors.append(error_msg)
             logger.error(error_msg)
 
@@ -322,15 +325,15 @@ def main():
     total_functions = sum(r.functions_analyzed for r in analyzer.results)
     total_annotated = sum(r.functions_annotated for r in analyzer.results)
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("TYPE ANNOTATION ANALYSIS SUMMARY")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"Files Processed: {len(analyzer.results)}")
     print(f"Functions Analyzed: {total_functions}")
     print(f"Functions Needing Annotations: {total_functions - total_annotated}")
     print(f"Current Coverage: {(total_annotated / total_functions * 100):.1f}%")
     print("Target Coverage: ≥90%")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
 
 if __name__ == "__main__":

@@ -8,4 +8,4 @@ from .alerts import AlertManager
 from .health import HealthMonitor
 from .metrics import MetricsManager, get_metrics_manager
 
-__all__ = ["MetricsManager", "get_metrics_manager", "HealthMonitor", "AlertManager"]
+__all__ = ["AlertManager", "HealthMonitor", "MetricsManager", "get_metrics_manager"]

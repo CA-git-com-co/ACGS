@@ -14,9 +14,9 @@ from .models import (
 )
 
 __all__ = [
-    "SyndromeDiagnosticEngine",
+    "DiagnosticMetrics",
     "DiagnosticResult",
     "ErrorClassification",
     "RecoveryRecommendation",
-    "DiagnosticMetrics",
+    "SyndromeDiagnosticEngine",
 ]

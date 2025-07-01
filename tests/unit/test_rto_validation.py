@@ -394,6 +394,7 @@ class RTOValidationTester:
             try:
                 result = subprocess.run(
                     ["python3", "scripts/emergency_rollback_procedures.py", "health"],
+                    check=False,
                     cwd=self.project_root,
                     capture_output=True,
                     text=True,

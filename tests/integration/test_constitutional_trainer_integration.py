@@ -8,7 +8,7 @@ covering full "train → evaluate → log" workflow through the ACGS-1 Lite stac
 Test Coverage:
 - Constitutional Trainer API endpoints
 - Policy Engine (OPA) integration
-- Audit Engine integration  
+- Audit Engine integration
 - Redis caching behavior
 - Prometheus metrics emission
 - End-to-end training workflow
@@ -25,8 +25,7 @@ import json
 import time
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional
-from unittest.mock import AsyncMock, patch
+from typing import Any
 
 import aiohttp
 import pytest
@@ -52,9 +51,9 @@ class ConstitutionalTrainerIntegrationTest:
     """Integration test suite for Constitutional Trainer Service."""
 
     def __init__(self):
-        self.session: Optional[aiohttp.ClientSession] = None
-        self.redis_client: Optional[aioredis.Redis] = None
-        self.test_results: Dict[str, Any] = {
+        self.session: aiohttp.ClientSession | None = None
+        self.redis_client: aioredis.Redis | None = None
+        self.test_results: dict[str, Any] = {
             "test_cases": [],
             "performance_metrics": {},
             "cache_metrics": {},
@@ -105,7 +104,7 @@ class ConstitutionalTrainerIntegrationTest:
 
         return all_healthy
 
-    async def test_happy_path_training(self) -> Dict[str, Any]:
+    async def test_happy_path_training(self) -> dict[str, Any]:
         """Test successful constitutional training workflow."""
         test_case = {
             "name": "happy_path_training",
@@ -189,7 +188,7 @@ class ConstitutionalTrainerIntegrationTest:
         self.test_results["test_cases"].append(test_case)
         return test_case
 
-    async def test_policy_violation_scenario(self) -> Dict[str, Any]:
+    async def test_policy_violation_scenario(self) -> dict[str, Any]:
         """Test policy violation detection and handling."""
         test_case = {
             "name": "policy_violation_scenario",
@@ -217,7 +216,6 @@ class ConstitutionalTrainerIntegrationTest:
                 json=invalid_request,
                 headers={"Authorization": "Bearer test-token"},
             ) as response:
-
                 if response.status in [
                     400,
                     403,
@@ -252,7 +250,7 @@ class ConstitutionalTrainerIntegrationTest:
         self.test_results["test_cases"].append(test_case)
         return test_case
 
-    async def test_redis_caching_behavior(self) -> Dict[str, Any]:
+    async def test_redis_caching_behavior(self) -> dict[str, Any]:
         """Test Redis caching functionality."""
         test_case = {
             "name": "redis_caching_behavior",
@@ -306,7 +304,7 @@ class ConstitutionalTrainerIntegrationTest:
         self.test_results["test_cases"].append(test_case)
         return test_case
 
-    async def test_audit_log_ingestion(self) -> Dict[str, Any]:
+    async def test_audit_log_ingestion(self) -> dict[str, Any]:
         """Test audit log ingestion and retrieval."""
         test_case = {
             "name": "audit_log_ingestion",
@@ -334,7 +332,6 @@ class ConstitutionalTrainerIntegrationTest:
                 json=audit_entry,
                 headers={"Authorization": "Bearer internal-service-token"},
             ) as response:
-
                 if response.status == 201:
                     result = await response.json()
                     audit_id = result.get("id")
@@ -344,7 +341,6 @@ class ConstitutionalTrainerIntegrationTest:
                         f"{AUDIT_ENGINE_URL}/api/v1/audit/{audit_id}",
                         headers={"Authorization": "Bearer internal-service-token"},
                     ) as get_response:
-
                         if get_response.status == 200:
                             retrieved_entry = await get_response.json()
 
@@ -381,7 +377,7 @@ class ConstitutionalTrainerIntegrationTest:
         self.test_results["test_cases"].append(test_case)
         return test_case
 
-    async def test_prometheus_metrics_emission(self) -> Dict[str, Any]:
+    async def test_prometheus_metrics_emission(self) -> dict[str, Any]:
         """Test Prometheus metrics emission and collection."""
         test_case = {
             "name": "prometheus_metrics_emission",
@@ -451,7 +447,7 @@ class ConstitutionalTrainerIntegrationTest:
         self.test_results["test_cases"].append(test_case)
         return test_case
 
-    async def test_policy_engine_integration(self) -> Dict[str, Any]:
+    async def test_policy_engine_integration(self) -> dict[str, Any]:
         """Test Policy Engine (OPA) integration."""
         test_case = {
             "name": "policy_engine_integration",
@@ -500,7 +496,7 @@ class ConstitutionalTrainerIntegrationTest:
                         }
                     )
 
-                    print(f"✅ Policy evaluation test passed")
+                    print("✅ Policy evaluation test passed")
                     print(
                         f"   Evaluation time: {evaluation_time:.2f}ms (target: <{MAX_POLICY_EVALUATION_MS}ms)"
                     )
@@ -525,7 +521,7 @@ class ConstitutionalTrainerIntegrationTest:
         self.test_results["test_cases"].append(test_case)
         return test_case
 
-    async def run_all_tests(self) -> Dict[str, Any]:
+    async def run_all_tests(self) -> dict[str, Any]:
         """Run all integration tests and generate comprehensive report."""
         print("🚀 Starting Constitutional Trainer Integration Tests")
         print("=" * 60)
@@ -566,7 +562,7 @@ class ConstitutionalTrainerIntegrationTest:
         finally:
             await self.teardown()
 
-    def generate_test_report(self) -> Dict[str, Any]:
+    def generate_test_report(self) -> dict[str, Any]:
         """Generate comprehensive test report."""
         total_tests = len(self.test_results["test_cases"])
         passed_tests = len(

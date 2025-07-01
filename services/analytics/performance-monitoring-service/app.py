@@ -15,21 +15,19 @@ Port: 8012
 
 import asyncio
 import logging
-import json
+import sys
+from datetime import datetime, timedelta
+from typing import Any
+
+import numpy as np
 import uvicorn
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import BackgroundTasks, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from typing import Dict, List, Any, Optional
-import pandas as pd
-import numpy as np
-from datetime import datetime, timedelta
-import sys
-import os
 
 # Add core modules to path
 sys.path.append("../../core/acgs-pgp-v8")
-from nats_event_broker import NATSEventBroker, ACGSEvent
+from nats_event_broker import ACGSEvent, NATSEventBroker
 
 logger = logging.getLogger(__name__)
 
@@ -37,8 +35,8 @@ logger = logging.getLogger(__name__)
 # Pydantic models for API
 class PerformanceMetricsRequest(BaseModel):
     service_id: str = Field(..., description="Service identifier")
-    metrics: Dict[str, float] = Field(..., description="Performance metrics")
-    timestamp: Optional[str] = Field(None, description="Metric timestamp")
+    metrics: dict[str, float] = Field(..., description="Performance metrics")
+    timestamp: str | None = Field(None, description="Metric timestamp")
     constitutional_hash: str = Field(
         ..., description="Constitutional hash for validation"
     )
@@ -48,15 +46,15 @@ class PerformanceMetricsResponse(BaseModel):
     metric_id: str
     service_id: str
     sla_compliance: bool
-    violations: List[Dict[str, Any]]
-    recommendations: List[str]
+    violations: list[dict[str, Any]]
+    recommendations: list[str]
     constitutional_hash: str
     timestamp: str
 
 
 class SLAConfigRequest(BaseModel):
     service_id: str = Field(..., description="Service identifier")
-    sla_targets: Dict[str, float] = Field(..., description="SLA target values")
+    sla_targets: dict[str, float] = Field(..., description="SLA target values")
     constitutional_hash: str = Field(
         ..., description="Constitutional hash for validation"
     )
@@ -111,10 +109,10 @@ class PerformanceMonitoringMicroservice:
         }
 
         # Service-specific SLA configurations
-        self.sla_configs: Dict[str, Dict[str, float]] = {}
+        self.sla_configs: dict[str, dict[str, float]] = {}
 
         # Performance history storage
-        self.performance_history: Dict[str, List[Dict[str, Any]]] = {}
+        self.performance_history: dict[str, list[dict[str, Any]]] = {}
 
         # Service metrics
         self.metrics = {
@@ -245,7 +243,7 @@ class PerformanceMonitoringMicroservice:
             except Exception as e:
                 logger.error(f"❌ Performance metrics submission failed: {e}")
                 raise HTTPException(
-                    status_code=500, detail=f"Metrics submission failed: {str(e)}"
+                    status_code=500, detail=f"Metrics submission failed: {e!s}"
                 )
 
         @self.app.get("/metrics/history/{service_id}")
@@ -326,8 +324,8 @@ class PerformanceMonitoringMicroservice:
             }
 
     def _analyze_metrics(
-        self, service_id: str, metrics: Dict[str, float], sla_targets: Dict[str, float]
-    ) -> Dict[str, Any]:
+        self, service_id: str, metrics: dict[str, float], sla_targets: dict[str, float]
+    ) -> dict[str, Any]:
         """Analyze metrics against SLA targets."""
 
         violations = []
@@ -417,7 +415,7 @@ class PerformanceMonitoringMicroservice:
         }
 
     def _store_metrics_history(
-        self, service_id: str, metrics: Dict[str, float], timestamp: Optional[str]
+        self, service_id: str, metrics: dict[str, float], timestamp: str | None
     ):
         """Store metrics in history."""
 
@@ -441,7 +439,7 @@ class PerformanceMonitoringMicroservice:
 
     def _get_recent_metrics(
         self, service_id: str, hours: int = 1
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get recent metrics for a service."""
 
         if service_id not in self.performance_history:
@@ -456,7 +454,7 @@ class PerformanceMonitoringMicroservice:
         ]
 
     def _calculate_compliance_rate(
-        self, metrics_history: List[Dict[str, Any]], sla_targets: Dict[str, float]
+        self, metrics_history: list[dict[str, Any]], sla_targets: dict[str, float]
     ) -> float:
         """Calculate SLA compliance rate."""
 
@@ -478,8 +476,8 @@ class PerformanceMonitoringMicroservice:
         self,
         metric_id: str,
         service_id: str,
-        metrics: Dict[str, float],
-        analysis_result: Dict[str, Any],
+        metrics: dict[str, float],
+        analysis_result: dict[str, Any],
     ):
         """Publish performance metrics event."""
 
@@ -564,7 +562,7 @@ class PerformanceMonitoringMicroservice:
                 logger.error(f"❌ Error in continuous performance monitoring: {e}")
                 await asyncio.sleep(5)
 
-    def _generate_sample_metrics(self) -> Dict[str, float]:
+    def _generate_sample_metrics(self) -> dict[str, float]:
         """Generate sample performance metrics for monitoring demo."""
 
         return {

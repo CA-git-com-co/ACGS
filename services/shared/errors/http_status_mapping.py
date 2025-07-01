@@ -20,7 +20,6 @@ HTTP Status Code Standards:
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, Optional, Set, Tuple
 
 from .error_catalog import ErrorCategory, ErrorSeverity, ServiceCode
 
@@ -69,9 +68,9 @@ class StatusCodeRule:
     """Rule for determining HTTP status code based on error characteristics."""
 
     category: ErrorCategory
-    severity: Optional[ErrorSeverity] = None
-    service: Optional[ServiceCode] = None
-    error_pattern: Optional[str] = None
+    severity: ErrorSeverity | None = None
+    service: ServiceCode | None = None
+    error_pattern: str | None = None
     status_code: HTTPStatusCode = HTTPStatusCode.INTERNAL_SERVER_ERROR
     priority: int = 0  # Higher priority rules take precedence
 
@@ -293,7 +292,7 @@ class HTTPStatusMapper:
         severity: ErrorSeverity,
         service: ServiceCode,
         error_code: str,
-    ) -> Dict[str, str]:
+    ) -> dict[str, str]:
         """Get appropriate HTTP headers for error response."""
         headers = {}
 
@@ -329,7 +328,7 @@ class StatusCodeValidator:
 
     def __init__(self):
         self.valid_status_codes = {code.value for code in HTTPStatusCode}
-        self.usage_stats: Dict[int, int] = {}
+        self.usage_stats: dict[int, int] = {}
 
     def validate_status_code(self, status_code: int) -> bool:
         """Validate that status code is in approved list."""
@@ -339,7 +338,7 @@ class StatusCodeValidator:
         """Record status code usage for monitoring."""
         self.usage_stats[status_code] = self.usage_stats.get(status_code, 0) + 1
 
-    def get_usage_report(self) -> Dict[str, any]:
+    def get_usage_report(self) -> dict[str, any]:
         """Get status code usage report."""
         total_usage = sum(self.usage_stats.values())
 
@@ -425,7 +424,7 @@ def get_error_response_headers(
     severity: ErrorSeverity,
     service: ServiceCode,
     error_code: str,
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """Get appropriate headers for error response."""
     return status_mapper.get_error_headers(category, severity, service, error_code)
 
@@ -438,23 +437,23 @@ def validate_status_code_usage(status_code: int) -> bool:
     return is_valid
 
 
-def get_status_code_usage_report() -> Dict[str, any]:
+def get_status_code_usage_report() -> dict[str, any]:
     """Get status code usage statistics."""
     return status_validator.get_usage_report()
 
 
 # Export main classes and functions
 __all__ = [
-    "HTTPStatusCode",
     "ACGSStatusCode",
-    "StatusCodeRule",
+    "HTTPStatusCode",
     "HTTPStatusMapper",
+    "StatusCodeRule",
     "StatusCodeValidator",
+    "get_error_response_headers",
+    "get_http_status_code",
+    "get_status_code_usage_report",
+    "is_error_retryable",
     "status_mapper",
     "status_validator",
-    "get_http_status_code",
-    "is_error_retryable",
-    "get_error_response_headers",
     "validate_status_code_usage",
-    "get_status_code_usage_report",
 ]

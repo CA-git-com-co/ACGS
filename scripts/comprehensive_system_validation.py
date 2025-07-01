@@ -10,7 +10,6 @@ import logging
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
 
 import aiohttp
 
@@ -356,7 +355,7 @@ class ComprehensiveSystemValidator:
             # Check if access control enhancement results exist
             results_file = Path("access_control_enhancement_results.json")
             if results_file.exists():
-                with open(results_file, "r") as f:
+                with open(results_file) as f:
                     data = json.load(f)
                     return {
                         "score": data.get("final_score", 0.0),
@@ -385,7 +384,7 @@ class ComprehensiveSystemValidator:
             # Check if frontend enhancement results exist
             results_file = Path("frontend_integration_enhancement_results.json")
             if results_file.exists():
-                with open(results_file, "r") as f:
+                with open(results_file) as f:
                     data = json.load(f)
                     return {
                         "score": data.get("e2e_validation_score", 0),

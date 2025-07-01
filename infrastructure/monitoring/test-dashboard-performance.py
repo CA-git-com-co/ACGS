@@ -14,7 +14,7 @@ import statistics
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import aiohttp
@@ -157,7 +157,7 @@ class DashboardPerformanceTester:
             return success
 
         except Exception as e:
-            logger.error(f"❌ Dashboard performance testing failed: {str(e)}")
+            logger.error(f"❌ Dashboard performance testing failed: {e!s}")
             return False
 
     async def test_dashboard_loading_performance(self):
@@ -238,7 +238,7 @@ class DashboardPerformanceTester:
 
             except Exception as e:
                 logger.error(
-                    f"❌ Dashboard loading test failed for {dashboard['name']}: {str(e)}"
+                    f"❌ Dashboard loading test failed for {dashboard['name']}: {e!s}"
                 )
 
             self.test_results[f"loading_{dashboard['uid']}"] = result
@@ -277,7 +277,7 @@ class DashboardPerformanceTester:
                         except Exception as e:
                             result.error_count += 1
                             result.error_details.append(
-                                f"Query failed: {query} - {str(e)}"
+                                f"Query failed: {query} - {e!s}"
                             )
 
                         await asyncio.sleep(0.1)
@@ -296,7 +296,7 @@ class DashboardPerformanceTester:
                         )
 
         except Exception as e:
-            logger.error(f"❌ Dashboard query performance test failed: {str(e)}")
+            logger.error(f"❌ Dashboard query performance test failed: {e!s}")
 
         self.test_results["query_performance"] = result
 
@@ -360,7 +360,7 @@ class DashboardPerformanceTester:
                 )
 
         except Exception as e:
-            logger.error(f"❌ Real-time dashboard updates test failed: {str(e)}")
+            logger.error(f"❌ Real-time dashboard updates test failed: {e!s}")
 
         self.test_results["realtime_updates"] = result
 
@@ -447,7 +447,7 @@ class DashboardPerformanceTester:
                 )
 
         except Exception as e:
-            logger.error(f"❌ Concurrent dashboard access test failed: {str(e)}")
+            logger.error(f"❌ Concurrent dashboard access test failed: {e!s}")
 
         self.test_results["concurrent_access"] = result
 
@@ -490,7 +490,7 @@ class DashboardPerformanceTester:
 
                         except Exception as e:
                             result.error_count += 1
-                            result.error_details.append(f"API {endpoint}: {str(e)}")
+                            result.error_details.append(f"API {endpoint}: {e!s}")
 
                         await asyncio.sleep(0.1)
 
@@ -502,7 +502,7 @@ class DashboardPerformanceTester:
                         logger.info(f"{status} API {endpoint}: {avg_time:.2f}ms")
 
         except Exception as e:
-            logger.error(f"❌ Dashboard API performance test failed: {str(e)}")
+            logger.error(f"❌ Dashboard API performance test failed: {e!s}")
 
         self.test_results["api_performance"] = result
 
@@ -593,7 +593,7 @@ class DashboardPerformanceTester:
                 )
 
         except Exception as e:
-            logger.error(f"❌ Dashboard load test failed: {str(e)}")
+            logger.error(f"❌ Dashboard load test failed: {e!s}")
 
         self.test_results["load_testing"] = result
 
@@ -690,7 +690,7 @@ class DashboardPerformanceTester:
 
             logger.info(f"✅ Dashboard performance test report saved to: {report_file}")
         except Exception as e:
-            logger.error(f"❌ Failed to save report: {str(e)}")
+            logger.error(f"❌ Failed to save report: {e!s}")
 
     def summarize_errors(self, error_details: list[str]) -> dict[str, int]:
         """Summarize error details for reporting."""
@@ -745,7 +745,7 @@ async def main():
         logger.info("⚠️ Dashboard performance tests interrupted by user")
         sys.exit(130)
     except Exception as e:
-        logger.error(f"❌ Dashboard performance tests failed with error: {str(e)}")
+        logger.error(f"❌ Dashboard performance tests failed with error: {e!s}")
         sys.exit(1)
 
 

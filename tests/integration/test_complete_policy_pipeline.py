@@ -22,7 +22,7 @@ Target Metrics:
 import asyncio
 import json
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import httpx
@@ -89,7 +89,7 @@ class PolicyPipelineTestSuite:
                     print(f"  ❌ {service}_service: HTTP {response.status_code}")
 
             except Exception as e:
-                print(f"  ❌ {service}_service: {str(e)}")
+                print(f"  ❌ {service}_service: {e!s}")
                 health_results[service] = {"status": False, "error": str(e)}
 
         self.performance_metrics["service_health"] = health_results
@@ -465,7 +465,7 @@ class PolicyPipelineTestSuite:
             print("🚀 ACGS-PGP system ready for production deployment")
 
         except Exception as e:
-            print(f"\n❌ Test execution failed: {str(e)}")
+            print(f"\n❌ Test execution failed: {e!s}")
             raise
         finally:
             await self.client.aclose()

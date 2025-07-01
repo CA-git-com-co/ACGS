@@ -12,7 +12,7 @@ import logging
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 # Production readiness configuration
 PRODUCTION_CONFIG = {
@@ -88,7 +88,7 @@ class ProductionReadinessValidator:
             "recommendations": [],
         }
 
-    async def execute_production_validation(self) -> Dict[str, Any]:
+    async def execute_production_validation(self) -> dict[str, Any]:
         """Execute comprehensive production readiness validation."""
         try:
             self.logger.info("🚀 Starting ACGS-PGP Production Readiness Validation")
@@ -151,7 +151,7 @@ class ProductionReadinessValidator:
 
         self.logger.info(f"Enhancement completion score: {overall_completion:.3f}")
 
-    async def _validate_router_optimization(self) -> Dict[str, Any]:
+    async def _validate_router_optimization(self) -> dict[str, Any]:
         """Validate router optimization implementation in gs-service."""
         try:
             coordinator_file = Path(
@@ -168,7 +168,7 @@ class ProductionReadinessValidator:
                 }
 
             # Read and analyze the coordinator file
-            with open(coordinator_file, "r") as f:
+            with open(coordinator_file) as f:
                 content = f.read()
 
             # Check for required features
@@ -214,7 +214,7 @@ class ProductionReadinessValidator:
         except Exception as e:
             return {"completed": False, "completion_score": 0.0, "error": str(e)}
 
-    async def _validate_wina_integration(self) -> Dict[str, Any]:
+    async def _validate_wina_integration(self) -> dict[str, Any]:
         """Validate WINA integration implementation in ec-service."""
         try:
             wina_dir = Path(
@@ -249,7 +249,7 @@ class ProductionReadinessValidator:
             coordinator_integrated = coordinator_file.exists()
 
             if coordinator_integrated:
-                with open(coordinator_file, "r") as f:
+                with open(coordinator_file) as f:
                     content = f.read()
                     coordinator_integrated = (
                         "WINACore" in content and "ConstitutionalWINASupport" in content
@@ -277,7 +277,7 @@ class ProductionReadinessValidator:
         except Exception as e:
             return {"completed": False, "completion_score": 0.0, "error": str(e)}
 
-    async def _validate_formal_verification(self) -> Dict[str, Any]:
+    async def _validate_formal_verification(self) -> dict[str, Any]:
         """Validate formal verification enhancement in fv-service."""
         try:
             compiler_file = Path(
@@ -294,7 +294,7 @@ class ProductionReadinessValidator:
                 }
 
             # Read and analyze the compiler file
-            with open(compiler_file, "r") as f:
+            with open(compiler_file) as f:
                 content = f.read()
 
             # Check for required features
@@ -320,7 +320,7 @@ class ProductionReadinessValidator:
             smt_enhanced = smt_file.exists()
 
             if smt_enhanced:
-                with open(smt_file, "r") as f:
+                with open(smt_file) as f:
                     smt_content = f.read()
                     smt_enhanced = (
                         "PolicySMTCompiler" in smt_content
@@ -391,7 +391,7 @@ class ProductionReadinessValidator:
 
         return None
 
-    async def _validate_constitutional_hash_consistency(self) -> Dict[str, Any]:
+    async def _validate_constitutional_hash_consistency(self) -> dict[str, Any]:
         """Validate constitutional hash consistency across services."""
         expected_hash = PRODUCTION_CONFIG["constitutional_hash"]
 
@@ -407,7 +407,7 @@ class ProductionReadinessValidator:
             file_path = Path(config_file)
             if file_path.exists():
                 try:
-                    with open(file_path, "r") as f:
+                    with open(file_path) as f:
                         content = f.read()
                         if expected_hash in content:
                             hash_found_in.append(config_file)
@@ -485,7 +485,7 @@ class ProductionReadinessValidator:
         compose_file = Path("docker-compose.yml")
         if compose_file.exists():
             try:
-                with open(compose_file, "r") as f:
+                with open(compose_file) as f:
                     content = f.read()
                     return "user:" in content or "runAsNonRoot" in content
             except:
@@ -497,7 +497,7 @@ class ProductionReadinessValidator:
         compose_file = Path("docker-compose.yml")
         if compose_file.exists():
             try:
-                with open(compose_file, "r") as f:
+                with open(compose_file) as f:
                     content = f.read()
                     return "cpus:" in content or "memory:" in content
             except:

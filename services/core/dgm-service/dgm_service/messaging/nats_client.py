@@ -9,9 +9,10 @@ request/reply, and streaming capabilities.
 import asyncio
 import json
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 from uuid import uuid4
 
 import nats
@@ -25,14 +26,14 @@ from nats.js.api import ConsumerConfig, StreamConfig
 class NATSConfig:
     """NATS configuration for DGM service."""
 
-    servers: List[str] = field(default_factory=lambda: ["nats://localhost:4222"])
+    servers: list[str] = field(default_factory=lambda: ["nats://localhost:4222"])
     name: str = "dgm-service"
-    user: Optional[str] = None
-    password: Optional[str] = None
-    token: Optional[str] = None
-    tls_cert: Optional[str] = None
-    tls_key: Optional[str] = None
-    tls_ca: Optional[str] = None
+    user: str | None = None
+    password: str | None = None
+    token: str | None = None
+    tls_cert: str | None = None
+    tls_key: str | None = None
+    tls_ca: str | None = None
 
     # Connection settings
     max_reconnect_attempts: int = 10
@@ -43,7 +44,7 @@ class NATSConfig:
     # JetStream settings
     enable_jetstream: bool = True
     stream_name: str = "DGM_EVENTS"
-    subjects: List[str] = field(
+    subjects: list[str] = field(
         default_factory=lambda: [
             "dgm.improvement.*",
             "dgm.performance.*",
@@ -66,12 +67,12 @@ class NATSClient:
         self.logger = logging.getLogger(__name__)
 
         # NATS connections
-        self.nc: Optional[NATS] = None
-        self.js: Optional[JetStreamContext] = None
+        self.nc: NATS | None = None
+        self.js: JetStreamContext | None = None
 
         # Subscriptions tracking
-        self.subscriptions: Dict[str, Subscription] = {}
-        self.handlers: Dict[str, List[Callable]] = {}
+        self.subscriptions: dict[str, Subscription] = {}
+        self.handlers: dict[str, list[Callable]] = {}
 
         # Connection state
         self.connected = False
@@ -214,8 +215,8 @@ class NATSClient:
     async def publish(
         self,
         subject: str,
-        data: Dict[str, Any],
-        headers: Optional[Dict[str, str]] = None,
+        data: dict[str, Any],
+        headers: dict[str, str] | None = None,
     ) -> bool:
         """Publish message to NATS subject."""
         if not self.connected:
@@ -258,8 +259,8 @@ class NATSClient:
         self,
         subject: str,
         handler: Callable,
-        queue_group: Optional[str] = None,
-        durable: Optional[str] = None,
+        queue_group: str | None = None,
+        durable: str | None = None,
     ) -> bool:
         """Subscribe to NATS subject with message handler."""
         if not self.connected:
@@ -327,8 +328,8 @@ class NATSClient:
             return False
 
     async def request(
-        self, subject: str, data: Dict[str, Any], timeout: float = 5.0
-    ) -> Optional[Dict[str, Any]]:
+        self, subject: str, data: dict[str, Any], timeout: float = 5.0
+    ) -> dict[str, Any] | None:
         """Send request and wait for reply."""
         if not self.connected:
             self.logger.error("Cannot send request: not connected to NATS")
@@ -359,7 +360,7 @@ class NATSClient:
             self.logger.error(f"Request to {subject} failed: {e}")
             return None
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Perform health check of NATS connection."""
         health = {
             "connected": self.connected,

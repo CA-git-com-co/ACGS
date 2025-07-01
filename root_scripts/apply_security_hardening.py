@@ -67,11 +67,8 @@ class SecurityHardeningApplicator:
                     f"✅ Security Hardening Service operational: {status['framework_status']}"
                 )
                 return True
-            else:
-                logger.error(
-                    f"❌ Security service returned status {response.status_code}"
-                )
-                return False
+            logger.error(f"❌ Security service returned status {response.status_code}")
+            return False
         except Exception as e:
             logger.error(f"❌ Security Hardening Service not available: {e}")
             return False
@@ -86,11 +83,8 @@ class SecurityHardeningApplicator:
                 health_data = response.json()
                 logger.info(f"✅ {service_name} is healthy on port {port}")
                 return {"status": "healthy", "data": health_data}
-            else:
-                logger.warning(
-                    f"⚠️ {service_name} returned status {response.status_code}"
-                )
-                return {"status": "unhealthy", "code": response.status_code}
+            logger.warning(f"⚠️ {service_name} returned status {response.status_code}")
+            return {"status": "unhealthy", "code": response.status_code}
         except Exception as e:
             logger.warning(f"⚠️ {service_name} not responding: {e}")
             return {"status": "not_responding", "error": str(e)}
@@ -105,9 +99,8 @@ class SecurityHardeningApplicator:
             )
             if response.status_code == 200:
                 return response.json()
-            else:
-                logger.error(f"Validation failed with status {response.status_code}")
-                return {"error": f"HTTP {response.status_code}"}
+            logger.error(f"Validation failed with status {response.status_code}")
+            return {"error": f"HTTP {response.status_code}"}
         except Exception as e:
             logger.error(f"Validation request failed: {e}")
             return {"error": str(e)}
@@ -306,9 +299,8 @@ async def main():
                 "✅ Security Hardening & Input Validation Framework - COMPLETED"
             )
             return True
-        else:
-            logger.warning("⚠️ Security hardening needs improvement")
-            return False
+        logger.warning("⚠️ Security hardening needs improvement")
+        return False
 
     except Exception as e:
         logger.error(f"❌ Security hardening failed: {e}")

@@ -11,6 +11,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from services.shared.database import get_async_db  # Added
 from services.shared.models import Principle
 
+# Security validation imports
+from services.shared.security_validation import (
+    validate_policy_input,
+)
+
 # Import schemas and CRUD functions using relative paths
 from ... import schemas as gs_schemas  # Goes up 3 levels from v1 to app.
 from ...crud_gs import get_policy  # Goes up 3 levels from v1 to app for crud_gs
@@ -20,13 +25,6 @@ from ...services import (  # Goes up 3 levels for services
     integrity_client,
 )
 from ...services.qec_error_correction_service import QECErrorCorrectionService
-
-# Security validation imports
-from services.shared.security_validation import (
-    validate_user_input,
-    validate_policy_input,
-    validate_governance_input,
-)
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -46,7 +44,7 @@ async def perform_actual_synthesis(
     generated_rules = []
     for i, principle in enumerate(principles_content):
         # Simulate rule generation - this would be the core AI/ML part
-        rule_content = f"rule_for_principle_{principle.get('id', i+1)}_{principle.get('name', 'unknown').replace(' ', '_')}(X) :- condition(X)."
+        rule_content = f"rule_for_principle_{principle.get('id', i + 1)}_{principle.get('name', 'unknown').replace(' ', '_')}(X) :- condition(X)."
         if target_context:
             rule_content += f" AND context_is_{target_context}(X)."
 
@@ -366,7 +364,7 @@ async def multi_model_synthesis(
                 error_prediction=error_prediction,
             )
 
-        elif recommended_strategy == "multi_model_consensus":
+        if recommended_strategy == "multi_model_consensus":
             # High risk - use enhanced multi-model approach
             generated_rules_info = await perform_enhanced_multi_model_synthesis(
                 principles_for_synthesis, request_body.target_context, error_prediction
@@ -439,7 +437,7 @@ async def multi_model_synthesis(
         logger.error(f"Error in multi-model synthesis: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Multi-model synthesis failed: {str(e)}",
+            detail=f"Multi-model synthesis failed: {e!s}",
         )
 
 
@@ -459,7 +457,7 @@ async def perform_enhanced_multi_model_synthesis(
     for i, principle in enumerate(principles_content):
         try:
             # Enhanced rule generation with consensus approach
-            base_rule = f"consensus_rule_for_principle_{principle.get('id', i+1)}"
+            base_rule = f"consensus_rule_for_principle_{principle.get('id', i + 1)}"
 
             # Add risk-aware context
             risk_level = "high"
@@ -516,7 +514,7 @@ async def perform_enhanced_synthesis(
     for i, principle in enumerate(principles_content):
         try:
             # Enhanced rule generation with validation
-            base_rule = f"validated_rule_for_principle_{principle.get('id', i+1)}"
+            base_rule = f"validated_rule_for_principle_{principle.get('id', i + 1)}"
             rule_content = f"{base_rule}(X) :- constitutional_compliance(X), enhanced_validation(X)"
 
             if target_context:

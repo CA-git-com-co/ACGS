@@ -18,35 +18,34 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import logging
-import numpy as np
-import pandas as pd
-from datetime import datetime, timedelta
-from typing import Dict, List, Tuple, Any, Optional
-from dataclasses import dataclass
-import joblib
 import os
-import json
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+from typing import Any
 
-# Advanced ML libraries
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-from sklearn.neural_network import MLPRegressor
-from sklearn.model_selection import TimeSeriesSplit, cross_val_score
-from sklearn.preprocessing import StandardScaler, RobustScaler
-from sklearn.feature_selection import SelectKBest, f_regression
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-import optuna
-import xgboost as xgb
+import joblib
 import lightgbm as lgb
+import numpy as np
+import optuna
 
 # Text analysis
 import textstat
+import xgboost as xgb
+
+# Advanced ML libraries
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.feature_selection import SelectKBest, f_regression
+from sklearn.metrics import mean_absolute_error, r2_score
+from sklearn.model_selection import TimeSeriesSplit, cross_val_score
+from sklearn.neural_network import MLPRegressor
+from sklearn.preprocessing import RobustScaler
 from textblob import TextBlob
 
 from services.shared.ai_types import (
-    ModelType,
-    RequestType,
     ContentType,
+    ModelType,
     MultimodalRequest,
+    RequestType,
 )
 
 logger = logging.getLogger(__name__)
@@ -173,7 +172,7 @@ class EnhancedMLRoutingOptimizer:
 
     def _get_advanced_historical_metrics(
         self, request_type: RequestType, content_type: ContentType
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Get advanced historical metrics with recency weighting."""
 
         # Get recent relevant metrics (last 30 days)
@@ -234,7 +233,7 @@ class EnhancedMLRoutingOptimizer:
 
     def optimize_hyperparameters(
         self, X: np.ndarray, y: np.ndarray, model_type: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Optimize hyperparameters using Optuna."""
 
         def objective(trial):
@@ -383,7 +382,7 @@ class EnhancedMLRoutingOptimizer:
         self._save_enhanced_models()
         logger.info("Enhanced ML models training completed")
 
-    def _calculate_ensemble_weights(self, models: Dict[str, Dict]) -> Dict[str, float]:
+    def _calculate_ensemble_weights(self, models: dict[str, dict]) -> dict[str, float]:
         """Calculate ensemble weights based on model performance."""
 
         # Use inverse MAE as weight (better models get higher weight)
@@ -403,7 +402,7 @@ class EnhancedMLRoutingOptimizer:
 
     def predict_with_ensemble(
         self, request: MultimodalRequest, model_type: ModelType
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Make predictions using ensemble of models."""
 
         if not self._models_trained():
@@ -468,7 +467,7 @@ class EnhancedMLRoutingOptimizer:
 
     def _prepare_advanced_training_data(
         self,
-    ) -> Tuple[np.ndarray, Dict[str, np.ndarray]]:
+    ) -> tuple[np.ndarray, dict[str, np.ndarray]]:
         # Simplified data preparation
         X = []
         y = {"response_time": [], "cost": [], "quality": [], "compliance": []}
@@ -507,7 +506,7 @@ class EnhancedMLRoutingOptimizer:
 
     def _features_to_vector(
         self, features: AdvancedRequestFeatures, model_type: ModelType
-    ) -> List[float]:
+    ) -> list[float]:
         return [
             features.request_type_encoded,
             features.content_type_encoded,
@@ -540,7 +539,7 @@ class EnhancedMLRoutingOptimizer:
 
     def _fallback_prediction(
         self, request: MultimodalRequest, model_type: ModelType
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         # Same as original implementation
         base_predictions = {
             ModelType.FLASH_LITE: {

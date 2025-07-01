@@ -200,7 +200,7 @@ class ACGSBackupRecoverySystem:
                 str(dump_file),
             ]
 
-            result = subprocess.run(cmd, capture_output=True, text=True)
+            result = subprocess.run(cmd, check=False, capture_output=True, text=True)
             if result.returncode != 0:
                 raise Exception(f"Database backup failed: {result.stderr}")
 
@@ -406,12 +406,11 @@ class ACGSBackupRecoverySystem:
                     if conn.laddr.port == port and conn.status == "LISTEN":
                         return True
                 return False
-            else:
-                # Fallback using netstat
-                result = subprocess.run(
-                    ["netstat", "-ln"], capture_output=True, text=True
-                )
-                return f":{port} " in result.stdout
+            # Fallback using netstat
+            result = subprocess.run(
+                ["netstat", "-ln"], check=False, capture_output=True, text=True
+            )
+            return f":{port} " in result.stdout
         except:
             return False
 
@@ -431,7 +430,10 @@ class ACGSBackupRecoverySystem:
         for file_path in backup_dir.rglob("*"):
             if file_path.is_file() and file_path.name != "checksums.sha256":
                 result = subprocess.run(
-                    ["sha256sum", str(file_path)], capture_output=True, text=True
+                    ["sha256sum", str(file_path)],
+                    check=False,
+                    capture_output=True,
+                    text=True,
                 )
                 if result.returncode == 0:
                     checksums.append(result.stdout.strip())
@@ -456,7 +458,7 @@ class ACGSBackupRecoverySystem:
             backup_dir.name,
         ]
 
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        result = subprocess.run(cmd, check=False, capture_output=True, text=True)
         if result.returncode != 0:
             raise Exception(f"Compression failed: {result.stderr}")
 
@@ -556,7 +558,7 @@ class ACGSBackupRecoverySystem:
         for service_name in self.services:
             port = self.service_ports[service_name]
             # Kill processes on service ports
-            subprocess.run(f"pkill -f 'uvicorn.*:{port}'", shell=True)
+            subprocess.run(f"pkill -f 'uvicorn.*:{port}'", check=False, shell=True)
 
         # Wait for services to stop
         await asyncio.sleep(5)
@@ -565,7 +567,9 @@ class ACGSBackupRecoverySystem:
         """Start all ACGS services"""
         start_script = self.project_root / "scripts" / "start_missing_services.sh"
         if start_script.exists():
-            subprocess.run(["bash", str(start_script)], cwd=self.project_root)
+            subprocess.run(
+                ["bash", str(start_script)], check=False, cwd=self.project_root
+            )
 
         # Wait for services to start
         await asyncio.sleep(30)
@@ -589,7 +593,7 @@ class ACGSBackupRecoverySystem:
                 self.config["database"]["name"],
                 "--if-exists",
             ]
-            subprocess.run(cmd)
+            subprocess.run(cmd, check=False)
 
             cmd = [
                 "createdb",
@@ -617,7 +621,7 @@ class ACGSBackupRecoverySystem:
                 str(dump_file),
             ]
 
-            result = subprocess.run(cmd, capture_output=True, text=True)
+            result = subprocess.run(cmd, check=False, capture_output=True, text=True)
             if result.returncode != 0:
                 raise Exception(f"Database restore failed: {result.stderr}")
 
@@ -687,6 +691,7 @@ class ACGSBackupRecoverySystem:
             if health_script.exists():
                 result = subprocess.run(
                     ["python3", str(health_script)],
+                    check=False,
                     capture_output=True,
                     text=True,
                     cwd=self.project_root,
@@ -697,8 +702,7 @@ class ACGSBackupRecoverySystem:
                     "output": result.stdout,
                     "timestamp": datetime.now().isoformat(),
                 }
-            else:
-                return {"status": "skipped", "reason": "Health check script not found"}
+            return {"status": "skipped", "reason": "Health check script not found"}
 
         except Exception as e:
             logger.error(f"Health verification failed: {e}")
@@ -761,6 +765,7 @@ class ACGSBackupRecoverySystem:
             # Verify checksums
             result = subprocess.run(
                 ["sha256sum", "-c", str(checksum_file)],
+                check=False,
                 cwd=backup_dir,
                 capture_output=True,
                 text=True,

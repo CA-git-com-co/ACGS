@@ -189,7 +189,7 @@ class ServiceIntegrator:
                     self._update_metrics(service_name, False, None)
                     return {
                         "success": False,
-                        "error": f"Service call failed after {self.retry_attempts} attempts: {str(e)}",
+                        "error": f"Service call failed after {self.retry_attempts} attempts: {e!s}",
                         "service": service_name,
                         "endpoint": endpoint,
                     }
@@ -201,7 +201,7 @@ class ServiceIntegrator:
                 self._update_metrics(service_name, False, None)
                 return {
                     "success": False,
-                    "error": f"Unexpected error: {str(e)}",
+                    "error": f"Unexpected error: {e!s}",
                     "service": service_name,
                     "endpoint": endpoint,
                 }
@@ -214,22 +214,21 @@ class ServiceIntegrator:
             if response.status == 200:
                 response_data = await response.json()
                 return {"success": True, "data": response_data}
-            elif response.status == 404:
+            if response.status == 404:
                 return {"success": False, "error": "Endpoint not found"}
-            elif response.status == 500:
+            if response.status == 500:
                 error_text = await response.text()
                 return {
                     "success": False,
                     "error": f"Internal server error: {error_text}",
                 }
-            else:
-                error_text = await response.text()
-                return {
-                    "success": False,
-                    "error": f"HTTP {response.status}: {error_text}",
-                }
+            error_text = await response.text()
+            return {
+                "success": False,
+                "error": f"HTTP {response.status}: {error_text}",
+            }
         except Exception as e:
-            return {"success": False, "error": f"Response parsing error: {str(e)}"}
+            return {"success": False, "error": f"Response parsing error: {e!s}"}
 
     def _update_metrics(
         self, service_name: str, success: bool, response_time_ms: float | None
@@ -294,17 +293,14 @@ class ServiceIntegrator:
                         }
                     )
                     return True
-                else:
-                    self.integration_metrics["service_availability"][
-                        service_name
-                    ].update(
-                        {
-                            "available": False,
-                            "last_check": time.time(),
-                            "response_time_ms": None,
-                        }
-                    )
-                    return False
+                self.integration_metrics["service_availability"][service_name].update(
+                    {
+                        "available": False,
+                        "last_check": time.time(),
+                        "response_time_ms": None,
+                    }
+                )
+                return False
 
         except Exception as e:
             logger.warning(f"Health check failed for {service_name}: {e}")

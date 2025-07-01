@@ -9,16 +9,16 @@ evaluation dashboard functionality.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import sys
-import os
-import numpy as np
 import logging
-from datetime import datetime
+import os
+import sys
+
+import numpy as np
 
 # Add the services directory to the path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from production_ml_optimizer import ProductionMLOptimizer, ComprehensiveMetricsEvaluator
+from production_ml_optimizer import ComprehensiveMetricsEvaluator, ProductionMLOptimizer
 
 # Configure logging
 logging.basicConfig(
@@ -77,7 +77,7 @@ def test_regression_metrics():
     assert 0 <= metrics.r2_score <= 1
     assert metrics.mape >= 0
 
-    logger.info(f"  📊 Regression Metrics:")
+    logger.info("  📊 Regression Metrics:")
     logger.info(f"    MAE: {metrics.mae:.4f}")
     logger.info(f"    RMSE: {metrics.rmse:.4f}")
     logger.info(f"    R²: {metrics.r2_score:.4f}")
@@ -121,7 +121,7 @@ def test_business_metrics():
     assert 0 <= metrics.response_time_accuracy <= 1
     assert 0 <= metrics.constitutional_compliance_rate <= 1
 
-    logger.info(f"  💼 Business Metrics:")
+    logger.info("  💼 Business Metrics:")
     logger.info(f"    Cost Efficiency: {metrics.cost_efficiency:.3f}")
     logger.info(f"    Response Time Accuracy: {metrics.response_time_accuracy:.3f}")
     logger.info(
@@ -160,7 +160,7 @@ def test_performance_metrics():
     assert 0 <= metrics.model_confidence <= 1
     assert 0 <= metrics.feature_importance_stability <= 1
 
-    logger.info(f"  🔧 Performance Metrics:")
+    logger.info("  🔧 Performance Metrics:")
     logger.info(f"    Prediction Stability: {metrics.prediction_stability:.3f}")
     logger.info(f"    Model Confidence: {metrics.model_confidence:.3f}")
     logger.info(
@@ -194,7 +194,7 @@ def test_metric_trends():
         metrics = evaluator.calculate_comprehensive_metrics(model, X, y)
 
         logger.info(
-            f"    Evaluation {i+1}: R² = {metrics.r2_score:.3f}, MAE = {metrics.mae:.3f}"
+            f"    Evaluation {i + 1}: R² = {metrics.r2_score:.3f}, MAE = {metrics.mae:.3f}"
         )
 
     # Analyze trends
@@ -240,7 +240,7 @@ def test_production_ml_optimizer_integration():
     assert metrics.constitutional_hash == "cdd01ef066bc6cf2"
     assert metrics.sample_size == len(y)
 
-    logger.info(f"  📊 Comprehensive Metrics Evaluation:")
+    logger.info("  📊 Comprehensive Metrics Evaluation:")
     logger.info(f"    R²: {metrics.r2_score:.3f}")
     logger.info(f"    MAE: {metrics.mae:.3f}")
     logger.info(
@@ -260,7 +260,7 @@ def test_production_ml_optimizer_integration():
     assert summary["constitutional_hash_verified"] == True
     assert "overall_quality_score" in summary
 
-    logger.info(f"  🎯 Comprehensive Evaluation:")
+    logger.info("  🎯 Comprehensive Evaluation:")
     logger.info(f"    Overall Quality Score: {summary['overall_quality_score']:.3f}")
     logger.info(
         f"    Deployment Recommendation: {summary['deployment_recommendation']}"
@@ -310,7 +310,7 @@ def test_evaluation_dashboard():
     assert "business_metrics" in current_metrics
     assert "performance_metrics" in current_metrics
 
-    logger.info(f"  📊 Dashboard Data Generated:")
+    logger.info("  📊 Dashboard Data Generated:")
     logger.info(
         f"    Total Evaluations: {dashboard_data['summary']['total_evaluations']}"
     )

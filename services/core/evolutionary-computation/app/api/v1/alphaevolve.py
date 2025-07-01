@@ -261,7 +261,7 @@ async def evaluate_ec_governance(
     except Exception as e:
         logger.error(f"EC governance evaluation failed: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Governance evaluation failed: {str(e)}"
+            status_code=500, detail=f"Governance evaluation failed: {e!s}"
         )
 
 
@@ -386,7 +386,7 @@ async def optimize_ec_algorithm(
     except Exception as e:
         logger.error(f"EC algorithm optimization failed: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Algorithm optimization failed: {str(e)}"
+            status_code=500, detail=f"Algorithm optimization failed: {e!s}"
         )
 
 

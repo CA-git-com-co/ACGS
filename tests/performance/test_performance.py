@@ -11,6 +11,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 import pytest_asyncio
+
 from services.core.caching.cache_manager import CacheManager
 from services.core.generation_engine.engine import (
     GenerationConfig,
@@ -170,7 +171,6 @@ class TestPerformanceTargets:
                 with patch.object(
                     cache_manager, "set", new_callable=AsyncMock
                 ) as mock_set:
-
                     await cache_manager.initialize()
 
                     # Configure mock responses for cache hits/misses

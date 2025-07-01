@@ -2,19 +2,6 @@
 Unit tests for services.core.constitutional-ai.ac_service.app.services.advanced_democratic_participation
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.constitutional_ai.ac_service.app.services.advanced_democratic_participation import (
-    VotingMechanism,
-    ParticipationLevel,
-    BlockchainVote,
-    QuadraticVote,
-    DelegationChain,
-    AIModeratedDiscussion,
-    RealTimePolling,
-    AdvancedDemocraticParticipation,
-)
-
 
 class TestVotingMechanism:
     """Test suite for VotingMechanism."""

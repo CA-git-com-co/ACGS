@@ -11,7 +11,7 @@ from .security import SecurityMiddleware
 
 __all__ = [
     "AuthMiddleware",
-    "SecurityMiddleware",
     "LoggingMiddleware",
     "RateLimitingMiddleware",
+    "SecurityMiddleware",
 ]

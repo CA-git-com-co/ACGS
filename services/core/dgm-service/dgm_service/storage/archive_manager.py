@@ -6,16 +6,13 @@ including performance data, constitutional compliance records,
 and rollback information.
 """
 
-import asyncio
 import json
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
-from uuid import UUID, uuid4
+from typing import Any
+from uuid import UUID
 
-import asyncpg
-from sqlalchemy import delete, insert, select, update
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import delete, select, update
 
 from ..config import settings
 from ..database import get_db_session
@@ -34,14 +31,14 @@ class ArchiveManager:
         self,
         improvement_id: UUID,
         description: str,
-        algorithm_changes: Dict[str, Any],
-        performance_before: Dict[str, Any],
-        performance_after: Dict[str, Any],
+        algorithm_changes: dict[str, Any],
+        performance_before: dict[str, Any],
+        performance_after: dict[str, Any],
         constitutional_compliance_score: float,
-        compliance_details: Dict[str, Any],
-        rollback_data: Optional[Dict[str, Any]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
-        created_by: Optional[str] = None,
+        compliance_details: dict[str, Any],
+        rollback_data: dict[str, Any] | None = None,
+        metadata: dict[str, Any] | None = None,
+        created_by: str | None = None,
     ) -> UUID:
         """Store a new improvement in the archive."""
         try:
@@ -71,7 +68,7 @@ class ArchiveManager:
             logger.error(f"Failed to store improvement {improvement_id}: {e}")
             raise
 
-    async def get_improvement(self, improvement_id: UUID) -> Optional[DGMArchive]:
+    async def get_improvement(self, improvement_id: UUID) -> DGMArchive | None:
         """Retrieve a specific improvement from the archive."""
         try:
             async with get_db_session() as session:
@@ -90,11 +87,11 @@ class ArchiveManager:
         self,
         limit: int = 100,
         offset: int = 0,
-        status: Optional[ImprovementStatus] = None,
-        min_compliance_score: Optional[float] = None,
-        start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None,
-    ) -> List[DGMArchive]:
+        status: ImprovementStatus | None = None,
+        min_compliance_score: float | None = None,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
+    ) -> list[DGMArchive]:
         """List improvements with optional filtering."""
         try:
             async with get_db_session() as session:
@@ -133,7 +130,7 @@ class ArchiveManager:
         self,
         improvement_id: UUID,
         status: ImprovementStatus,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> bool:
         """Update the status of an improvement."""
         try:
@@ -155,17 +152,16 @@ class ArchiveManager:
                         f"Updated improvement {improvement_id} status to {status}"
                     )
                     return True
-                else:
-                    logger.warning(f"No improvement found with ID {improvement_id}")
-                    return False
+                logger.warning(f"No improvement found with ID {improvement_id}")
+                return False
 
         except Exception as e:
             logger.error(f"Failed to update improvement {improvement_id} status: {e}")
             return False
 
     async def get_performance_trends(
-        self, days: int = 30, metric_name: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, days: int = 30, metric_name: str | None = None
+    ) -> dict[str, Any]:
         """Get performance trends over time."""
         try:
             async with get_db_session() as session:
@@ -231,8 +227,8 @@ class ArchiveManager:
 
     async def export_archive(
         self,
-        start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
         format: str = "json",
     ) -> str:
         """Export archive data for backup or analysis."""
@@ -266,8 +262,7 @@ class ArchiveManager:
 
                 return json.dumps(export_data, indent=2)
 
-            else:
-                raise ValueError(f"Unsupported export format: {format}")
+            raise ValueError(f"Unsupported export format: {format}")
 
         except Exception as e:
             logger.error(f"Failed to export archive: {e}")

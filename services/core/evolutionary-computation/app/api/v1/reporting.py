@@ -262,14 +262,12 @@ async def get_oversight_summary(
 
     except Exception as e:
         logger.error(f"Failed to generate oversight summary: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Report generation failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Report generation failed: {e!s}")
 
 
 @router.get("/constitutional-compliance", response_model=ConstitutionalComplianceReport)
 async def get_constitutional_compliance_report(
-    time_period: str = Query(default="24h", description="Time period for analysis")
+    time_period: str = Query(default="24h", description="Time period for analysis"),
 ):
     """
     Generate detailed constitutional compliance report.
@@ -348,13 +346,13 @@ async def get_constitutional_compliance_report(
     except Exception as e:
         logger.error(f"Failed to generate compliance report: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Compliance report generation failed: {str(e)}"
+            status_code=500, detail=f"Compliance report generation failed: {e!s}"
         )
 
 
 @router.get("/wina-optimization", response_model=WINAOptimizationReport)
 async def get_wina_optimization_report(
-    time_period: str = Query(default="24h", description="Time period for analysis")
+    time_period: str = Query(default="24h", description="Time period for analysis"),
 ):
     """
     Generate detailed WINA optimization performance report.
@@ -436,7 +434,7 @@ async def get_wina_optimization_report(
     except Exception as e:
         logger.error(f"Failed to generate WINA optimization report: {e}")
         raise HTTPException(
-            status_code=500, detail=f"WINA report generation failed: {str(e)}"
+            status_code=500, detail=f"WINA report generation failed: {e!s}"
         )
 
 
@@ -483,5 +481,5 @@ async def reporting_health_check():
     except Exception as e:
         logger.error(f"Reporting health check failed: {e}")
         raise HTTPException(
-            status_code=503, detail=f"Reporting system unhealthy: {str(e)}"
+            status_code=503, detail=f"Reporting system unhealthy: {e!s}"
         )

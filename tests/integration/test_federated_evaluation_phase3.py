@@ -475,7 +475,8 @@ async def test_byzantine_fault_tolerance_under_load():
             # Test Byzantine detection under load
             start_time = time.time()
             byzantine_nodes = coordinator._detect_byzantine_nodes_statistical(
-                mock_metrics, 0.33  # tolerance parameter
+                mock_metrics,
+                0.33,  # tolerance parameter
             )
             detection_time = (time.time() - start_time) * 1000
 
@@ -505,6 +506,7 @@ async def test_resource_utilization_monitoring():
     """Test resource utilization monitoring during federated evaluation."""
     try:
         import psutil
+
         from .core.federated_evaluator import FederatedEvaluator, PlatformType
 
         # Create evaluator

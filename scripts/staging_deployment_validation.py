@@ -2,22 +2,21 @@
 """
 ACGS-PGP Staging Deployment Validation Script
 
-Validates staging deployment configurations, tests 10-20 concurrent requests 
+Validates staging deployment configurations, tests 10-20 concurrent requests
 with ≤2s response time targets, and verifies >95% constitutional compliance accuracy.
 """
 
-import os
-import sys
-import json
-import time
 import asyncio
-import aiohttp
+import json
 import logging
-from pathlib import Path
-from typing import Dict, List, Any, Tuple
-from datetime import datetime
-from concurrent.futures import ThreadPoolExecutor
 import statistics
+import sys
+import time
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+import aiohttp
 
 # Configure logging
 logging.basicConfig(
@@ -47,7 +46,7 @@ class StagingDeploymentValidator:
 
     async def validate_service_health(
         self, session: aiohttp.ClientSession, service_name: str, port: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate individual service health."""
         try:
             start_time = time.time()
@@ -66,14 +65,13 @@ class StagingDeploymentValidator:
                         "constitutional_hash": data.get("constitutional_hash"),
                         "port": port,
                     }
-                else:
-                    return {
-                        "service": service_name,
-                        "status": "unhealthy",
-                        "response_time": response_time,
-                        "http_status": response.status,
-                        "port": port,
-                    }
+                return {
+                    "service": service_name,
+                    "status": "unhealthy",
+                    "response_time": response_time,
+                    "http_status": response.status,
+                    "port": port,
+                }
         except Exception as e:
             return {
                 "service": service_name,
@@ -84,7 +82,7 @@ class StagingDeploymentValidator:
 
     async def test_concurrent_load(
         self, session: aiohttp.ClientSession, service_name: str, port: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test concurrent load on service."""
         logger.info(
             f"🔄 Testing concurrent load for {service_name} ({self.concurrent_requests} requests)..."
@@ -134,7 +132,7 @@ class StagingDeploymentValidator:
 
     async def validate_constitutional_compliance(
         self, session: aiohttp.ClientSession, service_name: str, port: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate constitutional compliance for service."""
         try:
             async with session.get(
@@ -156,14 +154,13 @@ class StagingDeploymentValidator:
                             else "below_threshold"
                         ),
                     }
-                else:
-                    return {
-                        "service": service_name,
-                        "compliance_score": 0,
-                        "validation_status": "endpoint_error",
-                        "http_status": response.status,
-                    }
-        except Exception as e:
+                return {
+                    "service": service_name,
+                    "compliance_score": 0,
+                    "validation_status": "endpoint_error",
+                    "http_status": response.status,
+                }
+        except Exception:
             # Mock compliance validation for demonstration
             mock_score = 0.96  # >95% target
             return {
@@ -175,7 +172,7 @@ class StagingDeploymentValidator:
                 "note": "Service endpoint not available, using mock validation",
             }
 
-    def validate_staging_configuration(self) -> Dict[str, Any]:
+    def validate_staging_configuration(self) -> dict[str, Any]:
         """Validate staging deployment configuration files."""
         logger.info("📋 Validating staging deployment configurations...")
 
@@ -220,7 +217,7 @@ class StagingDeploymentValidator:
             "configuration_score": sum(config_checks.values()) / len(config_checks),
         }
 
-    async def run_comprehensive_validation(self) -> Dict[str, Any]:
+    async def run_comprehensive_validation(self) -> dict[str, Any]:
         """Run comprehensive staging deployment validation."""
         logger.info("🚀 Starting comprehensive staging deployment validation...")
 
@@ -324,7 +321,7 @@ class StagingDeploymentValidator:
 
         return validation_results
 
-    def generate_validation_report(self, results: Dict[str, Any]) -> Dict[str, Any]:
+    def generate_validation_report(self, results: dict[str, Any]) -> dict[str, Any]:
         """Generate comprehensive validation report."""
         logger.info("📊 Generating validation report...")
 

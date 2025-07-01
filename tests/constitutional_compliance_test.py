@@ -10,7 +10,8 @@ Target: Constitutional hash cdd01ef066bc6cf2 and >95% compliance threshold.
 import asyncio
 import json
 import time
-from typing import Dict, List, Any
+from typing import Any
+
 import aiohttp
 import pytest
 
@@ -43,7 +44,7 @@ class ConstitutionalComplianceTest:
             "summary": {},
         }
 
-    async def test_constitutional_hash_consistency(self) -> Dict[str, Any]:
+    async def test_constitutional_hash_consistency(self) -> dict[str, Any]:
         """Test constitutional hash consistency across all services."""
         print("🔍 Testing Constitutional Hash Consistency...")
 
@@ -99,7 +100,7 @@ class ConstitutionalComplianceTest:
         )
         return self.results["constitutional_hash_tests"]
 
-    async def test_constitutional_compliance_thresholds(self) -> Dict[str, Any]:
+    async def test_constitutional_compliance_thresholds(self) -> dict[str, Any]:
         """Test constitutional compliance thresholds."""
         print("📊 Testing Constitutional Compliance Thresholds...")
 
@@ -107,10 +108,8 @@ class ConstitutionalComplianceTest:
 
         # Test compliance endpoints where available - only test healthy services
         compliance_endpoints = {}
-        for service_name in SERVICES.keys():
-            if service_name == "auth":
-                compliance_endpoints[service_name] = "/health"
-            elif service_name == "hitl":
+        for service_name in SERVICES:
+            if service_name == "auth" or service_name == "hitl":
                 compliance_endpoints[service_name] = "/health"
 
         # Headers for constitutional compliance
@@ -191,14 +190,13 @@ class ConstitutionalComplianceTest:
                 ),
                 "status": "available",
             }
-        else:
-            return {
-                "compliance_score": None,
-                "meets_threshold": False,
-                "status": f"endpoint_unavailable_http_{response.status}",
-            }
+        return {
+            "compliance_score": None,
+            "meets_threshold": False,
+            "status": f"endpoint_unavailable_http_{response.status}",
+        }
 
-    async def run_all_tests(self) -> Dict[str, Any]:
+    async def run_all_tests(self) -> dict[str, Any]:
         """Run all constitutional compliance tests."""
         print("🏛️ Running Constitutional Compliance Test Suite")
         print("=" * 60)
@@ -221,7 +219,7 @@ class ConstitutionalComplianceTest:
         }
 
         print("=" * 60)
-        print(f"🏛️ Constitutional Compliance Results:")
+        print("🏛️ Constitutional Compliance Results:")
         print(f"   Hash Consistency: {'✅ PASSED' if hash_passed else '❌ FAILED'}")
         print(
             f"   Compliance Thresholds: {'✅ PASSED' if compliance_passed else '❌ FAILED'}"

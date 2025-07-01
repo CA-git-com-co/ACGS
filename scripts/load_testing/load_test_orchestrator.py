@@ -8,13 +8,11 @@ import asyncio
 import json
 import logging
 import os
-import subprocess
 import sys
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -33,7 +31,7 @@ class LoadTestConfiguration:
     duration_minutes: int
     max_vus: int
     ramp_up_duration: str
-    target_rps: Optional[int] = None
+    target_rps: int | None = None
 
     # SLA thresholds
     max_response_time_ms: float = 500.0
@@ -47,7 +45,7 @@ class LoadTestConfiguration:
 
     # Environment
     base_url: str = "http://localhost"
-    services: Dict[str, int] = field(
+    services: dict[str, int] = field(
         default_factory=lambda: {
             "auth-service": 8000,
             "ac-service": 8001,
@@ -89,8 +87,8 @@ class LoadTestResult:
     overall_sla_pass: bool
 
     # Additional data
-    service_status: Dict[str, Dict] = field(default_factory=dict)
-    detailed_results: Optional[Dict] = None
+    service_status: dict[str, dict] = field(default_factory=dict)
+    detailed_results: dict | None = None
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
 
@@ -99,14 +97,14 @@ class LoadTestOrchestrator:
 
     def __init__(self):
         self.project_root = Path(__file__).parent.parent.parent
-        self.test_results: List[LoadTestResult] = []
+        self.test_results: list[LoadTestResult] = []
 
         # Predefined test configurations
         self.test_configurations = self.setup_test_configurations()
 
         logger.info("Load Test Orchestrator initialized")
 
-    def setup_test_configurations(self) -> Dict[str, LoadTestConfiguration]:
+    def setup_test_configurations(self) -> dict[str, LoadTestConfiguration]:
         """Setup predefined test configurations."""
         return {
             "smoke": LoadTestConfiguration(
@@ -168,7 +166,7 @@ class LoadTestOrchestrator:
             ),
         }
 
-    async def run_comprehensive_load_tests(self) -> List[LoadTestResult]:
+    async def run_comprehensive_load_tests(self) -> list[LoadTestResult]:
         """Run comprehensive load testing suite."""
         logger.info("Starting comprehensive load testing suite...")
 
@@ -244,7 +242,7 @@ class LoadTestOrchestrator:
             logger.error(f"Load test {test_type} failed: {e}")
             raise
 
-    async def run_k6_test(self, config: LoadTestConfiguration, test_id: str) -> Dict:
+    async def run_k6_test(self, config: LoadTestConfiguration, test_id: str) -> dict:
         """Run K6 load test."""
         k6_script = self.project_root / "tests/load/k6_load_tests.js"
 
@@ -328,7 +326,7 @@ class LoadTestOrchestrator:
         config: LoadTestConfiguration,
         start_time: datetime,
         end_time: datetime,
-        k6_result: Dict,
+        k6_result: dict,
     ) -> LoadTestResult:
         """Parse test results from K6 output."""
 
@@ -431,7 +429,7 @@ class LoadTestOrchestrator:
             f"✓ Pre-flight checks passed: {available_services}/{total_services} services available"
         )
 
-    async def generate_comprehensive_report(self, results: List[LoadTestResult]):
+    async def generate_comprehensive_report(self, results: list[LoadTestResult]):
         """Generate comprehensive load testing report."""
         logger.info("Generating comprehensive load testing report...")
 
@@ -520,7 +518,7 @@ class LoadTestOrchestrator:
         logger.info(f"Comprehensive report saved: {report_file}")
         logger.info(f"Markdown report saved: {markdown_file}")
 
-    def generate_recommendations(self, results: List[LoadTestResult]) -> List[str]:
+    def generate_recommendations(self, results: list[LoadTestResult]) -> list[str]:
         """Generate performance recommendations based on test results."""
         recommendations = []
 
@@ -568,23 +566,23 @@ class LoadTestOrchestrator:
 
         return recommendations
 
-    def generate_markdown_report(self, report: Dict) -> str:
+    def generate_markdown_report(self, report: dict) -> str:
         """Generate markdown report."""
         markdown = f"""# ACGS Load Testing Report
 
 ## Summary
-- **Total Tests**: {report['load_test_suite_summary']['total_tests']}
-- **Successful Tests**: {report['load_test_suite_summary']['successful_tests']}
-- **Failed Tests**: {report['load_test_suite_summary']['failed_tests']}
-- **Test Duration**: {report['load_test_suite_summary']['test_duration']}
-- **Constitutional Hash**: `{report['load_test_suite_summary']['constitutional_hash']}`
+- **Total Tests**: {report["load_test_suite_summary"]["total_tests"]}
+- **Successful Tests**: {report["load_test_suite_summary"]["successful_tests"]}
+- **Failed Tests**: {report["load_test_suite_summary"]["failed_tests"]}
+- **Test Duration**: {report["load_test_suite_summary"]["test_duration"]}
+- **Constitutional Hash**: `{report["load_test_suite_summary"]["constitutional_hash"]}`
 
 ## Performance Summary
-- **Max Throughput**: {report['performance_summary']['max_throughput_rps']:.1f} RPS
-- **Best Response Time**: {report['performance_summary']['best_response_time_ms']:.1f}ms
-- **Worst Response Time**: {report['performance_summary']['worst_response_time_ms']:.1f}ms
-- **Overall Error Rate**: {report['performance_summary']['overall_error_rate']:.2f}%
-- **Constitutional Compliance**: {report['performance_summary']['overall_constitutional_compliance']:.1%}
+- **Max Throughput**: {report["performance_summary"]["max_throughput_rps"]:.1f} RPS
+- **Best Response Time**: {report["performance_summary"]["best_response_time_ms"]:.1f}ms
+- **Worst Response Time**: {report["performance_summary"]["worst_response_time_ms"]:.1f}ms
+- **Overall Error Rate**: {report["performance_summary"]["overall_error_rate"]:.2f}%
+- **Constitutional Compliance**: {report["performance_summary"]["overall_constitutional_compliance"]:.1%}
 
 ## Test Results
 
@@ -595,14 +593,14 @@ class LoadTestOrchestrator:
                 "✅ PASS" if test["sla_compliance"]["overall_sla"] else "❌ FAIL"
             )
 
-            markdown += f"""### {test['test_name']} ({test['test_type']})
-- **Duration**: {test['duration']}
-- **Total Requests**: {test['performance_metrics']['total_requests']:,}
-- **Avg Response Time**: {test['performance_metrics']['avg_response_time_ms']:.1f}ms
-- **P95 Response Time**: {test['performance_metrics']['p95_response_time_ms']:.1f}ms
-- **Throughput**: {test['performance_metrics']['requests_per_second']:.1f} RPS
-- **Error Rate**: {test['performance_metrics']['error_rate_percent']:.2f}%
-- **Constitutional Compliance**: {test['performance_metrics']['constitutional_compliance_rate']:.1%}
+            markdown += f"""### {test["test_name"]} ({test["test_type"]})
+- **Duration**: {test["duration"]}
+- **Total Requests**: {test["performance_metrics"]["total_requests"]:,}
+- **Avg Response Time**: {test["performance_metrics"]["avg_response_time_ms"]:.1f}ms
+- **P95 Response Time**: {test["performance_metrics"]["p95_response_time_ms"]:.1f}ms
+- **Throughput**: {test["performance_metrics"]["requests_per_second"]:.1f} RPS
+- **Error Rate**: {test["performance_metrics"]["error_rate_percent"]:.2f}%
+- **Constitutional Compliance**: {test["performance_metrics"]["constitutional_compliance_rate"]:.1%}
 - **SLA Compliance**: {sla_status}
 
 """

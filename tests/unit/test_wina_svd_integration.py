@@ -63,7 +63,7 @@ try:
     from services.shared.wina.exceptions import (
         WINAError,
         WINAOptimizationError,
-    )  # noqa: E501
+    )
     from services.shared.wina.svd_transformation import SVDTransformation
 
     WINA_AVAILABLE = True
@@ -83,7 +83,7 @@ except ImportError:
 
 # Import GS Engine components - using mock implementations for testing
 try:
-    from services.core.governance_synthesis.gs_service.app.core.wina_llm_integration import (  # noqa: E501
+    from services.core.governance_synthesis.gs_service.app.core.wina_llm_integration import (
         WINAOptimizedLLMClient,
         WINAOptimizedSynthesisResult,
         get_wina_optimized_llm_client,

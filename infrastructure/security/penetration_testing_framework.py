@@ -5,14 +5,11 @@ Comprehensive penetration testing and vulnerability assessment framework with co
 """
 
 import asyncio
-import json
 import logging
-import subprocess
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from enum import Enum
-from typing import Dict, List, Optional, Any
 
 import aiohttp
 import nmap
@@ -96,14 +93,14 @@ class PenetrationTestReport:
     test_name: str
     test_type: TestType
     start_time: datetime
-    end_time: Optional[datetime] = None
+    end_time: datetime | None = None
 
     # Test scope
-    target_services: List[str] = field(default_factory=list)
-    target_endpoints: List[str] = field(default_factory=list)
+    target_services: list[str] = field(default_factory=list)
+    target_endpoints: list[str] = field(default_factory=list)
 
     # Findings
-    vulnerabilities: List[Vulnerability] = field(default_factory=list)
+    vulnerabilities: list[Vulnerability] = field(default_factory=list)
 
     # Summary
     total_vulnerabilities: int = 0
@@ -114,7 +111,7 @@ class PenetrationTestReport:
 
     # Constitutional compliance
     constitutional_compliance_score: float = 100.0
-    constitutional_violations: List[str] = field(default_factory=list)
+    constitutional_violations: list[str] = field(default_factory=list)
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
     # Test metadata
@@ -164,8 +161,8 @@ class PenetrationTestingFramework:
         }
 
         # Test reports
-        self.test_reports: List[PenetrationTestReport] = []
-        self.vulnerabilities: List[Vulnerability] = []
+        self.test_reports: list[PenetrationTestReport] = []
+        self.vulnerabilities: list[Vulnerability] = []
 
         # Test configurations
         self.test_configurations = {
@@ -247,7 +244,7 @@ class PenetrationTestingFramework:
         logger.info("Penetration Testing Framework started")
 
     async def execute_penetration_test(
-        self, test_type: TestType, target_services: List[str] = None
+        self, test_type: TestType, target_services: list[str] = None
     ) -> PenetrationTestReport:
         """Execute a penetration test."""
         test_id = f"pentest_{int(time.time())}_{test_type.value}"

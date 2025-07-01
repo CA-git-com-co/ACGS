@@ -105,11 +105,10 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
                         status_code=503,
                         detail="Constitutional validation service temporarily unavailable",
                     )
-                else:
-                    # Graceful degradation - continue without validation
-                    response = await call_next(request)
-                    self._add_constitutional_headers(response, degraded=True)
-                    return response
+                # Graceful degradation - continue without validation
+                response = await call_next(request)
+                self._add_constitutional_headers(response, degraded=True)
+                return response
 
             # Perform constitutional validation
             validation_result = await self._validate_request_constitutional_compliance(
@@ -148,11 +147,10 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
                 raise HTTPException(
                     status_code=500, detail="Constitutional validation failed"
                 )
-            else:
-                # Graceful degradation
-                response = await call_next(request)
-                self._add_constitutional_headers(response, error=str(e))
-                return response
+            # Graceful degradation
+            response = await call_next(request)
+            self._add_constitutional_headers(response, error=str(e))
+            return response
 
     async def _validate_request_constitutional_compliance(
         self, request: Request
@@ -211,7 +209,7 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
             logger.error(f"Constitutional compliance validation failed: {e}")
             return {
                 "valid": False,
-                "reason": f"Validation error: {str(e)}",
+                "reason": f"Validation error: {e!s}",
                 "compliance_score": 0.0,
             }
 
@@ -291,7 +289,7 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
             logger.error(f"Policy operation validation failed: {e}")
             return {
                 "valid": False,
-                "reason": f"Policy validation error: {str(e)}",
+                "reason": f"Policy validation error: {e!s}",
                 "compliance_score": 0.0,
             }
 

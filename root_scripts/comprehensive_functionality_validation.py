@@ -105,7 +105,7 @@ class FunctionalityValidator:
                             }
 
                 except Exception as e:
-                    logger.error(f"  ❌ {service_name}: {str(e)}")
+                    logger.error(f"  ❌ {service_name}: {e!s}")
                     self.validation_report["service_health"][service_name] = {
                         "status": "unreachable",
                         "port": config["port"],
@@ -171,7 +171,7 @@ class FunctionalityValidator:
                             }
 
                 except Exception as e:
-                    logger.error(f"  ❌ {workflow_name}: {str(e)}")
+                    logger.error(f"  ❌ {workflow_name}: {e!s}")
                     self.validation_report["governance_workflows"][workflow_name] = {
                         "status": "failed",
                         "endpoint": endpoint,
@@ -222,6 +222,7 @@ class FunctionalityValidator:
             blockchain_dir = self.root_dir / "blockchain"
             result = subprocess.run(
                 ["anchor", "build"],
+                check=False,
                 cwd=blockchain_dir,
                 capture_output=True,
                 text=True,
@@ -232,13 +233,10 @@ class FunctionalityValidator:
                 self.validation_report["blockchain_status"]["build_status"] = "success"
                 logger.info("  ✅ Anchor programs build successfully")
                 return True
-            else:
-                self.validation_report["blockchain_status"]["build_status"] = "failed"
-                self.validation_report["blockchain_status"][
-                    "build_error"
-                ] = result.stderr
-                logger.error(f"  ❌ Anchor build failed: {result.stderr}")
-                return False
+            self.validation_report["blockchain_status"]["build_status"] = "failed"
+            self.validation_report["blockchain_status"]["build_error"] = result.stderr
+            logger.error(f"  ❌ Anchor build failed: {result.stderr}")
+            return False
 
         except Exception as e:
             logger.error(f"  ❌ Blockchain validation failed: {e}")
@@ -255,6 +253,7 @@ class FunctionalityValidator:
         try:
             result = subprocess.run(
                 ["python", "-m", "pytest", "tests/", "-v", "--tb=short"],
+                check=False,
                 cwd=self.root_dir,
                 capture_output=True,
                 text=True,
@@ -280,6 +279,7 @@ class FunctionalityValidator:
         try:
             result = subprocess.run(
                 ["anchor", "test"],
+                check=False,
                 cwd=self.root_dir / "blockchain",
                 capture_output=True,
                 text=True,
@@ -448,7 +448,7 @@ class FunctionalityValidator:
             except Exception as e:
                 logger.error(f"❌ {task_name}: ERROR - {e}")
                 validation_results[task_name] = False
-                self.validation_report["issues_found"].append(f"{task_name}: {str(e)}")
+                self.validation_report["issues_found"].append(f"{task_name}: {e!s}")
 
         # Generate recommendations
         recommendations = self.generate_recommendations()

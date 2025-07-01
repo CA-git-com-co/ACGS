@@ -24,12 +24,11 @@ except ImportError:
         """Fallback message accumulator when LangGraph is not available."""
         if isinstance(x, list) and isinstance(y, list):
             return x + y
-        elif isinstance(x, list):
+        if isinstance(x, list):
             return x + [y]
-        elif isinstance(y, list):
+        if isinstance(y, list):
             return [x] + y
-        else:
-            return [x, y]
+        return [x, y]
 
     LANGGRAPH_AVAILABLE = False
 

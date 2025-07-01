@@ -13,10 +13,8 @@ import importlib
 import logging
 import sys
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock
-
-import pytest
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -231,7 +229,7 @@ async def check_service_health(service_url: str, timeout: int = 5) -> bool:
         return False
 
 
-async def wait_for_services(services: list[str], max_wait: int = 30) -> Dict[str, bool]:
+async def wait_for_services(services: list[str], max_wait: int = 30) -> dict[str, bool]:
     """Wait for services to become available."""
     results = {}
     for service in services:
@@ -251,15 +249,15 @@ async def wait_for_services(services: list[str], max_wait: int = 30) -> Dict[str
 
 # Export commonly used fixtures and utilities
 __all__ = [
-    "safe_import",
-    "create_mock_service",
-    "create_mock_llm_service",
-    "create_mock_database",
-    "MockComponents",
-    "TEST_CONFIG",
-    "SERVICE_URLS",
-    "SERVICE_PORTS",
-    "check_service_health",
-    "wait_for_services",
     "SERVICE_PATH_MAPPINGS",
+    "SERVICE_PORTS",
+    "SERVICE_URLS",
+    "TEST_CONFIG",
+    "MockComponents",
+    "check_service_health",
+    "create_mock_database",
+    "create_mock_llm_service",
+    "create_mock_service",
+    "safe_import",
+    "wait_for_services",
 ]

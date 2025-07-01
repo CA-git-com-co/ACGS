@@ -18,7 +18,7 @@ import logging
 import statistics
 import time
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional
+from typing import Any
 
 import httpx
 from pydantic import BaseModel
@@ -36,7 +36,7 @@ class PerformanceTestResult(BaseModel):
     test_name: str
     service: str
     status: str
-    response_times: List[float]
+    response_times: list[float]
     avg_response_time: float
     p95_response_time: float
     p99_response_time: float
@@ -103,7 +103,7 @@ class ACGSPerformanceValidator:
                 else:
                     failed_requests += 1
 
-            except Exception as e:
+            except Exception:
                 request_time = (time.time() - request_start) * 1000
                 response_times.append(request_time)
                 failed_requests += 1
@@ -167,7 +167,7 @@ class ACGSPerformanceValidator:
             timestamp=datetime.now(timezone.utc),
         )
 
-    async def test_response_time_compliance(self) -> Dict[str, Any]:
+    async def test_response_time_compliance(self) -> dict[str, Any]:
         """Test response time compliance (≤2s target)"""
         logger.info("⏱️ Testing response time compliance...")
 
@@ -221,7 +221,7 @@ class ACGSPerformanceValidator:
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-    async def test_concurrent_request_handling(self) -> Dict[str, Any]:
+    async def test_concurrent_request_handling(self) -> dict[str, Any]:
         """Test concurrent request handling capacity (10-20 concurrent requests)"""
         logger.info("🔄 Testing concurrent request handling...")
 
@@ -332,7 +332,7 @@ class ACGSPerformanceValidator:
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-    async def test_availability(self) -> Dict[str, Any]:
+    async def test_availability(self) -> dict[str, Any]:
         """Test service availability (>99.9% target)"""
         logger.info("📊 Testing service availability...")
 
@@ -399,7 +399,7 @@ class ACGSPerformanceValidator:
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-    async def run_performance_validation(self) -> Dict[str, Any]:
+    async def run_performance_validation(self) -> dict[str, Any]:
         """Run comprehensive performance validation tests"""
         logger.info(
             "🚀 Starting ACGS-PGP Performance Validation & Operational Readiness Tests..."
@@ -502,9 +502,8 @@ async def main():
         if results["overall_status"] == "passed":
             print("✅ Performance validation and operational readiness tests passed!")
             return 0
-        else:
-            print("❌ Some performance tests failed. Check results for details.")
-            return 1
+        print("❌ Some performance tests failed. Check results for details.")
+        return 1
 
     except Exception as e:
         logger.error(f"Performance validation failed: {e}")

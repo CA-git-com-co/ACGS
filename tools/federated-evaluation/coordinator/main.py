@@ -58,8 +58,7 @@ async def receive_test(payload: dict = Body(...)):
                 "status": dispatch_response.status,
             },
         }
-    else:
-        return {"status": "failed to dispatch test", "task_id": task_id}
+    return {"status": "failed to dispatch test", "task_id": task_id}
 
 
 if __name__ == "__main__":

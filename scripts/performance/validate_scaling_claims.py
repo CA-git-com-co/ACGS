@@ -12,14 +12,13 @@ Constitutional Hash: cdd01ef066bc6cf2
 import asyncio
 import json
 import logging
-import math
 import time
-import psutil
-import numpy as np
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Tuple
-import matplotlib.pyplot as plt
 from pathlib import Path
+from typing import Any
+
+import numpy as np
+import psutil
 
 # Configure logging
 logging.basicConfig(
@@ -44,7 +43,7 @@ class ScalingValidator:
             "theoretical_validation": {},
         }
 
-    async def validate_scaling_claims(self) -> Dict[str, Any]:
+    async def validate_scaling_claims(self) -> dict[str, Any]:
         """Validate O(n^0.73) scaling claims comprehensively."""
         logger.info("🔬 Starting O(n^0.73) Scaling Claims Validation")
         logger.info(f"Constitutional Hash: {self.constitutional_hash}")
@@ -96,7 +95,7 @@ class ScalingValidator:
             self.test_results["error"] = str(e)
             raise
 
-    async def _generate_test_policy_sets(self) -> List[Dict[str, Any]]:
+    async def _generate_test_policy_sets(self) -> list[dict[str, Any]]:
         """Generate constitutional policy sets of varying sizes for testing."""
         logger.info("📋 Generating test policy sets")
 
@@ -158,8 +157,8 @@ class ScalingValidator:
         return policy_sets
 
     async def _measure_scaling_performance(
-        self, policy_sets: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, policy_sets: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """Measure performance scaling across different policy set sizes."""
         logger.info("⚡ Measuring scaling performance")
 
@@ -200,7 +199,7 @@ class ScalingValidator:
 
             performance_data["measurements"].append(measurement)
             logger.info(
-                f"📈 {size} policies: {evaluation_time*1000:.2f}ms, {memory_delta/(1024*1024):.2f}MB"
+                f"📈 {size} policies: {evaluation_time * 1000:.2f}ms, {memory_delta / (1024 * 1024):.2f}MB"
             )
 
         # Analyze scaling pattern
@@ -236,7 +235,7 @@ class ScalingValidator:
         )
         return performance_data
 
-    async def _simulate_policy_evaluation(self, policy_set: Dict[str, Any]) -> float:
+    async def _simulate_policy_evaluation(self, policy_set: dict[str, Any]) -> float:
         """Simulate constitutional policy evaluation with realistic complexity."""
         policies = policy_set["policies"]
         size = len(policies)
@@ -262,8 +261,8 @@ class ScalingValidator:
         return actual_time
 
     async def _analyze_memory_scaling(
-        self, policy_sets: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, policy_sets: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """Analyze memory usage scaling patterns."""
         logger.info("🧠 Analyzing memory scaling")
 
@@ -324,8 +323,8 @@ class ScalingValidator:
         return memory_data
 
     async def _validate_theoretical_model(
-        self, performance_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, performance_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Validate theoretical O(n^0.73) model against measurements."""
         logger.info("🔬 Validating theoretical model")
 
@@ -370,8 +369,8 @@ class ScalingValidator:
         return validation
 
     async def _identify_scaling_limits(
-        self, performance_data: Dict[str, Any], memory_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, performance_data: dict[str, Any], memory_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Identify practical scaling limits for the system."""
         logger.info("🎯 Identifying scaling limits")
 
@@ -424,10 +423,10 @@ class ScalingValidator:
 
     async def _generate_optimization_recommendations(
         self,
-        performance_data: Dict[str, Any],
-        memory_data: Dict[str, Any],
-        scaling_limits: Dict[str, Any],
-    ) -> List[Dict[str, Any]]:
+        performance_data: dict[str, Any],
+        memory_data: dict[str, Any],
+        scaling_limits: dict[str, Any],
+    ) -> list[dict[str, Any]]:
         """Generate optimization recommendations based on scaling analysis."""
         logger.info("💡 Generating optimization recommendations")
 

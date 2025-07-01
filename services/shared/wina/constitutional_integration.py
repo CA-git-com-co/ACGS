@@ -381,15 +381,15 @@ class WINAConstitutionalPrincipleAnalyzer:
             return f"""
 package wina_efficiency_optimization
 
-# WINA-informed efficiency principle for {principle.get('name', 'Unknown')}
+# WINA-informed efficiency principle for {principle.get("name", "Unknown")}
 default allow_wina_optimization = false
 
 allow_wina_optimization {{
-    input.accuracy_retention >= {analysis.get('efficiency_impact', {}).get('accuracy_retention_expected', 0.95)}
-    input.gflops_reduction <= {analysis.get('efficiency_impact', {}).get('gflops_reduction_potential', 0.5)}
+    input.accuracy_retention >= {analysis.get("efficiency_impact", {}).get("accuracy_retention_expected", 0.95)}
+    input.gflops_reduction <= {analysis.get("efficiency_impact", {}).get("gflops_reduction_potential", 0.5)}
     input.constitutional_compliance_verified == true
     input.fallback_mechanism_available == true
-    input.optimization_confidence >= {analysis.get('optimization_potential', 0.5)}
+    input.optimization_confidence >= {analysis.get("optimization_potential", 0.5)}
 }}
 
 # Additional constraints for safety-critical operations
@@ -398,21 +398,20 @@ deny_wina_optimization {{
     input.accuracy_retention < 0.99
 }}
 """
-        else:
-            # Modify existing principle
-            original_policy = principle.get("policy_code", "")
-            efficiency_impact = analysis.get("efficiency_impact", {})
+        # Modify existing principle
+        original_policy = principle.get("policy_code", "")
+        efficiency_impact = analysis.get("efficiency_impact", {})
 
-            # Add WINA optimization clauses to existing policy
-            wina_clause = f"""
+        # Add WINA optimization clauses to existing policy
+        wina_clause = f"""
 # WINA optimization constraints (auto-generated)
 allow_wina_optimization {{
-    input.accuracy_retention >= {efficiency_impact.get('accuracy_retention_expected', 0.95)}
-    input.gflops_reduction <= {efficiency_impact.get('gflops_reduction_potential', 0.5)}
+    input.accuracy_retention >= {efficiency_impact.get("accuracy_retention_expected", 0.95)}
+    input.gflops_reduction <= {efficiency_impact.get("gflops_reduction_potential", 0.5)}
     input.constitutional_compliance_verified == true
 }}
 """
-            return original_policy + "\n" + wina_clause
+        return original_policy + "\n" + wina_clause
 
     async def _perform_compliance_assessment(
         self, principle: dict[str, Any], proposed_content: str, analysis: dict[str, Any]
@@ -669,26 +668,24 @@ class WINAConstitutionalUpdateService:
                     "estimated_review_time": "24-72 hours",
                     "council_tracking": council_result,
                 }
-            else:
-                # Auto-approve low-risk updates
-                if (
-                    update.risk_assessment
-                    and update.risk_assessment.get("overall_risk_level") == "low"
-                ):
-                    await self._auto_approve_update(update)
-                    return {
-                        "success": True,
-                        "approval_status": "auto_approved",
-                        "reason": "Low-risk update auto-approved",
-                    }
-                else:
-                    # Mark as pending manual review
-                    update.approval_status = "pending_manual_review"
-                    return {
-                        "success": True,
-                        "approval_status": "pending_manual_review",
-                        "reason": "Manual review required for medium/high-risk update",
-                    }
+            # Auto-approve low-risk updates
+            if (
+                update.risk_assessment
+                and update.risk_assessment.get("overall_risk_level") == "low"
+            ):
+                await self._auto_approve_update(update)
+                return {
+                    "success": True,
+                    "approval_status": "auto_approved",
+                    "reason": "Low-risk update auto-approved",
+                }
+            # Mark as pending manual review
+            update.approval_status = "pending_manual_review"
+            return {
+                "success": True,
+                "approval_status": "pending_manual_review",
+                "reason": "Manual review required for medium/high-risk update",
+            }
 
         except Exception as e:
             logger.error(f"Error submitting update for approval: {e}")

@@ -100,7 +100,7 @@ async def create_principle_endpoint(
             return created_principle
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to create principle with cryptographic signing: {str(e)}",
+            detail=f"Failed to create principle with cryptographic signing: {e!s}",
         )
 
 
@@ -257,7 +257,7 @@ async def verify_principle_signature_endpoint(
     except Exception as e:
         logger.error(f"Failed to verify principle signature: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Signature verification error: {str(e)}"
+            status_code=500, detail=f"Signature verification error: {e!s}"
         )
 
 
@@ -475,5 +475,5 @@ async def validate_constitutional_endpoint(
     except Exception as e:
         logger.error(f"Constitutional validation failed: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Constitutional validation error: {str(e)}"
+            status_code=500, detail=f"Constitutional validation error: {e!s}"
         )

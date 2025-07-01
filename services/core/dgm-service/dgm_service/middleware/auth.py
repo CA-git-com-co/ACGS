@@ -4,12 +4,10 @@ Authentication middleware for DGM Service.
 
 import logging
 import uuid
-from typing import Optional
 
-from fastapi import HTTPException, Request, Response, status
+from fastapi import Request, Response, status
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from ..config import settings
 from ..network.service_client import ACGSServiceClient
 
 logger = logging.getLogger(__name__)
@@ -18,7 +16,7 @@ logger = logging.getLogger(__name__)
 class AuthMiddleware(BaseHTTPMiddleware):
     """Authentication middleware for validating JWT tokens."""
 
-    def __init__(self, app, exclude_paths: Optional[list] = None):
+    def __init__(self, app, exclude_paths: list | None = None):
         super().__init__(app)
         self.exclude_paths = exclude_paths or [
             "/health",

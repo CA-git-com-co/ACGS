@@ -7,13 +7,11 @@ error handling, and recovery mechanisms.
 
 import asyncio
 import logging
-import time
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 from uuid import UUID, uuid4
 
-from ..database import get_db_session
 from .improvement_workflow import ImprovementWorkflow
 from .validation_workflow import ValidationWorkflow
 from .workflow_state import WorkflowState, WorkflowStatus
@@ -39,7 +37,7 @@ class WorkflowEngine:
     """
 
     def __init__(self):
-        self.active_workflows: Dict[UUID, WorkflowState] = {}
+        self.active_workflows: dict[UUID, WorkflowState] = {}
         self.workflow_classes = {
             WorkflowType.IMPROVEMENT: ImprovementWorkflow,
             WorkflowType.VALIDATION: ValidationWorkflow,
@@ -52,7 +50,7 @@ class WorkflowEngine:
         self.retry_delay = 60  # seconds
 
         # Background task for workflow monitoring
-        self.monitor_task: Optional[asyncio.Task] = None
+        self.monitor_task: asyncio.Task | None = None
         self.running = False
 
     async def start(self):
@@ -89,9 +87,9 @@ class WorkflowEngine:
     async def submit_workflow(
         self,
         workflow_type: WorkflowType,
-        workflow_data: Dict[str, Any],
+        workflow_data: dict[str, Any],
         priority: int = 5,
-        timeout: Optional[timedelta] = None,
+        timeout: timedelta | None = None,
     ) -> UUID:
         """
         Submit a new workflow for execution.
@@ -140,7 +138,7 @@ class WorkflowEngine:
             logger.error(f"Failed to submit workflow: {e}")
             raise
 
-    async def get_workflow_status(self, workflow_id: UUID) -> Optional[WorkflowState]:
+    async def get_workflow_status(self, workflow_id: UUID) -> WorkflowState | None:
         """Get the status of a workflow."""
         if workflow_id in self.active_workflows:
             return self.active_workflows[workflow_id]
@@ -358,9 +356,7 @@ class WorkflowEngine:
         except Exception as e:
             logger.error(f"Failed to persist workflow state: {e}")
 
-    async def _load_workflow_from_db(
-        self, workflow_id: UUID
-    ) -> Optional[WorkflowState]:
+    async def _load_workflow_from_db(self, workflow_id: UUID) -> WorkflowState | None:
         """Load workflow state from database."""
         try:
             # This would query the database for the workflow
@@ -371,7 +367,7 @@ class WorkflowEngine:
             logger.error(f"Failed to load workflow from database: {e}")
             return None
 
-    def get_engine_stats(self) -> Dict[str, Any]:
+    def get_engine_stats(self) -> dict[str, Any]:
         """Get workflow engine statistics."""
         active_count = len(self.active_workflows)
         status_counts = {}

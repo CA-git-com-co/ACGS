@@ -290,10 +290,9 @@ async def verify_token(
                 )
                 if response.status_code == 200:
                     return response.json()
-                else:
-                    raise HTTPException(
-                        status_code=401, detail="Invalid authentication token"
-                    )
+                raise HTTPException(
+                    status_code=401, detail="Invalid authentication token"
+                )
         except Exception:
             raise HTTPException(
                 status_code=401, detail="Authentication service unavailable"
@@ -609,9 +608,9 @@ async def generate_policy(
             return response
 
         except Exception as e:
-            execution.add_log(f"Policy generation failed: {str(e)}", "ERROR")
+            execution.add_log(f"Policy generation failed: {e!s}", "ERROR")
             raise HTTPException(
-                status_code=500, detail=f"Policy generation failed: {str(e)}"
+                status_code=500, detail=f"Policy generation failed: {e!s}"
             )
 
 
@@ -646,8 +645,8 @@ async def diagnose_system(
         }
 
     except Exception as e:
-        logger.error(f"System diagnosis failed: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Diagnosis failed: {str(e)}")
+        logger.error(f"System diagnosis failed: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Diagnosis failed: {e!s}")
 
 
 @app.post("/api/v1/validate-lsu")
@@ -688,7 +687,7 @@ async def validate_lsu(
 
     except Exception as e:
         logger.error(f"LSU validation failed: {e}")
-        raise HTTPException(status_code=400, detail=f"LSU validation failed: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"LSU validation failed: {e!s}")
 
 
 @app.get("/api/v1/stabilizers")
@@ -725,7 +724,7 @@ async def list_stabilizers(
     except Exception as e:
         logger.error(f"Failed to list stabilizers: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to list stabilizers: {str(e)}"
+            status_code=500, detail=f"Failed to list stabilizers: {e!s}"
         )
 
 
@@ -742,17 +741,16 @@ async def get_diagnostic_result(
 
         if cached_result:
             return cached_result
-        else:
-            raise HTTPException(
-                status_code=404, detail=f"Diagnostic result not found: {diagnostic_id}"
-            )
+        raise HTTPException(
+            status_code=404, detail=f"Diagnostic result not found: {diagnostic_id}"
+        )
 
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Failed to get diagnostic result: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to get diagnostic result: {str(e)}"
+            status_code=500, detail=f"Failed to get diagnostic result: {e!s}"
         )
 
 
@@ -766,15 +764,14 @@ async def get_prometheus_metrics():
                 content=metrics_data,
                 media_type="text/plain; version=0.0.4; charset=utf-8",
             )
-        else:
-            return Response(
-                content="# Metrics manager not initialized\n",
-                media_type="text/plain; version=0.0.4; charset=utf-8",
-            )
-    except Exception as e:
-        logger.error(f"Failed to get metrics: {str(e)}")
         return Response(
-            content=f"# Error getting metrics: {str(e)}\n",
+            content="# Metrics manager not initialized\n",
+            media_type="text/plain; version=0.0.4; charset=utf-8",
+        )
+    except Exception as e:
+        logger.error(f"Failed to get metrics: {e!s}")
+        return Response(
+            content=f"# Error getting metrics: {e!s}\n",
             media_type="text/plain; version=0.0.4; charset=utf-8",
         )
 
@@ -786,15 +783,14 @@ async def get_metrics_summary():
         if metrics_manager:
             summary = metrics_manager.get_metrics_summary()
             return summary
-        else:
-            return {
-                "error": "Metrics manager not initialized",
-                "constitutional_hash": "cdd01ef066bc6cf2",
-                "timestamp": datetime.now().isoformat(),
-            }
+        return {
+            "error": "Metrics manager not initialized",
+            "constitutional_hash": "cdd01ef066bc6cf2",
+            "timestamp": datetime.now().isoformat(),
+        }
     except Exception as e:
-        logger.error(f"Failed to get metrics summary: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Metrics summary failed: {str(e)}")
+        logger.error(f"Failed to get metrics summary: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Metrics summary failed: {e!s}")
 
 
 if __name__ == "__main__":

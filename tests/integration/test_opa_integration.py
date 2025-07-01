@@ -12,6 +12,7 @@ import time
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+
 from services.core.governance_synthesis.gs_service.app.config.opa_config import (
     OPAMode,
 )

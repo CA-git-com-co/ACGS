@@ -8,19 +8,17 @@ Provides comprehensive tracking of decisions, reviews, and feedback.
 import uuid
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Dict, Any, Optional
 
 from sqlalchemy import (
+    JSON,
     Boolean,
     Column,
     DateTime,
     Float,
     ForeignKey,
     Integer,
-    JSON,
     String,
     Text,
-    UniqueConstraint,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
@@ -257,7 +255,7 @@ class AgentConfidenceProfile(Base):
         )
 
     def update_confidence(
-        self, operation_type: str, success: bool, learning_rate: Optional[float] = None
+        self, operation_type: str, success: bool, learning_rate: float | None = None
     ) -> None:
         """Update confidence scores based on operation outcome."""
         lr = learning_rate or self.learning_rate

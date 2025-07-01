@@ -17,10 +17,9 @@ Based on research in safe multi-armed bandits and constitutional AI governance.
 """
 
 import logging
-import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import numpy as np
 from scipy.linalg import inv
@@ -67,8 +66,8 @@ class ArmStatistics:
     theta: np.ndarray = None  # Parameter estimate
     n_pulls: int = 0
     total_reward: float = 0.0
-    constitutional_scores: List[float] = field(default_factory=list)
-    safety_scores: List[float] = field(default_factory=list)
+    constitutional_scores: list[float] = field(default_factory=list)
+    safety_scores: list[float] = field(default_factory=list)
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     def __post_init__(self):
@@ -90,9 +89,9 @@ class ConservativeLinUCB(MABAlgorithmBase):
         """Initialize Conservative LinUCB algorithm."""
         super().__init__(MABConfig())  # Initialize base class
         self.config = config
-        self.arm_stats: Dict[str, ArmStatistics] = {}
-        self.baseline_performance: Optional[float] = None
-        self.baseline_history: List[float] = []
+        self.arm_stats: dict[str, ArmStatistics] = {}
+        self.baseline_performance: float | None = None
+        self.baseline_history: list[float] = []
         self.context_dimension = config.context_dimension
         self.total_rounds = 0
 
@@ -115,7 +114,7 @@ class ConservativeLinUCB(MABAlgorithmBase):
         logger.debug(f"Initialized new arm: {arm_id}")
         return stats
 
-    def _extract_context_vector(self, context: Dict[str, Any]) -> np.ndarray:
+    def _extract_context_vector(self, context: dict[str, Any]) -> np.ndarray:
         """Extract and normalize context vector from context dictionary."""
         # Create context vector from available features
         features = []
@@ -213,8 +212,8 @@ class ConservativeLinUCB(MABAlgorithmBase):
         return is_safe
 
     def select_arm(
-        self, context: Dict[str, Any] = None, available_arms: List[str] = None
-    ) -> Optional[str]:
+        self, context: dict[str, Any] = None, available_arms: list[str] = None
+    ) -> str | None:
         """Select arm using Conservative Constrained LinUCB."""
         if not available_arms:
             logger.warning("No available arms for selection")
@@ -284,8 +283,8 @@ class ConservativeLinUCB(MABAlgorithmBase):
         return selected_arm
 
     def _select_fallback_arm(
-        self, context_vector: np.ndarray, available_arms: List[str]
-    ) -> Optional[str]:
+        self, context_vector: np.ndarray, available_arms: list[str]
+    ) -> str | None:
         """Select fallback arm when no safe arms are available."""
         if not self.baseline_performance:
             return available_arms[0] if available_arms else None
@@ -306,7 +305,7 @@ class ConservativeLinUCB(MABAlgorithmBase):
 
         return best_arm or available_arms[0]
 
-    def update_reward(self, arm_id: str, reward: float, context: Dict[str, Any] = None):
+    def update_reward(self, arm_id: str, reward: float, context: dict[str, Any] = None):
         """Update arm statistics with new reward observation."""
         if arm_id not in self.arm_stats:
             self._initialize_arm(arm_id)
@@ -376,7 +375,7 @@ class ConservativeLinUCB(MABAlgorithmBase):
                 msg += f"(from {sample_count} samples)"
                 logger.info(msg)
 
-    def get_arm_statistics(self, arm_id: str) -> Optional[Dict[str, Any]]:
+    def get_arm_statistics(self, arm_id: str) -> dict[str, Any] | None:
         """Get comprehensive statistics for an arm."""
         if arm_id not in self.arm_stats:
             return None
@@ -422,7 +421,7 @@ class ConservativeLinUCB(MABAlgorithmBase):
             "theta_norm": theta_norm,
         }
 
-    def get_system_statistics(self) -> Dict[str, Any]:
+    def get_system_statistics(self) -> dict[str, Any]:
         """Get comprehensive system statistics."""
         return {
             "total_rounds": self.total_rounds,
@@ -451,7 +450,7 @@ class ConservativeLinUCB(MABAlgorithmBase):
         self.baseline_history = []
         logger.info("Reset baseline performance calculation")
 
-    def export_performance_data(self) -> Dict[str, Any]:
+    def export_performance_data(self) -> dict[str, Any]:
         """Export performance data for analysis."""
         return {
             "performance_history": self.performance_history,

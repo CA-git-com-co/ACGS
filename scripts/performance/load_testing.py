@@ -5,12 +5,12 @@ Tests system performance under 10x baseline load.
 """
 
 import asyncio
-import aiohttp
-import time
-import statistics
-import json
-from typing import List, Dict, Any
 import logging
+import statistics
+import time
+from typing import Any
+
+import aiohttp
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ class LoadTester:
             "throughput_rps": 0,
         }
 
-    async def run_load_test(self) -> Dict[str, Any]:
+    async def run_load_test(self) -> dict[str, Any]:
         """Run comprehensive load test."""
         target_rps = self.baseline_rps * self.target_multiplier
 
@@ -105,13 +105,13 @@ class LoadTester:
                     else:
                         self.results["failed_requests"] += 1
 
-            except Exception as e:
+            except Exception:
                 response_time = (time.time() - start_time) * 1000
                 self.results["total_requests"] += 1
                 self.results["failed_requests"] += 1
                 self.results["response_times"].append(response_time)
 
-    def _calculate_results(self) -> Dict[str, Any]:
+    def _calculate_results(self) -> dict[str, Any]:
         """Calculate load test results."""
         if not self.results["response_times"]:
             return {"error": "No response times recorded"}

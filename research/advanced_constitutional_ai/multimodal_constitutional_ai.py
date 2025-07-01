@@ -10,27 +10,20 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import logging
-import json
-import numpy as np
-from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional, Tuple, Union
+from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
-from dataclasses import dataclass, asdict
-from pathlib import Path
-import torch
-import torch.nn as nn
+from typing import Any
+
+import numpy as np
 from transformers import (
     AutoModel,
     AutoTokenizer,
-    AutoProcessor,
     CLIPModel,
     CLIPProcessor,
     Wav2Vec2Model,
     Wav2Vec2Processor,
 )
-from PIL import Image
-import librosa
-import cv2
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -66,9 +59,9 @@ class ModalityInput:
 
     modality: ModalityType
     content: Any  # Raw content (text, image array, audio array, etc.)
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
     timestamp: datetime
-    source: Optional[str] = None
+    source: str | None = None
 
 
 @dataclass
@@ -79,9 +72,9 @@ class ConstitutionalAnalysis:
     modality: ModalityType
     constitutional_compliance: bool
     compliance_score: float
-    violations: List[ConstitutionalViolationType]
-    violation_details: Dict[str, Any]
-    recommendations: List[str]
+    violations: list[ConstitutionalViolationType]
+    violation_details: dict[str, Any]
+    recommendations: list[str]
     confidence: float
     constitutional_hash: str = "cdd01ef066bc6cf2"
 
@@ -91,11 +84,11 @@ class MultiModalAnalysis:
     """Combined analysis across multiple modalities."""
 
     analysis_id: str
-    modality_analyses: List[ConstitutionalAnalysis]
+    modality_analyses: list[ConstitutionalAnalysis]
     cross_modal_consistency: float
     overall_compliance: bool
     overall_score: float
-    integrated_recommendations: List[str]
+    integrated_recommendations: list[str]
     constitutional_hash: str = "cdd01ef066bc6cf2"
 
 
@@ -145,7 +138,7 @@ class MultiModalConstitutionalAI:
         self.audio_processor = None
         self.audio_model = None
 
-    def _set_constitutional_thresholds(self) -> Dict[str, float]:
+    def _set_constitutional_thresholds(self) -> dict[str, float]:
         """Set thresholds for constitutional compliance detection."""
         return {
             "discrimination_threshold": 0.3,
@@ -349,7 +342,7 @@ class MultiModalConstitutionalAI:
         )
 
     async def analyze_multimodal(
-        self, inputs: List[ModalityInput]
+        self, inputs: list[ModalityInput]
     ) -> MultiModalAnalysis:
         """Analyze multiple modalities together for constitutional compliance."""
         analysis_id = f"multimodal_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
@@ -474,7 +467,7 @@ class MultiModalConstitutionalAI:
         return 0.25  # Low harmful content score
 
     def _calculate_cross_modal_consistency(
-        self, analyses: List[ConstitutionalAnalysis]
+        self, analyses: list[ConstitutionalAnalysis]
     ) -> float:
         """Calculate consistency across different modalities."""
         if len(analyses) < 2:

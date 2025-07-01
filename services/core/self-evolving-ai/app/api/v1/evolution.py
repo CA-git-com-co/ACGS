@@ -123,10 +123,9 @@ async def initiate_evolution(
                 message="Evolution initiated successfully",
                 data=status_info,
             )
-        else:
-            return EvolutionResponse(
-                success=False, message="Failed to initiate evolution", data=status_info
-            )
+        return EvolutionResponse(
+            success=False, message="Failed to initiate evolution", data=status_info
+        )
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -160,13 +159,12 @@ async def approve_evolution(
                 message="Evolution approved successfully",
                 data=status_info,
             )
-        else:
-            return EvolutionResponse(
-                success=False,
-                evolution_id=evolution_id,
-                message="Failed to approve evolution",
-                data=status_info,
-            )
+        return EvolutionResponse(
+            success=False,
+            evolution_id=evolution_id,
+            message="Failed to approve evolution",
+            data=status_info,
+        )
 
     except Exception as e:
         logger.error(f"Evolution approval failed: {e}")
@@ -223,13 +221,12 @@ async def rollback_evolution(
                 message="Evolution rolled back successfully",
                 data=rollback_info,
             )
-        else:
-            return EvolutionResponse(
-                success=False,
-                evolution_id=evolution_id,
-                message="Failed to rollback evolution",
-                data=rollback_info,
-            )
+        return EvolutionResponse(
+            success=False,
+            evolution_id=evolution_id,
+            message="Failed to rollback evolution",
+            data=rollback_info,
+        )
 
     except Exception as e:
         logger.error(f"Evolution rollback failed: {e}")
@@ -365,12 +362,11 @@ async def evolution_health_check(
                 "message": "Evolution engine is operational",
                 "data": health_status,
             }
-        else:
-            return {
-                "status": "unhealthy",
-                "message": "Evolution engine has issues",
-                "data": health_status,
-            }
+        return {
+            "status": "unhealthy",
+            "message": "Evolution engine has issues",
+            "data": health_status,
+        }
 
     except Exception as e:
         logger.error(f"Evolution health check failed: {e}")

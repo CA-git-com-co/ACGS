@@ -7,25 +7,24 @@ validation, and optimization for arXiv and other venues.
 """
 
 import argparse
-import sys
-import os
 import json
-from pathlib import Path
-from typing import Optional, List, Dict, Any
 import logging
+import sys
 from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 # Add parent directory to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
 
 try:
-    from quality_assurance.submission_validator import (
-        SubmissionValidator,
-        generate_validation_report,
-    )
     from quality_assurance.compliance_checker import (
         ComplianceChecker,
         generate_compliance_report,
+    )
+    from quality_assurance.submission_validator import (
+        SubmissionValidator,
+        generate_validation_report,
     )
 except ImportError as e:
     print(f"Error importing modules: {e}")
@@ -189,7 +188,7 @@ Examples:
 
         return parser
 
-    def run(self, args: Optional[List[str]] = None) -> int:
+    def run(self, args: list[str] | None = None) -> int:
         """Run the CLI application."""
         try:
             parsed_args = self.parser.parse_args(args)
@@ -206,19 +205,18 @@ Examples:
             # Execute command
             if parsed_args.command == "validate":
                 return self._validate_command(parsed_args, config)
-            elif parsed_args.command == "compliance":
+            if parsed_args.command == "compliance":
                 return self._compliance_command(parsed_args, config)
-            elif parsed_args.command == "optimize":
+            if parsed_args.command == "optimize":
                 return self._optimize_command(parsed_args, config)
-            elif parsed_args.command == "package":
+            if parsed_args.command == "package":
                 return self._package_command(parsed_args, config)
-            elif parsed_args.command == "status":
+            if parsed_args.command == "status":
                 return self._status_command(parsed_args, config)
-            elif parsed_args.command == "init":
+            if parsed_args.command == "init":
                 return self._init_command(parsed_args, config)
-            else:
-                self.parser.print_help()
-                return 1
+            self.parser.print_help()
+            return 1
 
         except KeyboardInterrupt:
             print("\nOperation cancelled by user.")
@@ -231,16 +229,16 @@ Examples:
                 traceback.print_exc()
             return 1
 
-    def _load_config(self, config_path: str) -> Dict[str, Any]:
+    def _load_config(self, config_path: str) -> dict[str, Any]:
         """Load configuration from file."""
         try:
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 return json.load(f)
         except Exception as e:
             logger.warning(f"Could not load config file {config_path}: {e}")
             return {}
 
-    def _validate_command(self, args, config: Dict[str, Any]) -> int:
+    def _validate_command(self, args, config: dict[str, Any]) -> int:
         """Execute validate command."""
         submission_path = Path(args.path)
 
@@ -306,7 +304,7 @@ Examples:
             logger.error(f"Validation failed: {e}")
             return 1
 
-    def _compliance_command(self, args, config: Dict[str, Any]) -> int:
+    def _compliance_command(self, args, config: dict[str, Any]) -> int:
         """Execute compliance command."""
         submission_path = Path(args.path)
 
@@ -342,20 +340,20 @@ Examples:
             logger.error(f"Compliance check failed: {e}")
             return 1
 
-    def _optimize_command(self, args, config: Dict[str, Any]) -> int:
+    def _optimize_command(self, args, config: dict[str, Any]) -> int:
         """Execute optimize command."""
         logger.info("Optimization feature coming soon!")
         logger.info("This will include automatic fixing of common LaTeX issues,")
         logger.info("bibliography optimization, and figure compression.")
         return 0
 
-    def _package_command(self, args, config: Dict[str, Any]) -> int:
+    def _package_command(self, args, config: dict[str, Any]) -> int:
         """Execute package command."""
         logger.info("Packaging feature coming soon!")
         logger.info("This will create submission-ready archives for various venues.")
         return 0
 
-    def _status_command(self, args, config: Dict[str, Any]) -> int:
+    def _status_command(self, args, config: dict[str, Any]) -> int:
         """Execute status command."""
         submission_path = Path(args.path)
 
@@ -363,8 +361,8 @@ Examples:
             logger.error(f"Submission path does not exist: {submission_path}")
             return 1
 
-        print(f"\n📄 Academic Submission Status")
-        print(f"{'='*50}")
+        print("\n📄 Academic Submission Status")
+        print(f"{'=' * 50}")
         print(f"Path: {submission_path}")
         print(
             f"Last modified: {datetime.fromtimestamp(submission_path.stat().st_mtime)}"
@@ -386,7 +384,7 @@ Examples:
             ),
         }
 
-        print(f"\n📋 Key Files:")
+        print("\n📋 Key Files:")
         for name, path in key_files.items():
             status = "✅" if path and path.exists() else "❌"
             print(f"  {status} {name}")
@@ -396,7 +394,7 @@ Examples:
             validator = SubmissionValidator(submission_path)
             report = validator.validate_submission()
 
-            print(f"\n🔍 Quick Validation:")
+            print("\n🔍 Quick Validation:")
             print(f"  Overall Status: {report.overall_status}")
             print(f"  Compliance Score: {report.compliance_score:.1f}%")
 
@@ -410,7 +408,7 @@ Examples:
             if warning_count > 0:
                 print(f"  ⚠️  {warning_count} warnings")
             if fail_count == 0 and warning_count == 0:
-                print(f"  ✅ No issues found")
+                print("  ✅ No issues found")
 
         except Exception as e:
             print(f"  ❌ Validation error: {e}")
@@ -418,7 +416,7 @@ Examples:
         print()
         return 0
 
-    def _init_command(self, args, config: Dict[str, Any]) -> int:
+    def _init_command(self, args, config: dict[str, Any]) -> int:
         """Execute init command."""
         logger.info("Initialization feature coming soon!")
         logger.info("This will create new submission templates for various venues.")
@@ -426,8 +424,8 @@ Examples:
 
     def _print_validation_summary(self, report):
         """Print validation summary to console."""
-        print(f"\n📊 Validation Summary")
-        print(f"{'='*50}")
+        print("\n📊 Validation Summary")
+        print(f"{'=' * 50}")
         print(f"Overall Status: {report.overall_status}")
         print(f"Compliance Score: {report.compliance_score:.1f}%")
 
@@ -438,21 +436,21 @@ Examples:
         )
         fail_count = sum(1 for r in report.validation_results if r.status == "FAIL")
 
-        print(f"\nResults:")
+        print("\nResults:")
         print(f"  ✅ Passed: {pass_count}")
         print(f"  ⚠️  Warnings: {warning_count}")
         print(f"  ❌ Failed: {fail_count}")
 
         # Show failed checks
         if fail_count > 0:
-            print(f"\n❌ Critical Issues:")
+            print("\n❌ Critical Issues:")
             for result in report.validation_results:
                 if result.status == "FAIL":
                     print(f"  • {result.check_name}: {result.message}")
 
         # Show recommendations
         if report.recommendations:
-            print(f"\n💡 Recommendations:")
+            print("\n💡 Recommendations:")
             for i, rec in enumerate(report.recommendations[:5], 1):  # Show top 5
                 print(f"  {i}. {rec}")
             if len(report.recommendations) > 5:
@@ -461,7 +459,7 @@ Examples:
     def _print_compliance_summary(self, results, venue):
         """Print compliance summary to console."""
         print(f"\n📋 {venue.upper()} Compliance Summary")
-        print(f"{'='*50}")
+        print(f"{'=' * 50}")
 
         # Count results by status
         pass_count = sum(1 for r in results if r.status == "PASS")
@@ -471,14 +469,14 @@ Examples:
         compliance_rate = (pass_count / len(results) * 100) if results else 0
 
         print(f"Compliance Rate: {compliance_rate:.1f}%")
-        print(f"\nResults:")
+        print("\nResults:")
         print(f"  ✅ Passed: {pass_count}")
         print(f"  ⚠️  Warnings: {warning_count}")
         print(f"  ❌ Failed: {fail_count}")
 
         # Show failed checks
         if fail_count > 0:
-            print(f"\n❌ Compliance Issues:")
+            print("\n❌ Compliance Issues:")
             for result in results:
                 if result.status == "FAIL":
                     print(f"  • {result.rule_id}: {result.message}")

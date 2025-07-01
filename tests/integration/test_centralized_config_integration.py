@@ -185,7 +185,7 @@ class CentralizedConfigIntegrationTest:
                             )
 
                     except Exception as e:
-                        print(f"  ❌ {service} service health check failed: {str(e)}")
+                        print(f"  ❌ {service} service health check failed: {e!s}")
 
             # Consider test successful if at least some services are running
             success = successful_checks > 0
@@ -340,9 +340,8 @@ async def main():
     if success:
         print("\n🎉 Centralized configuration integration tests PASSED!")
         return 0
-    else:
-        print("\n💥 Centralized configuration integration tests FAILED!")
-        return 1
+    print("\n💥 Centralized configuration integration tests FAILED!")
+    return 1
 
 
 if __name__ == "__main__":

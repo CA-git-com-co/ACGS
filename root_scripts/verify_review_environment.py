@@ -33,11 +33,10 @@ def check_git_branch():
     if branch == expected_branch:
         print(f"   ✅ On correct branch: {branch}")
         return True
-    else:
-        print(f"   ❌ Wrong branch: {branch}")
-        print(f"   Expected: {expected_branch}")
-        print(f"   Run: git checkout {expected_branch}")
-        return False
+    print(f"   ❌ Wrong branch: {branch}")
+    print(f"   Expected: {expected_branch}")
+    print(f"   Run: git checkout {expected_branch}")
+    return False
 
 
 def check_required_files():
@@ -128,9 +127,8 @@ def check_git_status():
                 print(f"      {line}")
         print("   Consider committing or stashing changes before review")
         return True  # Not a blocker, just a warning
-    else:
-        print("   ✅ Working directory clean")
-        return True
+    print("   ✅ Working directory clean")
+    return True
 
 
 def run_quick_validation():
@@ -147,11 +145,10 @@ def run_quick_validation():
     if success and "ALL TESTS PASSED" in output:
         print("   ✅ Quick validation successful")
         return True
-    else:
-        print("   ❌ Validation failed")
-        if error:
-            print(f"   Error: {error}")
-        return False
+    print("   ❌ Validation failed")
+    if error:
+        print(f"   Error: {error}")
+    return False
 
 
 def main():
@@ -199,11 +196,10 @@ def main():
         print("2. Run: python test_restructured_applications.py")
         print("3. Complete manual verification")
         return True
-    else:
-        print("\n⚠️  ENVIRONMENT NEEDS ATTENTION")
-        print(f"❌ {total - passed} check(s) failed")
-        print("\nPlease resolve the issues above before proceeding with review")
-        return False
+    print("\n⚠️  ENVIRONMENT NEEDS ATTENTION")
+    print(f"❌ {total - passed} check(s) failed")
+    print("\nPlease resolve the issues above before proceeding with review")
+    return False
 
 
 if __name__ == "__main__":

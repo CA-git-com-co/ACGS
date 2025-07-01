@@ -9,24 +9,25 @@ This module bridges the existing production_ml_optimizer.py with the new
 MLOps framework, ensuring constitutional compliance and performance targets.
 """
 
-import logging
 import json
+import logging
 import pickle
-import tempfile
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Union
 
 # Import existing production ML optimizer
 import sys
+import tempfile
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
 
 sys.path.append(str(Path(__file__).parent.parent))
 from production_ml_optimizer import ProductionMLOptimizer
 
-# Import new MLOps framework
-from .mlops_manager import MLOpsManager, MLOpsConfig
-from .model_versioning import VersionPolicy
 from .deployment_pipeline import DeploymentStatus
+
+# Import new MLOps framework
+from .mlops_manager import MLOpsConfig, MLOpsManager
+from .model_versioning import VersionPolicy
 
 logger = logging.getLogger(__name__)
 
@@ -83,8 +84,8 @@ class MLOpsProductionIntegration:
         y,
         model_name: str = "production_model",
         version_policy: VersionPolicy = VersionPolicy.PATCH,
-        metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """
         Train model using existing optimizer and create MLOps version.
 
@@ -168,7 +169,7 @@ class MLOpsProductionIntegration:
 
     def deploy_model_with_mlops(
         self, model_name: str, model_version: str, skip_staging: bool = False
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Deploy model using MLOps pipeline with production optimizer integration.
 
@@ -229,12 +230,11 @@ class MLOpsProductionIntegration:
                     "success": True,
                     "fallback_reason": str(e),
                 }
-            else:
-                raise
+            raise
 
     def monitor_and_retrain_with_mlops(
         self, X, y, model_name: str = "production_model"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Monitor model performance and trigger retraining with MLOps integration.
 
@@ -279,7 +279,6 @@ class MLOpsProductionIntegration:
             if versioning_results["mlops_info"].get(
                 "constitutional_compliance_verified", False
             ) and monitoring_results.get("improvement_achieved", False):
-
                 logger.info("Auto-deploying improved model")
 
                 deployment_results = self.deploy_model_with_mlops(
@@ -309,7 +308,7 @@ class MLOpsProductionIntegration:
 
         return combined_results
 
-    def get_integrated_model_status(self, model_name: str) -> Dict[str, Any]:
+    def get_integrated_model_status(self, model_name: str) -> dict[str, Any]:
         """Get comprehensive model status from both systems."""
 
         # Get status from production optimizer
@@ -342,7 +341,7 @@ class MLOpsProductionIntegration:
         return integrated_status
 
     def _create_model_artifacts(
-        self, model, training_results: Dict[str, Any], model_name: str
+        self, model, training_results: dict[str, Any], model_name: str
     ) -> tuple[Path, Path]:
         """Create temporary model and configuration artifacts."""
 
@@ -370,7 +369,7 @@ class MLOpsProductionIntegration:
 
         return model_path, config_path
 
-    def _cleanup_temp_files(self, file_paths: List[Path]):
+    def _cleanup_temp_files(self, file_paths: list[Path]):
         """Clean up temporary files."""
         for file_path in file_paths:
             try:
@@ -410,7 +409,7 @@ class MLOpsProductionIntegration:
         self.migration_mode = enabled
         logger.info(f"Migration mode {'enabled' if enabled else 'disabled'}")
 
-    def validate_integration_health(self) -> Dict[str, Any]:
+    def validate_integration_health(self) -> dict[str, Any]:
         """Validate health of the integrated system."""
 
         health_status = {

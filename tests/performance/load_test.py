@@ -5,14 +5,13 @@ Tests system performance under various load conditions.
 """
 
 import asyncio
-import time
 import statistics
-from typing import List, Dict, Any
+import time
 from dataclasses import dataclass
-from concurrent.futures import ThreadPoolExecutor
+from typing import Any
 
 import httpx
-from colorama import init, Fore, Style
+from colorama import Fore, Style, init
 
 init()
 
@@ -46,10 +45,10 @@ class ACGSLoadTester:
             "sandbox_execution": "http://localhost:8009",
         }
 
-    async def run_all_load_tests(self) -> Dict[str, LoadTestResult]:
+    async def run_all_load_tests(self) -> dict[str, LoadTestResult]:
         """Run all load tests."""
         print(f"{Fore.CYAN}⚡ ACGS Load Testing Suite{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{'='*50}{Style.RESET_ALL}\n")
+        print(f"{Fore.CYAN}{'=' * 50}{Style.RESET_ALL}\n")
 
         results = {}
 
@@ -165,7 +164,7 @@ class ACGSLoadTester:
         concurrent_requests: int,
         total_requests: int,
         target_latency_ms: int,
-        payload: Dict[str, Any] = None,
+        payload: dict[str, Any] = None,
         method: str = "POST",
     ) -> LoadTestResult:
         """Run concurrent requests and measure performance."""
@@ -198,7 +197,7 @@ class ACGSLoadTester:
                     else:
                         failed_requests += 1
 
-                except Exception as e:
+                except Exception:
                     failed_requests += 1
                     # Still record time for failed requests
                     request_time = (time.time() - request_start) * 1000
@@ -273,22 +272,22 @@ class ACGSLoadTester:
         print(f"  Error Rate: {result.error_rate:.1f}%")
         print(f"  Duration: {result.duration_seconds:.2f}s")
 
-    def _print_load_test_summary(self, results: Dict[str, LoadTestResult]):
+    def _print_load_test_summary(self, results: dict[str, LoadTestResult]):
         """Print load test summary."""
         print(f"{Fore.CYAN}📊 Load Test Summary{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{'='*50}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{'=' * 50}{Style.RESET_ALL}")
 
         total_requests = sum(r.total_requests for r in results.values())
         total_successful = sum(r.successful_requests for r in results.values())
         total_failed = sum(r.failed_requests for r in results.values())
 
-        print(f"\nOverall Results:")
+        print("\nOverall Results:")
         print(f"Total Requests: {total_requests}")
         print(f"Successful: {Fore.GREEN}{total_successful}{Style.RESET_ALL}")
         print(f"Failed: {Fore.RED}{total_failed}{Style.RESET_ALL}")
-        print(f"Overall Success Rate: {(total_successful/total_requests)*100:.1f}%")
+        print(f"Overall Success Rate: {(total_successful / total_requests) * 100:.1f}%")
 
-        print(f"\nPerformance Targets:")
+        print("\nPerformance Targets:")
         targets = [
             (
                 "HITL Decision Latency",

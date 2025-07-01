@@ -12,7 +12,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -35,7 +35,7 @@ class IntelligentAlertingDeployer:
         for directory in [self.config_dir, self.logs_dir, self.pids_dir]:
             directory.mkdir(exist_ok=True)
 
-    async def deploy_intelligent_alerting(self) -> Dict[str, Any]:
+    async def deploy_intelligent_alerting(self) -> dict[str, Any]:
         """Deploy the complete intelligent alerting system"""
         logger.info("🚀 Starting ACGS-1 Intelligent Alerting System Deployment")
         logger.info("=" * 80)
@@ -96,7 +96,7 @@ class IntelligentAlertingDeployer:
             logger.error(f"❌ Deployment failed: {e}")
             return {"status": "failed", "error": str(e), "results": results}
 
-    async def validate_prerequisites(self) -> Dict[str, Any]:
+    async def validate_prerequisites(self) -> dict[str, Any]:
         """Validate system prerequisites"""
         logger.info("🔍 Validating prerequisites...")
 
@@ -125,6 +125,7 @@ class IntelligentAlertingDeployer:
             try:
                 result = subprocess.run(
                     ["curl", "-f", f"http://localhost:{port}/health"],
+                    check=False,
                     capture_output=True,
                     timeout=5,
                 )
@@ -139,7 +140,7 @@ class IntelligentAlertingDeployer:
 
         return checks
 
-    async def install_dependencies(self) -> Dict[str, Any]:
+    async def install_dependencies(self) -> dict[str, Any]:
         """Install required Python dependencies"""
         logger.info("📦 Installing dependencies...")
 
@@ -157,6 +158,7 @@ class IntelligentAlertingDeployer:
             try:
                 result = subprocess.run(
                     [sys.executable, "-m", "pip", "install", dep],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=60,
@@ -174,7 +176,7 @@ class IntelligentAlertingDeployer:
 
         return results
 
-    async def configure_monitoring(self) -> Dict[str, Any]:
+    async def configure_monitoring(self) -> dict[str, Any]:
         """Configure monitoring infrastructure"""
         logger.info("⚙️  Configuring monitoring infrastructure...")
 
@@ -210,7 +212,7 @@ class IntelligentAlertingDeployer:
 
         return results
 
-    async def deploy_webhook_server(self) -> Dict[str, Any]:
+    async def deploy_webhook_server(self) -> dict[str, Any]:
         """Deploy the webhook server"""
         logger.info("🌐 Deploying webhook server...")
 
@@ -254,7 +256,7 @@ WantedBy=multi-user.target
         except Exception as e:
             return {"status": "failed", "error": str(e)}
 
-    async def configure_prometheus_integration(self) -> Dict[str, Any]:
+    async def configure_prometheus_integration(self) -> dict[str, Any]:
         """Configure Prometheus integration"""
         logger.info("📊 Configuring Prometheus integration...")
 
@@ -272,7 +274,7 @@ WantedBy=multi-user.target
 
         try:
             if prometheus_config.exists():
-                with open(prometheus_config, "r") as f:
+                with open(prometheus_config) as f:
                     config_content = f.read()
 
                 if "acgs-webhook-server" not in config_content:
@@ -289,20 +291,17 @@ WantedBy=multi-user.target
                             "status": "updated",
                             "config_file": str(prometheus_config),
                         }
-                    else:
-                        return {
-                            "status": "failed",
-                            "error": "Invalid Prometheus config format",
-                        }
-                else:
-                    return {"status": "already_configured"}
-            else:
-                return {"status": "failed", "error": "Prometheus config not found"}
+                    return {
+                        "status": "failed",
+                        "error": "Invalid Prometheus config format",
+                    }
+                return {"status": "already_configured"}
+            return {"status": "failed", "error": "Prometheus config not found"}
 
         except Exception as e:
             return {"status": "failed", "error": str(e)}
 
-    async def configure_alertmanager(self) -> Dict[str, Any]:
+    async def configure_alertmanager(self) -> dict[str, Any]:
         """Configure Alertmanager with enhanced configuration"""
         logger.info("🚨 Configuring Alertmanager...")
 
@@ -328,16 +327,15 @@ WantedBy=multi-user.target
                         str(backup_path) if current_config.exists() else None
                     ),
                 }
-            else:
-                return {
-                    "status": "failed",
-                    "error": "Enhanced Alertmanager config not found",
-                }
+            return {
+                "status": "failed",
+                "error": "Enhanced Alertmanager config not found",
+            }
 
         except Exception as e:
             return {"status": "failed", "error": str(e)}
 
-    async def deploy_runbooks(self) -> Dict[str, Any]:
+    async def deploy_runbooks(self) -> dict[str, Any]:
         """Deploy operational runbooks"""
         logger.info("📚 Deploying operational runbooks...")
 
@@ -372,7 +370,7 @@ WantedBy=multi-user.target
         except Exception as e:
             return {"status": "failed", "error": str(e)}
 
-    async def start_services(self) -> Dict[str, Any]:
+    async def start_services(self) -> dict[str, Any]:
         """Start intelligent alerting services"""
         logger.info("🚀 Starting intelligent alerting services...")
 
@@ -420,7 +418,7 @@ WantedBy=multi-user.target
 
         return results
 
-    async def validate_deployment(self) -> Dict[str, Any]:
+    async def validate_deployment(self) -> dict[str, Any]:
         """Validate the deployment"""
         logger.info("✅ Validating deployment...")
 
@@ -430,6 +428,7 @@ WantedBy=multi-user.target
         try:
             result = subprocess.run(
                 ["curl", "-f", "http://localhost:8080/health"],
+                check=False,
                 capture_output=True,
                 timeout=10,
             )
@@ -458,7 +457,7 @@ WantedBy=multi-user.target
 
         return validations
 
-    async def configure_automated_monitoring(self) -> Dict[str, Any]:
+    async def configure_automated_monitoring(self) -> dict[str, Any]:
         """Configure automated monitoring and cleanup"""
         logger.info("🔄 Configuring automated monitoring...")
 
@@ -507,7 +506,7 @@ if __name__ == "__main__":
         except Exception as e:
             return {"status": "failed", "error": str(e)}
 
-    def generate_deployment_summary(self, results: Dict[str, Any]) -> Dict[str, Any]:
+    def generate_deployment_summary(self, results: dict[str, Any]) -> dict[str, Any]:
         """Generate deployment summary"""
         summary = {
             "components_deployed": [],

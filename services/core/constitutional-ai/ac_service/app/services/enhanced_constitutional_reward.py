@@ -22,7 +22,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import numpy as np
 from openai import AsyncOpenAI
@@ -52,14 +52,14 @@ class ConstitutionalEvaluation:
     """Result of constitutional evaluation."""
 
     action_id: str
-    context: Dict[str, Any]
-    dimension_scores: Dict[ConstitutionalDimension, float] = field(default_factory=dict)
-    principle_scores: Dict[str, float] = field(default_factory=dict)
+    context: dict[str, Any]
+    dimension_scores: dict[ConstitutionalDimension, float] = field(default_factory=dict)
+    principle_scores: dict[str, float] = field(default_factory=dict)
     critique_text: str = ""
     composite_score: float = 0.0
     confidence: float = 0.0
-    violations: List[str] = field(default_factory=list)
-    recommendations: List[str] = field(default_factory=list)
+    violations: list[str] = field(default_factory=list)
+    recommendations: list[str] = field(default_factory=list)
     evaluation_time: float = 0.0
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
@@ -75,7 +75,7 @@ class ConstitutionalRewardConfig:
     max_tokens: int = 1000
 
     # Dimension weights
-    dimension_weights: Dict[ConstitutionalDimension, float] = field(
+    dimension_weights: dict[ConstitutionalDimension, float] = field(
         default_factory=lambda: {
             ConstitutionalDimension.SAFETY: 0.25,
             ConstitutionalDimension.FAIRNESS: 0.20,
@@ -122,8 +122,8 @@ class EnhancedConstitutionalReward:
         self.openai_client = openai_client
 
         # Performance tracking
-        self.evaluation_history: List[ConstitutionalEvaluation] = []
-        self.evaluation_cache: Dict[str, ConstitutionalEvaluation] = {}
+        self.evaluation_history: list[ConstitutionalEvaluation] = []
+        self.evaluation_cache: dict[str, ConstitutionalEvaluation] = {}
         self.performance_metrics = {
             "total_evaluations": 0,
             "average_evaluation_time": 0.0,
@@ -133,7 +133,7 @@ class EnhancedConstitutionalReward:
         }
 
         # Constitutional principles (loaded from compliance service)
-        self.principles: List[ConstitutionalPrinciple] = []
+        self.principles: list[ConstitutionalPrinciple] = []
 
         logger.info("Initialized Enhanced Constitutional Reward Framework")
 
@@ -166,7 +166,7 @@ class EnhancedConstitutionalReward:
             raise ValueError("high_confidence_threshold must be between 0.0 and 1.0")
 
     async def evaluate_action(
-        self, action: str, context: Dict[str, Any]
+        self, action: str, context: dict[str, Any]
     ) -> ConstitutionalEvaluation:
         """
         Evaluate an action against constitutional principles.
@@ -253,7 +253,7 @@ class EnhancedConstitutionalReward:
                 violations=["evaluation_failed"],
             )
 
-    async def _generate_critique(self, action: str, context: Dict[str, Any]) -> str:
+    async def _generate_critique(self, action: str, context: dict[str, Any]) -> str:
         """Generate constitutional critique using LLM."""
         principles_text = "\n".join(
             [
@@ -266,7 +266,7 @@ class EnhancedConstitutionalReward:
         Evaluate the following action against constitutional AI principles:
         
         Action: {action}
-        Context: {context.get('description', 'No additional context')}
+        Context: {context.get("description", "No additional context")}
         
         Constitutional Principles:
         {principles_text}
@@ -294,11 +294,11 @@ class EnhancedConstitutionalReward:
 
         except Exception as e:
             logger.error(f"Failed to generate critique: {e}")
-            return f"Failed to generate critique: {str(e)}"
+            return f"Failed to generate critique: {e!s}"
 
     async def _evaluate_dimensions(
-        self, action: str, context: Dict[str, Any], critique: str
-    ) -> Dict[ConstitutionalDimension, float]:
+        self, action: str, context: dict[str, Any], critique: str
+    ) -> dict[ConstitutionalDimension, float]:
         """Evaluate action against constitutional dimensions."""
         dimension_scores = {}
 
@@ -312,7 +312,7 @@ class EnhancedConstitutionalReward:
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
         # Process results
-        for dimension, result in zip(ConstitutionalDimension, results):
+        for dimension, result in zip(ConstitutionalDimension, results, strict=False):
             if isinstance(result, Exception):
                 logger.error(f"Failed to evaluate dimension {dimension}: {result}")
                 dimension_scores[dimension] = 0.0
@@ -324,7 +324,7 @@ class EnhancedConstitutionalReward:
     async def _evaluate_single_dimension(
         self,
         action: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         critique: str,
         dimension: ConstitutionalDimension,
     ) -> float:
@@ -366,7 +366,7 @@ class EnhancedConstitutionalReward:
 
         prompt = f"""
         Action: {action}
-        Context: {context.get('description', '')}
+        Context: {context.get("description", "")}
         Critique: {critique[:500]}...
 
         {dimension_prompts[dimension]}
@@ -395,8 +395,8 @@ class EnhancedConstitutionalReward:
             return 0.5  # Default neutral score
 
     async def _evaluate_principles(
-        self, action: str, context: Dict[str, Any], critique: str
-    ) -> Dict[str, float]:
+        self, action: str, context: dict[str, Any], critique: str
+    ) -> dict[str, float]:
         """Evaluate action against specific constitutional principles."""
         principle_scores = {}
 
@@ -418,7 +418,7 @@ class EnhancedConstitutionalReward:
     async def _evaluate_single_principle(
         self,
         action: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         critique: str,
         principle: ConstitutionalPrinciple,
     ) -> float:
@@ -430,7 +430,7 @@ class EnhancedConstitutionalReward:
         Description: {principle.description}
 
         Action: {action}
-        Context: {context.get('description', '')}
+        Context: {context.get("description", "")}
 
         Rate compliance with this principle (0.0 to 1.0):
         - 0.0 = Completely violates the principle
@@ -457,8 +457,8 @@ class EnhancedConstitutionalReward:
 
     def _calculate_composite_score(
         self,
-        dimension_scores: Dict[ConstitutionalDimension, float],
-        principle_scores: Dict[str, float],
+        dimension_scores: dict[ConstitutionalDimension, float],
+        principle_scores: dict[str, float],
     ) -> float:
         """Calculate composite constitutional compliance score."""
         # Weighted average of dimension scores
@@ -481,8 +481,8 @@ class EnhancedConstitutionalReward:
 
     def _calculate_confidence(
         self,
-        dimension_scores: Dict[ConstitutionalDimension, float],
-        principle_scores: Dict[str, float],
+        dimension_scores: dict[ConstitutionalDimension, float],
+        principle_scores: dict[str, float],
     ) -> float:
         """Calculate confidence in the evaluation."""
         all_scores = list(dimension_scores.values()) + list(principle_scores.values())
@@ -503,9 +503,9 @@ class EnhancedConstitutionalReward:
 
     def _detect_violations(
         self,
-        dimension_scores: Dict[ConstitutionalDimension, float],
-        principle_scores: Dict[str, float],
-    ) -> List[str]:
+        dimension_scores: dict[ConstitutionalDimension, float],
+        principle_scores: dict[str, float],
+    ) -> list[str]:
         """Detect constitutional violations based on scores."""
         violations = []
 
@@ -524,8 +524,8 @@ class EnhancedConstitutionalReward:
         return violations
 
     async def _generate_recommendations(
-        self, action: str, context: Dict[str, Any], violations: List[str]
-    ) -> List[str]:
+        self, action: str, context: dict[str, Any], violations: list[str]
+    ) -> list[str]:
         """Generate recommendations for improving constitutional compliance."""
         if not violations:
             return [
@@ -564,7 +564,7 @@ class EnhancedConstitutionalReward:
                 "Consult governance team",
             ]
 
-    def _generate_cache_key(self, action: str, context: Dict[str, Any]) -> str:
+    def _generate_cache_key(self, action: str, context: dict[str, Any]) -> str:
         """Generate cache key for evaluation using secure SHA-256 hashing."""
         import hashlib
 
@@ -596,7 +596,7 @@ class EnhancedConstitutionalReward:
         if evaluation.confidence >= self.config.high_confidence_threshold:
             self.performance_metrics["high_confidence_evaluations"] += 1
 
-    def get_performance_metrics(self) -> Dict[str, Any]:
+    def get_performance_metrics(self) -> dict[str, Any]:
         """Get performance metrics for monitoring."""
         return {
             **self.performance_metrics,

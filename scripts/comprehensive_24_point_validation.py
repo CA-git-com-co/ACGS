@@ -84,7 +84,7 @@ class ACGS24PointValidator:
         except TimeoutError:
             return False, f"Command timed out after {timeout} seconds"
         except Exception as e:
-            return False, f"Command execution failed: {str(e)}"
+            return False, f"Command execution failed: {e!s}"
 
     async def validate_code_formatting(self) -> list[ValidationResult]:
         """Validate code formatting and linting (6 checks)."""
@@ -719,7 +719,7 @@ async def main():
             sys.exit(1)
 
     except Exception as e:
-        logger.error(f"Validation failed with error: {str(e)}")
+        logger.error(f"Validation failed with error: {e!s}")
         sys.exit(1)
 
 

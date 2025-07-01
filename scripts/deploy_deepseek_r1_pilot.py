@@ -7,7 +7,7 @@ Implements blue-green deployment strategy with automatic rollback capabilities.
 
 Deployment Phases:
 - Phase 1: Initial Pilot (10% traffic, 7 days)
-- Phase 2: Expanded Testing (25% traffic, 14 days)  
+- Phase 2: Expanded Testing (25% traffic, 14 days)
 - Phase 3: Majority Traffic (50% traffic, 14 days)
 - Phase 4: Full Migration (90% traffic, 7 days)
 
@@ -30,8 +30,8 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 from services.shared.ai_model_service import AIModelService
-from services.shared.deepseek_r1_pilot import DeepSeekR1PilotManager
 from services.shared.deepseek_r1_monitoring import DeepSeekR1Monitor
+from services.shared.deepseek_r1_pilot import DeepSeekR1PilotManager
 
 # Configure logging
 logging.basicConfig(
@@ -71,7 +71,7 @@ class DeepSeekR1Deployer:
 
     def _load_deployment_config(self) -> dict:
         """Load deployment configuration."""
-        config_file = f"config/deepseek-r1-pilot.yaml"
+        config_file = "config/deepseek-r1-pilot.yaml"
 
         # For this implementation, return default config
         # In production, this would load from YAML file
@@ -270,7 +270,7 @@ class DeepSeekR1Deployer:
 
                 # Log progress
                 logger.info(
-                    f"Monitoring check {i+1}/{checks}: "
+                    f"Monitoring check {i + 1}/{checks}: "
                     f"Compliance: {metrics.constitutional_compliance_rate:.3f}, "
                     f"Response: {metrics.response_time_p95_ms:.1f}ms"
                 )
@@ -422,23 +422,21 @@ class DeepSeekR1Deployer:
                     f"Prepare for Phase {self.phase + 1} deployment",
                     "Review performance metrics and user feedback",
                 ]
-            else:
-                return [
-                    "Monitor full migration performance",
-                    "Validate 96.4% cost reduction achieved",
-                    "Document lessons learned",
-                    "Plan Phase 2 implementation (multi-level caching)",
-                    "Celebrate successful migration! 🎉",
-                ]
-        else:
             return [
-                "Investigate deployment failure root cause",
-                "Review logs and error messages",
-                "Validate environment configuration",
-                "Test pilot functionality in staging",
-                "Consider rollback to previous phase",
-                "Schedule post-mortem review",
+                "Monitor full migration performance",
+                "Validate 96.4% cost reduction achieved",
+                "Document lessons learned",
+                "Plan Phase 2 implementation (multi-level caching)",
+                "Celebrate successful migration! 🎉",
             ]
+        return [
+            "Investigate deployment failure root cause",
+            "Review logs and error messages",
+            "Validate environment configuration",
+            "Test pilot functionality in staging",
+            "Consider rollback to previous phase",
+            "Schedule post-mortem review",
+        ]
 
 
 async def main():

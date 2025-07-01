@@ -11,19 +11,17 @@ Constitutional Hash: cdd01ef066bc6cf2
 import asyncio
 import logging
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional
-from fastapi import FastAPI, HTTPException, Depends, Security
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
-import uvicorn
+from typing import Any
 
+import uvicorn
+from fastapi import FastAPI, HTTPException, Security
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from governance_maturity_framework import (
-    GovernanceMaturityFramework,
-    AssessmentResult,
     GovernanceDomain,
-    MaturityLevel,
+    GovernanceMaturityFramework,
 )
+from pydantic import BaseModel, Field
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -35,10 +33,10 @@ class AssessmentRequest(BaseModel):
     organization_id: str = Field(..., description="Unique organization identifier")
     organization_name: str = Field(..., description="Organization name")
     assessor_name: str = Field(..., description="Name of person conducting assessment")
-    responses: Dict[str, int] = Field(
+    responses: dict[str, int] = Field(
         ..., description="Assessment responses (1-5 scale)"
     )
-    notes: Optional[str] = Field(None, description="Additional assessment notes")
+    notes: str | None = Field(None, description="Additional assessment notes")
 
 
 class AssessmentResponse(BaseModel):
@@ -47,9 +45,9 @@ class AssessmentResponse(BaseModel):
     overall_maturity_level: float
     maturity_level_name: str
     constitutional_compliance_score: float
-    domain_scores: Dict[str, float]
-    recommendations: List[str]
-    improvement_roadmap: List[Dict[str, Any]]
+    domain_scores: dict[str, float]
+    recommendations: list[str]
+    improvement_roadmap: list[dict[str, Any]]
     constitutional_hash: str
 
 
@@ -58,13 +56,13 @@ class MaturityIndicatorInfo(BaseModel):
     name: str
     description: str
     domain: str
-    criteria: Dict[str, List[str]]
+    criteria: dict[str, list[str]]
     weight: float
 
 
 class DomainSummary(BaseModel):
     domain: str
-    indicators: List[MaturityIndicatorInfo]
+    indicators: list[MaturityIndicatorInfo]
     description: str
 
 
@@ -113,7 +111,7 @@ async def health_check():
     }
 
 
-@app.get("/api/v1/domains", response_model=List[DomainSummary])
+@app.get("/api/v1/domains", response_model=list[DomainSummary])
 async def get_assessment_domains():
     """Get all governance domains and their indicators."""
     domains = []
@@ -232,7 +230,7 @@ async def conduct_assessment(
 
     except Exception as e:
         logger.error(f"Assessment failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Assessment failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Assessment failed: {e!s}")
 
 
 @app.get("/api/v1/assessments/{organization_id}/history")
@@ -336,7 +334,7 @@ async def get_industry_benchmarks():
 
 @app.post("/api/v1/recommendations/generate")
 async def generate_custom_recommendations(
-    request: Dict[str, Any],
+    request: dict[str, Any],
     credentials: HTTPAuthorizationCredentials = Security(security),
 ):
     """Generate custom improvement recommendations based on specific criteria."""

@@ -4,15 +4,14 @@ Business Rules and Edge Case Testing Framework
 Validates business rule implementations, governance workflows, and constitutional compliance.
 """
 
-import os
-import sys
 import json
-import time
 import re
-from pathlib import Path
-from typing import Dict, List, Any, Optional, Union
+import sys
+import time
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+from typing import Any
 
 # Add project paths
 project_root = Path(__file__).parent
@@ -33,11 +32,11 @@ class BusinessRuleTestResult:
     test_name: str
     status: TestStatus
     execution_time: float
-    rule_validations: List[Dict[str, Any]]
+    rule_validations: list[dict[str, Any]]
     edge_cases_tested: int
     edge_cases_passed: int
-    details: Dict[str, Any]
-    error_message: Optional[str] = None
+    details: dict[str, Any]
+    error_message: str | None = None
 
 
 class BusinessRulesTester:
@@ -709,7 +708,7 @@ class BusinessRulesTester:
         except UnicodeError:
             return {"error": True, "message": "Unicode processing failed"}
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Run all business rule tests."""
         print("Starting Business Rules and Edge Case Testing...")
         print("=" * 60)
@@ -736,7 +735,7 @@ class BusinessRulesTester:
                     0,
                     0,
                     {},
-                    f"Test execution failed: {str(e)}",
+                    f"Test execution failed: {e!s}",
                 )
                 self.log_result(error_result)
 

@@ -132,7 +132,7 @@ async def get_compliance_metrics():
 
 @app.get("/api/v1/compliance/soc2", response_model=SOC2Report)
 async def get_soc2_report(
-    period_days: int = Query(default=30, description="Report period in days")
+    period_days: int = Query(default=30, description="Report period in days"),
 ):
     """Generate SOC2 compliance report"""
     period_start = datetime.now() - timedelta(days=period_days)
@@ -191,7 +191,7 @@ async def get_soc2_report(
 
 @app.get("/api/v1/compliance/gdpr", response_model=GDPRReport)
 async def get_gdpr_report(
-    period_days: int = Query(default=30, description="Report period in days")
+    period_days: int = Query(default=30, description="Report period in days"),
 ):
     """Generate GDPR compliance report"""
     period_start = datetime.now() - timedelta(days=period_days)
@@ -319,7 +319,7 @@ async def get_audit_trail(
                 "event_type": "compliance_check",
                 "component": ["soc2", "gdpr", "constitutional"][i % 3],
                 "status": "passed",
-                "details": f"Automated compliance validation #{i+1}",
+                "details": f"Automated compliance validation #{i + 1}",
                 "constitution_hash": "cdd01ef066bc6cf2",
             }
         )
@@ -357,16 +357,15 @@ async def generate_compliance_report(
                 "constitutional": "/api/v1/compliance/constitutional",
             },
         }
-    else:
-        return {
-            "report_id": report_id,
-            "status": "generated",
-            "report_type": report_type,
-            "period_days": period_days,
-            "generated_at": datetime.now().isoformat(),
-            "constitution_hash": "cdd01ef066bc6cf2",
-            "download_url": f"/api/v1/compliance/{report_type}?period_days={period_days}",
-        }
+    return {
+        "report_id": report_id,
+        "status": "generated",
+        "report_type": report_type,
+        "period_days": period_days,
+        "generated_at": datetime.now().isoformat(),
+        "constitution_hash": "cdd01ef066bc6cf2",
+        "download_url": f"/api/v1/compliance/{report_type}?period_days={period_days}",
+    }
 
 
 if __name__ == "__main__":

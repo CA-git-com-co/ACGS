@@ -28,6 +28,7 @@ def run_command(
     try:
         result = subprocess.run(
             command,
+            check=False,
             shell=False,  # SECURITY: Disabled shell to prevent injection attacks
             capture_output=capture_output,
             text=True,

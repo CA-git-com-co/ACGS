@@ -2,15 +2,6 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.api.v1.enhanced_multi_model
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance_synthesis.gs_service.app.api.v1.enhanced_multi_model import (
-    ValidationRequest,
-    ModelPerformanceUpdate,
-    EnsembleValidationResponse,
-    ValidationMetricsResponse,
-)
-
 
 class TestValidationRequest:
     """Test suite for ValidationRequest."""

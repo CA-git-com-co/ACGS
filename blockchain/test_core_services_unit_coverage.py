@@ -5,11 +5,9 @@ Tests all 7 core services for >80% unit test coverage
 """
 
 import asyncio
-import time
-import json
-from typing import Dict, List, Any, Tuple
-from dataclasses import dataclass
 import logging
+from dataclasses import dataclass
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,8 +23,8 @@ class ServiceTestResult:
     passed_tests: int
     failed_tests: int
     coverage_percentage: float
-    test_categories: List[str]
-    critical_functions_tested: List[str]
+    test_categories: list[str]
+    critical_functions_tested: list[str]
 
 
 class CoreServicesUnitTestCoverage:
@@ -579,7 +577,7 @@ class CoreServicesUnitTestCoverage:
             critical_functions_tested=critical_functions,
         )
 
-    async def run_comprehensive_unit_test_coverage(self) -> Dict[str, Any]:
+    async def run_comprehensive_unit_test_coverage(self) -> dict[str, Any]:
         """Run comprehensive unit test coverage analysis for all core services."""
         print("🚀 Running Comprehensive Core Services Unit Test Coverage")
         print("=" * 70)
@@ -637,7 +635,7 @@ class CoreServicesUnitTestCoverage:
         target_coverage = 80.0
         meets_target = overall_coverage >= target_coverage
 
-        print(f"\n🎯 Coverage Target Validation:")
+        print("\n🎯 Coverage Target Validation:")
         print(f"   Target Coverage: ≥{target_coverage}%")
         print(f"   Achieved Coverage: {overall_coverage:.1f}%")
         print(f"   Coverage Target: {'✅ MET' if meets_target else '❌ NOT MET'}")

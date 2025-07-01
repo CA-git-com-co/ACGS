@@ -11,9 +11,9 @@ import base64
 import json
 import logging
 import os
-from pathlib import Path
-from typing import Any, Dict, Union, Optional, List
 from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 import requests
 
@@ -60,7 +60,7 @@ class EnhancedOCRIntegration:
         )
         logger.info("Advanced document processing capabilities enabled")
 
-    def _initialize_prompt_templates(self) -> Dict[str, str]:
+    def _initialize_prompt_templates(self) -> dict[str, str]:
         """Initialize enhanced prompt templates for different document types"""
         base_nanonets_prompt = """Extract the text from the above document as if you were reading it naturally. Return the tables in html format. Return the equations in LaTeX representation. If there is an image in the document and image caption is not present, add a small description of the image inside the <img></img> tag; otherwise, add the image caption inside <img></img>. Watermarks should be wrapped in brackets. Ex: <watermark>OFFICIAL COPY</watermark>. Page numbers should be wrapped in brackets. Ex: <page_number>14</page_number> or <page_number>9/22</page_number>. Prefer using ☐ and ☑ for check boxes."""
 
@@ -97,7 +97,7 @@ class EnhancedOCRIntegration:
             logger.warning(f"OCR service health check failed: {e}")
             return False
 
-    def encode_image(self, image_path: Union[str, Path]) -> str:
+    def encode_image(self, image_path: str | Path) -> str:
         """Encode an image file to base64."""
         image_path = Path(image_path)
         with open(image_path, "rb") as image_file:
@@ -105,9 +105,9 @@ class EnhancedOCRIntegration:
 
     def extract_text(
         self,
-        image_data: Union[str, Path, bytes],
+        image_data: str | Path | bytes,
         prompt: str = "Extract all text from this image.",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Extract text from an image using the OCR service.
 
@@ -164,23 +164,22 @@ class EnhancedOCRIntegration:
                         "usage": result.get("usage", {}),
                     },
                 }
-            else:
-                return {
-                    "success": False,
-                    "error": "No content in response",
-                    "raw_response": result,
-                }
+            return {
+                "success": False,
+                "error": "No content in response",
+                "raw_response": result,
+            }
 
         except requests.exceptions.RequestException as e:
             logger.error(f"Error calling OCR service: {e}")
-            raise OCRServiceException(f"OCR service request failed: {str(e)}")
+            raise OCRServiceException(f"OCR service request failed: {e!s}")
         except Exception as e:
             logger.error(f"Unexpected error in OCR integration: {e}")
-            raise OCRServiceException(f"OCR integration error: {str(e)}")
+            raise OCRServiceException(f"OCR integration error: {e!s}")
 
     def analyze_document(
-        self, image_data: Union[str, Path, bytes], analysis_type: str = "general"
-    ) -> Dict[str, Any]:
+        self, image_data: str | Path | bytes, analysis_type: str = "general"
+    ) -> dict[str, Any]:
         """
         Perform enhanced document analysis with structured element extraction.
 
@@ -232,7 +231,7 @@ class EnhancedOCRIntegration:
         return enhanced_result
 
     def extract_structured_elements(
-        self, image_data: Union[str, Path, bytes], document_type: str = "general"
+        self, image_data: str | Path | bytes, document_type: str = "general"
     ) -> ProcessedDocument:
         """
         Extract structured elements from a document and return ProcessedDocument object.
@@ -260,8 +259,8 @@ class EnhancedOCRIntegration:
         return processed_doc
 
     def get_document_authenticity_score(
-        self, image_data: Union[str, Path, bytes]
-    ) -> Dict[str, Any]:
+        self, image_data: str | Path | bytes
+    ) -> dict[str, Any]:
         """
         Analyze document authenticity based on signatures, watermarks, and other markers.
 

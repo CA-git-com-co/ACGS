@@ -5,7 +5,7 @@ Tests core cryptographic functions without database dependencies
 
 import hashlib
 import json
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 # Test cryptography library availability
 try:

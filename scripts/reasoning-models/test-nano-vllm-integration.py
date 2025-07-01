@@ -8,7 +8,6 @@ everything works correctly before full deployment.
 
 import asyncio
 import sys
-import os
 import time
 from pathlib import Path
 
@@ -17,7 +16,7 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root / "services" / "reasoning-models"))
 
 try:
-    from nano_vllm_adapter import NanoVLLMAdapter, ModelConfig, create_nano_vllm_adapter
+    from nano_vllm_adapter import ModelConfig, NanoVLLMAdapter, create_nano_vllm_adapter
 
     print("✅ Successfully imported Nano-vLLM adapter")
 except ImportError as e:
@@ -26,9 +25,9 @@ except ImportError as e:
 
 try:
     from nano_vllm_integration import (
+        ConstitutionalDomain,
         NanoVLLMReasoningService,
         ReasoningRequest,
-        ConstitutionalDomain,
         create_nano_vllm_reasoning_service,
     )
 
@@ -86,7 +85,7 @@ async def test_nano_vllm_adapter():
             messages=messages, max_tokens=50, temperature=0.7
         )
 
-        print(f"✅ Chat completion successful")
+        print("✅ Chat completion successful")
         print(f"   Response: {response['choices'][0]['message']['content'][:100]}...")
         print(f"   Tokens: {response['usage']['completion_tokens']}")
         print(f"   Time: {response.get('generation_time', 0):.2f}s")
@@ -102,7 +101,7 @@ async def test_nano_vllm_adapter():
         return True
 
     except Exception as e:
-        print(f"❌ Adapter test failed: {str(e)}")
+        print(f"❌ Adapter test failed: {e!s}")
         return False
 
 
@@ -169,7 +168,7 @@ async def test_reasoning_service():
         return True
 
     except Exception as e:
-        print(f"❌ Reasoning service test failed: {str(e)}")
+        print(f"❌ Reasoning service test failed: {e!s}")
         import traceback
 
         traceback.print_exc()
@@ -202,7 +201,7 @@ async def test_performance_benchmark():
 
             request_time = (end_time - start_time) * 1000
             times.append(request_time)
-            print(f"   Request {i+1}: {request_time:.2f}ms")
+            print(f"   Request {i + 1}: {request_time:.2f}ms")
 
         avg_time = sum(times) / len(times)
         print(f"✅ Average response time: {avg_time:.2f}ms")
@@ -212,7 +211,7 @@ async def test_performance_benchmark():
         return True
 
     except Exception as e:
-        print(f"❌ Performance benchmark failed: {str(e)}")
+        print(f"❌ Performance benchmark failed: {e!s}")
         return False
 
 
@@ -239,7 +238,7 @@ async def main():
             else:
                 print(f"❌ {test_name} test FAILED")
         except Exception as e:
-            print(f"❌ {test_name} test ERROR: {str(e)}")
+            print(f"❌ {test_name} test ERROR: {e!s}")
             results.append((test_name, False))
 
     # Summary
@@ -258,9 +257,8 @@ async def main():
     if passed == total:
         print("🎉 All tests passed! Nano-vLLM integration is working correctly.")
         return 0
-    else:
-        print("⚠️  Some tests failed. Please check the output above.")
-        return 1
+    print("⚠️  Some tests failed. Please check the output above.")
+    return 1
 
 
 if __name__ == "__main__":

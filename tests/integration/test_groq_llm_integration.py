@@ -322,7 +322,7 @@ class GroqLLMIntegrationTest:
         print(f"  Total Passed: {total_passed}")
         print(f"  Total Failed: {total_failed}")
         print(
-            f"  Success Rate: {(total_passed/(total_passed+total_failed)*100):.1f}%"
+            f"  Success Rate: {(total_passed / (total_passed + total_failed) * 100):.1f}%"
             if (total_passed + total_failed) > 0
             else "No tests run"
         )

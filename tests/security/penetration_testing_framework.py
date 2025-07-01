@@ -31,7 +31,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import aiohttp
 import pytest
@@ -80,7 +80,7 @@ class SecurityTestResult:
     test_type: str
     component: str
     success: bool
-    vulnerabilities: List[SecurityVulnerability]
+    vulnerabilities: list[SecurityVulnerability]
     execution_time_ms: float
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
@@ -182,7 +182,7 @@ class NeMoSkillsSandboxSecurityTester:
             execution_time_ms=execution_time,
         )
 
-    def _is_dangerous_execution(self, result: Dict[str, Any], payload: str) -> bool:
+    def _is_dangerous_execution(self, result: dict[str, Any], payload: str) -> bool:
         """Check if code execution result indicates a security vulnerability."""
         if not result:
             return False
@@ -286,7 +286,7 @@ class NeMoSkillsSandboxSecurityTester:
             execution_time_ms=execution_time,
         )
 
-    def _is_sandbox_escape(self, result: Dict[str, Any], payload: str) -> bool:
+    def _is_sandbox_escape(self, result: dict[str, Any], payload: str) -> bool:
         """Check if execution result indicates sandbox escape."""
         if not result:
             return False
@@ -534,10 +534,10 @@ class ComprehensiveSecurityTester:
     """Comprehensive security testing orchestrator."""
 
     def __init__(self):
-        self.all_vulnerabilities: List[SecurityVulnerability] = []
-        self.test_results: List[SecurityTestResult] = []
+        self.all_vulnerabilities: list[SecurityVulnerability] = []
+        self.test_results: list[SecurityTestResult] = []
 
-    async def run_comprehensive_security_test(self) -> Dict[str, Any]:
+    async def run_comprehensive_security_test(self) -> dict[str, Any]:
         """Run comprehensive security testing across all components."""
         logger.info("Starting comprehensive security penetration testing")
         start_time = time.time()
@@ -569,7 +569,7 @@ class ComprehensiveSecurityTester:
         # Calculate security metrics
         return self._calculate_security_metrics(total_duration)
 
-    def _calculate_security_metrics(self, duration: float) -> Dict[str, Any]:
+    def _calculate_security_metrics(self, duration: float) -> dict[str, Any]:
         """Calculate comprehensive security metrics."""
         # Vulnerability severity counts
         severity_counts = {
@@ -651,7 +651,7 @@ class ComprehensiveSecurityTester:
             ],
         }
 
-        logger.info(f"Security Test Results:")
+        logger.info("Security Test Results:")
         logger.info(f"  Security Score: {security_score:.1f}/100")
         logger.info(f"  Total Vulnerabilities: {total_vulnerabilities}")
         logger.info(
@@ -663,7 +663,7 @@ class ComprehensiveSecurityTester:
 
         return results
 
-    def save_results(self, filepath: str, metrics: Dict[str, Any]):
+    def save_results(self, filepath: str, metrics: dict[str, Any]):
         """Save security test results to file."""
         Path(filepath).parent.mkdir(parents=True, exist_ok=True)
         with open(filepath, "w") as f:

@@ -292,7 +292,7 @@ class AsyncProcessingTester:
         print("=" * 80)
 
         summary = self.test_results.get("test_summary", {})
-        print(f"\n📊 Test Summary:")
+        print("\n📊 Test Summary:")
         print(f"Total Tests: {summary.get('total_tests', 0)}")
         print(f"Passed Tests: {summary.get('passed_tests', 0)}")
         print(f"Success Rate: {summary.get('success_rate', 0)}%")
@@ -303,14 +303,14 @@ class AsyncProcessingTester:
         # Job submission results
         job_submission = self.test_results.get("job_submission", {})
         if job_submission:
-            print(f"\n✅ Job Submission Test:")
+            print("\n✅ Job Submission Test:")
             print(f"Jobs Submitted: {job_submission.get('jobs_submitted', 0)}")
             print(f"Status: {job_submission.get('status', 'unknown').upper()}")
 
         # Job processing results
         job_processing = self.test_results.get("job_processing", {})
         if job_processing:
-            print(f"\n🔄 Job Processing Test:")
+            print("\n🔄 Job Processing Test:")
             print(
                 f"Jobs Processed: {job_processing.get('completed_jobs', 0)}/{job_processing.get('total_jobs', 0)}"
             )
@@ -320,7 +320,7 @@ class AsyncProcessingTester:
         # Priority handling results
         priority_handling = self.test_results.get("priority_handling", {})
         if priority_handling:
-            print(f"\n⚡ Priority Handling Test:")
+            print("\n⚡ Priority Handling Test:")
             print(
                 f"High Priority Completed: {priority_handling.get('high_priority_completed', False)}"
             )
@@ -329,7 +329,7 @@ class AsyncProcessingTester:
         # Error handling results
         error_handling = self.test_results.get("error_handling", {})
         if error_handling:
-            print(f"\n🔧 Error Handling Test:")
+            print("\n🔧 Error Handling Test:")
             print(
                 f"Final Status: {error_handling.get('final_status', 'unknown').upper()}"
             )
@@ -339,7 +339,7 @@ class AsyncProcessingTester:
         # Metrics results
         metrics = self.test_results.get("metrics_monitoring", {})
         if metrics and "metrics" in metrics:
-            print(f"\n📊 Metrics Test:")
+            print("\n📊 Metrics Test:")
             m = metrics["metrics"]
             print(f"Jobs Processed: {m.get('jobs_processed', 0)}")
             print(f"Jobs Failed: {m.get('jobs_failed', 0)}")

@@ -224,7 +224,7 @@ class PolicySynthesisWorkflow:
                 )
 
         except Exception as e:
-            state.add_error(f"Constitutional analysis error: {str(e)}")
+            state.add_error(f"Constitutional analysis error: {e!s}")
             logger.error(
                 f"Constitutional analysis failed for workflow {state.workflow_id}: {e}"
             )
@@ -256,7 +256,7 @@ class PolicySynthesisWorkflow:
                 )
 
         except Exception as e:
-            state.add_error(f"Policy generation error: {str(e)}")
+            state.add_error(f"Policy generation error: {e!s}")
             logger.error(
                 f"Policy generation failed for workflow {state.workflow_id}: {e}"
             )
@@ -293,7 +293,7 @@ class PolicySynthesisWorkflow:
                 )
 
         except Exception as e:
-            state.add_error(f"Fidelity assessment error: {str(e)}")
+            state.add_error(f"Fidelity assessment error: {e!s}")
             logger.error(
                 f"Fidelity assessment failed for workflow {state.workflow_id}: {e}"
             )
@@ -331,7 +331,7 @@ class PolicySynthesisWorkflow:
                 )
 
         except Exception as e:
-            state.add_error(f"Conflict resolution error: {str(e)}")
+            state.add_error(f"Conflict resolution error: {e!s}")
             logger.error(
                 f"Conflict resolution failed for workflow {state.workflow_id}: {e}"
             )
@@ -370,7 +370,7 @@ class PolicySynthesisWorkflow:
                 )
 
         except Exception as e:
-            state.add_error(f"Final validation error: {str(e)}")
+            state.add_error(f"Final validation error: {e!s}")
             logger.error(
                 f"Final validation failed for workflow {state.workflow_id}: {e}"
             )
@@ -415,8 +415,7 @@ class PolicySynthesisWorkflow:
             if state.retry_count < state.max_retries:
                 state.retry_count += 1
                 return "retry"
-            else:
-                return "error"
+            return "error"
 
         if (
             state.fidelity_assessment

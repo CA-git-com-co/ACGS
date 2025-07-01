@@ -134,7 +134,7 @@ class HealthChecker:
         except requests.exceptions.RequestException as e:
             response_time = time.time() - start_time
             self.metrics.update_service_health(service, False, response_time, 0)
-            logger.debug(f"Service {service}: ❌ Connection failed - {str(e)}")
+            logger.debug(f"Service {service}: ❌ Connection failed - {e!s}")
 
     def run_health_checks(self):
         while self.running:

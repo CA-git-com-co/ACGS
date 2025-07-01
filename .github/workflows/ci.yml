@@ -382,12 +382,82 @@ jobs:
           echo "ready=true" >> $GITHUB_OUTPUT
           echo "✅ All enterprise toolchain components validated successfully"
 
+  # Enhanced Code Quality Gates Job
+  code_quality_gates:
+    runs-on: ubuntu-latest
+    name: Enterprise Code Quality Gates
+    needs: [preflight, toolchain_setup]
+    if: needs.preflight.outputs.should_run_tests == 'true'
+    outputs:
+      quality_passed: ${{ steps.quality_check.outputs.passed }}
+      coverage_score: ${{ steps.coverage.outputs.score }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install quality tools
+        run: |
+          pip install -e .[dev,test]
+          pip install ruff black mypy bandit safety pytest-cov
+
+      - name: Constitutional Compliance Validation
+        id: constitutional
+        run: |
+          echo "🏛️ Running constitutional compliance validation..."
+          python scripts/validate_constitutional_compliance.py
+          echo "passed=true" >> $GITHUB_OUTPUT
+
+      - name: Code Quality Validation
+        id: quality_check
+        run: |
+          echo "🔍 Running comprehensive code quality validation..."
+          python scripts/code_quality_validator.py --fail-on-error
+          echo "passed=true" >> $GITHUB_OUTPUT
+
+      - name: Security Scanning
+        run: |
+          echo "🔒 Running security scans..."
+          bandit -r services/ scripts/ -f json -o bandit-report.json
+          safety check --json --output safety-report.json
+
+      - name: Type Checking
+        run: |
+          echo "📝 Running type checking..."
+          mypy services/ scripts/ --ignore-missing-imports
+
+      - name: Code Coverage
+        id: coverage
+        run: |
+          echo "📊 Running test coverage analysis..."
+          pytest --cov=services --cov-report=xml --cov-report=term-missing --cov-fail-under=80
+          COVERAGE=$(python -c "import xml.etree.ElementTree as ET; print(float(ET.parse('coverage.xml').getroot().attrib['line-rate']) * 100)")
+          echo "score=$COVERAGE" >> $GITHUB_OUTPUT
+          echo "Coverage: $COVERAGE%"
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          file: coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+
+      - name: Performance Impact Check
+        run: |
+          echo "⚡ Checking performance impact..."
+          python scripts/check_performance_impact.py services/core/acgs-pgp-v8/src/main.py
+
   # Parallel Job 1: Rust Code Quality & Build
   rust_quality_build:
     runs-on: ubuntu-latest
     name: Rust Quality & Build (Parallel)
-    needs: [preflight, toolchain_setup]
-    if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.rust_changed == 'true'
+    needs: [preflight, toolchain_setup, code_quality_gates]
+    if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.rust_changed == 'true' && needs.code_quality_gates.outputs.quality_passed == 'true'
     continue-on-error: true
     steps:
       - name: Check out repository
@@ -797,6 +867,7 @@ jobs:
         performance_monitoring,
         preflight,
         toolchain_setup,
+        code_quality_gates,
         rust_quality_build,
         enterprise_security_scan,
       ]
@@ -867,6 +938,10 @@ jobs:
           scripts/enterprise/failure-analysis.sh init "${{ needs.performance_monitoring.outputs.pipeline_id }}"
 
           # Check for any job failures and record them
+          if [ "${{ needs.code_quality_gates.result }}" != "success" ] && [ "${{ needs.code_quality_gates.result }}" != "skipped" ]; then
+            scripts/enterprise/failure-analysis.sh record "quality_gates_failure" "Code quality gates failed" "ci_cd_pipeline" "code_quality_gates"
+          fi
+
           if [ "${{ needs.rust_quality_build.result }}" != "success" ] && [ "${{ needs.rust_quality_build.result }}" != "skipped" ]; then
             scripts/enterprise/failure-analysis.sh record "rust_build_failure" "Rust quality and build job failed" "ci_cd_pipeline" "rust_quality_build"
           fi
@@ -915,6 +990,12 @@ jobs:
             echo "⚠️ Security deduction: 40 points (security scan failed)"
           fi
 
+          # Code quality gates compliance check
+          if [ "${{ needs.code_quality_gates.result }}" != "success" ] && [ "${{ needs.code_quality_gates.result }}" != "skipped" ]; then
+            DEDUCTIONS=$((DEDUCTIONS + 25))
+            echo "⚠️ Quality gates deduction: 25 points (code quality gates failed)"
+          fi
+
           # Build quality compliance check
           if [ "${{ needs.rust_quality_build.result }}" != "success" ] && [ "${{ needs.rust_quality_build.result }}" != "skipped" ]; then
             DEDUCTIONS=$((DEDUCTIONS + 20))
@@ -925,6 +1006,20 @@ jobs:
           if [ "${{ needs.toolchain_setup.result }}" != "success" ]; then
             DEDUCTIONS=$((DEDUCTIONS + 10))
             echo "⚠️ Infrastructure deduction: 10 points (toolchain setup issues)"
+          fi
+
+          # Coverage score bonus/penalty
+          COVERAGE_SCORE="${{ needs.code_quality_gates.outputs.coverage_score }}"
+          if [ ! -z "$COVERAGE_SCORE" ] && [ "$COVERAGE_SCORE" != "null" ]; then
+            if (( $(echo "$COVERAGE_SCORE < 80" | bc -l) )); then
+              COVERAGE_PENALTY=$(echo "scale=0; (80 - $COVERAGE_SCORE) / 2" | bc)
+              DEDUCTIONS=$((DEDUCTIONS + COVERAGE_PENALTY))
+              echo "⚠️ Coverage deduction: $COVERAGE_PENALTY points (coverage: ${COVERAGE_SCORE}%)"
+            elif (( $(echo "$COVERAGE_SCORE > 90" | bc -l) )); then
+              COVERAGE_BONUS=$(echo "scale=0; ($COVERAGE_SCORE - 90) / 2" | bc)
+              DEDUCTIONS=$((DEDUCTIONS - COVERAGE_BONUS))
+              echo "✅ Coverage bonus: $COVERAGE_BONUS points (coverage: ${COVERAGE_SCORE}%)"
+            fi
           fi
 
           # Calculate final score
@@ -971,8 +1066,13 @@ jobs:
             "job_results": {
               "preflight": "${{ needs.preflight.result }}",
               "toolchain_setup": "${{ needs.toolchain_setup.result }}",
+              "code_quality_gates": "${{ needs.code_quality_gates.result }}",
               "rust_quality_build": "${{ needs.rust_quality_build.result }}",
               "enterprise_security_scan": "${{ needs.enterprise_security_scan.result }}"
+            },
+            "quality_metrics": {
+              "coverage_score": "${{ needs.code_quality_gates.outputs.coverage_score }}",
+              "quality_passed": "${{ needs.code_quality_gates.outputs.quality_passed }}"
             },
             "performance_targets": {
               "build_duration_target_minutes": ${{ env.ENTERPRISE_BUILD_TARGET_MINUTES }},
@@ -1036,11 +1136,12 @@ jobs:
       [
         preflight,
         toolchain_setup,
+        code_quality_gates,
         rust_quality_build,
         enterprise_security_scan,
         enterprise_reporting,
       ]
-    if: needs.preflight.outputs.should_deploy == 'true' && (needs.enterprise_reporting.result == 'success' || github.event.inputs.skip_tests == 'true')
+    if: needs.preflight.outputs.should_deploy == 'true' && needs.code_quality_gates.outputs.quality_passed == 'true' && (needs.enterprise_reporting.result == 'success' || github.event.inputs.skip_tests == 'true')
     environment:
       name: ${{ needs.preflight.outputs.target_environment }}
       url: ${{ needs.preflight.outputs.target_environment == 'production' && 'https://api.acgs-pgp.com' || needs.preflight.outputs.target_environment == 'staging' && 'https://staging.acgs-pgp.com' || 'https://dev.acgs-pgp.com' }}

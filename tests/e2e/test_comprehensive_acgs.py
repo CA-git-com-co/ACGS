@@ -39,7 +39,7 @@ class ACGSTestSuite:
                     print(f"  ❌ {service_name}: HTTP {response.status_code}")
                     all_healthy = False
             except Exception as e:
-                print(f"  ❌ {service_name}: {str(e)}")
+                print(f"  ❌ {service_name}: {e!s}")
                 all_healthy = False
 
         return all_healthy
@@ -63,15 +63,12 @@ class ACGSTestSuite:
                     "Enhanced Principle Listing: PASSED"
                 )
                 return True
-            else:
-                print(f"  ❌ Principle listing failed: HTTP {response.status_code}")
-                self.results["phase1"]["failed"] += 1
-                self.results["phase1"]["tests"].append(
-                    "Enhanced Principle Listing: FAILED"
-                )
-                return False
+            print(f"  ❌ Principle listing failed: HTTP {response.status_code}")
+            self.results["phase1"]["failed"] += 1
+            self.results["phase1"]["tests"].append("Enhanced Principle Listing: FAILED")
+            return False
         except Exception as e:
-            print(f"  ❌ Principle listing error: {str(e)}")
+            print(f"  ❌ Principle listing error: {e!s}")
             self.results["phase1"]["failed"] += 1
             self.results["phase1"]["tests"].append("Enhanced Principle Listing: ERROR")
             return False
@@ -98,16 +95,15 @@ class ACGSTestSuite:
                 else:
                     print(f"  ❌ {endpoint}: HTTP {response.status_code}")
             except Exception as e:
-                print(f"  ❌ {endpoint}: {str(e)}")
+                print(f"  ❌ {endpoint}: {e!s}")
 
         if passed == len(endpoints):
             self.results["phase1"]["passed"] += 1
             self.results["phase1"]["tests"].append("Constitutional Council: PASSED")
             return True
-        else:
-            self.results["phase1"]["failed"] += 1
-            self.results["phase1"]["tests"].append("Constitutional Council: PARTIAL")
-            return False
+        self.results["phase1"]["failed"] += 1
+        self.results["phase1"]["tests"].append("Constitutional Council: PARTIAL")
+        return False
 
     def test_phase1_constitutional_synthesis(self) -> bool:
         """Test Phase 1 Constitutional Synthesis"""
@@ -136,16 +132,15 @@ class ACGSTestSuite:
                 else:
                     print(f"  ❌ {endpoint}: HTTP {response.status_code}")
             except Exception as e:
-                print(f"  ❌ {endpoint}: {str(e)}")
+                print(f"  ❌ {endpoint}: {e!s}")
 
         if passed >= 2:  # At least 2 out of 3 endpoints working
             self.results["phase1"]["passed"] += 1
             self.results["phase1"]["tests"].append("Constitutional Synthesis: PASSED")
             return True
-        else:
-            self.results["phase1"]["failed"] += 1
-            self.results["phase1"]["tests"].append("Constitutional Synthesis: FAILED")
-            return False
+        self.results["phase1"]["failed"] += 1
+        self.results["phase1"]["tests"].append("Constitutional Synthesis: FAILED")
+        return False
 
     def test_cross_service_communication(self) -> bool:
         """Test cross-service communication"""
@@ -164,7 +159,7 @@ class ACGSTestSuite:
                 else:
                     print(f"  ❌ {service_name}: HTTP {response.status_code}")
             except Exception as e:
-                print(f"  ❌ {service_name}: {str(e)}")
+                print(f"  ❌ {service_name}: {e!s}")
 
         if services_reachable == total_services:
             self.results["cross_service"]["passed"] += 1
@@ -172,12 +167,9 @@ class ACGSTestSuite:
                 "Service Communication: PASSED"
             )
             return True
-        else:
-            self.results["cross_service"]["failed"] += 1
-            self.results["cross_service"]["tests"].append(
-                "Service Communication: PARTIAL"
-            )
-            return False
+        self.results["cross_service"]["failed"] += 1
+        self.results["cross_service"]["tests"].append("Service Communication: PARTIAL")
+        return False
 
     def test_phase2_alphaevolve(self) -> bool:
         """Test Phase 2 AlphaEvolve Integration"""
@@ -205,16 +197,15 @@ class ACGSTestSuite:
                 else:
                     print(f"  ❌ {endpoint}: HTTP {response.status_code}")
             except Exception as e:
-                print(f"  ❌ {endpoint}: {str(e)}")
+                print(f"  ❌ {endpoint}: {e!s}")
 
         if passed >= 1:  # At least 1 endpoint working
             self.results["phase2"]["passed"] += 1
             self.results["phase2"]["tests"].append("AlphaEvolve Integration: PASSED")
             return True
-        else:
-            self.results["phase2"]["failed"] += 1
-            self.results["phase2"]["tests"].append("AlphaEvolve Integration: FAILED")
-            return False
+        self.results["phase2"]["failed"] += 1
+        self.results["phase2"]["tests"].append("AlphaEvolve Integration: FAILED")
+        return False
 
     def test_phase3_formal_verification(self) -> bool:
         """Test Phase 3 Formal Verification"""
@@ -229,13 +220,12 @@ class ACGSTestSuite:
                 self.results["phase3"]["passed"] += 1
                 self.results["phase3"]["tests"].append("Formal Verification: PASSED")
                 return True
-            else:
-                print(f"  ❌ Formal verification: HTTP {response.status_code}")
-                self.results["phase3"]["failed"] += 1
-                self.results["phase3"]["tests"].append("Formal Verification: FAILED")
-                return False
+            print(f"  ❌ Formal verification: HTTP {response.status_code}")
+            self.results["phase3"]["failed"] += 1
+            self.results["phase3"]["tests"].append("Formal Verification: FAILED")
+            return False
         except Exception as e:
-            print(f"  ❌ Formal verification error: {str(e)}")
+            print(f"  ❌ Formal verification error: {e!s}")
             self.results["phase3"]["failed"] += 1
             self.results["phase3"]["tests"].append("Formal Verification: ERROR")
             return False
@@ -269,16 +259,15 @@ class ACGSTestSuite:
                 else:
                     print(f"  ❌ {endpoint}: HTTP {response.status_code}")
             except Exception as e:
-                print(f"  ❌ {endpoint}: {str(e)}")
+                print(f"  ❌ {endpoint}: {e!s}")
 
         if passed >= 2:  # At least 2 endpoints working
             self.results["phase3"]["passed"] += 1
             self.results["phase3"]["tests"].append("Cryptographic Integrity: PASSED")
             return True
-        else:
-            self.results["phase3"]["failed"] += 1
-            self.results["phase3"]["tests"].append("Cryptographic Integrity: FAILED")
-            return False
+        self.results["phase3"]["failed"] += 1
+        self.results["phase3"]["tests"].append("Cryptographic Integrity: FAILED")
+        return False
 
     def run_comprehensive_tests(self):
         """Run all comprehensive tests"""
@@ -347,7 +336,7 @@ class ACGSTestSuite:
         print(f"  ✅ Total Passed: {total_passed}")
         print(f"  ❌ Total Failed: {total_failed}")
         print(
-            f"  📈 Success Rate: {(total_passed/(total_passed+total_failed)*100):.1f}%"
+            f"  📈 Success Rate: {(total_passed / (total_passed + total_failed) * 100):.1f}%"
         )
 
         if total_failed == 0:

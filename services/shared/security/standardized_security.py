@@ -3,22 +3,21 @@ ACGS Production Readiness - Standardized Security Middleware
 Provides consistent security implementation across all ACGS services
 """
 
-import os
-import sys
 import logging
-from typing import Dict, Any, Optional
+import sys
 from pathlib import Path
+from typing import Any
 
 # Add project root to path for imports
 PROJECT_ROOT = Path(__file__).parent.parent.parent.absolute()
 sys.path.insert(0, str(PROJECT_ROOT))
 
 try:
-    from services.shared.middleware.security_middleware import SecurityMiddleware
+    from services.shared.common.security_validation import SecurityInputValidator
     from services.shared.middleware.input_validation_middleware import (
         InputValidationMiddleware,
     )
-    from services.shared.common.security_validation import SecurityInputValidator
+    from services.shared.middleware.security_middleware import SecurityMiddleware
 
     SECURITY_COMPONENTS_AVAILABLE = True
 except ImportError as e:
@@ -30,7 +29,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 CONSTITUTIONAL_COMPLIANCE_THRESHOLD = 0.95
 
 
-def get_standardized_security_config() -> Dict[str, Any]:
+def get_standardized_security_config() -> dict[str, Any]:
     """Get standardized security configuration for all ACGS services"""
     return {
         "constitutional_hash": CONSTITUTIONAL_HASH,
@@ -101,7 +100,7 @@ def apply_standardized_security(app, service_name: str, service_version: str = "
 
 def create_health_endpoint_response(
     service_name: str, service_version: str = "3.0.0"
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Create standardized health endpoint response with constitutional compliance"""
     config = get_standardized_security_config()
 
@@ -141,7 +140,7 @@ def validate_constitutional_compliance(request_data: Any) -> bool:
         return False
 
 
-def create_security_headers() -> Dict[str, str]:
+def create_security_headers() -> dict[str, str]:
     """Create standardized security headers for all ACGS services"""
     return {
         "X-Content-Type-Options": "nosniff",
@@ -156,7 +155,7 @@ def create_security_headers() -> Dict[str, str]:
     }
 
 
-def log_security_event(event_type: str, service_name: str, details: Dict[str, Any]):
+def log_security_event(event_type: str, service_name: str, details: dict[str, Any]):
     """Log security events for audit trail"""
     security_logger = logging.getLogger(f"acgs.security.{service_name}")
 
@@ -207,15 +206,15 @@ def validate_constitutional_input(func):
 
 # Export commonly used functions and classes
 __all__ = [
-    "apply_standardized_security",
-    "get_standardized_security_config",
-    "create_health_endpoint_response",
-    "validate_constitutional_compliance",
-    "create_security_headers",
-    "log_security_event",
-    "validate_policy_input",
-    "validate_governance_input",
-    "validate_constitutional_input",
-    "CONSTITUTIONAL_HASH",
     "CONSTITUTIONAL_COMPLIANCE_THRESHOLD",
+    "CONSTITUTIONAL_HASH",
+    "apply_standardized_security",
+    "create_health_endpoint_response",
+    "create_security_headers",
+    "get_standardized_security_config",
+    "log_security_event",
+    "validate_constitutional_compliance",
+    "validate_constitutional_input",
+    "validate_governance_input",
+    "validate_policy_input",
 ]

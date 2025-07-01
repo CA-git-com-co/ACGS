@@ -4,13 +4,13 @@ ACGS Formal Verification Engine
 Implements Z3 SMT solver integration for advanced constitutional verification
 """
 
-import json
-import time
 import hashlib
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone
+import json
 import logging
+import time
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from typing import Any
 
 # Mock Z3 implementation for environments without Z3
 try:
@@ -68,8 +68,8 @@ class VerificationRequest:
     request_id: str
     policy_id: str
     constitutional_hash: str
-    assertions: List[str]
-    constraints: List[str]
+    assertions: list[str]
+    constraints: list[str]
     verification_type: str
     timeout_seconds: int = 30
 
@@ -82,7 +82,7 @@ class VerificationResult:
     policy_id: str
     verification_status: str  # "SAT", "UNSAT", "TIMEOUT", "ERROR"
     is_valid: bool
-    counterexample: Optional[Dict[str, Any]]
+    counterexample: dict[str, Any] | None
     verification_time_ms: float
     solver_output: str
     constitutional_compliance: bool
@@ -97,7 +97,7 @@ class FormalVerificationEngine:
         self.verification_cache = {}
         self.solver_timeout = 30000  # 30 seconds in milliseconds
 
-    def generate_smt_assertions(self, policy_data: Dict[str, Any]) -> List[str]:
+    def generate_smt_assertions(self, policy_data: dict[str, Any]) -> list[str]:
         """Generate SMT-LIB assertions from policy data"""
         assertions = []
 
@@ -122,7 +122,7 @@ class FormalVerificationEngine:
 
         # Constitutional compliance threshold
         threshold = policy_data.get("compliance_threshold", 0.95)
-        assertions.append(f"(declare-const compliance_threshold Real)")
+        assertions.append("(declare-const compliance_threshold Real)")
         assertions.append(f"(assert (= compliance_threshold {threshold}))")
 
         # Overall compliance calculation
@@ -172,7 +172,7 @@ class FormalVerificationEngine:
         # Default to true for unrecognized requirements
         return "true"
 
-    def create_z3_solver(self, assertions: List[str]) -> Tuple[Any, List[Any]]:
+    def create_z3_solver(self, assertions: list[str]) -> tuple[Any, list[Any]]:
         """Create Z3 solver with assertions"""
         if not Z3_AVAILABLE:
             return MockSolver(), []
@@ -290,7 +290,7 @@ class FormalVerificationEngine:
                 is_valid=False,
                 counterexample=None,
                 verification_time_ms=verification_time,
-                solver_output=f"Error: {str(e)}",
+                solver_output=f"Error: {e!s}",
                 constitutional_compliance=False,
                 timestamp=datetime.now(timezone.utc).isoformat(),
             )
@@ -309,8 +309,8 @@ class FormalVerificationEngine:
         return hashlib.sha256(key_string.encode()).hexdigest()
 
     def batch_verify(
-        self, requests: List[VerificationRequest]
-    ) -> List[VerificationResult]:
+        self, requests: list[VerificationRequest]
+    ) -> list[VerificationResult]:
         """Perform batch verification of multiple policies"""
         results = []
 
@@ -320,7 +320,7 @@ class FormalVerificationEngine:
 
         return results
 
-    def get_verification_statistics(self) -> Dict[str, Any]:
+    def get_verification_statistics(self) -> dict[str, Any]:
         """Get verification engine statistics"""
         if not self.verification_cache:
             return {
@@ -406,12 +406,12 @@ def test_formal_verification_engine():
             print(f"    Counterexample: {result.counterexample}")
 
     # Test batch verification
-    print(f"\n🔄 Testing batch verification...")
+    print("\n🔄 Testing batch verification...")
     batch_results = engine.batch_verify(test_requests)
     print(f"  Batch processed: {len(batch_results)} requests")
 
     # Get statistics
-    print(f"\n📊 Verification Statistics:")
+    print("\n📊 Verification Statistics:")
     stats = engine.get_verification_statistics()
     for key, value in stats.items():
         if isinstance(value, float):
@@ -419,7 +419,7 @@ def test_formal_verification_engine():
         else:
             print(f"  {key}: {value}")
 
-    print(f"\n✅ Formal Verification Engine: OPERATIONAL")
+    print("\n✅ Formal Verification Engine: OPERATIONAL")
 
 
 if __name__ == "__main__":

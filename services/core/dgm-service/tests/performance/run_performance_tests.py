@@ -18,7 +18,6 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
 
 import psutil
 import pytest
@@ -33,7 +32,7 @@ class PerformanceTestRunner:
         self.start_time = None
         self.service_process = None
 
-    def _load_config(self, config_path: str) -> Dict:
+    def _load_config(self, config_path: str) -> dict:
         """Load performance test configuration."""
         default_config = {
             "service": {"host": "localhost", "port": 8007, "startup_timeout": 30},
@@ -65,7 +64,7 @@ class PerformanceTestRunner:
         }
 
         if config_path and os.path.exists(config_path):
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 user_config = json.load(f)
                 default_config.update(user_config)
 
@@ -134,7 +133,7 @@ class PerformanceTestRunner:
                 self.service_process.kill()
             print("✓ DGM service stopped")
 
-    def run_pytest_tests(self, test_type: str, markers: List[str] = None) -> Dict:
+    def run_pytest_tests(self, test_type: str, markers: list[str] = None) -> dict:
         """Run pytest-based performance tests."""
         print(f"\nRunning {test_type} tests...")
 
@@ -163,7 +162,7 @@ class PerformanceTestRunner:
             "execution_time": execution_time,
         }
 
-    def run_load_tests(self) -> Dict:
+    def run_load_tests(self) -> dict:
         """Run Locust load tests."""
         print("\nRunning load tests...")
 
@@ -212,6 +211,7 @@ class PerformanceTestRunner:
                 start_time = time.time()
                 result = subprocess.run(
                     cmd,
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=self.config["load_test"]["duration_minutes"] * 60 + 120,
@@ -250,7 +250,7 @@ class PerformanceTestRunner:
 
         return results
 
-    def validate_sla_requirements(self) -> Dict:
+    def validate_sla_requirements(self) -> dict:
         """Validate SLA requirements from test results."""
         print("\nValidating SLA requirements...")
 
@@ -297,7 +297,7 @@ class PerformanceTestRunner:
 
         return sla_results
 
-    def generate_report(self) -> Dict:
+    def generate_report(self) -> dict:
         """Generate comprehensive performance test report."""
         end_time = time.time()
         total_duration = end_time - self.start_time if self.start_time else 0
@@ -326,7 +326,7 @@ class PerformanceTestRunner:
 
         return report
 
-    def print_summary(self, report: Dict):
+    def print_summary(self, report: dict):
         """Print test summary."""
         print("\n" + "=" * 80)
         print("PERFORMANCE TEST SUMMARY")
@@ -356,7 +356,7 @@ class PerformanceTestRunner:
         else:
             print("\n✓ SUCCESS: All performance tests passed and SLA requirements met.")
 
-    async def run_all_tests(self) -> Dict:
+    async def run_all_tests(self) -> dict:
         """Run all performance tests."""
         self.start_time = time.time()
         print("Starting comprehensive performance test suite...")

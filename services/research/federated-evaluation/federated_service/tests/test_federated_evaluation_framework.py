@@ -152,7 +152,6 @@ class TestFederatedEvaluationFramework:
                 federated_evaluator, "_execute_federated_evaluation"
             ) as mock_execute,
         ):
-
             task_id = await federated_evaluator.submit_evaluation(
                 sample_evaluation_request
             )
@@ -290,7 +289,6 @@ class TestFederatedEvaluationFramework:
                 federated_evaluator, "_execute_federated_evaluation"
             ) as mock_execute,
         ):
-
             mock_select.return_value = ["test_node_1", "test_node_2"]
 
             await federated_evaluator._redistribute_node_evaluations(failed_node_id)
@@ -412,7 +410,6 @@ class TestFederatedEvaluationFramework:
             patch.object(federated_evaluator, "_store_evaluation_in_db"),
             patch.object(federated_evaluator, "_execute_federated_evaluation"),
         ):
-
             task_id = await federated_evaluator.submit_evaluation(
                 sample_evaluation_request
             )
@@ -450,7 +447,6 @@ class TestFederatedEvaluationFramework:
             patch.object(federated_evaluator, "_store_evaluation_in_db"),
             patch.object(federated_evaluator, "_execute_federated_evaluation"),
         ):
-
             # Submit evaluations concurrently
             tasks = [
                 federated_evaluator.submit_evaluation(request)

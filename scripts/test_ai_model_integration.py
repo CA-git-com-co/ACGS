@@ -6,12 +6,11 @@ Tests the integration of AI models (Google Gemini, DeepSeek-R1, NVIDIA Qwen, Nan
 with the ACGS-PGP services and validates constitutional constraints.
 """
 
-import asyncio
 import json
-import os
 import sys
 import time
-from typing import Dict, List, Any
+from typing import Any
+
 import requests
 
 
@@ -41,7 +40,7 @@ class AIModelIntegrationTester:
             print(f"❌ {service_name} health check failed: {e}")
             return False
 
-    def test_ai_model_endpoints(self) -> Dict[str, Any]:
+    def test_ai_model_endpoints(self) -> dict[str, Any]:
         """Test AI model integration endpoints."""
         results = {}
 
@@ -93,7 +92,7 @@ class AIModelIntegrationTester:
 
         return results
 
-    def test_constitutional_constraints(self) -> Dict[str, Any]:
+    def test_constitutional_constraints(self) -> dict[str, Any]:
         """Test constitutional constraints and DGM safety patterns."""
         results = {}
 
@@ -130,7 +129,7 @@ class AIModelIntegrationTester:
 
         return results
 
-    def run_comprehensive_test(self) -> Dict[str, Any]:
+    def run_comprehensive_test(self) -> dict[str, Any]:
         """Run comprehensive AI model integration tests."""
         print("🚀 Starting ACGS-PGP AI Model Integration Tests")
         print("=" * 60)
@@ -221,7 +220,7 @@ def main():
     with open("ai_model_integration_test_results.json", "w") as f:
         json.dump(results, f, indent=2)
 
-    print(f"\n💾 Results saved to: ai_model_integration_test_results.json")
+    print("\n💾 Results saved to: ai_model_integration_test_results.json")
 
     # Exit with appropriate code
     summary = results["summary"]

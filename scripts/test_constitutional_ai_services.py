@@ -7,10 +7,10 @@ Test end-to-end agent operation workflows with full ACGS governance.
 
 import asyncio
 import json
-import time
-from typing import List, Dict, Any
-import httpx
 from datetime import datetime
+from typing import Any
+
+import httpx
 
 # Service endpoints
 SERVICES = {
@@ -37,7 +37,7 @@ class ConstitutionalAIServicesTester:
         }
         self.client = httpx.AsyncClient(timeout=30.0)
 
-    async def discover_services(self) -> Dict[str, Any]:
+    async def discover_services(self) -> dict[str, Any]:
         """Discover available services and their capabilities."""
         print("🔍 Discovering Constitutional AI services...")
 
@@ -98,7 +98,7 @@ class ConstitutionalAIServicesTester:
 
         return service_discovery
 
-    async def test_constitutional_analysis(self) -> Dict[str, Any]:
+    async def test_constitutional_analysis(self) -> dict[str, Any]:
         """Test constitutional analysis capabilities."""
         print("⚖️ Testing constitutional analysis capabilities...")
 
@@ -160,7 +160,7 @@ class ConstitutionalAIServicesTester:
             except Exception as e:
                 test_result["error"] = str(e)
                 self.results["errors"].append(
-                    f"Constitutional analysis test {test_case['name']} failed: {str(e)}"
+                    f"Constitutional analysis test {test_case['name']} failed: {e!s}"
                 )
 
             analysis_tests.append(test_result)
@@ -171,7 +171,7 @@ class ConstitutionalAIServicesTester:
             "test_results": analysis_tests,
         }
 
-    async def test_cross_service_integration(self) -> Dict[str, Any]:
+    async def test_cross_service_integration(self) -> dict[str, Any]:
         """Test integration between Constitutional AI services."""
         print("🔗 Testing cross-service integration...")
 
@@ -197,7 +197,7 @@ class ConstitutionalAIServicesTester:
             "test_results": integration_tests,
         }
 
-    async def _test_auth_ac_integration(self) -> Dict[str, Any]:
+    async def _test_auth_ac_integration(self) -> dict[str, Any]:
         """Test Auth Service to AC Service integration."""
         try:
             # Get token from Auth Service
@@ -243,7 +243,7 @@ class ConstitutionalAIServicesTester:
                 "error": str(e),
             }
 
-    async def _test_hitl_ac_integration(self) -> Dict[str, Any]:
+    async def _test_hitl_ac_integration(self) -> dict[str, Any]:
         """Test HITL Service to AC Service integration."""
         try:
             # Submit request to HITL that should trigger AC Service consultation
@@ -279,7 +279,7 @@ class ConstitutionalAIServicesTester:
                 "error": str(e),
             }
 
-    async def _test_full_workflow_integration(self) -> Dict[str, Any]:
+    async def _test_full_workflow_integration(self) -> dict[str, Any]:
         """Test full end-to-end workflow integration."""
         try:
             # Step 1: Authenticate
@@ -349,7 +349,7 @@ class ConstitutionalAIServicesTester:
                 "error": str(e),
             }
 
-    async def test_constitutional_governance(self) -> Dict[str, Any]:
+    async def test_constitutional_governance(self) -> dict[str, Any]:
         """Test constitutional governance enforcement."""
         print("🏛️ Testing constitutional governance enforcement...")
 
@@ -411,7 +411,7 @@ class ConstitutionalAIServicesTester:
             "test_results": governance_tests,
         }
 
-    async def run_comprehensive_test(self) -> Dict[str, Any]:
+    async def run_comprehensive_test(self) -> dict[str, Any]:
         """Run comprehensive Constitutional AI services testing."""
         print("🧪 Starting comprehensive Constitutional AI services testing...")
         self.results["test_start"] = datetime.utcnow().isoformat()
@@ -490,22 +490,22 @@ async def main():
         print("🎯 CONSTITUTIONAL AI SERVICES TEST RESULTS")
         print("=" * 80)
 
-        print(f"\n📊 Overall Summary:")
+        print("\n📊 Overall Summary:")
         summary = results["summary"]
         print(
             f"  • Available Services: {summary['available_services']}/{summary['total_services']}"
         )
         print(
-            f"  • Service Availability: {summary['service_availability_rate']*100:.1f}%"
+            f"  • Service Availability: {summary['service_availability_rate'] * 100:.1f}%"
         )
         print(f"  • Tests Passed: {summary['passed_tests']}/{summary['total_tests']}")
-        print(f"  • Test Pass Rate: {summary['test_pass_rate']*100:.1f}%")
+        print(f"  • Test Pass Rate: {summary['test_pass_rate'] * 100:.1f}%")
         print(
             f"  • Constitutional Compliance: {'✅ YES' if summary['constitutional_compliance'] else '❌ NO'}"
         )
         print(f"  • Total Errors: {summary['total_errors']}")
 
-        print(f"\n🔍 Service Discovery:")
+        print("\n🔍 Service Discovery:")
         for service_name, service_info in results["service_discovery"].items():
             status = "✅" if service_info.get("available") else "❌"
             print(f"  • {service_name}: {status}")
@@ -515,14 +515,14 @@ async def main():
                     f"    Constitutional Compliance: {'✅' if service_info.get('constitutional_compliance') else '❌'}"
                 )
 
-        print(f"\n⚖️ Constitutional Analysis:")
+        print("\n⚖️ Constitutional Analysis:")
         analysis = results["constitutional_analysis"]
         print(f"  • Tests Passed: {analysis['passed_tests']}/{analysis['total_tests']}")
         for test in analysis["test_results"]:
             status = "✅" if test["passed"] else "❌"
             print(f"    {status} {test['test_name']}: {test['description']}")
 
-        print(f"\n🔗 Cross-Service Integration:")
+        print("\n🔗 Cross-Service Integration:")
         integration = results["cross_service_integration"]
         print(
             f"  • Tests Passed: {integration['passed_tests']}/{integration['total_tests']}"
@@ -531,7 +531,7 @@ async def main():
             status = "✅" if test.get("passed") else "❌"
             print(f"    {status} {test['test_name']}")
 
-        print(f"\n🏛️ Constitutional Governance:")
+        print("\n🏛️ Constitutional Governance:")
         governance = results["constitutional_governance"]
         print(
             f"  • Tests Passed: {governance['passed_tests']}/{governance['total_tests']}"
@@ -541,16 +541,14 @@ async def main():
             print(f"    {status} {test['test_name']}")
 
         if results["errors"]:
-            print(f"\n❌ Errors Encountered:")
+            print("\n❌ Errors Encountered:")
             for error in results["errors"][:5]:
                 print(f"  • {error}")
 
         # Save detailed results
         with open("constitutional_ai_services_results.json", "w") as f:
             json.dump(results, f, indent=2)
-        print(
-            f"\n💾 Detailed results saved to: constitutional_ai_services_results.json"
-        )
+        print("\n💾 Detailed results saved to: constitutional_ai_services_results.json")
 
     except Exception as e:
         print(f"❌ Constitutional AI services test execution failed: {e}")

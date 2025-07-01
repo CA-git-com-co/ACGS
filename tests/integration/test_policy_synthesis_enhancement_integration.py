@@ -20,7 +20,7 @@ Test Coverage:
 import asyncio
 import json
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 import pytest
@@ -231,12 +231,11 @@ class PolicySynthesisEnhancementTester:
                     "meets_performance_target": response_time_ms
                     < self.targets["response_time_ms"],
                 }
-            else:
-                return {
-                    "success": False,
-                    "status_code": response.status_code,
-                    "error": response.text,
-                }
+            return {
+                "success": False,
+                "status_code": response.status_code,
+                "error": response.text,
+            }
 
         except Exception as e:
             return {"success": False, "error": str(e)}
@@ -404,12 +403,11 @@ class PolicySynthesisEnhancementTester:
                     "optimization_strategy": result.get("strategy", ""),
                     "estimated_improvement": result.get("estimated_improvement", 0),
                 }
-            else:
-                return {
-                    "success": False,
-                    "status_code": response.status_code,
-                    "error": response.text,
-                }
+            return {
+                "success": False,
+                "status_code": response.status_code,
+                "error": response.text,
+            }
 
         except Exception as e:
             return {"success": False, "error": str(e)}

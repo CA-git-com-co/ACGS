@@ -28,7 +28,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import aiohttp
 
@@ -102,7 +102,7 @@ class LoadTestOrchestrator:
         self.services_health_checked = True
         return True
 
-    def run_locust_test(self, scenario_name: str, user_class: str) -> Dict[str, Any]:
+    def run_locust_test(self, scenario_name: str, user_class: str) -> dict[str, Any]:
         """Run Locust load test for specific scenario."""
         scenario = LOAD_TEST_SCENARIOS[scenario_name]
 
@@ -136,6 +136,7 @@ class LoadTestOrchestrator:
             start_time = time.time()
             result = subprocess.run(
                 cmd,
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=scenario.duration_seconds + 120,
@@ -165,7 +166,7 @@ class LoadTestOrchestrator:
             logger.error(f"❌ Locust test execution failed: {e}")
             return {"error": str(e), "execution_time": 0}
 
-    def _parse_locust_results(self, scenario_name: str) -> Dict[str, Any]:
+    def _parse_locust_results(self, scenario_name: str) -> dict[str, Any]:
         """Parse Locust CSV results into structured data."""
         stats_file = self.results_dir / f"{scenario_name}_results_stats.csv"
 
@@ -210,7 +211,7 @@ class LoadTestOrchestrator:
             logger.error(f"Error parsing Locust results: {e}")
             return {"error": f"parsing_failed: {e}"}
 
-    async def collect_prometheus_metrics(self, duration_seconds: int) -> Dict[str, Any]:
+    async def collect_prometheus_metrics(self, duration_seconds: int) -> dict[str, Any]:
         """Collect Prometheus metrics during load test."""
         logger.info("📊 Collecting Prometheus metrics...")
 
@@ -255,7 +256,7 @@ class LoadTestOrchestrator:
 
         return metrics
 
-    async def run_scenario(self, scenario_name: str) -> Dict[str, Any]:
+    async def run_scenario(self, scenario_name: str) -> dict[str, Any]:
         """Run complete load test scenario with monitoring."""
         if not self.services_health_checked:
             if not await self.check_system_health():
@@ -311,7 +312,7 @@ class LoadTestOrchestrator:
 
         return report
 
-    async def run_all_scenarios(self) -> Dict[str, Any]:
+    async def run_all_scenarios(self) -> dict[str, Any]:
         """Run all load test scenarios sequentially."""
         logger.info("🚀 Running all load test scenarios...")
 
@@ -330,9 +331,9 @@ class LoadTestOrchestrator:
         ]
 
         for scenario_name in scenario_order:
-            logger.info(f"\n{'='*60}")
+            logger.info(f"\n{'=' * 60}")
             logger.info(f"Running scenario: {scenario_name}")
-            logger.info(f"{'='*60}")
+            logger.info(f"{'=' * 60}")
 
             result = await self.run_scenario(scenario_name)
             all_results[scenario_name] = result
@@ -394,7 +395,7 @@ async def main():
     if "error" in results:
         print(f"❌ Execution failed: {results['error']}")
     else:
-        print(f"✅ Execution completed successfully")
+        print("✅ Execution completed successfully")
         if args.scenario:
             stats = results.get("load_test_stats", {})
             print(f"Success Rate: {stats.get('success_rate', 0):.2f}%")

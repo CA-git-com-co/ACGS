@@ -127,12 +127,10 @@ class EventHandler:
                     return await asyncio.wait_for(
                         self.handler_func(event), timeout=self.timeout
                     )
-                else:
-                    # Run sync function in thread pool
-                    loop = asyncio.get_event_loop()
-                    return await loop.run_in_executor(None, self.handler_func, event)
-            else:
-                return self.handler_func(event)
+                # Run sync function in thread pool
+                loop = asyncio.get_event_loop()
+                return await loop.run_in_executor(None, self.handler_func, event)
+            return self.handler_func(event)
 
         except TimeoutError:
             raise ACGSException(

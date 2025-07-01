@@ -92,7 +92,7 @@ async def override_get_async_db() -> AsyncGenerator[AsyncSession, None]:
         await session.rollback()  # Rollback to ensure test isolation
 
 
-@pytest.fixture()
+@pytest.fixture
 async def client() -> AsyncGenerator[AsyncClient, None]:  # Changed to async generator
     """Get a TestClient that uses the overridden async DB session."""
     fastapi_app.dependency_overrides[get_async_db] = override_get_async_db

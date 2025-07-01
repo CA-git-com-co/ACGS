@@ -9,9 +9,10 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import logging
+from datetime import datetime, timedelta
+
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
 from data_quality_framework import DataQualityAssessment
 
 # Configure logging
@@ -136,7 +137,7 @@ def main():
         logger.info(f"⏰ Data Freshness: {metrics.data_freshness_hours:.1f} hours")
         logger.info(f"🔄 Duplicate Rate: {metrics.duplicate_rate:.1%}")
         logger.info(f"✅ Completeness Score: {metrics.completeness_score:.1%}")
-        logger.info(f"🔒 Constitutional Hash: cdd01ef066bc6cf2 ✅")
+        logger.info("🔒 Constitutional Hash: cdd01ef066bc6cf2 ✅")
         logger.info("=" * 60)
         logger.info(f"📄 Metrics saved to: {json_path}")
         logger.info(f"📋 Report saved to: {report_path}")

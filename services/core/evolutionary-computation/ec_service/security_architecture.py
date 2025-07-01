@@ -4,15 +4,13 @@ Implements comprehensive security layers: Sandboxing, Policy Engine, Authenticat
 """
 
 import asyncio
-import hashlib
-import json
 import logging
 import time
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import jwt
 from prometheus_client import Counter, Gauge, Histogram
@@ -60,7 +58,7 @@ class SecurityContext:
     session_id: str
     authentication_method: AuthenticationMethod
     security_level: SecurityLevel
-    permissions: Set[str] = field(default_factory=set)
+    permissions: set[str] = field(default_factory=set)
 
     # Constitutional compliance
     constitutional_hash: str = CONSTITUTIONAL_HASH
@@ -68,8 +66,8 @@ class SecurityContext:
 
     # Metadata
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    expires_at: Optional[datetime] = None
-    source_ip: Optional[str] = None
+    expires_at: datetime | None = None
+    source_ip: str | None = None
 
 
 @dataclass
@@ -91,7 +89,7 @@ class AuditEvent:
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
     # Additional data
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -100,7 +98,7 @@ class Layer1_Sandboxing:
 
     def __init__(self):
         self.setup_metrics()
-        self.active_sandboxes: Dict[str, Dict[str, Any]] = {}
+        self.active_sandboxes: dict[str, dict[str, Any]] = {}
 
         # Sandbox configuration
         self.max_execution_time = 300  # 5 minutes
@@ -123,7 +121,7 @@ class Layer1_Sandboxing:
             "ec_active_sandboxes", "Number of active sandboxes"
         )
 
-    async def create_sandbox(self, sandbox_id: str, config: Dict[str, Any]) -> bool:
+    async def create_sandbox(self, sandbox_id: str, config: dict[str, Any]) -> bool:
         """Create a new sandbox environment."""
         try:
             # Validate sandbox configuration
@@ -153,7 +151,7 @@ class Layer1_Sandboxing:
             logger.error(f"Failed to create sandbox {sandbox_id}: {e}")
             return False
 
-    def validate_sandbox_config(self, config: Dict[str, Any]) -> bool:
+    def validate_sandbox_config(self, config: dict[str, Any]) -> bool:
         """Validate sandbox configuration."""
         required_fields = ["execution_context", "resource_limits"]
 
@@ -175,8 +173,8 @@ class Layer1_Sandboxing:
         return True
 
     async def execute_in_sandbox(
-        self, sandbox_id: str, operation: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, sandbox_id: str, operation: dict[str, Any]
+    ) -> dict[str, Any]:
         """Execute operation in sandbox."""
         start_time = time.time()
 
@@ -216,8 +214,8 @@ class Layer1_Sandboxing:
             return {"success": False, "error": str(e), "execution_time": execution_time}
 
     async def simulate_sandbox_execution(
-        self, operation: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, operation: dict[str, Any]
+    ) -> dict[str, Any]:
         """Simulate sandbox execution (placeholder for real implementation)."""
         # In real implementation, this would execute in isolated container
         await asyncio.sleep(0.1)  # Simulate execution time
@@ -244,8 +242,8 @@ class Layer2_PolicyEngine:
 
     def __init__(self):
         self.setup_metrics()
-        self.policies: Dict[str, Dict[str, Any]] = {}
-        self.policy_cache: Dict[str, Any] = {}
+        self.policies: dict[str, dict[str, Any]] = {}
+        self.policy_cache: dict[str, Any] = {}
 
         # Load default policies
         self.load_default_policies()
@@ -301,8 +299,8 @@ class Layer2_PolicyEngine:
         self.policies.update(default_policies)
 
     async def evaluate_policy(
-        self, policy_name: str, context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, policy_name: str, context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate a policy against given context."""
         start_time = time.time()
 
@@ -347,13 +345,13 @@ class Layer2_PolicyEngine:
             return {
                 "policy_name": policy_name,
                 "allowed": False,
-                "reason": f"Policy evaluation error: {str(e)}",
+                "reason": f"Policy evaluation error: {e!s}",
                 "evaluation_time": evaluation_time,
             }
 
     async def evaluate_policy_rules(
-        self, rules: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, rules: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate policy rules against context."""
         # Constitutional compliance check
         if rules.get("constitutional_compliance_required", False):
@@ -397,7 +395,7 @@ class Layer3_Authentication:
 
     def __init__(self):
         self.setup_metrics()
-        self.active_sessions: Dict[str, SecurityContext] = {}
+        self.active_sessions: dict[str, SecurityContext] = {}
         self.jwt_secret = (
             "acgs_ec_service_secret_key"  # In production, use secure key management
         )
@@ -417,19 +415,18 @@ class Layer3_Authentication:
         )
 
     async def authenticate_user(
-        self, credentials: Dict[str, Any]
-    ) -> Optional[SecurityContext]:
+        self, credentials: dict[str, Any]
+    ) -> SecurityContext | None:
         """Authenticate user and create security context."""
         try:
             auth_method = AuthenticationMethod(credentials.get("method", "jwt_token"))
 
             if auth_method == AuthenticationMethod.JWT_TOKEN:
                 return await self.authenticate_jwt(credentials)
-            elif auth_method == AuthenticationMethod.API_KEY:
+            if auth_method == AuthenticationMethod.API_KEY:
                 return await self.authenticate_api_key(credentials)
-            else:
-                logger.error(f"Unsupported authentication method: {auth_method}")
-                return None
+            logger.error(f"Unsupported authentication method: {auth_method}")
+            return None
 
         except Exception as e:
             logger.error(f"Authentication failed: {e}")
@@ -439,8 +436,8 @@ class Layer3_Authentication:
             return None
 
     async def authenticate_jwt(
-        self, credentials: Dict[str, Any]
-    ) -> Optional[SecurityContext]:
+        self, credentials: dict[str, Any]
+    ) -> SecurityContext | None:
         """Authenticate using JWT token."""
         try:
             token = credentials.get("token")
@@ -480,8 +477,8 @@ class Layer3_Authentication:
             return None
 
     async def authenticate_api_key(
-        self, credentials: Dict[str, Any]
-    ) -> Optional[SecurityContext]:
+        self, credentials: dict[str, Any]
+    ) -> SecurityContext | None:
         """Authenticate using API key."""
         # Simplified API key authentication
         api_key = credentials.get("api_key")
@@ -539,7 +536,7 @@ class Layer4_AuditLayer:
 
     def __init__(self):
         self.setup_metrics()
-        self.audit_events: List[AuditEvent] = []
+        self.audit_events: list[AuditEvent] = []
         self.max_events = 10000  # Keep last 10k events in memory
 
         logger.info("Layer 4 Audit Layer initialized")
@@ -607,8 +604,8 @@ class FourLayerSecurityArchitecture:
         logger.info("4-Layer Security Architecture initialized")
 
     async def secure_execute(
-        self, operation: Dict[str, Any], credentials: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, operation: dict[str, Any], credentials: dict[str, Any]
+    ) -> dict[str, Any]:
         """Execute operation through all security layers."""
         # Layer 3: Authentication
         context = await self.layer3_auth.authenticate_user(credentials)

@@ -9,16 +9,8 @@ from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
-import httpx
 import pytest
-from dgm_service.api.v1.models import (
-    ImprovementRequest,
-    ImprovementResponse,
-    PerformanceReport,
-)
-from dgm_service.main import app
 from fastapi import status
-from fastapi.testclient import TestClient
 
 
 @pytest.mark.unit

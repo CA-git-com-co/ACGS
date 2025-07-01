@@ -90,8 +90,7 @@ class ACGSRedisClient:
                 json_value = json.dumps(value, default=str)
                 if ttl:
                     return await client.setex(key, ttl, json_value)
-                else:
-                    return await client.set(key, json_value)
+                return await client.set(key, json_value)
         except Exception as e:
             logger.error(f"Failed to set JSON key {key}: {e}")
             return False

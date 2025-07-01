@@ -8,7 +8,7 @@ vulnerabilities in the ACGS-PGP formal verification service.
 import json
 import logging
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 import aiohttp
 
@@ -115,22 +115,21 @@ class Z3BypassTester:
 
         if vector == "constraint_satisfaction_manipulation":
             return await self._test_constraint_satisfaction_manipulation(fv_endpoint)
-        elif vector == "smt_formula_injection":
+        if vector == "smt_formula_injection":
             return await self._test_smt_formula_injection(fv_endpoint)
-        elif vector == "solver_timeout_exploitation":
+        if vector == "solver_timeout_exploitation":
             return await self._test_solver_timeout_exploitation(fv_endpoint)
-        elif vector == "proof_obligation_bypass":
+        if vector == "proof_obligation_bypass":
             return await self._test_proof_obligation_bypass(fv_endpoint)
-        elif vector == "satisfiability_confusion":
+        if vector == "satisfiability_confusion":
             return await self._test_satisfiability_confusion(fv_endpoint)
-        elif vector == "model_generation_manipulation":
+        if vector == "model_generation_manipulation":
             return await self._test_model_generation_manipulation(fv_endpoint)
-        elif vector == "assertion_negation_attack":
+        if vector == "assertion_negation_attack":
             return await self._test_assertion_negation_attack(fv_endpoint)
-        elif vector == "quantifier_explosion_attack":
+        if vector == "quantifier_explosion_attack":
             return await self._test_quantifier_explosion_attack(fv_endpoint)
-        else:
-            return []
+        return []
 
     async def _test_constraint_satisfaction_manipulation(
         self, fv_endpoint: str
@@ -190,7 +189,6 @@ class Z3BypassTester:
                         json=verification_request,
                         timeout=30,
                     ) as response:
-
                         execution_time = (time.time() - start_time) * 1000
 
                         if response.status == 200:
@@ -266,7 +264,6 @@ class Z3BypassTester:
                             json=verification_request,
                             timeout=60,  # Longer timeout for potential timeout bombs
                         ) as response:
-
                             execution_time = (time.time() - start_time) * 1000
 
                             if response.status == 200:
@@ -400,7 +397,6 @@ class Z3BypassTester:
                         json=verification_request,
                         timeout=10,
                     ) as response:
-
                         execution_time = (time.time() - start_time) * 1000
 
                         # If we get a response, check if timeout was exploited
@@ -509,7 +505,6 @@ class Z3BypassTester:
                         json=verification_request,
                         timeout=30,
                     ) as response:
-
                         execution_time = (time.time() - start_time) * 1000
 
                         if response.status == 200:
@@ -582,11 +577,11 @@ class Z3BypassTester:
             injection_indicators = ["exit", "drop table", "bypass", "assert false"]
             return any(indicator in response_str for indicator in injection_indicators)
 
-        elif formula_type == "logic_bombs":
+        if formula_type == "logic_bombs":
             bomb_indicators = ["timeout", "memory", "get-info", "check-sat"]
             return any(indicator in response_str for indicator in bomb_indicators)
 
-        elif formula_type == "complexity_exploits":
+        if formula_type == "complexity_exploits":
             complexity_indicators = ["array", "forall", "exists", "distinct"]
             return any(indicator in response_str for indicator in complexity_indicators)
 

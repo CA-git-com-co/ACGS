@@ -504,9 +504,9 @@ class AutomaticResolutionWorkflow:
                 correction_id=correction_id,
                 status=ErrorCorrectionStatus.FAILED,
                 conflict_type=conflict.conflict_type,
-                correction_description=f"Resolution failed: {str(e)}",
+                correction_description=f"Resolution failed: {e!s}",
                 escalation_required=True,
-                escalation_reason=f"System error during resolution: {str(e)}",
+                escalation_reason=f"System error during resolution: {e!s}",
                 response_time_seconds=time.time() - start_time,
                 correction_metadata={"error": str(e)},
             )
@@ -547,28 +547,27 @@ class AutomaticResolutionWorkflow:
         """Apply the selected resolution strategy."""
         if strategy == ResolutionStrategy.AUTOMATIC_MERGE:
             return await self._apply_automatic_merge(conflict, correction_id, db)
-        elif strategy == ResolutionStrategy.PRINCIPLE_PRIORITY:
+        if strategy == ResolutionStrategy.PRINCIPLE_PRIORITY:
             return await self._apply_principle_priority(conflict, correction_id, db)
-        elif strategy == ResolutionStrategy.SEMANTIC_CLARIFICATION:
+        if strategy == ResolutionStrategy.SEMANTIC_CLARIFICATION:
             return await self._apply_semantic_clarification(conflict, correction_id, db)
-        elif strategy == ResolutionStrategy.STAKEHOLDER_CONSENSUS:
+        if strategy == ResolutionStrategy.STAKEHOLDER_CONSENSUS:
             return await self._apply_stakeholder_consensus(conflict, correction_id, db)
-        else:
-            # Escalate to human or constitutional council
-            return ErrorCorrectionResult(
-                correction_id=correction_id,
-                status=ErrorCorrectionStatus.ESCALATED_TO_HUMAN,
-                conflict_type=conflict.conflict_type,
-                resolution_strategy=strategy,
-                correction_description=f"Conflict escalated for {strategy.value} resolution",
-                escalation_required=True,
-                escalation_reason=f"Strategy {strategy.value} requires human intervention",
-                recommended_actions=[
-                    f"Review conflict using {strategy.value} approach",
-                    "Consult relevant stakeholders",
-                    "Apply constitutional principles",
-                ],
-            )
+        # Escalate to human or constitutional council
+        return ErrorCorrectionResult(
+            correction_id=correction_id,
+            status=ErrorCorrectionStatus.ESCALATED_TO_HUMAN,
+            conflict_type=conflict.conflict_type,
+            resolution_strategy=strategy,
+            correction_description=f"Conflict escalated for {strategy.value} resolution",
+            escalation_required=True,
+            escalation_reason=f"Strategy {strategy.value} requires human intervention",
+            recommended_actions=[
+                f"Review conflict using {strategy.value} approach",
+                "Consult relevant stakeholders",
+                "Apply constitutional principles",
+            ],
+        )
 
     async def _apply_automatic_merge(
         self, conflict: ConflictDetectionResult, correction_id: str, db: AsyncSession
@@ -611,8 +610,7 @@ class AutomaticResolutionWorkflow:
                         "confidence": 0.8,
                     },
                 )
-            else:
-                raise Exception("LLM merge generation failed")
+            raise Exception("LLM merge generation failed")
 
         except Exception as e:
             logger.error(f"Error in automatic merge: {e}")
@@ -621,9 +619,9 @@ class AutomaticResolutionWorkflow:
                 status=ErrorCorrectionStatus.FAILED,
                 conflict_type=conflict.conflict_type,
                 resolution_strategy=ResolutionStrategy.AUTOMATIC_MERGE,
-                correction_description=f"Automatic merge failed: {str(e)}",
+                correction_description=f"Automatic merge failed: {e!s}",
                 escalation_required=True,
-                escalation_reason=f"Merge generation error: {str(e)}",
+                escalation_reason=f"Merge generation error: {e!s}",
             )
 
     async def _apply_principle_priority(
@@ -658,8 +656,7 @@ class AutomaticResolutionWorkflow:
                         ),
                     },
                 )
-            else:
-                raise Exception("No clear principle-policy conflict to resolve")
+            raise Exception("No clear principle-policy conflict to resolve")
 
         except Exception as e:
             return ErrorCorrectionResult(
@@ -667,7 +664,7 @@ class AutomaticResolutionWorkflow:
                 status=ErrorCorrectionStatus.FAILED,
                 conflict_type=conflict.conflict_type,
                 resolution_strategy=ResolutionStrategy.PRINCIPLE_PRIORITY,
-                correction_description=f"Principle priority resolution failed: {str(e)}",
+                correction_description=f"Principle priority resolution failed: {e!s}",
                 escalation_required=True,
                 escalation_reason=str(e),
             )
@@ -712,8 +709,7 @@ class AutomaticResolutionWorkflow:
                         "model_used": response.get("model_used"),
                     },
                 )
-            else:
-                raise Exception("LLM clarification generation failed")
+            raise Exception("LLM clarification generation failed")
 
         except Exception as e:
             return ErrorCorrectionResult(
@@ -721,7 +717,7 @@ class AutomaticResolutionWorkflow:
                 status=ErrorCorrectionStatus.FAILED,
                 conflict_type=conflict.conflict_type,
                 resolution_strategy=ResolutionStrategy.SEMANTIC_CLARIFICATION,
-                correction_description=f"Semantic clarification failed: {str(e)}",
+                correction_description=f"Semantic clarification failed: {e!s}",
                 escalation_required=True,
                 escalation_reason=str(e),
             )
@@ -826,27 +822,26 @@ class SemanticValidationEngine:
 
                 correction_result.response_time_seconds = time.time() - start_time
                 return correction_result
-            else:
-                # No correction needed
-                return ErrorCorrectionResult(
-                    correction_id=correction_id,
-                    status=ErrorCorrectionStatus.RESOLVED_AUTOMATICALLY,
-                    correction_applied=False,
-                    correction_description="Semantic validation passed - no correction needed",
-                    response_time_seconds=time.time() - start_time,
-                    correction_metadata={
-                        "distance_score": distance_score,
-                        "threshold": distance_threshold,
-                        "validation_passed": True,
-                    },
-                )
+            # No correction needed
+            return ErrorCorrectionResult(
+                correction_id=correction_id,
+                status=ErrorCorrectionStatus.RESOLVED_AUTOMATICALLY,
+                correction_applied=False,
+                correction_description="Semantic validation passed - no correction needed",
+                response_time_seconds=time.time() - start_time,
+                correction_metadata={
+                    "distance_score": distance_score,
+                    "threshold": distance_threshold,
+                    "validation_passed": True,
+                },
+            )
 
         except Exception as e:
             logger.error(f"Error in semantic validation: {e}")
             return ErrorCorrectionResult(
                 correction_id=correction_id,
                 status=ErrorCorrectionStatus.FAILED,
-                correction_description=f"Semantic validation failed: {str(e)}",
+                correction_description=f"Semantic validation failed: {e!s}",
                 escalation_required=True,
                 escalation_reason=str(e),
                 response_time_seconds=time.time() - start_time,
@@ -900,14 +895,13 @@ class SemanticValidationEngine:
                         "model_used": response.get("model_used"),
                     },
                 )
-            else:
-                raise Exception("LLM correction generation failed")
+            raise Exception("LLM correction generation failed")
 
         except Exception as e:
             return ErrorCorrectionResult(
                 correction_id=correction_id,
                 status=ErrorCorrectionStatus.FAILED,
-                correction_description=f"Semantic correction failed: {str(e)}",
+                correction_description=f"Semantic correction failed: {e!s}",
                 escalation_required=True,
                 escalation_reason=str(e),
             )
@@ -1043,8 +1037,7 @@ class PolicyRefinementSuggester:
                         "implementation_complexity": "medium",
                     },
                 )
-            else:
-                return None
+            return None
 
         except Exception as e:
             logger.warning(f"Error generating principle suggestion: {e}")
@@ -1288,9 +1281,8 @@ class ParallelConflictProcessor:
                 if self._is_cache_valid(cached_result):
                     cached_results.append(cached_result)
                     continue
-                else:
-                    # Remove expired cache entry
-                    del self.pattern_cache[pattern_key]
+                # Remove expired cache entry
+                del self.pattern_cache[pattern_key]
 
             uncached_conflicts.append(conflict)
 
@@ -1806,12 +1798,11 @@ class QECErrorCorrectionService:
         """
         if overall_risk < 0.3:
             return "standard_synthesis"
-        elif overall_risk < 0.6:
+        if overall_risk < 0.6:
             return "enhanced_validation"
-        elif overall_risk < 0.8:
+        if overall_risk < 0.8:
             return "multi_model_consensus"
-        else:
-            return "human_review_required"
+        return "human_review_required"
 
     async def process_error_correction_workflow(
         self,
@@ -1864,10 +1855,11 @@ class QECErrorCorrectionService:
             # Phase 2: Complexity Analysis and Escalation Decision
             escalation_decisions = []
             for conflict in conflicts:
-                complexity_score, requires_escalation = (
-                    await self.complexity_scorer.score_complexity(
-                        conflict, context_data
-                    )
+                (
+                    complexity_score,
+                    requires_escalation,
+                ) = await self.complexity_scorer.score_complexity(
+                    conflict, context_data
                 )
                 escalation_decisions.append(
                     {
@@ -2009,17 +2001,16 @@ class QECErrorCorrectionService:
                         "complexity_score": conflict.confidence_score,
                     },
                 )
-            else:
-                # Fallback escalation
-                return ErrorCorrectionResult(
-                    correction_id=correction_id,
-                    status=ErrorCorrectionStatus.ESCALATED_TO_HUMAN,
-                    conflict_type=conflict.conflict_type,
-                    correction_description="Conflict escalated for human review",
-                    escalation_required=True,
-                    escalation_reason="Complex conflict requiring manual intervention",
-                    response_time_seconds=time.time() - start_time,
-                )
+            # Fallback escalation
+            return ErrorCorrectionResult(
+                correction_id=correction_id,
+                status=ErrorCorrectionStatus.ESCALATED_TO_HUMAN,
+                conflict_type=conflict.conflict_type,
+                correction_description="Conflict escalated for human review",
+                escalation_required=True,
+                escalation_reason="Complex conflict requiring manual intervention",
+                response_time_seconds=time.time() - start_time,
+            )
 
         except Exception as e:
             logger.error(f"Error escalating complex conflict: {e}")
@@ -2027,7 +2018,7 @@ class QECErrorCorrectionService:
                 correction_id=correction_id,
                 status=ErrorCorrectionStatus.FAILED,
                 conflict_type=conflict.conflict_type,
-                correction_description=f"Escalation failed: {str(e)}",
+                correction_description=f"Escalation failed: {e!s}",
                 response_time_seconds=time.time() - start_time,
                 correction_metadata={"error": str(e)},
             )

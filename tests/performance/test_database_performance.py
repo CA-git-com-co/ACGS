@@ -110,7 +110,11 @@ class DatabasePerformanceTester:
         # Test Redis connectivity
         try:
             result = subprocess.run(
-                ["redis-cli", "ping"], capture_output=True, text=True, timeout=5
+                ["redis-cli", "ping"],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=5,
             )
             if result.returncode == 0 and "PONG" in result.stdout:
                 self.redis_available = True
@@ -124,6 +128,7 @@ class DatabasePerformanceTester:
         try:
             result = subprocess.run(
                 ["pg_isready", "-h", "localhost", "-p", "5432"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=5,
@@ -161,6 +166,7 @@ class DatabasePerformanceTester:
                 if operation == "SET":
                     result = subprocess.run(
                         ["redis-cli", "set", "test_key", "test_value"],
+                        check=False,
                         capture_output=True,
                         text=True,
                         timeout=5,
@@ -168,6 +174,7 @@ class DatabasePerformanceTester:
                 elif operation == "GET":
                     result = subprocess.run(
                         ["redis-cli", "get", "test_key"],
+                        check=False,
                         capture_output=True,
                         text=True,
                         timeout=5,
@@ -175,6 +182,7 @@ class DatabasePerformanceTester:
                 elif operation == "EXISTS":
                     result = subprocess.run(
                         ["redis-cli", "exists", "test_key"],
+                        check=False,
                         capture_output=True,
                         text=True,
                         timeout=5,
@@ -182,6 +190,7 @@ class DatabasePerformanceTester:
                 elif operation == "DEL":
                     result = subprocess.run(
                         ["redis-cli", "del", "test_key"],
+                        check=False,
                         capture_output=True,
                         text=True,
                         timeout=5,
@@ -386,6 +395,7 @@ class DatabasePerformanceTester:
             try:
                 subprocess.run(
                     ["redis-cli", "set", f"test_cache_key_{i}", f"value_{i}"],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=1,
@@ -403,6 +413,7 @@ class DatabasePerformanceTester:
             try:
                 result = subprocess.run(
                     ["redis-cli", "get", f"test_cache_key_{i}"],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=1,
@@ -438,7 +449,11 @@ class DatabasePerformanceTester:
         print("   🧹 Cleaning up test data...")
         try:
             subprocess.run(
-                ["redis-cli", "flushdb"], capture_output=True, text=True, timeout=5
+                ["redis-cli", "flushdb"],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=5,
             )
         except:
             pass

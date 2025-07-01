@@ -7,11 +7,11 @@ new features, and compatibility issues for automated migration planning.
 
 import json
 import logging
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Dict, List, Any, Optional, Set, Tuple
-from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 try:
     import yaml
@@ -55,10 +55,10 @@ class APIChange:
     description: str
     old_value: Any = None
     new_value: Any = None
-    affected_endpoints: List[str] = field(default_factory=list)
+    affected_endpoints: list[str] = field(default_factory=list)
     migration_notes: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "change_type": self.change_type.value,
@@ -79,8 +79,8 @@ class DiffReport:
     source_version: str
     target_version: str
     generated_at: datetime
-    changes: List[APIChange] = field(default_factory=list)
-    summary: Dict[str, int] = field(default_factory=dict)
+    changes: list[APIChange] = field(default_factory=list)
+    summary: dict[str, int] = field(default_factory=dict)
     compatibility_score: float = 0.0
     migration_complexity: str = "low"
 
@@ -134,7 +134,7 @@ class DiffReport:
         else:
             self.migration_complexity = "low"
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "source_version": self.source_version,
@@ -176,8 +176,8 @@ class APIDiffAnalyzer:
 
     def analyze_openapi_specs(
         self,
-        source_spec: Dict[str, Any],
-        target_spec: Dict[str, Any],
+        source_spec: dict[str, Any],
+        target_spec: dict[str, Any],
         source_version: str,
         target_version: str,
     ) -> DiffReport:
@@ -219,8 +219,8 @@ class APIDiffAnalyzer:
 
     def _analyze_paths(
         self,
-        source_spec: Dict[str, Any],
-        target_spec: Dict[str, Any],
+        source_spec: dict[str, Any],
+        target_spec: dict[str, Any],
         report: DiffReport,
     ):
         """Analyze endpoint path changes."""
@@ -269,8 +269,8 @@ class APIDiffAnalyzer:
     def _analyze_endpoint_changes(
         self,
         path: str,
-        source_endpoint: Dict[str, Any],
-        target_endpoint: Dict[str, Any],
+        source_endpoint: dict[str, Any],
+        target_endpoint: dict[str, Any],
         report: DiffReport,
     ):
         """Analyze changes within a specific endpoint."""
@@ -312,8 +312,8 @@ class APIDiffAnalyzer:
 
     def _analyze_schemas(
         self,
-        source_spec: Dict[str, Any],
-        target_spec: Dict[str, Any],
+        source_spec: dict[str, Any],
+        target_spec: dict[str, Any],
         report: DiffReport,
     ):
         """Analyze schema changes."""
@@ -362,7 +362,7 @@ class APIDiffAnalyzer:
                     self._analyze_schema_field_change(changed_path, change_info, report)
 
     def _analyze_schema_field_change(
-        self, path: str, change_info: Dict[str, Any], report: DiffReport
+        self, path: str, change_info: dict[str, Any], report: DiffReport
     ):
         """Analyze individual schema field changes."""
         old_value = change_info.get("old_value")
@@ -399,8 +399,8 @@ class APIDiffAnalyzer:
 
     def _analyze_parameters(
         self,
-        source_spec: Dict[str, Any],
-        target_spec: Dict[str, Any],
+        source_spec: dict[str, Any],
+        target_spec: dict[str, Any],
         report: DiffReport,
     ):
         """Analyze parameter changes."""
@@ -410,8 +410,8 @@ class APIDiffAnalyzer:
 
     def _analyze_responses(
         self,
-        source_spec: Dict[str, Any],
-        target_spec: Dict[str, Any],
+        source_spec: dict[str, Any],
+        target_spec: dict[str, Any],
         report: DiffReport,
     ):
         """Analyze response changes."""
@@ -421,8 +421,8 @@ class APIDiffAnalyzer:
 
     def _analyze_security(
         self,
-        source_spec: Dict[str, Any],
-        target_spec: Dict[str, Any],
+        source_spec: dict[str, Any],
+        target_spec: dict[str, Any],
         report: DiffReport,
     ):
         """Analyze security requirement changes."""
@@ -451,13 +451,12 @@ class APIDiffAnalyzer:
 
         logger.info(f"Diff report saved to {output_path}")
 
-    def load_openapi_spec(self, spec_path: Path) -> Dict[str, Any]:
+    def load_openapi_spec(self, spec_path: Path) -> dict[str, Any]:
         """Load OpenAPI specification from file."""
-        with open(spec_path, "r") as f:
+        with open(spec_path) as f:
             if spec_path.suffix.lower() in [".yaml", ".yml"]:
                 return yaml.safe_load(f)
-            else:
-                return json.load(f)
+            return json.load(f)
 
 
 # CLI interface for the diff analyzer
@@ -499,7 +498,7 @@ def main():
     analyzer.save_report(report, Path(args.output))
 
     # Print summary
-    print(f"\nAPI Diff Analysis Summary:")
+    print("\nAPI Diff Analysis Summary:")
     print(f"Source Version: {report.source_version}")
     print(f"Target Version: {report.target_version}")
     print(f"Total Changes: {report.summary['total_changes']}")

@@ -12,10 +12,9 @@ Analyzes all test results and generates a comprehensive report with:
 """
 
 import json
-import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 
 class ComprehensiveTestReporter:
@@ -36,7 +35,7 @@ class ComprehensiveTestReporter:
         self.results_dir = Path("tests/results")
         self.results_dir.mkdir(exist_ok=True)
 
-    def load_test_results(self) -> Dict[str, Any]:
+    def load_test_results(self) -> dict[str, Any]:
         """Load all available test results."""
         results = {}
 
@@ -64,7 +63,7 @@ class ComprehensiveTestReporter:
 
         return results
 
-    def analyze_test_execution(self, results: Dict[str, Any]) -> Dict[str, Any]:
+    def analyze_test_execution(self, results: dict[str, Any]) -> dict[str, Any]:
         """Analyze test execution summary."""
         print("📊 Analyzing Test Execution Summary...")
 
@@ -134,7 +133,7 @@ class ComprehensiveTestReporter:
         self.report["test_execution_summary"] = execution_summary
         return execution_summary
 
-    def analyze_coverage(self) -> Dict[str, Any]:
+    def analyze_coverage(self) -> dict[str, Any]:
         """Analyze test coverage."""
         print("📈 Analyzing Test Coverage...")
 
@@ -169,7 +168,7 @@ class ComprehensiveTestReporter:
         self.report["coverage_analysis"] = coverage_analysis
         return coverage_analysis
 
-    def analyze_failures(self, results: Dict[str, Any]) -> Dict[str, Any]:
+    def analyze_failures(self, results: dict[str, Any]) -> dict[str, Any]:
         """Analyze test failures and identify root causes."""
         print("🔍 Analyzing Test Failures...")
 
@@ -229,7 +228,7 @@ class ComprehensiveTestReporter:
         self.report["failure_analysis"] = failure_analysis
         return failure_analysis
 
-    def generate_recommendations(self, results: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def generate_recommendations(self, results: dict[str, Any]) -> list[dict[str, Any]]:
         """Generate remediation recommendations."""
         print("💡 Generating Recommendations...")
 
@@ -283,7 +282,7 @@ class ComprehensiveTestReporter:
         self.report["recommendations"] = recommendations
         return recommendations
 
-    def generate_overall_assessment(self, results: Dict[str, Any]) -> Dict[str, Any]:
+    def generate_overall_assessment(self, results: dict[str, Any]) -> dict[str, Any]:
         """Generate overall system assessment."""
         print("🎯 Generating Overall Assessment...")
 
@@ -336,7 +335,7 @@ class ComprehensiveTestReporter:
         self.report["overall_assessment"] = assessment
         return assessment
 
-    def generate_report(self) -> Dict[str, Any]:
+    def generate_report(self) -> dict[str, Any]:
         """Generate comprehensive test report."""
         print("📋 Generating Comprehensive Test Report")
         print("=" * 60)

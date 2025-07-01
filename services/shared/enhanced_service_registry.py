@@ -60,14 +60,14 @@ class CircuitBreaker:
         """Check if operation can be executed."""
         if self.state == CircuitBreakerState.CLOSED:
             return True
-        elif self.state == CircuitBreakerState.OPEN:
+        if self.state == CircuitBreakerState.OPEN:
             if time.time() - self.last_failure_time > self.recovery_timeout:
                 self.state = CircuitBreakerState.HALF_OPEN
                 self.half_open_calls = 0
                 return True
             return False
-        else:  # HALF_OPEN
-            return self.half_open_calls < self.half_open_max_calls
+        # HALF_OPEN
+        return self.half_open_calls < self.half_open_max_calls
 
     def record_success(self):
         # requires: Valid input parameters
@@ -87,9 +87,10 @@ class CircuitBreaker:
         self.failure_count += 1
         self.last_failure_time = time.time()
 
-        if self.state == CircuitBreakerState.HALF_OPEN:
-            self.state = CircuitBreakerState.OPEN
-        elif self.failure_count >= self.failure_threshold:
+        if (
+            self.state == CircuitBreakerState.HALF_OPEN
+            or self.failure_count >= self.failure_threshold
+        ):
             self.state = CircuitBreakerState.OPEN
 
 
@@ -409,7 +410,9 @@ class EnhancedServiceRegistry:
                 "timestamp": time.time(),
             }
             await self.redis_client.setex(
-                f"service_health:{service_name}", 300, str(cache_data)  # 5 minutes TTL
+                f"service_health:{service_name}",
+                300,
+                str(cache_data),  # 5 minutes TTL
             )
         except Exception as e:
             logger.debug(f"Failed to cache health status for {service_name}: {e}")
@@ -542,7 +545,9 @@ class EnhancedServiceRegistry:
 
             # Store aggregated metrics
             await self.redis_client.setex(
-                "service_registry_metrics", 3600, str(metrics_data)  # 1 hour TTL
+                "service_registry_metrics",
+                3600,
+                str(metrics_data),  # 1 hour TTL
             )
 
         except Exception as e:
@@ -647,9 +652,9 @@ enhanced_service_registry = EnhancedServiceRegistry()
 
 # Export main functions and classes
 __all__ = [
+    "CircuitBreaker",
     "EnhancedServiceRegistry",
     "ServiceInfo",
     "ServiceStatus",
-    "CircuitBreaker",
     "enhanced_service_registry",
 ]

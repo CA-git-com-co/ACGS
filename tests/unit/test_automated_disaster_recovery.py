@@ -20,7 +20,7 @@ import json
 import logging
 import subprocess
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -181,6 +181,7 @@ class AutomatedDisasterRecoveryTester:
             # Use the simple backup system
             result = subprocess.run(
                 ["python3", "scripts/simple_backup_recovery.py", "backup"],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -215,12 +216,11 @@ class AutomatedDisasterRecoveryTester:
                     "output": backup_output,
                     "duration": time.time(),
                 }
-            else:
-                return {
-                    "status": "failed",
-                    "error": result.stderr,
-                    "output": result.stdout,
-                }
+            return {
+                "status": "failed",
+                "error": result.stderr,
+                "output": result.stdout,
+            }
 
         except Exception as e:
             return {"status": "failed", "error": str(e)}
@@ -297,7 +297,9 @@ class AutomatedDisasterRecoveryTester:
 
             # Step 2: Graceful service restart (simulates recovery procedure)
             logger.info("Performing graceful service restart simulation...")
-            subprocess.run(["pkill", "-f", "uvicorn.*8006"], capture_output=True)
+            subprocess.run(
+                ["pkill", "-f", "uvicorn.*8006"], check=False, capture_output=True
+            )
 
             # Wait a moment for shutdown
             await asyncio.sleep(2)
@@ -365,6 +367,7 @@ class AutomatedDisasterRecoveryTester:
             if restoration_tests["restoration_script_exists"]:
                 test_result = subprocess.run(
                     ["python3", "scripts/simple_backup_recovery.py", "list"],
+                    check=False,
                     cwd=self.project_root,
                     capture_output=True,
                     text=True,

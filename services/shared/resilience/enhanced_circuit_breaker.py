@@ -6,11 +6,11 @@ Provides advanced circuit breaker patterns with constitutional compliance integr
 import asyncio
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any
 
-import numpy as np
 from prometheus_client import Counter, Gauge, Histogram
 
 logger = logging.getLogger(__name__)
@@ -47,8 +47,8 @@ class CallResult:
 
     success: bool
     duration: float
-    error: Optional[Exception] = None
-    constitutional_compliance_score: Optional[float] = None
+    error: Exception | None = None
+    constitutional_compliance_score: float | None = None
     timestamp: float = field(default_factory=time.time)
 
 
@@ -67,7 +67,7 @@ class EnhancedCircuitBreaker:
         self.half_open_calls = 0
 
         # Sliding window for failure rate calculation
-        self.call_results: List[CallResult] = []
+        self.call_results: list[CallResult] = []
 
         # Metrics
         self.setup_metrics()
@@ -146,7 +146,7 @@ class EnhancedCircuitBreaker:
         """Check if the circuit breaker allows execution."""
         if self.state == CircuitState.CLOSED:
             return True
-        elif self.state == CircuitState.OPEN:
+        if self.state == CircuitState.OPEN:
             if time.time() - self.last_failure_time >= self.config.recovery_timeout:
                 self.state = CircuitState.HALF_OPEN
                 self.half_open_calls = 0
@@ -154,7 +154,7 @@ class EnhancedCircuitBreaker:
                 logger.info(f"Circuit breaker '{self.name}' moved to HALF_OPEN")
                 return True
             return False
-        elif self.state == CircuitState.HALF_OPEN:
+        if self.state == CircuitState.HALF_OPEN:
             return self.half_open_calls < self.config.half_open_max_calls
 
         return False
@@ -273,7 +273,7 @@ class EnhancedCircuitBreaker:
         failure_rate = self.calculate_failure_rate()
         self.failure_rate.labels(name=self.name).set(failure_rate)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get circuit breaker statistics."""
         return {
             "name": self.name,
@@ -313,10 +313,10 @@ class CircuitBreakerManager:
     """Manages multiple circuit breakers."""
 
     def __init__(self):
-        self.circuit_breakers: Dict[str, EnhancedCircuitBreaker] = {}
+        self.circuit_breakers: dict[str, EnhancedCircuitBreaker] = {}
 
     def get_circuit_breaker(
-        self, name: str, config: Optional[CircuitBreakerConfig] = None
+        self, name: str, config: CircuitBreakerConfig | None = None
     ) -> EnhancedCircuitBreaker:
         """Get or create circuit breaker."""
         if name not in self.circuit_breakers:
@@ -326,7 +326,7 @@ class CircuitBreakerManager:
 
         return self.circuit_breakers[name]
 
-    def get_all_stats(self) -> Dict[str, Dict[str, Any]]:
+    def get_all_stats(self) -> dict[str, dict[str, Any]]:
         """Get statistics for all circuit breakers."""
         return {name: cb.get_stats() for name, cb in self.circuit_breakers.items()}
 

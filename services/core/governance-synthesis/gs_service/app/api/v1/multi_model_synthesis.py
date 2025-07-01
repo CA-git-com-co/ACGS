@@ -134,9 +134,7 @@ async def synthesize_policy(
 
     except Exception as e:
         logger.error(f"Policy synthesis failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Policy synthesis failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Policy synthesis failed: {e!s}")
 
 
 @router.get("/performance", response_model=ModelPerformanceResponse)
@@ -169,7 +167,7 @@ async def get_model_performance() -> ModelPerformanceResponse:
     except Exception as e:
         logger.error(f"Failed to get model performance: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to get model performance: {str(e)}"
+            status_code=500, detail=f"Failed to get model performance: {e!s}"
         )
 
 
@@ -229,7 +227,7 @@ async def get_model_health() -> ModelHealthResponse:
     except Exception as e:
         logger.error(f"Failed to get model health: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to get model health: {str(e)}"
+            status_code=500, detail=f"Failed to get model health: {e!s}"
         )
 
 
@@ -251,7 +249,7 @@ async def get_model_configuration() -> ModelSpecializationConfig:
     except Exception as e:
         logger.error(f"Failed to get model configuration: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to get model configuration: {str(e)}"
+            status_code=500, detail=f"Failed to get model configuration: {e!s}"
         )
 
 
@@ -286,7 +284,7 @@ async def reset_circuit_breakers() -> JSONResponse:
     except Exception as e:
         logger.error(f"Failed to reset circuit breakers: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to reset circuit breakers: {str(e)}"
+            status_code=500, detail=f"Failed to reset circuit breakers: {e!s}"
         )
 
 

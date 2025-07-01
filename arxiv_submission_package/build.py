@@ -17,15 +17,13 @@ Usage:
     python build.py --release          # Release build with all checks
 """
 
-import os
-import sys
-import subprocess
-import time
-import json
-from pathlib import Path
-from typing import Dict, List, Optional
-from dataclasses import dataclass, asdict
 import argparse
+import json
+import subprocess
+import sys
+import time
+from dataclasses import asdict, dataclass
+from pathlib import Path
 
 
 @dataclass
@@ -33,7 +31,7 @@ class BuildConfig:
     """Build configuration settings."""
 
     latex_engine: str = "pdflatex"
-    venue_optimization: Optional[str] = None
+    venue_optimization: str | None = None
     run_tests: bool = True
     run_linting: bool = True
     generate_docs: bool = True
@@ -49,9 +47,9 @@ class BuildResult:
     step_name: str
     success: bool
     duration: float
-    output_files: List[str]
-    warnings: List[str]
-    errors: List[str]
+    output_files: list[str]
+    warnings: list[str]
+    errors: list[str]
 
 
 class BuildOrchestrator:
@@ -60,9 +58,9 @@ class BuildOrchestrator:
     def __init__(self, config: BuildConfig):
         """Initialize the build orchestrator."""
         self.config = config
-        self.base_dir = Path(".").resolve()
+        self.base_dir = Path().resolve()
         self.build_dir = self.base_dir / "build"
-        self.results: List[BuildResult] = []
+        self.results: list[BuildResult] = []
         self.start_time = time.time()
 
         # Ensure build directory exists
@@ -74,7 +72,7 @@ class BuildOrchestrator:
             timestamp = time.strftime("%H:%M:%S")
             print(f"[{timestamp}] {level}: {message}")
 
-    def run_command(self, cmd: List[str], step_name: str) -> BuildResult:
+    def run_command(self, cmd: list[str], step_name: str) -> BuildResult:
         """Run a command and track the result."""
         self.log(f"Starting {step_name}")
         start_time = time.time()
@@ -82,6 +80,7 @@ class BuildOrchestrator:
         try:
             result = subprocess.run(
                 cmd,
+                check=False,
                 cwd=self.base_dir,
                 capture_output=True,
                 text=True,
@@ -223,7 +222,7 @@ class BuildOrchestrator:
             [sys.executable, "compiler.py", "validate"], "Build Validation"
         )
 
-    def run_full_build(self) -> Dict[str, BuildResult]:
+    def run_full_build(self) -> dict[str, BuildResult]:
         """Run the complete build process."""
         self.log("🚀 Starting Academic Submission System build")
 
@@ -252,10 +251,9 @@ class BuildOrchestrator:
                         f"❌ Critical step {step_name} failed, stopping build", "ERROR"
                     )
                     break
-                else:
-                    self.log(
-                        f"⚠️ Non-critical step {step_name} failed, continuing", "WARNING"
-                    )
+                self.log(
+                    f"⚠️ Non-critical step {step_name} failed, continuing", "WARNING"
+                )
 
         total_duration = time.time() - self.start_time
         successful_steps = sum(1 for r in results.values() if r.success)
@@ -271,7 +269,7 @@ class BuildOrchestrator:
 
         return results
 
-    def generate_build_report(self, results: Dict[str, BuildResult]) -> str:
+    def generate_build_report(self, results: dict[str, BuildResult]) -> str:
         """Generate a comprehensive build report."""
         total_duration = time.time() - self.start_time
         successful_steps = sum(1 for r in results.values() if r.success)
@@ -372,7 +370,7 @@ class BuildOrchestrator:
 
         return "\n".join(report_lines)
 
-    def save_build_metadata(self, results: Dict[str, BuildResult]):
+    def save_build_metadata(self, results: dict[str, BuildResult]):
         """Save build metadata as JSON."""
         metadata = {
             "build_time": time.strftime("%Y-%m-%d %H:%M:%S"),

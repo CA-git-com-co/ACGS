@@ -595,7 +595,7 @@ async def handle_websocket_message(session: FidelityMonitoringSession, message: 
                 await session.send_message(
                     {
                         "type": "error",
-                        "message": f"Failed to get fidelity status: {str(e)}",
+                        "message": f"Failed to get fidelity status: {e!s}",
                         "timestamp": datetime.utcnow().isoformat(),
                     }
                 )
@@ -629,7 +629,7 @@ async def handle_websocket_message(session: FidelityMonitoringSession, message: 
                 await session.send_message(
                     {
                         "type": "error",
-                        "message": f"Failed to start error correction: {str(e)}",
+                        "message": f"Failed to start error correction: {e!s}",
                         "timestamp": datetime.utcnow().isoformat(),
                     }
                 )
@@ -655,7 +655,7 @@ async def handle_websocket_message(session: FidelityMonitoringSession, message: 
                 await session.send_message(
                     {
                         "type": "error",
-                        "message": f"Failed to get error correction status: {str(e)}",
+                        "message": f"Failed to get error correction status: {e!s}",
                         "timestamp": datetime.utcnow().isoformat(),
                     }
                 )

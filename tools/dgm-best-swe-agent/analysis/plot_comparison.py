@@ -1,9 +1,10 @@
 import argparse
 import os
 
-from analysis.visualize_archive import get_performance_score
 from matplotlib import pyplot as plt
 from utils.evo_utils import load_dgm_metadata
+
+from analysis.visualize_archive import get_performance_score
 
 
 def get_run_info(dgm_dir):

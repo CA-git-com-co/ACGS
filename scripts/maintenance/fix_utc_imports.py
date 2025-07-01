@@ -5,7 +5,6 @@ Replace 'from datetime import timezone' with 'from datetime import timezone'
 and replace all timezone.utc usage with timezone.utc
 """
 
-import os
 import re
 from pathlib import Path
 

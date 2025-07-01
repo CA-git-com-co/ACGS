@@ -112,6 +112,7 @@ class SecurityHardener:
                     "-o",
                     "bandit_report.json",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -187,6 +188,7 @@ class SecurityHardener:
                     "services/",
                     "--include=*.py",
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
             )
@@ -218,6 +220,7 @@ class SecurityHardener:
         try:
             result = subprocess.run(
                 ["grep", "-r", "debug.*=.*true", "services/", "--include=*.py", "-i"],
+                check=False,
                 capture_output=True,
                 text=True,
             )
@@ -256,6 +259,7 @@ class SecurityHardener:
                     "--format=json",
                     "--output=pip_audit_report.json",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -302,6 +306,7 @@ class SecurityHardener:
         try:
             result = subprocess.run(
                 ["python", "-m", "pip", "list", "--outdated", "--format=json"],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -349,6 +354,7 @@ class SecurityHardener:
                 # Check for security headers
                 result = subprocess.run(
                     ["curl", "-I", "-s", f"http://localhost:{port}/health"],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=10,
@@ -404,6 +410,7 @@ class SecurityHardener:
         try:
             result = subprocess.run(
                 ["curl", "-s", "http://localhost:8000/health"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -449,7 +456,11 @@ class SecurityHardener:
         # Check firewall status (if available)
         try:
             result = subprocess.run(
-                ["sudo", "ufw", "status"], capture_output=True, text=True, timeout=10
+                ["sudo", "ufw", "status"],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
 
             if result.returncode == 0:
@@ -468,7 +479,11 @@ class SecurityHardener:
         # Check for open ports
         try:
             result = subprocess.run(
-                ["netstat", "-tuln"], capture_output=True, text=True, timeout=10
+                ["netstat", "-tuln"],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
 
             if result.returncode == 0:
@@ -502,7 +517,10 @@ class SecurityHardener:
             for tool in ["bandit", "pip-audit"]:
                 try:
                     result = subprocess.run(
-                        ["python", "-m", tool, "--help"], capture_output=True, timeout=5
+                        ["python", "-m", tool, "--help"],
+                        check=False,
+                        capture_output=True,
+                        timeout=5,
                     )
                     if result.returncode == 0:
                         tools_available += 1

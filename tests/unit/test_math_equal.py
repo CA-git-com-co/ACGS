@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import pytest
-
 from nemo_skills.evaluation.math_grader import math_equal
 
 
@@ -36,7 +35,7 @@ from nemo_skills.evaluation.math_grader import math_equal
         (".185", "0.185"),
         ("\\frac {1}{2}", 0.5),
         ("17\\text{ any text}", "17"),
-        ("\$10", "10"),
+        (r"\$10", "10"),
         ("10%", "10"),
         ("10\\%", "10"),
         (5 / 2, "\\frac{5}{2}"),

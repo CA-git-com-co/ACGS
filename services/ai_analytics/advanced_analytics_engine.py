@@ -9,13 +9,13 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio
-import json
 import logging
-import numpy as np
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Any, Optional, Tuple
-from pathlib import Path
 import pickle
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from typing import Any
+
+import numpy as np
 
 # Configure logging
 logging.basicConfig(
@@ -129,7 +129,7 @@ class AdvancedAnalyticsEngine:
         self.trend_analyzer = None
         self.policy_recommender = None
 
-    async def initialize_analytics_engine(self) -> Dict[str, Any]:
+    async def initialize_analytics_engine(self) -> dict[str, Any]:
         """Initialize the advanced analytics engine."""
         logger.info("🤖 Initializing Advanced AI Analytics Engine")
         logger.info(f"📜 Constitutional Hash: {self.constitutional_hash}")
@@ -217,7 +217,7 @@ class AdvancedAnalyticsEngine:
 
         logger.info("🔍 Anomaly detection models initialized")
 
-    async def _generate_training_data(self) -> Dict[str, np.ndarray]:
+    async def _generate_training_data(self) -> dict[str, np.ndarray]:
         """Generate synthetic training data for model training."""
         logger.info("📊 Generating training data")
 
@@ -353,7 +353,7 @@ class AdvancedAnalyticsEngine:
 
     async def _generate_time_series_data(
         self,
-    ) -> Dict[str, Tuple[np.ndarray, np.ndarray]]:
+    ) -> dict[str, tuple[np.ndarray, np.ndarray]]:
         """Generate time series data for trend analysis."""
         logger.info("📈 Generating time series data")
 
@@ -453,7 +453,7 @@ class AdvancedAnalyticsEngine:
 
         logger.info("📋 Policy recommendation engine initialized")
 
-    async def _generate_policy_training_data(self) -> Tuple[np.ndarray, np.ndarray]:
+    async def _generate_policy_training_data(self) -> tuple[np.ndarray, np.ndarray]:
         """Generate training data for policy recommendations."""
         # Features: current_compliance, performance_metrics, governance_maturity,
         # stakeholder_feedback, constitutional_alignment
@@ -538,7 +538,7 @@ class AdvancedAnalyticsEngine:
 
         logger.info("💾 Models saved successfully")
 
-    async def detect_anomalies(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def detect_anomalies(self, data: dict[str, Any]) -> dict[str, Any]:
         """Detect anomalies in governance data."""
         logger.info("🔍 Detecting anomalies")
 
@@ -578,8 +578,8 @@ class AdvancedAnalyticsEngine:
         return anomaly_results
 
     async def _detect_constitutional_anomalies(
-        self, metrics: Dict[str, float]
-    ) -> List[Dict[str, Any]]:
+        self, metrics: dict[str, float]
+    ) -> list[dict[str, Any]]:
         """Detect constitutional governance anomalies."""
         anomalies = []
 
@@ -599,8 +599,8 @@ class AdvancedAnalyticsEngine:
         return anomalies
 
     async def _detect_performance_anomalies(
-        self, metrics: Dict[str, float]
-    ) -> List[Dict[str, Any]]:
+        self, metrics: dict[str, float]
+    ) -> list[dict[str, Any]]:
         """Detect performance anomalies."""
         anomalies = []
 
@@ -619,8 +619,8 @@ class AdvancedAnalyticsEngine:
         return anomalies
 
     async def predict_governance_trends(
-        self, historical_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, historical_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Predict governance trends based on historical data."""
         logger.info("🔮 Predicting governance trends")
 
@@ -646,8 +646,8 @@ class AdvancedAnalyticsEngine:
         return predictions
 
     async def generate_policy_recommendations(
-        self, context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Generate policy recommendations based on current context."""
         logger.info("📋 Generating policy recommendations")
 

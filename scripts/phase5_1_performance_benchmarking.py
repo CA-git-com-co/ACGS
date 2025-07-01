@@ -20,7 +20,7 @@ import logging
 import statistics
 import time
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional
+from typing import Any
 
 import httpx
 from pydantic import BaseModel
@@ -40,7 +40,7 @@ class PerformanceBenchmark(BaseModel):
     total_requests: int
     successful_requests: int
     failed_requests: int
-    response_times: List[float]
+    response_times: list[float]
     p50_ms: float
     p95_ms: float
     p99_ms: float
@@ -49,7 +49,7 @@ class PerformanceBenchmark(BaseModel):
     max_response_time_ms: float
     requests_per_second: float
     success_rate: float
-    meets_targets: Dict[str, bool]
+    meets_targets: dict[str, bool]
     timestamp: datetime
 
 
@@ -73,7 +73,7 @@ class ACGSPerformanceBenchmarker:
             "p99_complex_operations_ms": 500,  # P99 ≤500ms complex operations
         }
 
-    def calculate_percentiles(self, response_times: List[float]) -> Dict[str, float]:
+    def calculate_percentiles(self, response_times: list[float]) -> dict[str, float]:
         """Calculate response time percentiles"""
         if not response_times:
             return {"p50": 0, "p95": 0, "p99": 0}
@@ -125,7 +125,7 @@ class ACGSPerformanceBenchmarker:
                     else:
                         failed_requests += 1
 
-                except Exception as e:
+                except Exception:
                     request_time = (time.time() - request_start) * 1000
                     response_times.append(request_time)
                     failed_requests += 1
@@ -223,7 +223,7 @@ class ACGSPerformanceBenchmarker:
                     else:
                         failed_requests += 1
 
-                except Exception as e:
+                except Exception:
                     request_time = (time.time() - request_start) * 1000
                     response_times.append(request_time)
                     failed_requests += 1
@@ -334,7 +334,7 @@ class ACGSPerformanceBenchmarker:
                     else:
                         failed_requests += 1
 
-                except Exception as e:
+                except Exception:
                     request_time = (time.time() - request_start) * 1000
                     response_times.append(request_time)
                     failed_requests += 1
@@ -375,7 +375,7 @@ class ACGSPerformanceBenchmarker:
             timestamp=datetime.now(timezone.utc),
         )
 
-    async def run_comprehensive_benchmarks(self) -> Dict[str, Any]:
+    async def run_comprehensive_benchmarks(self) -> dict[str, Any]:
         """Run comprehensive performance benchmarks for all services"""
         logger.info("🚀 Starting ACGS-PGP Comprehensive Performance Benchmarking...")
 
@@ -480,9 +480,8 @@ async def main():
         if results["summary"]["benchmark_status"] == "passed":
             print("✅ Performance benchmarking passed all targets!")
             return 0
-        else:
-            print("❌ Some performance targets not met. Check detailed results.")
-            return 1
+        print("❌ Some performance targets not met. Check detailed results.")
+        return 1
 
     except Exception as e:
         logger.error(f"Performance benchmarking failed: {e}")

@@ -22,7 +22,7 @@ import prompts
 import typer
 from aider import models, sendchat
 from aider.coders import Coder, base_coder
-from aider.dump import dump  # noqa: F401
+from aider.dump import dump
 from aider.io import InputOutput
 from dotenv import load_dotenv
 from plots import plot_refactoring
@@ -139,13 +139,13 @@ def resolve_dirname(dirname, use_single_prior, make_new):
     if len(priors) == 1 and use_single_prior:
         dirname = priors[0].name
         print(f"Using pre-existing {dirname}")
-    elif len(priors):
+    elif priors:
         if not make_new:
             print(f"Prior runs of {dirname} exist, use --new or name one explicitly")
             print()
             for prior in priors:
                 print(prior)
-            return
+            return None
 
     if not re.match(r"\d\d\d\d-\d\d-\d\d-", str(dirname)):
         now = datetime.datetime.now()
@@ -273,7 +273,7 @@ def main(
         print(
             "Warning: benchmarking runs unvetted code from GPT, run in a docker container"
         )
-        return
+        return None
 
     assert BENCHMARK_DNAME.exists() and BENCHMARK_DNAME.is_dir(), BENCHMARK_DNAME
 
@@ -320,7 +320,7 @@ def main(
                 "ERROR: will not delete dir that does not look like original tests",
                 dirname,
             )
-            return
+            return None
 
         dest = dirname.parent / "OLD" / dirname.name
         if dest.exists():
@@ -547,15 +547,19 @@ def summarize_results(dirname, stats_languages=None):
         res.syntax_errors += results.get("syntax_errors", 0)
         res.indentation_errors += results.get("indentation_errors", 0)
 
-        for (
-            key
-        ) in "model edit_format commit_hash editor_model editor_edit_format".split():
+        for key in [
+            "model",
+            "edit_format",
+            "commit_hash",
+            "editor_model",
+            "editor_edit_format",
+        ]:
             val = results.get(key)
             if val:
                 variants[key].add(val)
 
     if not res.completed_tests:
-        return
+        return None
 
     # if res.completed_tests < 133:
     #    return
@@ -711,7 +715,7 @@ def run_test_real(
 ):
     if not os.path.isdir(testdir):
         print("Not a dir:", testdir)
-        return
+        return None
 
     testdir = Path(testdir)
 
@@ -1034,6 +1038,7 @@ def run_unit_tests(original_dname, testdir, history_fname, test_files):
 
     result = subprocess.run(
         command,
+        check=False,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,

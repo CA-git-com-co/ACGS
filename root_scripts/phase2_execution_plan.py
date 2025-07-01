@@ -112,7 +112,7 @@ class Phase2ExecutionManager:
         total_failed = len(self.failed_services)
         results["success"] = restored_count == total_failed and health_check_success
         results["availability_improvement"] = (
-            f"{3 + restored_count}/7 services ({((3 + restored_count)/7)*100:.1f}%)"
+            f"{3 + restored_count}/7 services ({((3 + restored_count) / 7) * 100:.1f}%)"
         )
 
         self.log_action(
@@ -223,18 +223,16 @@ class Phase2ExecutionManager:
                         "SUCCESS",
                     )
                     return True
-                else:
-                    self.log_action(
-                        f"Service {service_name} started but health check failed",
-                        "WARNING",
-                    )
-                    return False
-            else:
-                stdout, stderr = process.communicate()
                 self.log_action(
-                    f"Service {service_name} process exited", "ERROR", stdout[:200]
+                    f"Service {service_name} started but health check failed",
+                    "WARNING",
                 )
                 return False
+            stdout, stderr = process.communicate()
+            self.log_action(
+                f"Service {service_name} process exited", "ERROR", stdout[:200]
+            )
+            return False
 
         except Exception as e:
             self.log_action(f"Failed to start {service_name}", "ERROR", str(e))
@@ -255,6 +253,7 @@ class Phase2ExecutionManager:
             # Run the comprehensive health check script
             result = subprocess.run(
                 ["python", "comprehensive_system_health_check.py"],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -266,7 +265,7 @@ class Phase2ExecutionManager:
                 output = result.stdout
                 if "7/7 Healthy" in output:
                     return True
-                elif "6/7 Healthy" in output or "5/7 Healthy" in output:
+                if "6/7 Healthy" in output or "5/7 Healthy" in output:
                     return True  # Partial success acceptable
 
             return False

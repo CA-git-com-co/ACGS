@@ -367,10 +367,8 @@ class ACGSHealthChecker:
 
             if all_services_healthy:
                 return "healthy"
-            else:
-                return "degraded"
-        else:
-            return "unhealthy"
+            return "degraded"
+        return "unhealthy"
 
     def generate_recommendations(self) -> list[str]:
         """Generate recommendations based on health check results."""

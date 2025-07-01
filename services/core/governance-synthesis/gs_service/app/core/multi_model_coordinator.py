@@ -17,10 +17,10 @@ import hashlib
 import json
 import logging
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 try:
     import redis.asyncio as redis
@@ -102,10 +102,9 @@ class RequestClassifier:
         # Determine complexity based on highest score
         if complexity_scores[RequestComplexity.HIGH_STAKES] > 0:
             return RequestComplexity.HIGH_STAKES
-        elif complexity_scores[RequestComplexity.COMPLEX] > 1:
+        if complexity_scores[RequestComplexity.COMPLEX] > 1:
             return RequestComplexity.COMPLEX
-        else:
-            return RequestComplexity.SIMPLE
+        return RequestComplexity.SIMPLE
 
 
 @dataclass
@@ -401,7 +400,7 @@ class MultiModelCoordinator:
             )
             return [cost_efficient[0][0]] if cost_efficient else [self.primary_model]
 
-        elif complexity == RequestComplexity.HIGH_STAKES:
+        if complexity == RequestComplexity.HIGH_STAKES:
             # Use full ensemble with constitutional priority
             constitutional_sorted = sorted(
                 healthy_models.items(),
@@ -420,7 +419,7 @@ class MultiModelCoordinator:
             )
             return [model_id for model_id, _ in sorted_models[:3]]
 
-        elif self.ensemble_strategy == EnsembleStrategy.CONSTITUTIONAL_PRIORITY:
+        if self.ensemble_strategy == EnsembleStrategy.CONSTITUTIONAL_PRIORITY:
             # Prioritize models with high constitutional compliance
             sorted_models = sorted(
                 healthy_models.items(),
@@ -429,7 +428,7 @@ class MultiModelCoordinator:
             )
             return [model_id for model_id, _ in sorted_models[:2]]
 
-        elif self.ensemble_strategy == EnsembleStrategy.WINA_OPTIMIZED:
+        if self.ensemble_strategy == EnsembleStrategy.WINA_OPTIMIZED:
             # Select models optimized for WINA performance
             wina_optimized = [
                 model_id
@@ -438,9 +437,8 @@ class MultiModelCoordinator:
             ]
             return wina_optimized[:2] if wina_optimized else [self.primary_model]
 
-        else:
-            # Default: use primary + one fallback
-            return [self.primary_model, self.fallback_models[0]]
+        # Default: use primary + one fallback
+        return [self.primary_model, self.fallback_models[0]]
 
     async def _execute_parallel_synthesis(
         self, request: dict[str, Any], models: list[str], enable_wina: bool
@@ -481,7 +479,7 @@ class MultiModelCoordinator:
             # Simulate model-specific results
             if model_id == "gemini-2.5-pro":
                 policy_content = f"""
-                package acgs.governance.{model_id.replace('-', '_')}
+                package acgs.governance.{model_id.replace("-", "_")}
 
                 # High-quality policy synthesis from {model_id}
                 default allow := false
@@ -537,27 +535,22 @@ class MultiModelCoordinator:
 
         if self.ensemble_strategy == EnsembleStrategy.WEIGHTED_VOTING:
             return await self._weighted_voting_ensemble(valid_results)
-        elif self.ensemble_strategy == EnsembleStrategy.CONSTITUTIONAL_PRIORITY:
+        if self.ensemble_strategy == EnsembleStrategy.CONSTITUTIONAL_PRIORITY:
             return await self._constitutional_priority_ensemble(valid_results)
-        else:
-            # Default: select best performing result
-            best_model = max(
-                valid_results.items(), key=lambda x: x[1].get("accuracy", 0)
-            )
-            result = best_model[1]
+        # Default: select best performing result
+        best_model = max(valid_results.items(), key=lambda x: x[1].get("accuracy", 0))
+        result = best_model[1]
 
-            return EnsembleResult(
-                synthesized_policy=result["policy_content"],
-                confidence_score=result.get("accuracy", 0.0),
-                contributing_models=[result["model_id"]],
-                ensemble_strategy_used=self.ensemble_strategy,
-                performance_metrics=result,
-                constitutional_fidelity=result.get("constitutional_compliance", 0.0),
-                wina_optimization_applied=result.get(
-                    "wina_optimization_applied", False
-                ),
-                synthesis_time_ms=0.0,  # Will be set by caller
-            )
+        return EnsembleResult(
+            synthesized_policy=result["policy_content"],
+            confidence_score=result.get("accuracy", 0.0),
+            contributing_models=[result["model_id"]],
+            ensemble_strategy_used=self.ensemble_strategy,
+            performance_metrics=result,
+            constitutional_fidelity=result.get("constitutional_compliance", 0.0),
+            wina_optimization_applied=result.get("wina_optimization_applied", False),
+            synthesis_time_ms=0.0,  # Will be set by caller
+        )
 
     async def _weighted_voting_ensemble(
         self, results: dict[str, dict[str, Any]]
@@ -677,7 +670,7 @@ class MultiModelCoordinator:
         content = f"{request_str}:{complexity.value}:{self.ensemble_strategy.value}"
         return hashlib.sha256(content.encode()).hexdigest()[:16]
 
-    async def _get_cached_result(self, cache_key: str) -> Optional[EnsembleResult]:
+    async def _get_cached_result(self, cache_key: str) -> EnsembleResult | None:
         """Retrieve cached synthesis result."""
         try:
             if not self.redis_client:

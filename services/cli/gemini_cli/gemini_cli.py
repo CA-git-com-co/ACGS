@@ -5,24 +5,22 @@ Gemini CLI - Main entry point with full ACGS integration
 
 import argparse
 import asyncio
-import json
 import logging
+import os
+import subprocess
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Any
-import subprocess
-import os
 
 # Add parent directory to path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, current_dir)
 
-from gemini_config import get_config, save_config, get_default_config
 from acgs_client import ACGSClient
-from commands import agent, execute, verify, audit, monitor
+from commands import agent, audit, execute, monitor, verify
 from formatters import format_output
-from tools import ToolManager
+from gemini_config import get_config, get_default_config, save_config
 
+from tools import ToolManager
 
 logger = logging.getLogger(__name__)
 
@@ -241,7 +239,7 @@ Examples:
             print(error_output, file=sys.stderr)
             sys.exit(1)
 
-    async def handle_config_command(self, args) -> Dict:
+    async def handle_config_command(self, args) -> dict:
         """Handle configuration commands"""
         if args.config_command == "show":
             config_dict = {
@@ -268,7 +266,7 @@ Examples:
             }
             return config_dict
 
-        elif args.config_command == "set":
+        if args.config_command == "set":
             # Set configuration value
             if "." in args.key:
                 # Handle nested keys
@@ -283,7 +281,7 @@ Examples:
             save_config()
             return {"message": f"Set {args.key} = {args.value}"}
 
-        elif args.config_command == "init":
+        if args.config_command == "init":
             # Initialize with default configuration
             self.config = get_default_config()
             save_config()
@@ -291,7 +289,7 @@ Examples:
 
         return {"error": "Unknown config command"}
 
-    async def handle_tools_command(self, args) -> Dict:
+    async def handle_tools_command(self, args) -> dict:
         """Handle tools commands"""
         if args.tools_command == "list":
             tools = {
@@ -322,21 +320,19 @@ Examples:
             }
             return {"tools": tools}
 
-        elif args.tools_command == "enable":
+        if args.tools_command == "enable":
             if hasattr(self.config.tools, args.tool):
                 setattr(self.config.tools, args.tool, True)
                 save_config()
                 return {"message": f"Enabled tool: {args.tool}"}
-            else:
-                return {"error": f"Unknown tool: {args.tool}"}
+            return {"error": f"Unknown tool: {args.tool}"}
 
-        elif args.tools_command == "disable":
+        if args.tools_command == "disable":
             if hasattr(self.config.tools, args.tool):
                 setattr(self.config.tools, args.tool, False)
                 save_config()
                 return {"message": f"Disabled tool: {args.tool}"}
-            else:
-                return {"error": f"Unknown tool: {args.tool}"}
+            return {"error": f"Unknown tool: {args.tool}"}
 
         return {"error": "Unknown tools command"}
 

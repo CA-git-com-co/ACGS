@@ -5,9 +5,8 @@ Monitors constitutional compliance across ACGS services.
 """
 
 import asyncio
-import time
-import httpx
-from prometheus_client import start_http_server, Gauge
+
+from prometheus_client import Gauge, start_http_server
 
 # Metrics
 compliance_score = Gauge(

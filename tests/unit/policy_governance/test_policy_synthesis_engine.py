@@ -2,16 +2,7 @@
 Unit tests for services.core.policy-governance.pgc_service.app.core.policy_synthesis_engine
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.policy_governance.pgc_service.app.core.policy_synthesis_engine import (
-    MockAnalysisType,
-    MockConsensusStrategy,
-    RiskStrategy,
-    ConstitutionalPrincipleDecomposition,
-    DomainOntologySchema,
-    ValidationPipelineResult,
-    EnhancedSynthesisRequest,
     PolicySynthesisEngine,
 )
 

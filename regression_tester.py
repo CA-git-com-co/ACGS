@@ -5,15 +5,13 @@ Runs comprehensive regression tests to ensure no new issues are introduced
 and all performance targets are maintained after fixes.
 """
 
-import os
-import sys
 import json
-import time
 import subprocess
-from pathlib import Path
-from typing import Dict, List, Any, Optional
+import sys
+import time
 from dataclasses import dataclass
-from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 # Add project paths
 project_root = Path(__file__).parent
@@ -30,8 +28,8 @@ class RegressionTestResult:
     tests_failed: int
     performance_regression: bool
     new_issues_introduced: int
-    details: Dict[str, Any]
-    error_message: Optional[str] = None
+    details: dict[str, Any]
+    error_message: str | None = None
 
 
 class RegressionTester:
@@ -72,6 +70,7 @@ class RegressionTester:
             if security_file.exists():
                 result = subprocess.run(
                     [sys.executable, str(security_file)],
+                    check=False,
                     cwd=self.project_root,
                     capture_output=True,
                     text=True,
@@ -92,31 +91,29 @@ class RegressionTester:
                         0,
                         {"security_validation": "passed", "vulnerabilities": 0},
                     )
-                else:
-                    # Check if this is due to new issues or existing ones
-                    return RegressionTestResult(
-                        "security_regression",
-                        "FAIL",
-                        time.time() - start_time,
-                        3,
-                        2,  # Assume some passed
-                        1,
-                        False,  # Not a regression, known issues
-                        0,
-                        {"security_validation": "failed", "known_issues": True},
-                    )
-            else:
+                # Check if this is due to new issues or existing ones
                 return RegressionTestResult(
                     "security_regression",
-                    "SKIP",
+                    "FAIL",
                     time.time() - start_time,
+                    3,
+                    2,  # Assume some passed
+                    1,
+                    False,  # Not a regression, known issues
                     0,
-                    0,
-                    0,
-                    False,
-                    0,
-                    {"reason": "Security validator not found"},
+                    {"security_validation": "failed", "known_issues": True},
                 )
+            return RegressionTestResult(
+                "security_regression",
+                "SKIP",
+                time.time() - start_time,
+                0,
+                0,
+                0,
+                False,
+                0,
+                {"reason": "Security validator not found"},
+            )
 
         except Exception as e:
             return RegressionTestResult(
@@ -141,6 +138,7 @@ class RegressionTester:
             if performance_file.exists():
                 result = subprocess.run(
                     [sys.executable, str(performance_file)],
+                    check=False,
                     cwd=self.project_root,
                     capture_output=True,
                     text=True,
@@ -167,18 +165,17 @@ class RegressionTester:
                         "latency_regression": performance_regression,
                     },
                 )
-            else:
-                return RegressionTestResult(
-                    "performance_regression",
-                    "SKIP",
-                    time.time() - start_time,
-                    0,
-                    0,
-                    0,
-                    False,
-                    0,
-                    {"reason": "Performance benchmarker not found"},
-                )
+            return RegressionTestResult(
+                "performance_regression",
+                "SKIP",
+                time.time() - start_time,
+                0,
+                0,
+                0,
+                False,
+                0,
+                {"reason": "Performance benchmarker not found"},
+            )
 
         except Exception as e:
             return RegressionTestResult(
@@ -216,6 +213,7 @@ class RegressionTester:
                 if wina_file.exists():
                     result = subprocess.run(
                         [sys.executable, str(wina_file)],
+                        check=False,
                         cwd=self.project_root,
                         capture_output=True,
                         text=True,
@@ -251,6 +249,7 @@ class RegressionTester:
                 if integration_file.exists():
                     result = subprocess.run(
                         [sys.executable, str(integration_file)],
+                        check=False,
                         cwd=self.project_root,
                         capture_output=True,
                         text=True,
@@ -305,6 +304,7 @@ class RegressionTester:
             if error_file.exists():
                 result = subprocess.run(
                     [sys.executable, str(error_file)],
+                    check=False,
                     cwd=self.project_root,
                     capture_output=True,
                     text=True,
@@ -323,30 +323,28 @@ class RegressionTester:
                         0,
                         {"error_handling_intact": True, "resilience_maintained": True},
                     )
-                else:
-                    return RegressionTestResult(
-                        "error_handling_regression",
-                        "FAIL",
-                        time.time() - start_time,
-                        5,
-                        3,  # Some passed
-                        2,
-                        True,  # Regression in error handling
-                        1,
-                        {"error_handling_regression": True},
-                    )
-            else:
                 return RegressionTestResult(
                     "error_handling_regression",
-                    "SKIP",
+                    "FAIL",
                     time.time() - start_time,
-                    0,
-                    0,
-                    0,
-                    False,
-                    0,
-                    {"reason": "Error recovery tester not found"},
+                    5,
+                    3,  # Some passed
+                    2,
+                    True,  # Regression in error handling
+                    1,
+                    {"error_handling_regression": True},
                 )
+            return RegressionTestResult(
+                "error_handling_regression",
+                "SKIP",
+                time.time() - start_time,
+                0,
+                0,
+                0,
+                False,
+                0,
+                {"reason": "Error recovery tester not found"},
+            )
 
         except Exception as e:
             return RegressionTestResult(
@@ -481,7 +479,7 @@ class RegressionTester:
                 str(e),
             )
 
-    def run_all_regression_tests(self) -> Dict[str, Any]:
+    def run_all_regression_tests(self) -> dict[str, Any]:
         """Run all regression tests."""
         print("Starting Comprehensive Regression Testing...")
         print("=" * 60)
@@ -511,7 +509,7 @@ class RegressionTester:
                     False,
                     0,
                     {},
-                    f"Test execution failed: {str(e)}",
+                    f"Test execution failed: {e!s}",
                 )
                 self.log_result(error_result)
 
@@ -600,8 +598,8 @@ def main():
             f"\n⚠️  Regressions detected! {summary['regression_metrics']['performance_regressions']} performance regressions, {summary['regression_metrics']['new_issues_introduced']} new issues!"
         )
         return 1
-    elif summary["failed_suites"] > 0 or summary["error_suites"] > 0:
-        print(f"\n⚠️  Some regression tests failed or had errors!")
+    if summary["failed_suites"] > 0 or summary["error_suites"] > 0:
+        print("\n⚠️  Some regression tests failed or had errors!")
         return 1
     return 0
 

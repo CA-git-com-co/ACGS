@@ -26,6 +26,7 @@ sys.path.insert(0, project_root)
 sys.path.insert(0, src_dir)
 
 from lib.integration.es_client import ES_COLLECTION_NAME, get_es_client  # noqa: E402
+
 from services.core.scripts.utils import validate_path  # noqa: E402
 
 ES_CLIENT = get_es_client()

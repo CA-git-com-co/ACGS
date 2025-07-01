@@ -12,15 +12,15 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import logging
+import warnings
+
+import lightgbm as lgb
 import numpy as np
 import pandas as pd
-from datetime import datetime
-from multi_armed_bandit_selection import MultiArmedBanditSelector, BanditResults
+import xgboost as xgb
+from multi_armed_bandit_selection import MultiArmedBanditSelector
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.neural_network import MLPRegressor
-import xgboost as xgb
-import lightgbm as lgb
-import warnings
 
 warnings.filterwarnings("ignore")
 
@@ -109,7 +109,6 @@ class EnhancedBanditSelector(MultiArmedBanditSelector):
             and len(self.algorithm_rewards[algorithm])
             >= self.min_selections_per_algorithm
         ):
-
             avg_reward = np.mean(self.algorithm_rewards[algorithm])
             if avg_reward < self.poor_performance_threshold:
                 self.eliminated_algorithms.add(algorithm)
@@ -161,7 +160,7 @@ class EnhancedBanditSelector(MultiArmedBanditSelector):
 
             if round_num % 10 == 0:
                 logger.info(
-                    f"  Round {round_num+1}: {selected_algorithm} -> {performance:.3f}"
+                    f"  Round {round_num + 1}: {selected_algorithm} -> {performance:.3f}"
                 )
 
         avg_bandit_performance = (

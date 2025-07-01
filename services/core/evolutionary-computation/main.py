@@ -3,7 +3,7 @@
 ACGS-1 Lite Evolution Oversight Service
 
 Comprehensive evolution evaluation, approval workflows, and rollback mechanisms
-for AI agent governance. Provides automated evaluation criteria, human review 
+for AI agent governance. Provides automated evaluation criteria, human review
 integration, and fast rollback capabilities.
 
 Constitutional Hash: cdd01ef066bc6cf2
@@ -11,22 +11,22 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import json
-import uuid
 import time
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, asdict
+import uuid
+from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
 from enum import Enum
+from typing import Any
 
 import aioredis
 import asyncpg
 import httpx
 import structlog
-from fastapi import FastAPI, HTTPException, BackgroundTasks, WebSocket
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
 import uvicorn
-from prometheus_client import Counter, Histogram, Gauge, start_http_server
+from fastapi import BackgroundTasks, FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from prometheus_client import Counter, Gauge, Histogram, start_http_server
+from pydantic import BaseModel, Field
 
 # Configuration
 SERVICE_PORT = 8004
@@ -82,13 +82,13 @@ class DecisionType(str, Enum):
 @dataclass
 class EvaluationResult:
     agent_id: str
-    scores: Dict[str, float]
+    scores: dict[str, float]
     total_score: float
     requires_human_review: bool
-    risk_factors: List[str]
+    risk_factors: list[str]
     recommendation: str
 
-    def to_summary(self) -> Dict[str, Any]:
+    def to_summary(self) -> dict[str, Any]:
         return {
             "total_score": self.total_score,
             "requires_human_review": self.requires_human_review,
@@ -97,7 +97,7 @@ class EvaluationResult:
             "scores": self.scores,
         }
 
-    def get_risk_factors(self) -> List[Dict[str, Any]]:
+    def get_risk_factors(self) -> list[dict[str, Any]]:
         factors = []
         for criterion, score in self.scores.items():
             if score < 0.8:
@@ -114,7 +114,7 @@ class EvaluationResult:
 class EvolutionRequest(BaseModel):
     evolution_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     agent_id: str
-    new_version: Dict[str, Any]
+    new_version: dict[str, Any]
     change_description: str
     requester_id: str
     priority: ReviewPriority = ReviewPriority.MEDIUM
@@ -126,11 +126,11 @@ class ReviewTask(BaseModel):
     agent_id: str
     priority: ReviewPriority
     status: str = "pending"
-    assigned_to: Optional[str] = None
+    assigned_to: str | None = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    evaluation_summary: Dict[str, Any]
+    evaluation_summary: dict[str, Any]
     diff_view: str
-    risk_factors: List[Dict[str, Any]]
+    risk_factors: list[dict[str, Any]]
     recommended_action: str
 
 
@@ -164,7 +164,7 @@ class EvaluationCriteria:
         }
 
     async def evaluate_agent(
-        self, agent_id: str, new_version: Dict[str, Any]
+        self, agent_id: str, new_version: dict[str, Any]
     ) -> EvaluationResult:
         """Evaluate an agent evolution against all criteria."""
         start_time = time.time()
@@ -235,8 +235,8 @@ class EvaluationCriteria:
             raise HTTPException(status_code=500, detail=f"Evaluation failed: {e}")
 
     async def check_constitutional_compliance(
-        self, new_version: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, new_version: dict[str, Any]
+    ) -> dict[str, Any]:
         """Check constitutional compliance via Policy Engine."""
         try:
             # Check cache first
@@ -278,7 +278,7 @@ class EvaluationCriteria:
             return {"score": 0.0, "details": f"Error: {e}"}
 
     async def analyze_performance_delta(
-        self, agent_id: str, new_version: Dict[str, Any]
+        self, agent_id: str, new_version: dict[str, Any]
     ) -> float:
         """Analyze performance change compared to current version."""
         try:
@@ -302,7 +302,7 @@ class EvaluationCriteria:
             logger.error("Performance analysis failed", agent_id=agent_id, error=str(e))
             return 0.1  # Conservative estimate
 
-    async def get_baseline_metrics(self, agent_id: str) -> Optional[Dict[str, Any]]:
+    async def get_baseline_metrics(self, agent_id: str) -> dict[str, Any] | None:
         """Get baseline performance metrics for agent."""
         try:
             cached = await self.redis.get(f"metrics:{agent_id}")
@@ -322,7 +322,7 @@ class EvaluationCriteria:
         except Exception:
             return None
 
-    async def detect_anomalies(self, new_version: Dict[str, Any]) -> Dict[str, Any]:
+    async def detect_anomalies(self, new_version: dict[str, Any]) -> dict[str, Any]:
         """Detect anomalous patterns in the new version."""
         try:
             # Simulate anomaly detection
@@ -350,7 +350,7 @@ class EvaluationCriteria:
             logger.error("Anomaly detection failed", error=str(e))
             return {"score": 0.0, "details": f"Error: {e}"}
 
-    async def assess_risk(self, new_version: Dict[str, Any]) -> Dict[str, Any]:
+    async def assess_risk(self, new_version: dict[str, Any]) -> dict[str, Any]:
         """Assess overall risk of the evolution."""
         try:
             risk_score = 0.0
@@ -390,7 +390,7 @@ class ApprovalWorkflow:
 
     async def process_evolution(
         self, evolution_request: EvolutionRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Process an evolution request through the approval workflow."""
         try:
             # Step 1: Evaluate the agent
@@ -403,13 +403,12 @@ class ApprovalWorkflow:
                 # Auto-approve low-risk changes
                 return await self.auto_approve(evolution_request, evaluation)
 
-            elif evaluation.total_score >= 0.90:
+            if evaluation.total_score >= 0.90:
                 # Fast-track review for medium risk
                 return await self.fast_track_review(evolution_request, evaluation)
 
-            else:
-                # Full human review for high risk
-                return await self.human_review_required(evolution_request, evaluation)
+            # Full human review for high risk
+            return await self.human_review_required(evolution_request, evaluation)
 
         except Exception as e:
             logger.error(
@@ -421,7 +420,7 @@ class ApprovalWorkflow:
 
     async def auto_approve(
         self, request: EvolutionRequest, evaluation: EvaluationResult
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Auto-approve low-risk evolutions."""
         try:
             # Additional safety check
@@ -470,7 +469,7 @@ class ApprovalWorkflow:
 
     async def fast_track_review(
         self, request: EvolutionRequest, evaluation: EvaluationResult
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Fast-track review for medium-risk evolutions."""
         try:
             # Create review task with high priority
@@ -513,7 +512,7 @@ class ApprovalWorkflow:
 
     async def human_review_required(
         self, request: EvolutionRequest, evaluation: EvaluationResult
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Require full human review for high-risk evolutions."""
         try:
             # Create review task with critical priority
@@ -556,7 +555,7 @@ class ApprovalWorkflow:
 
     async def final_safety_validation(
         self, request: EvolutionRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Final safety check before auto-approval."""
         try:
             # Check for high-risk patterns
@@ -593,7 +592,7 @@ class ApprovalWorkflow:
 
     async def escalate_to_human(
         self, request: EvolutionRequest, reason: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Escalate to human review due to safety concerns."""
         try:
             # Create evaluation with low score to force human review
@@ -614,7 +613,7 @@ class ApprovalWorkflow:
             )
             raise HTTPException(status_code=500, detail=f"Escalation failed: {e}")
 
-    async def deploy_agent(self, request: EvolutionRequest) -> Dict[str, Any]:
+    async def deploy_agent(self, request: EvolutionRequest) -> dict[str, Any]:
         """Deploy the approved agent evolution."""
         try:
             # Simulate deployment
@@ -650,9 +649,9 @@ class ApprovalWorkflow:
         self,
         evolution_id: str,
         status: EvolutionStatus,
-        evaluation: Optional[EvaluationResult],
-        decision: Optional[DecisionType],
-        reviewer_id: Optional[str],
+        evaluation: EvaluationResult | None,
+        decision: DecisionType | None,
+        reviewer_id: str | None,
     ):
         """Update evolution status in database."""
         try:
@@ -717,7 +716,7 @@ class HumanReviewInterface:
         evolution_request: EvolutionRequest,
         evaluation: EvaluationResult,
         priority: ReviewPriority,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Create a review task for human reviewers."""
         try:
             task = ReviewTask(
@@ -807,7 +806,7 @@ class RollbackManager:
         self.db_pool = db_pool
         self.audit_client = audit_client
 
-    async def rollback_agent(self, agent_id: str, reason: str) -> Dict[str, Any]:
+    async def rollback_agent(self, agent_id: str, reason: str) -> dict[str, Any]:
         """Rollback an agent to its previous version."""
         try:
             # Get current and previous versions
@@ -853,7 +852,7 @@ class RollbackManager:
             rollback_operations.labels(reason="failed").inc()
             raise HTTPException(status_code=500, detail=f"Rollback failed: {e}")
 
-    async def get_current_version(self, agent_id: str) -> Optional[Dict[str, Any]]:
+    async def get_current_version(self, agent_id: str) -> dict[str, Any] | None:
         """Get the current deployed version of an agent."""
         try:
             async with self.db_pool.acquire() as conn:
@@ -882,7 +881,7 @@ class RollbackManager:
             )
             return None
 
-    async def get_previous_version(self, agent_id: str) -> Optional[Dict[str, Any]]:
+    async def get_previous_version(self, agent_id: str) -> dict[str, Any] | None:
         """Get the previous deployed version of an agent."""
         try:
             async with self.db_pool.acquire() as conn:
@@ -911,7 +910,7 @@ class RollbackManager:
             )
             return None
 
-    async def validate_version(self, version_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def validate_version(self, version_data: dict[str, Any]) -> dict[str, Any]:
         """Validate that a version is safe for rollback."""
         try:
             # Check evaluation scores
@@ -943,7 +942,7 @@ class RollbackManager:
             return {"safe": False, "reason": f"Validation error: {e}"}
 
     async def deploy_version(
-        self, agent_id: str, version_data: Dict[str, Any], rollback_id: str
+        self, agent_id: str, version_data: dict[str, Any], rollback_id: str
     ):
         """Deploy a specific version (simulate deployment)."""
         try:
@@ -1014,14 +1013,14 @@ app.add_middleware(
 )
 
 # Global components
-db_pool: Optional[asyncpg.Pool] = None
-redis: Optional[aioredis.Redis] = None
-policy_client: Optional[httpx.AsyncClient] = None
-audit_client: Optional[httpx.AsyncClient] = None
-criteria: Optional[EvaluationCriteria] = None
-workflow: Optional[ApprovalWorkflow] = None
-review_interface: Optional[HumanReviewInterface] = None
-rollback_manager: Optional[RollbackManager] = None
+db_pool: asyncpg.Pool | None = None
+redis: aioredis.Redis | None = None
+policy_client: httpx.AsyncClient | None = None
+audit_client: httpx.AsyncClient | None = None
+criteria: EvaluationCriteria | None = None
+workflow: ApprovalWorkflow | None = None
+review_interface: HumanReviewInterface | None = None
+rollback_manager: RollbackManager | None = None
 
 
 @app.on_event("startup")

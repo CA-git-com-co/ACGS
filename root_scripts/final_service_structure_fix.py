@@ -6,10 +6,9 @@ This script fixes the remaining service structure issues by ensuring
 all services have the correct nested structure and requirements files.
 """
 
-import os
 import shutil
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 
 class FinalServiceStructureFix:
@@ -209,7 +208,7 @@ if __name__ == "__main__":
         hash_verified = False
 
         try:
-            with open(constitution_file, "r") as f:
+            with open(constitution_file) as f:
                 content = f.read()
                 if "cdd01ef066bc6cf2" in content:
                     self.log_action("✅ Constitutional hash cdd01ef066bc6cf2 verified")
@@ -275,7 +274,7 @@ if __name__ == "__main__":
                 f"📦 Services with valid structure: {valid_services}/{total_services}"
             )
             print(f"⛓️ Quantumagi integration: {'✅' if quantumagi_ok else '❌'}")
-            print(f"🏥 Health check script created")
+            print("🏥 Health check script created")
             print(f"📝 Total actions: {len(self.fix_log)}")
 
             success = (
@@ -292,7 +291,7 @@ if __name__ == "__main__":
             return success
 
         except Exception as e:
-            self.log_action(f"ERROR during final fix: {str(e)}")
+            self.log_action(f"ERROR during final fix: {e!s}")
             print(f"❌ Final fix failed: {e}")
             return False
 

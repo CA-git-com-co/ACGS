@@ -14,27 +14,25 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import json
-import logging
 import os
 import time
 import uuid
-import yaml
-from datetime import datetime, timezone, timedelta
+from contextlib import asynccontextmanager
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import aiofiles
 import aiohttp
 import aioredis
+import structlog
 import uvicorn
-from fastapi import FastAPI, HTTPException, Request, Response, BackgroundTasks
+from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
 from kubernetes_asyncio import client, config
 from kubernetes_asyncio.client.rest import ApiException
 from prometheus_client import Counter, Gauge, Histogram, generate_latest
 from pydantic import BaseModel, Field
-import structlog
 
 # Configure structured logging
 structlog.configure(
@@ -171,10 +169,10 @@ class HardenedSandboxRequest(BaseModel):
     memory_limit_mb: int = Field(default=512, le=2048, description="Memory limit in MB")
     cpu_limit: float = Field(default=0.5, le=2.0, description="CPU limit (cores)")
     network_policy: str = Field(default="none", description="Network access policy")
-    filesystem_access: List[str] = Field(
+    filesystem_access: list[str] = Field(
         default_factory=list, description="Allowed filesystem paths"
     )
-    environment: Dict[str, str] = Field(
+    environment: dict[str, str] = Field(
         default_factory=dict, description="Environment variables"
     )
 
@@ -189,7 +187,7 @@ class SecurityViolation(BaseModel):
     description: str
     detection_layer: str  # SECCOMP, SYSCALL_MONITOR, NETWORK, FILESYSTEM
     blocked: bool
-    indicators: Dict[str, Any]
+    indicators: dict[str, Any]
     remediation: str
 
 
@@ -199,11 +197,11 @@ class HardenedSandboxResponse(BaseModel):
     execution_id: str
     success: bool
     output: str
-    error: Optional[str] = None
-    security_violations: List[SecurityViolation] = Field(default_factory=list)
+    error: str | None = None
+    security_violations: list[SecurityViolation] = Field(default_factory=list)
     execution_time_seconds: float
     cold_start_time_ms: float
-    resource_usage: Dict[str, Any]
+    resource_usage: dict[str, Any]
     termination_reason: str
     runtime_used: str
     constitutional_hash_verified: bool
@@ -233,7 +231,7 @@ class HardenedSandboxController:
             },
         }
 
-        self.active_sandboxes: Dict[str, Dict[str, Any]] = {}
+        self.active_sandboxes: dict[str, dict[str, Any]] = {}
         self.violation_detector = ViolationDetector()
 
     async def initialize(self):
@@ -318,7 +316,7 @@ class HardenedSandboxController:
             logger.error("Failed to verify runtime classes", error=str(e))
             raise
 
-    async def _install_runtime_classes(self, missing_runtimes: Set[str]):
+    async def _install_runtime_classes(self, missing_runtimes: set[str]):
         """Install missing runtime classes."""
         v1 = client.NodeV1Api(self.k8s_client)
 
@@ -663,7 +661,7 @@ class HardenedSandboxController:
 
     async def _check_policy_authorization(
         self, request: HardenedSandboxRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Check with policy engine for authorization."""
         try:
             async with aiohttp.ClientSession() as session:
@@ -688,15 +686,14 @@ class HardenedSandboxController:
                 ) as response:
                     if response.status == 200:
                         return await response.json()
-                    else:
-                        logger.warning(
-                            "Policy engine request failed", status=response.status
-                        )
-                        return {"allow": False, "reason": "Policy engine unavailable"}
+                    logger.warning(
+                        "Policy engine request failed", status=response.status
+                    )
+                    return {"allow": False, "reason": "Policy engine unavailable"}
 
         except Exception as e:
             logger.error("Policy engine check failed", error=str(e))
-            return {"allow": False, "reason": f"Policy check error: {str(e)}"}
+            return {"allow": False, "reason": f"Policy check error: {e!s}"}
 
     async def _create_hardened_sandbox_pod(
         self, execution_id: str, request: HardenedSandboxRequest
@@ -845,7 +842,7 @@ class HardenedSandboxController:
 
     async def _execute_with_monitoring(
         self, pod_name: str, request: HardenedSandboxRequest, execution_id: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute code with real-time monitoring."""
         try:
             # Start syscall monitoring
@@ -951,7 +948,7 @@ timeout {request.timeout_seconds} python3 code.py 2>&1
         except Exception as e:
             logger.error("Syscall monitoring error", pod_name=pod_name, error=str(e))
 
-    async def _check_syscall_violations(self, pod_name: str) -> List[SecurityViolation]:
+    async def _check_syscall_violations(self, pod_name: str) -> list[SecurityViolation]:
         """Check for syscall violations (simplified implementation)."""
         violations = []
 
@@ -969,7 +966,7 @@ timeout {request.timeout_seconds} python3 code.py 2>&1
 
         # Store in Redis for collection
         await self.redis_client.lpush(
-            f"violations:sandbox", json.dumps(violation.dict(), default=str)
+            "violations:sandbox", json.dumps(violation.dict(), default=str)
         )
 
         logger.warning(
@@ -997,12 +994,12 @@ timeout {request.timeout_seconds} python3 code.py 2>&1
         except Exception as e:
             logger.error("Failed to emergency terminate sandbox", error=str(e))
 
-    async def _collect_violations(self, execution_id: str) -> List[SecurityViolation]:
+    async def _collect_violations(self, execution_id: str) -> list[SecurityViolation]:
         """Collect all violations for this execution."""
         violations = []
 
         # Get violations from Redis
-        violation_data = await self.redis_client.lrange(f"violations:sandbox", 0, -1)
+        violation_data = await self.redis_client.lrange("violations:sandbox", 0, -1)
 
         for data in violation_data:
             try:
@@ -1012,11 +1009,11 @@ timeout {request.timeout_seconds} python3 code.py 2>&1
                 continue
 
         # Clear collected violations
-        await self.redis_client.delete(f"violations:sandbox")
+        await self.redis_client.delete("violations:sandbox")
 
         return violations
 
-    async def _get_resource_usage(self, pod_name: str) -> Dict[str, Any]:
+    async def _get_resource_usage(self, pod_name: str) -> dict[str, Any]:
         """Get resource usage statistics."""
         try:
             # In production, get actual metrics from Kubernetes metrics API
@@ -1055,8 +1052,8 @@ timeout {request.timeout_seconds} python3 code.py 2>&1
         self,
         execution_id: str,
         request: HardenedSandboxRequest,
-        result: Dict[str, Any],
-        violations: List[SecurityViolation],
+        result: dict[str, Any],
+        violations: list[SecurityViolation],
     ):
         """Log execution to audit engine."""
         try:
@@ -1110,7 +1107,7 @@ timeout {request.timeout_seconds} python3 code.py 2>&1
                 logger.error("Violation monitoring error", error=str(e))
                 await asyncio.sleep(10)
 
-    async def _check_escape_patterns(self, pod_name: str) -> Optional[Dict[str, str]]:
+    async def _check_escape_patterns(self, pod_name: str) -> dict[str, str] | None:
         """Check for sandbox escape patterns."""
         # In production, this would analyze:
         # - Process lists
@@ -1130,8 +1127,8 @@ class ViolationDetector:
         self.ml_model = None  # Could load ML model for anomaly detection
 
     async def analyze_execution(
-        self, execution_data: Dict[str, Any]
-    ) -> List[SecurityViolation]:
+        self, execution_data: dict[str, Any]
+    ) -> list[SecurityViolation]:
         """Analyze execution for security violations."""
         violations = []
 
@@ -1148,7 +1145,7 @@ class ViolationDetector:
 
         return violations
 
-    def _analyze_code_patterns(self, code: str) -> List[SecurityViolation]:
+    def _analyze_code_patterns(self, code: str) -> list[SecurityViolation]:
         """Analyze code for suspicious patterns."""
         violations = []
 
@@ -1171,7 +1168,7 @@ class ViolationDetector:
 
         return violations
 
-    def _analyze_syscall_patterns(self, syscalls: List[str]) -> List[SecurityViolation]:
+    def _analyze_syscall_patterns(self, syscalls: list[str]) -> list[SecurityViolation]:
         """Analyze syscall patterns for violations."""
         violations = []
 

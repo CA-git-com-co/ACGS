@@ -194,21 +194,20 @@ class EnhancedVotingClient:
 
             return result
 
-        elif response.status_code == 400:
+        if response.status_code == 400:
             error_detail = response.json().get("detail", "Bad request")
             raise VotingClientError(f"Invalid vote data: {error_detail}")
 
-        elif response.status_code == 403:
+        if response.status_code == 403:
             raise VotingClientError("Insufficient permissions to vote")
 
-        elif response.status_code == 404:
+        if response.status_code == 404:
             raise VotingClientError(f"Amendment {amendment_id} not found")
 
-        elif response.status_code == 409:
+        if response.status_code == 409:
             raise VotingClientError("Vote already exists for this amendment")
 
-        else:
-            response.raise_for_status()
+        response.raise_for_status()
 
     async def get_amendment_votes(
         self, amendment_id: int, auth_token: str
@@ -303,10 +302,10 @@ class EnhancedVotingClient:
         """Calculate retry delay based on strategy."""
         if self.config.retry_strategy == RetryStrategy.EXPONENTIAL_BACKOFF:
             return min(2**attempt, 30)  # Max 30 seconds
-        elif self.config.retry_strategy == RetryStrategy.LINEAR_BACKOFF:
+        if self.config.retry_strategy == RetryStrategy.LINEAR_BACKOFF:
             return min(attempt * 2, 30)  # Max 30 seconds
-        else:  # IMMEDIATE_RETRY
-            return 0.1
+        # IMMEDIATE_RETRY
+        return 0.1
 
     def get_metrics(self) -> dict[str, Any]:
         """Get client metrics."""

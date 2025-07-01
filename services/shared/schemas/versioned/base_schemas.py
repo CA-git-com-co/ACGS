@@ -6,7 +6,7 @@ Base classes and utilities for version-specific schema definitions.
 
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Any, Dict, Optional, Type, Union
+from typing import Any
 
 from pydantic import BaseModel, Field, validator
 
@@ -65,7 +65,7 @@ class VersionedResponse(BaseModel):
     compatible_versions: list[str] = Field(
         default_factory=list, description="List of compatible API versions"
     )
-    deprecation_info: Optional[Dict[str, Any]] = Field(
+    deprecation_info: dict[str, Any] | None = Field(
         None, description="Deprecation information if version is deprecated"
     )
     transformation_applied: bool = Field(
@@ -90,10 +90,10 @@ class VersionedRequest(BaseModel):
     """
 
     data: Any
-    requested_version: Optional[str] = Field(
+    requested_version: str | None = Field(
         None, description="Explicitly requested API version"
     )
-    client_version: Optional[str] = Field(None, description="Client SDK version")
+    client_version: str | None = Field(None, description="Client SDK version")
     compatibility_mode: bool = Field(
         False, description="Enable compatibility mode for version mismatches"
     )
@@ -109,14 +109,14 @@ class SchemaRegistry:
     """
 
     def __init__(self):
-        self._schemas: Dict[str, Dict[str, Type[BaseVersionedModel]]] = {}
+        self._schemas: dict[str, dict[str, type[BaseVersionedModel]]] = {}
         # Structure: {model_name: {version: schema_class}}
 
     def register_schema(
         self,
         model_name: str,
-        version: Union[str, APIVersion],
-        schema_class: Type[BaseVersionedModel],
+        version: str | APIVersion,
+        schema_class: type[BaseVersionedModel],
     ):
         """Register a schema for a specific model and version."""
         if isinstance(version, APIVersion):
@@ -128,8 +128,8 @@ class SchemaRegistry:
         self._schemas[model_name][version] = schema_class
 
     def get_schema(
-        self, model_name: str, version: Union[str, APIVersion]
-    ) -> Optional[Type[BaseVersionedModel]]:
+        self, model_name: str, version: str | APIVersion
+    ) -> type[BaseVersionedModel] | None:
         """Get schema class for specific model and version."""
         if isinstance(version, APIVersion):
             version = str(version)
@@ -137,8 +137,8 @@ class SchemaRegistry:
         return self._schemas.get(model_name, {}).get(version)
 
     def get_compatible_schema(
-        self, model_name: str, version: Union[str, APIVersion]
-    ) -> Optional[Type[BaseVersionedModel]]:
+        self, model_name: str, version: str | APIVersion
+    ) -> type[BaseVersionedModel] | None:
         """
         Get compatible schema for model and version.
 
@@ -185,14 +185,14 @@ schema_registry = SchemaRegistry()
 
 # Utility functions
 def get_schema_for_version(
-    model_name: str, version: Union[str, APIVersion]
-) -> Optional[Type[BaseVersionedModel]]:
+    model_name: str, version: str | APIVersion
+) -> type[BaseVersionedModel] | None:
     """Get schema class for specific model and version."""
     return schema_registry.get_schema(model_name, version)
 
 
 def validate_version_compatibility(
-    model: BaseVersionedModel, target_version: Union[str, APIVersion]
+    model: BaseVersionedModel, target_version: str | APIVersion
 ) -> bool:
     """Validate if model is compatible with target version."""
     if isinstance(target_version, str):
@@ -202,7 +202,7 @@ def validate_version_compatibility(
 
 
 def transform_model_to_version(
-    model: BaseVersionedModel, target_version: Union[str, APIVersion]
+    model: BaseVersionedModel, target_version: str | APIVersion
 ) -> BaseVersionedModel:
     """Transform model to target version."""
     if isinstance(target_version, str):
@@ -212,7 +212,7 @@ def transform_model_to_version(
 
 
 # Decorators for schema registration
-def versioned_schema(model_name: str, version: Union[str, APIVersion]):
+def versioned_schema(model_name: str, version: str | APIVersion):
     """
     Decorator to register a schema class with the global registry.
 
@@ -222,7 +222,7 @@ def versioned_schema(model_name: str, version: Union[str, APIVersion]):
             ...
     """
 
-    def decorator(schema_class: Type[BaseVersionedModel]):
+    def decorator(schema_class: type[BaseVersionedModel]):
         schema_registry.register_schema(model_name, version, schema_class)
         return schema_class
 

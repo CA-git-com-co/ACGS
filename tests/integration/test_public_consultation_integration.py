@@ -121,9 +121,8 @@ class PublicConsultationIntegrationTest:
             self.test_proposal_id = proposal_id
             print(f"   ✅ Public proposal submitted successfully (ID: {proposal_id})")
             return proposal_id
-        else:
-            print(f"   ❌ Public proposal submission failed: {result['data']}")
-            return None
+        print(f"   ❌ Public proposal submission failed: {result['data']}")
+        return None
 
     async def test_public_feedback_collection(self, proposal_id: int) -> bool:
         """Test public feedback collection for a proposal."""
@@ -168,11 +167,10 @@ class PublicConsultationIntegrationTest:
             )
             self.test_feedback_id = auth_result["data"].get("id")
             return True
-        else:
-            print(
-                f"   ❌ Feedback submission failed - Auth: {auth_result['success']}, Anon: {anon_result['success']}"
-            )
-            return False
+        print(
+            f"   ❌ Feedback submission failed - Auth: {auth_result['success']}, Anon: {anon_result['success']}"
+        )
+        return False
 
     async def test_hitl_integration(self, proposal_id: int) -> bool:
         """Test integration with HITL sampling for public feedback escalation."""
@@ -196,9 +194,8 @@ class PublicConsultationIntegrationTest:
         if result["success"]:
             print("   ✅ HITL integration working for public consultation")
             return True
-        else:
-            print(f"   ❌ HITL integration failed: {result['data']}")
-            return False
+        print(f"   ❌ HITL integration failed: {result['data']}")
+        return False
 
     async def test_constitutional_council_advancement(self, proposal_id: int) -> bool:
         """Test proposal advancement to Constitutional Council."""
@@ -215,9 +212,8 @@ class PublicConsultationIntegrationTest:
         if result["success"]:
             print("   ✅ Proposal advancement to Constitutional Council working")
             return True
-        else:
-            print(f"   ❌ Constitutional Council advancement failed: {result['data']}")
-            return False
+        print(f"   ❌ Constitutional Council advancement failed: {result['data']}")
+        return False
 
     async def test_cross_service_communication(self) -> bool:
         """Test cross-service communication for public consultation workflows."""
@@ -240,9 +236,8 @@ class PublicConsultationIntegrationTest:
         if result["success"]:
             print("   ✅ AC to GS service communication working")
             return True
-        else:
-            print(f"   ❌ Cross-service communication failed: {result['data']}")
-            return False
+        print(f"   ❌ Cross-service communication failed: {result['data']}")
+        return False
 
     async def test_public_access_security(self) -> bool:
         """Test security measures for public-facing endpoints."""
@@ -287,11 +282,10 @@ class PublicConsultationIntegrationTest:
                 "   ✅ Security measures working (rate limiting and input validation)"
             )
             return True
-        else:
-            print(
-                f"   ❌ Security issues detected - Requests: {successful_requests}, Validation: {security_ok}"
-            )
-            return False
+        print(
+            f"   ❌ Security issues detected - Requests: {successful_requests}, Validation: {security_ok}"
+        )
+        return False
 
     async def test_transparency_dashboard(self) -> bool:
         """Test transparency dashboard functionality."""
@@ -311,11 +305,10 @@ class PublicConsultationIntegrationTest:
         if metrics_result["success"] and dashboard_result["success"]:
             print("   ✅ Transparency dashboard working")
             return True
-        else:
-            print(
-                f"   ❌ Transparency dashboard failed - Metrics: {metrics_result['success']}, Dashboard: {dashboard_result['success']}"
-            )
-            return False
+        print(
+            f"   ❌ Transparency dashboard failed - Metrics: {metrics_result['success']}, Dashboard: {dashboard_result['success']}"
+        )
+        return False
 
 
 async def main():
@@ -381,7 +374,7 @@ async def main():
 
         for i, (test_name, result) in enumerate(test_results):
             status = "✅ PASS" if result else "❌ FAIL"
-            print(f"{i+1}. {test_name}: {status}")
+            print(f"{i + 1}. {test_name}: {status}")
 
         print(f"\nOverall: {passed_tests}/{total_tests} integration tests passed")
 

@@ -10,8 +10,7 @@ import argparse
 import json
 import logging
 import sys
-from pathlib import Path
-from typing import Any, Dict, Optional, TextIO
+from typing import Any, TextIO
 
 from .ocr_client import OCRClient, OCRRequestException, OCRServiceException
 
@@ -118,7 +117,7 @@ def parse_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def format_output(result: Dict[str, Any], format_type: str) -> str:
+def format_output(result: dict[str, Any], format_type: str) -> str:
     """
     Format the OCR result according to the specified format.
 
@@ -131,19 +130,17 @@ def format_output(result: Dict[str, Any], format_type: str) -> str:
     """
     if format_type == "json":
         return json.dumps(result)
-    elif format_type == "pretty":
+    if format_type == "pretty":
         return json.dumps(result, indent=2)
-    elif format_type == "compact":
+    if format_type == "compact":
         return (
             result["text"]
             if result["success"]
             else f"Error: {result.get('error', 'Unknown error')}"
         )
-    else:  # text format
-        if result["success"]:
-            return result["text"]
-        else:
-            return f"Error: {result.get('error', 'Unknown error')}"
+    if result["success"]:
+        return result["text"]
+    return f"Error: {result.get('error', 'Unknown error')}"
 
 
 def write_output(output: str, output_file: TextIO) -> None:
@@ -177,9 +174,8 @@ def perform_health_check(client: OCRClient) -> bool:
     if is_healthy:
         print("OK")
         return True
-    else:
-        print(f"FAILED: {error}")
-        return False
+    print(f"FAILED: {error}")
+    return False
 
 
 def main() -> int:

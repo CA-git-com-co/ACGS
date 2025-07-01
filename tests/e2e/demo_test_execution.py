@@ -28,7 +28,6 @@ import logging
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, Any, List
 
 # Configure logging
 logging.basicConfig(
@@ -126,7 +125,7 @@ class ACGSTestDemo:
             return overall_success
 
         except Exception as e:
-            logger.error(f"❌ Demo execution failed: {str(e)}")
+            logger.error(f"❌ Demo execution failed: {e!s}")
             return False
 
     async def _demo_service_health_tests(self) -> bool:
@@ -171,7 +170,7 @@ class ACGSTestDemo:
             return success_rate >= 0.8  # Require 80% healthy
 
         except Exception as e:
-            logger.error(f"❌ Service health demo failed: {str(e)}")
+            logger.error(f"❌ Service health demo failed: {e!s}")
             return False
 
     async def _demo_authentication_workflow(self) -> bool:
@@ -215,7 +214,7 @@ class ACGSTestDemo:
             return total_time <= 500  # Target: <500ms
 
         except Exception as e:
-            logger.error(f"❌ Authentication workflow demo failed: {str(e)}")
+            logger.error(f"❌ Authentication workflow demo failed: {e!s}")
             return False
 
     async def _demo_policy_creation_workflow(self) -> bool:
@@ -259,7 +258,7 @@ class ACGSTestDemo:
             return total_time <= 1000  # Target: <1s for complex workflow
 
         except Exception as e:
-            logger.error(f"❌ Policy creation workflow demo failed: {str(e)}")
+            logger.error(f"❌ Policy creation workflow demo failed: {e!s}")
             return False
 
     async def _demo_constitutional_compliance(self) -> bool:
@@ -315,7 +314,7 @@ class ACGSTestDemo:
             return avg_compliance >= 0.7
 
         except Exception as e:
-            logger.error(f"❌ Constitutional compliance demo failed: {str(e)}")
+            logger.error(f"❌ Constitutional compliance demo failed: {e!s}")
             return False
 
     async def _demo_blockchain_integration(self) -> bool:
@@ -360,7 +359,7 @@ class ACGSTestDemo:
             return total_cost <= 0.05
 
         except Exception as e:
-            logger.error(f"❌ Blockchain integration demo failed: {str(e)}")
+            logger.error(f"❌ Blockchain integration demo failed: {e!s}")
             return False
 
     async def _demo_performance_validation(self) -> bool:
@@ -417,7 +416,7 @@ class ACGSTestDemo:
             return service_pass and workflow_pass
 
         except Exception as e:
-            logger.error(f"❌ Performance validation demo failed: {str(e)}")
+            logger.error(f"❌ Performance validation demo failed: {e!s}")
             return False
 
     async def _demo_security_validation(self) -> bool:
@@ -456,7 +455,7 @@ class ACGSTestDemo:
             return security_score >= 0.9
 
         except Exception as e:
-            logger.error(f"❌ Security validation demo failed: {str(e)}")
+            logger.error(f"❌ Security validation demo failed: {e!s}")
             return False
 
     async def _generate_demo_report(self):
@@ -511,7 +510,7 @@ class ACGSTestDemo:
             logger.info(f"📋 Demo report saved: {report_file}")
 
         except Exception as e:
-            logger.error(f"❌ Demo report generation failed: {str(e)}")
+            logger.error(f"❌ Demo report generation failed: {e!s}")
 
     def _print_demo_summary(self, overall_success: bool):
         """Print comprehensive demo summary."""
@@ -529,13 +528,13 @@ class ACGSTestDemo:
         else:
             logger.warning("⚠️ Demo completed with some issues")
 
-        logger.info(f"📊 Test Results:")
+        logger.info("📊 Test Results:")
         logger.info(f"  Total Tests: {summary.get('total_tests', 0)}")
         logger.info(f"  Successful: {summary.get('successful_tests', 0)}")
         logger.info(f"  Success Rate: {summary.get('success_rate', 0):.1%}")
         logger.info(f"  Duration: {summary.get('total_duration_seconds', 0):.2f}s")
 
-        logger.info(f"🎯 Key Validations:")
+        logger.info("🎯 Key Validations:")
         logger.info(
             f"  Performance: {'✅ PASS' if summary.get('performance_pass') else '❌ FAIL'}"
         )

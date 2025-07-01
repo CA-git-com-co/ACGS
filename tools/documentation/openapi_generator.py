@@ -16,28 +16,26 @@ Features:
 - CI/CD pipeline integration support
 """
 
-import os
-import sys
-import json
-import yaml
-import asyncio
-import importlib
-import inspect
-from pathlib import Path
-from typing import Dict, List, Any, Optional, Union
-from datetime import datetime
 import argparse
+import importlib
+import json
 import logging
+import sys
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+import yaml
 
 # Add project root to path for imports
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 try:
+    import uvicorn
     from fastapi import FastAPI
     from fastapi.openapi.utils import get_openapi
     from fastapi.routing import APIRoute
-    import uvicorn
 
     FASTAPI_AVAILABLE = True
 except ImportError:
@@ -46,9 +44,9 @@ except ImportError:
 
 try:
     from services.shared.errors.error_catalog import (
+        ServiceCode,
         export_error_catalog,
         get_service_errors,
-        ServiceCode,
     )
     from services.shared.response.unified_response import UnifiedResponse
 
@@ -369,7 +367,7 @@ class OpenAPIGenerator:
         except Exception as e:
             logger.warning(f"Could not load error responses: {e}")
 
-    def discover_fastapi_app(self, service_key: str) -> Optional[FastAPI]:
+    def discover_fastapi_app(self, service_key: str) -> FastAPI | None:
         """Discover and load FastAPI application for a service."""
         if not FASTAPI_AVAILABLE:
             logger.error("FastAPI not available")
@@ -388,11 +386,10 @@ class OpenAPIGenerator:
             if isinstance(app, FastAPI):
                 logger.info(f"Successfully loaded FastAPI app for {config['name']}")
                 return app
-            else:
-                logger.error(
-                    f"Found {config['app_variable']} but it's not a FastAPI instance"
-                )
-                return None
+            logger.error(
+                f"Found {config['app_variable']} but it's not a FastAPI instance"
+            )
+            return None
 
         except ImportError as e:
             logger.warning(f"Could not import {config['module_path']}: {e}")
@@ -432,7 +429,7 @@ class OpenAPIGenerator:
         return app
 
     def _add_common_endpoints(
-        self, app: FastAPI, service_key: str, config: Dict[str, Any]
+        self, app: FastAPI, service_key: str, config: dict[str, Any]
     ):
         """Add common endpoints to mock FastAPI app."""
 
@@ -688,7 +685,7 @@ class OpenAPIGenerator:
 
     def generate_openapi_spec(
         self, service_key: str, use_mock: bool = False
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate OpenAPI 3.0 specification for a service."""
 
         config = self.service_configs.get(service_key)
@@ -719,7 +716,7 @@ class OpenAPIGenerator:
         return openapi_spec
 
     def _enhance_openapi_spec(
-        self, spec: Dict[str, Any], service_key: str, config: Dict[str, Any]
+        self, spec: dict[str, Any], service_key: str, config: dict[str, Any]
     ):
         """Enhance OpenAPI specification with ACGS-specific features."""
 
@@ -804,7 +801,7 @@ class OpenAPIGenerator:
             ]
         )
 
-    def _enhance_paths(self, spec: Dict[str, Any], service_key: str):
+    def _enhance_paths(self, spec: dict[str, Any], service_key: str):
         """Enhance API paths with unified responses and error handling."""
 
         if "paths" not in spec:
@@ -815,7 +812,7 @@ class OpenAPIGenerator:
                 if method.lower() in ["get", "post", "put", "patch", "delete"]:
                     self._enhance_operation(operation, service_key)
 
-    def _enhance_operation(self, operation: Dict[str, Any], service_key: str):
+    def _enhance_operation(self, operation: dict[str, Any], service_key: str):
         """Enhance individual operation with unified responses."""
 
         # Ensure responses section exists
@@ -886,7 +883,7 @@ class OpenAPIGenerator:
                 }
             )
 
-    def generate_all_specs(self, use_mock: bool = False) -> Dict[str, Dict[str, Any]]:
+    def generate_all_specs(self, use_mock: bool = False) -> dict[str, dict[str, Any]]:
         """Generate OpenAPI specifications for all services."""
 
         specs = {}
@@ -906,8 +903,8 @@ class OpenAPIGenerator:
     def save_spec(
         self,
         service_key: str,
-        spec: Dict[str, Any],
-        formats: List[str] = ["json", "yaml"],
+        spec: dict[str, Any],
+        formats: list[str] = ["json", "yaml"],
     ):
         """Save OpenAPI specification in multiple formats."""
 
@@ -932,7 +929,7 @@ class OpenAPIGenerator:
         if "html" in formats:
             self._generate_html_docs(service_key, spec)
 
-    def _generate_html_docs(self, service_key: str, spec: Dict[str, Any]):
+    def _generate_html_docs(self, service_key: str, spec: dict[str, Any]):
         """Generate HTML documentation using Swagger UI."""
 
         config = self.service_configs[service_key]
@@ -942,7 +939,7 @@ class OpenAPIGenerator:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{config['name']} API Documentation</title>
+    <title>{config["name"]} API Documentation</title>
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@4.15.5/swagger-ui.css" />
     <style>
         html {{
@@ -1006,8 +1003,8 @@ class OpenAPIGenerator:
         logger.info(f"Generated HTML docs: {html_path}")
 
     def generate_combined_spec(
-        self, specs: Dict[str, Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, specs: dict[str, dict[str, Any]]
+    ) -> dict[str, Any]:
         """Generate combined OpenAPI specification for all services."""
 
         combined_spec = {

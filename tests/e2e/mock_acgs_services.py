@@ -17,14 +17,11 @@ Usage:
 """
 
 import asyncio
-import json
 import logging
 import time
 from datetime import datetime, timezone
-from typing import Dict, Any
 
-from aiohttp import web, ClientSession
-import aiohttp
+from aiohttp import web
 
 # Configure logging
 logging.basicConfig(
@@ -183,7 +180,7 @@ class MockACGSServices:
                     }
                 )
 
-            elif request.method == "POST":
+            if request.method == "POST":
                 data = await request.json()
 
                 # Simulate processing time

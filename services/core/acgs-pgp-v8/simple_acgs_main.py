@@ -4,14 +4,13 @@ Simple ACGS-PGP v8 Service for ACGS-1
 Simplified version without complex dependencies for Phase 1 completion
 """
 
+import hashlib
 import logging
 import time
-import hashlib
-import json
 from datetime import datetime
-from fastapi import FastAPI, Request, status, HTTPException
+
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 
 # Configure logging
 logging.basicConfig(

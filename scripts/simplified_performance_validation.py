@@ -16,7 +16,7 @@ import statistics
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 import aiohttp
 
@@ -56,7 +56,7 @@ class SimplifiedPerformanceValidator:
         self.results = {}
         self.start_time = time.time()
 
-    async def validate_service_health(self) -> Dict[str, Any]:
+    async def validate_service_health(self) -> dict[str, Any]:
         """Validate all services are healthy and measure response times."""
         logger.info("🏥 Validating Service Health...")
 
@@ -91,7 +91,7 @@ class SimplifiedPerformanceValidator:
 
                 except Exception as e:
                     service_details[service["name"]] = {
-                        "status": f"❌ Error: {str(e)}",
+                        "status": f"❌ Error: {e!s}",
                         "response_time_ms": 5000,  # Timeout
                         "port": service["port"],
                     }
@@ -119,7 +119,7 @@ class SimplifiedPerformanceValidator:
         )
         return result
 
-    async def test_concurrent_load(self) -> Dict[str, Any]:
+    async def test_concurrent_load(self) -> dict[str, Any]:
         """Test concurrent load on services."""
         logger.info(
             f"🚀 Testing Concurrent Load ({PERFORMANCE_TARGETS['concurrent_users']} users)..."
@@ -143,8 +143,7 @@ class SimplifiedPerformanceValidator:
 
                     if response.status == 200:
                         return True
-                    else:
-                        return False
+                    return False
 
             except Exception:
                 response_times.append(10000)  # Timeout
@@ -204,7 +203,7 @@ class SimplifiedPerformanceValidator:
         )
         return result
 
-    async def test_cache_performance(self) -> Dict[str, Any]:
+    async def test_cache_performance(self) -> dict[str, Any]:
         """Test cache performance using the multi-level cache test."""
         logger.info("💾 Testing Cache Performance...")
 
@@ -215,6 +214,7 @@ class SimplifiedPerformanceValidator:
 
             result = subprocess.run(
                 [sys.executable, "scripts/test_multi_level_cache.py"],
+                check=False,
                 capture_output=True,
                 text=True,
                 cwd="/home/ubuntu/ACGS",
@@ -248,20 +248,19 @@ class SimplifiedPerformanceValidator:
                     f"✅ Cache Performance - {cache_hit_rate}% hit rate, {avg_response_time}ms avg response"
                 )
                 return cache_result
-            else:
-                logger.warning(f"⚠️ Cache test issues: {result.stderr}")
-                return {
-                    "cache_hit_rate_percent": 0,
-                    "avg_response_time_ms": 9999,
-                    "compliance_rate_percent": 0,
-                    "test_passed": False,
-                    "error": result.stderr,
-                    "meets_targets": {
-                        "cache_hit_rate": False,
-                        "response_time": False,
-                        "compliance_rate": False,
-                    },
-                }
+            logger.warning(f"⚠️ Cache test issues: {result.stderr}")
+            return {
+                "cache_hit_rate_percent": 0,
+                "avg_response_time_ms": 9999,
+                "compliance_rate_percent": 0,
+                "test_passed": False,
+                "error": result.stderr,
+                "meets_targets": {
+                    "cache_hit_rate": False,
+                    "response_time": False,
+                    "compliance_rate": False,
+                },
+            }
 
         except Exception as e:
             logger.error(f"❌ Cache testing failed: {e}")
@@ -278,7 +277,7 @@ class SimplifiedPerformanceValidator:
                 },
             }
 
-    async def run_validation(self) -> Dict[str, Any]:
+    async def run_validation(self) -> dict[str, Any]:
         """Run complete performance validation."""
         logger.info("🚀 Starting Simplified ACGS-PGP Performance Validation")
         logger.info("=" * 60)
@@ -345,7 +344,7 @@ class SimplifiedPerformanceValidator:
 
         return overall_result
 
-    def print_report(self, results: Dict[str, Any]):
+    def print_report(self, results: dict[str, Any]):
         """Print formatted performance report."""
         print("\n" + "=" * 60)
         print("SIMPLIFIED ACGS-PGP PERFORMANCE VALIDATION SUMMARY")
@@ -400,7 +399,7 @@ async def main():
         json.dump(results, f, indent=2)
 
     print(
-        f"\n📄 Detailed report saved to: reports/simplified_performance_validation.json"
+        "\n📄 Detailed report saved to: reports/simplified_performance_validation.json"
     )
 
     # Return appropriate exit code

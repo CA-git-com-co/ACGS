@@ -12,19 +12,13 @@ Streamlit-based dashboard for real-time monitoring of ACGS platform:
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import streamlit as st
-import pandas as pd
-import numpy as np
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import asyncio
-import aiohttp
-import json
-from datetime import datetime, timedelta
-import time
 import sys
-import os
+import time
+from datetime import datetime
+
+import numpy as np
+import plotly.graph_objects as go
+import streamlit as st
 
 # Add ACGS modules to path
 sys.path.append("../services/core/acgs-pgp-v8")
@@ -241,7 +235,7 @@ def create_system_overview_metrics(metrics):
     with col1:
         st.metric(
             label="System Availability",
-            value=f"{(healthy_services/total_services)*100:.1f}%",
+            value=f"{(healthy_services / total_services) * 100:.1f}%",
             delta=f"{healthy_services}/{total_services} services healthy",
         )
 
@@ -469,7 +463,7 @@ def main():
                 # Footer
                 st.markdown("---")
                 st.markdown(f"**Last Updated**: {metrics['timestamp']}")
-                st.markdown(f"**Dashboard Version**: ACGS-PGP v8")
+                st.markdown("**Dashboard Version**: ACGS-PGP v8")
                 st.markdown(f"**Constitutional Hash**: `{CONSTITUTIONAL_HASH}`")
 
             # Wait before next refresh

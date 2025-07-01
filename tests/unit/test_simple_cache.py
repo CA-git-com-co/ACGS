@@ -180,7 +180,7 @@ def test_service_health():
                         "status_code": response.status,
                     }
         except Exception as e:
-            print(f"   ❌ {service_name} (port {port}): Not responding ({str(e)})")
+            print(f"   ❌ {service_name} (port {port}): Not responding ({e!s})")
             service_results[service_name] = {"healthy": False, "error": str(e)}
 
     print(
@@ -293,9 +293,8 @@ def main():
     if results.get("overall_score", {}).get("percentage", 0) >= 75:
         print("✅ Performance targets met - Advanced caching is operational")
         return 0
-    else:
-        print("⚠️  Some performance targets not met - Review and optimize")
-        return 1
+    print("⚠️  Some performance targets not met - Review and optimize")
+    return 1
 
 
 if __name__ == "__main__":

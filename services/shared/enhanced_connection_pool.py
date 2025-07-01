@@ -6,13 +6,13 @@ Optimized connection pooling for ACGS services to improve throughput and scalabi
 Addresses the AC service throughput issue (643 RPS vs 1000 RPS target).
 """
 
-import asyncio
 import logging
 import time
-from typing import Dict, Any, Optional, AsyncGenerator
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-import asyncpg
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+from typing import Any
+
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import QueuePool
 
 logger = logging.getLogger(__name__)
@@ -124,7 +124,7 @@ class EnhancedConnectionPool:
             if duration > 1.0:  # Log slow queries
                 logger.warning(f"Slow database operation: {duration:.2f}s")
 
-    async def get_connection_stats(self) -> Dict[str, Any]:
+    async def get_connection_stats(self) -> dict[str, Any]:
         """Get connection pool statistics."""
         pool_stats = {}
 
@@ -151,7 +151,7 @@ class EnhancedConnectionPool:
             ),
         }
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Perform health check on the connection pool."""
         try:
             async with self.get_session() as session:
@@ -185,7 +185,7 @@ class ConnectionPoolManager:
     Global connection pool manager for ACGS services.
     """
 
-    _pools: Dict[str, EnhancedConnectionPool] = {}
+    _pools: dict[str, EnhancedConnectionPool] = {}
 
     @classmethod
     async def get_pool(
@@ -210,7 +210,7 @@ class ConnectionPoolManager:
         cls._pools.clear()
 
     @classmethod
-    async def get_all_stats(cls) -> Dict[str, Any]:
+    async def get_all_stats(cls) -> dict[str, Any]:
         """Get statistics for all connection pools."""
         stats = {}
 
@@ -292,8 +292,8 @@ async def setup_optimized_pool(
 
 # Export key components
 __all__ = [
-    "EnhancedConnectionPool",
-    "ConnectionPoolManager",
-    "setup_optimized_pool",
     "SERVICE_POOL_CONFIGS",
+    "ConnectionPoolManager",
+    "EnhancedConnectionPool",
+    "setup_optimized_pool",
 ]

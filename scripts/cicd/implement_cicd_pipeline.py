@@ -10,14 +10,15 @@ Implements comprehensive CI/CD pipeline including:
 Target: Code changes deploy to staging within 10 minutes
 """
 
+import json
+import logging
 import os
 import sys
-import logging
-import json
 import time
-import yaml
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
+
+import yaml
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -63,7 +64,7 @@ class CICDPipelineImplementor:
             },
         }
 
-    def implement_cicd_pipeline(self) -> Dict[str, Any]:
+    def implement_cicd_pipeline(self) -> dict[str, Any]:
         """Implement complete CI/CD pipeline."""
         logger.info("🚀 Implementing CI/CD pipeline...")
 
@@ -127,7 +128,7 @@ class CICDPipelineImplementor:
 
         logger.info("✅ CI/CD structure created")
 
-    def _implement_testing_pipeline(self) -> Dict[str, Any]:
+    def _implement_testing_pipeline(self) -> dict[str, Any]:
         """Implement automated testing pipeline."""
         logger.info("🧪 Implementing testing pipeline...")
 
@@ -243,7 +244,7 @@ class CICDPipelineImplementor:
             logger.error(f"Testing pipeline implementation failed: {e}")
             raise
 
-    def _implement_deployment_pipeline(self) -> Dict[str, Any]:
+    def _implement_deployment_pipeline(self) -> dict[str, Any]:
         """Implement automated deployment pipeline."""
         logger.info("🚀 Implementing deployment pipeline...")
 
@@ -396,7 +397,7 @@ class CICDPipelineImplementor:
             logger.error(f"Deployment pipeline implementation failed: {e}")
             raise
 
-    def _implement_quality_gates(self) -> Dict[str, Any]:
+    def _implement_quality_gates(self) -> dict[str, Any]:
         """Implement quality gates for deployment prevention."""
         logger.info("🚪 Implementing quality gates...")
 
@@ -468,7 +469,7 @@ class CICDPipelineImplementor:
             logger.error(f"Quality gates implementation failed: {e}")
             raise
 
-    def _create_deployment_scripts(self) -> Dict[str, Any]:
+    def _create_deployment_scripts(self) -> dict[str, Any]:
         """Create deployment and rollback scripts."""
         logger.info("📜 Creating deployment scripts...")
 
@@ -603,7 +604,7 @@ echo "✅ All health checks passed"
             scripts_created += 1
 
             # Rollback script
-            rollback_script = """#!/bin/bash
+            rollback_script = r"""#!/bin/bash
 set -e
 
 ENVIRONMENT=${1:-staging}
@@ -673,7 +674,7 @@ echo "✅ Rollback script completed"
             logger.error(f"Deployment scripts creation failed: {e}")
             raise
 
-    def _create_cicd_monitoring(self) -> Dict[str, Any]:
+    def _create_cicd_monitoring(self) -> dict[str, Any]:
         """Create CI/CD monitoring and alerting."""
         logger.info("📊 Creating CI/CD monitoring...")
 
@@ -720,7 +721,7 @@ echo "✅ Rollback script completed"
             logger.error(f"CI/CD monitoring creation failed: {e}")
             raise
 
-    def _generate_pipeline_report(self, results: Dict[str, Any]):
+    def _generate_pipeline_report(self, results: dict[str, Any]):
         """Generate CI/CD pipeline implementation report."""
         report_path = self.project_root / "cicd_pipeline_implementation_report.json"
 
@@ -823,7 +824,7 @@ def main():
         print("✅ Quality gates with 80% coverage threshold")
         print("✅ Security and performance validation")
 
-        print(f"\n🚀 CI/CD workflows available at: .github/workflows/")
+        print("\n🚀 CI/CD workflows available at: .github/workflows/")
         print("📜 Deployment scripts available at: scripts/cicd/")
     else:
         print("❌ CI/CD pipeline implementation failed!")

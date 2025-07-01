@@ -190,7 +190,7 @@ class SimpleDatabaseOptimizer:
 
             except Exception as e:
                 failed.append({"name": index["name"], "error": str(e)})
-                print(f"   ❌ Failed: {index['name']} - {str(e)}")
+                print(f"   ❌ Failed: {index['name']} - {e!s}")
 
         self.results["phases"]["indexes"] = {
             "status": "completed",
@@ -231,7 +231,7 @@ class SimpleDatabaseOptimizer:
                     print(f"   ✅ Vacuumed: {table_name}")
                 except Exception as e:
                     failed.append({"table": table_name, "error": str(e)})
-                    print(f"   ❌ Failed: {table_name} - {str(e)}")
+                    print(f"   ❌ Failed: {table_name} - {e!s}")
 
             self.results["phases"]["maintenance"] = {
                 "status": "completed",

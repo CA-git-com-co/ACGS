@@ -7,11 +7,10 @@ and specialized loggers for different components.
 
 import logging
 import logging.config
-import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 import yaml
 
@@ -29,9 +28,9 @@ class LogManager:
     def __init__(self):
         self.log_dir = Path("/var/log/dgm-service")
         self.config_loaded = False
-        self._loggers: Dict[str, logging.Logger] = {}
+        self._loggers: dict[str, logging.Logger] = {}
 
-    def setup_logging(self, config_path: Optional[str] = None) -> None:
+    def setup_logging(self, config_path: str | None = None) -> None:
         """
         Set up logging configuration.
 
@@ -51,7 +50,7 @@ class LogManager:
             )
 
         try:
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 config = yaml.safe_load(f)
 
             # Apply environment-specific overrides
@@ -82,7 +81,7 @@ class LogManager:
             logger.info("Using fallback logging configuration")
 
     def _apply_env_overrides(
-        self, base_config: Dict[str, Any], env_config: Dict[str, Any]
+        self, base_config: dict[str, Any], env_config: dict[str, Any]
     ) -> None:
         """Apply environment-specific configuration overrides."""
         if "loggers" in env_config:
@@ -130,7 +129,7 @@ class LogManager:
         logger: logging.Logger,
         level: int,
         message: str,
-        extra: Optional[Dict[str, Any]] = None,
+        extra: dict[str, Any] | None = None,
         **kwargs,
     ) -> None:
         """
@@ -158,7 +157,7 @@ class LogManager:
         improvement_id: str,
         event_type: str,
         message: str,
-        extra: Optional[Dict[str, Any]] = None,
+        extra: dict[str, Any] | None = None,
     ) -> None:
         """Log DGM improvement events."""
         logger = self.get_component_logger("core")
@@ -204,7 +203,7 @@ class LogManager:
         self,
         metric_name: str,
         metric_value: float,
-        threshold: Optional[float] = None,
+        threshold: float | None = None,
         message: str = "",
     ) -> None:
         """Log performance events."""
@@ -228,9 +227,9 @@ class LogManager:
         event_type: str,
         severity: str,
         message: str,
-        user_id: Optional[str] = None,
-        resource_id: Optional[str] = None,
-        extra: Optional[Dict[str, Any]] = None,
+        user_id: str | None = None,
+        resource_id: str | None = None,
+        extra: dict[str, Any] | None = None,
     ) -> None:
         """Log security events."""
         logger = self.get_component_logger("security")
@@ -256,7 +255,7 @@ class LogManager:
         status_code: int,
         duration_ms: float,
         request_id: str,
-        user_id: Optional[str] = None,
+        user_id: str | None = None,
     ) -> None:
         """Log API requests."""
         logger = self.get_component_logger("api")
@@ -281,8 +280,8 @@ class LogManager:
         operation: str,
         table: str,
         duration_ms: float,
-        rows_affected: Optional[int] = None,
-        error: Optional[str] = None,
+        rows_affected: int | None = None,
+        error: str | None = None,
     ) -> None:
         """Log database operations."""
         logger = self.get_component_logger("database")
@@ -344,6 +343,6 @@ def get_component_logger(component: str) -> logging.Logger:
     return log_manager.get_component_logger(component)
 
 
-def setup_logging(config_path: Optional[str] = None) -> None:
+def setup_logging(config_path: str | None = None) -> None:
     """Set up logging configuration."""
     log_manager.setup_logging(config_path)

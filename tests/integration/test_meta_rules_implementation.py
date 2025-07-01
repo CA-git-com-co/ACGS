@@ -67,9 +67,8 @@ class ACGSTestClient:
             if response.status_code == 200:
                 print("✅ Health endpoint working")
                 return True
-            else:
-                print(f"❌ Health endpoint failed: {response.status_code}")
-                return False
+            print(f"❌ Health endpoint failed: {response.status_code}")
+            return False
         except Exception as e:
             print(f"❌ Health endpoint error: {e}")
             return False
@@ -87,12 +86,11 @@ class ACGSTestClient:
                     f"✅ Meta-rules list endpoint working (found {len(meta_rules)} rules)"
                 )
                 return True
-            elif response.status_code == 401:
+            if response.status_code == 401:
                 print("⚠️  Meta-rules list requires authentication (expected)")
                 return True  # This is expected behavior
-            else:
-                print(f"❌ Meta-rules list failed: {response.status_code}")
-                return False
+            print(f"❌ Meta-rules list failed: {response.status_code}")
+            return False
         except Exception as e:
             print(f"❌ Meta-rules list error: {e}")
             return False
@@ -132,10 +130,9 @@ class ACGSTestClient:
                     f"✅ Meta-rule creation successful (ID: {created_rule.get('id')})"
                 )
                 return created_rule
-            else:
-                print(f"❌ Meta-rule creation failed: {response.status_code}")
-                print(f"   Response: {response.text}")
-                return None
+            print(f"❌ Meta-rule creation failed: {response.status_code}")
+            print(f"   Response: {response.text}")
+            return None
         except Exception as e:
             print(f"❌ Meta-rule creation error: {e}")
             return None
@@ -154,12 +151,11 @@ class ACGSTestClient:
                     f"✅ Conflict resolutions list endpoint working (found {len(conflicts)} conflicts)"
                 )
                 return True
-            elif response.status_code == 401:
+            if response.status_code == 401:
                 print("⚠️  Conflict resolutions list requires authentication (expected)")
                 return True
-            else:
-                print(f"❌ Conflict resolutions list failed: {response.status_code}")
-                return False
+            print(f"❌ Conflict resolutions list failed: {response.status_code}")
+            return False
         except Exception as e:
             print(f"❌ Conflict resolutions list error: {e}")
             return False
@@ -177,12 +173,11 @@ class ACGSTestClient:
                     f"✅ Amendments list endpoint working (found {len(amendments)} amendments)"
                 )
                 return True
-            elif response.status_code == 401:
+            if response.status_code == 401:
                 print("⚠️  Amendments list requires authentication (expected)")
                 return True
-            else:
-                print(f"❌ Amendments list failed: {response.status_code}")
-                return False
+            print(f"❌ Amendments list failed: {response.status_code}")
+            return False
         except Exception as e:
             print(f"❌ Amendments list error: {e}")
             return False

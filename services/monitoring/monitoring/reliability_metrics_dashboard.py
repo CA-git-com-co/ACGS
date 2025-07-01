@@ -603,12 +603,11 @@ class ReliabilityMetricsDashboard:
 
         if overall_reliability >= 0.995:
             return "healthy"
-        elif overall_reliability >= 0.990:
+        if overall_reliability >= 0.990:
             return "warning"
-        elif overall_reliability >= 0.980:
+        if overall_reliability >= 0.980:
             return "degraded"
-        else:
-            return "critical"
+        return "critical"
 
     async def _analyze_trends(self):
         # requires: Valid input parameters
@@ -729,12 +728,11 @@ class ReliabilityMetricsDashboard:
 
         if value < target * 0.90:
             return "critical"
-        elif value < target * 0.95:
+        if value < target * 0.95:
             return "error"
-        elif value < target * 0.98:
+        if value < target * 0.98:
             return "warning"
-        else:
-            return "info"
+        return "info"
 
     async def _cleanup_old_data(self):
         # requires: Valid input parameters

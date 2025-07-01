@@ -13,13 +13,14 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio
-import logging
 import json
+import logging
 import signal
-from datetime import datetime
-from typing import Dict, List, Any, Optional, Callable, Union
-from dataclasses import dataclass, asdict
 import warnings
+from collections.abc import Callable
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from typing import Any
 
 warnings.filterwarnings("ignore")
 
@@ -45,11 +46,11 @@ class ACGSEvent:
     timestamp: str
     constitutional_hash: str
     source_service: str
-    target_service: Optional[str]
+    target_service: str | None
     event_id: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     priority: str = "NORMAL"  # LOW, NORMAL, HIGH, CRITICAL
-    correlation_id: Optional[str] = None
+    correlation_id: str | None = None
 
 
 class NATSEventBroker:
@@ -63,9 +64,9 @@ class NATSEventBroker:
         self.constitutional_hash = "cdd01ef066bc6cf2"
         self.nats_url = nats_url
         self.cluster_name = cluster_name
-        self.nats_client: Optional[NATS] = None
-        self.subscriptions: Dict[str, Subscription] = {}
-        self.event_handlers: Dict[str, List[Callable]] = {}
+        self.nats_client: NATS | None = None
+        self.subscriptions: dict[str, Subscription] = {}
+        self.event_handlers: dict[str, list[Callable]] = {}
         self.running = False
 
         # ACGS event subjects
@@ -88,7 +89,7 @@ class NATSEventBroker:
             "configuration_change": "acgs.system.config.*",
         }
 
-        logger.info(f"NATS Event Broker initialized")
+        logger.info("NATS Event Broker initialized")
         logger.info(f"Constitutional hash: {self.constitutional_hash}")
         logger.info(f"NATS URL: {self.nats_url}")
 
@@ -140,8 +141,8 @@ class NATSEventBroker:
     async def publish_event(
         self,
         subject: str,
-        event: Union[ACGSEvent, Dict[str, Any]],
-        reply_to: Optional[str] = None,
+        event: ACGSEvent | dict[str, Any],
+        reply_to: str | None = None,
     ) -> bool:
         """Publish event to NATS subject."""
         if not self.nats_client:
@@ -168,7 +169,7 @@ class NATSEventBroker:
             return False
 
     async def subscribe_to_subject(
-        self, subject: str, handler: Callable, queue_group: Optional[str] = None
+        self, subject: str, handler: Callable, queue_group: str | None = None
     ) -> bool:
         """Subscribe to NATS subject with event handler."""
         if not self.nats_client:
@@ -188,7 +189,7 @@ class NATSEventBroker:
                             event_data["constitutional_hash"]
                             != self.constitutional_hash
                         ):
-                            logger.warning(f"⚠️ Constitutional hash mismatch in event")
+                            logger.warning("⚠️ Constitutional hash mismatch in event")
                             return
 
                     # Call handler
@@ -218,8 +219,8 @@ class NATSEventBroker:
             return False
 
     async def request_response(
-        self, subject: str, request_data: Dict[str, Any], timeout: float = 5.0
-    ) -> Optional[Dict[str, Any]]:
+        self, subject: str, request_data: dict[str, Any], timeout: float = 5.0
+    ) -> dict[str, Any] | None:
         """Send request and wait for response."""
         if not self.nats_client:
             logger.error("❌ Not connected to NATS")
@@ -293,7 +294,7 @@ class NATSEventBroker:
         logger.info("✅ ACGS event handlers configured")
 
     # Standard ACGS Event Handlers
-    async def _handle_quality_alert(self, event_data: Dict[str, Any], msg):
+    async def _handle_quality_alert(self, event_data: dict[str, Any], msg):
         """Handle data quality alert events."""
         logger.warning(f"🚨 QUALITY ALERT: {event_data.get('service_id', 'unknown')}")
         logger.warning(f"   Score: {event_data.get('quality_score', 0):.3f}")
@@ -301,13 +302,13 @@ class NATSEventBroker:
 
         # In production: trigger quality remediation workflows
 
-    async def _handle_drift_detected(self, event_data: Dict[str, Any], msg):
+    async def _handle_drift_detected(self, event_data: dict[str, Any], msg):
         """Handle drift detection events."""
         logger.warning(f"📊 DRIFT DETECTED: {event_data.get('model_id', 'unknown')}")
         logger.warning(f"   Features: {len(event_data.get('features_with_drift', []))}")
         logger.warning(f"   Severity: {event_data.get('drift_severity', 'UNKNOWN')}")
 
-    async def _handle_retraining_required(self, event_data: Dict[str, Any], msg):
+    async def _handle_retraining_required(self, event_data: dict[str, Any], msg):
         """Handle model retraining requirement events."""
         logger.critical(
             f"🔄 RETRAINING REQUIRED: {event_data.get('model_id', 'unknown')}"
@@ -316,7 +317,7 @@ class NATSEventBroker:
 
         # In production: trigger model retraining pipeline
 
-    async def _handle_compliance_violation(self, event_data: Dict[str, Any], msg):
+    async def _handle_compliance_violation(self, event_data: dict[str, Any], msg):
         """Handle constitutional compliance violation events."""
         logger.critical(
             f"⚖️ COMPLIANCE VIOLATION: {event_data.get('service_id', 'unknown')}"
@@ -326,7 +327,7 @@ class NATSEventBroker:
 
         # In production: trigger compliance remediation
 
-    async def _handle_performance_alert(self, event_data: Dict[str, Any], msg):
+    async def _handle_performance_alert(self, event_data: dict[str, Any], msg):
         """Handle performance alert events."""
         logger.warning(
             f"⚡ PERFORMANCE ALERT: {event_data.get('service_id', 'unknown')}"
@@ -334,7 +335,7 @@ class NATSEventBroker:
         logger.warning(f"   Metric: {event_data.get('metric', 'unknown')}")
         logger.warning(f"   Value: {event_data.get('value', 'unknown')}")
 
-    async def _handle_service_health(self, event_data: Dict[str, Any], msg):
+    async def _handle_service_health(self, event_data: dict[str, Any], msg):
         """Handle service health events."""
         service_id = event_data.get("service_id", "unknown")
         status = event_data.get("status", "unknown")

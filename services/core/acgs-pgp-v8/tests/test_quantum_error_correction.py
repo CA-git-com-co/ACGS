@@ -5,9 +5,10 @@ Comprehensive tests for the quantum-inspired error correction system
 including stabilizer codes, error detection, and correction algorithms.
 """
 
-import pytest
+from unittest.mock import patch
+
 import numpy as np
-from unittest.mock import patch, MagicMock
+import pytest
 
 from services.core.acgs_pgp_v8.src.quantum.qec_engine import (
     QuantumErrorCorrectionEngine,

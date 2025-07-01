@@ -350,7 +350,7 @@ class WINAModelIntegrator:
                 logger.debug(
                     f"Transformed layer {layer_name}: "
                     f"compression_ratio={transformation_result.compression_ratio:.3f}, "
-                    f"gflops_reduction={(1 - optimized_gflops/original_gflops):.3f}"
+                    f"gflops_reduction={(1 - optimized_gflops / original_gflops):.3f}"
                 )
 
             # Calculate overall metrics

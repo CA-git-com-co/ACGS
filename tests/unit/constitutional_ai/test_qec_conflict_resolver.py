@@ -2,13 +2,8 @@
 Unit tests for services.core.constitutional-ai.ac_service.app.services.qec_conflict_resolver
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.constitutional_ai.ac_service.app.services.qec_conflict_resolver import (
-    ConflictAnalysis,
-    PatchResult,
     QECConflictResolver,
-    ConstitutionalPrinciple,
 )
 
 

@@ -9,12 +9,11 @@ It runs as a separate process and responds to health check requests.
 import argparse
 import http.server
 import logging
-import os
 import socketserver
 import sys
 import threading
 import time
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -29,9 +28,9 @@ class HealthState:
     def __init__(self):
         self.healthy = False
         self.last_update = time.time()
-        self.info: Dict[str, Any] = {"status": "initializing"}
+        self.info: dict[str, Any] = {"status": "initializing"}
 
-    def set_healthy(self, info: Optional[Dict[str, Any]] = None):
+    def set_healthy(self, info: dict[str, Any] | None = None):
         """Mark the service as healthy."""
         self.healthy = True
         self.last_update = time.time()
@@ -45,7 +44,7 @@ class HealthState:
         self.info = {"status": "unhealthy", "reason": reason}
         logger.warning(f"Service marked as unhealthy: {reason}")
 
-    def get_status(self) -> Tuple[bool, Dict[str, Any]]:
+    def get_status(self) -> tuple[bool, dict[str, Any]]:
         """Get the current health status."""
         # If we haven't received an update in a while, consider the service unhealthy
         if time.time() - self.last_update > 60:  # 60 seconds timeout
@@ -133,7 +132,7 @@ class HealthCheckHandler(http.server.BaseHTTPRequestHandler):
                 self.send_response(400)
                 self.send_header("Content-type", "text/plain")
                 self.end_headers()
-                self.wfile.write(f"Invalid request: {str(e)}".encode())
+                self.wfile.write(f"Invalid request: {e!s}".encode())
         else:
             self.send_response(404)
             self.send_header("Content-type", "text/plain")
@@ -142,7 +141,7 @@ class HealthCheckHandler(http.server.BaseHTTPRequestHandler):
 
     def log_message(self, format, *args):
         """Override log_message to use our logger."""
-        logger.debug(f"{self.client_address[0]} - {format%args}")
+        logger.debug(f"{self.client_address[0]} - {format % args}")
 
 
 def run_health_server(port: int, host: str = "0.0.0.0"):
@@ -228,7 +227,7 @@ def monitor_vllm_health(vllm_host: str, vllm_port: int, check_interval: int = 30
                 health_state.set_unhealthy("vLLM service is not responding")
         except Exception as e:
             logger.error(f"Error in health monitor: {e}")
-            health_state.set_unhealthy(f"Health monitor error: {str(e)}")
+            health_state.set_unhealthy(f"Health monitor error: {e!s}")
 
         # Sleep for the check interval
         time.sleep(check_interval)

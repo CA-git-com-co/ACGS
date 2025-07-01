@@ -3,9 +3,7 @@ API endpoint tests for api
 """
 
 import pytest
-import httpx
 from fastapi.testclient import TestClient
-from unittest.mock import AsyncMock, patch
 
 
 class TestAPIEndpoints:

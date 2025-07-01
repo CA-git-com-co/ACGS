@@ -4,12 +4,11 @@ GitHub Actions Workflow Validation Summary
 Validates all workflow fixes and provides status report.
 """
 
-import yaml
 import json
-import glob
-import os
 from datetime import datetime
 from pathlib import Path
+
+import yaml
 
 
 def validate_workflows():
@@ -39,7 +38,7 @@ def validate_workflows():
         results["total_workflows"] += 1
 
         try:
-            with open(workflow_file, "r") as f:
+            with open(workflow_file) as f:
                 workflow_data = yaml.safe_load(f)
 
             # Basic validation checks
@@ -112,7 +111,7 @@ def validate_workflows():
                     "file": workflow_name,
                     "status": "invalid",
                     "name": "Parse error",
-                    "issues": [f"YAML parse error: {str(e)}"],
+                    "issues": [f"YAML parse error: {e!s}"],
                     "improvements": [],
                 }
             )
@@ -123,7 +122,7 @@ def validate_workflows():
                     "file": workflow_name,
                     "status": "invalid",
                     "name": "Unknown error",
-                    "issues": [f"Validation error: {str(e)}"],
+                    "issues": [f"Validation error: {e!s}"],
                     "improvements": [],
                 }
             )
@@ -144,10 +143,10 @@ def create_summary_report(results):
     report = f"""
 # GitHub Actions Workflow Validation Summary
 
-**Validation Date:** {results['validation_timestamp']}
-**Total Workflows:** {results['total_workflows']}
-**Valid Workflows:** {results['valid_workflows']}
-**Success Rate:** {results['success_rate']:.1f}%
+**Validation Date:** {results["validation_timestamp"]}
+**Total Workflows:** {results["total_workflows"]}
+**Valid Workflows:** {results["valid_workflows"]}
+**Success Rate:** {results["success_rate"]:.1f}%
 
 ## Fixes Applied:
 
@@ -156,7 +155,7 @@ def create_summary_report(results):
     for fix in results["fixes_applied"]:
         report += f"- ✅ {fix}\n"
 
-    report += f"""
+    report += """
 
 ## Fixed Workflows:
 
@@ -165,7 +164,7 @@ def create_summary_report(results):
     for workflow in results["fixed_workflows"]:
         report += f"- ✅ {workflow}\n"
 
-    report += f"""
+    report += """
 
 ## Workflow Status Details:
 
@@ -185,7 +184,7 @@ def create_summary_report(results):
 
         report += "\n"
 
-    report += f"""
+    report += """
 ## Summary:
 
 The systematic workflow fixes have addressed all the identified failed workflows:
@@ -219,10 +218,10 @@ if __name__ == "__main__":
         f.write(summary_report)
 
     # Print summary
-    print(f"✅ Validation completed!")
+    print("✅ Validation completed!")
     print(
         f"📊 {validation_results['valid_workflows']}/{validation_results['total_workflows']} workflows valid ({validation_results['success_rate']:.1f}%)"
     )
     print(f"🔧 {len(validation_results['fixed_workflows'])} workflows fixed")
-    print(f"📋 Detailed results saved to workflow_validation_results.json")
-    print(f"📄 Summary report saved to workflow_validation_summary.md")
+    print("📋 Detailed results saved to workflow_validation_results.json")
+    print("📄 Summary report saved to workflow_validation_summary.md")

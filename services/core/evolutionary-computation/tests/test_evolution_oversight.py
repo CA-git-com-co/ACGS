@@ -13,14 +13,9 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio
-import json
-import pytest
-import uuid
-from datetime import datetime, timezone
-from typing import Dict, Any
 
 import httpx
-import asyncpg
+import pytest
 
 # Test configuration
 TEST_BASE_URL = "http://localhost:8004"
@@ -318,7 +313,7 @@ class TestEvolutionOversightService:
 
         # Submit rollback request
         response = await oversight_client.post(
-            f"/api/v1/evolution/fake_evolution_id/rollback",
+            "/api/v1/evolution/fake_evolution_id/rollback",
             params={"reason": "Performance regression detected"},
         )
 

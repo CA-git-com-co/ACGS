@@ -2,19 +2,8 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.core.phase_a3_multi_model_consensus
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.governance_synthesis.gs_service.app.core.phase_a3_multi_model_consensus import (
-    ConsensusStrategy,
-    RedTeamingStrategy,
-    ConstitutionalFidelityMetric,
-    ModelAgreementLevel,
-    ModelResponse,
-    RedTeamingResult,
-    ConstitutionalFidelityScore,
-    ConsensusResult,
     CircuitBreaker,
-    PhaseA3MultiModelConsensus,
 )
 
 

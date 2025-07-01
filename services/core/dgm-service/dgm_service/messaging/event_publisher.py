@@ -6,7 +6,7 @@ subject routing, message formatting, and delivery guarantees.
 """
 
 import logging
-from typing import Any, Dict, Optional
+from typing import Any
 
 from .message_types import (
     DGMEvent,
@@ -38,7 +38,7 @@ class EventPublisher:
         }
 
     async def publish_event(
-        self, event: DGMEvent, headers: Optional[Dict[str, str]] = None
+        self, event: DGMEvent, headers: dict[str, str] | None = None
     ) -> bool:
         """Publish a DGM event to the appropriate NATS subject."""
         try:
@@ -320,6 +320,6 @@ class EventPublisher:
         else:
             self.metrics["events_by_priority"][priority]["failed"] += 1
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get publishing metrics."""
         return self.metrics.copy()

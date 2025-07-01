@@ -4,10 +4,11 @@ Microsoft Phi-4 Reasoning Plus Model Test Script
 Based on official documentation from: https://huggingface.co/microsoft/Phi-4-reasoning-plus
 """
 
-import onnxruntime_genai as og
 import argparse
 import json
 import time
+
+import onnxruntime_genai as og
 
 
 def create_system_prompt():

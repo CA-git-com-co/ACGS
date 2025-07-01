@@ -289,12 +289,10 @@ class OAuthService:
             }
 
         except httpx.HTTPError as e:
-            raise HTTPException(
-                status_code=400, detail=f"OAuth provider error: {str(e)}"
-            )
+            raise HTTPException(status_code=400, detail=f"OAuth provider error: {e!s}")
         except Exception as e:
             raise HTTPException(
-                status_code=500, detail=f"OAuth authentication failed: {str(e)}"
+                status_code=500, detail=f"OAuth authentication failed: {e!s}"
             )
 
 

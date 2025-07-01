@@ -17,14 +17,14 @@ import json
 import logging
 import time
 from collections import defaultdict
+from collections.abc import Callable
 from datetime import datetime
 from functools import wraps
-from typing import Any, Callable, Dict, List, Optional, Set
+from typing import Any
 
 from fastapi import Request, Response
-from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.responses import JSONResponse
-from starlette.middleware.base import RequestResponseEndpoint
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.types import ASGIApp
 
 logger = logging.getLogger(__name__)
@@ -44,8 +44,8 @@ class SecurityConfig:
         self.enable_xss_protection = True
         self.enable_csrf_protection = True
         self.enable_rate_limiting = True
-        self.blocked_ips: Set[str] = set()
-        self.trusted_proxies: Set[str] = {"127.0.0.1", "::1"}
+        self.blocked_ips: set[str] = set()
+        self.trusted_proxies: set[str] = {"127.0.0.1", "::1"}
 
 
 class RateLimiter:
@@ -53,8 +53,8 @@ class RateLimiter:
 
     def __init__(self, config: SecurityConfig):
         self.config = config
-        self.requests: Dict[str, List[float]] = defaultdict(list)
-        self.blocked_until: Dict[str, float] = {}
+        self.requests: dict[str, list[float]] = defaultdict(list)
+        self.blocked_until: dict[str, float] = {}
 
     def is_allowed(self, client_ip: str) -> bool:
         """Check if request is allowed based on rate limiting."""
@@ -64,8 +64,7 @@ class RateLimiter:
         if client_ip in self.blocked_until:
             if current_time < self.blocked_until[client_ip]:
                 return False
-            else:
-                del self.blocked_until[client_ip]
+            del self.blocked_until[client_ip]
 
         # Clean old requests
         cutoff_time = current_time - self.config.rate_limit_window
@@ -127,7 +126,7 @@ class CSRFProtection:
 class SecurityMiddleware(BaseHTTPMiddleware):
     """Comprehensive security middleware for ACGS-1."""
 
-    def __init__(self, app: ASGIApp, config: Optional[SecurityConfig] = None):
+    def __init__(self, app: ASGIApp, config: SecurityConfig | None = None):
         super().__init__(app)
         self.config = config or SecurityConfig()
         self.rate_limiter = RateLimiter(self.config)
@@ -192,7 +191,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
     async def perform_security_checks(
         self, request: Request, client_ip: str
-    ) -> Optional[Response]:
+    ) -> Response | None:
         """Perform comprehensive security checks."""
 
         # Define exempt paths that should bypass security checks
@@ -287,7 +286,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
 
 def create_security_middleware(
-    config: Optional[SecurityConfig] = None,
+    config: SecurityConfig | None = None,
 ) -> SecurityMiddleware:
     """Factory function to create security middleware."""
     return SecurityMiddleware(None, config)
@@ -306,7 +305,7 @@ def require_auth(func: Callable) -> Callable:
     return wrapper
 
 
-def validate_input(schema: Dict[str, Any]) -> Callable:
+def validate_input(schema: dict[str, Any]) -> Callable:
     """Decorator for input validation."""
 
     def decorator(func: Callable) -> Callable:

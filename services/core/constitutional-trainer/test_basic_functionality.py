@@ -4,12 +4,9 @@ Basic Functionality Test for Constitutional Trainer
 Tests core components without external dependencies.
 """
 
-import json
 import sys
 import time
 import traceback
-from dataclasses import dataclass
-from typing import Any, Dict, List, Tuple
 
 
 # Mock external dependencies for testing
@@ -397,7 +394,7 @@ async def run_all_tests():
         print("🎉 ALL TESTS COMPLETED SUCCESSFULLY!")
         print(f"⏱️  Total test time: {end_time - start_time:.2f} seconds")
         print(f"🔒 Constitutional Hash: {config.constitutional_hash}")
-        print(f"✅ All core components validated")
+        print("✅ All core components validated")
 
         return True
 

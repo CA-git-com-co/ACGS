@@ -694,12 +694,11 @@ class PerformanceMonitor:
                     "implementation_time_minutes": plan.estimated_duration_minutes
                     * 0.9,
                 }
-            else:
-                return {
-                    "success": False,
-                    "plan_id": plan.plan_id,
-                    "error": "Implementation failed due to high risk",
-                }
+            return {
+                "success": False,
+                "plan_id": plan.plan_id,
+                "error": "Implementation failed due to high risk",
+            }
 
         except Exception as e:
             logger.error(f"Failed to implement optimization plan: {e}")

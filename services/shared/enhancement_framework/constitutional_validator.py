@@ -7,7 +7,7 @@ Validates all requests against the constitutional framework hash (cdd01ef066bc6c
 
 import logging
 import time
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -36,7 +36,7 @@ class ConstitutionalComplianceValidator:
         service_name: str,
         performance_target_ms: float = 5.0,
         enable_strict_validation: bool = True,
-        additional_bypass_paths: Optional[list] = None,
+        additional_bypass_paths: list | None = None,
     ):
         self.service_name = service_name
         self.performance_target_ms = performance_target_ms
@@ -55,7 +55,7 @@ class ConstitutionalComplianceValidator:
 
     async def validate_request(
         self, request: Request
-    ) -> tuple[bool, Optional[Dict[str, Any]]]:
+    ) -> tuple[bool, dict[str, Any] | None]:
         """
         Fast constitutional compliance validation for incoming requests.
 
@@ -109,9 +109,8 @@ class ConstitutionalComplianceValidator:
                     "detail": str(e),
                     "service": self.service_name,
                 }
-            else:
-                # Graceful degradation - allow request to proceed
-                return True, None
+            # Graceful degradation - allow request to proceed
+            return True, None
 
         finally:
             # Update performance metrics
@@ -130,7 +129,7 @@ class ConstitutionalComplianceValidator:
                     f"Constitutional validation exceeded target: {validation_time:.2f}ms > {self.performance_target_ms}ms"
                 )
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get constitutional validation metrics."""
         success_rate = (
             (self.validation_count - self.validation_failures) / self.validation_count

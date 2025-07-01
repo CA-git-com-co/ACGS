@@ -10,7 +10,7 @@ import logging
 import os
 import subprocess
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 import aiohttp
 
@@ -33,7 +33,7 @@ class SecurityAnalyzer:
         }
         self.security_results = {}
 
-    async def analyze_service_security(self, service: str, port: int) -> Dict[str, Any]:
+    async def analyze_service_security(self, service: str, port: int) -> dict[str, Any]:
         """Analyze security posture of individual service."""
         logger.info(f"🔍 Analyzing security for {service} service (port {port})")
 
@@ -78,7 +78,7 @@ class SecurityAnalyzer:
 
         return security_analysis
 
-    def _analyze_security_headers(self, headers) -> Dict[str, Any]:
+    def _analyze_security_headers(self, headers) -> dict[str, Any]:
         """Analyze HTTP security headers."""
         required_headers = {
             "X-Content-Type-Options": "nosniff",
@@ -123,12 +123,11 @@ class SecurityAnalyzer:
         """Check if header value is compliant with security requirements."""
         if isinstance(expected, list):
             return any(exp in value for exp in expected)
-        else:
-            return expected in value
+        return expected in value
 
     async def _check_security_endpoints(
         self, session: aiohttp.ClientSession, port: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Check for security-related endpoints."""
         endpoints_to_check = [
             "/metrics",
@@ -191,7 +190,7 @@ class SecurityAnalyzer:
 
         return endpoint_analysis
 
-    async def analyze_network_security(self) -> Dict[str, Any]:
+    async def analyze_network_security(self) -> dict[str, Any]:
         """Analyze network security configuration."""
         logger.info("🌐 Analyzing network security")
 
@@ -206,7 +205,11 @@ class SecurityAnalyzer:
         for service, port in self.services.items():
             try:
                 result = subprocess.run(
-                    ["netstat", "-tlnp"], capture_output=True, text=True, timeout=10
+                    ["netstat", "-tlnp"],
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
                 )
                 if f":{port}" in result.stdout:
                     network_analysis["port_analysis"][service] = {
@@ -237,7 +240,7 @@ class SecurityAnalyzer:
 
         return network_analysis
 
-    async def analyze_authentication_security(self) -> Dict[str, Any]:
+    async def analyze_authentication_security(self) -> dict[str, Any]:
         """Analyze authentication and authorization security."""
         logger.info("🔐 Analyzing authentication security")
 
@@ -277,7 +280,7 @@ class SecurityAnalyzer:
 
         return auth_analysis
 
-    async def analyze_data_protection(self) -> Dict[str, Any]:
+    async def analyze_data_protection(self) -> dict[str, Any]:
         """Analyze data protection and encryption."""
         logger.info("🛡️ Analyzing data protection")
 
@@ -416,7 +419,7 @@ class SecurityAnalyzer:
         print("=" * 80)
 
         summary = self.security_results.get("security_summary", {})
-        print(f"\n📊 Security Summary:")
+        print("\n📊 Security Summary:")
         print(f"Overall Security Score: {summary.get('overall_security_score', 0)}%")
         print(f"Services Analyzed: {summary.get('services_analyzed', 0)}")
         print(f"Security Framework: {summary.get('security_framework', 'Unknown')}")
@@ -424,7 +427,7 @@ class SecurityAnalyzer:
 
         # Service analysis summary
         service_analysis = self.security_results.get("service_analysis", {})
-        print(f"\n🎯 Service Security Analysis:")
+        print("\n🎯 Service Security Analysis:")
         print("-" * 50)
 
         for service, analysis in service_analysis.items():
@@ -437,7 +440,7 @@ class SecurityAnalyzer:
         # Security features summary
         auth_analysis = self.security_results.get("authentication_security", {})
         if auth_analysis:
-            print(f"\n🔐 Authentication Security:")
+            print("\n🔐 Authentication Security:")
             jwt_config = auth_analysis.get("jwt_configuration", {})
             print(f"JWT Algorithm: {jwt_config.get('algorithm', 'Unknown')}")
             print(f"Token Expiry: {jwt_config.get('token_expiry', 'Unknown')}")
@@ -448,7 +451,7 @@ class SecurityAnalyzer:
         # Data protection summary
         data_protection = self.security_results.get("data_protection", {})
         if data_protection:
-            print(f"\n🛡️ Data Protection:")
+            print("\n🛡️ Data Protection:")
             transit_encryption = data_protection.get("encryption_in_transit", {})
             print(
                 f"HTTPS Enabled: {'✅' if transit_encryption.get('https_enabled') else '❌'}"

@@ -11,17 +11,15 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel
 
+# Security validation imports
+from services.shared.security_validation import (
+    validate_policy_input,
+)
+
 # Fix the import paths to use the full package path
 from .core.mab_integration import MABIntegratedGSService
 from .core.mab_prompt_optimizer import MABAlgorithm, MABConfig, PromptTemplate
 from .schemas import ConstitutionalSynthesisInput
-
-# Security validation imports
-from services.shared.security_validation import (
-    validate_user_input,
-    validate_policy_input,
-    validate_governance_input,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +99,7 @@ async def get_mab_status():
         logger.error(f"Failed to get MAB status: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve MAB status: {str(e)}",
+            detail=f"Failed to retrieve MAB status: {e!s}",
         )
 
 
@@ -119,7 +117,7 @@ async def get_mab_metrics():
         logger.error(f"Failed to get MAB metrics: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve MAB metrics: {str(e)}",
+            detail=f"Failed to retrieve MAB metrics: {e!s}",
         )
 
 
@@ -134,7 +132,7 @@ async def get_best_templates(top_k: int = Query(5, ge=1, le=20)):
         logger.error(f"Failed to get best templates: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve best templates: {str(e)}",
+            detail=f"Failed to retrieve best templates: {e!s}",
         )
 
 
@@ -174,7 +172,7 @@ async def register_prompt_template(
         logger.error(f"Failed to register template: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to register template: {str(e)}",
+            detail=f"Failed to register template: {e!s}",
         )
 
 
@@ -204,9 +202,10 @@ async def synthesize_with_mab(
         }
 
         # Execute MAB-optimized synthesis
-        synthesis_output, integration_metadata = (
-            await mab_service.synthesize_with_mab_optimization(synthesis_input, context)
-        )
+        (
+            synthesis_output,
+            integration_metadata,
+        ) = await mab_service.synthesize_with_mab_optimization(synthesis_input, context)
 
         return {
             "synthesis_result": {
@@ -222,7 +221,7 @@ async def synthesize_with_mab(
         logger.error(f"MAB synthesis failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"MAB synthesis failed: {str(e)}",
+            detail=f"MAB synthesis failed: {e!s}",
         )
 
 
@@ -274,7 +273,7 @@ async def update_mab_config(
         logger.error(f"Failed to update MAB config: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to update MAB config: {str(e)}",
+            detail=f"Failed to update MAB config: {e!s}",
         )
 
 
@@ -315,7 +314,7 @@ async def list_prompt_templates(
         logger.error(f"Failed to list templates: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to list templates: {str(e)}",
+            detail=f"Failed to list templates: {e!s}",
         )
 
 

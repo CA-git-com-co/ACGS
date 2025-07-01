@@ -2,10 +2,10 @@
 Performance tests for performance
 """
 
-import pytest
-import time
 import asyncio
-from unittest.mock import AsyncMock
+import time
+
+import pytest
 
 
 class TestPerformance:
@@ -46,8 +46,9 @@ class TestPerformance:
     def test_memory_usage(self):
         """Test memory usage patterns."""
         # TODO: Implement memory usage testing
-        import psutil
         import os
+
+        import psutil
 
         process = psutil.Process(os.getpid())
         initial_memory = process.memory_info().rss

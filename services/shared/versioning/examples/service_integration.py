@@ -5,15 +5,13 @@ Demonstrates how to integrate the versioned router system with existing
 ACGS-1 services, showing migration patterns and best practices.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import Depends, FastAPI, HTTPException, Request
 
-from ...api_models import APIResponse, APIStatus
 from ..response_transformers import VersionedResponseBuilder
 from ..version_manager import APIVersion
 from ..versioned_router import (
-    VersionedRouter,
     create_versioned_router,
     get_api_version,
     versioned_response,
@@ -114,7 +112,7 @@ class ConstitutionalAIVersionedService:
                 detail="API version not supported. Please use v1.5.0, v2.0.0, or v2.1.0",
             )
 
-    async def _fetch_principles(self, skip: int, limit: int) -> List[Dict[str, Any]]:
+    async def _fetch_principles(self, skip: int, limit: int) -> list[dict[str, Any]]:
         """Mock principle fetching (replace with actual database call)."""
         return [
             {
@@ -154,7 +152,7 @@ class PolicyGovernanceVersionedService:
             """Handle policies in v7.2.0 format."""
             if request.method == "GET":
                 return await self._get_policies_v7_2()
-            elif request.method == "POST":
+            if request.method == "POST":
                 return await self._create_policy_v7_2(await request.json())
 
         # Version 8.0.0 - Enhanced policy format
@@ -165,10 +163,10 @@ class PolicyGovernanceVersionedService:
             """Handle policies in v8.0.0 format with quantum-inspired features."""
             if request.method == "GET":
                 return await self._get_policies_v8_0()
-            elif request.method == "POST":
+            if request.method == "POST":
                 return await self._create_policy_v8_0(await request.json())
 
-    async def _get_policies_v7_2(self) -> Dict[str, Any]:
+    async def _get_policies_v7_2(self) -> dict[str, Any]:
         """Get policies in v7.2.0 format."""
         return {
             "policies": [
@@ -182,7 +180,7 @@ class PolicyGovernanceVersionedService:
             "count": 1,
         }
 
-    async def _get_policies_v8_0(self) -> Dict[str, Any]:
+    async def _get_policies_v8_0(self) -> dict[str, Any]:
         """Get policies in v8.0.0 format with quantum features."""
         return {
             "policies": [
@@ -199,7 +197,7 @@ class PolicyGovernanceVersionedService:
             "quantumMetrics": {"coherenceLevel": 0.98, "entanglementStrength": 0.87},
         }
 
-    async def _create_policy_v7_2(self, policy_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def _create_policy_v7_2(self, policy_data: dict[str, Any]) -> dict[str, Any]:
         """Create policy in v7.2.0 format."""
         return {
             "policy_id": "pol_124",
@@ -207,7 +205,7 @@ class PolicyGovernanceVersionedService:
             "message": "Policy created successfully",
         }
 
-    async def _create_policy_v8_0(self, policy_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def _create_policy_v8_0(self, policy_data: dict[str, Any]) -> dict[str, Any]:
         """Create policy in v8.0.0 format with quantum validation."""
         return {
             "policyId": "pol_124",
@@ -252,10 +250,10 @@ def create_versioned_app() -> FastAPI:
 
     # Include versioned routers
     for version_str, router in constitutional_ai.router.routers.items():
-        app.include_router(router, prefix=f"/constitutional-ai")
+        app.include_router(router, prefix="/constitutional-ai")
 
     for version_str, router in policy_governance.router.routers.items():
-        app.include_router(router, prefix=f"/policy-governance")
+        app.include_router(router, prefix="/policy-governance")
 
     # Add version info endpoint
     @app.get("/version-info")
@@ -298,8 +296,8 @@ class MigrationHelper:
 
     @staticmethod
     def transform_dict_keys(
-        data: Dict[str, Any], transformer: callable
-    ) -> Dict[str, Any]:
+        data: dict[str, Any], transformer: callable
+    ) -> dict[str, Any]:
         """Transform dictionary keys using provided transformer function."""
         if not isinstance(data, dict):
             return data
@@ -326,7 +324,7 @@ class MigrationHelper:
         return transformed
 
     @staticmethod
-    def v1_to_v2_transform(data: Dict[str, Any]) -> Dict[str, Any]:
+    def v1_to_v2_transform(data: dict[str, Any]) -> dict[str, Any]:
         """Transform v1.x data to v2.x format."""
         # Convert snake_case to camelCase
         transformed = MigrationHelper.transform_dict_keys(
@@ -345,7 +343,7 @@ class MigrationHelper:
         return transformed
 
     @staticmethod
-    def v2_to_v1_transform(data: Dict[str, Any]) -> Dict[str, Any]:
+    def v2_to_v1_transform(data: dict[str, Any]) -> dict[str, Any]:
         """Transform v2.x data to v1.x format for backward compatibility."""
         # Convert camelCase to snake_case
         transformed = MigrationHelper.transform_dict_keys(

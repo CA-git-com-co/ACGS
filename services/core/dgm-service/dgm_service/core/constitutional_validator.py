@@ -5,10 +5,9 @@ Validates improvements against constitutional principles and
 governance rules with integration to ACGS Constitutional AI Service.
 """
 
-import asyncio
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 from uuid import UUID, uuid4
 
 from ..config import settings
@@ -49,9 +48,9 @@ class ConstitutionalValidator:
         self.validation_rules = self._initialize_validation_rules()
 
         # Compliance cache
-        self.compliance_cache: Dict[str, Dict[str, Any]] = {}
+        self.compliance_cache: dict[str, dict[str, Any]] = {}
 
-    def _initialize_validation_rules(self) -> Dict[str, Dict[str, Any]]:
+    def _initialize_validation_rules(self) -> dict[str, dict[str, Any]]:
         """Initialize constitutional validation rules."""
         return {
             "human_autonomy": {
@@ -144,10 +143,10 @@ class ConstitutionalValidator:
 
     async def validate_improvement(
         self,
-        improvement_data: Dict[str, Any],
-        principles: Optional[List[str]] = None,
+        improvement_data: dict[str, Any],
+        principles: list[str] | None = None,
         strict_mode: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Validate improvement against constitutional principles.
 
@@ -207,15 +206,15 @@ class ConstitutionalValidator:
             return {
                 "is_compliant": False,
                 "compliance_score": 0.0,
-                "violations": [f"Validation error: {str(e)}"],
+                "violations": [f"Validation error: {e!s}"],
                 "warnings": [],
                 "recommendations": ["Review improvement data and retry validation"],
                 "error": str(e),
             }
 
     async def _perform_local_validation(
-        self, improvement_data: Dict[str, Any], principles: List[str], strict_mode: bool
-    ) -> Dict[str, Any]:
+        self, improvement_data: dict[str, Any], principles: list[str], strict_mode: bool
+    ) -> dict[str, Any]:
         """Perform local constitutional validation."""
         violations = []
         warnings = []
@@ -257,7 +256,7 @@ class ConstitutionalValidator:
             )
             total_weight = sum(
                 self.validation_rules[principle]["weight"]
-                for principle in principle_scores.keys()
+                for principle in principle_scores
                 if principle in self.validation_rules
             )
             compliance_score = (
@@ -277,8 +276,8 @@ class ConstitutionalValidator:
         }
 
     async def _perform_ac_service_validation(
-        self, improvement_data: Dict[str, Any], principles: List[str]
-    ) -> Optional[Dict[str, Any]]:
+        self, improvement_data: dict[str, Any], principles: list[str]
+    ) -> dict[str, Any] | None:
         """Perform validation using AC Service."""
         try:
             result = await self.service_client.validate_constitutional_compliance(
@@ -292,10 +291,10 @@ class ConstitutionalValidator:
 
     async def _combine_validation_results(
         self,
-        local_result: Dict[str, Any],
-        ac_result: Optional[Dict[str, Any]],
+        local_result: dict[str, Any],
+        ac_result: dict[str, Any] | None,
         strict_mode: bool,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Combine local and AC Service validation results."""
         if not ac_result:
             return local_result
@@ -347,9 +346,9 @@ class ConstitutionalValidator:
 
     async def _validate_principle(
         self,
-        improvement_data: Dict[str, Any],
+        improvement_data: dict[str, Any],
         principle: str,
-        rule: Dict[str, Any],
+        rule: dict[str, Any],
         strict_mode: bool,
     ) -> float:
         """Validate a specific constitutional principle."""
@@ -367,7 +366,7 @@ class ConstitutionalValidator:
 
     async def _perform_principle_check(
         self,
-        improvement_data: Dict[str, Any],
+        improvement_data: dict[str, Any],
         principle: str,
         check: str,
         strict_mode: bool,
@@ -402,7 +401,7 @@ class ConstitutionalValidator:
 
     async def _generate_principle_recommendations(
         self, principle: str, score: float
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate recommendations for improving principle compliance."""
         recommendations = []
 
@@ -440,8 +439,8 @@ class ConstitutionalValidator:
     async def _log_compliance_result(
         self,
         validation_id: UUID,
-        improvement_data: Dict[str, Any],
-        result: Dict[str, Any],
+        improvement_data: dict[str, Any],
+        result: dict[str, Any],
     ):
         """Log compliance validation result."""
         try:
@@ -478,8 +477,8 @@ class ConstitutionalValidator:
             logger.error(f"Failed to log compliance result: {e}")
 
     async def get_compliance_history(
-        self, improvement_id: Optional[UUID] = None, days: int = 30
-    ) -> List[Dict[str, Any]]:
+        self, improvement_id: UUID | None = None, days: int = 30
+    ) -> list[dict[str, Any]]:
         """Get compliance validation history."""
         try:
             # This would query the compliance log table
@@ -490,7 +489,7 @@ class ConstitutionalValidator:
             logger.error(f"Failed to get compliance history: {e}")
             return []
 
-    async def get_compliance_summary(self) -> Dict[str, Any]:
+    async def get_compliance_summary(self) -> dict[str, Any]:
         """Get compliance summary statistics."""
         try:
             # This would aggregate compliance data

@@ -2,17 +2,6 @@
 Unit tests for services.core.policy-governance.pgc_service.app.core.opa_client
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.policy_governance.pgc_service.app.core.opa_client import (
-    PolicyOperation,
-    PolicyBundle,
-    PolicyEvaluationRequest,
-    PolicyEvaluationResponse,
-    CompilationMetrics,
-    OPAClient,
-)
-
 
 class TestPolicyOperation:
     """Test suite for PolicyOperation."""

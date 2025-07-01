@@ -5,10 +5,10 @@ Provides high-level event subscription capabilities with automatic
 message parsing, error handling, and handler registration.
 """
 
-import asyncio
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 from .message_types import EventType, get_subject_for_event
 from .nats_client import NATSClient
@@ -20,11 +20,11 @@ class SubscriptionConfig:
 
     subject: str
     handler: Callable
-    queue_group: Optional[str] = None
-    durable_name: Optional[str] = None
+    queue_group: str | None = None
+    durable_name: str | None = None
     max_retries: int = 3
     retry_delay: float = 1.0
-    dead_letter_subject: Optional[str] = None
+    dead_letter_subject: str | None = None
 
 
 class EventSubscriber:
@@ -36,8 +36,8 @@ class EventSubscriber:
         self.logger = logging.getLogger(__name__)
 
         # Subscription tracking
-        self.subscriptions: Dict[str, SubscriptionConfig] = {}
-        self.handlers: Dict[EventType, List[Callable]] = {}
+        self.subscriptions: dict[str, SubscriptionConfig] = {}
+        self.handlers: dict[EventType, list[Callable]] = {}
 
         # Processing metrics
         self.metrics = {
@@ -53,8 +53,8 @@ class EventSubscriber:
         self,
         event_type: EventType,
         handler: Callable,
-        queue_group: Optional[str] = None,
-        durable_name: Optional[str] = None,
+        queue_group: str | None = None,
+        durable_name: str | None = None,
     ) -> bool:
         """Subscribe to specific event type with handler."""
         try:
@@ -63,8 +63,8 @@ class EventSubscriber:
             # Create wrapper handler for event processing
             async def event_handler(
                 subject: str,
-                data: Dict[str, Any],
-                headers: Optional[Dict[str, str]] = None,
+                data: dict[str, Any],
+                headers: dict[str, str] | None = None,
             ):
                 await self._process_event(event_type, handler, data, headers)
 
@@ -196,16 +196,16 @@ class EventSubscriber:
         self,
         subject_pattern: str,
         handler: Callable,
-        queue_group: Optional[str] = None,
-        durable_name: Optional[str] = None,
+        queue_group: str | None = None,
+        durable_name: str | None = None,
     ) -> bool:
         """Subscribe to events matching a subject pattern."""
         try:
             # Create wrapper handler for pattern processing
             async def pattern_handler(
                 subject: str,
-                data: Dict[str, Any],
-                headers: Optional[Dict[str, str]] = None,
+                data: dict[str, Any],
+                headers: dict[str, str] | None = None,
             ):
                 await self._process_pattern_event(
                     subject_pattern, handler, subject, data, headers
@@ -243,8 +243,8 @@ class EventSubscriber:
         self,
         event_type: EventType,
         handler: Callable,
-        data: Dict[str, Any],
-        headers: Optional[Dict[str, str]] = None,
+        data: dict[str, Any],
+        headers: dict[str, str] | None = None,
     ):
         """Process individual event with error handling and retries."""
         self.metrics["messages_received"] += 1
@@ -279,8 +279,8 @@ class EventSubscriber:
         pattern: str,
         handler: Callable,
         subject: str,
-        data: Dict[str, Any],
-        headers: Optional[Dict[str, str]] = None,
+        data: dict[str, Any],
+        headers: dict[str, str] | None = None,
     ):
         """Process pattern-matched event."""
         self.metrics["messages_received"] += 1
@@ -312,7 +312,7 @@ class EventSubscriber:
             await self._handle_processing_error(pattern, data, e)
 
     async def _handle_processing_error(
-        self, identifier: str, data: Dict[str, Any], error: Exception
+        self, identifier: str, data: dict[str, Any], error: Exception
     ):
         """Handle event processing errors with retry logic."""
         try:
@@ -369,10 +369,10 @@ class EventSubscriber:
         except Exception as e:
             self.logger.error(f"Error unsubscribing from all events: {e}")
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get subscription metrics."""
         return self.metrics.copy()
 
-    def get_active_subscriptions(self) -> List[str]:
+    def get_active_subscriptions(self) -> list[str]:
         """Get list of active subscription subjects."""
         return list(self.subscriptions.keys())

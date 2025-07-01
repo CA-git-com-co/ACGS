@@ -18,7 +18,7 @@ async def get_async_db():
     # ensures: Correct function execution
     # sha256: func_hash
     """Mock database session for testing."""
-    return None
+    return
 
 
 from ...core.workflow_engine import WorkflowStatus, WorkflowType, workflow_engine
@@ -77,7 +77,7 @@ async def create_workflow(
         logger.error(f"Failed to create workflow: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create workflow: {str(e)}",
+            detail=f"Failed to create workflow: {e!s}",
         )
 
 
@@ -108,7 +108,7 @@ async def start_workflow(
         logger.error(f"Failed to start workflow {workflow_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to start workflow: {str(e)}",
+            detail=f"Failed to start workflow: {e!s}",
         )
 
 
@@ -295,7 +295,7 @@ async def create_checkpoint(
         logger.error(f"Failed to create checkpoint: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create checkpoint: {str(e)}",
+            detail=f"Failed to create checkpoint: {e!s}",
         )
 
 
@@ -329,7 +329,7 @@ async def create_recovery_plan(
         logger.error(f"Failed to create recovery plan: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create recovery plan: {str(e)}",
+            detail=f"Failed to create recovery plan: {e!s}",
         )
 
 
@@ -358,7 +358,7 @@ async def execute_recovery_plan(
         logger.error(f"Failed to execute recovery plan {plan_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to execute recovery plan: {str(e)}",
+            detail=f"Failed to execute recovery plan: {e!s}",
         )
 
 
@@ -390,7 +390,7 @@ async def run_test_suite(
         logger.error(f"Failed to start test suite {suite_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to start test suite: {str(e)}",
+            detail=f"Failed to start test suite: {e!s}",
         )
 
 

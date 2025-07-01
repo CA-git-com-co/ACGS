@@ -9,16 +9,16 @@ testing, and automatic rollback on performance degradation.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import sys
-import os
-import numpy as np
 import logging
-from datetime import datetime
+import os
+import sys
+
+import numpy as np
 
 # Add the services directory to the path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from production_ml_optimizer import ProductionMLOptimizer, ABTestingFramework
+from production_ml_optimizer import ABTestingFramework, ProductionMLOptimizer
 
 # Configure logging
 logging.basicConfig(
@@ -77,7 +77,7 @@ def test_sample_size_calculation():
     # Smaller effects should require larger sample sizes
     assert small_effect > large_effect
 
-    logger.info(f"  📊 Sample Size Calculations:")
+    logger.info("  📊 Sample Size Calculations:")
     logger.info(f"    2% effect size: {sample_size} samples per group")
     logger.info(f"    1% effect size: {small_effect} samples per group")
     logger.info(f"    5% effect size: {large_effect} samples per group")
@@ -92,8 +92,8 @@ def test_ab_test_creation():
     framework = ABTestingFramework()
 
     # Create test models
-    from sklearn.linear_model import LinearRegression
     from sklearn.ensemble import RandomForestRegressor
+    from sklearn.linear_model import LinearRegression
 
     np.random.seed(42)
     X_train = np.random.randn(100, 5)
@@ -158,7 +158,7 @@ def test_traffic_routing():
     # Allow 5% tolerance in traffic split
     assert abs(treatment_ratio - expected_ratio) < 0.05
 
-    logger.info(f"  📊 Traffic Routing Results:")
+    logger.info("  📊 Traffic Routing Results:")
     logger.info(f"    Control requests: {control_count}")
     logger.info(f"    Treatment requests: {treatment_count}")
     logger.info(
@@ -216,7 +216,7 @@ def test_ab_test_analysis():
         "inconclusive",
     ]
 
-    logger.info(f"  📊 A/B Test Analysis Results:")
+    logger.info("  📊 A/B Test Analysis Results:")
     logger.info(f"    Test conclusion: {results.test_conclusion}")
     logger.info(f"    Deployment recommendation: {results.deployment_recommendation}")
     logger.info(
@@ -233,8 +233,8 @@ def test_shadow_deployment():
     framework = ABTestingFramework()
 
     # Create test models
-    from sklearn.linear_model import LinearRegression
     from sklearn.ensemble import RandomForestRegressor
+    from sklearn.linear_model import LinearRegression
 
     np.random.seed(42)
     X_train = np.random.randn(100, 5)
@@ -303,7 +303,7 @@ def test_shadow_monitoring_and_rollback():
     assert "performance_comparison" in monitoring_results
     assert monitoring_results["constitutional_hash_verified"] == True
 
-    logger.info(f"  📊 Shadow Monitoring Results:")
+    logger.info("  📊 Shadow Monitoring Results:")
     logger.info(f"    Status: {monitoring_results['status']}")
     logger.info(f"    Rollback required: {monitoring_results['rollback_required']}")
     if "performance_comparison" in monitoring_results:
@@ -371,7 +371,7 @@ def test_production_ml_optimizer_integration():
     assert integration["ab_testing_integrated"] == True
     assert integration["constitutional_hash_consistency"] == True
 
-    logger.info(f"  📊 Integration Test Results:")
+    logger.info("  📊 Integration Test Results:")
     logger.info(f"    A/B tests active: {dashboard_data['active_tests']}")
     logger.info(
         f"    Shadow deployments: {dashboard_data['active_shadow_deployments']}"

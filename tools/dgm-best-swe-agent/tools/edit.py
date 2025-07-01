@@ -174,12 +174,11 @@ def str_replace_in_file(path: Path, old_str: str, new_str: str) -> str:
 
         if occurrences == 0:
             return f"Error: Could not find the exact text to replace in {path}"
-        elif occurrences > 1:
+        if occurrences > 1:
             return f"Error: Found multiple ({occurrences}) occurrences of the text in {path}. Must be unique."
-        else:
-            new_content = content.replace(old_str, new_str)
-            write_file(path, new_content)
-            return f"Successfully replaced text in {path}"
+        new_content = content.replace(old_str, new_str)
+        write_file(path, new_content)
+        return f"Successfully replaced text in {path}"
 
     except Exception as e:
         return f"Error during string replacement: {e}"
@@ -201,6 +200,7 @@ def view_path(path_obj: Path, view_range: list[int] | None = None) -> str:
         try:
             result = subprocess.run(
                 ["find", str(path_obj), "-maxdepth", "2", "-not", "-path", "*/\\.*"],
+                check=False,
                 capture_output=True,
                 text=True,
             )
@@ -238,24 +238,23 @@ def tool_function(
         if command == "view":
             return view_path(path_obj, view_range)
 
-        elif command == "create":
+        if command == "create":
             if file_text is None:
                 raise ValueError("Missing required `file_text` for 'create' command.")
             write_file(path_obj, file_text)
             return f"File created successfully at: {path}"
 
-        elif command == "str_replace":
+        if command == "str_replace":
             if old_str is None or new_str is None:
                 raise ValueError(
                     "Missing required `old_str` and/or `new_str` for 'str_replace' command."
                 )
             return str_replace_in_file(path_obj, old_str, new_str)
 
-        else:
-            raise ValueError(f"Unknown command: {command}")
+        raise ValueError(f"Unknown command: {command}")
 
     except Exception as e:
-        return f"Error: {str(e)}"
+        return f"Error: {e!s}"
 
 
 if __name__ == "__main__":

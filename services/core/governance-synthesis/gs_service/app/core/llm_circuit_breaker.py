@@ -6,13 +6,13 @@ for LLM operations with adaptive thresholds, predictive failure detection,
 and intelligent recovery mechanisms.
 """
 
-import asyncio
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 try:
     from prometheus_client import Counter, Gauge, Histogram
@@ -79,8 +79,8 @@ class FailureRecord:
     model_name: str
     error_message: str
     response_time: float
-    confidence_score: Optional[float] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    confidence_score: float | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -98,11 +98,11 @@ class CircuitMetrics:
     p99_response_time: float = 0.0
 
     # Failure analysis
-    failure_by_type: Dict[FailureType, int] = field(default_factory=dict)
-    recent_failures: List[FailureRecord] = field(default_factory=list)
+    failure_by_type: dict[FailureType, int] = field(default_factory=dict)
+    recent_failures: list[FailureRecord] = field(default_factory=list)
 
     # State transitions
-    state_transitions: List[Dict[str, Any]] = field(default_factory=list)
+    state_transitions: list[dict[str, Any]] = field(default_factory=list)
     time_in_open_state: float = 0.0
     time_in_half_open_state: float = 0.0
 
@@ -124,7 +124,7 @@ class LLMCircuitBreaker:
 
         # Adaptive thresholds
         self.current_failure_threshold = config.failure_threshold
-        self.response_times: List[float] = []
+        self.response_times: list[float] = []
 
         # Prometheus metrics
         if PROMETHEUS_AVAILABLE:
@@ -133,23 +133,23 @@ class LLMCircuitBreaker:
     def _setup_prometheus_metrics(self):
         """Setup Prometheus metrics for monitoring."""
         self.request_counter = Counter(
-            f"llm_circuit_breaker_requests_total",
+            "llm_circuit_breaker_requests_total",
             "Total requests through circuit breaker",
             ["model", "state", "result"],
         )
 
         self.state_gauge = Gauge(
-            f"llm_circuit_breaker_state",
+            "llm_circuit_breaker_state",
             "Current circuit breaker state (0=closed, 1=half_open, 2=open)",
             ["model"],
         )
 
         self.failure_rate_gauge = Gauge(
-            f"llm_circuit_breaker_failure_rate", "Current failure rate", ["model"]
+            "llm_circuit_breaker_failure_rate", "Current failure rate", ["model"]
         )
 
         self.response_time_histogram = Histogram(
-            f"llm_circuit_breaker_response_time_seconds",
+            "llm_circuit_breaker_response_time_seconds",
             "Response time through circuit breaker",
             ["model"],
         )
@@ -169,9 +169,8 @@ class LLMCircuitBreaker:
                 raise CircuitBreakerOpenError(
                     f"Circuit breaker open for {self.model_name}"
                 )
-            else:
-                # Transition to half-open
-                await self._transition_to_half_open()
+            # Transition to half-open
+            await self._transition_to_half_open()
 
         # Execute operation
         try:
@@ -237,18 +236,17 @@ class LLMCircuitBreaker:
 
         if response_time > self.config.timeout_threshold:
             return FailureType.TIMEOUT
-        elif "rate limit" in error_message or "429" in error_message:
+        if "rate limit" in error_message or "429" in error_message:
             return FailureType.RATE_LIMIT
-        elif "api" in error_message or "http" in error_message:
+        if "api" in error_message or "http" in error_message:
             return FailureType.API_ERROR
-        elif "bias" in error_message:
+        if "bias" in error_message:
             return FailureType.BIAS_DETECTED
-        elif "confidence" in error_message:
+        if "confidence" in error_message:
             return FailureType.LOW_CONFIDENCE
-        elif "semantic" in error_message:
+        if "semantic" in error_message:
             return FailureType.SEMANTIC_FAILURE
-        else:
-            return FailureType.INVALID_RESPONSE
+        return FailureType.INVALID_RESPONSE
 
     async def _record_success(self, response_time: float):
         """Record a successful operation."""
@@ -434,7 +432,7 @@ class LLMCircuitBreaker:
         self.metrics.p95_response_time = sorted_times[int(n * 0.95)] if n > 0 else 0
         self.metrics.p99_response_time = sorted_times[int(n * 0.99)] if n > 0 else 0
 
-    def get_health_status(self) -> Dict[str, Any]:
+    def get_health_status(self) -> dict[str, Any]:
         """Get current health status of the circuit breaker."""
         return {
             "model_name": self.model_name,
@@ -464,11 +462,11 @@ class LLMCircuitBreakerManager:
     """Manager for multiple LLM circuit breakers."""
 
     def __init__(self):
-        self.circuit_breakers: Dict[str, LLMCircuitBreaker] = {}
+        self.circuit_breakers: dict[str, LLMCircuitBreaker] = {}
         self.default_config = CircuitBreakerConfig()
 
     def get_circuit_breaker(
-        self, model_name: str, config: Optional[CircuitBreakerConfig] = None
+        self, model_name: str, config: CircuitBreakerConfig | None = None
     ) -> LLMCircuitBreaker:
         """Get or create circuit breaker for a model."""
         if model_name not in self.circuit_breakers:
@@ -479,7 +477,7 @@ class LLMCircuitBreakerManager:
 
         return self.circuit_breakers[model_name]
 
-    def get_all_health_status(self) -> Dict[str, Dict[str, Any]]:
+    def get_all_health_status(self) -> dict[str, dict[str, Any]]:
         """Get health status for all circuit breakers."""
         return {
             model_name: breaker.get_health_status()
@@ -495,7 +493,7 @@ class LLMCircuitBreakerManager:
 
 
 # Global circuit breaker manager
-_circuit_breaker_manager: Optional[LLMCircuitBreakerManager] = None
+_circuit_breaker_manager: LLMCircuitBreakerManager | None = None
 
 
 def get_circuit_breaker_manager() -> LLMCircuitBreakerManager:

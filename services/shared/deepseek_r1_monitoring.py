@@ -16,12 +16,10 @@ Key Metrics:
 import asyncio
 import json
 import logging
-import time
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-import httpx
 from services.shared.utils import get_config
 
 logger = logging.getLogger(__name__)
@@ -68,7 +66,7 @@ class ComplianceReport:
     non_compliant_responses: int
     compliance_rate: float
     average_confidence_score: float
-    violations_by_type: Dict[str, int]
+    violations_by_type: dict[str, int]
     constitutional_hash_verified: bool
 
 
@@ -83,9 +81,9 @@ class DeepSeekR1Monitor:
     def __init__(self):
         self.config = get_config()
         self.pilot_config = self.config.get("deepseek_r1_pilot", {})
-        self.metrics_history: List[PilotMetrics] = []
-        self.cost_history: List[CostAnalysis] = []
-        self.compliance_history: List[ComplianceReport] = []
+        self.metrics_history: list[PilotMetrics] = []
+        self.cost_history: list[CostAnalysis] = []
+        self.compliance_history: list[ComplianceReport] = []
 
         # Alert thresholds from configuration
         self.alert_thresholds = {
@@ -221,7 +219,7 @@ class DeepSeekR1Monitor:
         self.cost_history.append(cost_analysis)
         return cost_analysis
 
-    def check_alerts(self, metrics: PilotMetrics) -> List[Dict[str, Any]]:
+    def check_alerts(self, metrics: PilotMetrics) -> list[dict[str, Any]]:
         """Check for alert conditions based on current metrics."""
         alerts = []
 
@@ -302,7 +300,7 @@ class DeepSeekR1Monitor:
 
         return alerts
 
-    def generate_dashboard_data(self) -> Dict[str, Any]:
+    def generate_dashboard_data(self) -> dict[str, Any]:
         """Generate data for monitoring dashboard."""
         if not self.metrics_history:
             return {"status": "no_data", "message": "No pilot metrics available"}
@@ -376,7 +374,7 @@ class DeepSeekR1Monitor:
 
         return dashboard_data
 
-    def _check_phase_success_criteria(self, metrics: PilotMetrics) -> Dict[str, bool]:
+    def _check_phase_success_criteria(self, metrics: PilotMetrics) -> dict[str, bool]:
         """Check if current phase success criteria are met."""
         return {
             "constitutional_compliance": metrics.constitutional_compliance_rate >= 0.95,
@@ -444,7 +442,7 @@ class DeepSeekR1Monitor:
 
 
 # Global monitor instance
-_monitor: Optional[DeepSeekR1Monitor] = None
+_monitor: DeepSeekR1Monitor | None = None
 
 
 def get_monitor() -> DeepSeekR1Monitor:

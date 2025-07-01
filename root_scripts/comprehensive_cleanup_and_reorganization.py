@@ -19,19 +19,18 @@ Usage:
     python comprehensive_cleanup_and_reorganization.py --execute  # Execute the cleanup
 """
 
-import os
-import sys
-import shutil
+import argparse
+import glob
 import hashlib
 import json
-import re
-import glob
-import argparse
-from pathlib import Path
-from typing import Dict, List, Tuple, Set, Optional, Any
-from datetime import datetime
-import subprocess
 import logging
+import os
+import re
+import shutil
+import subprocess
+import sys
+from datetime import datetime
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -149,7 +148,7 @@ class FileAction:
         self,
         action_type: str,
         source: str,
-        destination: Optional[str] = None,
+        destination: str | None = None,
         reason: str = "",
     ):
         self.action_type = action_type
@@ -160,38 +159,37 @@ class FileAction:
     def __str__(self) -> str:
         if self.action_type == FileAction.MOVE:
             return f"MOVE: {self.source} -> {self.destination} ({self.reason})"
-        elif self.action_type == FileAction.REMOVE:
+        if self.action_type == FileAction.REMOVE:
             return f"REMOVE: {self.source} ({self.reason})"
-        elif self.action_type == FileAction.RENAME:
+        if self.action_type == FileAction.RENAME:
             return f"RENAME: {self.source} -> {self.destination} ({self.reason})"
-        elif self.action_type == FileAction.STANDARDIZE:
+        if self.action_type == FileAction.STANDARDIZE:
             return f"STANDARDIZE: {self.source} ({self.reason})"
-        else:
-            return f"UNKNOWN ACTION: {self.action_type} - {self.source}"
+        return f"UNKNOWN ACTION: {self.action_type} - {self.source}"
 
 
 class CodebaseReorganizer:
     """Manages the cleanup and reorganization of the ACGS-1 repository"""
 
     def __init__(self):
-        self.actions: List[FileAction] = []
-        self.file_hashes: Dict[str, List[str]] = (
+        self.actions: list[FileAction] = []
+        self.file_hashes: dict[str, list[str]] = (
             {}
         )  # Maps file hash to list of file paths
-        self.duplicate_files: List[Tuple[str, List[str]]] = (
+        self.duplicate_files: list[tuple[str, list[str]]] = (
             []
         )  # (hash, list of file paths)
-        self.backup_files: List[str] = []
-        self.misplaced_files: Dict[str, str] = (
+        self.backup_files: list[str] = []
+        self.misplaced_files: dict[str, str] = (
             {}
         )  # Maps file path to recommended location
-        self.test_files_outside_tests: List[str] = []
-        self.script_files_outside_scripts: List[str] = []
-        self.docker_files_outside_infrastructure: List[str] = []
-        self.config_files_outside_config: List[str] = []
+        self.test_files_outside_tests: list[str] = []
+        self.script_files_outside_scripts: list[str] = []
+        self.docker_files_outside_infrastructure: list[str] = []
+        self.config_files_outside_config: list[str] = []
         self.scanned_files: int = 0
-        self.directories_created: Set[str] = set()
-        self.verification_results: Dict[str, Any] = {}
+        self.directories_created: set[str] = set()
+        self.verification_results: dict[str, Any] = {}
 
     def add_action(self, action: FileAction) -> None:
         """Add an action to the plan"""
@@ -202,7 +200,7 @@ class CodebaseReorganizer:
         try:
             with open(filepath, "rb") as f:
                 return hashlib.md5(f.read()).hexdigest()
-        except (IOError, OSError):
+        except OSError:
             return "error-computing-hash"
 
     def should_ignore(self, filepath: str) -> bool:
@@ -247,7 +245,7 @@ class CodebaseReorganizer:
                     if file_hash not in self.file_hashes:
                         self.file_hashes[file_hash] = []
                     self.file_hashes[file_hash].append(filepath)
-                except (OSError, IOError):
+                except OSError:
                     continue
 
     def find_duplicate_files(self) -> None:
@@ -751,7 +749,7 @@ class CodebaseReorganizer:
         with open(output_file, "w") as f:
             json.dump(plan_data, f, indent=2)
 
-    def verify_system_functionality(self) -> Dict[str, Any]:
+    def verify_system_functionality(self) -> dict[str, Any]:
         """Verify that the system still functions after cleanup"""
         logger.info("Verifying system functionality...")
 
@@ -767,6 +765,7 @@ class CodebaseReorganizer:
             logger.info("Running tests...")
             result = subprocess.run(
                 ["pytest", "-xvs", "tests/"],
+                check=False,
                 cwd=ROOT_DIR,
                 capture_output=True,
                 text=True,
@@ -838,6 +837,7 @@ class CodebaseReorganizer:
                     "--exclude",
                     "venv|__pycache__|.git",
                 ],
+                check=False,
                 cwd=ROOT_DIR,
                 capture_output=True,
                 text=True,
@@ -860,6 +860,7 @@ class CodebaseReorganizer:
                     "--ignore-path",
                     ".gitignore",
                 ],
+                check=False,
                 cwd=ROOT_DIR,
                 capture_output=True,
                 text=True,
@@ -875,6 +876,7 @@ class CodebaseReorganizer:
         try:
             result = subprocess.run(
                 ["find", ".", "-name", "*.rs", "-exec", "rustfmt", "{}", ";"],
+                check=False,
                 cwd=ROOT_DIR,
                 capture_output=True,
                 text=True,
@@ -927,7 +929,7 @@ def main() -> None:
             logger.info(f"Cleanup plan saved to {args.output}")
         else:
             # Load plan from file
-            with open(args.output, "r") as f:
+            with open(args.output) as f:
                 plan_data = json.load(f)
                 for action_data in plan_data.get("actions", []):
                     reorganizer.add_action(

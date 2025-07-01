@@ -120,10 +120,9 @@ except ImportError:
             content_lower = content.lower()
             if "access" in content_lower:
                 return "access"
-            elif "privacy" in content_lower:
+            if "privacy" in content_lower:
                 return "privacy"
-            else:
-                return "general"
+            return "general"
 
     def create_enhanced_multi_model_validator():
         return EnhancedMultiModelValidator()

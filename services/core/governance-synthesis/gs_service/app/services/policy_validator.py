@@ -543,8 +543,7 @@ class PolicyValidationEngine:
         ) / total
 
         # Update max latency
-        if latency_ms > self.metrics["max_latency_ms"]:
-            self.metrics["max_latency_ms"] = latency_ms
+        self.metrics["max_latency_ms"] = max(self.metrics["max_latency_ms"], latency_ms)
 
         # Update error rate
         if not success:
@@ -574,13 +573,12 @@ class PolicyValidationEngine:
 
             tasks = [validate_with_semaphore(request) for request in requests]
             return await asyncio.gather(*tasks, return_exceptions=True)
-        else:
-            # Sequential processing
-            results = []
-            for request in requests:
-                result = await self.validate_policy(request)
-                results.append(result)
-            return results
+        # Sequential processing
+        results = []
+        for request in requests:
+            result = await self.validate_policy(request)
+            results.append(result)
+        return results
 
     def get_metrics(self) -> dict[str, Any]:
         """Get performance metrics."""

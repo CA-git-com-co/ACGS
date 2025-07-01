@@ -18,17 +18,13 @@ Features:
 - Integration with version control systems
 """
 
-import os
-import sys
-import json
-import hashlib
-import difflib
-from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple, Set
-from datetime import datetime
 import argparse
+import json
 import logging
-import subprocess
+import sys
+from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -76,7 +72,7 @@ class DocumentationSynchronizer:
             "version_changes": [],
         }
 
-    def generate_baseline(self, services: List[str] = None) -> Dict[str, Any]:
+    def generate_baseline(self, services: list[str] = None) -> dict[str, Any]:
         """Generate baseline documentation for comparison."""
         if not self.generator:
             raise RuntimeError("OpenAPI generator not available")
@@ -106,7 +102,7 @@ class DocumentationSynchronizer:
 
         return baseline_specs
 
-    def load_baseline(self, service: str) -> Optional[Dict[str, Any]]:
+    def load_baseline(self, service: str) -> dict[str, Any] | None:
         """Load baseline documentation for a service."""
         baseline_file = self.baseline_dir / f"{service}_baseline.json"
 
@@ -115,15 +111,15 @@ class DocumentationSynchronizer:
             return None
 
         try:
-            with open(baseline_file, "r") as f:
+            with open(baseline_file) as f:
                 return json.load(f)
         except Exception as e:
             logger.error(f"Failed to load baseline for {service}: {e}")
             return None
 
     def compare_specifications(
-        self, service: str, current_spec: Dict[str, Any], baseline_spec: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, service: str, current_spec: dict[str, Any], baseline_spec: dict[str, Any]
+    ) -> dict[str, Any]:
         """Compare current specification with baseline to detect changes."""
 
         comparison = {
@@ -243,8 +239,8 @@ class DocumentationSynchronizer:
         return comparison
 
     def _compare_endpoints(
-        self, path: str, current: Dict[str, Any], baseline: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+        self, path: str, current: dict[str, Any], baseline: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         """Compare individual endpoint changes."""
         changes = []
 
@@ -282,8 +278,8 @@ class DocumentationSynchronizer:
         return changes
 
     def _compare_method(
-        self, current: Dict[str, Any], baseline: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+        self, current: dict[str, Any], baseline: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         """Compare individual HTTP method changes."""
         changes = []
 
@@ -321,8 +317,8 @@ class DocumentationSynchronizer:
         return changes
 
     def _compare_parameters(
-        self, current: List[Dict[str, Any]], baseline: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
+        self, current: list[dict[str, Any]], baseline: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         """Compare parameter changes."""
         changes = []
 
@@ -360,8 +356,8 @@ class DocumentationSynchronizer:
         return changes
 
     def _compare_responses(
-        self, current: Dict[str, Any], baseline: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+        self, current: dict[str, Any], baseline: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         """Compare response changes."""
         changes = []
 
@@ -403,8 +399,8 @@ class DocumentationSynchronizer:
         return changes
 
     def _compare_schemas(
-        self, current: Dict[str, Any], baseline: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+        self, current: dict[str, Any], baseline: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         """Compare schema changes."""
         changes = []
 
@@ -461,8 +457,8 @@ class DocumentationSynchronizer:
         return False
 
     def _detect_breaking_endpoint_changes(
-        self, path: str, changes: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
+        self, path: str, changes: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         """Detect breaking changes in endpoint modifications."""
         breaking_changes = []
 
@@ -497,8 +493,8 @@ class DocumentationSynchronizer:
         return breaking_changes
 
     def _detect_breaking_schema_changes(
-        self, schema_changes: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
+        self, schema_changes: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         """Detect breaking changes in schema modifications."""
         breaking_changes = []
 
@@ -536,7 +532,7 @@ class DocumentationSynchronizer:
 
         return breaking_changes
 
-    def validate_documentation_sync(self, services: List[str] = None) -> Dict[str, Any]:
+    def validate_documentation_sync(self, services: list[str] = None) -> dict[str, Any]:
         """Validate that documentation is synchronized with current code."""
         if not self.generator:
             raise RuntimeError("OpenAPI generator not available")
@@ -609,7 +605,7 @@ class DocumentationSynchronizer:
         return validation_results
 
     def generate_sync_report(
-        self, validation_results: Dict[str, Any], output_file: str = None
+        self, validation_results: dict[str, Any], output_file: str = None
     ) -> str:
         """Generate human-readable synchronization report."""
 

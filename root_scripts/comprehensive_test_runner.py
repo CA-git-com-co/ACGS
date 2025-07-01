@@ -50,6 +50,7 @@ class ComprehensiveTestRunner:
             # Check if Anchor programs can be built
             build_result = subprocess.run(
                 ["anchor", "build"],
+                check=False,
                 cwd=self.project_root / "blockchain",
                 capture_output=True,
                 text=True,
@@ -80,7 +81,7 @@ class ComprehensiveTestRunner:
 
         except Exception as e:
             results["status"] = "FAIL"
-            results["errors"].append(f"Exception: {str(e)}")
+            results["errors"].append(f"Exception: {e!s}")
             logger.error(f"❌ Blockchain test error: {e}")
 
         self.test_results["test_suites"]["blockchain_tests"] = results
@@ -125,6 +126,7 @@ class ComprehensiveTestRunner:
                                 "--tb=short",
                                 "--maxfail=5",
                             ],
+                            check=False,
                             capture_output=True,
                             text=True,
                             timeout=300,
@@ -151,7 +153,7 @@ class ComprehensiveTestRunner:
                         results["errors"].append(f"Timeout in {test_dir}")
                         logger.warning(f"⚠️ Timeout in {test_dir}")
                     except Exception as e:
-                        results["errors"].append(f"Error in {test_dir}: {str(e)}")
+                        results["errors"].append(f"Error in {test_dir}: {e!s}")
                         logger.warning(f"⚠️ Error in {test_dir}: {e}")
 
             results["test_count"] = total_tests
@@ -171,7 +173,7 @@ class ComprehensiveTestRunner:
 
         except Exception as e:
             results["status"] = "FAIL"
-            results["errors"].append(f"Exception: {str(e)}")
+            results["errors"].append(f"Exception: {e!s}")
             logger.error(f"❌ Python test error: {e}")
 
         self.test_results["test_suites"]["python_unit_tests"] = results
@@ -216,7 +218,7 @@ class ComprehensiveTestRunner:
 
         except Exception as e:
             results["status"] = "FAIL"
-            results["errors"].append(f"Exception: {str(e)}")
+            results["errors"].append(f"Exception: {e!s}")
             logger.error(f"❌ Service integration error: {e}")
 
         self.test_results["test_suites"]["service_integration_tests"] = results
@@ -266,7 +268,7 @@ class ComprehensiveTestRunner:
 
         except Exception as e:
             results["status"] = "FAIL"
-            results["errors"].append(f"Exception: {str(e)}")
+            results["errors"].append(f"Exception: {e!s}")
             logger.error(f"❌ End-to-end test error: {e}")
 
         self.test_results["test_suites"]["end_to_end_tests"] = results
@@ -313,7 +315,7 @@ class ComprehensiveTestRunner:
 
         except Exception as e:
             results["status"] = "FAIL"
-            results["errors"].append(f"Exception: {str(e)}")
+            results["errors"].append(f"Exception: {e!s}")
             logger.error(f"❌ Security validation error: {e}")
 
         self.test_results["test_suites"]["security_validation"] = results

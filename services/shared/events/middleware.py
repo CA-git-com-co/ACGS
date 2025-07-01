@@ -245,8 +245,7 @@ class ValidationMiddleware(EventMiddleware):
                 if self.strict:
                     logger.error(f"Event validation failed: {', '.join(errors)}")
                     return None
-                else:
-                    logger.warning(f"Event validation warnings: {', '.join(errors)}")
+                logger.warning(f"Event validation warnings: {', '.join(errors)}")
 
             return event
 

@@ -80,14 +80,14 @@ async def test_constitutional_prompting():
         for i in range(3):
             LLMInterpretationInput(
                 principle_id=i + 3,
-                principle_content=f"Test principle {i+1}: Ensure system reliability and security",
+                principle_content=f"Test principle {i + 1}: Ensure system reliability and security",
                 target_context="general",
                 datalog_predicate_schema={},
             )
 
             start_time = time.time()
             await client.generate_text(
-                prompt=f"Explain constitutional principle {i+1} briefly",
+                prompt=f"Explain constitutional principle {i + 1} briefly",
                 temperature=0.2,
                 max_tokens=100,
             )
@@ -263,7 +263,7 @@ async def main():
     total = len(results)
 
     print(f"Tests passed: {passed}/{total}")
-    print(f"Success rate: {(passed/total)*100:.1f}%")
+    print(f"Success rate: {(passed / total) * 100:.1f}%")
 
     if passed == total:
         print("🎉 All constitutional prompting tests passed!")

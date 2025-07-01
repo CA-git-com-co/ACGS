@@ -2,11 +2,6 @@
 Constitutional compliance tests for fv_service.
 """
 
-import pytest
-import asyncio
-from unittest.mock import Mock, patch
-from fastapi.testclient import TestClient
-
 # Constitutional hash validation
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 

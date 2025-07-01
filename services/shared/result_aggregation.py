@@ -296,24 +296,23 @@ class ByzantineFaultTolerantAggregator:
                 AggregationStrategy.CONSENSUS_THRESHOLD
             )
             return majority_result
-        else:
-            # Consensus not reached
-            final_result = {
-                "status": "consensus_not_reached",
-                "consensus_level": majority_result.consensus_level,
-                "required_threshold": threshold,
-                "message": f"Consensus threshold {threshold} not met (actual: {majority_result.consensus_level:.3f})",
-            }
+        # Consensus not reached
+        final_result = {
+            "status": "consensus_not_reached",
+            "consensus_level": majority_result.consensus_level,
+            "required_threshold": threshold,
+            "message": f"Consensus threshold {threshold} not met (actual: {majority_result.consensus_level:.3f})",
+        }
 
-            return AggregatedResult(
-                task_id=results[0].task_id,
-                aggregation_strategy=AggregationStrategy.CONSENSUS_THRESHOLD,
-                final_result=final_result,
-                confidence_score=0.0,
-                individual_results=results,
-                consensus_level=majority_result.consensus_level,
-                conflicts_detected=["consensus_threshold_not_met"],
-            )
+        return AggregatedResult(
+            task_id=results[0].task_id,
+            aggregation_strategy=AggregationStrategy.CONSENSUS_THRESHOLD,
+            final_result=final_result,
+            confidence_score=0.0,
+            individual_results=results,
+            consensus_level=majority_result.consensus_level,
+            conflicts_detected=["consensus_threshold_not_met"],
+        )
 
     def _first_valid_aggregation(
         self, results: list[ValidationResult]

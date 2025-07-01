@@ -498,17 +498,15 @@ class EnhancedMultiModelValidator:
                 query, available_models
             )
             return cluster_models[:max_models]
-        else:
-            # Use general selection based on context
-            if context.complexity_score > 0.8:
-                # High complexity - use reasoning-heavy models
-                return ["gpt-4", "claude-3", "gemini-pro"][:max_models]
-            elif context.bias_sensitivity > 0.7:
-                # High bias sensitivity - use diverse models
-                return available_models[:max_models]
-            else:
-                # General case - use top performers
-                return ["gpt-4", "claude-3"][:max_models]
+        # Use general selection based on context
+        if context.complexity_score > 0.8:
+            # High complexity - use reasoning-heavy models
+            return ["gpt-4", "claude-3", "gemini-pro"][:max_models]
+        if context.bias_sensitivity > 0.7:
+            # High bias sensitivity - use diverse models
+            return available_models[:max_models]
+        # General case - use top performers
+        return ["gpt-4", "claude-3"][:max_models]
 
     async def _get_model_predictions(
         self, query: str, model_ids: list[str], context: ValidationContext

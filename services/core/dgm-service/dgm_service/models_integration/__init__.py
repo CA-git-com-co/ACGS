@@ -11,4 +11,4 @@ from .model_client import ModelClient
 from .model_router import ModelRouter
 from .openai_client import OpenAIClient
 
-__all__ = ["ModelClient", "ClaudeClient", "OpenAIClient", "ModelRouter"]
+__all__ = ["ClaudeClient", "ModelClient", "ModelRouter", "OpenAIClient"]

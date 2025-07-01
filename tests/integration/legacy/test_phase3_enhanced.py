@@ -443,12 +443,10 @@ async def main():
             if results["success_rate"] >= 80:
                 print("\n🎉 Phase 3 Enhanced Implementation: VALIDATED ✅")
                 return 0
-            else:
-                print("\n⚠️  Phase 3 Enhanced Implementation: NEEDS IMPROVEMENT")
-                return 1
-        else:
-            print(f"❌ Validation failed: {results.get('error', 'Unknown error')}")
+            print("\n⚠️  Phase 3 Enhanced Implementation: NEEDS IMPROVEMENT")
             return 1
+        print(f"❌ Validation failed: {results.get('error', 'Unknown error')}")
+        return 1
 
     except Exception as e:
         print(f"❌ Validation execution failed: {e}")

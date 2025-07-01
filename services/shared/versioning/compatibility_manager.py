@@ -9,10 +9,10 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Set
+from typing import Any
 
 from .response_transformers import CompatibilityTransformer, ResponseTransformer
-from .version_manager import APIVersion, VersionCompatibility, VersionStatus
+from .version_manager import APIVersion
 
 logger = logging.getLogger(__name__)
 
@@ -32,11 +32,11 @@ class BreakingChange:
 
     change_type: str  # "field_removed", "field_renamed", "type_changed", etc.
     description: str
-    affected_endpoints: List[str]
+    affected_endpoints: list[str]
     migration_notes: str
     severity: str = "medium"  # "low", "medium", "high", "critical"
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "type": self.change_type,
@@ -54,9 +54,9 @@ class CompatibilityRule:
     source_version: APIVersion
     target_version: APIVersion
     compatibility_level: CompatibilityLevel
-    transformer: Optional[ResponseTransformer] = None
-    breaking_changes: List[BreakingChange] = field(default_factory=list)
-    migration_guide_url: Optional[str] = None
+    transformer: ResponseTransformer | None = None
+    breaking_changes: list[BreakingChange] = field(default_factory=list)
+    migration_guide_url: str | None = None
 
     def is_compatible(self) -> bool:
         """Check if versions are compatible."""
@@ -80,8 +80,8 @@ class CompatibilityManager:
 
     def __init__(self, service_name: str):
         self.service_name = service_name
-        self.compatibility_rules: Dict[str, CompatibilityRule] = {}
-        self.transformers: Dict[str, ResponseTransformer] = {}
+        self.compatibility_rules: dict[str, CompatibilityRule] = {}
+        self.transformers: dict[str, ResponseTransformer] = {}
 
         # Deprecation policies
         self.deprecation_period_days = 180  # 6 months
@@ -140,24 +140,23 @@ class CompatibilityManager:
                     )
                 ],
             )
-        elif source_version.minor != target_version.minor:
+        if source_version.minor != target_version.minor:
             # Minor version change - partial compatibility
             return CompatibilityRule(
                 source_version=source_version,
                 target_version=target_version,
                 compatibility_level=CompatibilityLevel.PARTIAL,
             )
-        else:
-            # Patch version change - full compatibility
-            return CompatibilityRule(
-                source_version=source_version,
-                target_version=target_version,
-                compatibility_level=CompatibilityLevel.FULL,
-            )
+        # Patch version change - full compatibility
+        return CompatibilityRule(
+            source_version=source_version,
+            target_version=target_version,
+            compatibility_level=CompatibilityLevel.FULL,
+        )
 
     def get_migration_path(
         self, from_version: APIVersion, to_version: APIVersion
-    ) -> List[CompatibilityRule]:
+    ) -> list[CompatibilityRule]:
         """
         Generate migration path between versions.
 
@@ -170,7 +169,7 @@ class CompatibilityManager:
 
     def create_deprecation_schedule(
         self, current_version: APIVersion, new_version: APIVersion
-    ) -> Dict[str, datetime]:
+    ) -> dict[str, datetime]:
         """
         Create deprecation schedule for version transition.
 
@@ -193,7 +192,7 @@ class CompatibilityManager:
             "migration_deadline": sunset_date - timedelta(days=7),  # 1 week buffer
         }
 
-    def validate_concurrent_versions(self, active_versions: List[APIVersion]) -> bool:
+    def validate_concurrent_versions(self, active_versions: list[APIVersion]) -> bool:
         """
         Validate that the number of concurrent versions doesn't exceed policy.
 
@@ -211,12 +210,12 @@ class CompatibilityManager:
 
     def get_breaking_changes_summary(
         self, from_version: APIVersion, to_version: APIVersion
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get summary of breaking changes between versions."""
         rule = self.check_compatibility(from_version, to_version)
         return [change.to_dict() for change in rule.breaking_changes]
 
-    def create_compatibility_report(self) -> Dict[str, Any]:
+    def create_compatibility_report(self) -> dict[str, Any]:
         """Create comprehensive compatibility report."""
         report = {
             "service": self.service_name,
@@ -259,7 +258,7 @@ class CompatibilityManager:
 
 
 # Pre-built compatibility rules for common ACGS-1 version transitions
-def create_acgs_compatibility_rules() -> List[CompatibilityRule]:
+def create_acgs_compatibility_rules() -> list[CompatibilityRule]:
     """Create standard compatibility rules for ACGS-1 services."""
     rules = []
 

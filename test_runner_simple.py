@@ -4,7 +4,6 @@ Simple test runner that bypasses async dependency issues for basic testing.
 """
 
 import sys
-import os
 from pathlib import Path
 
 # Add project paths
@@ -43,9 +42,6 @@ def run_basic_tests():
     print("Running import tests...")
     try:
         # Test if we can import basic modules
-        import json
-        import datetime
-        import pathlib
 
         print("✓ Standard library imports work")
 

@@ -6,6 +6,7 @@ This script runs the complete adversarial testing framework for ACGS-PGP,
 targeting 95% vulnerability detection, 1000+ test case resilience, and
 80% attack surface reduction recommendations.
 """
+
 import pytest
 
 # Skip this test file if dependencies are not available
@@ -321,14 +322,11 @@ async def main():
                 "🎯 All adversarial testing targets achieved - returning success code"
             )
             return 0
-        elif targets_achieved >= total_targets * 0.67:
+        if targets_achieved >= total_targets * 0.67:
             logger.warning("⚠️ Partial success - some targets not achieved")
             return 1
-        else:
-            logger.error(
-                "🚨 Multiple targets not achieved - security concerns identified"
-            )
-            return 2
+        logger.error("🚨 Multiple targets not achieved - security concerns identified")
+        return 2
 
     except KeyboardInterrupt:
         logger.info("⏹️ Adversarial testing interrupted by user")

@@ -2,16 +2,6 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.services.violation_detection_service
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance_synthesis.gs_service.app.services.violation_detection_service import (
-    ViolationType,
-    ViolationSeverity,
-    ViolationDetectionResult,
-    BatchViolationResult,
-    ViolationDetectionService,
-)
-
 
 class TestViolationType:
     """Test suite for ViolationType."""

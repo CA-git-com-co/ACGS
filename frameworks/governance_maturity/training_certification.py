@@ -10,11 +10,10 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import json
 import logging
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Any, Optional
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from enum import Enum
-from dataclasses import dataclass, asdict
-from pathlib import Path
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -55,9 +54,9 @@ class LearningObjective:
     module: TrainingModule
     level: CertificationLevel
     duration_hours: float
-    prerequisites: List[str]
-    assessment_criteria: List[str]
-    resources: List[str]
+    prerequisites: list[str]
+    assessment_criteria: list[str]
+    resources: list[str]
 
 
 @dataclass
@@ -68,10 +67,10 @@ class TrainingProgram:
     name: str
     description: str
     duration_weeks: int
-    modules: List[TrainingModule]
-    learning_objectives: List[str]
-    prerequisites: List[str]
-    certification_requirements: List[str]
+    modules: list[TrainingModule]
+    learning_objectives: list[str]
+    prerequisites: list[str]
+    certification_requirements: list[str]
     constitutional_hash: str = "cdd01ef066bc6cf2"
 
 
@@ -85,8 +84,8 @@ class CertificationExam:
     duration_minutes: int
     passing_score: float
     question_count: int
-    question_types: List[str]
-    topics_covered: List[TrainingModule]
+    question_types: list[str]
+    topics_covered: list[TrainingModule]
     retake_policy: str
 
 
@@ -97,11 +96,11 @@ class LearnerProgress:
     learner_id: str
     name: str
     email: str
-    current_level: Optional[CertificationLevel]
-    enrolled_programs: List[str]
-    completed_modules: List[TrainingModule]
-    module_scores: Dict[TrainingModule, float]
-    certification_attempts: List[Dict[str, Any]]
+    current_level: CertificationLevel | None
+    enrolled_programs: list[str]
+    completed_modules: list[TrainingModule]
+    module_scores: dict[TrainingModule, float]
+    certification_attempts: list[dict[str, Any]]
     last_activity: datetime
     constitutional_compliance_score: float
 
@@ -114,9 +113,9 @@ class TrainingCertificationSystem:
         self.learning_objectives = self._initialize_learning_objectives()
         self.training_programs = self._initialize_training_programs()
         self.certification_exams = self._initialize_certification_exams()
-        self.learner_records: Dict[str, LearnerProgress] = {}
+        self.learner_records: dict[str, LearnerProgress] = {}
 
-    def _initialize_learning_objectives(self) -> Dict[str, LearningObjective]:
+    def _initialize_learning_objectives(self) -> dict[str, LearningObjective]:
         """Initialize learning objectives for all modules."""
         objectives = {}
 
@@ -228,7 +227,7 @@ class TrainingCertificationSystem:
 
     def _initialize_training_programs(
         self,
-    ) -> Dict[CertificationLevel, TrainingProgram]:
+    ) -> dict[CertificationLevel, TrainingProgram]:
         """Initialize training programs for each certification level."""
         programs = {}
 
@@ -328,7 +327,7 @@ class TrainingCertificationSystem:
 
     def _initialize_certification_exams(
         self,
-    ) -> Dict[CertificationLevel, CertificationExam]:
+    ) -> dict[CertificationLevel, CertificationExam]:
         """Initialize certification examinations."""
         exams = {}
 
@@ -432,13 +431,13 @@ class TrainingCertificationSystem:
 
     def _get_prerequisite_level(
         self, level: CertificationLevel
-    ) -> Optional[CertificationLevel]:
+    ) -> CertificationLevel | None:
         """Get the prerequisite certification level."""
         if level == CertificationLevel.PRACTITIONER:
             return CertificationLevel.FOUNDATION
-        elif level == CertificationLevel.EXPERT:
+        if level == CertificationLevel.EXPERT:
             return CertificationLevel.PRACTITIONER
-        elif level == CertificationLevel.MASTER:
+        if level == CertificationLevel.MASTER:
             return CertificationLevel.EXPERT
         return None
 
@@ -470,7 +469,7 @@ class TrainingCertificationSystem:
 
     def attempt_certification(
         self, learner_id: str, level: CertificationLevel, exam_score: float
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Record a certification attempt."""
         if learner_id not in self.learner_records:
             return {"success": False, "error": "Learner not found"}
@@ -503,7 +502,7 @@ class TrainingCertificationSystem:
             "certification_level": level.value if attempt["passed"] else None,
         }
 
-    def get_learner_progress(self, learner_id: str) -> Optional[Dict[str, Any]]:
+    def get_learner_progress(self, learner_id: str) -> dict[str, Any] | None:
         """Get comprehensive learner progress report."""
         if learner_id not in self.learner_records:
             return None
@@ -546,22 +545,22 @@ class TrainingCertificationSystem:
         }
 
     def _get_next_certification_level(
-        self, current_level: Optional[CertificationLevel]
-    ) -> Optional[str]:
+        self, current_level: CertificationLevel | None
+    ) -> str | None:
         """Get the next available certification level."""
         if current_level is None:
             return CertificationLevel.FOUNDATION.value
-        elif current_level == CertificationLevel.FOUNDATION:
+        if current_level == CertificationLevel.FOUNDATION:
             return CertificationLevel.PRACTITIONER.value
-        elif current_level == CertificationLevel.PRACTITIONER:
+        if current_level == CertificationLevel.PRACTITIONER:
             return CertificationLevel.EXPERT.value
-        elif current_level == CertificationLevel.EXPERT:
+        if current_level == CertificationLevel.EXPERT:
             return CertificationLevel.MASTER.value
         return None
 
     def generate_certificate(
         self, learner_id: str, level: CertificationLevel
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate a digital certificate for a learner."""
         if learner_id not in self.learner_records:
             return {"error": "Learner not found"}

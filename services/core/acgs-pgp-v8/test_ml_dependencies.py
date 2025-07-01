@@ -8,8 +8,8 @@ and verifies constitutional hash integrity.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import sys
 import logging
+import sys
 from datetime import datetime
 
 # Configure logging
@@ -35,29 +35,29 @@ def test_advanced_ml_imports():
     """Test advanced ML library imports."""
     try:
         # Advanced sklearn features
-        from sklearn.experimental import enable_iterative_imputer
-        from sklearn.impute import IterativeImputer
-        from sklearn.preprocessing import StandardScaler, PolynomialFeatures
-        from sklearn.model_selection import StratifiedKFold, TimeSeriesSplit
-        from sklearn.feature_selection import SelectKBest, f_regression
+        import lightgbm as lgb
 
         # Hyperparameter optimization
         import optuna
 
-        # Imbalanced learning
-        from imblearn.over_sampling import SMOTE
+        # Text analysis
+        import textstat
 
         # Gradient boosting
         import xgboost as xgb
-        import lightgbm as lgb
 
-        # Text analysis
-        import textstat
-        from textblob import TextBlob
+        # Imbalanced learning
+        from imblearn.over_sampling import SMOTE
 
         # Statistical libraries
         from scipy import stats
         from scipy.stats import ks_2samp
+        from sklearn.experimental import enable_iterative_imputer
+        from sklearn.feature_selection import SelectKBest, f_regression
+        from sklearn.impute import IterativeImputer
+        from sklearn.model_selection import StratifiedKFold, TimeSeriesSplit
+        from sklearn.preprocessing import PolynomialFeatures, StandardScaler
+        from textblob import TextBlob
 
         logger.info("✅ Advanced ML libraries imported successfully")
         return True
@@ -70,7 +70,6 @@ def test_iterative_imputer():
     """Test IterativeImputer (MICE) functionality."""
     try:
         import numpy as np
-        from sklearn.experimental import enable_iterative_imputer
         from sklearn.impute import IterativeImputer
 
         # Create test data with missing values
@@ -125,8 +124,8 @@ def test_optuna():
     """Test Optuna hyperparameter optimization."""
     try:
         import optuna
-        from sklearn.ensemble import RandomForestRegressor
         from sklearn.datasets import make_regression
+        from sklearn.ensemble import RandomForestRegressor
         from sklearn.model_selection import cross_val_score
 
         # Create test dataset
@@ -159,8 +158,8 @@ def test_optuna():
 def test_gradient_boosting():
     """Test XGBoost and LightGBM."""
     try:
-        import xgboost as xgb
         import lightgbm as lgb
+        import xgboost as xgb
         from sklearn.datasets import make_regression
 
         # Create test dataset
@@ -217,7 +216,7 @@ def test_constitutional_hash_integrity():
         constitutional_hash = "cdd01ef066bc6cf2"
 
         # Check if hash is maintained in this file
-        with open(__file__, "r") as f:
+        with open(__file__) as f:
             content = f.read()
             assert constitutional_hash in content
 
@@ -258,19 +257,18 @@ def main():
             logger.error(f"❌ Test {test_name} failed with exception: {e}")
             failed += 1
 
-    logger.info(f"\n📊 Test Results:")
+    logger.info("\n📊 Test Results:")
     logger.info(f"✅ Passed: {passed}")
     logger.info(f"❌ Failed: {failed}")
-    logger.info(f"📈 Success Rate: {passed/(passed+failed)*100:.1f}%")
+    logger.info(f"📈 Success Rate: {passed / (passed + failed) * 100:.1f}%")
 
     if failed == 0:
         logger.info(
             "🎉 All tests passed! ML dependencies are compatible with ACGS-PGP v8"
         )
         return True
-    else:
-        logger.error("⚠️ Some tests failed. Please review the issues above.")
-        return False
+    logger.error("⚠️ Some tests failed. Please review the issues above.")
+    return False
 
 
 if __name__ == "__main__":

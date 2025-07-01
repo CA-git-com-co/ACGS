@@ -8,18 +8,17 @@ Include alerts for performance degradation or security violations.
 """
 
 import asyncio
-import json
-import time
 import statistics
-from typing import Dict, List, Any
-from datetime import datetime, timedelta
+import time
+from datetime import datetime
+from typing import Any
+
+import asyncpg
 import httpx
 import redis
-import asyncpg
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
 import uvicorn
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 
 # Configuration
 DATABASE_CONFIG = {
@@ -77,7 +76,7 @@ class ACGSMonitor:
             print(f"❌ Failed to initialize ACGS Monitor: {e}")
             raise
 
-    async def get_system_health(self) -> Dict[str, Any]:
+    async def get_system_health(self) -> dict[str, Any]:
         """Get overall system health status."""
         health_data = {
             "timestamp": datetime.utcnow().isoformat(),
@@ -114,7 +113,7 @@ class ACGSMonitor:
 
         return health_data
 
-    async def get_hitl_metrics(self) -> Dict[str, Any]:
+    async def get_hitl_metrics(self) -> dict[str, Any]:
         """Get HITL decision metrics."""
         try:
             async with self.db_pool.acquire() as conn:
@@ -194,7 +193,7 @@ class ACGSMonitor:
         except Exception as e:
             return {"error": str(e)}
 
-    async def get_agent_metrics(self) -> Dict[str, Any]:
+    async def get_agent_metrics(self) -> dict[str, Any]:
         """Get agent activity and confidence metrics."""
         try:
             async with self.db_pool.acquire() as conn:
@@ -244,7 +243,7 @@ class ACGSMonitor:
         except Exception as e:
             return {"error": str(e)}
 
-    async def get_performance_metrics(self) -> Dict[str, Any]:
+    async def get_performance_metrics(self) -> dict[str, Any]:
         """Get system performance metrics."""
         try:
             # Get Redis performance
@@ -278,7 +277,7 @@ class ACGSMonitor:
         except Exception as e:
             return {"error": str(e)}
 
-    async def check_alerts(self) -> List[Dict[str, Any]]:
+    async def check_alerts(self) -> list[dict[str, Any]]:
         """Check for performance degradation or security violations."""
         new_alerts = []
 
@@ -304,7 +303,7 @@ class ACGSMonitor:
                     {
                         "type": "security",
                         "severity": "warning",
-                        "message": f"High escalation rate ({hitl_metrics['escalation_rate']*100:.1f}%) detected",
+                        "message": f"High escalation rate ({hitl_metrics['escalation_rate'] * 100:.1f}%) detected",
                         "timestamp": datetime.utcnow().isoformat(),
                     }
                 )
@@ -315,7 +314,7 @@ class ACGSMonitor:
                     {
                         "type": "security",
                         "severity": "critical",
-                        "message": f"Low constitutional compliance rate ({hitl_metrics['compliance_rate']*100:.1f}%)",
+                        "message": f"Low constitutional compliance rate ({hitl_metrics['compliance_rate'] * 100:.1f}%)",
                         "timestamp": datetime.utcnow().isoformat(),
                     }
                 )
@@ -342,12 +341,12 @@ class ACGSMonitor:
                 {
                     "type": "system",
                     "severity": "error",
-                    "message": f"Alert check failed: {str(e)}",
+                    "message": f"Alert check failed: {e!s}",
                     "timestamp": datetime.utcnow().isoformat(),
                 }
             ]
 
-    async def get_dashboard_data(self) -> Dict[str, Any]:
+    async def get_dashboard_data(self) -> dict[str, Any]:
         """Get comprehensive dashboard data."""
         return {
             "system_health": await self.get_system_health(),

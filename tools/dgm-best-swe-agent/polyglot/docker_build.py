@@ -9,10 +9,10 @@ import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-import docker
-import docker.errors
 from tqdm import tqdm
 
+import docker
+import docker.errors
 from polyglot.constants import (
     BASE_IMAGE_BUILD_DIR,
     ENV_IMAGE_BUILD_DIR,

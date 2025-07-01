@@ -199,10 +199,12 @@ class BiasDetector:
         if FAIRLEARN_AVAILABLE and len(dataset) > 10:
             # Use actual fairlearn implementation
             try:
-                bias_score, explanation, recommendations = (
-                    await self._calculate_fairlearn_metrics(
-                        rule, dataset, protected_attributes, metric
-                    )
+                (
+                    bias_score,
+                    explanation,
+                    recommendations,
+                ) = await self._calculate_fairlearn_metrics(
+                    rule, dataset, protected_attributes, metric
                 )
                 threshold = metric.threshold or 0.1
                 bias_detected = bias_score > threshold
@@ -299,12 +301,11 @@ class BiasDetector:
         if "allow" in rule_content or "permit" in rule_content:
             # More permissive rule
             return secure_random.choices([0, 1], weights=[0.3, 0.7], k=len(df))
-        elif "deny" in rule_content or "restrict" in rule_content:
+        if "deny" in rule_content or "restrict" in rule_content:
             # More restrictive rule
             return secure_random.choices([0, 1], weights=[0.7, 0.3], k=len(df))
-        else:
-            # Balanced rule
-            return secure_random.choices([0, 1], weights=[0.5, 0.5], k=len(df))
+        # Balanced rule
+        return secure_random.choices([0, 1], weights=[0.5, 0.5], k=len(df))
 
     async def _heuristic_bias_detection(
         self,
@@ -522,12 +523,11 @@ class BiasDetector:
         """Determine risk level based on bias score."""
         if bias_score >= 0.7:
             return "critical"
-        elif bias_score >= 0.5:
+        if bias_score >= 0.5:
             return "high"
-        elif bias_score >= 0.3:
+        if bias_score >= 0.3:
             return "medium"
-        else:
-            return "low"
+        return "low"
 
     def _generate_bias_summary(
         self, results: list[BiasDetectionResult], overall_score: float, risk_level: str
@@ -798,10 +798,9 @@ class BiasDetector:
         """Determine compliance status based on fairness score."""
         if fairness_score >= 0.9:
             return "compliant"
-        elif fairness_score >= 0.7:
+        if fairness_score >= 0.7:
             return "requires_review"
-        else:
-            return "non_compliant"
+        return "non_compliant"
 
     def _generate_fairness_summary(
         self, results: list[FairnessValidationResult], overall_score: float, status: str

@@ -15,22 +15,17 @@ Features:
 """
 
 import asyncio
-import json
-import logging
 import time
-import hashlib
-import numpy as np
-from datetime import datetime, timedelta
-from typing import Dict, List, Tuple, Any, Optional, Union
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from enum import Enum
-import aiohttp
+from typing import Any
+
+import numpy as np
 import redis.asyncio as redis
+import structlog
+from sklearn.cluster import DBSCAN
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
-from sklearn.cluster import DBSCAN
-import joblib
-import structlog
 
 # Configure structured logging
 logger = structlog.get_logger()
@@ -82,11 +77,11 @@ class ThreatEvent:
     threat_level: ThreatLevel
     detection_method: DetectionMethod
     confidence: float
-    source_ip: Optional[str]
-    user_id: Optional[str]
+    source_ip: str | None
+    user_id: str | None
     description: str
-    indicators: Dict[str, Any]
-    context: Dict[str, Any]
+    indicators: dict[str, Any]
+    context: dict[str, Any]
     mitigation_applied: bool = False
     false_positive: bool = False
 
@@ -96,7 +91,7 @@ class BehavioralProfile:
     """User behavioral profile for anomaly detection"""
 
     user_id: str
-    normal_patterns: Dict[str, Any]
+    normal_patterns: dict[str, Any]
     risk_score: float
     last_updated: float
     anomaly_threshold: float = 0.7
@@ -113,13 +108,13 @@ class ThreatIntelligence:
     source: str
     first_seen: float
     last_seen: float
-    tags: List[str]
+    tags: list[str]
 
 
 class AdvancedThreatDetector:
     """Advanced threat detection system for ACGS-1"""
 
-    def __init__(self, config: Dict[str, Any] = None):
+    def __init__(self, config: dict[str, Any] = None):
         self.config = config or {}
         self.redis_client = None
         self.ml_models = {}
@@ -177,7 +172,7 @@ class AdvancedThreatDetector:
             logger.error("Failed to initialize threat detection system", error=str(e))
             raise
 
-    async def detect_threats(self, event_data: Dict[str, Any]) -> List[ThreatEvent]:
+    async def detect_threats(self, event_data: dict[str, Any]) -> list[ThreatEvent]:
         """Main threat detection pipeline"""
         threats = []
 
@@ -228,8 +223,8 @@ class AdvancedThreatDetector:
             return []
 
     async def _ml_anomaly_detection(
-        self, features: np.ndarray, event_data: Dict[str, Any]
-    ) -> Optional[ThreatEvent]:
+        self, features: np.ndarray, event_data: dict[str, Any]
+    ) -> ThreatEvent | None:
         """Machine learning-based anomaly detection"""
         try:
             if not hasattr(self.anomaly_detector, "decision_function"):
@@ -273,8 +268,8 @@ class AdvancedThreatDetector:
             return None
 
     async def _behavioral_analysis(
-        self, features: np.ndarray, event_data: Dict[str, Any]
-    ) -> Optional[ThreatEvent]:
+        self, features: np.ndarray, event_data: dict[str, Any]
+    ) -> ThreatEvent | None:
         """Behavioral pattern analysis"""
         try:
             user_id = event_data.get("user_id")
@@ -325,8 +320,8 @@ class AdvancedThreatDetector:
             return None
 
     async def _signature_detection(
-        self, event_data: Dict[str, Any]
-    ) -> List[ThreatEvent]:
+        self, event_data: dict[str, Any]
+    ) -> list[ThreatEvent]:
         """Signature-based threat detection"""
         threats = []
 

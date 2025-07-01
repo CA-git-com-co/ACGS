@@ -2,13 +2,6 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.validators.gemini_validators
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance_synthesis.gs_service.app.validators.gemini_validators import (
-    GeminiProValidator,
-    GeminiFlashValidator,
-)
-
 
 class TestGeminiProValidator:
     """Test suite for GeminiProValidator."""

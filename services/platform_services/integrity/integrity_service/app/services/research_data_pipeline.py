@@ -189,14 +189,13 @@ class ResearchDataPipeline:
 
         if config.method == AnonymizationMethod.K_ANONYMITY:
             return await self._apply_k_anonymity(research_data, config)
-        elif config.method == AnonymizationMethod.DIFFERENTIAL_PRIVACY:
+        if config.method == AnonymizationMethod.DIFFERENTIAL_PRIVACY:
             return await self._apply_differential_privacy(research_data, config)
-        elif config.method == AnonymizationMethod.GENERALIZATION:
+        if config.method == AnonymizationMethod.GENERALIZATION:
             return await self._apply_generalization(research_data, config)
-        elif config.method == AnonymizationMethod.SUPPRESSION:
+        if config.method == AnonymizationMethod.SUPPRESSION:
             return await self._apply_suppression(research_data, config)
-        else:
-            raise ValueError(f"Unsupported anonymization method: {config.method}")
+        raise ValueError(f"Unsupported anonymization method: {config.method}")
 
     async def generate_statistical_summary(
         self, research_data: list[dict[str, Any]]
@@ -373,9 +372,10 @@ class ResearchDataPipeline:
             )
 
             # Anonymize the data
-            anonymized_data, anonymization_metadata = (
-                await self.anonymize_research_data(raw_data, anonymization_config)
-            )
+            (
+                anonymized_data,
+                anonymization_metadata,
+            ) = await self.anonymize_research_data(raw_data, anonymization_config)
 
             # Generate statistical summary
             statistical_summary = await self.generate_statistical_summary(
@@ -430,7 +430,7 @@ class ResearchDataPipeline:
                 pgp_signature = f"PGP_SIGNATURE_PLACEHOLDER_{data_hash[:16]}"
                 signed_by_key_id = "research_export_key"
             except Exception as e:
-                logger.warning(f"Failed to sign research export: {str(e)}")
+                logger.warning(f"Failed to sign research export: {e!s}")
 
             # Calculate privacy budget used (for differential privacy)
             privacy_budget_used = None
@@ -468,7 +468,7 @@ class ResearchDataPipeline:
 
         except Exception as e:
             await db.rollback()
-            logger.error(f"Failed to create research export: {str(e)}")
+            logger.error(f"Failed to create research export: {e!s}")
             raise
 
     async def _apply_k_anonymity(

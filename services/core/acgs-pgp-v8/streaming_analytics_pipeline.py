@@ -13,22 +13,23 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio
-import logging
 import json
+import logging
+import warnings
+from collections import deque
+from collections.abc import AsyncGenerator, Callable
+from dataclasses import asdict, dataclass
+from datetime import datetime
+
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Callable, AsyncGenerator
-from dataclasses import dataclass, asdict
-from collections import deque
-import warnings
 
 warnings.filterwarnings("ignore")
 
 # Import Phase 1 event-driven frameworks
-from event_driven_data_quality import EventDrivenDataQualityFramework, QualityEvent
-from event_driven_drift_detection import EventDrivenDriftDetector, DriftEvent
-from nats_event_broker import NATSEventBroker, ACGSEvent
+from event_driven_data_quality import EventDrivenDataQualityFramework
+from event_driven_drift_detection import EventDrivenDriftDetector
+from nats_event_broker import ACGSEvent, NATSEventBroker
 
 # NATS Streaming integration
 try:
@@ -82,7 +83,7 @@ class StreamingAnalyticsPipeline:
         self.nats_url = nats_url
         self.cluster_id = cluster_id
         self.client_id = client_id
-        self.stan_client: Optional[STAN] = None
+        self.stan_client: STAN | None = None
 
         # Initialize Phase 1 frameworks
         self.quality_framework = EventDrivenDataQualityFramework(nats_url)
@@ -112,7 +113,7 @@ class StreamingAnalyticsPipeline:
         }
 
         # Data buffers for windowed analysis
-        self.data_buffers: Dict[str, deque] = {
+        self.data_buffers: dict[str, deque] = {
             "quality": deque(maxlen=10000),
             "drift": deque(maxlen=20000),
             "performance": deque(maxlen=5000),
@@ -120,9 +121,9 @@ class StreamingAnalyticsPipeline:
         }
 
         # Window managers
-        self.active_windows: Dict[str, Dict] = {}
+        self.active_windows: dict[str, dict] = {}
 
-        logger.info(f"Streaming Analytics Pipeline initialized")
+        logger.info("Streaming Analytics Pipeline initialized")
         logger.info(f"Constitutional hash: {self.constitutional_hash}")
         logger.info(f"NATS Streaming URL: {self.nats_url}")
 
@@ -191,7 +192,6 @@ class StreamingAnalyticsPipeline:
                     time_since_last >= window_config.slide_interval_seconds
                     or len(window_buffer) >= window_config.max_records
                 ):
-
                     # Create DataFrame from window data
                     if window_buffer:
                         window_df = pd.DataFrame(list(window_buffer))

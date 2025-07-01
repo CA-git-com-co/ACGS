@@ -9,7 +9,7 @@ import json
 import logging
 import time
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -28,7 +28,7 @@ class BlueGreenSystemDeployer:
         )
         self.constitutional_hash = "cdd01ef066bc6cf2"
 
-    async def deploy_complete_system(self) -> Dict[str, Any]:
+    async def deploy_complete_system(self) -> dict[str, Any]:
         """Deploy complete blue-green system"""
         logger.info("🚀 Starting Complete Blue-Green System Deployment")
         logger.info("=" * 80)
@@ -83,7 +83,7 @@ class BlueGreenSystemDeployer:
             logger.error(f"❌ Blue-Green system deployment failed: {e}")
             return {"status": "failed", "error": str(e), "results": results}
 
-    async def validate_prerequisites(self) -> Dict[str, Any]:
+    async def validate_prerequisites(self) -> dict[str, Any]:
         """Validate system prerequisites"""
         logger.info("🔍 Validating prerequisites...")
 
@@ -135,7 +135,7 @@ class BlueGreenSystemDeployer:
 
         return validation
 
-    async def create_namespaces(self) -> Dict[str, Any]:
+    async def create_namespaces(self) -> dict[str, Any]:
         """Create Kubernetes namespaces and RBAC"""
         logger.info("📁 Creating namespaces and RBAC...")
 
@@ -184,7 +184,7 @@ class BlueGreenSystemDeployer:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def deploy_shared_resources(self) -> Dict[str, Any]:
+    async def deploy_shared_resources(self) -> dict[str, Any]:
         """Deploy shared resources (database, Redis, monitoring)"""
         logger.info("🗄️ Deploying shared resources...")
 
@@ -216,7 +216,7 @@ class BlueGreenSystemDeployer:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def deploy_blue_environment(self) -> Dict[str, Any]:
+    async def deploy_blue_environment(self) -> dict[str, Any]:
         """Deploy blue environment"""
         logger.info("🟦 Deploying blue environment...")
 
@@ -243,7 +243,7 @@ class BlueGreenSystemDeployer:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def deploy_green_environment(self) -> Dict[str, Any]:
+    async def deploy_green_environment(self) -> dict[str, Any]:
         """Deploy green environment"""
         logger.info("🟩 Deploying green environment...")
 
@@ -270,7 +270,7 @@ class BlueGreenSystemDeployer:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def setup_traffic_routing(self) -> Dict[str, Any]:
+    async def setup_traffic_routing(self) -> dict[str, Any]:
         """Setup traffic routing and ingress"""
         logger.info("🚦 Setting up traffic routing...")
 
@@ -297,7 +297,7 @@ class BlueGreenSystemDeployer:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def deploy_monitoring(self) -> Dict[str, Any]:
+    async def deploy_monitoring(self) -> dict[str, Any]:
         """Deploy monitoring and health check systems"""
         logger.info("📊 Deploying monitoring systems...")
 
@@ -325,7 +325,7 @@ class BlueGreenSystemDeployer:
 
         return monitoring_results
 
-    async def validate_complete_system(self) -> Dict[str, Any]:
+    async def validate_complete_system(self) -> dict[str, Any]:
         """Validate the complete blue-green system"""
         logger.info("✅ Validating complete system...")
 
@@ -368,7 +368,7 @@ class BlueGreenSystemDeployer:
 
         return validation_results
 
-    async def setup_automation(self) -> Dict[str, Any]:
+    async def setup_automation(self) -> dict[str, Any]:
         """Setup automation scripts and tools"""
         logger.info("🤖 Setting up automation...")
 
@@ -397,7 +397,7 @@ class BlueGreenSystemDeployer:
 
         return automation_results
 
-    async def generate_documentation(self) -> Dict[str, Any]:
+    async def generate_documentation(self) -> dict[str, Any]:
         """Generate deployment documentation"""
         logger.info("📚 Generating documentation...")
 
@@ -551,7 +551,7 @@ See runbooks in infrastructure/monitoring/runbooks/
 
         logger.warning(f"{namespace} environment may not be fully ready")
 
-    async def verify_shared_resources(self) -> Dict[str, Any]:
+    async def verify_shared_resources(self) -> dict[str, Any]:
         """Verify shared resources are running"""
         resources = ["acgs-postgres", "acgs-redis", "acgs-prometheus"]
         status = {}
@@ -581,7 +581,7 @@ See runbooks in infrastructure/monitoring/runbooks/
 
         return status
 
-    async def verify_environment(self, environment: str) -> Dict[str, Any]:
+    async def verify_environment(self, environment: str) -> dict[str, Any]:
         """Verify environment deployment"""
         namespace = f"acgs-{environment}"
         services = ["auth-service", "ac-service", "pgc-service"]
@@ -612,7 +612,7 @@ See runbooks in infrastructure/monitoring/runbooks/
 
         return status
 
-    async def verify_traffic_routing(self) -> Dict[str, Any]:
+    async def verify_traffic_routing(self) -> dict[str, Any]:
         """Verify traffic routing setup"""
         result = await self.run_command(
             ["kubectl", "get", "ingress", "-n", "acgs-shared", "-o", "json"]
@@ -623,7 +623,7 @@ See runbooks in infrastructure/monitoring/runbooks/
             "traffic_controller_ready": True,  # Simplified check
         }
 
-    async def validate_constitutional_compliance(self) -> Dict[str, Any]:
+    async def validate_constitutional_compliance(self) -> dict[str, Any]:
         """Validate constitutional compliance"""
         return {
             "constitutional_hash": self.constitutional_hash,
@@ -631,7 +631,7 @@ See runbooks in infrastructure/monitoring/runbooks/
             "governance_workflows": "operational",
         }
 
-    async def check_system_performance(self) -> Dict[str, Any]:
+    async def check_system_performance(self) -> dict[str, Any]:
         """Check system performance"""
         return {
             "response_times": "< 500ms",
@@ -639,7 +639,7 @@ See runbooks in infrastructure/monitoring/runbooks/
             "resource_usage": "within_limits",
         }
 
-    async def run_command(self, cmd: List[str]) -> Dict[str, Any]:
+    async def run_command(self, cmd: list[str]) -> dict[str, Any]:
         """Run shell command"""
         try:
             process = await asyncio.create_subprocess_exec(
@@ -656,7 +656,7 @@ See runbooks in infrastructure/monitoring/runbooks/
         except Exception as e:
             return {"returncode": -1, "stdout": "", "stderr": str(e)}
 
-    def generate_deployment_summary(self, results: Dict[str, Any]) -> Dict[str, Any]:
+    def generate_deployment_summary(self, results: dict[str, Any]) -> dict[str, Any]:
         """Generate deployment summary"""
         summary = {
             "components_deployed": 0,

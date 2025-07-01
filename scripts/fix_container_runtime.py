@@ -34,25 +34,31 @@ class ContainerRuntimeFixer:
         """Check if Docker is available and running."""
         try:
             result = subprocess.run(
-                ["docker", "--version"], capture_output=True, text=True, timeout=10
+                ["docker", "--version"],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
             if result.returncode == 0:
                 logger.info(f"✅ Docker available: {result.stdout.strip()}")
 
                 # Check if Docker daemon is running
                 result = subprocess.run(
-                    ["docker", "info"], capture_output=True, text=True, timeout=10
+                    ["docker", "info"],
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
                 )
                 if result.returncode == 0:
                     logger.info("✅ Docker daemon is running")
                     self.docker_available = True
                     return True
-                else:
-                    logger.warning("⚠️ Docker daemon is not running")
-                    return False
-            else:
-                logger.warning("⚠️ Docker not available")
+                logger.warning("⚠️ Docker daemon is not running")
                 return False
+            logger.warning("⚠️ Docker not available")
+            return False
         except Exception as e:
             logger.warning(f"⚠️ Docker check failed: {e}")
             return False
@@ -102,6 +108,7 @@ class ContainerRuntimeFixer:
                 try:
                     result = subprocess.run(
                         ["docker", "info", "--format", "{{.CgroupDriver}}"],
+                        check=False,
                         capture_output=True,
                         text=True,
                         timeout=10,
@@ -124,6 +131,7 @@ class ContainerRuntimeFixer:
             try:
                 result = subprocess.run(
                     ["systemctl", "--version"],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=5,
@@ -165,6 +173,7 @@ class ContainerRuntimeFixer:
             logger.info("Stopping Docker service...")
             result = subprocess.run(
                 ["sudo", "systemctl", "stop", "docker"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -198,6 +207,7 @@ class ContainerRuntimeFixer:
             logger.info("Starting Docker service...")
             result = subprocess.run(
                 ["sudo", "systemctl", "start", "docker"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=60,
@@ -210,18 +220,20 @@ class ContainerRuntimeFixer:
 
                 # Verify Docker is working
                 result = subprocess.run(
-                    ["docker", "info"], capture_output=True, text=True, timeout=10
+                    ["docker", "info"],
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
                 )
                 if result.returncode == 0:
                     logger.info("✅ Docker is working correctly")
                     self.fixes_applied.append("Docker cgroup configuration fixed")
                     return True
-                else:
-                    logger.error("❌ Docker is not working after restart")
-                    return False
-            else:
-                logger.error(f"❌ Failed to start Docker service: {result.stderr}")
+                logger.error("❌ Docker is not working after restart")
                 return False
+            logger.error(f"❌ Failed to start Docker service: {result.stderr}")
+            return False
 
         except Exception as e:
             logger.error(f"❌ Failed to fix Docker configuration: {e}")
@@ -318,6 +330,7 @@ echo "Note: Services need to be started manually in separate terminals"
             if self.docker_available:
                 result = subprocess.run(
                     ["docker", "run", "--rm", "hello-world"],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=60,

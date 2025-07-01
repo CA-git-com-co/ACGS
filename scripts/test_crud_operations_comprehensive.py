@@ -87,7 +87,7 @@ class CRUDTester:
 
         try:
             result = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=timeout
+                cmd, check=False, capture_output=True, text=True, timeout=timeout
             )
             output_lines = result.stdout.strip().split("\n")
 
@@ -131,24 +131,23 @@ class CRUDTester:
             self.success_count += 1
             print(f"✅ {service_name} health check (nginx): {result['status_code']}")
             return True
-        else:
-            # Try direct service port as fallback
-            if service_name in DIRECT_SERVICES:
-                direct_config = DIRECT_SERVICES[service_name]
-                url = f"http://localhost:{direct_config['port']}/health"
-                result = self.run_curl_command("GET", url)
+        # Try direct service port as fallback
+        if service_name in DIRECT_SERVICES:
+            direct_config = DIRECT_SERVICES[service_name]
+            url = f"http://localhost:{direct_config['port']}/health"
+            result = self.run_curl_command("GET", url)
 
-                if result["success"]:
-                    self.success_count += 1
-                    print(
-                        f"✅ {service_name} health check (direct): {result['status_code']}"
-                    )
-                    return True
+            if result["success"]:
+                self.success_count += 1
+                print(
+                    f"✅ {service_name} health check (direct): {result['status_code']}"
+                )
+                return True
 
-            print(
-                f"❌ {service_name} health check failed: {result['status_code']} - {result.get('error', 'Unknown error')}"
-            )
-            return False
+        print(
+            f"❌ {service_name} health check failed: {result['status_code']} - {result.get('error', 'Unknown error')}"
+        )
+        return False
 
     def authenticate_user(self) -> bool:
         """Authenticate and get JWT token."""
@@ -191,7 +190,7 @@ class CRUDTester:
             import subprocess
 
             curl_result = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=10
+                cmd, check=False, capture_output=True, text=True, timeout=10
             )
             output_lines = curl_result.stdout.strip().split("\n")
 
@@ -406,7 +405,7 @@ class CRUDTester:
 
         # Test service health checks
         print("\n🏥 Testing Service Health Checks...")
-        for service_name in SERVICES.keys():
+        for service_name in SERVICES:
             self.test_service_health(service_name)
 
         # Authenticate
@@ -435,11 +434,10 @@ class CRUDTester:
         if success_rate >= target_success_rate:
             print(f"✅ SUCCESS: Achieved target success rate of {target_success_rate}%")
             return True
-        else:
-            print(
-                f"❌ FAILED: Did not achieve target success rate of {target_success_rate}%"
-            )
-            return False
+        print(
+            f"❌ FAILED: Did not achieve target success rate of {target_success_rate}%"
+        )
+        return False
 
 
 def main():

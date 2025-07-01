@@ -6,15 +6,15 @@ Provides validation and serialization for API requests and responses.
 """
 
 from datetime import datetime
-from typing import Dict, List, Optional, Any, Union
+from typing import Any
 
 from pydantic import BaseModel, Field, validator
 
 from ..models.hitl_models import (
-    EscalationLevel,
     DecisionStatus,
-    ReviewTaskStatus,
+    EscalationLevel,
     OperationRiskLevel,
+    ReviewTaskStatus,
 )
 
 
@@ -23,8 +23,8 @@ class AgentOperationRequestCreate(BaseModel):
 
     agent_id: str = Field(..., description="Agent identifier")
     operation_type: str = Field(..., description="Type of operation being requested")
-    operation_data: Dict[str, Any] = Field(..., description="Operation-specific data")
-    operation_context: Optional[Dict[str, Any]] = Field(
+    operation_data: dict[str, Any] = Field(..., description="Operation-specific data")
+    operation_context: dict[str, Any] | None = Field(
         None, description="Additional context"
     )
 
@@ -32,12 +32,12 @@ class AgentOperationRequestCreate(BaseModel):
     risk_level: OperationRiskLevel = Field(
         default=OperationRiskLevel.MEDIUM, description="Operation risk level"
     )
-    risk_factors: Optional[Dict[str, Any]] = Field(
+    risk_factors: dict[str, Any] | None = Field(
         None, description="Detailed risk factors"
     )
 
     # Constitutional compliance
-    constitutional_principles: Optional[List[str]] = Field(
+    constitutional_principles: list[str] | None = Field(
         None, description="Relevant constitutional principles"
     )
     requires_constitutional_review: bool = Field(
@@ -45,11 +45,11 @@ class AgentOperationRequestCreate(BaseModel):
     )
 
     # Timing
-    expires_at: Optional[datetime] = Field(None, description="Request expiration time")
+    expires_at: datetime | None = Field(None, description="Request expiration time")
 
     # Client context
-    client_ip: Optional[str] = Field(None, description="Client IP address")
-    user_agent: Optional[str] = Field(None, description="Client user agent")
+    client_ip: str | None = Field(None, description="Client IP address")
+    user_agent: str | None = Field(None, description="Client user agent")
 
     @validator("operation_type")
     def validate_operation_type(cls, v):
@@ -63,7 +63,7 @@ class HITLEvaluationRequest(BaseModel):
     """Schema for HITL evaluation request."""
 
     operation_request: AgentOperationRequestCreate
-    force_escalation_level: Optional[EscalationLevel] = Field(
+    force_escalation_level: EscalationLevel | None = Field(
         None, description="Force specific escalation level"
     )
     bypass_cache: bool = Field(default=False, description="Bypass decision cache")
@@ -87,23 +87,23 @@ class HITLDecisionResponse(BaseModel):
     )
 
     # Decision details
-    decision_reasoning: Optional[str] = None
-    risk_assessment: Optional[Dict[str, Any]] = None
-    constitutional_compliance_score: Optional[float] = Field(None, ge=0.0, le=1.0)
+    decision_reasoning: str | None = None
+    risk_assessment: dict[str, Any] | None = None
+    constitutional_compliance_score: float | None = Field(None, ge=0.0, le=1.0)
 
     # Processing metrics
-    processing_time_ms: Optional[float] = None
+    processing_time_ms: float | None = None
     cache_hit: bool = False
-    decision_algorithm: Optional[str] = None
+    decision_algorithm: str | None = None
 
     # Human involvement
     requires_human_review: bool = False
-    human_reviewer_id: Optional[int] = None
-    human_decision_at: Optional[datetime] = None
+    human_reviewer_id: int | None = None
+    human_decision_at: datetime | None = None
 
     # Timing
     created_at: datetime
-    completed_at: Optional[datetime] = None
+    completed_at: datetime | None = None
 
     # Constitutional compliance
     constitutional_hash: str = "cdd01ef066bc6cf2"
@@ -124,8 +124,8 @@ class AgentConfidenceProfileResponse(BaseModel):
     failed_operations: int = Field(..., ge=0)
 
     # Operation-specific scores
-    operation_type_scores: Dict[str, float] = Field(default_factory=dict)
-    risk_level_scores: Dict[str, float] = Field(default_factory=dict)
+    operation_type_scores: dict[str, float] = Field(default_factory=dict)
+    risk_level_scores: dict[str, float] = Field(default_factory=dict)
 
     # Learning parameters
     learning_rate: float = Field(..., ge=0.0, le=1.0)
@@ -138,7 +138,7 @@ class AgentConfidenceProfileResponse(BaseModel):
     # Timing
     created_at: datetime
     updated_at: datetime
-    last_decision_at: Optional[datetime] = None
+    last_decision_at: datetime | None = None
 
     class Config:
         from_attributes = True
@@ -149,9 +149,9 @@ class AgentConfidenceUpdate(BaseModel):
 
     operation_type: str
     success: bool
-    learning_rate: Optional[float] = Field(None, ge=0.0, le=1.0)
-    constitutional_compliant: Optional[bool] = None
-    feedback_notes: Optional[str] = None
+    learning_rate: float | None = Field(None, ge=0.0, le=1.0)
+    constitutional_compliant: bool | None = None
+    feedback_notes: str | None = None
 
 
 class HumanReviewTaskResponse(BaseModel):
@@ -164,27 +164,27 @@ class HumanReviewTaskResponse(BaseModel):
     status: ReviewTaskStatus
 
     # Assignment
-    assigned_reviewer_id: Optional[int] = None
-    assigned_at: Optional[datetime] = None
-    reviewer_expertise: Optional[Dict[str, Any]] = None
+    assigned_reviewer_id: int | None = None
+    assigned_at: datetime | None = None
+    reviewer_expertise: dict[str, Any] | None = None
 
     # Task context
     operation_summary: str
-    risk_factors: Optional[Dict[str, Any]] = None
-    constitutional_concerns: Optional[Dict[str, Any]] = None
-    agent_context: Optional[Dict[str, Any]] = None
+    risk_factors: dict[str, Any] | None = None
+    constitutional_concerns: dict[str, Any] | None = None
+    agent_context: dict[str, Any] | None = None
 
     # Review details
-    review_started_at: Optional[datetime] = None
-    review_completed_at: Optional[datetime] = None
-    review_decision: Optional[str] = None
-    review_reasoning: Optional[str] = None
-    review_confidence: Optional[float] = Field(None, ge=0.0, le=1.0)
+    review_started_at: datetime | None = None
+    review_completed_at: datetime | None = None
+    review_decision: str | None = None
+    review_reasoning: str | None = None
+    review_confidence: float | None = Field(None, ge=0.0, le=1.0)
 
     # Timing
     created_at: datetime
     due_at: datetime
-    expires_at: Optional[datetime] = None
+    expires_at: datetime | None = None
 
     class Config:
         from_attributes = True
@@ -205,9 +205,9 @@ class HumanReviewSubmission(BaseModel):
     )
 
     # Additional feedback
-    suggested_confidence_adjustment: Optional[float] = Field(None, ge=-1.0, le=1.0)
-    constitutional_concerns: Optional[List[str]] = None
-    recommendations: Optional[str] = None
+    suggested_confidence_adjustment: float | None = Field(None, ge=-1.0, le=1.0)
+    constitutional_concerns: list[str] | None = None
+    recommendations: str | None = None
 
     @validator("review_decision")
     def validate_review_decision(cls, v):
@@ -232,17 +232,17 @@ class HITLFeedbackCreate(BaseModel):
     )
 
     # Confidence feedback
-    suggested_confidence: Optional[float] = Field(None, ge=0.0, le=1.0)
+    suggested_confidence: float | None = Field(None, ge=0.0, le=1.0)
 
     # Human feedback
-    human_agreed_with_decision: Optional[bool] = None
-    human_reasoning: Optional[str] = None
-    human_confidence_rating: Optional[float] = Field(None, ge=0.0, le=1.0)
+    human_agreed_with_decision: bool | None = None
+    human_reasoning: str | None = None
+    human_confidence_rating: float | None = Field(None, ge=0.0, le=1.0)
 
     # Outcome validation
-    actual_outcome: Optional[str] = None
-    outcome_details: Optional[Dict[str, Any]] = None
-    constitutional_compliance_actual: Optional[bool] = None
+    actual_outcome: str | None = None
+    outcome_details: dict[str, Any] | None = None
+    constitutional_compliance_actual: bool | None = None
 
     # Learning parameters
     learning_weight: float = Field(default=1.0, ge=0.0, le=10.0)
@@ -277,11 +277,11 @@ class HITLDashboardData(BaseModel):
     constitutional_violations_today: int
 
     # Recent activity
-    recent_decisions: List[HITLDecisionResponse]
-    recent_reviews: List[HumanReviewTaskResponse]
+    recent_decisions: list[HITLDecisionResponse]
+    recent_reviews: list[HumanReviewTaskResponse]
 
     # Alerts
-    active_alerts: List[Dict[str, Any]]
+    active_alerts: list[dict[str, Any]]
 
 
 class HITLMetrics(BaseModel):
@@ -306,9 +306,9 @@ class HITLMetrics(BaseModel):
     confidence_accuracy: float
 
     # Agent metrics
-    agent_confidence_distribution: Dict[str, int]  # confidence_range -> count
-    top_performing_agents: List[str]
-    agents_needing_attention: List[str]
+    agent_confidence_distribution: dict[str, int]  # confidence_range -> count
+    top_performing_agents: list[str]
+    agents_needing_attention: list[str]
 
     # Constitutional compliance
     constitutional_compliance_rate: float
@@ -324,44 +324,44 @@ class HITLConfigUpdate(BaseModel):
     """Schema for updating HITL configuration."""
 
     # Escalation thresholds
-    level_1_confidence_threshold: Optional[float] = Field(None, ge=0.0, le=1.0)
-    level_2_confidence_threshold: Optional[float] = Field(None, ge=0.0, le=1.0)
-    level_3_confidence_threshold: Optional[float] = Field(None, ge=0.0, le=1.0)
+    level_1_confidence_threshold: float | None = Field(None, ge=0.0, le=1.0)
+    level_2_confidence_threshold: float | None = Field(None, ge=0.0, le=1.0)
+    level_3_confidence_threshold: float | None = Field(None, ge=0.0, le=1.0)
 
     # Risk factors
-    operation_risk_weights: Optional[Dict[str, float]] = None
-    agent_compliance_weights: Optional[Dict[str, float]] = None
+    operation_risk_weights: dict[str, float] | None = None
+    agent_compliance_weights: dict[str, float] | None = None
 
     # Performance tuning
-    cache_ttl_seconds: Optional[int] = Field(None, ge=60, le=86400)
-    max_concurrent_reviews: Optional[int] = Field(None, ge=1, le=1000)
-    decision_timeout_ms: Optional[int] = Field(None, ge=1000, le=300000)
+    cache_ttl_seconds: int | None = Field(None, ge=60, le=86400)
+    max_concurrent_reviews: int | None = Field(None, ge=1, le=1000)
+    decision_timeout_ms: int | None = Field(None, ge=1000, le=300000)
 
     # Learning parameters
-    global_learning_rate: Optional[float] = Field(None, ge=0.0, le=1.0)
-    confidence_decay_rate: Optional[float] = Field(None, ge=0.0, le=1.0)
+    global_learning_rate: float | None = Field(None, ge=0.0, le=1.0)
+    confidence_decay_rate: float | None = Field(None, ge=0.0, le=1.0)
 
 
 class HITLSearchRequest(BaseModel):
     """Schema for searching HITL records."""
 
     # Filters
-    agent_ids: Optional[List[str]] = None
-    operation_types: Optional[List[str]] = None
-    escalation_levels: Optional[List[EscalationLevel]] = None
-    decision_statuses: Optional[List[DecisionStatus]] = None
+    agent_ids: list[str] | None = None
+    operation_types: list[str] | None = None
+    escalation_levels: list[EscalationLevel] | None = None
+    decision_statuses: list[DecisionStatus] | None = None
 
     # Date range
-    start_date: Optional[datetime] = None
-    end_date: Optional[datetime] = None
+    start_date: datetime | None = None
+    end_date: datetime | None = None
 
     # Confidence range
-    min_confidence: Optional[float] = Field(None, ge=0.0, le=1.0)
-    max_confidence: Optional[float] = Field(None, ge=0.0, le=1.0)
+    min_confidence: float | None = Field(None, ge=0.0, le=1.0)
+    max_confidence: float | None = Field(None, ge=0.0, le=1.0)
 
     # Human involvement
-    human_reviewed_only: Optional[bool] = None
-    constitutional_reviewed_only: Optional[bool] = None
+    human_reviewed_only: bool | None = None
+    constitutional_reviewed_only: bool | None = None
 
     # Pagination
     page: int = Field(default=1, ge=1)

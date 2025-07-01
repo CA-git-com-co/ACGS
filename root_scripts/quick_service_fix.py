@@ -66,7 +66,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="{service_name.replace('_', ' ').title()}")
+app = FastAPI(title="{service_name.replace("_", " ").title()}")
 
 # Add CORS middleware
 app.add_middleware(
@@ -80,7 +80,7 @@ app.add_middleware(
 @app.get("/")
 async def root():
     return {{
-        "message": "{service_name.replace('_', ' ').title()} is running",
+        "message": "{service_name.replace("_", " ").title()} is running",
         "status": "operational",
         "port": {port}
     }}
@@ -201,13 +201,11 @@ if __name__ == "__main__":
                 if health_ok:
                     print(f"   ✅ {service_name} is healthy")
                     return True
-                else:
-                    print(f"   ⚠️ {service_name} started but health check failed")
-                    return True  # Keep it running
-            else:
-                stdout, stderr = process.communicate()
-                print(f"   ❌ {service_name} process exited: {stdout[:200]}")
-                return False
+                print(f"   ⚠️ {service_name} started but health check failed")
+                return True  # Keep it running
+            stdout, stderr = process.communicate()
+            print(f"   ❌ {service_name} process exited: {stdout[:200]}")
+            return False
 
         except Exception as e:
             print(f"   ❌ Failed to start {service_name}: {e}")
@@ -277,6 +275,7 @@ if __name__ == "__main__":
             print("\n🏥 Running comprehensive health check...")
             result = subprocess.run(
                 ["python", "comprehensive_system_health_check.py"],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -288,12 +287,10 @@ if __name__ == "__main__":
                 if "6/7 Healthy" in output or "7/7 Healthy" in output:
                     print("   ✅ Comprehensive health check PASSED")
                     return True
-                else:
-                    print("   ⚠️ Comprehensive health check shows partial success")
-                    return True
-            else:
-                print("   ❌ Comprehensive health check FAILED")
-                return False
+                print("   ⚠️ Comprehensive health check shows partial success")
+                return True
+            print("   ❌ Comprehensive health check FAILED")
+            return False
         except Exception as e:
             print(f"   ❌ Health check failed: {e}")
             return False

@@ -2,22 +2,22 @@
 Test suite for DGM database performance optimization.
 """
 
-import asyncio
-import pytest
-from datetime import datetime, timedelta
+from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
+
+from services.core.dgm_service.dgm_service.database.monitoring import (
+    DatabaseAlert,
+    DGMDatabaseMonitor,
+    MonitoringConfig,
+    initialize_database_monitor,
+)
 from services.core.dgm_service.dgm_service.database.performance_optimizer import (
     DGMPerformanceOptimizer,
     OptimizationConfig,
     PerformanceMetrics,
     initialize_performance_optimizer,
-)
-from services.core.dgm_service.dgm_service.database.monitoring import (
-    DGMDatabaseMonitor,
-    MonitoringConfig,
-    DatabaseAlert,
-    initialize_database_monitor,
 )
 
 

@@ -244,7 +244,10 @@ class EnhancementReadinessValidator:
         # Check Python environment
         try:
             python_version = subprocess.run(
-                [sys.executable, "--version"], capture_output=True, text=True
+                [sys.executable, "--version"],
+                check=False,
+                capture_output=True,
+                text=True,
             ).stdout.strip()
 
             if "Python 3." in python_version:
@@ -259,7 +262,7 @@ class EnhancementReadinessValidator:
         # Check Node.js environment
         try:
             node_version = subprocess.run(
-                ["node", "--version"], capture_output=True, text=True
+                ["node", "--version"], check=False, capture_output=True, text=True
             ).stdout.strip()
 
             if node_version.startswith("v"):
@@ -274,7 +277,7 @@ class EnhancementReadinessValidator:
         # Check Solana CLI
         try:
             solana_version = subprocess.run(
-                ["solana", "--version"], capture_output=True, text=True
+                ["solana", "--version"], check=False, capture_output=True, text=True
             ).stdout.strip()
 
             if "solana-cli" in solana_version:
@@ -289,7 +292,7 @@ class EnhancementReadinessValidator:
         # Check Anchor
         try:
             anchor_version = subprocess.run(
-                ["anchor", "--version"], capture_output=True, text=True
+                ["anchor", "--version"], check=False, capture_output=True, text=True
             ).stdout.strip()
 
             if "anchor-cli" in anchor_version:

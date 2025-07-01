@@ -382,7 +382,7 @@ def log_error(
         else:
             logger.info(f"Low severity error: {error.message}", extra=context)
     else:
-        logger.error(f"Unhandled error: {str(error)}", extra=context, exc_info=True)
+        logger.error(f"Unhandled error: {error!s}", extra=context, exc_info=True)
 
 
 def create_error_response(

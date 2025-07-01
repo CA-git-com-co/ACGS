@@ -16,15 +16,14 @@ Key Features:
 import uuid
 from datetime import datetime, timezone
 from enum import Enum
-from typing import List, Optional
 
 from sqlalchemy import (
+    JSON,
     Boolean,
     Column,
     DateTime,
     ForeignKey,
     Integer,
-    JSON,
     String,
     Text,
     UniqueConstraint,
@@ -177,7 +176,7 @@ class Agent(Base):
         """Check if agent has a specific capability."""
         return capability in self.capabilities
 
-    def get_effective_permissions(self) -> List[str]:
+    def get_effective_permissions(self) -> list[str]:
         """Get all effective permissions including role-based permissions."""
         effective_permissions = set(self.permissions)
 

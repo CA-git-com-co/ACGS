@@ -5,13 +5,11 @@ Provides runtime gating and strategy selection for WINA optimization
 with constitutional compliance and performance monitoring.
 """
 
-import asyncio
 import logging
 import time
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Dict, Any, List, Optional, Callable
 from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +40,7 @@ class GatingContext:
     operation_type: str
     risk_level: str
     constitutional_score: float
-    performance_metrics: Dict[str, float]
+    performance_metrics: dict[str, float]
     historical_success_rate: float
     current_load: float
 
@@ -54,9 +52,9 @@ class GatingResult:
     decision: GatingDecision
     confidence: float
     reasoning: str
-    throttle_factor: Optional[float] = None
-    fallback_strategy: Optional[str] = None
-    metadata: Dict[str, Any] = None
+    throttle_factor: float | None = None
+    fallback_strategy: str | None = None
+    metadata: dict[str, Any] = None
 
 
 class RuntimeGating:
@@ -67,7 +65,7 @@ class RuntimeGating:
     performance metrics, and system health to ensure safe optimization.
     """
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         """
         Initialize runtime gating system.
 
@@ -89,9 +87,9 @@ class RuntimeGating:
         self.performance_thresholds = config.get("performance_targets", {})
 
         # Gating history and metrics
-        self.gating_history: List[GatingResult] = []
-        self.decision_counts = {decision: 0 for decision in GatingDecision}
-        self.strategy_performance: Dict[GatingStrategy, List[float]] = {}
+        self.gating_history: list[GatingResult] = []
+        self.decision_counts = dict.fromkeys(GatingDecision, 0)
+        self.strategy_performance: dict[GatingStrategy, list[float]] = {}
 
         # Circuit breaker state
         self.circuit_breaker_active = False
@@ -159,7 +157,7 @@ class RuntimeGating:
             return GatingResult(
                 decision=GatingDecision.BLOCK,
                 confidence=0.0,
-                reasoning=f"Gating evaluation error: {str(e)}",
+                reasoning=f"Gating evaluation error: {e!s}",
             )
 
     async def _conservative_gating(self, context: GatingContext) -> GatingResult:
@@ -397,7 +395,7 @@ class RuntimeGating:
         except Exception as e:
             logger.error(f"Failed to update gating metrics: {e}")
 
-    def get_gating_summary(self) -> Dict[str, Any]:
+    def get_gating_summary(self) -> dict[str, Any]:
         """Get summary of gating performance."""
         try:
             total_decisions = sum(self.decision_counts.values())

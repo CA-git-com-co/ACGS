@@ -8,7 +8,7 @@ Includes circuit breaker patterns, connection pooling, and performance monitorin
 import asyncio
 import logging
 import time
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import FastAPI, Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -145,7 +145,7 @@ class PerformanceEnhancer:
         """Check if circuit breaker is open."""
         return self.circuit_breaker_open
 
-    def get_performance_metrics(self) -> Dict[str, Any]:
+    def get_performance_metrics(self) -> dict[str, Any]:
         """Get current performance metrics."""
         if self.request_count == 0:
             return {

@@ -22,7 +22,7 @@ import logging
 import os
 import time
 from datetime import datetime, timezone
-from typing import Dict, Any, Optional
+from typing import Any
 
 import httpx
 
@@ -405,7 +405,7 @@ if __name__ == "__main__":
     uvicorn.run(app, **config)
 '''
 
-    async def fix_gs_service(self) -> Dict[str, Any]:
+    async def fix_gs_service(self) -> dict[str, Any]:
         """Fix gs-service (port 8004)"""
         logger.info("🔧 Fixing gs-service...")
 
@@ -424,7 +424,7 @@ if __name__ == "__main__":
             backup_path = f"{gs_main_path}.backup.{int(time.time())}"
 
             if os.path.exists(gs_main_path):
-                with open(gs_main_path, "r") as f:
+                with open(gs_main_path) as f:
                     content = f.read()
                 with open(backup_path, "w") as f:
                     f.write(content)
@@ -464,7 +464,7 @@ if __name__ == "__main__":
 
         return fix_result
 
-    async def fix_pgc_service(self) -> Dict[str, Any]:
+    async def fix_pgc_service(self) -> dict[str, Any]:
         """Fix pgc-service (port 8005)"""
         logger.info("🔧 Fixing pgc-service...")
 
@@ -483,7 +483,7 @@ if __name__ == "__main__":
             backup_path = f"{pgc_main_path}.backup.{int(time.time())}"
 
             if os.path.exists(pgc_main_path):
-                with open(pgc_main_path, "r") as f:
+                with open(pgc_main_path) as f:
                     content = f.read()
                 with open(backup_path, "w") as f:
                     f.write(content)
@@ -527,7 +527,7 @@ if __name__ == "__main__":
 
     async def validate_service(
         self, service_url: str, service_name: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate that a service is working correctly"""
         logger.info(f"✅ Validating {service_name}...")
 
@@ -591,7 +591,7 @@ if __name__ == "__main__":
 
         return validation
 
-    async def run_comprehensive_missing_services_fix(self) -> Dict[str, Any]:
+    async def run_comprehensive_missing_services_fix(self) -> dict[str, Any]:
         """Run comprehensive fix for missing services"""
         logger.info("🚀 Starting comprehensive missing services fix...")
 
@@ -640,7 +640,7 @@ async def main():
 
         # Print GS service results
         gs_fix = results["gs_service_fix"]
-        print(f"\nGS SERVICE (port 8004):")
+        print("\nGS SERVICE (port 8004):")
         print(f"  Backup Created: {'YES' if gs_fix['backup_created'] else 'NO'}")
         print(
             f"  Simplified Main Created: {'YES' if gs_fix['simplified_main_created'] else 'NO'}"
@@ -650,7 +650,7 @@ async def main():
 
         # Print PGC service results
         pgc_fix = results["pgc_service_fix"]
-        print(f"\nPGC SERVICE (port 8005):")
+        print("\nPGC SERVICE (port 8005):")
         print(f"  Backup Created: {'YES' if pgc_fix['backup_created'] else 'NO'}")
         print(
             f"  Simplified Main Created: {'YES' if pgc_fix['simplified_main_created'] else 'NO'}"
@@ -663,9 +663,8 @@ async def main():
         if results["overall_success"]:
             print("✅ Missing services fix completed successfully!")
             return 0
-        else:
-            print("❌ Missing services fix encountered issues")
-            return 1
+        print("❌ Missing services fix encountered issues")
+        return 1
 
     except Exception as e:
         logger.error(f"Missing services fix failed: {e}")

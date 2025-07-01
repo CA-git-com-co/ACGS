@@ -16,14 +16,12 @@ Features:
 """
 
 import math
-from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, Generic, List, Optional, TypeVar, Union
+from typing import Any, Generic, TypeVar
 
 from fastapi import HTTPException, Query
 from pydantic import BaseModel, Field, validator
-from sqlalchemy import and_, asc, desc, func, or_, text
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import asc, desc
 from sqlalchemy.orm import Query as SQLQuery
 
 T = TypeVar("T")
@@ -76,7 +74,7 @@ class FilterField(BaseModel):
 
     field: str = Field(..., description="Field name to filter by")
     operator: FilterOperator = Field(FilterOperator.EQ, description="Filter operator")
-    value: Union[str, int, float, bool, List[Any], None] = Field(
+    value: str | int | float | bool | list[Any] | None = Field(
         ..., description="Filter value"
     )
 
@@ -93,7 +91,7 @@ class PaginationParams(BaseModel):
 
     page: int = Field(1, ge=1, description="Page number (1-based)")
     limit: int = Field(50, ge=1, le=1000, description="Items per page")
-    offset: Optional[int] = Field(
+    offset: int | None = Field(
         None, ge=0, description="Offset for cursor-based pagination"
     )
 
@@ -108,8 +106,8 @@ class PaginationParams(BaseModel):
 class SearchParams(BaseModel):
     """Search parameters for full-text search."""
 
-    query: Optional[str] = Field(None, description="Search query string")
-    fields: Optional[List[str]] = Field(None, description="Fields to search in")
+    query: str | None = Field(None, description="Search query string")
+    fields: list[str] | None = Field(None, description="Fields to search in")
     fuzzy: bool = Field(False, description="Enable fuzzy search")
     highlight: bool = Field(False, description="Highlight search terms in results")
 
@@ -123,31 +121,29 @@ class PaginationMetadata(BaseModel):
     total_pages: int = Field(..., description="Total number of pages")
     has_next: bool = Field(..., description="Whether there is a next page")
     has_previous: bool = Field(..., description="Whether there is a previous page")
-    next_page: Optional[int] = Field(None, description="Next page number")
-    previous_page: Optional[int] = Field(None, description="Previous page number")
+    next_page: int | None = Field(None, description="Next page number")
+    previous_page: int | None = Field(None, description="Previous page number")
     first_page: int = Field(1, description="First page number")
     last_page: int = Field(..., description="Last page number")
 
     # Navigation URLs (to be populated by the service)
-    next_url: Optional[str] = Field(None, description="URL for next page")
-    previous_url: Optional[str] = Field(None, description="URL for previous page")
-    first_url: Optional[str] = Field(None, description="URL for first page")
-    last_url: Optional[str] = Field(None, description="URL for last page")
+    next_url: str | None = Field(None, description="URL for next page")
+    previous_url: str | None = Field(None, description="URL for previous page")
+    first_url: str | None = Field(None, description="URL for first page")
+    last_url: str | None = Field(None, description="URL for last page")
 
 
 class PaginatedResponse(BaseModel, Generic[T]):
     """Generic paginated response model."""
 
-    data: List[T] = Field(..., description="Paginated data items")
+    data: list[T] = Field(..., description="Paginated data items")
     pagination: PaginationMetadata = Field(..., description="Pagination metadata")
-    filters_applied: Optional[List[FilterField]] = Field(
+    filters_applied: list[FilterField] | None = Field(
         None, description="Applied filters"
     )
-    sort_applied: Optional[List[SortField]] = Field(None, description="Applied sorting")
-    search_applied: Optional[SearchParams] = Field(None, description="Applied search")
-    total_query_time_ms: Optional[float] = Field(
-        None, description="Query execution time"
-    )
+    sort_applied: list[SortField] | None = Field(None, description="Applied sorting")
+    search_applied: SearchParams | None = Field(None, description="Applied search")
+    total_query_time_ms: float | None = Field(None, description="Query execution time")
 
 
 class EnhancedPaginator:
@@ -157,9 +153,9 @@ class EnhancedPaginator:
         self,
         default_limit: int = 50,
         max_limit: int = 1000,
-        allowed_sort_fields: Optional[List[str]] = None,
-        allowed_filter_fields: Optional[List[str]] = None,
-        allowed_search_fields: Optional[List[str]] = None,
+        allowed_sort_fields: list[str] | None = None,
+        allowed_filter_fields: list[str] | None = None,
+        allowed_search_fields: list[str] | None = None,
     ):
         """Initialize paginator with configuration."""
         self.default_limit = default_limit
@@ -172,20 +168,19 @@ class EnhancedPaginator:
         self,
         page: int = Query(1, ge=1, description="Page number"),
         limit: int = Query(50, ge=1, le=1000, description="Items per page"),
-        offset: Optional[int] = Query(None, ge=0, description="Offset"),
+        offset: int | None = Query(None, ge=0, description="Offset"),
     ) -> PaginationParams:
         """Create pagination parameters with validation."""
-        if limit > self.max_limit:
-            limit = self.max_limit
+        limit = min(limit, self.max_limit)
 
         return PaginationParams(page=page, limit=limit, offset=offset)
 
     def create_sort_params(
         self,
-        sort: Optional[str] = Query(
+        sort: str | None = Query(
             None, description="Sort fields (field:direction,field2:direction)"
         ),
-    ) -> List[SortField]:
+    ) -> list[SortField]:
         """Create sort parameters from query string."""
         if not sort:
             return []
@@ -216,10 +211,10 @@ class EnhancedPaginator:
 
     def create_filter_params(
         self,
-        filters: Optional[str] = Query(
+        filters: str | None = Query(
             None, description="Filters (field:operator:value,field2:operator:value)"
         ),
-    ) -> List[FilterField]:
+    ) -> list[FilterField]:
         """Create filter parameters from query string."""
         if not filters:
             return []
@@ -258,10 +253,10 @@ class EnhancedPaginator:
 
     def create_search_params(
         self,
-        search: Optional[str] = Query(None, description="Search query"),
-        search_fields: Optional[str] = Query(None, description="Fields to search in"),
+        search: str | None = Query(None, description="Search query"),
+        search_fields: str | None = Query(None, description="Fields to search in"),
         fuzzy: bool = Query(False, description="Enable fuzzy search"),
-    ) -> Optional[SearchParams]:
+    ) -> SearchParams | None:
         """Create search parameters."""
         if not search:
             return None
@@ -287,7 +282,7 @@ class EnhancedPaginator:
         return query.offset(pagination.skip).limit(pagination.limit)
 
     def apply_sorting(
-        self, query: SQLQuery, sort_fields: List[SortField], model_class
+        self, query: SQLQuery, sort_fields: list[SortField], model_class
     ) -> SQLQuery:
         """Apply sorting to SQLAlchemy query."""
         for sort_field in sort_fields:
@@ -301,7 +296,7 @@ class EnhancedPaginator:
         return query
 
     def apply_filters(
-        self, query: SQLQuery, filter_fields: List[FilterField], model_class
+        self, query: SQLQuery, filter_fields: list[FilterField], model_class
     ) -> SQLQuery:
         """Apply filters to SQLAlchemy query."""
         for filter_field in filter_fields:
@@ -317,7 +312,7 @@ class EnhancedPaginator:
         self,
         pagination: PaginationParams,
         total_items: int,
-        base_url: Optional[str] = None,
+        base_url: str | None = None,
     ) -> PaginationMetadata:
         """Create pagination metadata with navigation information."""
         total_pages = (
@@ -394,33 +389,33 @@ class EnhancedPaginator:
 
         if operator == FilterOperator.EQ:
             return column == value
-        elif operator == FilterOperator.NE:
+        if operator == FilterOperator.NE:
             return column != value
-        elif operator == FilterOperator.GT:
+        if operator == FilterOperator.GT:
             return column > value
-        elif operator == FilterOperator.GTE:
+        if operator == FilterOperator.GTE:
             return column >= value
-        elif operator == FilterOperator.LT:
+        if operator == FilterOperator.LT:
             return column < value
-        elif operator == FilterOperator.LTE:
+        if operator == FilterOperator.LTE:
             return column <= value
-        elif operator == FilterOperator.LIKE:
+        if operator == FilterOperator.LIKE:
             return column.like(f"%{value}%")
-        elif operator == FilterOperator.ILIKE:
+        if operator == FilterOperator.ILIKE:
             return column.ilike(f"%{value}%")
-        elif operator == FilterOperator.IN:
+        if operator == FilterOperator.IN:
             return column.in_(value)
-        elif operator == FilterOperator.NOT_IN:
+        if operator == FilterOperator.NOT_IN:
             return ~column.in_(value)
-        elif operator == FilterOperator.IS_NULL:
+        if operator == FilterOperator.IS_NULL:
             return column.is_(None)
-        elif operator == FilterOperator.IS_NOT_NULL:
+        if operator == FilterOperator.IS_NOT_NULL:
             return column.isnot(None)
-        elif operator == FilterOperator.BETWEEN:
+        if operator == FilterOperator.BETWEEN:
             return column.between(value[0], value[1])
-        elif operator == FilterOperator.STARTS_WITH:
+        if operator == FilterOperator.STARTS_WITH:
             return column.like(f"{value}%")
-        elif operator == FilterOperator.ENDS_WITH:
+        if operator == FilterOperator.ENDS_WITH:
             return column.like(f"%{value}")
 
         return None
@@ -429,12 +424,12 @@ class EnhancedPaginator:
 # Export main classes and functions
 __all__ = [
     "EnhancedPaginator",
-    "PaginationParams",
+    "FilterField",
+    "FilterOperator",
     "PaginatedResponse",
     "PaginationMetadata",
-    "SortField",
-    "FilterField",
+    "PaginationParams",
     "SearchParams",
     "SortDirection",
-    "FilterOperator",
+    "SortField",
 ]

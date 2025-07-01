@@ -250,12 +250,11 @@ class BiasDetectionEngine:
         """Categorize bias level based on score."""
         if bias_score >= 0.7:
             return "high"
-        elif bias_score >= 0.4:
+        if bias_score >= 0.4:
             return "medium"
-        elif bias_score >= 0.1:
+        if bias_score >= 0.1:
             return "low"
-        else:
-            return "minimal"
+        return "minimal"
 
 
 class FairnessOptimizer:
@@ -531,10 +530,11 @@ class ProactiveFairnessGenerator:
         # Step 2: Optimize for fairness if bias detected or low fairness score
         if bias_analysis["mitigation_required"]:
             logger.info("Bias detected - optimizing for fairness")
-            optimized_policy, assessment = (
-                await self.fairness_optimizer.optimize_policy_for_fairness(
-                    initial_policy, context
-                )
+            (
+                optimized_policy,
+                assessment,
+            ) = await self.fairness_optimizer.optimize_policy_for_fairness(
+                initial_policy, context
             )
         else:
             # Still assess fairness even if no bias detected

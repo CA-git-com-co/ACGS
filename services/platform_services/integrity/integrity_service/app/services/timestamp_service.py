@@ -112,9 +112,8 @@ class RFC3161TimestampService:
 
                 logger.info(f"Timestamp request successful: {timestamp_value}")
                 return result
-            else:
-                logger.error(f"Timestamp request failed: {response.status_code}")
-                return None
+            logger.error(f"Timestamp request failed: {response.status_code}")
+            return None
 
         except requests.RequestException as e:
             logger.error(f"Timestamp request error: {e}")

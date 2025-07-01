@@ -18,15 +18,12 @@ Formal Verification Comments:
 # sha256: service_integration_module_v3.0
 """
 
-import asyncio
-import json
 import logging
 import time
-from dataclasses import dataclass, asdict
-from typing import Any, Dict, List, Optional, Tuple
+from dataclasses import asdict, dataclass
+from typing import Any
 
 import aiohttp
-import requests
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -42,8 +39,8 @@ class ServiceTestResult:
     success: bool
     response_time_ms: float
     status_code: int
-    response_data: Optional[Dict[str, Any]]
-    error_message: Optional[str]
+    response_data: dict[str, Any] | None
+    error_message: str | None
 
 
 @dataclass
@@ -51,10 +48,10 @@ class WorkflowTestResult:
     """Result from multi-service workflow test."""
 
     workflow_name: str
-    services_involved: List[str]
+    services_involved: list[str]
     total_duration_ms: float
     success: bool
-    step_results: List[ServiceTestResult]
+    step_results: list[ServiceTestResult]
     constitutional_compliance_score: float
 
 
@@ -173,9 +170,9 @@ class ACGSServiceIntegration:
             },
         }
 
-        self.test_results: List[ServiceTestResult] = []
-        self.workflow_results: List[WorkflowTestResult] = []
-        self.auth_token: Optional[str] = None
+        self.test_results: list[ServiceTestResult] = []
+        self.workflow_results: list[WorkflowTestResult] = []
+        self.auth_token: str | None = None
 
         # Test configuration
         self.test_config = {
@@ -218,7 +215,7 @@ class ACGSServiceIntegration:
         return success_rate >= 0.9  # Require 90% of services to be healthy
 
     async def _validate_service_health(
-        self, service_key: str, service_config: Dict[str, Any]
+        self, service_key: str, service_config: dict[str, Any]
     ) -> bool:
         """Validate individual service health."""
         try:
@@ -253,23 +250,22 @@ class ACGSServiceIntegration:
                             f"  ✅ {service_config['name']}: Healthy ({response_time:.2f}ms)"
                         )
                         return True
-                    else:
-                        result = ServiceTestResult(
-                            service_name=service_config["name"],
-                            endpoint=service_config["endpoints"]["health"],
-                            test_type="health_check",
-                            success=False,
-                            response_time_ms=response_time,
-                            status_code=response.status,
-                            response_data=None,
-                            error_message=f"HTTP {response.status}",
-                        )
+                    result = ServiceTestResult(
+                        service_name=service_config["name"],
+                        endpoint=service_config["endpoints"]["health"],
+                        test_type="health_check",
+                        success=False,
+                        response_time_ms=response_time,
+                        status_code=response.status,
+                        response_data=None,
+                        error_message=f"HTTP {response.status}",
+                    )
 
-                        self.test_results.append(result)
-                        logger.error(
-                            f"  ❌ {service_config['name']}: HTTP {response.status}"
-                        )
-                        return False
+                    self.test_results.append(result)
+                    logger.error(
+                        f"  ❌ {service_config['name']}: HTTP {response.status}"
+                    )
+                    return False
 
         except Exception as e:
             result = ServiceTestResult(
@@ -284,7 +280,7 @@ class ACGSServiceIntegration:
             )
 
             self.test_results.append(result)
-            logger.error(f"  ❌ {service_config['name']}: {str(e)}")
+            logger.error(f"  ❌ {service_config['name']}: {e!s}")
             return False
 
     async def test_authentication_workflow(self) -> bool:
@@ -347,7 +343,7 @@ class ACGSServiceIntegration:
             return True
 
         except Exception as e:
-            logger.error(f"❌ Authentication workflow failed: {str(e)}")
+            logger.error(f"❌ Authentication workflow failed: {e!s}")
             return False
 
     async def _test_user_registration(self) -> ServiceTestResult:
@@ -508,7 +504,7 @@ class ACGSServiceIntegration:
                 error_message=str(e),
             )
 
-    def get_integration_summary(self) -> Dict[str, Any]:
+    def get_integration_summary(self) -> dict[str, Any]:
         """Get comprehensive integration test summary."""
         successful_tests = [r for r in self.test_results if r.success]
         failed_tests = [r for r in self.test_results if not r.success]

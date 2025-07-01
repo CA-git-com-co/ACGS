@@ -8,13 +8,12 @@ Constitutional Hash: cdd01ef066bc6cf2
 import logging
 import time
 from dataclasses import asdict, dataclass
-from typing import Any, Dict, Optional
+from typing import Any
 
 from prometheus_client import (
     CONTENT_TYPE_LATEST,
     CollectorRegistry,
     Counter,
-    Enum,
     Gauge,
     Histogram,
     Info,
@@ -51,7 +50,7 @@ class ConstitutionalTrainingMetrics:
     active_sessions: int = 0
     cache_hit_rate: float = 0.0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
         return asdict(self)
 
@@ -237,7 +236,7 @@ class ConstitutionalMetrics:
         )
 
     def record_training_session_end(
-        self, session_id: str, success: bool, final_metrics: Dict[str, Any]
+        self, session_id: str, success: bool, final_metrics: dict[str, Any]
     ):
         """Record the end of a training session."""
         if session_id not in self.training_sessions:
@@ -329,7 +328,7 @@ class ConstitutionalMetrics:
         ).set(success_rate)
 
     def record_privacy_metrics(
-        self, model_id: str, training_session: str, privacy_metrics: Dict[str, float]
+        self, model_id: str, training_session: str, privacy_metrics: dict[str, float]
     ):
         """Record privacy-related metrics."""
 

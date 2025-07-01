@@ -5,15 +5,12 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio
-import json
 import os
 import statistics
 import time
-from typing import Dict, List, Optional
-import pytest
-import httpx
-from datetime import datetime
 
+import httpx
+import pytest
 
 # Configuration
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -49,7 +46,7 @@ class PerformanceTestSuite:
 
     async def single_request_latency_test(
         self, num_requests: int = 100
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Test single request latency performance"""
         test_request = {
             "type": "constitutional_evaluation",
@@ -105,7 +102,7 @@ class PerformanceTestSuite:
 
     async def concurrent_load_test(
         self, concurrency: int, requests_per_user: int = 50
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Test performance under concurrent load"""
         test_request = {
             "type": "constitutional_evaluation",
@@ -119,7 +116,7 @@ class PerformanceTestSuite:
             },
         }
 
-        async def user_session() -> List[float]:
+        async def user_session() -> list[float]:
             """Simulate single user session"""
             latencies = []
             async with httpx.AsyncClient(timeout=30.0) as client:
@@ -172,7 +169,7 @@ class PerformanceTestSuite:
             "max_latency_ms": max(all_latencies),
         }
 
-    async def mixed_workload_test(self, duration_seconds: int = 60) -> Dict[str, float]:
+    async def mixed_workload_test(self, duration_seconds: int = 60) -> dict[str, float]:
         """Test mixed workload performance (safe, complex, dangerous actions)"""
         requests = [
             # 70% safe actions
@@ -318,7 +315,7 @@ class PerformanceTestSuite:
             / 2,
         }
 
-    async def cache_effectiveness_test(self) -> Dict[str, float]:
+    async def cache_effectiveness_test(self) -> dict[str, float]:
         """Test cache performance and effectiveness"""
         test_request = {
             "type": "constitutional_evaluation",
@@ -404,7 +401,7 @@ async def test_single_request_latency_slo(performance_suite):
         results["mean_latency_ms"] <= PERFORMANCE_TARGET_P99_MS / 2
     ), f"Mean latency {results['mean_latency_ms']:.3f}ms too high"
 
-    print(f"\n✅ Single Request Latency Test:")
+    print("\n✅ Single Request Latency Test:")
     print(f"   Success Rate: {results['success_rate']:.1%}")
     print(f"   Mean: {results['mean_latency_ms']:.3f}ms")
     print(f"   P99: {results['p99_latency_ms']:.3f}ms")
@@ -453,7 +450,7 @@ async def test_concurrent_performance_scaling(performance_suite):
             scaling_efficiency >= 0.5
         ), f"Poor scaling efficiency: {scaling_efficiency:.2f} (expected >= 0.5)"
 
-        print(f"\n📈 Scaling Analysis:")
+        print("\n📈 Scaling Analysis:")
         print(f"   {low_concurrency} users: {low_rps:.0f} RPS")
         print(f"   {high_concurrency} users: {high_rps:.0f} RPS")
         print(f"   Scaling efficiency: {scaling_efficiency:.2f}")
@@ -476,7 +473,7 @@ async def test_mixed_workload_performance(performance_suite):
         results["constitutional_compliance_rate"] >= 0.95
     ), f"Constitutional compliance {results['constitutional_compliance_rate']:.1%} below 95%"
 
-    print(f"\n🎭 Mixed Workload Test:")
+    print("\n🎭 Mixed Workload Test:")
     print(f"   Duration: {results['duration_seconds']:.1f}s")
     print(f"   Throughput: {results['requests_per_second']:.0f} RPS")
     print(f"   P99 Latency: {results['p99_latency_ms']:.3f}ms")
@@ -503,7 +500,7 @@ async def test_cache_effectiveness(performance_suite):
         results["cache_hit_avg_latency_ms"] <= PERFORMANCE_TARGET_P99_MS / 2
     ), f"Cache hit latency {results['cache_hit_avg_latency_ms']:.3f}ms too high"
 
-    print(f"\n🗄️  Cache Effectiveness Test:")
+    print("\n🗄️  Cache Effectiveness Test:")
     print(f"   Cache Miss: {results['cache_miss_latency_ms']:.3f}ms")
     print(f"   Cache Hit Avg: {results['cache_hit_avg_latency_ms']:.3f}ms")
     print(f"   Cache Hit P99: {results['cache_hit_p99_latency_ms']:.3f}ms")
@@ -539,7 +536,7 @@ async def test_service_metrics_validation(performance_suite):
         if cache_hit_rate > 0:
             assert cache_hit_rate >= 0.5, f"Cache hit rate {cache_hit_rate:.1%} too low"
 
-        print(f"\n📊 Service Metrics Validation:")
+        print("\n📊 Service Metrics Validation:")
         print(f"   Total Requests: {metrics['request_count']}")
         print(f"   Average Latency: {metrics['avg_latency_ms']:.3f}ms")
         print(f"   P99 Latency: {percentiles['p99']:.3f}ms")

@@ -103,9 +103,9 @@ class TestRunner:
 
         results = {}
         for i, cmd in enumerate(unit_test_commands):
-            print(f"  Running unit test batch {i+1}/{len(unit_test_commands)}")
+            print(f"  Running unit test batch {i + 1}/{len(unit_test_commands)}")
             result = self._run_command(cmd)
-            results[f"unit_batch_{i+1}"] = result
+            results[f"unit_batch_{i + 1}"] = result
 
         return results
 
@@ -120,9 +120,11 @@ class TestRunner:
 
         results = {}
         for i, cmd in enumerate(integration_commands):
-            print(f"  Running integration test batch {i+1}/{len(integration_commands)}")
+            print(
+                f"  Running integration test batch {i + 1}/{len(integration_commands)}"
+            )
             result = self._run_command(cmd)
-            results[f"integration_batch_{i+1}"] = result
+            results[f"integration_batch_{i + 1}"] = result
 
         return results
 
@@ -141,9 +143,11 @@ class TestRunner:
 
         results = {}
         for i, cmd in enumerate(performance_commands):
-            print(f"  Running performance test batch {i+1}/{len(performance_commands)}")
+            print(
+                f"  Running performance test batch {i + 1}/{len(performance_commands)}"
+            )
             result = self._run_command(cmd)
-            results[f"performance_batch_{i+1}"] = result
+            results[f"performance_batch_{i + 1}"] = result
 
         return results
 
@@ -165,9 +169,9 @@ class TestRunner:
 
         results = {}
         for i, cmd in enumerate(coverage_commands):
-            print(f"  Running coverage analysis {i+1}/{len(coverage_commands)}")
+            print(f"  Running coverage analysis {i + 1}/{len(coverage_commands)}")
             result = self._run_command(cmd)
-            results[f"coverage_batch_{i+1}"] = result
+            results[f"coverage_batch_{i + 1}"] = result
 
         # Parse coverage results
         coverage_file = self.project_root / "coverage.json"
@@ -187,6 +191,7 @@ class TestRunner:
         try:
             result = subprocess.run(
                 command.split(),
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,

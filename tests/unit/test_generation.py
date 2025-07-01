@@ -20,7 +20,6 @@ import subprocess
 from pathlib import Path
 
 import pytest
-
 from nemo_skills.evaluation.metrics import ComputeMetrics
 
 DATA_TO_TEST = []

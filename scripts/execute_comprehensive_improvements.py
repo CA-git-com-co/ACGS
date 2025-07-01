@@ -160,6 +160,7 @@ class ComprehensiveImprovementExecutor:
             # Execute the script
             result = subprocess.run(
                 [sys.executable, str(script_path), str(self.project_root)],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=task.estimated_duration_minutes
@@ -186,15 +187,14 @@ class ComprehensiveImprovementExecutor:
                     output=result.stdout,
                     validation_passed=validation_passed,
                 )
-            else:
-                logger.error(f"Task {task.name} failed: {result.stderr}")
-                return ImprovementResult(
-                    task_name=task.name,
-                    success=False,
-                    duration_seconds=duration,
-                    output=result.stdout,
-                    error_message=result.stderr,
-                )
+            logger.error(f"Task {task.name} failed: {result.stderr}")
+            return ImprovementResult(
+                task_name=task.name,
+                success=False,
+                duration_seconds=duration,
+                output=result.stdout,
+                error_message=result.stderr,
+            )
 
         except subprocess.TimeoutExpired:
             duration = time.time() - start_time
@@ -210,7 +210,7 @@ class ComprehensiveImprovementExecutor:
 
         except Exception as e:
             duration = time.time() - start_time
-            error_msg = f"Unexpected error in task {task.name}: {str(e)}"
+            error_msg = f"Unexpected error in task {task.name}: {e!s}"
             logger.error(error_msg)
             return ImprovementResult(
                 task_name=task.name,
@@ -270,6 +270,7 @@ if __name__ == "__main__":
                 # Run validation command
                 result = subprocess.run(
                     task.validation_command.split(),
+                    check=False,
                     capture_output=True,
                     text=True,
                     cwd=self.project_root,
@@ -325,7 +326,7 @@ if __name__ == "__main__":
 
 **Execution Started:** {self.start_time.isoformat()}
 **Execution Completed:** {end_time.isoformat()}
-**Total Duration:** {total_duration:.1f} seconds ({total_duration/60:.1f} minutes)
+**Total Duration:** {total_duration:.1f} seconds ({total_duration / 60:.1f} minutes)
 
 ## Summary
 - **Total Tasks:** {len(self.tasks)}
@@ -426,15 +427,15 @@ def main():
     total = len(executor.results)
     duration = (datetime.now() - executor.start_time).total_seconds()
 
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print("COMPREHENSIVE CODEBASE IMPROVEMENT EXECUTION COMPLETE")
-    print(f"{'='*80}")
+    print(f"{'=' * 80}")
     print(f"Total Tasks: {total}")
     print(f"Successful: {successful}")
     print(f"Failed: {total - successful}")
     print(f"Success Rate: {(successful / total * 100):.1f}%")
-    print(f"Total Duration: {duration:.1f} seconds ({duration/60:.1f} minutes)")
-    print(f"{'='*80}")
+    print(f"Total Duration: {duration:.1f} seconds ({duration / 60:.1f} minutes)")
+    print(f"{'=' * 80}")
 
 
 if __name__ == "__main__":

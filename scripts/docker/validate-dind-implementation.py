@@ -13,10 +13,10 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional
+
+import yaml
 
 import docker
-import yaml
 
 # Configure logging
 logging.basicConfig(
@@ -480,7 +480,7 @@ class DinDImplementationValidator:
         # Print summary
         self.print_validation_summary(report)
 
-    def print_validation_summary(self, report: Dict):
+    def print_validation_summary(self, report: dict):
         """Print validation summary."""
         validation = report["validation_summary"]
 

@@ -241,7 +241,7 @@ class HealthMonitor:
             health_result = HealthResult(
                 name=name,
                 status=HealthStatus.UNHEALTHY,
-                message=f"Health check failed: {str(e)}",
+                message=f"Health check failed: {e!s}",
                 timestamp=end_time,
                 duration_ms=duration_ms,
                 details={"error": str(e)},
@@ -260,7 +260,6 @@ class HealthMonitor:
             result.status != HealthStatus.HEALTHY
             and failure_count >= health_check.failure_threshold
         ):
-
             alert_data = {
                 "type": "health_check_failure",
                 "component": name,

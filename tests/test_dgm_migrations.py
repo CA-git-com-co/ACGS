@@ -2,16 +2,10 @@
 Test suite for DGM database migrations.
 """
 
-import asyncio
 import os
-import pytest
-import subprocess
-from datetime import datetime
-from typing import Dict, Any
 
-import asyncpg
+import pytest
 from sqlalchemy import create_engine, text
-from sqlalchemy.exc import SQLAlchemyError
 
 from scripts.dgm_migration_runner import DGMMigrationRunner
 

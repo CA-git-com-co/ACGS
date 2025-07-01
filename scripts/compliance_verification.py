@@ -2,7 +2,7 @@
 """
 ACGS-1 Compliance and Standards Verification
 
-Verifies compliance with security standards and best practices based on 
+Verifies compliance with security standards and best practices based on
 the results from previous security audits and assessments.
 """
 
@@ -12,7 +12,7 @@ import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -57,7 +57,7 @@ class ComplianceVerification:
         os.makedirs("logs", exist_ok=True)
         os.makedirs("reports/security", exist_ok=True)
 
-    def run_verification(self) -> Dict[str, Any]:
+    def run_verification(self) -> dict[str, Any]:
         """Run comprehensive compliance verification."""
         logger.info(f"🔍 Starting compliance verification: {self.verification_id}")
 
@@ -94,7 +94,7 @@ class ComplianceVerification:
 
             for report_file in security_reports:
                 try:
-                    with open(report_file, "r") as f:
+                    with open(report_file) as f:
                         report_data = json.load(f)
 
                     # Extract summary data

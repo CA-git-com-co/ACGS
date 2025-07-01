@@ -18,7 +18,8 @@ import asyncio
 import json
 import logging
 import time
-from typing import Dict, List, Any
+from typing import Any
+
 import httpx
 
 # Configure logging
@@ -46,7 +47,7 @@ class WorkflowValidator:
         self.results = {}
         self.timeout = 30
 
-    async def validate_policy_governance_workflow(self) -> Dict[str, Any]:
+    async def validate_policy_governance_workflow(self) -> dict[str, Any]:
         """Test complete policy creation to enforcement workflow."""
         logger.info("🔄 Testing Policy Governance Workflow")
 
@@ -136,7 +137,7 @@ class WorkflowValidator:
             ),
         }
 
-    async def validate_constitutional_ai_workflow(self) -> Dict[str, Any]:
+    async def validate_constitutional_ai_workflow(self) -> dict[str, Any]:
         """Test constitutional AI compliance checking workflow."""
         logger.info("⚖️ Testing Constitutional AI Compliance Workflow")
 
@@ -214,7 +215,7 @@ class WorkflowValidator:
             ),
         }
 
-    async def validate_formal_verification_workflow(self) -> Dict[str, Any]:
+    async def validate_formal_verification_workflow(self) -> dict[str, Any]:
         """Test formal verification processes."""
         logger.info("🔍 Testing Formal Verification Workflow")
 
@@ -292,7 +293,7 @@ class WorkflowValidator:
             ),
         }
 
-    async def validate_governance_synthesis_workflow(self) -> Dict[str, Any]:
+    async def validate_governance_synthesis_workflow(self) -> dict[str, Any]:
         """Test governance synthesis pipeline."""
         logger.info("🏛️ Testing Governance Synthesis Workflow")
 
@@ -350,7 +351,7 @@ class WorkflowValidator:
             ),
         }
 
-    async def validate_all_workflows(self) -> Dict[str, Any]:
+    async def validate_all_workflows(self) -> dict[str, Any]:
         """Validate all ACGS-1 end-to-end workflows."""
         logger.info("🚀 Starting ACGS-1 Phase 3 Workflow Validation")
 
@@ -419,7 +420,7 @@ class WorkflowValidator:
 
         return validation_results
 
-    def print_workflow_report(self, results: Dict[str, Any]):
+    def print_workflow_report(self, results: dict[str, Any]):
         """Print a comprehensive workflow validation report."""
         print("\n" + "=" * 80)
         print("🔄 ACGS-1 PHASE 3 WORKFLOW VALIDATION REPORT")
@@ -479,10 +480,9 @@ async def main():
     # Return exit code based on results
     if results["overall_status"] == "all_workflows_operational":
         return 0
-    elif results["overall_status"] == "mostly_operational":
+    if results["overall_status"] == "mostly_operational":
         return 1
-    else:
-        return 2
+    return 2
 
 
 if __name__ == "__main__":

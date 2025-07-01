@@ -5,22 +5,21 @@ Tests backward compatibility framework including version transitions,
 breaking change detection, and migration path validation.
 """
 
-import pytest
-from datetime import datetime, timezone, timedelta
-from typing import Dict, Any
+from datetime import datetime
 
-from services.shared.versioning.version_manager import APIVersion
+import pytest
+
 from services.shared.versioning.compatibility_manager import (
-    CompatibilityManager,
-    CompatibilityRule,
-    CompatibilityLevel,
     BreakingChange,
+    CompatibilityLevel,
+    CompatibilityRule,
     create_compatibility_manager,
 )
 from services.shared.versioning.response_transformers import (
     CompatibilityTransformer,
     VersionedResponseBuilder,
 )
+from services.shared.versioning.version_manager import APIVersion
 
 
 class TestCompatibilityManager:

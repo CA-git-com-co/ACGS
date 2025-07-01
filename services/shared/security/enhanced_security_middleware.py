@@ -12,19 +12,19 @@ This middleware integrates with the advanced security hardening module to provid
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import asyncio
+import ipaddress
 import json
 import logging
+import re
 import time
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional, Set
-from fastapi import Request, Response, HTTPException
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from typing import Any
+
+from fastapi import Request, Response
+from fastapi.security import HTTPBearer
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
-import ipaddress
-import re
-from .advanced_security_hardening import security_hardening, SecurityLevel, ThreatLevel
+
+from .advanced_security_hardening import SecurityLevel, ThreatLevel, security_hardening
 
 logger = logging.getLogger(__name__)
 
@@ -32,15 +32,15 @@ logger = logging.getLogger(__name__)
 class EnhancedSecurityMiddleware(BaseHTTPMiddleware):
     """Enhanced security middleware with advanced threat protection."""
 
-    def __init__(self, app, config: Dict[str, Any] = None):
+    def __init__(self, app, config: dict[str, Any] = None):
         super().__init__(app)
         self.config = config or self._get_default_config()
-        self.blocked_ips: Set[str] = set()
-        self.rate_limits: Dict[str, Dict] = {}
-        self.suspicious_patterns: Dict[str, int] = {}
+        self.blocked_ips: set[str] = set()
+        self.rate_limits: dict[str, dict] = {}
+        self.suspicious_patterns: dict[str, int] = {}
         self.security_bearer = HTTPBearer(auto_error=False)
 
-    def _get_default_config(self) -> Dict[str, Any]:
+    def _get_default_config(self) -> dict[str, Any]:
         """Get default security configuration."""
         return {
             "enable_rate_limiting": True,
@@ -200,7 +200,7 @@ class EnhancedSecurityMiddleware(BaseHTTPMiddleware):
         """Check if IP is blocked."""
         return ip in self.blocked_ips
 
-    async def _check_rate_limit(self, ip: str, request: Request) -> Dict[str, Any]:
+    async def _check_rate_limit(self, ip: str, request: Request) -> dict[str, Any]:
         """Check rate limiting for IP."""
         now = time.time()
         window = self.config["rate_limit_window"]
@@ -240,7 +240,7 @@ class EnhancedSecurityMiddleware(BaseHTTPMiddleware):
         self.rate_limits[ip]["requests"].append(now)
         return {"allowed": True}
 
-    async def _validate_request_input(self, request: Request) -> Dict[str, Any]:
+    async def _validate_request_input(self, request: Request) -> dict[str, Any]:
         """Validate request input for malicious content."""
         try:
             # Get request body
@@ -269,7 +269,7 @@ class EnhancedSecurityMiddleware(BaseHTTPMiddleware):
                 "risk_level": ThreatLevel.MEDIUM,
             }
 
-    async def _detect_threats(self, request: Request, client_ip: str) -> Dict[str, Any]:
+    async def _detect_threats(self, request: Request, client_ip: str) -> dict[str, Any]:
         """Advanced threat detection."""
         threats = []
         threat_level = ThreatLevel.NONE
@@ -335,7 +335,7 @@ class EnhancedSecurityMiddleware(BaseHTTPMiddleware):
 
     async def _validate_constitutional_compliance(
         self, request: Request
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate constitutional compliance."""
         # Check for constitutional hash in headers
         constitutional_hash = request.headers.get("x-constitutional-hash")
@@ -368,11 +368,11 @@ class EnhancedSecurityMiddleware(BaseHTTPMiddleware):
         event_type: str,
         severity: SecurityLevel,
         source_ip: str,
-        user_id: Optional[str],
+        user_id: str | None,
         resource: str,
         action: str,
         result: str,
-        details: Dict[str, Any] = None,
+        details: dict[str, Any] = None,
     ):
         """Log security event."""
         security_hardening.log_security_event(
@@ -419,7 +419,7 @@ class EnhancedSecurityMiddleware(BaseHTTPMiddleware):
         )
 
     async def _create_validation_error_response(
-        self, ip: str, validation_result: Dict[str, Any]
+        self, ip: str, validation_result: dict[str, Any]
     ) -> JSONResponse:
         """Create response for validation errors."""
         await self._log_security_event(
@@ -444,7 +444,7 @@ class EnhancedSecurityMiddleware(BaseHTTPMiddleware):
         )
 
     async def _create_threat_response(
-        self, ip: str, threat_result: Dict[str, Any]
+        self, ip: str, threat_result: dict[str, Any]
     ) -> JSONResponse:
         """Create response for detected threats."""
         await self._log_security_event(
@@ -473,7 +473,7 @@ class EnhancedSecurityMiddleware(BaseHTTPMiddleware):
         )
 
     async def _create_compliance_error_response(
-        self, ip: str, compliance_result: Dict[str, Any]
+        self, ip: str, compliance_result: dict[str, Any]
     ) -> JSONResponse:
         """Create response for compliance errors."""
         await self._log_security_event(

@@ -15,14 +15,14 @@ Constitutional Hash: cdd01ef066bc6cf2
 import asyncio
 import json
 import logging
+import os
+import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Any
 
 import aiohttp
-import sys
-import os
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -46,7 +46,7 @@ class MultimodalIntegrationTester:
 
         logger.info("Multimodal Integration Tester initialized")
 
-    async def run_comprehensive_test(self) -> Dict[str, Any]:
+    async def run_comprehensive_test(self) -> dict[str, Any]:
         """Run comprehensive multimodal integration tests."""
 
         logger.info("🚀 Starting Comprehensive Multimodal AI Integration Test")
@@ -97,7 +97,7 @@ class MultimodalIntegrationTester:
 
         return overall_result
 
-    async def _test_service_health(self) -> Dict[str, Any]:
+    async def _test_service_health(self) -> dict[str, Any]:
         """Test ACGS-PGP service health."""
 
         logger.info("🏥 Testing Service Health...")
@@ -118,12 +118,11 @@ class MultimodalIntegrationTester:
                             "response_time_ms": 0,  # Would be measured in real implementation
                             "details": "Constitutional AI service healthy",
                         }
-                    else:
-                        return {
-                            "status": "FAIL",
-                            "error": f"Service returned HTTP {response.status}",
-                            "details": "Constitutional AI service unhealthy",
-                        }
+                    return {
+                        "status": "FAIL",
+                        "error": f"Service returned HTTP {response.status}",
+                        "details": "Constitutional AI service unhealthy",
+                    }
 
         except Exception as e:
             return {
@@ -132,7 +131,7 @@ class MultimodalIntegrationTester:
                 "details": "Failed to connect to Constitutional AI service",
             }
 
-    async def _test_openrouter_connectivity(self) -> Dict[str, Any]:
+    async def _test_openrouter_connectivity(self) -> dict[str, Any]:
         """Test OpenRouter API connectivity."""
 
         logger.info("🌐 Testing OpenRouter API Connectivity...")
@@ -170,7 +169,6 @@ class MultimodalIntegrationTester:
                     json=payload,
                     timeout=aiohttp.ClientTimeout(total=30),
                 ) as response:
-
                     response_time = (time.time() - start_time) * 1000
 
                     if response.status == 200:
@@ -185,14 +183,13 @@ class MultimodalIntegrationTester:
                             ),
                             "details": "OpenRouter API connectivity successful",
                         }
-                    else:
-                        error_text = await response.text()
-                        return {
-                            "status": "FAIL",
-                            "error": f"HTTP {response.status}: {error_text}",
-                            "response_time_ms": response_time,
-                            "details": "OpenRouter API request failed",
-                        }
+                    error_text = await response.text()
+                    return {
+                        "status": "FAIL",
+                        "error": f"HTTP {response.status}: {error_text}",
+                        "response_time_ms": response_time,
+                        "details": "OpenRouter API request failed",
+                    }
 
         except Exception as e:
             return {
@@ -201,7 +198,7 @@ class MultimodalIntegrationTester:
                 "details": "OpenRouter API connectivity test failed",
             }
 
-    async def _test_multimodal_endpoints(self) -> Dict[str, Any]:
+    async def _test_multimodal_endpoints(self) -> dict[str, Any]:
         """Test multimodal endpoints on Constitutional AI service."""
 
         logger.info("🖼️ Testing Multimodal Endpoints...")
@@ -249,7 +246,6 @@ class MultimodalIntegrationTester:
                             json=test_case["payload"],
                             timeout=aiohttp.ClientTimeout(total=30),
                         ) as response:
-
                             response_time = (time.time() - start_time) * 1000
 
                             if response.status == 200:
@@ -319,7 +315,7 @@ class MultimodalIntegrationTester:
                 "details": "Multimodal endpoint testing failed",
             }
 
-    async def _test_intelligent_routing(self) -> Dict[str, Any]:
+    async def _test_intelligent_routing(self) -> dict[str, Any]:
         """Test intelligent routing system."""
 
         logger.info("🧠 Testing Intelligent Routing...")
@@ -355,7 +351,6 @@ class MultimodalIntegrationTester:
                             },
                             timeout=aiohttp.ClientTimeout(total=30),
                         ) as response:
-
                             if response.status == 200:
                                 result = await response.json()
                                 model_used = result.get("model_used", "").lower()
@@ -412,7 +407,7 @@ class MultimodalIntegrationTester:
                 "details": "Intelligent routing test failed",
             }
 
-    async def _test_cache_integration(self) -> Dict[str, Any]:
+    async def _test_cache_integration(self) -> dict[str, Any]:
         """Test multi-level cache integration."""
 
         logger.info("💾 Testing Cache Integration...")
@@ -431,7 +426,6 @@ class MultimodalIntegrationTester:
                     json={"text_content": test_content, "priority": "normal"},
                     timeout=aiohttp.ClientTimeout(total=30),
                 ) as response:
-
                     first_response_time = (time.time() - start_time) * 1000
 
                     if response.status == 200:
@@ -455,7 +449,6 @@ class MultimodalIntegrationTester:
                     json={"text_content": test_content, "priority": "normal"},
                     timeout=aiohttp.ClientTimeout(total=30),
                 ) as response:
-
                     second_response_time = (time.time() - start_time) * 1000
 
                     if response.status == 200:
@@ -486,12 +479,11 @@ class MultimodalIntegrationTester:
                     "cache_working": cache_results[1].get("cache_hit", False),
                     "details": f"Cache integration working, {speedup:.2f}x speedup",
                 }
-            else:
-                return {
-                    "status": "FAIL",
-                    "error": "Insufficient cache test results",
-                    "cache_results": cache_results,
-                }
+            return {
+                "status": "FAIL",
+                "error": "Insufficient cache test results",
+                "cache_results": cache_results,
+            }
 
         except Exception as e:
             return {
@@ -500,7 +492,7 @@ class MultimodalIntegrationTester:
                 "details": "Cache integration test failed",
             }
 
-    async def _test_performance_validation(self) -> Dict[str, Any]:
+    async def _test_performance_validation(self) -> dict[str, Any]:
         """Test performance validation requirements."""
 
         logger.info("⚡ Testing Performance Validation...")
@@ -517,12 +509,11 @@ class MultimodalIntegrationTester:
                     async with session.post(
                         f"{self.base_url}/api/v1/multimodal/analyze",
                         json={
-                            "text_content": f"Performance test {i+1}: constitutional compliance validation",
+                            "text_content": f"Performance test {i + 1}: constitutional compliance validation",
                             "priority": "normal",
                         },
                         timeout=aiohttp.ClientTimeout(total=30),
                     ) as response:
-
                         response_time = (time.time() - start_time) * 1000
 
                         if response.status == 200:
@@ -567,12 +558,11 @@ class MultimodalIntegrationTester:
                     "meets_2s_target": avg_response_time < 2000,
                     "details": f"Performance: {avg_response_time:.1f}ms avg, {meets_target_count}/{len(performance_tests)} under 2s",
                 }
-            else:
-                return {
-                    "status": "FAIL",
-                    "error": "No performance test results",
-                    "details": "Performance validation failed",
-                }
+            return {
+                "status": "FAIL",
+                "error": "No performance test results",
+                "details": "Performance validation failed",
+            }
 
         except Exception as e:
             return {
@@ -581,7 +571,7 @@ class MultimodalIntegrationTester:
                 "details": "Performance validation test failed",
             }
 
-    async def _test_constitutional_compliance(self) -> Dict[str, Any]:
+    async def _test_constitutional_compliance(self) -> dict[str, Any]:
         """Test constitutional compliance accuracy."""
 
         logger.info("🏛️ Testing Constitutional Compliance...")
@@ -619,7 +609,6 @@ class MultimodalIntegrationTester:
                             },
                             timeout=aiohttp.ClientTimeout(total=30),
                         ) as response:
-
                             if response.status == 200:
                                 result = await response.json()
 
@@ -692,7 +681,7 @@ class MultimodalIntegrationTester:
                 "details": "Constitutional compliance test failed",
             }
 
-    def print_test_report(self, results: Dict[str, Any]):
+    def print_test_report(self, results: dict[str, Any]):
         """Print formatted test report."""
 
         print("\n" + "=" * 70)
@@ -706,12 +695,12 @@ class MultimodalIntegrationTester:
         print(f"Duration: {info['total_duration_seconds']:.1f} seconds")
         print(f"Constitutional Hash: {info['constitutional_hash']}")
 
-        print(f"\n📊 OVERALL SUMMARY")
+        print("\n📊 OVERALL SUMMARY")
         print(f"Status: {summary['overall_status']}")
         print(f"Tests Passed: {summary['passed_tests']}/{summary['total_tests']}")
         print(f"Success Rate: {summary['success_rate_percent']:.1f}%")
 
-        print(f"\n🔍 DETAILED RESULTS")
+        print("\n🔍 DETAILED RESULTS")
         print("-" * 50)
 
         for test_name, test_result in results["test_results"].items():

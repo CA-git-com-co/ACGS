@@ -372,7 +372,7 @@ class CryptoBenchmarker:
             if large_time > small_time * 2:
                 recommendations.append(
                     f"Significant performance difference between key sizes. "
-                    f"{largest_key} takes {large_time/small_time:.1f}x longer than {smallest_key}."
+                    f"{largest_key} takes {large_time / small_time:.1f}x longer than {smallest_key}."
                 )
 
         if overhead_analysis.memory_overhead_mb > 5:

@@ -90,7 +90,7 @@ def validate_security_configuration() -> dict:
     # Check for remaining sensitive files
     sensitive_patterns = ["auth_tokens.json", "auth_tokens.env", "cookies.txt"]
     for pattern in sensitive_patterns:
-        if list(Path(".").glob(f"**/{pattern}")):
+        if list(Path().glob(f"**/{pattern}")):
             results["sensitive_files_removed"] = False
             results["issues"].append(f"Sensitive file still present: {pattern}")
             results["status"] = "FAIL"
@@ -112,7 +112,7 @@ def validate_dependency_consistency() -> dict:
     }
 
     # Check requirements consolidation
-    requirements_files = list(Path(".").glob("**/requirements*.txt"))
+    requirements_files = list(Path().glob("**/requirements*.txt"))
     service_dirs = list(Path("services").glob("*/*/"))
 
     # Should have fewer requirements files after consolidation
@@ -121,7 +121,7 @@ def validate_dependency_consistency() -> dict:
         print("✅ Requirements files consolidated")
 
     # Check package.json files are clean
-    package_files = list(Path(".").glob("**/package.json"))
+    package_files = list(Path().glob("**/package.json"))
     clean_package_count = 0
 
     for package_file in package_files:
@@ -138,7 +138,7 @@ def validate_dependency_consistency() -> dict:
         print("✅ Package.json files cleaned")
 
     # Check Cargo.toml files
-    cargo_files = list(Path(".").glob("**/Cargo.toml"))
+    cargo_files = list(Path().glob("**/Cargo.toml"))
     if len(cargo_files) >= 4:  # Should have blockchain Cargo files
         results["cargo_toml_cleaned"] = True
         print("✅ Cargo.toml files present and cleaned")

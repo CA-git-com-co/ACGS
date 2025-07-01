@@ -342,9 +342,8 @@ async def run_all_tests():
     if passed == total:
         logger.info("🎉 All WINA core library tests passed!")
         return True
-    else:
-        logger.error(f"❌ {total - passed} tests failed")
-        return False
+    logger.error(f"❌ {total - passed} tests failed")
+    return False
 
 
 if __name__ == "__main__":

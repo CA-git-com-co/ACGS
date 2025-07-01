@@ -3,9 +3,9 @@
 Run working ACGS tests while skipping problematic ones
 """
 
+import os
 import subprocess
 import sys
-import os
 
 
 def run_tests():
@@ -103,7 +103,7 @@ def run_tests():
     print("=" * 80)
 
     try:
-        result = subprocess.run(cmd, cwd=os.getcwd(), capture_output=False)
+        result = subprocess.run(cmd, check=False, cwd=os.getcwd(), capture_output=False)
         return result.returncode
     except Exception as e:
         print(f"Error running tests: {e}")
@@ -133,7 +133,7 @@ def run_simple_tests():
     print("=" * 80)
 
     try:
-        result = subprocess.run(cmd, cwd=os.getcwd(), capture_output=False)
+        result = subprocess.run(cmd, check=False, cwd=os.getcwd(), capture_output=False)
         return result.returncode
     except Exception as e:
         print(f"Error running simple tests: {e}")
@@ -144,8 +144,7 @@ def main():
     """Main test runner"""
     if len(sys.argv) > 1 and sys.argv[1] == "--simple":
         return run_simple_tests()
-    else:
-        return run_tests()
+    return run_tests()
 
 
 if __name__ == "__main__":

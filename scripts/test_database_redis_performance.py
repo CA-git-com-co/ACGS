@@ -6,13 +6,14 @@ Tests database connectivity, Redis caching performance, and health check endpoin
 """
 
 import asyncio
-import time
-import statistics
 import json
-from typing import List, Dict, Any
+import statistics
+import time
+from typing import Any
+
 import asyncpg
-import redis
 import httpx
+import redis
 
 # Configuration
 DATABASE_CONFIG = {
@@ -35,7 +36,7 @@ class DatabaseRedisPerformanceTester:
             "errors": [],
         }
 
-    async def test_database_connectivity(self) -> Dict[str, Any]:
+    async def test_database_connectivity(self) -> dict[str, Any]:
         """Test PostgreSQL database connectivity and performance."""
         print("🗄️ Testing PostgreSQL database connectivity and performance...")
 
@@ -122,14 +123,14 @@ class DatabaseRedisPerformanceTester:
             }
 
         except Exception as e:
-            self.results["errors"].append(f"Database test failed: {str(e)}")
+            self.results["errors"].append(f"Database test failed: {e!s}")
             return {
                 "status": "unhealthy",
                 "connection_successful": False,
                 "error": str(e),
             }
 
-    def test_redis_connectivity(self) -> Dict[str, Any]:
+    def test_redis_connectivity(self) -> dict[str, Any]:
         """Test Redis connectivity and performance."""
         print("🔴 Testing Redis connectivity and performance...")
 
@@ -212,14 +213,14 @@ class DatabaseRedisPerformanceTester:
             }
 
         except Exception as e:
-            self.results["errors"].append(f"Redis test failed: {str(e)}")
+            self.results["errors"].append(f"Redis test failed: {e!s}")
             return {
                 "status": "unhealthy",
                 "connection_successful": False,
                 "error": str(e),
             }
 
-    async def test_health_endpoints(self) -> Dict[str, Any]:
+    async def test_health_endpoints(self) -> dict[str, Any]:
         """Test health check endpoints of all services."""
         print("🏥 Testing service health check endpoints...")
 
@@ -271,7 +272,7 @@ class DatabaseRedisPerformanceTester:
 
         return health_results
 
-    async def run_comprehensive_test(self) -> Dict[str, Any]:
+    async def run_comprehensive_test(self) -> dict[str, Any]:
         """Run comprehensive database and Redis performance tests."""
         print("🧪 Starting comprehensive database and Redis performance tests...")
 
@@ -324,21 +325,21 @@ async def main():
         print("🎯 DATABASE AND REDIS PERFORMANCE TEST RESULTS")
         print("=" * 80)
 
-        print(f"\n📊 Overall Summary:")
+        print("\n📊 Overall Summary:")
         summary = results["summary"]
-        print(f"  • Overall Health Score: {summary['overall_health_score']*100:.1f}%")
+        print(f"  • Overall Health Score: {summary['overall_health_score'] * 100:.1f}%")
         print(
             f"  • Database Healthy: {'✅ YES' if summary['database_healthy'] else '❌ NO'}"
         )
         print(f"  • Redis Healthy: {'✅ YES' if summary['redis_healthy'] else '❌ NO'}")
-        print(f"  • Services Healthy: {summary['services_healthy_ratio']*100:.1f}%")
+        print(f"  • Services Healthy: {summary['services_healthy_ratio'] * 100:.1f}%")
         print(f"  • Total Errors: {summary['total_errors']}")
 
-        print(f"\n🗄️ Database Performance:")
+        print("\n🗄️ Database Performance:")
         db_results = results["database_tests"]
         if db_results.get("connection_successful"):
             latency = db_results.get("query_latency_ms", {})
-            print(f"  • Connection: ✅ Successful")
+            print("  • Connection: ✅ Successful")
             print(f"  • Query Latency (mean): {latency.get('mean', 0):.2f}ms")
             print(f"  • Query Latency (P95): {latency.get('p95', 0):.2f}ms")
             print(f"  • Tables Found: {db_results.get('tables_found', 0)}")
@@ -356,23 +357,23 @@ async def main():
                 f"  • Connection: ❌ Failed - {db_results.get('error', 'Unknown error')}"
             )
 
-        print(f"\n🔴 Redis Performance:")
+        print("\n🔴 Redis Performance:")
         redis_results = results["redis_tests"]
         if redis_results.get("connection_successful"):
             write_perf = redis_results.get("write_performance_ms", {})
             read_perf = redis_results.get("read_performance_ms", {})
-            print(f"  • Connection: ✅ Successful")
+            print("  • Connection: ✅ Successful")
             print(f"  • Write Performance (mean): {write_perf.get('mean', 0):.2f}ms")
             print(f"  • Read Performance (mean): {read_perf.get('mean', 0):.2f}ms")
             print(
-                f"  • Cache Hit Rate: {redis_results.get('cache_hit_rate', 0)*100:.1f}%"
+                f"  • Cache Hit Rate: {redis_results.get('cache_hit_rate', 0) * 100:.1f}%"
             )
         else:
             print(
                 f"  • Connection: ❌ Failed - {redis_results.get('error', 'Unknown error')}"
             )
 
-        print(f"\n🏥 Service Health Checks:")
+        print("\n🏥 Service Health Checks:")
         for service, health in results["health_checks"].items():
             status_icon = (
                 "✅" if health.get("status") in ["healthy", "port_accessible"] else "❌"
@@ -383,16 +384,14 @@ async def main():
             )
 
         if results["errors"]:
-            print(f"\n❌ Errors Encountered:")
+            print("\n❌ Errors Encountered:")
             for error in results["errors"]:
                 print(f"  • {error}")
 
         # Save detailed results
         with open("database_redis_performance_results.json", "w") as f:
             json.dump(results, f, indent=2)
-        print(
-            f"\n💾 Detailed results saved to: database_redis_performance_results.json"
-        )
+        print("\n💾 Detailed results saved to: database_redis_performance_results.json")
 
     except Exception as e:
         print(f"❌ Test execution failed: {e}")

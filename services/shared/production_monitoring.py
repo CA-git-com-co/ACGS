@@ -16,14 +16,10 @@ Features:
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import asyncio
-import json
 import logging
-import time
-from datetime import datetime, timezone, timedelta
-from dataclasses import dataclass, asdict
-from typing import Dict, List, Any, Optional
-from pathlib import Path
+from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -72,9 +68,9 @@ class Alert:
     alert_id: str
     severity: str  # critical, high, medium, low
     message: str
-    model_affected: Optional[str] = None
-    metric_value: Optional[float] = None
-    threshold: Optional[float] = None
+    model_affected: str | None = None
+    metric_value: float | None = None
+    threshold: float | None = None
     timestamp: str = ""
     resolved: bool = False
 
@@ -97,15 +93,15 @@ class ProductionMonitor:
         }
 
         # Alert storage
-        self.alerts: List[Alert] = []
+        self.alerts: list[Alert] = []
         self.alert_counter = 0
 
         # Metrics history
-        self.metrics_history: List[Dict[str, Any]] = []
+        self.metrics_history: list[dict[str, Any]] = []
 
         logger.info("Production Monitor initialized")
 
-    async def collect_metrics(self) -> Dict[str, Any]:
+    async def collect_metrics(self) -> dict[str, Any]:
         """Collect comprehensive metrics from all system components."""
 
         try:
@@ -259,7 +255,7 @@ class ProductionMonitor:
             }
 
     async def _check_alerts(
-        self, system_metrics: SystemMetrics, model_metrics: Dict[str, ModelMetrics]
+        self, system_metrics: SystemMetrics, model_metrics: dict[str, ModelMetrics]
     ):
         """Check for performance issues and generate alerts."""
 
@@ -318,9 +314,9 @@ class ProductionMonitor:
         self,
         severity: str,
         message: str,
-        model_affected: Optional[str] = None,
-        metric_value: Optional[float] = None,
-        threshold: Optional[float] = None,
+        model_affected: str | None = None,
+        metric_value: float | None = None,
+        threshold: float | None = None,
     ):
         """Create a new alert."""
 
@@ -352,7 +348,7 @@ class ProductionMonitor:
         # For demo purposes, assume high uptime
         return 99.9
 
-    async def generate_dashboard_data(self) -> Dict[str, Any]:
+    async def generate_dashboard_data(self) -> dict[str, Any]:
         """Generate data for monitoring dashboard."""
 
         metrics = await self.collect_metrics()
@@ -383,7 +379,7 @@ class ProductionMonitor:
             "last_updated": datetime.now(timezone.utc).isoformat(),
         }
 
-    def _calculate_trends(self) -> Dict[str, Any]:
+    def _calculate_trends(self) -> dict[str, Any]:
         """Calculate performance trends from historical data."""
 
         if len(self.metrics_history) < 2:
@@ -419,7 +415,7 @@ class ProductionMonitor:
             * 5,  # Assuming 5-minute intervals
         }
 
-    def _generate_cost_analysis(self, model_metrics: Dict[str, Any]) -> Dict[str, Any]:
+    def _generate_cost_analysis(self, model_metrics: dict[str, Any]) -> dict[str, Any]:
         """Generate cost analysis and optimization recommendations."""
 
         total_cost = sum(m["total_cost"] for m in model_metrics.values())
@@ -473,8 +469,8 @@ class ProductionMonitor:
         }
 
     def _generate_cost_recommendations(
-        self, cost_breakdown: Dict[str, Any]
-    ) -> List[str]:
+        self, cost_breakdown: dict[str, Any]
+    ) -> list[str]:
         """Generate cost optimization recommendations."""
 
         recommendations = []
@@ -502,7 +498,7 @@ class ProductionMonitor:
 
         return recommendations
 
-    def _generate_performance_summary(self, metrics: Dict[str, Any]) -> Dict[str, Any]:
+    def _generate_performance_summary(self, metrics: dict[str, Any]) -> dict[str, Any]:
         """Generate performance summary with key insights."""
 
         system_metrics = metrics["system_metrics"]
@@ -541,7 +537,7 @@ class ProductionMonitor:
 
 
 # Global monitor instance
-_production_monitor: Optional[ProductionMonitor] = None
+_production_monitor: ProductionMonitor | None = None
 
 
 async def get_production_monitor() -> ProductionMonitor:

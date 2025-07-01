@@ -12,11 +12,11 @@ import asyncio
 import logging
 import os
 import sys
-import subprocess
-import yaml
-from pathlib import Path
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional
+from pathlib import Path
+from typing import Any
+
+import yaml
 
 # Add the project root to the Python path
 project_root = Path(__file__).parent.parent.parent
@@ -52,10 +52,10 @@ class SecurityHardeningDeployer:
             "overall_status": "in_progress",
         }
 
-    async def deploy_security_hardening(self) -> Dict[str, Any]:
+    async def deploy_security_hardening(self) -> dict[str, Any]:
         """Deploy comprehensive security hardening."""
         logger.info("Starting ACGS Security Hardening Deployment")
-        logger.info(f"Constitutional Hash: cdd01ef066bc6cf2")
+        logger.info("Constitutional Hash: cdd01ef066bc6cf2")
 
         try:
             # Step 1: Load and validate configuration
@@ -121,7 +121,7 @@ class SecurityHardeningDeployer:
         if not self.config_path.exists():
             raise FileNotFoundError(f"Security config not found: {self.config_path}")
 
-        with open(self.config_path, "r") as f:
+        with open(self.config_path) as f:
             self.security_config = yaml.safe_load(f)
 
         # Validate constitutional hash
@@ -405,7 +405,7 @@ async def main():
         print(f"Status: {deployment_result['overall_status'].upper()}")
         print(f"Steps Completed: {len(deployment_result['steps_completed'])}")
         print(f"Steps Failed: {len(deployment_result['steps_failed'])}")
-        print(f"Constitutional Hash: cdd01ef066bc6cf2")
+        print("Constitutional Hash: cdd01ef066bc6cf2")
         print("=" * 60)
 
         return 0

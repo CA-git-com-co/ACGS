@@ -14,15 +14,12 @@ import gc
 import random
 import statistics
 import time
-from typing import Dict, List
-from unittest.mock import AsyncMock
 
 import psutil
 import pytest
 from dgm_service.core.dgm_engine import DGMEngine
 from dgm_service.core.performance_monitor import PerformanceMonitor
 from dgm_service.database import database_manager
-from dgm_service.main import app
 
 
 class SystemPerformanceTest:
@@ -33,7 +30,7 @@ class SystemPerformanceTest:
         self.initial_memory = None
         self.initial_cpu = None
 
-    def get_system_metrics(self) -> Dict:
+    def get_system_metrics(self) -> dict:
         """Get current system metrics."""
         return {
             "memory_mb": self.process.memory_info().rss / (1024 * 1024),
@@ -55,7 +52,7 @@ class SystemPerformanceTest:
         self.initial_memory = self.process.memory_info().rss / (1024 * 1024)
         self.initial_cpu = self.process.cpu_percent()
 
-    async def memory_stress_test(self, iterations: int = 1000) -> Dict:
+    async def memory_stress_test(self, iterations: int = 1000) -> dict:
         """Test memory usage under stress."""
         start_metrics = self.get_system_metrics()
         memory_samples = []
@@ -92,7 +89,7 @@ class SystemPerformanceTest:
             "memory_samples": memory_samples,
         }
 
-    async def cpu_stress_test(self, duration_seconds: int = 30) -> Dict:
+    async def cpu_stress_test(self, duration_seconds: int = 30) -> dict:
         """Test CPU usage under computational load."""
         start_time = time.time()
         start_metrics = self.get_system_metrics()
@@ -127,7 +124,7 @@ def system_test():
     """Fixture for system performance testing."""
     test = SystemPerformanceTest()
     test.start_monitoring()
-    yield test
+    return test
 
 
 @pytest.mark.performance
@@ -245,7 +242,8 @@ async def test_performance_monitor_efficiency():
     # Test metrics aggregation performance
     start_time = time.perf_counter()
     summary = await monitor.get_metrics_summary(
-        start_time=time.time() - 3600, end_time=time.time()  # Last hour
+        start_time=time.time() - 3600,
+        end_time=time.time(),  # Last hour
     )
     aggregation_time = (time.perf_counter() - start_time) * 1000
 

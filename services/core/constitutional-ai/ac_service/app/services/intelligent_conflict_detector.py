@@ -762,9 +762,9 @@ class IntelligentConflictDetector:
                 stmt_b_lower = stmt_b.lower()
 
                 for positive, negative in contradiction_indicators:
-                    if positive in stmt_a_lower and negative in stmt_b_lower:
-                        contradiction_score += 1.0
-                    elif negative in stmt_a_lower and positive in stmt_b_lower:
+                    if (positive in stmt_a_lower and negative in stmt_b_lower) or (
+                        negative in stmt_a_lower and positive in stmt_b_lower
+                    ):
                         contradiction_score += 1.0
 
         return contradiction_score / max(total_comparisons, 1)
@@ -833,12 +833,11 @@ class IntelligentConflictDetector:
         """Determine conflict severity based on confidence score."""
         if confidence_score >= 0.9:
             return ConflictSeverity.CRITICAL
-        elif confidence_score >= 0.8:
+        if confidence_score >= 0.8:
             return ConflictSeverity.HIGH
-        elif confidence_score >= 0.7:
+        if confidence_score >= 0.7:
             return ConflictSeverity.MEDIUM
-        else:
-            return ConflictSeverity.LOW
+        return ConflictSeverity.LOW
 
     def _deduplicate_conflicts(
         self, conflicts: list[ConflictDetectionResult]

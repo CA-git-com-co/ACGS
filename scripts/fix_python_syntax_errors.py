@@ -56,6 +56,7 @@ def main():
             "{}",
             ";",
         ],
+        check=False,
         capture_output=True,
         text=True,
     )
@@ -93,6 +94,7 @@ def main():
             "{}",
             ";",
         ],
+        check=False,
         capture_output=True,
         text=True,
     )

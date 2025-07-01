@@ -123,37 +123,35 @@ class EnhancedHTTPXMock:
         """Extract service name from URL."""
         if "auth" in url or ":8000" in url:
             return "auth"
-        elif "ac_service" in url or ":8001" in url:
+        if "ac_service" in url or ":8001" in url:
             return "ac"
-        elif "integrity" in url or ":8002" in url:
+        if "integrity" in url or ":8002" in url:
             return "integrity"
-        elif "fv_service" in url or ":8003" in url:
+        if "fv_service" in url or ":8003" in url:
             return "fv"
-        elif "gs_service" in url or ":8004" in url:
+        if "gs_service" in url or ":8004" in url:
             return "gs"
-        elif "pgc_service" in url or ":8005" in url:
+        if "pgc_service" in url or ":8005" in url:
             return "pgc"
-        else:
-            return "unknown"
+        return "unknown"
 
     def _extract_endpoint(self, url: str) -> str:
         """Extract endpoint from URL."""
         if "/health" in url:
             return "health"
-        elif "/principles" in url:
+        if "/principles" in url:
             return "principles"
-        elif "/bias-detection" in url:
+        if "/bias-detection" in url:
             return "bias_detection"
-        elif "/synthesis" in url:
+        if "/synthesis" in url:
             return "synthesis"
-        elif "/verify" in url:
+        if "/verify" in url:
             return "verify"
-        elif "/compile" in url:
+        if "/compile" in url:
             return "compile"
-        elif "/login" in url:
+        if "/login" in url:
             return "login"
-        else:
-            return "default"
+        return "default"
 
     def _get_response_data(self, service: str, endpoint: str, method: str) -> dict:
         """Get response data for service/endpoint combination."""
@@ -165,12 +163,11 @@ class EnhancedHTTPXMock:
             and method.lower() in endpoint_responses
         ):
             return endpoint_responses[method.lower()]
-        elif isinstance(endpoint_responses, dict) and "default" in endpoint_responses:
+        if isinstance(endpoint_responses, dict) and "default" in endpoint_responses:
             return endpoint_responses["default"]
-        elif not isinstance(endpoint_responses, dict):
+        if not isinstance(endpoint_responses, dict):
             return {"json": endpoint_responses, "status_code": 200}
-        else:
-            return self._get_default_response(service, endpoint)
+        return self._get_default_response(service, endpoint)
 
     def _get_default_response(self, service: str, endpoint: str) -> dict:
         """Get default response for unknown service/endpoint."""
@@ -464,8 +461,7 @@ def get_service_call_count(service_name: str, method: str | None = None) -> int:
 
     if method:
         return len([call for call in call_history if call["method"] == method])
-    else:
-        return len(call_history)
+    return len(call_history)
 
 
 # =============================================================================
@@ -541,7 +537,6 @@ class MockDatabaseSession:
     async def scalar(self, statement, parameters=None):
         """Mock scalar query."""
         self._record_call("scalar", statement, parameters)
-        return None
 
     async def scalars(self, statement, parameters=None):
         """Mock scalars query."""
@@ -629,15 +624,15 @@ class MockQuery:
 
     async def first(self):
         """Mock get first result."""
-        return None
+        return
 
     async def one(self):
         """Mock get one result."""
-        return None
+        return
 
     async def one_or_none(self):
         """Mock get one or none result."""
-        return None
+        return
 
     async def count(self):
         """Mock count results."""
@@ -653,7 +648,6 @@ async def mock_database_session():
         patch("shared.database.AsyncSessionLocal", return_value=session),
         patch("shared.database.get_async_db", return_value=session),
     ):
-
         try:
             yield session
         finally:

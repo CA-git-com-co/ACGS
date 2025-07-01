@@ -3,7 +3,7 @@
 ACGS-1 Integration Testing - End-to-End Workflow Validation
 ===========================================================
 
-This script validates that all services communicate properly and governance 
+This script validates that all services communicate properly and governance
 workflows function correctly after the reorganization.
 
 Key Test Areas:
@@ -15,11 +15,10 @@ Key Test Areas:
 """
 
 import json
-import time
 import logging
-import requests
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, asdict
+import time
+from dataclasses import asdict, dataclass
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -37,8 +36,8 @@ class TestResult:
     test_name: str
     success: bool
     duration_ms: float
-    details: Dict[str, Any]
-    error_message: Optional[str] = None
+    details: dict[str, Any]
+    error_message: str | None = None
 
 
 @dataclass
@@ -64,10 +63,10 @@ class ACGSIntegrationTester:
             ServiceEndpoint("pgc_service", 8005, "http://localhost:8005"),
             ServiceEndpoint("ec_service", 8006, "http://localhost:8006"),
         ]
-        self.test_results: List[TestResult] = []
+        self.test_results: list[TestResult] = []
         self.constitution_hash = "cdd01ef066bc6cf2"
 
-    async def run_all_tests(self) -> List[TestResult]:
+    async def run_all_tests(self) -> list[TestResult]:
         """Run all integration tests."""
         logger.info("🚀 Starting ACGS-1 Integration Testing Suite")
         logger.info("=" * 60)
@@ -263,7 +262,7 @@ class ACGSIntegrationTester:
 
                     duration_ms = (time.time() - start_time) * 1000
 
-                except Exception as e:
+                except Exception:
                     # Try health endpoint for header check
                     try:
                         url = f"{service.base_url}/health"
@@ -492,7 +491,7 @@ class ACGSIntegrationTester:
                         f"⚠️ Performance baseline test warning (avg: {avg_response_time:.2f}ms)"
                     )
 
-    def generate_report(self) -> Dict[str, Any]:
+    def generate_report(self) -> dict[str, Any]:
         """Generate comprehensive integration test report."""
         successful_tests = [t for t in self.test_results if t.success]
         failed_tests = [t for t in self.test_results if not t.success]
@@ -523,7 +522,7 @@ class ACGSIntegrationTester:
 
         return report
 
-    def _generate_recommendations(self) -> List[str]:
+    def _generate_recommendations(self) -> list[str]:
         """Generate recommendations based on test results."""
         recommendations = []
 
@@ -596,15 +595,14 @@ async def main():
             for i, rec in enumerate(report["recommendations"], 1):
                 logger.info(f"{i}. {rec}")
 
-        logger.info(f"\n📄 Detailed report saved to: integration_test_report.json")
+        logger.info("\n📄 Detailed report saved to: integration_test_report.json")
 
         # Exit with appropriate code
         if report["summary"]["success_rate"] >= 80:
             logger.info("✅ Integration testing completed successfully!")
             return 0
-        else:
-            logger.error("❌ Integration testing completed with significant issues")
-            return 1
+        logger.error("❌ Integration testing completed with significant issues")
+        return 1
 
     except Exception as e:
         logger.error(f"Integration testing failed: {e}")

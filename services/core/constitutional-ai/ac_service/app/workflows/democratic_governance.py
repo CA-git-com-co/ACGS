@@ -5,22 +5,20 @@ This module implements comprehensive democratic governance workflows
 with enhanced voting mechanisms, stakeholder engagement, and transparency.
 """
 
-import asyncio
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..core.constitutional_council_scalability import (
     ConstitutionalCouncilScalabilityFramework,
 )
-from ..models import ACAmendment, ACAmendmentVote, User
+from ..models import ACAmendmentVote, User
 from ..monitoring.scalability_metrics import GovernancePhase, get_metrics_collector
-from ..schemas import ACAmendmentCreate, ACAmendmentVoteCreate
+from ..schemas import ACAmendmentCreate
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +54,7 @@ class VotingConfiguration:
     voting_period_hours: int = 72
     anonymous_voting: bool = False
     weighted_by_expertise: bool = True
-    stakeholder_weights: Dict[StakeholderGroup, float] = field(
+    stakeholder_weights: dict[StakeholderGroup, float] = field(
         default_factory=lambda: {
             StakeholderGroup.CONSTITUTIONAL_COUNCIL: 0.4,
             StakeholderGroup.EXPERT_ADVISORS: 0.25,
@@ -73,7 +71,7 @@ class DemocraticProcess:
 
     amendment_id: int
     process_type: str
-    stakeholder_groups: List[StakeholderGroup]
+    stakeholder_groups: list[StakeholderGroup]
     voting_config: VotingConfiguration
     consultation_period_days: int = 14
     transparency_level: str = "high"
@@ -81,10 +79,10 @@ class DemocraticProcess:
     expert_review_required: bool = True
 
     # Process tracking
-    started_at: Optional[datetime] = None
-    consultation_started_at: Optional[datetime] = None
-    voting_started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    started_at: datetime | None = None
+    consultation_started_at: datetime | None = None
+    voting_started_at: datetime | None = None
+    completed_at: datetime | None = None
     current_phase: GovernancePhase = GovernancePhase.PROPOSAL
 
     # Participation metrics
@@ -105,7 +103,7 @@ class DemocraticGovernanceEngine:
     async def initiate_democratic_process(
         self,
         amendment: ACAmendmentCreate,
-        process_config: Optional[DemocraticProcess] = None,
+        process_config: DemocraticProcess | None = None,
     ) -> DemocraticProcess:
         """Initiate a new democratic governance process."""
 
@@ -184,7 +182,7 @@ class DemocraticGovernanceEngine:
 
     async def conduct_democratic_voting(
         self, process: DemocraticProcess
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Conduct democratic voting with configured mechanism."""
 
         start_time = datetime.utcnow()
@@ -256,7 +254,7 @@ class DemocraticGovernanceEngine:
             raise
 
     async def _count_eligible_participants(
-        self, stakeholder_groups: List[StakeholderGroup]
+        self, stakeholder_groups: list[StakeholderGroup]
     ) -> int:
         """Count eligible participants across stakeholder groups."""
         try:
@@ -291,14 +289,14 @@ class DemocraticGovernanceEngine:
         logger.info(f"Requesting expert reviews for amendment {process.amendment_id}")
 
     async def _get_eligible_voters(
-        self, stakeholder_groups: List[StakeholderGroup]
-    ) -> List[User]:
+        self, stakeholder_groups: list[StakeholderGroup]
+    ) -> list[User]:
         """Get list of eligible voters from stakeholder groups."""
         # This would query the database for actual users
         # For now, return mock data
         return []
 
-    async def _get_existing_votes(self, amendment_id: int) -> List[ACAmendmentVote]:
+    async def _get_existing_votes(self, amendment_id: int) -> list[ACAmendmentVote]:
         """Get existing votes for an amendment."""
         try:
             # Query database for existing votes
@@ -311,34 +309,33 @@ class DemocraticGovernanceEngine:
     async def _calculate_voting_results(
         self,
         voting_config: VotingConfiguration,
-        eligible_voters: List[User],
-        existing_votes: List[ACAmendmentVote],
-    ) -> Dict[str, Any]:
+        eligible_voters: list[User],
+        existing_votes: list[ACAmendmentVote],
+    ) -> dict[str, Any]:
         """Calculate voting results based on the configured mechanism."""
 
         if voting_config.mechanism == VotingMechanism.WEIGHTED_VOTING:
             return self._calculate_weighted_voting_results(
                 voting_config, eligible_voters, existing_votes
             )
-        elif voting_config.mechanism == VotingMechanism.SIMPLE_MAJORITY:
+        if voting_config.mechanism == VotingMechanism.SIMPLE_MAJORITY:
             return self._calculate_simple_majority_results(existing_votes)
-        else:
-            # Default to simple counting
-            return self._calculate_simple_majority_results(existing_votes)
+        # Default to simple counting
+        return self._calculate_simple_majority_results(existing_votes)
 
     def _calculate_weighted_voting_results(
         self,
         voting_config: VotingConfiguration,
-        eligible_voters: List[User],
-        existing_votes: List[ACAmendmentVote],
-    ) -> Dict[str, Any]:
+        eligible_voters: list[User],
+        existing_votes: list[ACAmendmentVote],
+    ) -> dict[str, Any]:
         """Calculate weighted voting results."""
         # Mock implementation
         return {"for": 0.65, "against": 0.25, "abstain": 0.10, "weighted_total": 1.0}
 
     def _calculate_simple_majority_results(
-        self, existing_votes: List[ACAmendmentVote]
-    ) -> Dict[str, Any]:
+        self, existing_votes: list[ACAmendmentVote]
+    ) -> dict[str, Any]:
         """Calculate simple majority results."""
         # Mock implementation
         return {"for": 12, "against": 5, "abstain": 3, "total": 20}
@@ -352,7 +349,7 @@ class DemocraticGovernanceEngine:
         return (votes_cast / eligible_voters) >= quorum_percentage
 
     def _check_threshold(
-        self, voting_results: Dict[str, Any], threshold_percentage: float
+        self, voting_results: dict[str, Any], threshold_percentage: float
     ) -> bool:
         """Check if voting threshold is met."""
         # This would implement the actual threshold logic based on voting mechanism

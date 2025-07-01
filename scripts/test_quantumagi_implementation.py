@@ -355,7 +355,7 @@ class QuantumagiTestSuite:
 
             # Run compliance tests
             for i, test_case in enumerate(test_cases):
-                logger.info(f"  Testing case {i+1}: {test_case['description']}")
+                logger.info(f"  Testing case {i + 1}: {test_case['description']}")
 
                 # Mock PGC compliance logic
                 result = await self._mock_pgc_check(
@@ -607,11 +607,10 @@ async def main():
                 "\n🎉 ALL TESTS PASSED! Quantumagi implementation is ready for deployment."
             )
             return 0
-        else:
-            print(
-                f"\n⚠️  {report['summary']['failed']} tests failed. Please review and fix issues."
-            )
-            return 1
+        print(
+            f"\n⚠️  {report['summary']['failed']} tests failed. Please review and fix issues."
+        )
+        return 1
 
     except Exception as e:
         print(f"\n💥 Test suite execution failed: {e}")

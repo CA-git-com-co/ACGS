@@ -5,12 +5,10 @@ Provides integration between WINA optimization and constitutional compliance
 requirements for the ACGS-PGP system.
 """
 
-import asyncio
 import logging
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Dict, Any, List, Optional
 from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -42,9 +40,9 @@ class ComplianceResult:
     """Result of constitutional compliance check."""
 
     overall_score: float
-    principle_scores: Dict[ConstitutionalPrinciple, float]
-    violations: List[str]
-    recommendations: List[str]
+    principle_scores: dict[ConstitutionalPrinciple, float]
+    violations: list[str]
+    recommendations: list[str]
     compliant: bool
 
 
@@ -56,7 +54,7 @@ class ConstitutionalWINASupport:
     and democratic oversight principles.
     """
 
-    def __init__(self, wina_config: Dict[str, Any], integration_config: Dict[str, Any]):
+    def __init__(self, wina_config: dict[str, Any], integration_config: dict[str, Any]):
         """
         Initialize constitutional WINA support.
 
@@ -74,11 +72,11 @@ class ConstitutionalWINASupport:
         )
 
         # Constitutional constraints
-        self.constraints: List[ConstitutionalConstraint] = []
-        self.efficiency_principles: List[Dict[str, Any]] = []
+        self.constraints: list[ConstitutionalConstraint] = []
+        self.efficiency_principles: list[dict[str, Any]] = []
 
         # Compliance tracking
-        self.compliance_history: List[ComplianceResult] = []
+        self.compliance_history: list[ComplianceResult] = []
         self.violation_count = 0
         self.total_checks = 0
 
@@ -200,7 +198,7 @@ class ConstitutionalWINASupport:
             overall_score = sum(
                 score * constraint.weight
                 for constraint, score in zip(
-                    self.constraints, principle_scores.values()
+                    self.constraints, principle_scores.values(), strict=False
                 )
             )
 
@@ -235,7 +233,7 @@ class ConstitutionalWINASupport:
             return ComplianceResult(
                 overall_score=0.0,
                 principle_scores={},
-                violations=[f"Validation error: {str(e)}"],
+                violations=[f"Validation error: {e!s}"],
                 recommendations=["Fix validation system"],
                 compliant=False,
             )
@@ -264,30 +262,29 @@ class ConstitutionalWINASupport:
                 )  # Slight boost for transparency
                 return transparency_score
 
-            elif constraint.principle == ConstitutionalPrinciple.ACCOUNTABILITY:
+            if constraint.principle == ConstitutionalPrinciple.ACCOUNTABILITY:
                 # Accountability based on audit trail and decision tracking
                 accountability_score = base_score * 0.95  # Slightly more stringent
                 return accountability_score
 
-            elif constraint.principle == ConstitutionalPrinciple.FAIRNESS:
+            if constraint.principle == ConstitutionalPrinciple.FAIRNESS:
                 # Fairness based on stakeholder impact analysis
                 fairness_score = base_score * 0.90  # More stringent for fairness
                 return fairness_score
 
-            elif constraint.principle == ConstitutionalPrinciple.SECURITY:
+            if constraint.principle == ConstitutionalPrinciple.SECURITY:
                 # Security based on preservation of security properties
                 security_score = min(
                     1.0, base_score + 0.02
                 )  # Small boost for security focus
                 return security_score
 
-            elif constraint.principle == ConstitutionalPrinciple.DEMOCRATIC_OVERSIGHT:
+            if constraint.principle == ConstitutionalPrinciple.DEMOCRATIC_OVERSIGHT:
                 # Democratic oversight based on governance mechanism preservation
                 oversight_score = base_score * 0.85  # Most stringent requirement
                 return oversight_score
 
-            else:
-                return base_score
+            return base_score
 
         except Exception as e:
             logger.error(
@@ -295,7 +292,7 @@ class ConstitutionalWINASupport:
             )
             return 0.0
 
-    def get_compliance_summary(self) -> Dict[str, Any]:
+    def get_compliance_summary(self) -> dict[str, Any]:
         """
         Get summary of constitutional compliance performance.
 
@@ -347,7 +344,7 @@ class ConstitutionalWINASupport:
 
     async def suggest_compliance_improvements(
         self, compliance_result: ComplianceResult
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Suggest improvements for constitutional compliance.
 

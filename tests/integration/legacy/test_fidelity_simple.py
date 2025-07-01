@@ -35,7 +35,9 @@ def test_fidelity_thresholds():
             level = "red (CRITICAL)"
             status = "🚨"
 
-        print(f"{status} Score: {score:.2f} ({score*100:.1f}%) → Alert Level: {level}")
+        print(
+            f"{status} Score: {score:.2f} ({score * 100:.1f}%) → Alert Level: {level}"
+        )
 
 
 def simulate_fidelity_history():
@@ -88,7 +90,7 @@ def simulate_fidelity_history():
 
         # Calculate average
         avg_score = sum(entry["score"] for entry in history) / len(history)
-        print(f"📊 Average score: {avg_score:.3f} ({avg_score*100:.1f}%)")
+        print(f"📊 Average score: {avg_score:.3f} ({avg_score * 100:.1f}%)")
 
         # Show recent scores
         print("\n📋 Recent scores:")
@@ -100,7 +102,7 @@ def simulate_fidelity_history():
                 status = "⚠️"
             else:
                 status = "🚨"
-            print(f"  {status} {score:.3f} ({score*100:.1f}%)")
+            print(f"  {status} {score:.3f} ({score * 100:.1f}%)")
 
 
 def test_alert_generation():
@@ -192,12 +194,12 @@ def test_component_integration():
     for component, value in components.items():
         weight = weights[component]
         if component == "appeal_frequency":
-            display_value = f"{value:.2f} (inverted: {1-value:.2f})"
+            display_value = f"{value:.2f} (inverted: {1 - value:.2f})"
         else:
             display_value = f"{value:.2f}"
         print(f"  • {component}: {display_value} (weight: {weight:.2f})")
 
-    print(f"\n🎯 Composite Score: {composite_score:.3f} ({composite_score*100:.1f}%)")
+    print(f"\n🎯 Composite Score: {composite_score:.3f} ({composite_score * 100:.1f}%)")
 
     if composite_score >= 0.85:
         print("✅ Overall Status: EXCELLENT")

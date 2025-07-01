@@ -4,16 +4,13 @@ Implements comprehensive human oversight and approval mechanisms.
 """
 
 import asyncio
-import json
 import logging
-import time
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-import aiohttp
 from prometheus_client import Counter, Gauge, Histogram
 
 logger = logging.getLogger(__name__)
@@ -55,7 +52,7 @@ class ReviewerProfile:
     reviewer_id: str
     name: str
     role: ReviewerRole
-    expertise_areas: List[str]
+    expertise_areas: list[str]
     availability_status: str = "available"  # available, busy, offline
     max_concurrent_reviews: int = 5
     current_review_count: int = 0
@@ -72,29 +69,29 @@ class ReviewTask:
 
     task_id: str
     evolution_id: str
-    reviewer_id: Optional[str] = None
+    reviewer_id: str | None = None
 
     # Task metadata
     priority: ReviewPriority = ReviewPriority.MEDIUM
-    required_expertise: List[str] = field(default_factory=list)
+    required_expertise: list[str] = field(default_factory=list)
     estimated_review_time_hours: float = 24.0
 
     # Review content
     title: str = ""
     description: str = ""
-    review_materials: Dict[str, Any] = field(default_factory=dict)
+    review_materials: dict[str, Any] = field(default_factory=dict)
 
     # Decision tracking
-    decision: Optional[ReviewDecision] = None
+    decision: ReviewDecision | None = None
     justification: str = ""
-    recommendations: List[str] = field(default_factory=list)
+    recommendations: list[str] = field(default_factory=list)
 
     # Timestamps
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    assigned_at: Optional[datetime] = None
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
-    deadline: Optional[datetime] = None
+    assigned_at: datetime | None = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
+    deadline: datetime | None = None
 
 
 @dataclass
@@ -106,16 +103,16 @@ class ReviewWorkflow:
     workflow_type: str  # single_reviewer, multi_reviewer, consensus, escalation
 
     # Workflow stages
-    stages: List[Dict[str, Any]] = field(default_factory=list)
+    stages: list[dict[str, Any]] = field(default_factory=list)
     current_stage: int = 0
 
     # Overall workflow status
     status: str = "pending"  # pending, in_progress, completed, failed
-    final_decision: Optional[ReviewDecision] = None
+    final_decision: ReviewDecision | None = None
 
     # Metadata
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    completed_at: Optional[datetime] = None
+    completed_at: datetime | None = None
 
 
 class HumanApprovalWorkflow:
@@ -125,9 +122,9 @@ class HumanApprovalWorkflow:
         self.setup_metrics()
 
         # Workflow tracking
-        self.active_workflows: Dict[str, ReviewWorkflow] = {}
-        self.pending_tasks: Dict[str, ReviewTask] = {}
-        self.reviewer_profiles: Dict[str, ReviewerProfile] = {}
+        self.active_workflows: dict[str, ReviewWorkflow] = {}
+        self.pending_tasks: dict[str, ReviewTask] = {}
+        self.reviewer_profiles: dict[str, ReviewerProfile] = {}
 
         # Configuration
         self.auto_assignment_enabled = True
@@ -216,7 +213,7 @@ class HumanApprovalWorkflow:
         self,
         evolution_id: str,
         workflow_type: str = "single_reviewer",
-        required_expertise: List[str] = None,
+        required_expertise: list[str] = None,
         priority: ReviewPriority = ReviewPriority.MEDIUM,
     ) -> str:
         """Create a new review workflow."""
@@ -247,9 +244,9 @@ class HumanApprovalWorkflow:
     async def design_workflow_stages(
         self,
         workflow_type: str,
-        required_expertise: List[str],
+        required_expertise: list[str],
         priority: ReviewPriority,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Design workflow stages based on requirements."""
         stages = []
 
@@ -346,8 +343,8 @@ class HumanApprovalWorkflow:
         asyncio.create_task(self.monitor_stage_completion(workflow, stage_index, tasks))
 
     async def create_stage_review_tasks(
-        self, workflow: ReviewWorkflow, stage: Dict[str, Any]
-    ) -> List[ReviewTask]:
+        self, workflow: ReviewWorkflow, stage: dict[str, Any]
+    ) -> list[ReviewTask]:
         """Create review tasks for a workflow stage."""
         tasks = []
 
@@ -396,7 +393,7 @@ class HumanApprovalWorkflow:
         else:
             logger.warning(f"No suitable reviewer found for task {task.task_id}")
 
-    async def find_best_reviewer(self, task: ReviewTask) -> Optional[ReviewerProfile]:
+    async def find_best_reviewer(self, task: ReviewTask) -> ReviewerProfile | None:
         """Find the best reviewer for a task."""
         candidates = []
 
@@ -468,7 +465,7 @@ class HumanApprovalWorkflow:
         reviewer_id: str,
         decision: ReviewDecision,
         justification: str,
-        recommendations: List[str] = None,
+        recommendations: list[str] = None,
     ) -> bool:
         """Submit a review decision."""
         if task_id not in self.pending_tasks:
@@ -521,7 +518,7 @@ class HumanApprovalWorkflow:
         return True
 
     async def monitor_stage_completion(
-        self, workflow: ReviewWorkflow, stage_index: int, tasks: List[ReviewTask]
+        self, workflow: ReviewWorkflow, stage_index: int, tasks: list[ReviewTask]
     ):
         """Monitor completion of a workflow stage."""
         stage = workflow.stages[stage_index]
@@ -589,7 +586,7 @@ class HumanApprovalWorkflow:
         # Auto-escalate or assign to different reviewer
         # Implementation depends on escalation policies
 
-    def get_workflow_status(self, workflow_id: str) -> Optional[Dict[str, Any]]:
+    def get_workflow_status(self, workflow_id: str) -> dict[str, Any] | None:
         """Get status of a review workflow."""
         if workflow_id in self.active_workflows:
             workflow = self.active_workflows[workflow_id]
@@ -610,7 +607,7 @@ class HumanApprovalWorkflow:
 
         return None
 
-    def get_pending_tasks_for_reviewer(self, reviewer_id: str) -> List[Dict[str, Any]]:
+    def get_pending_tasks_for_reviewer(self, reviewer_id: str) -> list[dict[str, Any]]:
         """Get pending tasks for a specific reviewer."""
         tasks = []
 

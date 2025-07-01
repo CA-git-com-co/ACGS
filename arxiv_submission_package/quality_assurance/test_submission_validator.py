@@ -5,11 +5,12 @@ Test suite for the Academic Submission Validator
 This module provides comprehensive tests for the submission validation pipeline.
 """
 
-import unittest
-import tempfile
 import shutil
+import tempfile
+import unittest
 from pathlib import Path
-from submission_validator import SubmissionValidator, ValidationResult, SubmissionReport
+
+from submission_validator import SubmissionReport, SubmissionValidator, ValidationResult
 
 
 class TestSubmissionValidator(unittest.TestCase):

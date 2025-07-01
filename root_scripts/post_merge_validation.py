@@ -35,6 +35,7 @@ class PostMergeValidator:
         try:
             result = subprocess.run(
                 ["python", "scripts/comprehensive_health_check.py"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=120,
@@ -56,6 +57,7 @@ class PostMergeValidator:
         try:
             result = subprocess.run(
                 ["python", "scripts/phase3_security_validation.py"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=180,
@@ -77,6 +79,7 @@ class PostMergeValidator:
         try:
             result = subprocess.run(
                 ["bandit", "-r", "src/", "-f", "json"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=60,
@@ -125,6 +128,7 @@ class PostMergeValidator:
             # Run critical tests
             result = subprocess.run(
                 ["python", "-m", "pytest", "tests/", "-x", "--tb=short", "-q"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=300,
@@ -146,6 +150,7 @@ class PostMergeValidator:
         try:
             result = subprocess.run(
                 ["docker-compose", "-f", "docker-compose.yml", "config"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=30,

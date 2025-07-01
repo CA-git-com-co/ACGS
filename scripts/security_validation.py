@@ -169,7 +169,7 @@ class SecurityValidator:
             return SecurityTestResult(
                 test_name="Security Headers",
                 passed=False,
-                details=f"Test failed: {str(e)}",
+                details=f"Test failed: {e!s}",
                 severity="high",
                 execution_time_ms=execution_time,
             )
@@ -207,21 +207,20 @@ class SecurityValidator:
                     severity="low",
                     execution_time_ms=execution_time,
                 )
-            else:
-                return SecurityTestResult(
-                    test_name="Rate Limiting",
-                    passed=False,
-                    details="No rate limiting detected",
-                    severity="medium",
-                    execution_time_ms=execution_time,
-                )
+            return SecurityTestResult(
+                test_name="Rate Limiting",
+                passed=False,
+                details="No rate limiting detected",
+                severity="medium",
+                execution_time_ms=execution_time,
+            )
 
         except Exception as e:
             execution_time = (time.time() - start_time) * 1000
             return SecurityTestResult(
                 test_name="Rate Limiting",
                 passed=False,
-                details=f"Test failed: {str(e)}",
+                details=f"Test failed: {e!s}",
                 severity="high",
                 execution_time_ms=execution_time,
             )
@@ -263,21 +262,20 @@ class SecurityValidator:
                     severity="low",
                     execution_time_ms=execution_time,
                 )
-            else:
-                return SecurityTestResult(
-                    test_name="Input Validation",
-                    passed=False,
-                    details=f"Insufficient input validation: {blocked_count}/{len(malicious_payloads)} payloads blocked",
-                    severity="high",
-                    execution_time_ms=execution_time,
-                )
+            return SecurityTestResult(
+                test_name="Input Validation",
+                passed=False,
+                details=f"Insufficient input validation: {blocked_count}/{len(malicious_payloads)} payloads blocked",
+                severity="high",
+                execution_time_ms=execution_time,
+            )
 
         except Exception as e:
             execution_time = (time.time() - start_time) * 1000
             return SecurityTestResult(
                 test_name="Input Validation",
                 passed=False,
-                details=f"Test failed: {str(e)}",
+                details=f"Test failed: {e!s}",
                 severity="high",
                 execution_time_ms=execution_time,
             )
@@ -316,7 +314,7 @@ class SecurityValidator:
             return SecurityTestResult(
                 test_name="Authentication Security",
                 passed=False,
-                details=f"Test failed: {str(e)}",
+                details=f"Test failed: {e!s}",
                 severity="medium",
                 execution_time_ms=execution_time,
             )
@@ -365,7 +363,7 @@ class SecurityValidator:
             return SecurityTestResult(
                 test_name="CORS Configuration",
                 passed=False,
-                details=f"Test failed: {str(e)}",
+                details=f"Test failed: {e!s}",
                 severity="low",
                 execution_time_ms=execution_time,
             )
@@ -420,7 +418,7 @@ class SecurityValidator:
             return SecurityTestResult(
                 test_name="Error Handling",
                 passed=False,
-                details=f"Test failed: {str(e)}",
+                details=f"Test failed: {e!s}",
                 severity="low",
                 execution_time_ms=execution_time,
             )
@@ -471,7 +469,7 @@ def print_security_report(results: dict[str, list[SecurityTestResult]]):
     print(f"Total Tests: {total_tests}")
     print(f"Passed: {passed_tests}")
     print(f"Failed: {total_tests - passed_tests}")
-    print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
+    print(f"Success Rate: {(passed_tests / total_tests) * 100:.1f}%")
     print()
     print("Issues by Severity:")
     print(f"  🔴 Critical: {critical_issues}")

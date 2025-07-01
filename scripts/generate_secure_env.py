@@ -113,9 +113,9 @@ def generate_env_file(config: dict[str, str], output_file: str, environment: str
 
     header = f"""# =============================================================================
 # ACGS-PGP Secure Environment Configuration
-# Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+# Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 # Environment: {environment.upper()}
-# Security Level: {'CRITICAL' if environment == 'production' else 'HIGH'}
+# Security Level: {"CRITICAL" if environment == "production" else "HIGH"}
 # =============================================================================
 
 # ⚠️  SECURITY WARNING ⚠️

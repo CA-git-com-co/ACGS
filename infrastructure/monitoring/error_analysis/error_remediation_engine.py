@@ -5,11 +5,9 @@ Implements automated error remediation strategies based on error patterns and ro
 """
 
 import asyncio
-import json
 import logging
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Set
 
 import aiohttp
 from prometheus_client import Counter, Gauge
@@ -25,7 +23,7 @@ class RemediationAction:
     action_type: str
     target_service: str
     description: str
-    parameters: Dict
+    parameters: dict
     priority: int  # 1=critical, 2=high, 3=medium, 4=low
     estimated_impact: str
     rollback_possible: bool = True
@@ -39,8 +37,8 @@ class RemediationResult:
     success: bool
     message: str
     timestamp: datetime
-    metrics_before: Dict
-    metrics_after: Optional[Dict] = None
+    metrics_before: dict
+    metrics_after: dict | None = None
 
 
 class ErrorRemediationEngine:
@@ -48,8 +46,8 @@ class ErrorRemediationEngine:
 
     def __init__(self):
         self.setup_metrics()
-        self.active_remediations: Dict[str, RemediationAction] = {}
-        self.remediation_history: List[RemediationResult] = []
+        self.active_remediations: dict[str, RemediationAction] = {}
+        self.remediation_history: list[RemediationResult] = []
 
         # ACGS services configuration
         self.services = {
@@ -117,7 +115,7 @@ class ErrorRemediationEngine:
             for service_name, port in self.services.items():
                 try:
                     # Get error rate from metrics
-                    metrics_url = f"http://localhost:9090/api/v1/query"
+                    metrics_url = "http://localhost:9090/api/v1/query"
                     query = f'acgs_error_rate_by_service{{service="{service_name}"}}'
 
                     async with session.get(
@@ -248,7 +246,7 @@ class ErrorRemediationEngine:
 
                 except asyncio.TimeoutError:
                     await self.trigger_availability_remediation(service_name, "timeout")
-                except Exception as e:
+                except Exception:
                     await self.trigger_availability_remediation(
                         service_name, "connection_error"
                     )
@@ -374,7 +372,7 @@ class ErrorRemediationEngine:
             result = RemediationResult(
                 action_id=action.action_id,
                 success=False,
-                message=f"Execution failed: {str(e)}",
+                message=f"Execution failed: {e!s}",
                 timestamp=datetime.now(timezone.utc),
                 metrics_before=metrics_before,
             )
@@ -419,13 +417,12 @@ class ErrorRemediationEngine:
                 async with session.post(reload_url, timeout=10) as response:
                     if response.status == 200:
                         return True, "Constitutional policies reloaded successfully"
-                    else:
-                        return (
-                            False,
-                            f"Failed to reload policies: HTTP {response.status}",
-                        )
+                    return (
+                        False,
+                        f"Failed to reload policies: HTTP {response.status}",
+                    )
         except Exception as e:
-            return False, f"Failed to reload policies: {str(e)}"
+            return False, f"Failed to reload policies: {e!s}"
 
     async def refresh_policy_cache(self, action: RemediationAction) -> tuple[bool, str]:
         """Refresh policy cache."""
@@ -436,12 +433,11 @@ class ErrorRemediationEngine:
                 async with session.post(cache_url, timeout=5) as response:
                     if response.status == 200:
                         return True, "Policy cache refreshed successfully"
-                    else:
-                        return False, f"Failed to refresh cache: HTTP {response.status}"
+                    return False, f"Failed to refresh cache: HTTP {response.status}"
         except Exception as e:
-            return False, f"Failed to refresh cache: {str(e)}"
+            return False, f"Failed to refresh cache: {e!s}"
 
-    async def capture_service_metrics(self, service_name: str) -> Dict:
+    async def capture_service_metrics(self, service_name: str) -> dict:
         """Capture current metrics for a service."""
         metrics = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -451,7 +447,7 @@ class ErrorRemediationEngine:
         try:
             async with aiohttp.ClientSession() as session:
                 # Get error rate
-                metrics_url = f"http://localhost:9090/api/v1/query"
+                metrics_url = "http://localhost:9090/api/v1/query"
                 query = f'acgs_error_rate_by_service{{service="{service_name}"}}'
 
                 async with session.get(

@@ -9,9 +9,9 @@ from .experiment_tracking import router as experiment_tracking_router
 from .reproducibility import router as reproducibility_router
 
 __all__ = [
-    "experiment_tracking_router",
-    "data_collection_router",
     "analysis_router",
     "automation_router",
+    "data_collection_router",
+    "experiment_tracking_router",
     "reproducibility_router",
 ]

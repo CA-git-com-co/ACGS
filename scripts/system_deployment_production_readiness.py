@@ -210,6 +210,7 @@ class SystemDeploymentManager:
                             "-U",
                             "acgs_user",
                         ],
+                        check=False,
                         capture_output=True,
                         timeout=10,
                     )
@@ -223,6 +224,7 @@ class SystemDeploymentManager:
                     # Test Redis connection
                     result = subprocess.run(
                         ["docker", "exec", "acgs_redis", "redis-cli", "ping"],
+                        check=False,
                         capture_output=True,
                         timeout=10,
                     )
@@ -496,6 +498,7 @@ class SystemDeploymentManager:
             # Check if services are running with proper user permissions
             result = subprocess.run(
                 ["docker", "ps", "--format", "table {{.Names}}\t{{.Status}}"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -648,6 +651,7 @@ class SystemDeploymentManager:
                     "--format",
                     "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}",
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -706,6 +710,7 @@ class SystemDeploymentManager:
                     "-c",
                     "SELECT 1;",
                 ],
+                check=False,
                 capture_output=True,
                 timeout=5,
             )
@@ -1081,14 +1086,13 @@ echo "✅ ACGS-1 deployment completed successfully"
         """Get deployment status based on readiness score."""
         if readiness_score >= 95:
             return "ENTERPRISE_READY"
-        elif readiness_score >= 90:
+        if readiness_score >= 90:
             return "PRODUCTION_READY"
-        elif readiness_score >= 75:
+        if readiness_score >= 75:
             return "STAGING_READY"
-        elif readiness_score >= 50:
+        if readiness_score >= 50:
             return "DEVELOPMENT_READY"
-        else:
-            return "NOT_READY"
+        return "NOT_READY"
 
     def _get_critical_issues(self) -> list[str]:
         """Extract critical issues from validation results."""
@@ -1129,7 +1133,7 @@ echo "✅ ACGS-1 deployment completed successfully"
                 "4. Implement continuous monitoring and alerting",
                 "5. Schedule regular security and compliance audits",
             ]
-        elif readiness_score >= 75:
+        if readiness_score >= 75:
             return [
                 "1. Address remaining critical issues and recommendations",
                 "2. Complete security configuration and SSL/TLS setup",
@@ -1137,25 +1141,23 @@ echo "✅ ACGS-1 deployment completed successfully"
                 "4. Re-run production readiness validation",
                 "5. Proceed with production deployment after validation",
             ]
-        else:
-            return [
-                "1. Address all critical infrastructure and service issues",
-                "2. Complete missing service deployments",
-                "3. Implement required security configurations",
-                "4. Set up monitoring and observability stack",
-                "5. Re-run comprehensive validation before proceeding",
-            ]
+        return [
+            "1. Address all critical infrastructure and service issues",
+            "2. Complete missing service deployments",
+            "3. Implement required security configurations",
+            "4. Set up monitoring and observability stack",
+            "5. Re-run comprehensive validation before proceeding",
+        ]
 
     def _estimate_deployment_time(self, readiness_score: float) -> str:
         """Estimate deployment time based on readiness."""
         if readiness_score >= 90:
             return "15-30 minutes (ready for immediate deployment)"
-        elif readiness_score >= 75:
+        if readiness_score >= 75:
             return "2-4 hours (minor fixes required)"
-        elif readiness_score >= 50:
+        if readiness_score >= 50:
             return "1-2 days (significant work required)"
-        else:
-            return "3-5 days (major infrastructure work required)"
+        return "3-5 days (major infrastructure work required)"
 
     async def run_comprehensive_deployment_validation(self) -> dict[str, Any]:
         """Run comprehensive system deployment and production readiness validation."""

@@ -97,7 +97,7 @@ class SecurityValidator:
                         async with session.get(f"{base_url}/health") as response:
                             responses.append(response.status)
                     except Exception as e:
-                        responses.append(f"Error: {str(e)}")
+                        responses.append(f"Error: {e!s}")
 
                 # Check if any requests were rate limited (429 status)
                 rate_limited = any(r == 429 for r in responses if isinstance(r, int))
@@ -212,7 +212,7 @@ class SecurityValidator:
                         f"  {status_emoji} {result.test_name}: {result.status} ({result.response_time_ms:.1f}ms)"
                     )
                 else:
-                    print(f"  ❌ Test Error: {str(result)}")
+                    print(f"  ❌ Test Error: {result!s}")
 
             print()
 

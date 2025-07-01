@@ -6,14 +6,10 @@ This script performs a detailed analysis of the ACGS-1 project after the compreh
 to identify any remaining issues, validate service integration, and ensure optimal performance.
 """
 
-import os
-import sys
 import json
-import subprocess
-import requests
-from pathlib import Path
+import sys
 from datetime import datetime
-from typing import Dict, List, Set, Tuple
+from pathlib import Path
 
 
 class PostCleanupAnalyzer:
@@ -206,7 +202,7 @@ class PostCleanupAnalyzer:
 
                 for config_file in config_files:
                     try:
-                        with open(config_file, "r") as f:
+                        with open(config_file) as f:
                             content = f.read()
                             # Look for port configurations
                             if "port" in content.lower():
@@ -232,7 +228,7 @@ class PostCleanupAnalyzer:
         db_configs = []
         for config_file in self.project_root.rglob("*config*.py"):
             try:
-                with open(config_file, "r") as f:
+                with open(config_file) as f:
                     content = f.read()
                     if "database" in content.lower() or "db_" in content.lower():
                         db_configs.append(str(config_file))
@@ -287,7 +283,7 @@ class PostCleanupAnalyzer:
 
         for doc_file in doc_files:
             try:
-                with open(doc_file, "r", encoding="utf-8", errors="ignore") as f:
+                with open(doc_file, encoding="utf-8", errors="ignore") as f:
                     content = f.read()
 
                     for removed_service in removed_services:

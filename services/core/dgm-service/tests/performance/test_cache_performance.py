@@ -12,8 +12,7 @@ Tests Redis cache performance:
 import asyncio
 import statistics
 import time
-from typing import Any, Dict, List
-from unittest.mock import AsyncMock
+from typing import Any
 
 import pytest
 import redis.asyncio as redis
@@ -48,7 +47,7 @@ class CachePerformanceTest:
 
     async def measure_cache_operation(
         self, operation: str, key: str, value: Any = None, ttl: int = None
-    ) -> Dict:
+    ) -> dict:
         """Measure cache operation performance."""
         start_time = time.perf_counter()
 
@@ -90,7 +89,7 @@ class CachePerformanceTest:
 
     async def cache_hit_ratio_test(
         self, num_keys: int = 100, cache_percentage: int = 70
-    ) -> Dict:
+    ) -> dict:
         """Test cache hit ratio performance."""
         # Populate cache with some keys
         cached_keys = []
@@ -138,7 +137,7 @@ class CachePerformanceTest:
 
     async def concurrent_cache_test(
         self, concurrent_operations: int = 50, operations_per_worker: int = 20
-    ) -> Dict:
+    ) -> dict:
         """Test concurrent cache access performance."""
 
         async def cache_worker(worker_id: int):
@@ -194,7 +193,7 @@ class CachePerformanceTest:
             / ((end_time - start_time) or 0.001),
         }
 
-    def _percentile(self, data: List[float], percentile: int) -> float:
+    def _percentile(self, data: list[float], percentile: int) -> float:
         """Calculate percentile of data."""
         sorted_data = sorted(data)
         index = int((percentile / 100) * len(sorted_data))

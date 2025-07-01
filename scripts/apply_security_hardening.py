@@ -10,7 +10,6 @@ import logging
 import os
 from datetime import datetime
 
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -424,7 +423,7 @@ class SecurityHardening:
         print("=" * 80)
 
         summary = self.hardening_results.get("summary", {})
-        print(f"\n📊 Hardening Summary:")
+        print("\n📊 Hardening Summary:")
         print(f"Hardening Modules: {summary.get('hardening_modules', 0)}")
         print(f"Security Score: {summary.get('security_score', 0):.1f}%")
         print(f"Compliance Status: {summary.get('status', 'unknown').upper()}")
@@ -433,7 +432,7 @@ class SecurityHardening:
         verification = self.hardening_results.get("verification", {})
         compliance = verification.get("compliance_status", {})
 
-        print(f"\n✅ Security Features Verification:")
+        print("\n✅ Security Features Verification:")
         print(f"Total Features: {compliance.get('total_features', 0)}")
         print(f"Enabled Features: {compliance.get('enabled_features', 0)}")
         print(f"Compliance: {compliance.get('compliance_percentage', 0):.1f}%")
@@ -441,7 +440,7 @@ class SecurityHardening:
         # Configuration files
         config_files = verification.get("configuration_files", [])
         if config_files:
-            print(f"\n📁 Configuration Files:")
+            print("\n📁 Configuration Files:")
             print("-" * 50)
             for config in config_files:
                 status_icon = "✅" if config["status"] == "present" else "❌"
@@ -457,7 +456,7 @@ class SecurityHardening:
             ("monitoring", "Security Monitoring"),
         ]
 
-        print(f"\n🛡️ Security Modules Applied:")
+        print("\n🛡️ Security Modules Applied:")
         print("-" * 50)
         for module_key, module_name in modules:
             if module_key in self.hardening_results:

@@ -3,9 +3,6 @@ End-to-end governance workflow tests for ACGS-1
 """
 
 import pytest
-import asyncio
-import httpx
-from typing import Dict, Any
 
 
 class TestGovernanceWorkflows:

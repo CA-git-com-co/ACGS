@@ -18,7 +18,7 @@ def get_pgc_request_identifier(request: Request) -> str:
         user = request.scope.get("current_user")
         # Check if user is not None and has an 'id' attribute (as per schemas.User)
         if user and hasattr(user, "id") and user.id:
-            return f"user:{str(user.id)}"
+            return f"user:{user.id!s}"
 
     # Fallback to IP-based limiting, with a prefix
     remote_addr = get_remote_address(request)

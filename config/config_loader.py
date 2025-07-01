@@ -7,13 +7,14 @@ Centralized configuration loading with environment-specific overrides,
 validation, and secure secrets management.
 """
 
-import os
 import json
 import logging
-from pathlib import Path
-from typing import Dict, Any, Optional
-import jsonschema
+import os
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+import jsonschema
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +24,8 @@ class ConfigurationError(Exception):
     """Configuration loading or validation error"""
 
     message: str
-    config_file: Optional[str] = None
-    validation_errors: Optional[list] = None
+    config_file: str | None = None
+    validation_errors: list | None = None
 
 
 class ConfigurationLoader:
@@ -39,10 +40,10 @@ class ConfigurationLoader:
         # Load schema for validation
         self.schema = self._load_schema()
 
-    def _load_schema(self) -> Dict[str, Any]:
+    def _load_schema(self) -> dict[str, Any]:
         """Load configuration schema for validation"""
         try:
-            with open(self.schema_path, "r") as f:
+            with open(self.schema_path) as f:
                 return json.load(f)
         except FileNotFoundError:
             logger.warning(f"Schema file not found: {self.schema_path}")
@@ -50,7 +51,7 @@ class ConfigurationLoader:
         except json.JSONDecodeError as e:
             raise ConfigurationError(f"Invalid schema JSON: {e}", str(self.schema_path))
 
-    def load_environment_config(self, environment: str = None) -> Dict[str, Any]:
+    def load_environment_config(self, environment: str = None) -> dict[str, Any]:
         """Load environment-specific configuration"""
         if not environment:
             environment = os.getenv("ACGS_ENVIRONMENT", "development")
@@ -63,7 +64,7 @@ class ConfigurationLoader:
             )
 
         try:
-            with open(config_file, "r") as f:
+            with open(config_file) as f:
                 config = json.load(f)
 
             # Validate configuration
@@ -81,7 +82,7 @@ class ConfigurationLoader:
                 f"Invalid JSON in config file: {e}", str(config_file)
             )
 
-    def load_service_registry(self) -> Dict[str, Any]:
+    def load_service_registry(self) -> dict[str, Any]:
         """Load service registry configuration"""
         registry_file = self.services_dir / "registry.json"
 
@@ -89,7 +90,7 @@ class ConfigurationLoader:
             raise ConfigurationError("Service registry not found", str(registry_file))
 
         try:
-            with open(registry_file, "r") as f:
+            with open(registry_file) as f:
                 registry = json.load(f)
 
             logger.info("Loaded service registry configuration")
@@ -100,7 +101,7 @@ class ConfigurationLoader:
                 f"Invalid JSON in registry file: {e}", str(registry_file)
             )
 
-    def _validate_config(self, config: Dict[str, Any], config_file: str):
+    def _validate_config(self, config: dict[str, Any], config_file: str):
         """Validate configuration against schema"""
         try:
             jsonschema.validate(config, self.schema)
@@ -113,7 +114,7 @@ class ConfigurationLoader:
         except jsonschema.SchemaError as e:
             raise ConfigurationError(f"Invalid schema: {e.message}")
 
-    def _apply_env_substitutions(self, config: Dict[str, Any]) -> Dict[str, Any]:
+    def _apply_env_substitutions(self, config: dict[str, Any]) -> dict[str, Any]:
         """Apply environment variable substitutions"""
 
         def substitute_value(value):
@@ -128,18 +129,17 @@ class ConfigurationLoader:
                     logger.warning(f"Environment variable not found: {env_var}")
                     return value  # Return original if not found
                 return env_value
-            elif isinstance(value, dict):
+            if isinstance(value, dict):
                 return {k: substitute_value(v) for k, v in value.items()}
-            elif isinstance(value, list):
+            if isinstance(value, list):
                 return [substitute_value(item) for item in value]
-            else:
-                return value
+            return value
 
         return substitute_value(config)
 
     def get_service_config(
         self, service_name: str, environment: str = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get configuration for a specific service"""
         env_config = self.load_environment_config(environment)
         service_registry = self.load_service_registry()
@@ -163,22 +163,22 @@ class ConfigurationLoader:
 
         return merged_config
 
-    def get_database_config(self, environment: str = None) -> Dict[str, Any]:
+    def get_database_config(self, environment: str = None) -> dict[str, Any]:
         """Get database configuration"""
         env_config = self.load_environment_config(environment)
         return env_config.get("database", {})
 
-    def get_redis_config(self, environment: str = None) -> Dict[str, Any]:
+    def get_redis_config(self, environment: str = None) -> dict[str, Any]:
         """Get Redis configuration"""
         env_config = self.load_environment_config(environment)
         return env_config.get("redis", {})
 
-    def get_quantumagi_config(self, environment: str = None) -> Dict[str, Any]:
+    def get_quantumagi_config(self, environment: str = None) -> dict[str, Any]:
         """Get Quantumagi blockchain configuration"""
         env_config = self.load_environment_config(environment)
         return env_config.get("quantumagi", {})
 
-    def validate_all_environments(self) -> Dict[str, Any]:
+    def validate_all_environments(self) -> dict[str, Any]:
         """Validate all environment configurations"""
         results = {}
 
@@ -201,12 +201,11 @@ class ConfigurationLoader:
 config_loader = ConfigurationLoader()
 
 
-def get_config(service_name: str = None, environment: str = None) -> Dict[str, Any]:
+def get_config(service_name: str = None, environment: str = None) -> dict[str, Any]:
     """Convenience function to get configuration"""
     if service_name:
         return config_loader.get_service_config(service_name, environment)
-    else:
-        return config_loader.load_environment_config(environment)
+    return config_loader.load_environment_config(environment)
 
 
 def get_database_url(environment: str = None) -> str:
@@ -224,8 +223,7 @@ def get_database_url(environment: str = None) -> str:
 
     if password:
         return f"postgresql://{user}:{password}@{host}:{port}/{name}"
-    else:
-        return f"postgresql://{user}@{host}:{port}/{name}"
+    return f"postgresql://{user}@{host}:{port}/{name}"
 
 
 def get_redis_url(environment: str = None) -> str:
@@ -242,8 +240,7 @@ def get_redis_url(environment: str = None) -> str:
 
     if password and not password.startswith("${"):
         return f"{scheme}://:{password}@{host}:{port}/{db}"
-    else:
-        return f"{scheme}://{host}:{port}/{db}"
+    return f"{scheme}://{host}:{port}/{db}"
 
 
 if __name__ == "__main__":

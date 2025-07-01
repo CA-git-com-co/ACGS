@@ -9,7 +9,7 @@ import json
 import logging
 import time
 from dataclasses import asdict, dataclass
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
@@ -565,12 +565,11 @@ class SecurityHardeningRecommendations:
         """Determine priority level from score."""
         if score >= 0.8:
             return HardeningPriority.CRITICAL
-        elif score >= 0.6:
+        if score >= 0.6:
             return HardeningPriority.HIGH
-        elif score >= 0.4:
+        if score >= 0.4:
             return HardeningPriority.MEDIUM
-        else:
-            return HardeningPriority.LOW
+        return HardeningPriority.LOW
 
     def _priority_to_numeric(self, priority: HardeningPriority) -> int:
         """Convert priority to numeric value for sorting."""

@@ -185,7 +185,7 @@ class GroqTensorService:
             return result
 
         except Exception as e:
-            logger.error(f"Tensor decomposition generation failed: {str(e)}")
+            logger.error(f"Tensor decomposition generation failed: {e!s}")
             self._update_metrics((time.time() - start_time) * 1000, success=False)
             self._handle_failure()
 
@@ -289,11 +289,11 @@ class GroqTensorService:
         Generate a {decomposition_type.value} tensor decomposition algorithm for constitutional governance.
 
         MATRIX PROPERTIES:
-        - Shape: {matrix_analysis['shape']}
-        - Rank: {matrix_analysis['rank']}
-        - Condition Number: {matrix_analysis['condition_number']:.2f}
-        - Sparsity: {matrix_analysis['sparsity']:.2f}
-        - Frobenius Norm: {matrix_analysis['frobenius_norm']:.2f}
+        - Shape: {matrix_analysis["shape"]}
+        - Rank: {matrix_analysis["rank"]}
+        - Condition Number: {matrix_analysis["condition_number"]:.2f}
+        - Sparsity: {matrix_analysis["sparsity"]:.2f}
+        - Frobenius Norm: {matrix_analysis["frobenius_norm"]:.2f}
 
         GOVERNANCE CONSTRAINTS:
         - Constitutional Hash: {constraints.constitutional_hash}
@@ -344,11 +344,10 @@ class GroqTensorService:
                         "constitutional_compliance_notes", ""
                     ),
                 }
-            else:
-                raise ValueError("Could not parse JSON from response")
+            raise ValueError("Could not parse JSON from response")
 
         except Exception as e:
-            logger.error(f"Failed to parse Groq response: {str(e)}")
+            logger.error(f"Failed to parse Groq response: {e!s}")
             # Return fallback algorithm
             return self._get_fallback_algorithm()
 

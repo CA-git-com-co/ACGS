@@ -30,7 +30,7 @@ async def get_privacy_budget(current_user: dict = Depends(get_current_active_use
         logger.error(f"Failed to get privacy budget: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get privacy budget: {str(e)}",
+            detail=f"Failed to get privacy budget: {e!s}",
         )
 
 
@@ -64,7 +64,7 @@ async def reset_privacy_budget(
         logger.error(f"Failed to reset privacy budget: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to reset privacy budget: {str(e)}",
+            detail=f"Failed to reset privacy budget: {e!s}",
         )
 
 
@@ -79,7 +79,7 @@ async def get_privacy_metrics(current_user: dict = Depends(get_current_active_us
         logger.error(f"Failed to get privacy metrics: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get privacy metrics: {str(e)}",
+            detail=f"Failed to get privacy metrics: {e!s}",
         )
 
 
@@ -120,7 +120,7 @@ async def estimate_privacy_cost(
         logger.error(f"Failed to estimate privacy cost: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to estimate privacy cost: {str(e)}",
+            detail=f"Failed to estimate privacy cost: {e!s}",
         )
 
 
@@ -155,7 +155,7 @@ async def validate_privacy_requirements(
         logger.error(f"Failed to validate privacy requirements: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to validate requirements: {str(e)}",
+            detail=f"Failed to validate requirements: {e!s}",
         )
 
 
@@ -230,7 +230,7 @@ async def get_privacy_history(
         logger.error(f"Failed to get privacy history: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get privacy history: {str(e)}",
+            detail=f"Failed to get privacy history: {e!s}",
         )
 
 
@@ -283,5 +283,5 @@ async def get_privacy_status(current_user: dict = Depends(get_current_active_use
         logger.error(f"Failed to get privacy status: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get privacy status: {str(e)}",
+            detail=f"Failed to get privacy status: {e!s}",
         )

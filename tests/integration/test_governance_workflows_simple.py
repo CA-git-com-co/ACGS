@@ -34,20 +34,19 @@ class MockServiceClient:
         # Simulate service response based on endpoint
         if "auth" in endpoint or self.service_name == "auth":
             return self._mock_auth_response(endpoint, json_data)
-        elif "policies" in endpoint or self.service_name == "gs":
+        if "policies" in endpoint or self.service_name == "gs":
             return self._mock_policy_response(endpoint, json_data)
-        elif "constitutional" in endpoint or self.service_name in ["pgc", "ac"]:
+        if "constitutional" in endpoint or self.service_name in ["pgc", "ac"]:
             return self._mock_constitutional_response(endpoint, json_data)
-        elif "verify" in endpoint or self.service_name == "fv":
+        if "verify" in endpoint or self.service_name == "fv":
             return self._mock_verification_response(endpoint, json_data)
-        elif "enforcement" in endpoint or self.service_name == "ec":
+        if "enforcement" in endpoint or self.service_name == "ec":
             return self._mock_enforcement_response(endpoint, json_data)
-        elif "wina" in endpoint or self.service_name == "research":
+        if "wina" in endpoint or self.service_name == "research":
             return self._mock_wina_response(endpoint, json_data)
-        elif "audit" in endpoint or self.service_name == "integrity":
+        if "audit" in endpoint or self.service_name == "integrity":
             return self._mock_audit_response(endpoint, json_data)
-        else:
-            return {"status": "success", "service": self.service_name}
+        return {"status": "success", "service": self.service_name}
 
     def _mock_auth_response(
         self, endpoint: str, data: dict[str, Any]
@@ -93,7 +92,7 @@ class MockServiceClient:
                 },
                 "validation_level": "comprehensive",
             }
-        elif "council" in endpoint:
+        if "council" in endpoint:
             return {
                 "council_review": {
                     "approved": True,
@@ -130,7 +129,7 @@ class MockServiceClient:
                     "detection_confidence": 0.98,
                 }
             }
-        elif "execute" in endpoint:
+        if "execute" in endpoint:
             return {
                 "execution_result": {
                     "actions_executed": 1,

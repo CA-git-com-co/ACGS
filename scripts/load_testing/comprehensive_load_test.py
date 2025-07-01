@@ -16,7 +16,6 @@ import logging
 import statistics
 import time
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
 
 import aiohttp
 import click
@@ -37,7 +36,7 @@ class LoadTestConfig:
     target_availability_percent: float = 99.9
 
     # Test scenarios
-    scenarios: List[Dict] = field(
+    scenarios: list[dict] = field(
         default_factory=lambda: [
             {"path": "/health", "weight": 10, "method": "GET"},
             {"path": "/api/v1/auth/health", "weight": 15, "method": "GET"},
@@ -64,7 +63,7 @@ class TestResult:
     status_code: int
     response_time_ms: float
     success: bool
-    error: Optional[str] = None
+    error: str | None = None
     timestamp: float = field(default_factory=time.time)
 
 
@@ -73,10 +72,10 @@ class LoadTestRunner:
 
     def __init__(self, config: LoadTestConfig):
         self.config = config
-        self.results: List[TestResult] = []
+        self.results: list[TestResult] = []
         self.active_users = 0
         self.start_time = 0
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.session: aiohttp.ClientSession | None = None
 
     async def initialize(self):
         """Initialize test session."""
@@ -103,7 +102,7 @@ class LoadTestRunner:
             await self.session.close()
         logger.info("Load test session closed")
 
-    async def make_request(self, scenario: Dict) -> TestResult:
+    async def make_request(self, scenario: dict) -> TestResult:
         """Make a single HTTP request."""
         url = f"{self.config.base_url}{scenario['path']}"
         method = scenario["method"]
@@ -136,7 +135,7 @@ class LoadTestRunner:
                 error=str(e),
             )
 
-    def select_scenario(self) -> Dict:
+    def select_scenario(self) -> dict:
         """Select scenario based on weights."""
         import random
 
@@ -243,7 +242,7 @@ class LoadTestRunner:
 
         logger.info("Load test completed")
 
-    def analyze_results(self) -> Dict:
+    def analyze_results(self) -> dict:
         """Analyze test results and generate report."""
         if not self.results:
             return {"error": "No results to analyze"}
@@ -322,8 +321,8 @@ class LoadTestRunner:
         }
 
     def _generate_recommendations(
-        self, availability: float, p95_response_time: float, targets_met: Dict
-    ) -> List[str]:
+        self, availability: float, p95_response_time: float, targets_met: dict
+    ) -> list[str]:
         """Generate performance improvement recommendations."""
         recommendations = []
 

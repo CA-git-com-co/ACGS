@@ -4,14 +4,12 @@ Deployment script for Hunyuan-A13B-Instruct model in ACGS
 Handles Docker container deployment, health checks, and configuration.
 """
 
-import os
+import argparse
+import subprocess
 import sys
 import time
-import json
-import subprocess
-import argparse
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any
 
 import requests
 import yaml
@@ -20,7 +18,7 @@ import yaml
 class HunyuanDeploymentManager:
     """Manages deployment of Hunyuan-A13B-Instruct model."""
 
-    def __init__(self, config_path: Optional[str] = None):
+    def __init__(self, config_path: str | None = None):
         self.config_path = config_path or "config/models/hunyuan-a13b.yaml"
         self.docker_compose_file = "docker-compose.hunyuan.yml"
         self.service_name = "hunyuan-a13b"
@@ -29,10 +27,10 @@ class HunyuanDeploymentManager:
         # Load configuration
         self.config = self._load_config()
 
-    def _load_config(self) -> Dict[str, Any]:
+    def _load_config(self) -> dict[str, Any]:
         """Load model configuration from YAML file."""
         try:
-            with open(self.config_path, "r") as f:
+            with open(self.config_path) as f:
                 return yaml.safe_load(f)
         except FileNotFoundError:
             print(f"❌ Configuration file not found: {self.config_path}")
@@ -215,12 +213,11 @@ class HunyuanDeploymentManager:
             if response.status_code == 200:
                 result = response.json()
                 content = result["choices"][0]["message"]["content"]
-                print(f"✅ Model inference successful")
+                print("✅ Model inference successful")
                 print(f"📝 Response preview: {content[:100]}...")
                 return True
-            else:
-                print(f"❌ Inference failed: {response.status_code} - {response.text}")
-                return False
+            print(f"❌ Inference failed: {response.status_code} - {response.text}")
+            return False
 
         except requests.RequestException as e:
             print(f"❌ Inference test failed: {e}")
@@ -308,7 +305,7 @@ class HunyuanDeploymentManager:
         print("\n🎉 Hunyuan-A13B deployment completed successfully!")
         print(f"📡 API endpoint: {self.base_url}/v1")
         print(f"📊 Health check: {self.base_url}/health")
-        print(f"📈 Monitoring: http://localhost:9090 (if enabled)")
+        print("📈 Monitoring: http://localhost:9090 (if enabled)")
 
         return True
 

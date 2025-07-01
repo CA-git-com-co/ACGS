@@ -54,6 +54,7 @@ class LaTeXCompiler:
         try:
             result = subprocess.run(
                 [self.latex_engine, "--version"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -61,9 +62,8 @@ class LaTeXCompiler:
             if result.returncode == 0:
                 logger.info(f"✅ {self.latex_engine} is available")
                 return True
-            else:
-                logger.error(f"❌ {self.latex_engine} not found")
-                return False
+            logger.error(f"❌ {self.latex_engine} not found")
+            return False
         except (subprocess.TimeoutExpired, FileNotFoundError) as e:
             logger.error(f"❌ LaTeX check failed: {e}")
             return False
@@ -143,6 +143,7 @@ class LaTeXCompiler:
                     "-file-line-error",
                     self.main_tex_file,
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=120,
@@ -164,6 +165,7 @@ class LaTeXCompiler:
             logger.info("🔄 Running BibTeX compilation...")
             bibtex_result = subprocess.run(
                 ["bibtex", self.main_tex_file.replace(".tex", "")],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=60,
@@ -193,6 +195,7 @@ class LaTeXCompiler:
                     "-file-line-error",
                     self.main_tex_file,
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=120,
@@ -219,6 +222,7 @@ class LaTeXCompiler:
                     "-file-line-error",
                     self.main_tex_file,
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=120,
@@ -241,9 +245,8 @@ class LaTeXCompiler:
             if pdf_path.exists():
                 logger.info(f"✅ PDF successfully generated: {pdf_path}")
                 return True
-            else:
-                logger.error("❌ PDF file not found after compilation")
-                return False
+            logger.error("❌ PDF file not found after compilation")
+            return False
 
         except subprocess.TimeoutExpired:
             logger.error("❌ LaTeX compilation timed out")
@@ -291,6 +294,7 @@ class LaTeXCompiler:
                     # Try to get PDF info using pdfinfo if available
                     pdfinfo_result = subprocess.run(
                         ["pdfinfo", str(pdf_path)],
+                        check=False,
                         capture_output=True,
                         text=True,
                         timeout=10,
@@ -337,8 +341,8 @@ class LaTeXCompiler:
         file_status = self.check_required_files()
 
         report_content += f"""
-- **Main LaTeX File**: {'✅ Found' if file_status['main_tex'] else '❌ Missing'}
-- **Bibliography File**: {'✅ Found' if file_status['bibliography'] else '❌ Missing'}
+- **Main LaTeX File**: {"✅ Found" if file_status["main_tex"] else "❌ Missing"}
+- **Bibliography File**: {"✅ Found" if file_status["bibliography"] else "❌ Missing"}
 
 ### Figures Status
 """
@@ -365,9 +369,9 @@ class LaTeXCompiler:
         pdf_validation = self.validate_pdf_output()
         report_content += f"""
 ## PDF Validation
-- **PDF Generated**: {'✅ Yes' if pdf_validation['pdf_exists'] else '❌ No'}
-- **File Size**: {pdf_validation['file_size_mb']}MB
-- **Submission Ready**: {'✅ Yes' if pdf_validation['submission_ready'] else '❌ No'}
+- **PDF Generated**: {"✅ Yes" if pdf_validation["pdf_exists"] else "❌ No"}
+- **File Size**: {pdf_validation["file_size_mb"]}MB
+- **Submission Ready**: {"✅ Yes" if pdf_validation["submission_ready"] else "❌ No"}
 """
 
         if pdf_validation["issues"]:

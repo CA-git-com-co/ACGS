@@ -24,7 +24,7 @@ StateGraph Nodes Tested:
 import asyncio
 import json
 import time
-from datetime import timezone, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -569,7 +569,7 @@ class LangGraphAmendmentProcessingTests:
             print("🚀 StateGraph implementation ready for production deployment")
 
         except Exception as e:
-            print(f"\n❌ LangGraph test execution failed: {str(e)}")
+            print(f"\n❌ LangGraph test execution failed: {e!s}")
             raise
         finally:
             await self.client.aclose()

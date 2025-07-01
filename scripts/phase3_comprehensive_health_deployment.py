@@ -90,7 +90,9 @@ class Phase3HealthDeploymentOrchestrator:
 
         try:
             # Check if Docker is running
-            result = subprocess.run(["docker", "ps"], capture_output=True, text=True)
+            result = subprocess.run(
+                ["docker", "ps"], check=False, capture_output=True, text=True
+            )
             if result.returncode != 0:
                 self.log_action(
                     "Docker Check", "ERROR", "Docker is not running or accessible"
@@ -100,6 +102,7 @@ class Phase3HealthDeploymentOrchestrator:
             # Check for existing containers
             result = subprocess.run(
                 ["docker", "ps", "-a", "--format", "table {{.Names}}\t{{.Status}}"],
+                check=False,
                 capture_output=True,
                 text=True,
             )
@@ -141,6 +144,7 @@ class Phase3HealthDeploymentOrchestrator:
                             "-d",
                             "acgs_staging",
                         ],
+                        check=False,
                         capture_output=True,
                         text=True,
                         timeout=10,
@@ -172,6 +176,7 @@ class Phase3HealthDeploymentOrchestrator:
                             "redis-cli",
                             "ping",
                         ],
+                        check=False,
                         capture_output=True,
                         text=True,
                         timeout=10,
@@ -317,6 +322,7 @@ class Phase3HealthDeploymentOrchestrator:
                     "redis",
                     "opa",
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 cwd="/mnt/persist/workspace",
@@ -332,9 +338,8 @@ class Phase3HealthDeploymentOrchestrator:
                 # Wait for services to be ready
                 await asyncio.sleep(30)
                 return True
-            else:
-                self.log_action("Infrastructure Deployment", "ERROR", result.stderr)
-                return False
+            self.log_action("Infrastructure Deployment", "ERROR", result.stderr)
+            return False
 
         except Exception as e:
             self.log_action("Infrastructure Deployment", "ERROR", str(e))
@@ -375,6 +380,7 @@ class Phase3HealthDeploymentOrchestrator:
                         "-d",
                         service_name,
                     ],
+                    check=False,
                     capture_output=True,
                     text=True,
                     cwd="/mnt/persist/workspace",

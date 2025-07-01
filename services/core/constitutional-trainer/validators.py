@@ -11,7 +11,7 @@ import json
 import logging
 import time
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import aiohttp
 import aioredis
@@ -81,8 +81,8 @@ class ACGSConstitutionalValidator:
             self.redis_client = None
 
     async def validate_response(
-        self, response: str, context: Dict[str, Any]
-    ) -> Tuple[bool, float, List[str]]:
+        self, response: str, context: dict[str, Any]
+    ) -> tuple[bool, float, list[str]]:
         """
         Validate response against constitutional principles.
 
@@ -155,8 +155,8 @@ class ACGSConstitutionalValidator:
             return False, 0.0, ["validation_error"]
 
     async def _validate_with_policy_engine(
-        self, response: str, context: Dict[str, Any], evaluation_id: str
-    ) -> Dict[str, Any]:
+        self, response: str, context: dict[str, Any], evaluation_id: str
+    ) -> dict[str, Any]:
         """Validate response using ACGS-1 Policy Engine."""
 
         policy_request = {
@@ -200,8 +200,8 @@ class ACGSConstitutionalValidator:
             return self._get_default_policy_result()
 
     async def _validate_locally(
-        self, response: str, context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, response: str, context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Perform local constitutional validation as backup."""
 
         violations = []
@@ -231,7 +231,7 @@ class ACGSConstitutionalValidator:
         }
 
     async def _evaluate_principle(
-        self, response: str, principle: str, config: Dict
+        self, response: str, principle: str, config: dict
     ) -> float:
         """Evaluate a specific constitutional principle."""
 
@@ -242,12 +242,12 @@ class ACGSConstitutionalValidator:
             harmful_count = sum(1 for keyword in keywords if keyword in response)
             return max(0.0, 1.0 - (harmful_count * 0.2))
 
-        elif principle in ["helpfulness", "honesty"]:
+        if principle in ["helpfulness", "honesty"]:
             # For helpfulness and honesty, presence of positive keywords increases score
             positive_count = sum(1 for keyword in keywords if keyword in response)
             return min(1.0, positive_count * 0.25)
 
-        elif principle == "privacy":
+        if principle == "privacy":
             # For privacy, check for potential privacy violations
             privacy_keywords = [
                 "personal",
@@ -263,12 +263,12 @@ class ACGSConstitutionalValidator:
 
         return 0.5  # Default neutral score
 
-    def _validate_policy_response(self, response: Dict[str, Any]) -> bool:
+    def _validate_policy_response(self, response: dict[str, Any]) -> bool:
         """Validate Policy Engine response structure."""
         required_fields = ["allow", "confidence_score"]
         return all(field in response for field in required_fields)
 
-    def _get_default_policy_result(self) -> Dict[str, Any]:
+    def _get_default_policy_result(self) -> dict[str, Any]:
         """Get default policy result for fallback scenarios."""
         return {
             "allow": False,
@@ -278,14 +278,14 @@ class ACGSConstitutionalValidator:
             "validation_method": "fallback",
         }
 
-    def _generate_evaluation_id(self, response: str, context: Dict[str, Any]) -> str:
+    def _generate_evaluation_id(self, response: str, context: dict[str, Any]) -> str:
         """Generate unique evaluation ID for caching."""
         content = f"{response}:{json.dumps(context, sort_keys=True)}:{self.constitutional_hash}"
         return hashlib.sha256(content.encode()).hexdigest()[:16]
 
     async def _get_cached_result(
         self, evaluation_id: str
-    ) -> Optional[Tuple[bool, float, List[str]]]:
+    ) -> tuple[bool, float, list[str]] | None:
         """Get cached validation result."""
         if not self.redis_client:
             return None
@@ -307,7 +307,7 @@ class ACGSConstitutionalValidator:
         return None
 
     async def _cache_result(
-        self, evaluation_id: str, result: Tuple[bool, float, List[str]]
+        self, evaluation_id: str, result: tuple[bool, float, list[str]]
     ):
         """Cache validation result."""
         if not self.redis_client:
@@ -332,9 +332,9 @@ class ACGSConstitutionalValidator:
     async def _log_validation(
         self,
         response: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         score: float,
-        violations: List[str],
+        violations: list[str],
         evaluation_id: str,
     ):
         """Log validation results to Audit Engine."""
@@ -366,8 +366,8 @@ class ACGSConstitutionalValidator:
             logger.error(f"Audit logging failed: {e}")
 
     async def batch_validate(
-        self, responses: List[str], contexts: List[Dict[str, Any]]
-    ) -> List[Tuple[bool, float, List[str]]]:
+        self, responses: list[str], contexts: list[dict[str, Any]]
+    ) -> list[tuple[bool, float, list[str]]]:
         """Batch validate multiple responses for efficiency."""
 
         if len(responses) != len(contexts):
@@ -376,7 +376,7 @@ class ACGSConstitutionalValidator:
         # Create validation tasks
         tasks = [
             self.validate_response(response, context)
-            for response, context in zip(responses, contexts)
+            for response, context in zip(responses, contexts, strict=False)
         ]
 
         # Execute validations concurrently
@@ -393,7 +393,7 @@ class ACGSConstitutionalValidator:
 
         return processed_results
 
-    def get_validation_metrics(self) -> Dict[str, Any]:
+    def get_validation_metrics(self) -> dict[str, Any]:
         """Get validation performance metrics."""
         total_requests = self.cache_hits + self.cache_misses
         cache_hit_rate = self.cache_hits / total_requests if total_requests > 0 else 0.0
@@ -407,7 +407,7 @@ class ACGSConstitutionalValidator:
             "compliance_threshold": self.config.compliance_threshold,
         }
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Perform health check of validation components."""
         health_status = {
             "validator_status": "healthy",

@@ -9,7 +9,7 @@ import asyncio
 import json
 import logging
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 import aiohttp
 import psutil
@@ -98,36 +98,35 @@ class StressTestingProtocol:
             return await self._run_high_load_stress_test(
                 available_services, service_endpoints
             )
-        elif vector == "resource_exhaustion_attack":
+        if vector == "resource_exhaustion_attack":
             return await self._run_resource_exhaustion_attack(
                 available_services, service_endpoints
             )
-        elif vector == "concurrent_request_flooding":
+        if vector == "concurrent_request_flooding":
             return await self._run_concurrent_request_flooding(
                 available_services, service_endpoints
             )
-        elif vector == "memory_stress_test":
+        if vector == "memory_stress_test":
             return await self._run_memory_stress_test(
                 available_services, service_endpoints
             )
-        elif vector == "cpu_stress_test":
+        if vector == "cpu_stress_test":
             return await self._run_cpu_stress_test(
                 available_services, service_endpoints
             )
-        elif vector == "database_stress_test":
+        if vector == "database_stress_test":
             return await self._run_database_stress_test(
                 available_services, service_endpoints
             )
-        elif vector == "network_stress_test":
+        if vector == "network_stress_test":
             return await self._run_network_stress_test(
                 available_services, service_endpoints
             )
-        elif vector == "disk_io_stress_test":
+        if vector == "disk_io_stress_test":
             return await self._run_disk_io_stress_test(
                 available_services, service_endpoints
             )
-        else:
-            return []
+        return []
 
     async def _run_high_load_stress_test(
         self, available_services: list[str], service_endpoints: dict[str, str]
@@ -397,7 +396,6 @@ class StressTestingProtocol:
                 async with session.post(
                     f"{endpoint}/api/v1/process", json=large_payload, timeout=60
                 ) as response:
-
                     # Check if service handled large payload gracefully
                     if response.status != 200:
                         return VulnerabilityResult(
@@ -496,12 +494,11 @@ class StressTestingProtocol:
 
         if failure_rate > 0.5:
             return VulnerabilitySeverity.CRITICAL
-        elif failure_rate > 0.2:
+        if failure_rate > 0.2:
             return VulnerabilitySeverity.HIGH
-        elif failure_rate > 0.1:
+        if failure_rate > 0.1:
             return VulnerabilitySeverity.MEDIUM
-        else:
-            return VulnerabilitySeverity.LOW
+        return VulnerabilitySeverity.LOW
 
     def _calculate_stress_cvss(
         self, failed_requests: int, total_requests: int
@@ -511,12 +508,11 @@ class StressTestingProtocol:
 
         if failure_rate > 0.5:
             return 8.5
-        elif failure_rate > 0.2:
+        if failure_rate > 0.2:
             return 7.0
-        elif failure_rate > 0.1:
+        if failure_rate > 0.1:
             return 5.5
-        else:
-            return 3.0
+        return 3.0
 
     async def _run_memory_stress_test(
         self, available_services: list[str], service_endpoints: dict[str, str]

@@ -69,6 +69,7 @@ class DevnetValidator:
                         "--url",
                         f"https://api.{self.cluster}.solana.com",
                     ],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=30,

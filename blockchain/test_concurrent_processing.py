@@ -5,13 +5,12 @@ Tests async workflows, concurrent governance operations, and scalability
 """
 
 import asyncio
-import time
-import statistics
-import random
-from typing import List, Dict, Any, Optional
-from dataclasses import dataclass
-from concurrent.futures import ThreadPoolExecutor
 import logging
+import random
+import statistics
+import time
+from dataclasses import dataclass
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,7 +23,7 @@ class GovernanceAction:
     id: str
     action_type: str
     priority: int
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     created_at: float
     status: str = "pending"
 
@@ -36,7 +35,7 @@ class ProcessingResult:
     action_id: str
     success: bool
     processing_time: float
-    error: Optional[str] = None
+    error: str | None = None
 
 
 class ConcurrentGovernanceProcessor:
@@ -206,7 +205,7 @@ class ConcurrentGovernanceProcessor:
         except asyncio.QueueFull:
             return False
 
-    async def get_results(self, timeout: float = 1.0) -> List[ProcessingResult]:
+    async def get_results(self, timeout: float = 1.0) -> list[ProcessingResult]:
         """Get processed results."""
         results = []
 
@@ -221,7 +220,7 @@ class ConcurrentGovernanceProcessor:
 
         return results
 
-    def get_performance_metrics(self) -> Dict[str, Any]:
+    def get_performance_metrics(self) -> dict[str, Any]:
         """Get performance metrics."""
         if not self.response_times:
             return {
@@ -320,7 +319,7 @@ async def test_concurrent_processing():
         results = await processor.get_results(timeout=2.0)
 
         print(f"   ✅ Processed {len(results)} actions in {processing_time:.2f}s")
-        print(f"   Throughput: {len(results)/processing_time:.1f} actions/second")
+        print(f"   Throughput: {len(results) / processing_time:.1f} actions/second")
 
         # Test 2: High-load concurrent processing
         print("\n📊 Test 2: High-Load Processing (1000 actions)")
@@ -367,7 +366,7 @@ async def test_concurrent_processing():
             f"   ✅ Processed {len(high_load_results)} actions in {total_processing_time:.2f}s"
         )
         print(
-            f"   Throughput: {len(high_load_results)/total_processing_time:.1f} actions/second"
+            f"   Throughput: {len(high_load_results) / total_processing_time:.1f} actions/second"
         )
 
         # Test 3: Stress test with concurrent submissions
@@ -424,7 +423,7 @@ async def test_concurrent_processing():
             f"   ✅ Processed {len(stress_results)} actions in {stress_processing_time:.2f}s"
         )
         print(
-            f"   Throughput: {len(stress_results)/stress_processing_time:.1f} actions/second"
+            f"   Throughput: {len(stress_results) / stress_processing_time:.1f} actions/second"
         )
 
         # Get final performance metrics
@@ -449,7 +448,7 @@ async def test_concurrent_processing():
         meets_response_target = metrics["p95_response_time"] <= target_response_time
         meets_success_target = metrics["success_rate"] >= target_success_rate
 
-        print(f"\n🎯 Target Validation:")
+        print("\n🎯 Target Validation:")
         print(f"   Target Concurrent Actions: ≥{target_concurrent_actions}")
         print(f"   Achieved Concurrent Actions: {metrics['processed_actions']}")
         print(

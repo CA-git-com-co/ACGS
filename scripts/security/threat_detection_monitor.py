@@ -5,7 +5,6 @@ Real-time threat detection and automated response system.
 """
 
 import json
-import time
 import logging
 from collections import defaultdict, deque
 from datetime import datetime, timedelta

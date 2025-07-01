@@ -16,7 +16,7 @@ from pathlib import Path
 # Add the src directory to the path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from sde.ml_models import MLModelTrainer, TrainingDataGenerator
+from sde.ml_models import MLModelTrainer
 
 # Configure logging
 logging.basicConfig(
@@ -63,7 +63,7 @@ def main():
     # Create models directory
     args.models_dir.mkdir(exist_ok=True)
 
-    logger.info(f"Starting ML model training for ACGS-PGP v8")
+    logger.info("Starting ML model training for ACGS-PGP v8")
     logger.info(f"Models directory: {args.models_dir}")
     logger.info(f"Training samples: {args.samples}")
     logger.info(f"Model types: {args.model_types}")
@@ -202,8 +202,8 @@ def train_error_classification_models(trainer: MLModelTrainer, n_samples: int) -
 def train_anomaly_detection_model(trainer: MLModelTrainer) -> dict:
     """Train anomaly detection model."""
     try:
-        from sde.ml_models import AnomalyDetectionModel
         import numpy as np
+        from sde.ml_models import AnomalyDetectionModel
 
         # Generate normal system behavior data
         logger.info("Generating normal system behavior data...")

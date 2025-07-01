@@ -2,16 +2,9 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.core.opa_integration
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.governance_synthesis.gs_service.app.core.opa_integration import (
-    PolicyDecisionRequest,
-    PolicyDecisionResponse,
-    PolicyValidationResult,
-    BatchPolicyDecision,
-    OPAIntegrationError,
-    PolicyDecisionCache,
     OPAClient,
+    PolicyDecisionCache,
 )
 
 

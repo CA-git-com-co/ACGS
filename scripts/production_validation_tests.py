@@ -11,7 +11,7 @@ import asyncio
 import json
 import logging
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import httpx
@@ -253,8 +253,7 @@ class ACGSProductionValidator:
                 "sub_50ms_target_met": np.mean(latencies) < 50.0,
                 "all_latencies": latencies,
             }
-        else:
-            return {"error": "No successful latency measurements"}
+        return {"error": "No successful latency measurements"}
 
     async def _test_gs_synthesis_performance(self, client: httpx.AsyncClient) -> dict:
         """Test GS Engine policy synthesis performance"""
@@ -291,8 +290,7 @@ class ACGSProductionValidator:
                 "sub_2s_target_met": np.mean(synthesis_times) < 2000.0,
                 "all_synthesis_times": synthesis_times,
             }
-        else:
-            return {"error": "No successful synthesis measurements"}
+        return {"error": "No successful synthesis measurements"}
 
     async def _test_ac_compliance_performance(self, client: httpx.AsyncClient) -> dict:
         """Test AC compliance checking performance"""
@@ -329,8 +327,7 @@ class ACGSProductionValidator:
                 "sub_100ms_target_met": np.mean(compliance_times) < 100.0,
                 "all_compliance_times": compliance_times,
             }
-        else:
-            return {"error": "No successful compliance measurements"}
+        return {"error": "No successful compliance measurements"}
 
     async def _validate_quantumagi_integration(self):
         """Validate Quantumagi Solana integration"""
@@ -620,7 +617,7 @@ class ACGSProductionValidator:
             ]
 
             logger.info(
-                f"🛡️ Adversarial Defense Results: {detected_attacks}/{total_attacks} attacks detected ({adversarial_results['detection_rate']*100:.1f}%)"
+                f"🛡️ Adversarial Defense Results: {detected_attacks}/{total_attacks} attacks detected ({adversarial_results['detection_rate'] * 100:.1f}%)"
             )
 
         except Exception as e:
@@ -659,13 +656,13 @@ class ACGSProductionValidator:
         """Generate markdown summary report"""
         summary_content = f"""# ACGS-PGP Production Validation Report
 
-Generated: {report_data['validation_summary']['timestamp']}
+Generated: {report_data["validation_summary"]["timestamp"]}
 
 ## Executive Summary
 
-- **Services Tested**: {report_data['validation_summary']['services_tested']}/7 ACGS-1 services
-- **Quantumagi Verified**: {'✅ Yes' if report_data['validation_summary']['quantumagi_verified'] else '❌ No'}
-- **Overall Status**: {report_data['validation_summary']['overall_status'].upper()}
+- **Services Tested**: {report_data["validation_summary"]["services_tested"]}/7 ACGS-1 services
+- **Quantumagi Verified**: {"✅ Yes" if report_data["validation_summary"]["quantumagi_verified"] else "❌ No"}
+- **Overall Status**: {report_data["validation_summary"]["overall_status"].upper()}
 
 ## Service Connectivity Results
 
@@ -675,9 +672,9 @@ Generated: {report_data['validation_summary']['timestamp']}
         if "summary" in connectivity:
             summary = connectivity["summary"]
             summary_content += f"""
-- **Health Score**: {summary.get('health_score_percent', 0):.1f}%
-- **Healthy Services**: {summary.get('healthy_services', 0)}/{summary.get('total_services', 0)}
-- **All Services Healthy**: {'✅ Yes' if summary.get('all_services_healthy', False) else '❌ No'}
+- **Health Score**: {summary.get("health_score_percent", 0):.1f}%
+- **Healthy Services**: {summary.get("healthy_services", 0)}/{summary.get("total_services", 0)}
+- **All Services Healthy**: {"✅ Yes" if summary.get("all_services_healthy", False) else "❌ No"}
 
 """
 
@@ -694,9 +691,9 @@ Generated: {report_data['validation_summary']['timestamp']}
                 pgc = performance["pgc_enforcement"]
                 summary_content += f"""
 ### PGC Enforcement
-- **Average Latency**: {pgc['average_latency_ms']:.1f}ms
-- **Sub-50ms Target**: {'✅ Met' if pgc.get('sub_50ms_target_met', False) else '❌ Not Met'}
-- **P95 Latency**: {pgc.get('p95_latency_ms', 0):.1f}ms
+- **Average Latency**: {pgc["average_latency_ms"]:.1f}ms
+- **Sub-50ms Target**: {"✅ Met" if pgc.get("sub_50ms_target_met", False) else "❌ Not Met"}
+- **P95 Latency**: {pgc.get("p95_latency_ms", 0):.1f}ms
 
 """
 
@@ -711,9 +708,9 @@ Generated: {report_data['validation_summary']['timestamp']}
                 if "lipschitz_constant" in stability:
                     summary_content += f"""
 ### Constitutional Stability
-- **Lipschitz Constant**: {stability['lipschitz_constant']:.3f}
-- **Convergence Guaranteed**: {'✅ Yes' if stability.get('convergence_guaranteed', False) else '❌ No'}
-- **Stability Score**: {stability.get('stability_score', 0):.3f}
+- **Lipschitz Constant**: {stability["lipschitz_constant"]:.3f}
+- **Convergence Guaranteed**: {"✅ Yes" if stability.get("convergence_guaranteed", False) else "❌ No"}
+- **Stability Score**: {stability.get("stability_score", 0):.3f}
 
 """
 

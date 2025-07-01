@@ -19,7 +19,7 @@ import subprocess
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import aiohttp
 import yaml
@@ -65,7 +65,7 @@ class EnhancedPrometheusDeployer:
             "postgres_exporter": 9187,
         }
 
-    async def deploy_enhanced_monitoring(self) -> Dict[str, Any]:
+    async def deploy_enhanced_monitoring(self) -> dict[str, Any]:
         """Deploy enhanced Prometheus monitoring infrastructure."""
         logger.info("🚀 Starting Enhanced Prometheus Monitoring Deployment")
         logger.info("=" * 70)
@@ -140,7 +140,7 @@ class EnhancedPrometheusDeployer:
 
         return deployment_results
 
-    async def _validate_infrastructure(self) -> Dict[str, Any]:
+    async def _validate_infrastructure(self) -> dict[str, Any]:
         """Validate existing monitoring infrastructure."""
         validation_results = {
             "prometheus_config_exists": False,
@@ -210,7 +210,7 @@ class EnhancedPrometheusDeployer:
 
         return validation_results
 
-    async def _deploy_prometheus_config(self) -> Dict[str, Any]:
+    async def _deploy_prometheus_config(self) -> dict[str, Any]:
         """Deploy enhanced Prometheus configuration."""
         deployment_results = {
             "config_backup_created": False,
@@ -237,6 +237,7 @@ class EnhancedPrometheusDeployer:
             try:
                 result = subprocess.run(
                     ["curl", "-X", "POST", "http://localhost:9090/-/reload"],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=10,
@@ -263,7 +264,7 @@ class EnhancedPrometheusDeployer:
 
         return deployment_results
 
-    async def _deploy_alerting_rules(self) -> Dict[str, Any]:
+    async def _deploy_alerting_rules(self) -> dict[str, Any]:
         """Deploy enhanced alerting rules."""
         deployment_results = {
             "business_metrics_rules": False,
@@ -298,7 +299,7 @@ class EnhancedPrometheusDeployer:
                     capacity_rules_file,
                 ]:
                     if rules_file.exists():
-                        with open(rules_file, "r") as f:
+                        with open(rules_file) as f:
                             yaml.safe_load(f)
                 deployment_results["rules_validation"] = True
                 logger.info("✅ All alerting rules validated successfully")
@@ -321,7 +322,7 @@ class EnhancedPrometheusDeployer:
 
         return deployment_results
 
-    async def _validate_service_metrics(self) -> Dict[str, Any]:
+    async def _validate_service_metrics(self) -> dict[str, Any]:
         """Validate service metrics endpoints."""
         validation_results = {}
 
@@ -366,7 +367,7 @@ class EnhancedPrometheusDeployer:
 
         return validation_results
 
-    async def _establish_performance_baseline(self) -> Dict[str, Any]:
+    async def _establish_performance_baseline(self) -> dict[str, Any]:
         """Establish performance baseline metrics."""
         baseline_metrics = {
             "collection_timestamp": datetime.now().isoformat(),
@@ -425,7 +426,7 @@ class EnhancedPrometheusDeployer:
 
         return baseline_metrics
 
-    async def _validate_alerting_system(self) -> Dict[str, Any]:
+    async def _validate_alerting_system(self) -> dict[str, Any]:
         """Validate alerting system functionality."""
         alerting_validation = {
             "alertmanager_accessible": False,
@@ -474,7 +475,7 @@ class EnhancedPrometheusDeployer:
 
         return alerting_validation
 
-    def _calculate_deployment_success(self, deployment_results: Dict[str, Any]) -> bool:
+    def _calculate_deployment_success(self, deployment_results: dict[str, Any]) -> bool:
         """Calculate overall deployment success."""
         try:
             success_criteria = [

@@ -35,11 +35,10 @@ class EnhancedSecurityMiddleware:
         # sha256: func_hash
         """Process request through security middleware."""
         from starlette.requests import Request
-        from starlette.middleware.base import BaseHTTPMiddleware
 
         if scope["type"] != "http":
             await self.app(scope, receive, send)
-            return
+            return None
 
         request = Request(scope, receive)
 

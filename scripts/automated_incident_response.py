@@ -23,7 +23,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import aiohttp
 
@@ -68,10 +68,10 @@ class AutomatedIncidentResponse:
         self.config = self._load_config()
 
         # Active incidents tracking
-        self.active_incidents: Dict[str, Dict[str, Any]] = {}
+        self.active_incidents: dict[str, dict[str, Any]] = {}
 
         # Escalation timers
-        self.escalation_timers: Dict[str, asyncio.Task] = {}
+        self.escalation_timers: dict[str, asyncio.Task] = {}
 
         # Service endpoints
         self.services = {
@@ -84,7 +84,7 @@ class AutomatedIncidentResponse:
             "ec_service": 8006,
         }
 
-    def _load_config(self) -> Dict[str, Any]:
+    def _load_config(self) -> dict[str, Any]:
         """Load incident response configuration."""
         config_file = self.config_dir / "incident_response_config.json"
 
@@ -144,7 +144,7 @@ class AutomatedIncidentResponse:
 
         if config_file.exists():
             try:
-                with open(config_file, "r") as f:
+                with open(config_file) as f:
                     loaded_config = json.load(f)
                     # Merge with defaults
                     default_config.update(loaded_config)
@@ -153,7 +153,7 @@ class AutomatedIncidentResponse:
 
         return default_config
 
-    async def handle_alert(self, alert_data: Dict[str, Any]) -> str:
+    async def handle_alert(self, alert_data: dict[str, Any]) -> str:
         """Handle incoming alert and initiate incident response."""
         incident_id = self._generate_incident_id(alert_data)
 
@@ -183,14 +183,14 @@ class AutomatedIncidentResponse:
 
         return incident_id
 
-    def _generate_incident_id(self, alert_data: Dict[str, Any]) -> str:
+    def _generate_incident_id(self, alert_data: dict[str, Any]) -> str:
         """Generate unique incident ID."""
         timestamp = int(time.time())
         alert_name = alert_data.get("alertname", "unknown")
         service = alert_data.get("service", "unknown")
         return f"INC-{timestamp}-{alert_name}-{service}"
 
-    def _determine_severity(self, alert_data: Dict[str, Any]) -> str:
+    def _determine_severity(self, alert_data: dict[str, Any]) -> str:
         """Determine incident severity from alert data."""
         severity = alert_data.get("severity", "medium").lower()
 
@@ -204,7 +204,7 @@ class AutomatedIncidentResponse:
 
         return severity_mapping.get(severity, IncidentSeverity.MEDIUM.value)
 
-    async def _start_incident_response(self, incident: Dict[str, Any]):
+    async def _start_incident_response(self, incident: dict[str, Any]):
         """Start automated incident response workflow."""
         incident_id = incident["id"]
         severity = incident["severity"]
@@ -228,7 +228,7 @@ class AutomatedIncidentResponse:
         incident["updated_at"] = datetime.now().isoformat()
         await self._save_incident(incident)
 
-    async def _attempt_automated_remediation(self, incident: Dict[str, Any]):
+    async def _attempt_automated_remediation(self, incident: dict[str, Any]):
         """Attempt automated remediation based on alert type."""
         alert_data = incident["alert_data"]
         alertname = alert_data.get("alertname", "")
@@ -315,12 +315,13 @@ class AutomatedIncidentResponse:
                 }
             )
 
-    async def _restart_service(self, service_name: str) -> Dict[str, Any]:
+    async def _restart_service(self, service_name: str) -> dict[str, Any]:
         """Restart a specific service."""
         try:
             # Kill existing process
             kill_result = subprocess.run(
                 ["pkill", "-f", f"{service_name}"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -334,6 +335,7 @@ class AutomatedIncidentResponse:
             if service_script.exists():
                 start_result = subprocess.run(
                     ["bash", str(service_script)],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=30,
@@ -344,20 +346,23 @@ class AutomatedIncidentResponse:
                     "output": start_result.stdout,
                     "error": start_result.stderr,
                 }
-            else:
-                return {
-                    "success": False,
-                    "error": f"Service script not found: {service_script}",
-                }
+            return {
+                "success": False,
+                "error": f"Service script not found: {service_script}",
+            }
 
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _clear_cache(self) -> Dict[str, Any]:
+    async def _clear_cache(self) -> dict[str, Any]:
         """Clear Redis cache."""
         try:
             result = subprocess.run(
-                ["redis-cli", "FLUSHALL"], capture_output=True, text=True, timeout=10
+                ["redis-cli", "FLUSHALL"],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
 
             return {
@@ -368,7 +373,7 @@ class AutomatedIncidentResponse:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _reset_database_connections(self) -> Dict[str, Any]:
+    async def _reset_database_connections(self) -> dict[str, Any]:
         """Reset database connection pools."""
         try:
             # This would typically involve restarting connection pools
@@ -379,7 +384,7 @@ class AutomatedIncidentResponse:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _trigger_load_balancer_health_check(self) -> Dict[str, Any]:
+    async def _trigger_load_balancer_health_check(self) -> dict[str, Any]:
         """Trigger load balancer health check."""
         try:
             # This would typically involve HAProxy admin interface
@@ -390,7 +395,7 @@ class AutomatedIncidentResponse:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _send_initial_notification(self, incident: Dict[str, Any]):
+    async def _send_initial_notification(self, incident: dict[str, Any]):
         """Send initial incident notification."""
         severity = incident["severity"]
 
@@ -406,7 +411,7 @@ class AutomatedIncidentResponse:
             await self._send_webhook_notification(incident)
 
     async def _send_email_notification(
-        self, incident: Dict[str, Any], urgent: bool = False
+        self, incident: dict[str, Any], urgent: bool = False
     ):
         """Send email notification."""
         if not self.config["notification_channels"]["email"]["enabled"]:
@@ -457,7 +462,7 @@ class AutomatedIncidentResponse:
         except Exception as e:
             logger.error(f"❌ Failed to send email notification: {e}")
 
-    async def _send_slack_notification(self, incident: Dict[str, Any]):
+    async def _send_slack_notification(self, incident: dict[str, Any]):
         """Send Slack notification."""
         if not self.config["notification_channels"]["slack"]["enabled"]:
             return
@@ -527,7 +532,7 @@ class AutomatedIncidentResponse:
         except Exception as e:
             logger.error(f"❌ Failed to send Slack notification: {e}")
 
-    async def _send_webhook_notification(self, incident: Dict[str, Any]):
+    async def _send_webhook_notification(self, incident: dict[str, Any]):
         """Send webhook notification."""
         if not self.config["notification_channels"]["webhook"]["enabled"]:
             return
@@ -561,47 +566,66 @@ class AutomatedIncidentResponse:
         except Exception as e:
             logger.error(f"❌ Failed to send webhook notifications: {e}")
 
-    def _create_email_body(self, incident: Dict[str, Any]) -> str:
+    def _create_email_body(self, incident: dict[str, Any]) -> str:
         """Create HTML email body for incident notification."""
         alert_data = incident["alert_data"]
 
         return f"""
         <html>
         <body>
-            <h2 style="color: {'red' if incident['severity'] == 'critical' else 'orange'};">
+            <h2 style="color: {
+            "red" if incident["severity"] == "critical" else "orange"
+        };">
                 🚨 ACGS Incident Alert
             </h2>
             
             <div style="border: 1px solid #ccc; padding: 15px; margin: 10px 0;">
                 <h3>Incident Details</h3>
-                <p><strong>Incident ID:</strong> {incident['id']}</p>
-                <p><strong>Severity:</strong> {incident['severity'].upper()}</p>
-                <p><strong>Status:</strong> {incident['status']}</p>
-                <p><strong>Created:</strong> {incident['created_at']}</p>
+                <p><strong>Incident ID:</strong> {incident["id"]}</p>
+                <p><strong>Severity:</strong> {incident["severity"].upper()}</p>
+                <p><strong>Status:</strong> {incident["status"]}</p>
+                <p><strong>Created:</strong> {incident["created_at"]}</p>
             </div>
             
             <div style="border: 1px solid #ccc; padding: 15px; margin: 10px 0;">
                 <h3>Alert Information</h3>
-                <p><strong>Alert Name:</strong> {alert_data.get('alertname', 'Unknown')}</p>
-                <p><strong>Service:</strong> {alert_data.get('service', 'Unknown')}</p>
-                <p><strong>Description:</strong> {alert_data.get('description', 'No description available')}</p>
-                <p><strong>Summary:</strong> {alert_data.get('summary', 'No summary available')}</p>
+                <p><strong>Alert Name:</strong> {
+            alert_data.get("alertname", "Unknown")
+        }</p>
+                <p><strong>Service:</strong> {alert_data.get("service", "Unknown")}</p>
+                <p><strong>Description:</strong> {
+            alert_data.get("description", "No description available")
+        }</p>
+                <p><strong>Summary:</strong> {
+            alert_data.get("summary", "No summary available")
+        }</p>
             </div>
             
             <div style="border: 1px solid #ccc; padding: 15px; margin: 10px 0;">
                 <h3>Automated Actions</h3>
-                {'<p>No automated actions taken yet.</p>' if not incident.get('automated_actions') else 
-                 '<ul>' + ''.join([f"<li>{action['action']}: {action.get('result', {}).get('success', 'Unknown')}</li>" 
-                                  for action in incident['automated_actions']]) + '</ul>'}
+                {
+            "<p>No automated actions taken yet.</p>"
+            if not incident.get("automated_actions")
+            else "<ul>"
+            + "".join(
+                [
+                    f"<li>{action['action']}: {action.get('result', {}).get('success', 'Unknown')}</li>"
+                    for action in incident["automated_actions"]
+                ]
+            )
+            + "</ul>"
+        }
             </div>
             
             <p><strong>Next Steps:</strong> Please investigate and take appropriate action.</p>
-            <p><strong>Runbook:</strong> <a href="{alert_data.get('runbook_url', '#')}">View Runbook</a></p>
+            <p><strong>Runbook:</strong> <a href="{
+            alert_data.get("runbook_url", "#")
+        }">View Runbook</a></p>
         </body>
         </html>
         """
 
-    async def _start_escalation_timer(self, incident: Dict[str, Any]):
+    async def _start_escalation_timer(self, incident: dict[str, Any]):
         """Start escalation timer for incident."""
         incident_id = incident["id"]
         severity = incident["severity"]
@@ -665,7 +689,7 @@ class AutomatedIncidentResponse:
                 )
 
     async def _send_escalation_notification(
-        self, incident: Dict[str, Any], level: int, contacts: List[str]
+        self, incident: dict[str, Any], level: int, contacts: list[str]
     ):
         """Send escalation notification."""
         try:
@@ -689,11 +713,11 @@ class AutomatedIncidentResponse:
                     
                     <div style="border: 2px solid red; padding: 15px; margin: 10px 0;">
                         <h3>Incident Details</h3>
-                        <p><strong>Incident ID:</strong> {incident['id']}</p>
-                        <p><strong>Severity:</strong> {incident['severity'].upper()}</p>
-                        <p><strong>Created:</strong> {incident['created_at']}</p>
-                        <p><strong>Alert:</strong> {incident['alert_data'].get('alertname', 'Unknown')}</p>
-                        <p><strong>Service:</strong> {incident['alert_data'].get('service', 'Unknown')}</p>
+                        <p><strong>Incident ID:</strong> {incident["id"]}</p>
+                        <p><strong>Severity:</strong> {incident["severity"].upper()}</p>
+                        <p><strong>Created:</strong> {incident["created_at"]}</p>
+                        <p><strong>Alert:</strong> {incident["alert_data"].get("alertname", "Unknown")}</p>
+                        <p><strong>Service:</strong> {incident["alert_data"].get("service", "Unknown")}</p>
                     </div>
                     
                     <p><strong>IMMEDIATE ACTION REQUIRED</strong></p>
@@ -728,7 +752,7 @@ class AutomatedIncidentResponse:
         except Exception as e:
             logger.error(f"❌ Failed to send escalation notification: {e}")
 
-    async def _save_incident(self, incident: Dict[str, Any]):
+    async def _save_incident(self, incident: dict[str, Any]):
         """Save incident to disk."""
         try:
             incident_file = self.incidents_dir / f"{incident['id']}.json"
@@ -762,7 +786,7 @@ class AutomatedIncidentResponse:
 
         logger.info(f"✅ Incident {incident_id} resolved")
 
-    async def get_active_incidents(self) -> List[Dict[str, Any]]:
+    async def get_active_incidents(self) -> list[dict[str, Any]]:
         """Get list of active incidents."""
         return list(self.active_incidents.values())
 

@@ -18,8 +18,8 @@ import subprocess
 from pathlib import Path
 
 import pytest
-
 from nemo_skills.evaluation.metrics import ComputeMetrics
+
 from tests.conftest import docker_rm
 
 # TODO: retrieval test

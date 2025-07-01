@@ -11,8 +11,8 @@ from .policy_cache import PolicyGenerationCache
 
 __all__ = [
     "CacheManager",
-    "get_cache_manager",
-    "PolicyGenerationCache",
-    "ExecutionResultCache",
     "DiagnosticDataCache",
+    "ExecutionResultCache",
+    "PolicyGenerationCache",
+    "get_cache_manager",
 ]

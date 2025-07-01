@@ -424,7 +424,7 @@ class ConstitutionalVerificationEngine:
                 property_id="error",
                 proof_type=proof_type,
                 verification_level=VerificationLevel.BASIC,
-                proof_steps=[f"// Error in proof generation: {str(e)}"],
+                proof_steps=[f"// Error in proof generation: {e!s}"],
                 verified=False,
                 confidence_score=0.0,
                 verification_time_ms=verification_time,

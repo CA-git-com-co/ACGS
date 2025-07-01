@@ -197,6 +197,7 @@ class ProductionValidationSuite:
         try:
             result = subprocess.run(
                 ["pg_isready", "-h", "localhost", "-p", "5432"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -212,7 +213,11 @@ class ProductionValidationSuite:
         """Check Redis health"""
         try:
             result = subprocess.run(
-                ["redis-cli", "ping"], capture_output=True, text=True, timeout=10
+                ["redis-cli", "ping"],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
             return {
                 "status": "healthy" if result.stdout.strip() == "PONG" else "unhealthy",
@@ -374,10 +379,9 @@ class ProductionValidationSuite:
             score += 20
             if security_results["constitutional_compliance"].get("hash_valid"):
                 score += 10
-        else:
-            # Give partial credit if service is down but other components work
-            if security_results["security_middleware"].get("score", 0) > 0:
-                score += 5  # Partial credit for having some security infrastructure
+        # Give partial credit if service is down but other components work
+        elif security_results["security_middleware"].get("score", 0) > 0:
+            score += 5  # Partial credit for having some security infrastructure
 
         # Authentication (25 points) - Critical for access control
         auth_status = security_results["authentication"].get("status")
@@ -654,6 +658,7 @@ class ProductionValidationSuite:
         try:
             result = subprocess.run(
                 ["solana", "config", "get"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -680,6 +685,7 @@ class ProductionValidationSuite:
         try:
             result = subprocess.run(
                 ["python3", "scripts/simple_backup_recovery.py", "list"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -719,6 +725,7 @@ class ProductionValidationSuite:
                         "scripts/automated_disaster_recovery_test.py",
                         "--help",
                     ],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=10,
@@ -887,11 +894,11 @@ class ProductionValidationSuite:
         """Calculate score for a specific criterion"""
         if criterion == "system_health":
             return results.get("health_percentage", 0)
-        elif criterion == "performance":
+        if criterion == "performance":
             return results.get("targets_met", {}).get("response_time_percentage", 0)
-        elif criterion == "security":
+        if criterion == "security":
             return results.get("security_score", 0)
-        elif criterion == "governance":
+        if criterion == "governance":
             # Calculate based on functional components
             functional_count = 0
             total_count = 0
@@ -908,14 +915,7 @@ class ProductionValidationSuite:
                         functional_count += 1
 
             return (functional_count / total_count * 100) if total_count > 0 else 0
-        elif criterion == "backup_recovery":
-            functional_count = sum(
-                1
-                for component in results.values()
-                if component.get("status") == "functional"
-            )
-            return (functional_count / len(results) * 100) if results else 0
-        elif criterion == "enterprise":
+        if criterion == "backup_recovery" or criterion == "enterprise":
             functional_count = sum(
                 1
                 for component in results.values()
@@ -933,12 +933,11 @@ class ProductionValidationSuite:
             )
             if score >= 95:
                 return "excellent"
-            elif score >= 85:
+            if score >= 85:
                 return "good"
-            elif score >= 70:
+            if score >= 70:
                 return "fair"
-            else:
-                return "poor"
+            return "poor"
         return "unknown"
 
     def _is_production_ready(self) -> bool:

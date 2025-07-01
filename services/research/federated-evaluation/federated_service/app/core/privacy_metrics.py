@@ -133,10 +133,11 @@ class DifferentialPrivacyManager:
 
             for node_id, node_data in data.items():
                 if isinstance(node_data, dict) and node_data.get("success", False):
-                    private_node_data, noise_added = (
-                        await self._apply_privacy_mechanism(
-                            node_data, mechanism, epsilon_request
-                        )
+                    (
+                        private_node_data,
+                        noise_added,
+                    ) = await self._apply_privacy_mechanism(
+                        node_data, mechanism, epsilon_request
                     )
                     private_data[node_id] = private_node_data
                     total_noise += noise_added
@@ -266,8 +267,7 @@ class DifferentialPrivacyManager:
             p = np.exp(epsilon) / (np.exp(epsilon) + 1)
             if np.random.random() < p:
                 return 0.0  # Keep original value
-            else:
-                return np.random.uniform(-0.1, 0.1)  # Add small random noise
+            return np.random.uniform(-0.1, 0.1)  # Add small random noise
         except Exception as e:
             logger.error(f"Failed to generate local DP noise: {e}")
             return 0.0

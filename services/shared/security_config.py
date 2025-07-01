@@ -111,12 +111,11 @@ class SecurityConfigManager:
         """Determine security level based on environment."""
         if self.environment == "production":
             return SecurityLevel.CRITICAL
-        elif self.environment == "staging":
+        if self.environment == "staging":
             return SecurityLevel.HIGH
-        elif self.environment == "testing":
+        if self.environment == "testing":
             return SecurityLevel.MEDIUM
-        else:
-            return SecurityLevel.LOW
+        return SecurityLevel.LOW
 
     def is_production(self) -> bool:
         """Check if running in production environment."""
@@ -128,8 +127,7 @@ class SecurityConfigManager:
         if not cors_origins:
             if self.environment == "production":
                 return ["https://acgs-pgp.com"]  # Production domain
-            else:
-                return ["http://localhost:3000", "http://localhost:3001"]
+            return ["http://localhost:3000", "http://localhost:3001"]
 
         return [origin.strip() for origin in cors_origins.split(",")]
 

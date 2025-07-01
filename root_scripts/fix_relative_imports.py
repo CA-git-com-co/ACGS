@@ -6,14 +6,13 @@ Converts relative imports to absolute imports to fix pytest collection errors.
 
 import os
 import re
-from pathlib import Path
 
 
 def fix_relative_imports_in_file(file_path):
     """Fix relative imports in a single file."""
     print(f"Fixing relative imports in: {file_path}")
 
-    with open(file_path, "r") as f:
+    with open(file_path) as f:
         content = f.read()
 
     # Define patterns and replacements for relative imports
@@ -73,9 +72,8 @@ def fix_relative_imports_in_file(file_path):
             f.write(content)
         print(f"  ✅ Fixed relative imports in {file_path}")
         return True
-    else:
-        print(f"  ⏭️  No relative imports found in {file_path}")
-        return False
+    print(f"  ⏭️  No relative imports found in {file_path}")
+    return False
 
 
 def find_files_with_relative_imports():
@@ -98,7 +96,7 @@ def find_files_with_relative_imports():
 
                         # Check if file contains relative imports
                         try:
-                            with open(file_path, "r") as f:
+                            with open(file_path) as f:
                                 content = f.read()
 
                             # Look for relative import patterns
@@ -142,7 +140,7 @@ def main():
         if fix_relative_imports_in_file(file_path):
             fixed_count += 1
 
-    print(f"\n📊 Summary:")
+    print("\n📊 Summary:")
     print(f"  📁 Files scanned: {len(files_with_issues)}")
     print(f"  ✅ Files fixed: {fixed_count}")
     print(f"  ⏭️  Files unchanged: {len(files_with_issues) - fixed_count}")

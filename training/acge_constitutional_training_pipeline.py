@@ -14,22 +14,19 @@ import asyncio
 import json
 import logging
 import time
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from dataclasses import dataclass
+from typing import Any
 
 import torch
-import torch.nn as nn
-from torch.utils.data import DataLoader, Dataset
+import wandb
+from torch import nn
+from torch.utils.data import Dataset
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
-    TrainingArguments,
     Trainer,
+    TrainingArguments,
 )
-import wandb
-from datasets import load_dataset
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -91,21 +88,21 @@ class ConstitutionalDataset(Dataset):
         self.data = self._load_constitutional_data(data_path)
         logger.info(f"Loaded {len(self.data)} constitutional training examples")
 
-    def _load_constitutional_data(self, data_path: str) -> List[Dict[str, Any]]:
+    def _load_constitutional_data(self, data_path: str) -> list[dict[str, Any]]:
         """Load and validate constitutional training data."""
 
         constitutional_data = []
 
         # Load constitutional principles corpus
-        with open(f"{data_path}/constitutional_principles.json", "r") as f:
+        with open(f"{data_path}/constitutional_principles.json") as f:
             principles_data = json.load(f)
 
         # Load governance decision precedents
-        with open(f"{data_path}/governance_precedents.json", "r") as f:
+        with open(f"{data_path}/governance_precedents.json") as f:
             precedents_data = json.load(f)
 
         # Load constitutional violation examples
-        with open(f"{data_path}/constitutional_violations.json", "r") as f:
+        with open(f"{data_path}/constitutional_violations.json") as f:
             violations_data = json.load(f)
 
         # Combine and validate data
@@ -115,7 +112,7 @@ class ConstitutionalDataset(Dataset):
 
         return constitutional_data
 
-    def _validate_constitutional_example(self, example: Dict[str, Any]) -> bool:
+    def _validate_constitutional_example(self, example: dict[str, Any]) -> bool:
         """Validate constitutional training example."""
 
         required_fields = [
@@ -150,7 +147,7 @@ class ConstitutionalDataset(Dataset):
     def __len__(self) -> int:
         return len(self.data)
 
-    def __getitem__(self, idx: int) -> Dict[str, torch.Tensor]:
+    def __getitem__(self, idx: int) -> dict[str, torch.Tensor]:
         """Get constitutional training example."""
 
         example = self.data[idx]
@@ -176,25 +173,25 @@ class ConstitutionalDataset(Dataset):
             "constitutional_hash": example["constitutional_hash"],
         }
 
-    def _format_constitutional_prompt(self, example: Dict[str, Any]) -> str:
+    def _format_constitutional_prompt(self, example: dict[str, Any]) -> str:
         """Format constitutional training prompt."""
 
         prompt = f"""Constitutional Governance Analysis
 
-Constitutional Hash: {example['constitutional_hash']}
+Constitutional Hash: {example["constitutional_hash"]}
 
 Governance Scenario:
-{example['governance_scenario']}
+{example["governance_scenario"]}
 
 Constitutional Context:
-{example['constitutional_context']}
+{example["constitutional_context"]}
 
 Constitutional Analysis:
-{example['constitutional_reasoning']}
+{example["constitutional_reasoning"]}
 
-Constitutional Compliance Score: {example['constitutional_compliance_score']:.3f}
+Constitutional Compliance Score: {example["constitutional_compliance_score"]:.3f}
 
-Constitutional Decision: {"COMPLIANT" if example['constitutional_compliance_score'] >= 0.95 else "NON-COMPLIANT"}
+Constitutional Decision: {"COMPLIANT" if example["constitutional_compliance_score"] >= 0.95 else "NON-COMPLIANT"}
 """
 
         return prompt
@@ -238,7 +235,7 @@ class ACGEConstitutionalTrainer:
 
     async def train_constitutional_model(
         self, train_data_path: str, val_data_path: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Train ACGE constitutional model with RLHF."""
 
         training_start = time.time()
@@ -314,7 +311,7 @@ class ACGEConstitutionalTrainer:
         logger.info(f"ACGE constitutional training completed: {training_summary}")
         return training_summary
 
-    def _compute_constitutional_metrics(self, eval_pred) -> Dict[str, float]:
+    def _compute_constitutional_metrics(self, eval_pred) -> dict[str, float]:
         """Compute constitutional compliance metrics."""
 
         predictions, labels = eval_pred
@@ -337,7 +334,7 @@ class ACGEConstitutionalTrainer:
 
     async def _evaluate_constitutional_compliance(
         self, dataset: ConstitutionalDataset
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Evaluate constitutional compliance on validation set."""
 
         self.model.eval()

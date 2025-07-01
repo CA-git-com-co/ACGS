@@ -11,9 +11,9 @@ from .workflow_engine import WorkflowEngine
 from .workflow_state import WorkflowState, WorkflowStatus
 
 __all__ = [
+    "ImprovementWorkflow",
+    "ValidationWorkflow",
     "WorkflowEngine",
     "WorkflowState",
     "WorkflowStatus",
-    "ImprovementWorkflow",
-    "ValidationWorkflow",
 ]

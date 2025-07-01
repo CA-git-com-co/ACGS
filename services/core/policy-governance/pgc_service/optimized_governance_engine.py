@@ -14,16 +14,15 @@ Key Performance Features:
 """
 
 import asyncio
-import time
-import logging
 import hashlib
 import json
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set, Tuple
-from functools import lru_cache
-from datetime import datetime, timezone, timedelta
-from enum import Enum
+import logging
 import re
+import time
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Any
 
 # For high-performance operations
 try:
@@ -55,7 +54,7 @@ class PolicyValidationRequest:
     content: str
     category: str
     priority: str = "normal"
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
     constitutional_hash: str = "cdd01ef066bc6cf2"
 
     def cache_key(self) -> str:
@@ -76,8 +75,8 @@ class PolicyValidationResponse:
     compliance_score: float
     response_time_ms: float
     constitutional_hash: str
-    violations: List[str] = field(default_factory=list)
-    recommendations: List[str] = field(default_factory=list)
+    violations: list[str] = field(default_factory=list)
+    recommendations: list[str] = field(default_factory=list)
     cached: bool = False
     fast_path: bool = False
     timestamp: str = field(
@@ -128,13 +127,13 @@ class OptimizedGovernanceEngine:
         }
 
         # Async components
-        self.redis_pool: Optional[Any] = None
-        self.db_pool: Optional[Any] = None
+        self.redis_pool: Any | None = None
+        self.db_pool: Any | None = None
 
         # Initialize high-performance components
         asyncio.create_task(self._initialize_async_components())
 
-    def _compile_constitutional_patterns(self) -> Dict[str, re.Pattern]:
+    def _compile_constitutional_patterns(self) -> dict[str, re.Pattern]:
         """Pre-compile constitutional compliance patterns for fast matching."""
         patterns = {
             # Constitutional AI principles (pre-compiled regex for speed)
@@ -165,7 +164,7 @@ class OptimizedGovernanceEngine:
         )
         return patterns
 
-    def _compile_fast_path_rules(self) -> Dict[str, Tuple[ValidationResult, float]]:
+    def _compile_fast_path_rules(self) -> dict[str, tuple[ValidationResult, float]]:
         """Compile fast-path validation rules for instant responses."""
         return {
             # Known good patterns that can be instantly approved
@@ -277,7 +276,7 @@ class OptimizedGovernanceEngine:
                 compliance_score=0.0,
                 response_time_ms=(time.perf_counter() - start_time) * 1000,
                 constitutional_hash=request.constitutional_hash,
-                violations=[f"Validation error: {str(e)}"],
+                violations=[f"Validation error: {e!s}"],
                 recommendations=["Manual review required due to validation error"],
             )
 
@@ -286,7 +285,7 @@ class OptimizedGovernanceEngine:
 
     async def _get_cached_validation(
         self, cache_key: str
-    ) -> Optional[PolicyValidationResponse]:
+    ) -> PolicyValidationResponse | None:
         """Get cached validation result with sub-millisecond performance."""
         try:
             # Check in-memory cache first (fastest)
@@ -296,9 +295,8 @@ class OptimizedGovernanceEngine:
                 # Check TTL
                 if time.time() - timestamp < self.cache_ttl_seconds:
                     return cached_data
-                else:
-                    # Remove expired entry
-                    del self._validation_cache[cache_key]
+                # Remove expired entry
+                del self._validation_cache[cache_key]
 
             # Check Redis cache if available
             if self.redis_pool:
@@ -318,7 +316,7 @@ class OptimizedGovernanceEngine:
 
     async def _fast_path_validation(
         self, request: PolicyValidationRequest
-    ) -> Optional[PolicyValidationResponse]:
+    ) -> PolicyValidationResponse | None:
         """Ultra-fast validation for known patterns (target: <1ms)."""
         try:
             # Check for fast-path patterns in content
@@ -442,7 +440,7 @@ class OptimizedGovernanceEngine:
                 compliance_score=0.0,
                 response_time_ms=0.0,
                 constitutional_hash=request.constitutional_hash,
-                violations=[f"Validation processing error: {str(e)}"],
+                violations=[f"Validation processing error: {e!s}"],
                 recommendations=["Manual review required due to processing error"],
             )
 
@@ -464,7 +462,7 @@ class OptimizedGovernanceEngine:
         except Exception as e:
             self.logger.warning(f"Cache storage error for {cache_key}: {e}")
 
-    def _serialize_response(self, response: PolicyValidationResponse) -> Dict[str, Any]:
+    def _serialize_response(self, response: PolicyValidationResponse) -> dict[str, Any]:
         """Serialize response for caching."""
         return {
             "policy_id": response.policy_id,
@@ -476,7 +474,7 @@ class OptimizedGovernanceEngine:
             "timestamp": response.timestamp,
         }
 
-    def _deserialize_response(self, data: Dict[str, Any]) -> PolicyValidationResponse:
+    def _deserialize_response(self, data: dict[str, Any]) -> PolicyValidationResponse:
         """Deserialize cached response."""
         return PolicyValidationResponse(
             validation_id="",  # Will be set by caller
@@ -511,8 +509,8 @@ class OptimizedGovernanceEngine:
             self.metrics["constitutional_violations"] += 1
 
     async def validate_policies_batch(
-        self, requests: List[PolicyValidationRequest]
-    ) -> List[PolicyValidationResponse]:
+        self, requests: list[PolicyValidationRequest]
+    ) -> list[PolicyValidationResponse]:
         """
         Batch validation for multiple policies with parallel processing.
 
@@ -538,7 +536,7 @@ class OptimizedGovernanceEngine:
                         compliance_score=0.0,
                         response_time_ms=0.0,
                         constitutional_hash=requests[i].constitutional_hash,
-                        violations=[f"Batch processing error: {str(response)}"],
+                        violations=[f"Batch processing error: {response!s}"],
                         recommendations=["Manual review required"],
                     )
                     results.append(error_response)
@@ -558,13 +556,13 @@ class OptimizedGovernanceEngine:
                     compliance_score=0.0,
                     response_time_ms=0.0,
                     constitutional_hash=req.constitutional_hash,
-                    violations=[f"Batch validation failed: {str(e)}"],
+                    violations=[f"Batch validation failed: {e!s}"],
                     recommendations=["Manual review required"],
                 )
                 for i, req in enumerate(requests)
             ]
 
-    def get_performance_metrics(self) -> Dict[str, Any]:
+    def get_performance_metrics(self) -> dict[str, Any]:
         """Get current performance metrics."""
         cache_hit_rate = (
             self.metrics["cache_hits"]
@@ -592,7 +590,7 @@ class OptimizedGovernanceEngine:
             or self.db_pool is not None,
         }
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """High-performance health check."""
         start_time = time.perf_counter()
 
@@ -630,7 +628,7 @@ class OptimizedGovernanceEngine:
 
 
 # Global instance for service integration
-_governance_engine: Optional[OptimizedGovernanceEngine] = None
+_governance_engine: OptimizedGovernanceEngine | None = None
 
 
 async def get_governance_engine() -> OptimizedGovernanceEngine:

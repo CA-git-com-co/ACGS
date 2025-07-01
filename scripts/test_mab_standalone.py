@@ -8,7 +8,7 @@ import asyncio
 import os
 import sys
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
@@ -391,7 +391,7 @@ async def test_standalone_mab():
 
             if selected_template:
                 print(
-                    f"   Scenario {i+1}: Selected '{selected_template.name}' for {scenario['category']}"
+                    f"   Scenario {i + 1}: Selected '{selected_template.name}' for {scenario['category']}"
                 )
 
                 # Simulate LLM output
@@ -405,7 +405,7 @@ async def test_standalone_mab():
                 )
             else:
                 print(
-                    f"   Scenario {i+1}: No template selected for {scenario['category']}"
+                    f"   Scenario {i + 1}: No template selected for {scenario['category']}"
                 )
 
         # Get optimization metrics
@@ -659,7 +659,7 @@ async def main():
         print(f"{test_name:.<30} {status}")
 
     print("-" * 60)
-    print(f"Overall: {passed}/{total} tests passed ({passed/total*100:.1f}%)")
+    print(f"Overall: {passed}/{total} tests passed ({passed / total * 100:.1f}%)")
 
     if passed == total:
         print(

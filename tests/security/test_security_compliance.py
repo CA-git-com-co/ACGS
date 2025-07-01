@@ -13,6 +13,7 @@ from unittest.mock import MagicMock
 import pytest
 from fastapi import HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials
+
 from services.core.governance_synthesis.gs_service.app.services.security_compliance import (
     AuditLogger,
     InputValidator,
@@ -184,7 +185,7 @@ class TestRateLimiting:
         # Should allow requests up to limit
         for i in range(max_requests):
             result = rate_limiter.is_allowed(client_id, max_requests, window_minutes)
-            assert not result.blocked, f"Request {i+1} should be allowed"
+            assert not result.blocked, f"Request {i + 1} should be allowed"
             assert result.requests == i + 1
 
         # Should block additional requests

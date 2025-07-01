@@ -6,12 +6,11 @@ governance principle enforcement, and safety constraint checking.
 """
 
 from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 from uuid import uuid4
 
 import pytest
 from dgm_service.core.constitutional_validator import ConstitutionalValidator
-from dgm_service.models.compliance import ComplianceLevel, ConstitutionalComplianceLog
 
 
 @pytest.mark.unit

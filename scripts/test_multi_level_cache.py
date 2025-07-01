@@ -27,15 +27,15 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
+from services.shared.acgs_cache_integration import ACGSCacheIntegration
 from services.shared.multi_level_cache import (
-    MultiLevelCacheManager,
+    BloomFilter,
     L1MemoryCache,
     L2ProcessCache,
     L3RedisCache,
-    BloomFilter,
+    MultiLevelCacheManager,
 )
 from services.shared.parallel_validation_pipeline import ParallelValidationPipeline
-from services.shared.acgs_cache_integration import ACGSCacheIntegration
 
 # Configure logging
 logging.basicConfig(

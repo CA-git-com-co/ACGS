@@ -389,7 +389,7 @@ async def run_task8_performance_benchmarks():
     print("📊 TASK 8 PERFORMANCE BENCHMARK SUMMARY")
     print("=" * 80)
     print(f"Benchmarks Passed: {passed}/{total}")
-    print(f"Performance Score: {(passed/total)*100:.1f}%")
+    print(f"Performance Score: {(passed / total) * 100:.1f}%")
 
     if passed == total:
         print("🎉 All performance benchmarks passed!")

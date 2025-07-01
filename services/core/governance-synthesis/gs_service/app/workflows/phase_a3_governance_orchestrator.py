@@ -555,12 +555,11 @@ class PhaseA3GovernanceOrchestrator:
                     f"Step {step.name} completed in {step.execution_time_ms:.2f}ms"
                 )
                 return True
-            else:
-                step.status = WorkflowStepStatus.FAILED
-                step.error_message = result.get("error", "Unknown error")
+            step.status = WorkflowStepStatus.FAILED
+            step.error_message = result.get("error", "Unknown error")
 
-                logger.error(f"Step {step.name} failed: {step.error_message}")
-                return False
+            logger.error(f"Step {step.name} failed: {step.error_message}")
+            return False
 
         except Exception as e:
             step.status = WorkflowStepStatus.FAILED

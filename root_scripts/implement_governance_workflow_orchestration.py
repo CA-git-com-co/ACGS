@@ -115,13 +115,12 @@ class GovernanceWorkflowOrchestrator:
                     "processing_time_ms": processing_time,
                     "performance_target_met": processing_time <= 500,
                 }
-            else:
-                return {
-                    "workflow_type": "policy_creation",
-                    "status": "failed",
-                    "error": f"HTTP {response.status_code}",
-                    "processing_time_ms": (time.time() - start_time) * 1000,
-                }
+            return {
+                "workflow_type": "policy_creation",
+                "status": "failed",
+                "error": f"HTTP {response.status_code}",
+                "processing_time_ms": (time.time() - start_time) * 1000,
+            }
 
         except Exception as e:
             logger.error(f"Policy creation workflow test failed: {e}")
@@ -168,13 +167,12 @@ class GovernanceWorkflowOrchestrator:
                     "processing_time_ms": processing_time,
                     "performance_target_met": processing_time <= 500,
                 }
-            else:
-                return {
-                    "workflow_type": "constitutional_compliance",
-                    "status": "failed",
-                    "error": f"HTTP {response.status_code}",
-                    "processing_time_ms": processing_time,
-                }
+            return {
+                "workflow_type": "constitutional_compliance",
+                "status": "failed",
+                "error": f"HTTP {response.status_code}",
+                "processing_time_ms": processing_time,
+            }
 
         except Exception as e:
             logger.error(f"Constitutional compliance workflow test failed: {e}")
@@ -220,13 +218,12 @@ class GovernanceWorkflowOrchestrator:
                     "processing_time_ms": processing_time,
                     "performance_target_met": processing_time <= 500,
                 }
-            else:
-                return {
-                    "workflow_type": "policy_enforcement",
-                    "status": "failed",
-                    "error": f"HTTP {response.status_code}",
-                    "processing_time_ms": processing_time,
-                }
+            return {
+                "workflow_type": "policy_enforcement",
+                "status": "failed",
+                "error": f"HTTP {response.status_code}",
+                "processing_time_ms": processing_time,
+            }
 
         except Exception as e:
             logger.error(f"Policy enforcement workflow test failed: {e}")
@@ -276,13 +273,12 @@ class GovernanceWorkflowOrchestrator:
                     "processing_time_ms": processing_time,
                     "performance_target_met": processing_time <= 500,
                 }
-            else:
-                return {
-                    "workflow_type": "wina_oversight",
-                    "status": "failed",
-                    "error": f"HTTP {response.status_code}",
-                    "processing_time_ms": processing_time,
-                }
+            return {
+                "workflow_type": "wina_oversight",
+                "status": "failed",
+                "error": f"HTTP {response.status_code}",
+                "processing_time_ms": processing_time,
+            }
 
         except Exception as e:
             logger.error(f"WINA oversight workflow test failed: {e}")
@@ -326,13 +322,12 @@ class GovernanceWorkflowOrchestrator:
                     "processing_time_ms": processing_time,
                     "performance_target_met": processing_time <= 500,
                 }
-            else:
-                return {
-                    "workflow_type": "audit_transparency",
-                    "status": "failed",
-                    "error": f"HTTP {response.status_code}",
-                    "processing_time_ms": processing_time,
-                }
+            return {
+                "workflow_type": "audit_transparency",
+                "status": "failed",
+                "error": f"HTTP {response.status_code}",
+                "processing_time_ms": processing_time,
+            }
 
         except Exception as e:
             logger.error(f"Audit/transparency workflow test failed: {e}")
@@ -614,9 +609,8 @@ async def main():
                 "✅ Complete Governance Workflow Orchestration - IMPLEMENTED SUCCESSFULLY"
             )
             return True
-        else:
-            logger.warning("⚠️ Governance workflow orchestration needs improvement")
-            return False
+        logger.warning("⚠️ Governance workflow orchestration needs improvement")
+        return False
 
     except Exception as e:
         logger.error(f"❌ Workflow orchestration validation failed: {e}")

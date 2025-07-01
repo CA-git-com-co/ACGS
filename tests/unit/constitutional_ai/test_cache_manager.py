@@ -2,12 +2,6 @@
 Unit tests for services.core.constitutional-ai.ac_service.app.cache_manager
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.constitutional_ai.ac_service.app.cache_manager import (
-    Ac_serviceCacheManager,
-)
-
 
 class TestAc_serviceCacheManager:
     """Test suite for Ac_serviceCacheManager."""

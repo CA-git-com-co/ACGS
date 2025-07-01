@@ -160,7 +160,11 @@ class MimesisValidationSuite:
             for i, cmd in enumerate(test_commands):
                 try:
                     result = subprocess.run(
-                        cmd.split(), capture_output=True, text=True, timeout=60
+                        cmd.split(),
+                        check=False,
+                        capture_output=True,
+                        text=True,
+                        timeout=60,
                     )
 
                     pytest_results[f"test_command_{i}"] = {

@@ -13,39 +13,37 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import json
-import logging
 import os
-import time
-import uuid
-from datetime import datetime, timezone, timedelta
-from typing import Any, Dict, List, Optional
-
-import asyncpg
-import aiofiles
-import aioboto3
-import aioredis
-import uvicorn
-from aiokafka import AIOKafkaConsumer
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
-from fastapi import FastAPI, HTTPException, Request, Response, Query, Depends
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from prometheus_client import Counter, Gauge, Histogram, generate_latest
-from pydantic import BaseModel, Field
-import structlog
 
 # Import our audit compliance manager
 import sys
+import time
+import uuid
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Any
+
+import aioboto3
+import aioredis
+import asyncpg
+import structlog
+import uvicorn
+from aiokafka import AIOKafkaConsumer
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
+from fastapi import Depends, FastAPI, HTTPException, Query, Response
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from prometheus_client import Counter, Gauge, Histogram, generate_latest
+from pydantic import BaseModel, Field
 
 sys.path.append(str(Path(__file__).parent.parent.parent / "shared"))
 from compliance.audit_compliance_manager import (
     AuditComplianceManager,
     AuditEvent,
     AuditEventType,
-    DataClassification,
     ComplianceFramework,
+    DataClassification,
     RetentionPolicy,
 )
 
@@ -103,22 +101,22 @@ class EventIngestRequest(BaseModel):
 
     event_type: str = Field(..., description="Type of audit event")
     service_name: str = Field(..., description="Name of originating service")
-    agent_id: Optional[str] = Field(None, description="Agent identifier")
+    agent_id: str | None = Field(None, description="Agent identifier")
     action: str = Field(..., description="Action performed")
     outcome: str = Field(..., description="Outcome of action")
-    payload: Dict[str, Any] = Field(default_factory=dict, description="Event payload")
-    user_id: Optional[str] = Field(None, description="User identifier")
-    session_id: Optional[str] = Field(None, description="Session identifier")
-    ip_address: Optional[str] = Field(None, description="IP address")
+    payload: dict[str, Any] = Field(default_factory=dict, description="Event payload")
+    user_id: str | None = Field(None, description="User identifier")
+    session_id: str | None = Field(None, description="Session identifier")
+    ip_address: str | None = Field(None, description="IP address")
 
 
 class EventQueryParams(BaseModel):
     """Query parameters for event retrieval."""
 
-    agent_id: Optional[str] = None
-    event_type: Optional[str] = None
-    start_date: Optional[datetime] = None
-    end_date: Optional[datetime] = None
+    agent_id: str | None = None
+    event_type: str | None = None
+    start_date: datetime | None = None
+    end_date: datetime | None = None
     limit: int = Field(default=100, le=1000)
     offset: int = Field(default=0, ge=0)
 
@@ -409,7 +407,7 @@ class AuditEngineService:
             await self._init_kafka_consumer()
             self.consumer_task = asyncio.create_task(self._consume_events())
 
-    async def _process_kafka_event(self, event_data: Dict[str, Any]):
+    async def _process_kafka_event(self, event_data: dict[str, Any]):
         """Process a single event from Kafka."""
         # Map Kafka event to our audit event structure
         event_id = await self._ingest_audit_event(
@@ -749,7 +747,7 @@ async def health_check():
 
 @app.post("/api/v1/audit/events")
 async def ingest_event(
-    request: EventIngestRequest, user: Dict = Depends(get_current_user)
+    request: EventIngestRequest, user: dict = Depends(get_current_user)
 ):
     """Direct audit event ingestion."""
     start_time = time.time()
@@ -785,18 +783,18 @@ async def ingest_event(
         ).inc()
 
         logger.error("Event ingestion failed", error=str(e))
-        raise HTTPException(status_code=500, detail=f"Event ingestion failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Event ingestion failed: {e!s}")
 
 
 @app.get("/api/v1/audit/events")
 async def query_events(
-    agent_id: Optional[str] = Query(None),
-    event_type: Optional[str] = Query(None),
-    start_date: Optional[datetime] = Query(None),
-    end_date: Optional[datetime] = Query(None),
+    agent_id: str | None = Query(None),
+    event_type: str | None = Query(None),
+    start_date: datetime | None = Query(None),
+    end_date: datetime | None = Query(None),
     limit: int = Query(100, le=1000),
     offset: int = Query(0, ge=0),
-    user: Dict = Depends(get_current_user),
+    user: dict = Depends(get_current_user),
 ):
     """Query audit events with filters."""
     start_time = time.time()
@@ -863,11 +861,11 @@ async def query_events(
 
     except Exception as e:
         logger.error("Event query failed", error=str(e))
-        raise HTTPException(status_code=500, detail=f"Query failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Query failed: {e!s}")
 
 
 @app.get("/api/v1/audit/events/{event_id}")
-async def get_event(event_id: str, user: Dict = Depends(get_current_user)):
+async def get_event(event_id: str, user: dict = Depends(get_current_user)):
     """Get specific audit event by ID."""
     try:
         # Try Redis cache first
@@ -890,11 +888,11 @@ async def get_event(event_id: str, user: Dict = Depends(get_current_user)):
         raise HTTPException(status_code=400, detail="Invalid event ID format")
     except Exception as e:
         logger.error("Event retrieval failed", error=str(e), event_id=event_id)
-        raise HTTPException(status_code=500, detail=f"Retrieval failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Retrieval failed: {e!s}")
 
 
 @app.get("/api/v1/audit/verify")
-async def verify_chain_integrity(user: Dict = Depends(get_current_user)):
+async def verify_chain_integrity(user: dict = Depends(get_current_user)):
     """Verify complete audit chain integrity."""
     start_time = time.time()
 
@@ -915,13 +913,13 @@ async def verify_chain_integrity(user: Dict = Depends(get_current_user)):
 
     except Exception as e:
         logger.error("Chain verification failed", error=str(e))
-        raise HTTPException(status_code=500, detail=f"Verification failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Verification failed: {e!s}")
 
 
 @app.post("/api/v1/audit/export")
 async def export_events(
     request: ExportRequest,
-    user: Dict = Depends(
+    user: dict = Depends(
         require_admin_user
     ),  # SECURITY FIX: Require admin role for data export
 ):
@@ -968,12 +966,11 @@ async def export_events(
 
             return export_data
 
-        else:
-            raise HTTPException(status_code=400, detail="Unsupported export format")
+        raise HTTPException(status_code=400, detail="Unsupported export format")
 
     except Exception as e:
         logger.error("Event export failed", error=str(e))
-        raise HTTPException(status_code=500, detail=f"Export failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Export failed: {e!s}")
 
 
 @app.get("/metrics")

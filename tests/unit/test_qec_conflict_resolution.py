@@ -148,7 +148,6 @@ class TestQECConflictResolver:
                 patch.object(qec_resolver, "error_predictor") as mock_predictor,
                 patch.object(qec_resolver, "recovery_dispatcher") as mock_dispatcher,
             ):
-
                 # Setup mocks
                 mock_calc.calculate_distance.return_value = 0.3
                 mock_predictor.predict_synthesis_challenges.return_value = Mock(

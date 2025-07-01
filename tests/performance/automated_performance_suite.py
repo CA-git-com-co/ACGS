@@ -12,7 +12,6 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Tuple
 
 import aiohttp
 import pytest
@@ -42,7 +41,7 @@ class PerformanceTestResult:
     # Success metrics
     success: bool
     status_code: int
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
     # Performance metrics
     throughput_rps: float = 0.0
@@ -62,7 +61,7 @@ class PerformanceTestSuite:
     """Performance test suite configuration."""
 
     suite_name: str
-    services: List[str]
+    services: list[str]
     test_duration_seconds: int = 60
     concurrent_users: int = 10
     ramp_up_seconds: int = 10
@@ -93,7 +92,7 @@ class ACGSPerformanceTestSuite:
         }
 
         # Test results
-        self.test_results: List[PerformanceTestResult] = []
+        self.test_results: list[PerformanceTestResult] = []
 
         logger.info("ACGS Performance Test Suite initialized")
 
@@ -127,7 +126,7 @@ class ACGSPerformanceTestSuite:
             registry=self.registry,
         )
 
-    async def run_comprehensive_performance_tests(self) -> Dict:
+    async def run_comprehensive_performance_tests(self) -> dict:
         """Run comprehensive performance tests."""
         logger.info("Starting comprehensive performance tests...")
 
@@ -154,7 +153,7 @@ class ACGSPerformanceTestSuite:
         logger.info("Comprehensive performance tests completed")
         return results
 
-    async def run_api_endpoint_tests(self) -> Dict:
+    async def run_api_endpoint_tests(self) -> dict:
         """Test API endpoint performance."""
         logger.info("Running API endpoint performance tests...")
 
@@ -208,7 +207,7 @@ class ACGSPerformanceTestSuite:
         port: int,
         endpoint: str,
         method: str = "GET",
-        payload: Optional[Dict] = None,
+        payload: dict | None = None,
         concurrent_requests: int = 10,
     ) -> PerformanceTestResult:
         """Test individual endpoint performance."""
@@ -295,7 +294,7 @@ class ACGSPerformanceTestSuite:
         self.test_results.append(result)
         return result
 
-    async def run_database_operation_tests(self) -> Dict:
+    async def run_database_operation_tests(self) -> dict:
         """Test database operation performance."""
         logger.info("Running database operation performance tests...")
 
@@ -315,7 +314,7 @@ class ACGSPerformanceTestSuite:
 
         return {"database_operation_tests": db_results}
 
-    async def test_database_operations(self, service_name: str, port: int) -> Dict:
+    async def test_database_operations(self, service_name: str, port: int) -> dict:
         """Test database operations for a service."""
         operations = []
 
@@ -344,7 +343,7 @@ class ACGSPerformanceTestSuite:
             "success": all(op["result"].success for op in operations),
         }
 
-    async def run_nats_messaging_tests(self) -> Dict:
+    async def run_nats_messaging_tests(self) -> dict:
         """Test NATS messaging performance."""
         logger.info("Running NATS messaging performance tests...")
 
@@ -366,7 +365,7 @@ class ACGSPerformanceTestSuite:
 
         return {"nats_messaging_tests": nats_results}
 
-    async def test_nats_operations(self, service_name: str, port: int) -> Dict:
+    async def test_nats_operations(self, service_name: str, port: int) -> dict:
         """Test NATS operations for a service."""
         # Test event publishing/subscribing through service endpoints
         if service_name == "ec-service":
@@ -388,7 +387,7 @@ class ACGSPerformanceTestSuite:
 
         return {"success": True, "message": "No NATS operations to test"}
 
-    async def run_constitutional_validation_tests(self) -> Dict:
+    async def run_constitutional_validation_tests(self) -> dict:
         """Test constitutional validation performance."""
         logger.info("Running constitutional validation performance tests...")
 
@@ -425,7 +424,7 @@ class ACGSPerformanceTestSuite:
 
     async def test_constitutional_validation(
         self, service_name: str, port: int
-    ) -> Dict:
+    ) -> dict:
         """Test constitutional validation for a service."""
         validation_requests = [
             {"constitutional_hash": CONSTITUTIONAL_HASH, "validation_level": "basic"},
@@ -466,7 +465,7 @@ class ACGSPerformanceTestSuite:
             "success": compliance_score >= 0.67,  # At least 2/3 should succeed
         }
 
-    async def run_load_tests(self) -> Dict:
+    async def run_load_tests(self) -> dict:
         """Run load tests with increasing concurrent users."""
         logger.info("Running load tests...")
 
@@ -503,7 +502,7 @@ class ACGSPerformanceTestSuite:
 
         return {"load_tests": load_results}
 
-    async def run_stress_tests(self) -> Dict:
+    async def run_stress_tests(self) -> dict:
         """Run stress tests to find breaking points."""
         logger.info("Running stress tests...")
 
@@ -535,7 +534,7 @@ class ACGSPerformanceTestSuite:
 
         return {"stress_tests": stress_results}
 
-    async def run_endurance_tests(self) -> Dict:
+    async def run_endurance_tests(self) -> dict:
         """Run endurance tests for sustained load."""
         logger.info("Running endurance tests...")
 
@@ -577,7 +576,7 @@ class ACGSPerformanceTestSuite:
 
         return {"endurance_tests": endurance_results}
 
-    async def aggregate_test_results(self, test_suites: List[Dict]) -> Dict:
+    async def aggregate_test_results(self, test_suites: list[dict]) -> dict:
         """Aggregate all test results."""
         aggregated = {
             "test_summary": {
@@ -603,7 +602,7 @@ class ACGSPerformanceTestSuite:
 
         return aggregated
 
-    def check_sla_compliance(self) -> Dict:
+    def check_sla_compliance(self) -> dict:
         """Check SLA compliance based on test results."""
         if not self.test_results:
             return {"overall_compliance": False, "reason": "No test results"}
@@ -632,7 +631,7 @@ class ACGSPerformanceTestSuite:
             },
         }
 
-    async def generate_performance_report(self, results: Dict):
+    async def generate_performance_report(self, results: dict):
         """Generate performance test report."""
         import os
 

@@ -1,7 +1,7 @@
 """
 WINA Core Implementation
 
-Core WINA (Weighted Intelligence Network Architecture) functionality for 
+Core WINA (Weighted Intelligence Network Architecture) functionality for
 neural optimization and constitutional compliance.
 """
 
@@ -9,9 +9,8 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Dict, Any, List, Optional
 from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +35,7 @@ class WINAOptimizationResult:
     optimization_time_ms: float
     strategy_used: str
     success: bool
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 @dataclass
@@ -44,7 +43,7 @@ class NeuralWeightUpdate:
     """Neural weight update from WINA optimization."""
 
     layer_id: str
-    weight_deltas: List[float]
+    weight_deltas: list[float]
     activation_threshold: float
     gating_probability: float
     constitutional_score: float
@@ -58,7 +57,7 @@ class WINACore:
     constraints and performance optimization.
     """
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         """
         Initialize WINA core with configuration.
 
@@ -84,10 +83,10 @@ class WINACore:
         )
 
         # Internal state
-        self.optimization_history: List[WINAOptimizationResult] = []
-        self.neural_weights: Dict[str, List[float]] = {}
-        self.constitutional_constraints: List[Dict[str, Any]] = []
-        self.active_optimizations: Dict[str, Dict[str, Any]] = {}
+        self.optimization_history: list[WINAOptimizationResult] = []
+        self.neural_weights: dict[str, list[float]] = {}
+        self.constitutional_constraints: list[dict[str, Any]] = []
+        self.active_optimizations: dict[str, dict[str, Any]] = {}
 
         # Performance tracking
         self.total_optimizations = 0
@@ -101,8 +100,8 @@ class WINACore:
 
     async def optimize_neural_weights(
         self,
-        input_weights: Dict[str, List[float]],
-        constitutional_constraints: List[Dict[str, Any]] = None,
+        input_weights: dict[str, list[float]],
+        constitutional_constraints: list[dict[str, Any]] = None,
     ) -> WINAOptimizationResult:
         """
         Optimize neural weights with constitutional constraints.
@@ -168,7 +167,7 @@ class WINACore:
             )
 
     async def _advanced_optimization(
-        self, weights: Dict[str, List[float]], optimization_id: str
+        self, weights: dict[str, list[float]], optimization_id: str
     ) -> WINAOptimizationResult:
         """Advanced WINA optimization with full constitutional compliance."""
 
@@ -195,7 +194,7 @@ class WINACore:
         )
 
     async def _intermediate_optimization(
-        self, weights: Dict[str, List[float]], optimization_id: str
+        self, weights: dict[str, list[float]], optimization_id: str
     ) -> WINAOptimizationResult:
         """Intermediate WINA optimization with balanced performance."""
 
@@ -217,7 +216,7 @@ class WINACore:
         )
 
     async def _basic_optimization(
-        self, weights: Dict[str, List[float]], optimization_id: str
+        self, weights: dict[str, list[float]], optimization_id: str
     ) -> WINAOptimizationResult:
         """Basic WINA optimization with conservative approach."""
 
@@ -252,7 +251,7 @@ class WINACore:
             + alpha * result.accuracy_preservation
         )
 
-    def get_performance_summary(self) -> Dict[str, Any]:
+    def get_performance_summary(self) -> dict[str, Any]:
         """Get WINA core performance summary."""
         success_rate = (
             self.successful_optimizations / self.total_optimizations

@@ -86,9 +86,8 @@ def test_svd_transformation():
         if all_successful:
             logger.info("✓ SVD transformation tests passed")
             return True
-        else:
-            logger.error("✗ SVD transformation tests failed")
-            return False
+        logger.error("✗ SVD transformation tests failed")
+        return False
 
     except Exception as e:
         logger.error(f"✗ SVD transformation test failed: {e}")
@@ -276,9 +275,8 @@ async def main():
     if passed == total:
         logger.info("All WINA core tests passed successfully!")
         return 0
-    else:
-        logger.error(f"{total - passed} test(s) failed")
-        return 1
+    logger.error(f"{total - passed} test(s) failed")
+    return 1
 
 
 if __name__ == "__main__":

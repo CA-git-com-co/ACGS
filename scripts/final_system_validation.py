@@ -15,11 +15,11 @@ from pathlib import Path
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.shared.multimodal_ai_service import get_multimodal_service
-from services.shared.multi_level_cache import get_cache_manager
-from services.shared.ml_routing_optimizer import get_ml_optimizer
 from services.monitoring.production_dashboard import ProductionDashboard
-from services.shared.ai_types import MultimodalRequest, RequestType, ContentType
+from services.shared.ai_types import ContentType, MultimodalRequest, RequestType
+from services.shared.ml_routing_optimizer import get_ml_optimizer
+from services.shared.multi_level_cache import get_cache_manager
+from services.shared.multimodal_ai_service import get_multimodal_service
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -182,14 +182,13 @@ async def validate_all_systems():
                 f"✅ Constitutional Hash: {integration_response.constitutional_hash}"
             )
             logger.info(f"✅ Model Used: {integration_response.model_used.value}")
-            logger.info(f"✅ Cache Integration: Working")
-            logger.info(f"✅ ML Routing: Working")
-            logger.info(f"✅ Production Monitoring: Working")
+            logger.info("✅ Cache Integration: Working")
+            logger.info("✅ ML Routing: Working")
+            logger.info("✅ Production Monitoring: Working")
 
             return True
-        else:
-            logger.error("❌ SYSTEM VALIDATION FAILED")
-            return False
+        logger.error("❌ SYSTEM VALIDATION FAILED")
+        return False
 
     except Exception as e:
         logger.error(f"❌ Validation failed with error: {e}")
@@ -207,9 +206,8 @@ async def main():
     if success:
         logger.info("\n🎊 FINAL VALIDATION COMPLETE - ALL SYSTEMS OPERATIONAL!")
         return 0
-    else:
-        logger.error("\n💥 FINAL VALIDATION FAILED!")
-        return 1
+    logger.error("\n💥 FINAL VALIDATION FAILED!")
+    return 1
 
 
 if __name__ == "__main__":

@@ -16,7 +16,7 @@ import logging
 import statistics
 import time
 from datetime import datetime, timezone
-from typing import Dict, List, Any
+from typing import Any
 
 import httpx
 
@@ -42,7 +42,7 @@ class QuickConcurrentTester:
 
     async def quick_concurrent_test(
         self, service_key: str, concurrent_level: int, num_batches: int = 10
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Quick concurrent test with limited batches"""
         service = self.services[service_key]
         logger.info(
@@ -109,7 +109,7 @@ class QuickConcurrentTester:
             "meets_performance_target": avg_response_time <= 100,  # 100ms threshold
         }
 
-    async def test_concurrent_levels(self, service_key: str) -> Dict[str, Any]:
+    async def test_concurrent_levels(self, service_key: str) -> dict[str, Any]:
         """Test multiple concurrent levels quickly"""
         service = self.services[service_key]
         logger.info(f"📊 Testing concurrent levels for {service['name']}")
@@ -141,7 +141,7 @@ class QuickConcurrentTester:
             "passes_concurrent_test": max_stable >= 10,
         }
 
-    async def quick_throughput_test(self, service_key: str) -> Dict[str, Any]:
+    async def quick_throughput_test(self, service_key: str) -> dict[str, Any]:
         """Quick throughput test"""
         service = self.services[service_key]
         logger.info(f"🚀 Quick throughput test for {service['name']}")
@@ -191,7 +191,7 @@ class QuickConcurrentTester:
             "meets_throughput_target": rps >= 50,  # Modest 50 RPS target
         }
 
-    async def run_quick_tests(self) -> Dict[str, Any]:
+    async def run_quick_tests(self) -> dict[str, Any]:
         """Run quick concurrent and throughput tests"""
         logger.info("🚀 Starting Quick ACGS-PGP Concurrent Load Tests...")
 
@@ -283,9 +283,8 @@ async def main():
         if results["summary"]["overall_status"] == "passed":
             print("✅ Quick concurrent load testing passed!")
             return 0
-        else:
-            print("❌ Some concurrent load tests failed.")
-            return 1
+        print("❌ Some concurrent load tests failed.")
+        return 1
 
     except Exception as e:
         logger.error(f"Quick concurrent testing failed: {e}")

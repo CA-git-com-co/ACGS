@@ -492,13 +492,10 @@ class MultiModelManager:
                 )
                 response = await structured_client.ainvoke(prompt)
                 return response
-            else:
-                response = await client.ainvoke(prompt)
-                return (
-                    response.content if hasattr(response, "content") else str(response)
-                )
+            response = await client.ainvoke(prompt)
+            return response.content if hasattr(response, "content") else str(response)
 
-        elif isinstance(client, Groq):
+        if isinstance(client, Groq):
             # Groq client for Llama and Qwen models
             # Run in thread pool since Groq client is synchronous
             loop = asyncio.get_event_loop()
@@ -523,10 +520,9 @@ class MultiModelManager:
                 # For structured output, we'd need to parse the JSON response
                 # For now, return the raw content
                 return content
-            else:
-                return content
+            return content
 
-        elif isinstance(client, OpenAI):
+        if isinstance(client, OpenAI):
             # OpenAI client (for xAI Grok, OpenAI models, NVIDIA API models, or OpenRouter models)
             loop = asyncio.get_event_loop()
 
@@ -569,7 +565,7 @@ class MultiModelManager:
 
                 return content
 
-            elif model_name.startswith("qwen/") or model_name.startswith("nvidia/"):
+            if model_name.startswith("qwen/") or model_name.startswith("nvidia/"):
                 # NVIDIA API with reasoning support
                 extra_body = {}
                 if "qwen3-235b" in model_name.lower():
@@ -596,27 +592,25 @@ class MultiModelManager:
                         content = f"[REASONING]\n{reasoning}\n\n[RESPONSE]\n{content}"
 
                 return content
-            else:
-                # Standard OpenAI API call
-                response = await loop.run_in_executor(
-                    None,
-                    lambda: client.chat.completions.create(
-                        model=model_name,
-                        messages=[{"role": "user", "content": prompt}],
-                        temperature=temperature,
-                        max_tokens=4096,
-                    ),
-                )
-                content = response.choices[0].message.content
+            # Standard OpenAI API call
+            response = await loop.run_in_executor(
+                None,
+                lambda: client.chat.completions.create(
+                    model=model_name,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=temperature,
+                    max_tokens=4096,
+                ),
+            )
+            content = response.choices[0].message.content
 
-                if structured_output_class:
-                    # For structured output, we'd need to parse the JSON response
-                    # For now, return the raw content
-                    return content
-                else:
-                    return content
+            if structured_output_class:
+                # For structured output, we'd need to parse the JSON response
+                # For now, return the raw content
+                return content
+            return content
 
-        elif isinstance(client, OllamaLLMClient):
+        if isinstance(client, OllamaLLMClient):
             # Ollama local model client
             if structured_output_class:
                 # For structured output, use the structured interpretation method
@@ -631,17 +625,15 @@ class MultiModelManager:
 
                 response = await client.get_structured_interpretation(query)
                 return response.raw_llm_response
-            else:
-                # Standard text generation
-                response = await client.generate_text(
-                    prompt=prompt, temperature=temperature, max_tokens=4096
-                )
-                return response
-
-        else:
-            raise ValueError(
-                f"Unsupported client type for model {model_name}: {type(client)}"
+            # Standard text generation
+            response = await client.generate_text(
+                prompt=prompt, temperature=temperature, max_tokens=4096
             )
+            return response
+
+        raise ValueError(
+            f"Unsupported client type for model {model_name}: {type(client)}"
+        )
 
     def get_performance_metrics(self) -> dict[str, Any]:
         """Get performance metrics for all models."""

@@ -16,8 +16,6 @@ sys.path.append(str(Path(__file__).parent.parent.parent / "infrastructure/chaos"
 
 from acgs_chaos_framework import (
     ACGSChaosFramework,
-    ChaosExperiment,
-    ChaosType,
     ExperimentStatus,
 )
 
@@ -224,7 +222,7 @@ class ChaosExperimentOrchestrator:
                     results["summary"]["aborted_experiments"] += 1
 
                 # Wait between experiments
-                logger.info(f"Waiting 30 seconds before next experiment...")
+                logger.info("Waiting 30 seconds before next experiment...")
                 await asyncio.sleep(30)
 
             except Exception as e:

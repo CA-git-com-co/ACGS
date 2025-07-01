@@ -3,7 +3,7 @@ Pydantic models for DGM Service API.
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, Field, validator
@@ -16,18 +16,18 @@ class HealthResponse(BaseModel):
     timestamp: datetime = Field(..., description="Health check timestamp")
     version: str = Field(..., description="Service version")
     uptime: float = Field(..., description="Service uptime in seconds")
-    dependencies: Dict[str, bool] = Field(..., description="Dependency health status")
+    dependencies: dict[str, bool] = Field(..., description="Dependency health status")
 
 
 class ImprovementRequest(BaseModel):
     """Request model for triggering improvements."""
 
     description: str = Field(..., description="Description of the improvement")
-    target_services: List[str] = Field(
+    target_services: list[str] = Field(
         default=[], description="Target services for improvement"
     )
     priority: str = Field(default="normal", description="Improvement priority")
-    metadata: Dict[str, Any] = Field(default={}, description="Additional metadata")
+    metadata: dict[str, Any] = Field(default={}, description="Additional metadata")
 
     @validator("priority")
     def validate_priority(cls, v):
@@ -43,7 +43,7 @@ class ImprovementResponse(BaseModel):
     status: str = Field(..., description="Improvement status")
     description: str = Field(..., description="Improvement description")
     created_at: datetime = Field(..., description="Creation timestamp")
-    estimated_completion: Optional[datetime] = Field(
+    estimated_completion: datetime | None = Field(
         None, description="Estimated completion time"
     )
 
@@ -57,19 +57,19 @@ class ArchiveEntry(BaseModel):
     description: str = Field(..., description="Improvement description")
     status: str = Field(..., description="Improvement status")
     constitutional_compliance_score: float = Field(..., description="Compliance score")
-    performance_before: Dict[str, Any] = Field(
+    performance_before: dict[str, Any] = Field(
         ..., description="Performance before improvement"
     )
-    performance_after: Dict[str, Any] = Field(
+    performance_after: dict[str, Any] = Field(
         ..., description="Performance after improvement"
     )
-    metadata: Dict[str, Any] = Field(default={}, description="Additional metadata")
+    metadata: dict[str, Any] = Field(default={}, description="Additional metadata")
 
 
 class ArchiveListResponse(BaseModel):
     """Response model for archive listing."""
 
-    entries: List[ArchiveEntry] = Field(..., description="Archive entries")
+    entries: list[ArchiveEntry] = Field(..., description="Archive entries")
     total: int = Field(..., description="Total number of entries")
     page: int = Field(..., description="Current page number")
     page_size: int = Field(..., description="Page size")
@@ -83,8 +83,8 @@ class PerformanceMetric(BaseModel):
     service_name: str = Field(..., description="Service name")
     metric_name: str = Field(..., description="Metric name")
     metric_value: float = Field(..., description="Metric value")
-    metric_unit: Optional[str] = Field(None, description="Metric unit")
-    tags: Dict[str, str] = Field(default={}, description="Metric tags")
+    metric_unit: str | None = Field(None, description="Metric unit")
+    tags: dict[str, str] = Field(default={}, description="Metric tags")
 
 
 class PerformanceReport(BaseModel):
@@ -92,18 +92,18 @@ class PerformanceReport(BaseModel):
 
     period_start: datetime = Field(..., description="Report period start")
     period_end: datetime = Field(..., description="Report period end")
-    metrics: List[PerformanceMetric] = Field(..., description="Performance metrics")
-    summary: Dict[str, Any] = Field(..., description="Performance summary")
-    trends: Dict[str, Any] = Field(..., description="Performance trends")
+    metrics: list[PerformanceMetric] = Field(..., description="Performance metrics")
+    summary: dict[str, Any] = Field(..., description="Performance summary")
+    trends: dict[str, Any] = Field(..., description="Performance trends")
 
 
 class ConstitutionalValidationRequest(BaseModel):
     """Request model for constitutional validation."""
 
-    improvement_data: Dict[str, Any] = Field(
+    improvement_data: dict[str, Any] = Field(
         ..., description="Improvement data to validate"
     )
-    principles: List[str] = Field(
+    principles: list[str] = Field(
         default=[], description="Specific principles to check"
     )
     strict_mode: bool = Field(
@@ -116,12 +116,12 @@ class ConstitutionalValidationResponse(BaseModel):
 
     is_compliant: bool = Field(..., description="Whether the improvement is compliant")
     compliance_score: float = Field(..., description="Compliance score (0-1)")
-    violations: List[str] = Field(default=[], description="List of violations")
-    warnings: List[str] = Field(default=[], description="List of warnings")
-    recommendations: List[str] = Field(
+    violations: list[str] = Field(default=[], description="List of violations")
+    warnings: list[str] = Field(default=[], description="List of warnings")
+    recommendations: list[str] = Field(
         default=[], description="Improvement recommendations"
     )
-    details: Dict[str, Any] = Field(
+    details: dict[str, Any] = Field(
         default={}, description="Detailed validation results"
     )
 
@@ -140,7 +140,7 @@ class RollbackResponse(BaseModel):
     success: bool = Field(..., description="Whether rollback was successful")
     rollback_id: UUID = Field(..., description="Rollback operation ID")
     message: str = Field(..., description="Rollback result message")
-    restored_state: Dict[str, Any] = Field(
+    restored_state: dict[str, Any] = Field(
         default={}, description="Restored system state"
     )
 
@@ -153,10 +153,8 @@ class BanditArmStats(BaseModel):
     total_pulls: int = Field(..., description="Total number of pulls")
     total_reward: float = Field(..., description="Total reward accumulated")
     average_reward: float = Field(..., description="Average reward per pull")
-    confidence_bound: Optional[float] = Field(
-        None, description="Upper confidence bound"
-    )
-    last_pulled: Optional[datetime] = Field(None, description="Last pull timestamp")
+    confidence_bound: float | None = Field(None, description="Upper confidence bound")
+    last_pulled: datetime | None = Field(None, description="Last pull timestamp")
 
 
 class BanditReport(BaseModel):
@@ -166,8 +164,8 @@ class BanditReport(BaseModel):
     total_pulls: int = Field(..., description="Total pulls across all arms")
     best_arm: str = Field(..., description="Currently best performing arm")
     exploration_rate: float = Field(..., description="Current exploration rate")
-    arms: List[BanditArmStats] = Field(..., description="Individual arm statistics")
-    performance_history: List[Dict[str, Any]] = Field(
+    arms: list[BanditArmStats] = Field(..., description="Individual arm statistics")
+    performance_history: list[dict[str, Any]] = Field(
         ..., description="Performance history"
     )
 
@@ -182,10 +180,10 @@ class SystemStatus(BaseModel):
     active_improvements: int = Field(..., description="Number of active improvements")
     total_improvements: int = Field(..., description="Total improvements processed")
     average_compliance_score: float = Field(..., description="Average compliance score")
-    last_improvement: Optional[datetime] = Field(
+    last_improvement: datetime | None = Field(
         None, description="Last improvement timestamp"
     )
-    system_health: Dict[str, Any] = Field(..., description="Detailed system health")
+    system_health: dict[str, Any] = Field(..., description="Detailed system health")
 
 
 class ErrorResponse(BaseModel):
@@ -193,6 +191,6 @@ class ErrorResponse(BaseModel):
 
     error: str = Field(..., description="Error type")
     message: str = Field(..., description="Error message")
-    details: Optional[Dict[str, Any]] = Field(None, description="Error details")
-    request_id: Optional[str] = Field(None, description="Request ID for tracking")
+    details: dict[str, Any] | None = Field(None, description="Error details")
+    request_id: str | None = Field(None, description="Request ID for tracking")
     timestamp: datetime = Field(..., description="Error timestamp")

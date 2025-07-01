@@ -6,7 +6,7 @@ integrated with the EC oversight coordinator.
 """
 
 import asyncio
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 from services.shared.wina.performance_monitoring import (
     WINAConstitutionalComplianceMetrics,

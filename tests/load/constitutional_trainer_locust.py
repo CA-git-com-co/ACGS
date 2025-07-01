@@ -23,11 +23,10 @@ import os
 import random
 import time
 import uuid
-from typing import Any, Dict, List
+from typing import Any
 
 import requests
-from locust import HttpUser, task, between, events
-from locust.runners import MasterRunner, WorkerRunner
+from locust import HttpUser, between, events, task
 
 
 class ConstitutionalTrainerUser(HttpUser):
@@ -68,7 +67,6 @@ class ConstitutionalTrainerUser(HttpUser):
             catch_response=True,
             name="submit_training_request",
         ) as response:
-
             latency = (time.time() - start_time) * 1000  # Convert to ms
 
             if response.status_code in [200, 202]:
@@ -146,9 +144,7 @@ class ConstitutionalTrainerUser(HttpUser):
 
         except requests.RequestException as e:
             self.errors += 1
-            self._record_failure(
-                "policy_evaluation", f"Policy evaluation error: {str(e)}"
-            )
+            self._record_failure("policy_evaluation", f"Policy evaluation error: {e!s}")
 
     @task(2)  # Weight: 2
     def check_service_health(self):
@@ -180,7 +176,7 @@ class ConstitutionalTrainerUser(HttpUser):
             else:
                 response.failure(f"Metrics endpoint failed: {response.status_code}")
 
-    def _generate_training_request(self) -> Dict[str, Any]:
+    def _generate_training_request(self) -> dict[str, Any]:
         """Generate a realistic training request."""
         model_name = f"load-test-model-{random.randint(1000, 9999)}"
 
@@ -225,7 +221,7 @@ class ConstitutionalTrainerUser(HttpUser):
             },
         }
 
-    def _generate_policy_request(self) -> Dict[str, Any]:
+    def _generate_policy_request(self) -> dict[str, Any]:
         """Generate a policy evaluation request."""
         return {
             "action": "constitutional_training",
@@ -250,7 +246,6 @@ class ConstitutionalTrainerUser(HttpUser):
             catch_response=True,
             name="check_training_status",
         ) as response:
-
             if response.status_code == 200:
                 try:
                     status_data = response.json()
@@ -330,7 +325,7 @@ def on_test_stop(environment, **kwargs):
 
     # Generate summary report
     stats = environment.stats
-    print(f"\n📈 Performance Summary:")
+    print("\n📈 Performance Summary:")
     print(f"Total requests: {stats.total.num_requests}")
     print(f"Failed requests: {stats.total.num_failures}")
     print(f"Average response time: {stats.total.avg_response_time:.2f}ms")
@@ -359,12 +354,11 @@ class BaselineLoadShape:
 
         if run_time < 120:  # 0-2 minutes: ramp up to 10 users
             return (round(run_time / 12), 1)
-        elif run_time < 420:  # 2-7 minutes: sustain 10 users
+        if run_time < 420:  # 2-7 minutes: sustain 10 users
             return (10, 1)
-        elif run_time < 480:  # 7-8 minutes: ramp down
+        if run_time < 480:  # 7-8 minutes: ramp down
             return (round((480 - run_time) / 6), 1)
-        else:
-            return None
+        return None
 
 
 class PeakLoadShape:
@@ -375,19 +369,16 @@ class PeakLoadShape:
 
         if run_time < 300:  # 0-5 minutes: ramp up to 100 users
             return (round(run_time / 3), 2)
-        elif run_time < 600:  # 5-10 minutes: sustain 100 users
+        if run_time < 600:  # 5-10 minutes: sustain 100 users
             return (100, 2)
-        elif run_time < 720:  # 10-12 minutes: ramp down
+        if run_time < 720:  # 10-12 minutes: ramp down
             return (round((720 - run_time) / 6), 2)
-        else:
-            return None
+        return None
 
 
 # Configuration for different test scenarios
 if __name__ == "__main__":
     # This allows running the script directly for testing
-    import subprocess
-    import sys
 
     print("Constitutional Trainer Load Testing Script")
     print("Use 'locust -f constitutional_trainer_locust.py --host=<URL>' to run")

@@ -5,7 +5,6 @@ Fix import paths in ACGS test files
 
 import os
 import re
-from pathlib import Path
 
 
 def fix_import_paths():
@@ -37,7 +36,7 @@ def fix_import_paths():
     fixed_files = 0
     for test_file in test_files:
         try:
-            with open(test_file, "r", encoding="utf-8") as f:
+            with open(test_file, encoding="utf-8") as f:
                 content = f.read()
 
             original_content = content
@@ -81,7 +80,7 @@ pytestmark = pytest.mark.skipif(
     for skip_file in skip_files:
         if os.path.exists(skip_file):
             try:
-                with open(skip_file, "r", encoding="utf-8") as f:
+                with open(skip_file, encoding="utf-8") as f:
                     content = f.read()
 
                 # Check if skip decorator already exists

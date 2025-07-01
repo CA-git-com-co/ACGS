@@ -25,8 +25,8 @@ from services.shared.models import (
 )
 
 # Import WebSocket broadcasting
-from .api.v1.fidelity_monitoring_websocket import ViolationAlert as WSViolationAlert
 from .api.v1.fidelity_monitoring_websocket import (
+    ViolationAlert as WSViolationAlert,
     monitoring_manager,
 )
 from .core.violation_config import (
@@ -183,9 +183,7 @@ async def get_violations(
 
     except Exception as e:
         logger.error(f"Error getting violations: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get violations: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to get violations: {e!s}")
 
 
 @router.get("/violations/{violation_id}", response_model=dict[str, Any])
@@ -296,9 +294,7 @@ async def get_violation(
         raise
     except Exception as e:
         logger.error(f"Error getting violation {violation_id}: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get violation: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to get violation: {e!s}")
 
 
 @router.post("/violations/scan", response_model=dict[str, Any])
@@ -331,7 +327,7 @@ async def trigger_violation_scan(
 
     except Exception as e:
         logger.error(f"Error triggering violation scan: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to trigger scan: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to trigger scan: {e!s}")
 
 
 async def perform_violation_scan(db: AsyncSession):
@@ -486,7 +482,7 @@ async def escalate_violation(
     except Exception as e:
         logger.error(f"Error escalating violation {violation_id}: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to escalate violation: {str(e)}"
+            status_code=500, detail=f"Failed to escalate violation: {e!s}"
         )
 
 
@@ -559,7 +555,7 @@ async def resolve_violation(
         logger.error(f"Error resolving violation {violation_id}: {e}")
         await db.rollback()
         raise HTTPException(
-            status_code=500, detail=f"Failed to resolve violation: {str(e)}"
+            status_code=500, detail=f"Failed to resolve violation: {e!s}"
         )
 
 
@@ -609,9 +605,7 @@ async def get_violation_analytics(
 
     except Exception as e:
         logger.error(f"Error getting violation analytics: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get analytics: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to get analytics: {e!s}")
 
 
 @router.get("/compliance-report", response_model=dict[str, Any])
@@ -658,9 +652,7 @@ async def get_compliance_report(
 
     except Exception as e:
         logger.error(f"Error generating compliance report: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to generate report: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to generate report: {e!s}")
 
 
 @router.get("/thresholds", response_model=dict[str, Any])
@@ -703,9 +695,7 @@ async def get_violation_thresholds(
 
     except Exception as e:
         logger.error(f"Error getting violation thresholds: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get thresholds: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to get thresholds: {e!s}")
 
 
 @router.put("/thresholds/{threshold_name}", response_model=dict[str, Any])
@@ -770,5 +760,5 @@ async def update_violation_threshold(
     except Exception as e:
         logger.error(f"Error updating threshold {threshold_name}: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to update threshold: {str(e)}"
+            status_code=500, detail=f"Failed to update threshold: {e!s}"
         )

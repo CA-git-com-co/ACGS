@@ -15,24 +15,20 @@ Features:
 
 Usage:
     from nano_vllm_adapter import NanoVLLMAdapter
-    
+
     adapter = NanoVLLMAdapter(model_path="nvidia/Llama-3.1-Nemotron-70B")
     response = await adapter.chat_completion(messages, max_tokens=512)
 """
 
 import asyncio
-import logging
-import time
 import os
-import subprocess
-import psutil
-from typing import Dict, List, Any, Optional, Union
+import time
 from dataclasses import dataclass
 from pathlib import Path
-import json
+from typing import Any
 
-from pydantic import BaseModel, Field
 import structlog
+from pydantic import BaseModel, Field
 
 logger = structlog.get_logger(__name__)
 
@@ -59,8 +55,8 @@ try:
 except ImportError:
     try:
         # Try mock implementation
-        import sys
         import os
+        import sys
 
         sys.path.insert(0, os.path.dirname(__file__))
         from nanovllm_mock import LLM, SamplingParams
@@ -83,10 +79,10 @@ class ModelConfig:
     tensor_parallel_size: int = 1
     enforce_eager: bool = True
     gpu_memory_utilization: float = 0.9
-    max_model_len: Optional[int] = None
+    max_model_len: int | None = None
     trust_remote_code: bool = True
     enable_gpu_detection: bool = True
-    cuda_visible_devices: Optional[str] = None
+    cuda_visible_devices: str | None = None
     enable_monitoring: bool = True
 
 
@@ -101,7 +97,7 @@ class ChatCompletionRequest(BaseModel):
     """OpenAI-compatible chat completion request."""
 
     model: str = Field(..., description="Model identifier")
-    messages: List[ChatMessage] = Field(..., description="List of chat messages")
+    messages: list[ChatMessage] = Field(..., description="List of chat messages")
     max_tokens: int = Field(default=512, description="Maximum tokens to generate")
     temperature: float = Field(default=0.7, description="Sampling temperature")
     top_p: float = Field(default=0.9, description="Top-p sampling parameter")
@@ -116,8 +112,8 @@ class ChatCompletionResponse(BaseModel):
     object: str = Field(default="chat.completion", description="Response object type")
     created: int = Field(..., description="Unix timestamp of creation")
     model: str = Field(..., description="Model used for generation")
-    choices: List[Dict[str, Any]] = Field(..., description="Generated choices")
-    usage: Dict[str, int] = Field(..., description="Token usage statistics")
+    choices: list[dict[str, Any]] = Field(..., description="Generated choices")
+    usage: dict[str, int] = Field(..., description="Token usage statistics")
 
 
 class NanoVLLMAdapter:
@@ -130,7 +126,7 @@ class NanoVLLMAdapter:
 
     def __init__(self, model_config: ModelConfig):
         self.model_config = model_config
-        self.llm: Optional[LLM] = None
+        self.llm: LLM | None = None
         self.is_initialized = False
         self.model_name = Path(model_config.model_path).name
         self.gpu_info = {}
@@ -234,12 +230,12 @@ class NanoVLLMAdapter:
 
     async def chat_completion(
         self,
-        messages: List[Dict[str, str]],
+        messages: list[dict[str, str]],
         max_tokens: int = 512,
         temperature: float = 0.7,
         top_p: float = 0.9,
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Generate chat completion using Nano-vLLM.
 
@@ -289,7 +285,7 @@ class NanoVLLMAdapter:
             logger.error("Chat completion failed", error=str(e))
             raise
 
-    def _messages_to_prompt(self, messages: List[Dict[str, str]]) -> str:
+    def _messages_to_prompt(self, messages: list[dict[str, str]]) -> str:
         """Convert OpenAI messages format to a single prompt string."""
         prompt_parts = []
 
@@ -307,7 +303,7 @@ class NanoVLLMAdapter:
         prompt_parts.append("Assistant:")
         return "\n".join(prompt_parts)
 
-    def _format_response(self, output: Any, generation_time: float) -> Dict[str, Any]:
+    def _format_response(self, output: Any, generation_time: float) -> dict[str, Any]:
         """Format Nano-vLLM output to OpenAI-compatible response."""
         generated_text = output.get("text", "")
 
@@ -337,7 +333,7 @@ class NanoVLLMAdapter:
         }
 
     def _update_metrics(
-        self, response: Optional[Dict[str, Any]], generation_time: float, success: bool
+        self, response: dict[str, Any] | None, generation_time: float, success: bool
     ) -> None:
         """Update internal metrics for monitoring."""
         self.metrics["requests_total"] += 1
@@ -349,7 +345,7 @@ class NanoVLLMAdapter:
         else:
             self.metrics["requests_failed"] += 1
 
-    async def get_metrics(self) -> Dict[str, Any]:
+    async def get_metrics(self) -> dict[str, Any]:
         """Get current performance metrics."""
         gpu_metrics = {}
         if self.gpu_info.get("cuda_available", False) and TORCH_AVAILABLE:
@@ -384,7 +380,7 @@ class NanoVLLMAdapter:
             **gpu_metrics,
         }
 
-    def _get_gpu_temperature(self, device_id: int) -> Optional[float]:
+    def _get_gpu_temperature(self, device_id: int) -> float | None:
         """Get GPU temperature if available."""
         if PYNVML_AVAILABLE:
             try:
@@ -397,7 +393,7 @@ class NanoVLLMAdapter:
                 pass
         return None
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Check if the model is healthy and ready to serve requests."""
         try:
             if not self.is_initialized:

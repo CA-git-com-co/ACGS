@@ -20,14 +20,13 @@ What it preserves:
 - Git repository
 """
 
-import os
-import sys
-import shutil
 import logging
-from pathlib import Path
-from datetime import datetime
-from typing import List, Set
+import os
+import shutil
 import subprocess
+import sys
+from datetime import datetime
+from pathlib import Path
 
 # Configure logging
 logging.basicConfig(
@@ -240,6 +239,7 @@ class DependencyCleanup:
             try:
                 result = subprocess.run(
                     ["git", "rm", "-r", "--cached", "--ignore-unmatch", pattern],
+                    check=False,
                     cwd=self.project_root,
                     capture_output=True,
                     text=True,

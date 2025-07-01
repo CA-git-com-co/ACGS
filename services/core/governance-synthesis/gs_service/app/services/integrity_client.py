@@ -58,10 +58,10 @@ class IntegrityServiceClient:
                 pass  # Ignore if error response is not JSON or unparseable
             return None
         except httpx.RequestError as e:
-            print(f"Request error storing policy rule in Integrity Service: {str(e)}")
+            print(f"Request error storing policy rule in Integrity Service: {e!s}")
             return None
         except Exception as e:
-            print(f"Unexpected error storing policy rule: {str(e)}")
+            print(f"Unexpected error storing policy rule: {e!s}")
             return None
 
     async def get_policy_rule_by_id(
@@ -86,11 +86,11 @@ class IntegrityServiceClient:
             return None
         except httpx.RequestError as e:
             print(
-                f"Request error fetching rule {rule_id} from Integrity Service: {str(e)}"
+                f"Request error fetching rule {rule_id} from Integrity Service: {e!s}"
             )
             return None
         except Exception as e:
-            print(f"Unexpected error fetching rule {rule_id}: {str(e)}")
+            print(f"Unexpected error fetching rule {rule_id}: {e!s}")
             return None
 
     async def close(self):

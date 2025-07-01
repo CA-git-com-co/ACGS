@@ -2,18 +2,11 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.services.alphaevolve_bridge
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.governance_synthesis.gs_service.app.services.alphaevolve_bridge import (
-    ConstitutionalPrinciple,
-    OperationalRule,
-    PolicySynthesisInput,
-    PolicySuggestion,
-    LLMPolicyGenerator,
-    SyntacticValidator,
-    ScenarioBasedSemanticValidator,
     AlphaEvolveBridge,
-    ValidationResult,
+    LLMPolicyGenerator,
+    OperationalRule,
+    SyntacticValidator,
 )
 
 

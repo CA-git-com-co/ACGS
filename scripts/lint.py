@@ -11,7 +11,7 @@ This script runs all code quality checks including:
 
 Usage:
     python scripts/lint.py [--fix] [--check-only]
-    
+
 Options:
     --fix        Apply automatic fixes where possible
     --check-only Only check, don't apply fixes (CI mode)
@@ -36,13 +36,12 @@ def run_command(cmd: list[str], description: str, fix_mode: bool = False) -> boo
             if result.stdout.strip():
                 print(result.stdout)
             return True
-        else:
-            print(f"❌ {description} failed")
-            if result.stdout.strip():
-                print("STDOUT:", result.stdout)
-            if result.stderr.strip():
-                print("STDERR:", result.stderr)
-            return False
+        print(f"❌ {description} failed")
+        if result.stdout.strip():
+            print("STDOUT:", result.stdout)
+        if result.stderr.strip():
+            print("STDERR:", result.stderr)
+        return False
 
     except FileNotFoundError:
         print(f"❌ Command not found: {cmd[0]}")
@@ -137,9 +136,8 @@ def main():
     if success_count == total_checks:
         print("🎉 All code quality checks passed!")
         return 0
-    else:
-        print("💥 Some checks failed. Please review and fix the issues.")
-        return 1
+    print("💥 Some checks failed. Please review and fix the issues.")
+    return 1
 
 
 if __name__ == "__main__":

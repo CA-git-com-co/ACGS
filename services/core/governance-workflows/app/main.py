@@ -274,17 +274,16 @@ async def health_check():
                     },
                 },
             )
-        else:
-            return JSONResponse(
-                status_code=503,
-                content={
-                    "status": "unhealthy",
-                    "service": "governance-workflows",
-                    "timestamp": health_status["timestamp"],
-                    "checks": health_status["checks"],
-                    "error": health_status.get("error"),
-                },
-            )
+        return JSONResponse(
+            status_code=503,
+            content={
+                "status": "unhealthy",
+                "service": "governance-workflows",
+                "timestamp": health_status["timestamp"],
+                "checks": health_status["checks"],
+                "error": health_status.get("error"),
+            },
+        )
 
     except Exception as e:
         logger.error(f"Health check failed: {e}")

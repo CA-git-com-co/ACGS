@@ -2,18 +2,6 @@
 Unit tests for services.core.constitutional-ai.ac_service.app.services.collective_constitutional_ai
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.constitutional_ai.ac_service.app.services.collective_constitutional_ai import (
-    BiasCategory,
-    DemocraticLegitimacyLevel,
-    PolisConversation,
-    BiasEvaluationResult,
-    CollectiveInput,
-    DemocraticPrinciple,
-    CollectiveConstitutionalAI,
-)
-
 
 class TestBiasCategory:
     """Test suite for BiasCategory."""

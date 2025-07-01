@@ -340,7 +340,6 @@ class TestAdversarialFrameworkValidation:
             patch.object(framework, "initialize_testers") as mock_init,
             patch.object(framework, "_run_category_tests", return_value=[]),
         ):
-
             mock_init.return_value = None
             framework.testers = {
                 AttackCategory.CONSTITUTIONAL_MANIPULATION: MagicMock()
@@ -411,7 +410,6 @@ async def test_adversarial_framework_end_to_end():
         patch.object(framework, "initialize_testers"),
         patch.object(framework, "_run_category_tests", return_value=[]),
     ):
-
         # Initialize mock testers
         framework.testers = {AttackCategory.CONSTITUTIONAL_MANIPULATION: MagicMock()}
 

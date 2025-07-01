@@ -86,7 +86,7 @@ class ProductionRollout:
 
             except Exception as e:
                 health_status[service_name] = False
-                self.error(f"Service {service_name} health check error: {str(e)}")
+                self.error(f"Service {service_name} health check error: {e!s}")
 
         return health_status
 
@@ -119,7 +119,7 @@ class ProductionRollout:
                 metrics["error_rate_percent"] = 100.0
 
         except Exception as e:
-            self.error(f"Performance measurement failed: {str(e)}")
+            self.error(f"Performance measurement failed: {e!s}")
             metrics["error_rate_percent"] = 100.0
 
         # System resource metrics
@@ -130,6 +130,7 @@ class ProductionRollout:
         try:
             result = subprocess.run(
                 ["docker", "exec", "acgs-redis-prod", "redis-cli", "info", "stats"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=5,
@@ -150,7 +151,7 @@ class ProductionRollout:
                         metrics["cache_hit_rate_percent"] = (hits / total) * 100
 
         except Exception as e:
-            self.warning(f"Could not retrieve cache metrics: {str(e)}")
+            self.warning(f"Could not retrieve cache metrics: {e!s}")
 
         return metrics
 
@@ -200,7 +201,7 @@ server {{
             return True
 
         except Exception as e:
-            self.error(f"Failed to update traffic routing: {str(e)}")
+            self.error(f"Failed to update traffic routing: {e!s}")
             return False
 
     async def validate_stage_performance(self, stage_duration_minutes: int) -> bool:
@@ -284,9 +285,8 @@ server {{
                 f"Stage validation completed - Avg response: {avg_response_time:.2f}ms, CPU: {avg_cpu:.1f}%, Memory: {avg_memory:.1f}%"
             )
             return True
-        else:
-            self.error("No performance samples collected during stage validation")
-            return False
+        self.error("No performance samples collected during stage validation")
+        return False
 
     async def rollback_deployment(self) -> bool:
         """Rollback to previous deployment"""
@@ -315,12 +315,11 @@ server {{
                 self.success("Rollback completed successfully")
                 self.rollout_metrics["rollback_triggered"] = True
                 return True
-            else:
-                self.error("Rollback verification failed")
-                return False
+            self.error("Rollback verification failed")
+            return False
 
         except Exception as e:
-            self.error(f"Rollback failed: {str(e)}")
+            self.error(f"Rollback failed: {e!s}")
             return False
 
     async def execute_rollout(self) -> bool:
@@ -383,7 +382,6 @@ server {{
                 and final_metrics["error_rate_percent"]
                 <= self.rollout_config["error_rate_threshold_percent"]
             ):
-
                 self.rollout_metrics["rollout_status"] = "COMPLETED"
                 self.success("🎉 Production rollout completed successfully!")
 
@@ -392,11 +390,10 @@ server {{
                     json.dump(self.rollout_metrics, f, indent=2)
 
                 return True
-            else:
-                self.error("Final validation failed")
-                if self.rollout_config["rollback_on_failure"]:
-                    await self.rollback_deployment()
-                return False
+            self.error("Final validation failed")
+            if self.rollout_config["rollback_on_failure"]:
+                await self.rollback_deployment()
+            return False
 
         except KeyboardInterrupt:
             self.log("Rollout interrupted by user")
@@ -405,7 +402,7 @@ server {{
                 await self.rollback_deployment()
             return False
         except Exception as e:
-            self.error(f"Rollout failed with exception: {str(e)}")
+            self.error(f"Rollout failed with exception: {e!s}")
             if self.rollout_config["rollback_on_failure"]:
                 await self.rollback_deployment()
             return False
@@ -433,7 +430,7 @@ async def main():
         success = await rollout.execute_rollout()
         sys.exit(0 if success else 1)
     except Exception as e:
-        rollout.error(f"Rollout failed with exception: {str(e)}")
+        rollout.error(f"Rollout failed with exception: {e!s}")
         sys.exit(1)
 
 

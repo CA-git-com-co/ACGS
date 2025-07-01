@@ -103,7 +103,7 @@ class CICDPipelineAnalyzer:
             except Exception as e:
                 logger.error(f"    ❌ {workflow_file.name}: Analysis error - {e}")
                 self.analysis_report["issues_found"].append(
-                    f"Analysis error in {workflow_file.name}: {str(e)}"
+                    f"Analysis error in {workflow_file.name}: {e!s}"
                 )
 
     def analyze_technology_coverage(self):

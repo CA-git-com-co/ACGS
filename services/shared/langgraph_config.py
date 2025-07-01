@@ -295,18 +295,17 @@ class LangGraphConfiguration(BaseModel):
         """
         if model_id.startswith("deepseek/") or model_id.startswith("qwen/qwen3-235b"):
             return "openrouter"
-        elif model_id.startswith("qwen/qwen3-32b") or model_id == "qwen3-32b":
+        if model_id.startswith("qwen/qwen3-32b") or model_id == "qwen3-32b":
             return "groq"
-        elif model_id.startswith("gemini"):
+        if model_id.startswith("gemini"):
             return "gemini"
-        elif model_id.startswith("gpt-") or model_id.startswith("o1-"):
+        if model_id.startswith("gpt-") or model_id.startswith("o1-"):
             return "openai"
-        elif model_id.startswith("grok"):
+        if model_id.startswith("grok"):
             return "xai"
-        elif model_id.startswith("llama"):
+        if model_id.startswith("llama"):
             return "cerebras"
-        else:
-            return "unknown"
+        return "unknown"
 
     def get_model_config_for_provider(
         self, model_id: str, role: ModelRole

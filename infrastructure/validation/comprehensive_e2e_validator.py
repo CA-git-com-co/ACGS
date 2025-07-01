@@ -190,7 +190,7 @@ class ComprehensiveE2EValidator:
             except Exception as e:
                 status = ValidationStatus.FAILED
                 score = 0.0
-                details = f"Service validation failed: {str(e)}"
+                details = f"Service validation failed: {e!s}"
                 evidence = []
                 recommendations = ["Check service logs", "Verify service configuration"]
 
@@ -265,7 +265,7 @@ class ComprehensiveE2EValidator:
         except Exception as e:
             status = ValidationStatus.FAILED
             score = 0.0
-            details = f"Blockchain validation failed: {str(e)}"
+            details = f"Blockchain validation failed: {e!s}"
             evidence = []
             recommendations = ["Check blockchain configuration", "Verify Solana setup"]
 
@@ -316,7 +316,7 @@ class ComprehensiveE2EValidator:
         except Exception as e:
             status = ValidationStatus.FAILED
             score = 0.0
-            details = f"Constitutional framework validation failed: {str(e)}"
+            details = f"Constitutional framework validation failed: {e!s}"
             evidence = []
             recommendations = ["Initialize constitutional framework"]
 
@@ -374,7 +374,7 @@ class ComprehensiveE2EValidator:
         except Exception as e:
             status = ValidationStatus.FAILED
             score = 0.0
-            details = f"Frontend validation failed: {str(e)}"
+            details = f"Frontend validation failed: {e!s}"
             evidence = []
             recommendations = ["Check frontend configuration"]
 
@@ -427,7 +427,7 @@ class ComprehensiveE2EValidator:
         except Exception as e:
             status = ValidationStatus.FAILED
             score = 0.0
-            details = f"Blockchain-frontend integration validation failed: {str(e)}"
+            details = f"Blockchain-frontend integration validation failed: {e!s}"
             evidence = []
             recommendations = ["Implement blockchain integration"]
 
@@ -487,7 +487,7 @@ class ComprehensiveE2EValidator:
         except Exception as e:
             status = ValidationStatus.FAILED
             score = 0.0
-            details = f"Performance validation failed: {str(e)}"
+            details = f"Performance validation failed: {e!s}"
             evidence = []
             recommendations = ["Set up performance optimization infrastructure"]
 
@@ -544,7 +544,7 @@ class ComprehensiveE2EValidator:
         except Exception as e:
             status = ValidationStatus.FAILED
             score = 0.0
-            details = f"Security validation failed: {str(e)}"
+            details = f"Security validation failed: {e!s}"
             evidence = []
             recommendations = ["Set up security infrastructure"]
 
@@ -598,7 +598,7 @@ class ComprehensiveE2EValidator:
         except Exception as e:
             status = ValidationStatus.FAILED
             score = 0.0
-            details = f"Compliance validation failed: {str(e)}"
+            details = f"Compliance validation failed: {e!s}"
             evidence = []
             recommendations = ["Run compliance assessment"]
 
@@ -664,7 +664,7 @@ class ComprehensiveE2EValidator:
         except Exception as e:
             status = ValidationStatus.FAILED
             score = 0.0
-            details = f"Integration validation failed: {str(e)}"
+            details = f"Integration validation failed: {e!s}"
             evidence = []
             recommendations = ["Check system integration"]
 

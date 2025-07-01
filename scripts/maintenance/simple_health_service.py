@@ -4,13 +4,12 @@ Simple Health Service for ACGS Phase 3 Completion
 Provides basic health endpoints for all 7 core services
 """
 
-import asyncio
-import json
 import time
 from datetime import datetime
+
+import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-import uvicorn
 
 # Service configurations
 SERVICES = {
@@ -130,7 +129,6 @@ start_time = time.time()
 
 def main():
     """Main function to start all services."""
-    import sys
     import argparse
 
     parser = argparse.ArgumentParser(description="ACGS Simple Health Service")

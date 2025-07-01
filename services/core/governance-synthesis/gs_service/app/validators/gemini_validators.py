@@ -97,14 +97,14 @@ class GeminiProValidator(BaseValidator):
             return result
 
         except Exception as e:
-            logger.error(f"GeminiProValidator failed: {str(e)}")
+            logger.error(f"GeminiProValidator failed: {e!s}")
             self._update_metrics((time.time() - start_time) * 1000, success=False)
 
             return ValidationResult(
                 score=0.0,
                 confidence=0.0,
                 details={"error": str(e)},
-                error_message=f"Validation failed: {str(e)}",
+                error_message=f"Validation failed: {e!s}",
             )
 
     def _create_validation_prompt(
@@ -167,7 +167,7 @@ class GeminiProValidator(BaseValidator):
                     ) as response:
                         if response.status == 200:
                             return await response.json()
-                        elif response.status == 429:  # Rate limit
+                        if response.status == 429:  # Rate limit
                             if attempt < self.max_retries - 1:
                                 delay = self.retry_delay * (2**attempt)
                                 logger.warning(f"Rate limited, retrying in {delay}s")
@@ -180,7 +180,7 @@ class GeminiProValidator(BaseValidator):
                 if attempt < self.max_retries - 1:
                     delay = self.retry_delay * (2**attempt)
                     logger.warning(
-                        f"API call failed (attempt {attempt + 1}), retrying in {delay}s: {str(e)}"
+                        f"API call failed (attempt {attempt + 1}), retrying in {delay}s: {e!s}"
                     )
                     await asyncio.sleep(delay)
                 else:
@@ -222,26 +222,25 @@ class GeminiProValidator(BaseValidator):
                         "validator": "gemini_pro",
                     },
                 )
-            else:
-                # Fallback: extract basic score from text
-                score = 0.7  # Default moderate score
-                return ValidationResult(
-                    score=score,
-                    confidence=0.6,
-                    details={
-                        "raw_response": text,
-                        "validator": "gemini_pro",
-                        "parsing_note": "Could not parse structured JSON response",
-                    },
-                )
+            # Fallback: extract basic score from text
+            score = 0.7  # Default moderate score
+            return ValidationResult(
+                score=score,
+                confidence=0.6,
+                details={
+                    "raw_response": text,
+                    "validator": "gemini_pro",
+                    "parsing_note": "Could not parse structured JSON response",
+                },
+            )
 
         except Exception as e:
-            logger.error(f"Failed to parse Gemini response: {str(e)}")
+            logger.error(f"Failed to parse Gemini response: {e!s}")
             return ValidationResult(
                 score=0.0,
                 confidence=0.0,
                 details={"parsing_error": str(e)},
-                error_message=f"Response parsing failed: {str(e)}",
+                error_message=f"Response parsing failed: {e!s}",
             )
 
     def _update_metrics(self, latency_ms: float, success: bool):
@@ -324,14 +323,14 @@ class GeminiFlashValidator(BaseValidator):
             return result
 
         except Exception as e:
-            logger.error(f"GeminiFlashValidator failed: {str(e)}")
+            logger.error(f"GeminiFlashValidator failed: {e!s}")
             self._update_metrics((time.time() - start_time) * 1000, success=False)
 
             return ValidationResult(
                 score=0.5,  # Neutral score on failure
                 confidence=0.0,
                 details={"error": str(e)},
-                error_message=f"Screening failed: {str(e)}",
+                error_message=f"Screening failed: {e!s}",
             )
 
     def _create_screening_prompt(
@@ -379,7 +378,7 @@ class GeminiFlashValidator(BaseValidator):
                     ) as response:
                         if response.status == 200:
                             return await response.json()
-                        elif response.status == 429 and attempt < self.max_retries - 1:
+                        if response.status == 429 and attempt < self.max_retries - 1:
                             await asyncio.sleep(self.retry_delay)
                             continue
 
@@ -428,12 +427,12 @@ class GeminiFlashValidator(BaseValidator):
             )
 
         except Exception as e:
-            logger.error(f"Failed to parse Gemini Flash response: {str(e)}")
+            logger.error(f"Failed to parse Gemini Flash response: {e!s}")
             return ValidationResult(
                 score=0.5,
                 confidence=0.0,
                 details={"parsing_error": str(e)},
-                error_message=f"Response parsing failed: {str(e)}",
+                error_message=f"Response parsing failed: {e!s}",
             )
 
     def _update_metrics(self, latency_ms: float, success: bool):

@@ -139,9 +139,8 @@ class OllamaLLMClient:
                         f"Ollama server healthy. Available models: {len(self._available_models)}"
                     )
                     return True
-                else:
-                    logger.warning(f"Ollama server returned status {response.status}")
-                    return False
+                logger.warning(f"Ollama server returned status {response.status}")
+                return False
 
         except Exception as e:
             logger.error(f"Ollama health check failed: {e}")
@@ -214,7 +213,6 @@ class OllamaLLMClient:
             async with self.session.post(
                 f"{self.config.base_url}/api/generate", json=payload
             ) as response:
-
                 if response.status != 200:
                     error_text = await response.text()
                     raise Exception(f"Ollama API error {response.status}: {error_text}")
@@ -283,13 +281,13 @@ class OllamaLLMClient:
                     arguments=["Context"],
                 ),
                 body=[],
-                explanation=f"Fallback rule due to error: {str(e)}",
+                explanation=f"Fallback rule due to error: {e!s}",
                 confidence=0.1,
             )
 
             return LLMStructuredOutput(
                 interpretations=[fallback_rule],
-                raw_llm_response=f"Error in Ollama interpretation: {str(e)}",
+                raw_llm_response=f"Error in Ollama interpretation: {e!s}",
             )
 
     def _construct_constitutional_prompt(

@@ -665,8 +665,7 @@ class ACGSConfig:
             if not api_path.startswith("/"):
                 api_path = "/" + api_path
             return f"{base_url}/api/{self._config['api_version']}{api_path}"
-        else:
-            return base_url
+        return base_url
 
     def is_development(self) -> bool:
         """Check if running in development environment."""

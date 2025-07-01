@@ -172,6 +172,7 @@ def run_dgm_demo():
     try:
         result = subprocess.run(
             ["pytest", "test_calculator.py", "-v"],
+            check=False,
             cwd=repo_path,
             capture_output=True,
             text=True,
@@ -248,6 +249,7 @@ All tests in test_calculator.py should pass after the fixes.
             try:
                 result = subprocess.run(
                     ["pytest", "test_calculator.py", "-v"],
+                    check=False,
                     cwd=repo_path,
                     capture_output=True,
                     text=True,

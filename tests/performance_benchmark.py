@@ -10,10 +10,11 @@ Tests response times, throughput, and scalability requirements:
 """
 
 import asyncio
-import time
-import statistics
 import json
-from typing import Dict, List, Any
+import statistics
+import time
+from typing import Any
+
 import aiohttp
 
 # Performance targets
@@ -46,7 +47,7 @@ class PerformanceBenchmark:
 
     async def test_response_times(
         self, concurrent_requests: int = 50
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test response times for all services."""
         print(
             f"⚡ Testing Response Times (concurrent requests: {concurrent_requests})..."
@@ -139,7 +140,7 @@ class PerformanceBenchmark:
         )
         return self.results["response_time_tests"]
 
-    async def test_throughput(self, duration_seconds: int = 10) -> Dict[str, Any]:
+    async def test_throughput(self, duration_seconds: int = 10) -> dict[str, Any]:
         """Test throughput for key services."""
         print(f"🚀 Testing Throughput (duration: {duration_seconds}s)...")
 
@@ -224,7 +225,7 @@ class PerformanceBenchmark:
         )
         return self.results["throughput_tests"]
 
-    async def test_load_scalability(self) -> Dict[str, Any]:
+    async def test_load_scalability(self) -> dict[str, Any]:
         """Test system scalability under increasing load."""
         print("📈 Testing Load Scalability...")
 
@@ -314,7 +315,7 @@ class PerformanceBenchmark:
         )
         return self.results["load_tests"]
 
-    async def run_all_tests(self) -> Dict[str, Any]:
+    async def run_all_tests(self) -> dict[str, Any]:
         """Run all performance tests."""
         print("⚡ Running Performance Benchmark Suite")
         print("=" * 60)
@@ -342,7 +343,7 @@ class PerformanceBenchmark:
         }
 
         print("=" * 60)
-        print(f"⚡ Performance Benchmark Results:")
+        print("⚡ Performance Benchmark Results:")
         print(f"   Response Times: {'✅ PASSED' if response_passed else '❌ FAILED'}")
         print(f"   Throughput: {'✅ PASSED' if throughput_passed else '❌ FAILED'}")
         print(f"   Load Scalability: {'✅ PASSED' if load_passed else '❌ FAILED'}")

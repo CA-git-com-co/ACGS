@@ -23,11 +23,9 @@ Categories:
 - SYSTEM_ERROR: Internal system and infrastructure errors
 """
 
-import json
 from dataclasses import dataclass
 from enum import Enum
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class ErrorSeverity(str, Enum):
@@ -78,9 +76,9 @@ class ErrorDefinition:
     resolution_guidance: str
     user_message: str
     retryable: bool = False
-    context_fields: Optional[List[str]] = None
+    context_fields: list[str] | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "code": self.code,
@@ -101,8 +99,8 @@ class ErrorCodeRegistry:
     """Registry for managing error codes and preventing conflicts."""
 
     def __init__(self):
-        self._error_definitions: Dict[str, ErrorDefinition] = {}
-        self._service_counters: Dict[str, Dict[str, int]] = {}
+        self._error_definitions: dict[str, ErrorDefinition] = {}
+        self._service_counters: dict[str, dict[str, int]] = {}
         self._initialize_error_catalog()
 
     def _get_next_code_number(
@@ -132,8 +130,8 @@ class ErrorCodeRegistry:
         resolution_guidance: str,
         user_message: str,
         retryable: bool = False,
-        context_fields: Optional[List[str]] = None,
-        custom_number: Optional[int] = None,
+        context_fields: list[str] | None = None,
+        custom_number: int | None = None,
     ) -> str:
         """Register a new error and return the generated error code."""
 
@@ -167,11 +165,11 @@ class ErrorCodeRegistry:
         self._error_definitions[error_code] = error_def
         return error_code
 
-    def get_error_definition(self, error_code: str) -> Optional[ErrorDefinition]:
+    def get_error_definition(self, error_code: str) -> ErrorDefinition | None:
         """Get error definition by code."""
         return self._error_definitions.get(error_code)
 
-    def get_errors_by_service(self, service: ServiceCode) -> List[ErrorDefinition]:
+    def get_errors_by_service(self, service: ServiceCode) -> list[ErrorDefinition]:
         """Get all errors for a specific service."""
         return [
             error_def
@@ -179,7 +177,7 @@ class ErrorCodeRegistry:
             if error_def.service == service
         ]
 
-    def get_errors_by_category(self, category: ErrorCategory) -> List[ErrorDefinition]:
+    def get_errors_by_category(self, category: ErrorCategory) -> list[ErrorDefinition]:
         """Get all errors for a specific category."""
         return [
             error_def
@@ -187,7 +185,7 @@ class ErrorCodeRegistry:
             if error_def.category == category
         ]
 
-    def export_catalog(self) -> Dict[str, Any]:
+    def export_catalog(self) -> dict[str, Any]:
         """Export complete error catalog."""
         return {
             "version": "1.0.0",
@@ -596,36 +594,36 @@ error_registry = ErrorCodeRegistry()
 
 
 # Convenience functions for common operations
-def get_error_definition(error_code: str) -> Optional[ErrorDefinition]:
+def get_error_definition(error_code: str) -> ErrorDefinition | None:
     """Get error definition by code."""
     return error_registry.get_error_definition(error_code)
 
 
-def get_service_errors(service: ServiceCode) -> List[ErrorDefinition]:
+def get_service_errors(service: ServiceCode) -> list[ErrorDefinition]:
     """Get all errors for a service."""
     return error_registry.get_errors_by_service(service)
 
 
-def get_category_errors(category: ErrorCategory) -> List[ErrorDefinition]:
+def get_category_errors(category: ErrorCategory) -> list[ErrorDefinition]:
     """Get all errors for a category."""
     return error_registry.get_errors_by_category(category)
 
 
-def export_error_catalog() -> Dict[str, Any]:
+def export_error_catalog() -> dict[str, Any]:
     """Export complete error catalog."""
     return error_registry.export_catalog()
 
 
 # Export main classes and functions
 __all__ = [
-    "ErrorSeverity",
     "ErrorCategory",
-    "ServiceCode",
-    "ErrorDefinition",
     "ErrorCodeRegistry",
+    "ErrorDefinition",
+    "ErrorSeverity",
+    "ServiceCode",
     "error_registry",
+    "export_error_catalog",
+    "get_category_errors",
     "get_error_definition",
     "get_service_errors",
-    "get_category_errors",
-    "export_error_catalog",
 ]

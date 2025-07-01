@@ -40,7 +40,7 @@ class SimplePhase1Validator:
 
         try:
             result = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=timeout
+                cmd, check=False, capture_output=True, text=True, timeout=timeout
             )
             output_lines = result.stdout.strip().split("\n")
 
@@ -85,7 +85,9 @@ class SimplePhase1Validator:
             "SELECT COUNT(*) FROM users;",
         ]
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+            result = subprocess.run(
+                cmd, check=False, capture_output=True, text=True, timeout=10
+            )
             if result.returncode == 0:
                 self.success_count += 1
                 print("✅ Database connectivity: OK")
@@ -110,7 +112,9 @@ class SimplePhase1Validator:
             "SELECT COUNT(*) FROM principles;",
         ]
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+            result = subprocess.run(
+                cmd, check=False, capture_output=True, text=True, timeout=10
+            )
             if result.returncode == 0 and "5" in result.stdout:
                 self.success_count += 1
                 print("✅ Test principles data: OK")
@@ -188,7 +192,9 @@ class SimplePhase1Validator:
             "SELECT priority_weight, scope, normative_statement FROM principles LIMIT 1;",
         ]
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+            result = subprocess.run(
+                cmd, check=False, capture_output=True, text=True, timeout=10
+            )
             if result.returncode == 0 and "priority_weight" in result.stdout:
                 self.success_count += 1
                 print("✅ Enhanced principle schema: OK")
@@ -217,7 +223,9 @@ class SimplePhase1Validator:
             "SELECT COUNT(*) FROM ac_meta_rules;",
         ]
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+            result = subprocess.run(
+                cmd, check=False, capture_output=True, text=True, timeout=10
+            )
             if result.returncode == 0 and (
                 "5" in result.stdout or "count" in result.stdout.lower()
             ):
@@ -248,7 +256,9 @@ class SimplePhase1Validator:
             "SELECT COUNT(*) FROM environmental_factors;",
         ]
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+            result = subprocess.run(
+                cmd, check=False, capture_output=True, text=True, timeout=10
+            )
             if result.returncode == 0 and (
                 "8" in result.stdout or "count" in result.stdout.lower()
             ):
@@ -291,11 +301,10 @@ class SimplePhase1Validator:
                 f"✅ SUCCESS: Phase 1 validation passed with {success_rate:.1f}% success rate"
             )
             return True
-        else:
-            print(
-                f"❌ FAILED: Phase 1 validation failed. Target: {target_success_rate}%, Actual: {success_rate:.1f}%"
-            )
-            return False
+        print(
+            f"❌ FAILED: Phase 1 validation failed. Target: {target_success_rate}%, Actual: {success_rate:.1f}%"
+        )
+        return False
 
 
 def main():

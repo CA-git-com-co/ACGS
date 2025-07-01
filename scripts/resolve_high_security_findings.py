@@ -16,7 +16,7 @@ import re
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -233,7 +233,7 @@ class SecurityFindingsResolver:
             },
         }
 
-    def run_security_fixes(self) -> Dict[str, Any]:
+    def run_security_fixes(self) -> dict[str, Any]:
         """Run all security fixes and return summary"""
         logger.info("🔒 Starting ACGS-1 HIGH Severity Security Fixes")
         logger.info("=" * 60)
@@ -262,7 +262,7 @@ class SecurityFindingsResolver:
         """Fix security issues in a specific file"""
         try:
             # Read file content
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             original_content = content
@@ -705,7 +705,7 @@ def get_security_config() -> Dict[str, Any]:
             middleware_dir.mkdir(parents=True, exist_ok=True)
 
             # Security middleware content
-            middleware_content = '''"""
+            middleware_content = r'''"""
 ACGS-1 Security Middleware
 Comprehensive security middleware for all services
 """
@@ -822,7 +822,7 @@ def rate_limited(limit: int = 60):
         except Exception as e:
             logger.error(f"❌ Failed to create security middleware: {e}")
 
-    def _generate_summary(self) -> Dict[str, Any]:
+    def _generate_summary(self) -> dict[str, Any]:
         """Generate security fixes summary"""
         total_files_processed = len(self.high_severity_files)
         total_fixes_applied = len(self.fixes_applied)

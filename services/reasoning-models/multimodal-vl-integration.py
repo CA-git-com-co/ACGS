@@ -29,13 +29,10 @@ import json
 import logging
 import time
 from dataclasses import dataclass
-from datetime import datetime, timezone
 from enum import Enum
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 import aiohttp
-import requests
 from PIL import Image
 
 # Configure logging
@@ -71,11 +68,11 @@ class MultimodalRequest:
     """Request structure for multimodal vision-language analysis."""
 
     text_content: str
-    image_data: Optional[bytes] = None
-    image_path: Optional[str] = None
+    image_data: bytes | None = None
+    image_path: str | None = None
     analysis_type: VisionAnalysisType = VisionAnalysisType.POLICY_DOCUMENT
     domain: MultimodalDomain = MultimodalDomain.DOCUMENT_ANALYSIS
-    constitutional_focus: List[str] = None
+    constitutional_focus: list[str] = None
     max_tokens: int = 512
     temperature: float = 0.1
 
@@ -86,9 +83,9 @@ class MultimodalResponse:
 
     visual_analysis: str
     text_analysis: str
-    constitutional_assessment: Dict[str, float]
-    key_findings: List[str]
-    recommendations: List[str]
+    constitutional_assessment: dict[str, float]
+    key_findings: list[str]
+    recommendations: list[str]
     confidence_score: float
     processing_time_ms: float
     model_used: str
@@ -119,7 +116,7 @@ class MultimodalVLService:
         self.constitutional_principles = self._load_constitutional_principles()
         self.analysis_templates = self._load_analysis_templates()
 
-    def _load_constitutional_principles(self) -> Dict[str, Any]:
+    def _load_constitutional_principles(self) -> dict[str, Any]:
         """Load constitutional principles for multimodal analysis."""
         return {
             "visual_transparency": {
@@ -156,7 +153,7 @@ class MultimodalVLService:
             },
         }
 
-    def _load_analysis_templates(self) -> Dict[str, str]:
+    def _load_analysis_templates(self) -> dict[str, str]:
         """Load analysis templates for different multimodal scenarios."""
         return {
             "policy_document": """
@@ -241,7 +238,7 @@ Provide detailed process analysis with constitutional evaluation.
             with open(image_path, "rb") as f:
                 return f.read()
         except Exception as e:
-            logger.error(f"Error loading image from {image_path}: {str(e)}")
+            logger.error(f"Error loading image from {image_path}: {e!s}")
             raise
 
     def _validate_image(self, image_data: bytes) -> bool:
@@ -254,7 +251,7 @@ Provide detailed process analysis with constitutional evaluation.
                 logger.warning(f"Image size {width}x{height} may be too large")
             return True
         except Exception as e:
-            logger.error(f"Invalid image data: {str(e)}")
+            logger.error(f"Invalid image data: {e!s}")
             return False
 
     async def _check_model_availability(self) -> bool:
@@ -266,7 +263,7 @@ Provide detailed process analysis with constitutional evaluation.
                 ) as response:
                     return response.status == 200
         except Exception as e:
-            logger.warning(f"Multimodal model not available: {str(e)}")
+            logger.warning(f"Multimodal model not available: {e!s}")
             return False
 
     def _build_multimodal_prompt(self, request: MultimodalRequest) -> str:
@@ -290,7 +287,7 @@ Provide detailed process analysis with constitutional evaluation.
 
     async def _call_multimodal_model(
         self, request: MultimodalRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Call the multimodal vision-language model."""
         prompt = self._build_multimodal_prompt(request)
 
@@ -330,18 +327,17 @@ Provide detailed process analysis with constitutional evaluation.
                     if response.status == 200:
                         result = await response.json()
                         return result
-                    else:
-                        error_text = await response.text()
-                        raise RuntimeError(
-                            f"Model API error: {response.status} - {error_text}"
-                        )
+                    error_text = await response.text()
+                    raise RuntimeError(
+                        f"Model API error: {response.status} - {error_text}"
+                    )
 
         except Exception as e:
-            logger.error(f"Error calling multimodal model: {str(e)}")
+            logger.error(f"Error calling multimodal model: {e!s}")
             raise
 
     def _parse_multimodal_response(
-        self, api_response: Dict[str, Any]
+        self, api_response: dict[str, Any]
     ) -> MultimodalResponse:
         """Parse the multimodal model response."""
         try:
@@ -367,7 +363,7 @@ Provide detailed process analysis with constitutional evaluation.
             )
 
         except Exception as e:
-            logger.error(f"Error parsing multimodal response: {str(e)}")
+            logger.error(f"Error parsing multimodal response: {e!s}")
             # Return fallback response
             return MultimodalResponse(
                 visual_analysis="Error parsing visual analysis",
@@ -415,7 +411,7 @@ Provide detailed process analysis with constitutional evaluation.
             return paragraphs[1]
         return "No text analysis extracted"
 
-    def _extract_constitutional_scores(self, content: str) -> Dict[str, float]:
+    def _extract_constitutional_scores(self, content: str) -> dict[str, float]:
         """Extract constitutional compliance scores."""
         scores = {}
 
@@ -430,12 +426,12 @@ Provide detailed process analysis with constitutional evaluation.
                 rf"{principle_name}[:\s]*([0-9]\.[0-9]+)",
                 rf"{principle_key}[:\s]*([0-9]\.[0-9]+)",
                 (
-                    rf"transparency[:\s]*([0-9]\.[0-9]+)"
+                    r"transparency[:\s]*([0-9]\.[0-9]+)"
                     if "transparency" in principle_key
                     else None
                 ),
                 (
-                    rf"fairness[:\s]*([0-9]\.[0-9]+)"
+                    r"fairness[:\s]*([0-9]\.[0-9]+)"
                     if "fairness" in principle_key
                     else None
                 ),
@@ -457,7 +453,7 @@ Provide detailed process analysis with constitutional evaluation.
 
         return scores
 
-    def _extract_key_findings(self, content: str) -> List[str]:
+    def _extract_key_findings(self, content: str) -> list[str]:
         """Extract key findings from response."""
         findings = []
 
@@ -488,7 +484,7 @@ Provide detailed process analysis with constitutional evaluation.
 
         return findings[:5]  # Limit to 5 findings
 
-    def _extract_recommendations(self, content: str) -> List[str]:
+    def _extract_recommendations(self, content: str) -> list[str]:
         """Extract recommendations from response."""
         recommendations = []
 
@@ -540,10 +536,9 @@ Provide detailed process analysis with constitutional evaluation.
         # Default confidence based on response quality
         if len(content) > 1000 and "analysis" in content.lower():
             return 0.85
-        elif len(content) > 500:
+        if len(content) > 500:
             return 0.7
-        else:
-            return 0.5
+        return 0.5
 
     async def analyze_multimodal_content(
         self, request: MultimodalRequest
@@ -638,24 +633,24 @@ async def main():
             image_path=None,  # Would be path to policy document image
         )
 
-        print(f"\n🔍 Multimodal Analysis Results:")
+        print("\n🔍 Multimodal Analysis Results:")
         print(f"Model Used: {response.model_used}")
         print(f"Processing Time: {response.processing_time_ms:.2f}ms")
         print(f"Confidence Score: {response.confidence_score:.2f}")
         print(f"\nVisual Analysis: {response.visual_analysis}")
         print(f"\nText Analysis: {response.text_analysis}")
-        print(f"\nConstitutional Assessment:")
+        print("\nConstitutional Assessment:")
         for principle, score in response.constitutional_assessment.items():
             print(f"  {principle}: {score:.2f}")
-        print(f"\nKey Findings:")
+        print("\nKey Findings:")
         for finding in response.key_findings:
             print(f"  • {finding}")
-        print(f"\nRecommendations:")
+        print("\nRecommendations:")
         for rec in response.recommendations:
             print(f"  • {rec}")
 
     except Exception as e:
-        logger.error(f"Error in multimodal analysis: {str(e)}")
+        logger.error(f"Error in multimodal analysis: {e!s}")
 
 
 if __name__ == "__main__":

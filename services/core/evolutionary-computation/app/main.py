@@ -15,9 +15,9 @@ Key Features:
 
 import asyncio
 import logging
+import time
 from contextlib import asynccontextmanager
 from datetime import datetime
-import time
 
 from .api.v1.advanced_wina_oversight import router as advanced_wina_oversight_router
 from .api.v1.alphaevolve import router as alphaevolve_router
@@ -157,8 +157,8 @@ def get_config():
 
 # Import local components
 try:
-    from services.shared.wina.performance_api import router as wina_performance_router
     from services.shared.wina.performance_api import (
+        router as wina_performance_router,
         set_collector_getter,
     )
 except ImportError:
@@ -319,7 +319,7 @@ async def add_comprehensive_security_headers(request, call_next):
 # Apply comprehensive audit logging
 if AUDIT_LOGGING_AVAILABLE:
     apply_audit_logging_to_service(app, "ec_service")
-    print(f"✅ Comprehensive audit logging applied to ec service")
+    print("✅ Comprehensive audit logging applied to ec service")
     print("🔒 Audit features enabled:")
     print("   - Tamper-proof logs with cryptographic integrity")
     print("   - Compliance tracking (SOC 2, ISO 27001, NIST)")
@@ -328,7 +328,7 @@ if AUDIT_LOGGING_AVAILABLE:
     print("   - Automated log retention and archival")
     print("   - Performance metrics and alerting")
 else:
-    print(f"⚠️ Audit logging not available for ec service")
+    print("⚠️ Audit logging not available for ec service")
 
 # Apply production-grade security middleware
 if SECURITY_MIDDLEWARE_AVAILABLE:
@@ -339,9 +339,9 @@ if SECURITY_MIDDLEWARE_AVAILABLE:
         enable_threat_detection=True,
     )
     apply_production_security_middleware(app, "ec_service", security_config)
-    print(f"✅ Production security middleware applied to ec service")
+    print("✅ Production security middleware applied to ec service")
 else:
-    print(f"⚠️ Security middleware not available for ec service")
+    print("⚠️ Security middleware not available for ec service")
 
 # Initialize metrics for EC service
 metrics = get_metrics("ec_service")
@@ -439,7 +439,7 @@ async def health_check():
                 "healthy" if wina_coordinator.enable_wina else "disabled"
             )
         except Exception as e:
-            coordinator_status = f"error: {str(e)}"
+            coordinator_status = f"error: {e!s}"
 
     return {
         "status": "healthy",

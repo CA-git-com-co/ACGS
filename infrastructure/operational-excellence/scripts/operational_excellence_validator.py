@@ -10,7 +10,6 @@ import logging
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
 
 # Configure logging
 logging.basicConfig(
@@ -39,7 +38,7 @@ class OperationalExcellenceValidator:
             "status": "in_progress",
         }
 
-    async def validate_operational_excellence(self) -> Dict:
+    async def validate_operational_excellence(self) -> dict:
         """Execute comprehensive operational excellence validation"""
         logger.info(f"Starting operational excellence validation: {self.validation_id}")
 
@@ -107,7 +106,7 @@ class OperationalExcellenceValidator:
 
         return self.results
 
-    async def _validate_deployment_pipeline(self) -> Dict:
+    async def _validate_deployment_pipeline(self) -> dict:
         """Validate deployment pipeline maturity (25 points max)"""
         score = 0
         details = []
@@ -187,7 +186,7 @@ class OperationalExcellenceValidator:
             "category": "Deployment Pipeline Excellence",
         }
 
-    async def _validate_infrastructure_as_code(self) -> Dict:
+    async def _validate_infrastructure_as_code(self) -> dict:
         """Validate Infrastructure as Code implementation (20 points max)"""
         score = 0
         details = []
@@ -265,7 +264,7 @@ class OperationalExcellenceValidator:
             "category": "Infrastructure as Code",
         }
 
-    async def _validate_monitoring_observability(self) -> Dict:
+    async def _validate_monitoring_observability(self) -> dict:
         """Validate monitoring and observability (20 points max)"""
         score = 0
         details = []
@@ -349,7 +348,7 @@ class OperationalExcellenceValidator:
             "category": "Monitoring & Observability",
         }
 
-    async def _validate_disaster_recovery(self) -> Dict:
+    async def _validate_disaster_recovery(self) -> dict:
         """Validate disaster recovery capabilities (15 points max)"""
         score = 0
         details = []
@@ -414,7 +413,7 @@ class OperationalExcellenceValidator:
             "category": "Disaster Recovery & Business Continuity",
         }
 
-    async def _validate_security_compliance(self) -> Dict:
+    async def _validate_security_compliance(self) -> dict:
         """Validate security and compliance (10 points max)"""
         score = 0
         details = []
@@ -458,7 +457,7 @@ class OperationalExcellenceValidator:
             "category": "Security & Compliance",
         }
 
-    async def _validate_documentation(self) -> Dict:
+    async def _validate_documentation(self) -> dict:
         """Validate documentation and knowledge management (10 points max)"""
         score = 0
         details = []
@@ -515,7 +514,7 @@ class OperationalExcellenceValidator:
             "category": "Documentation & Knowledge Management",
         }
 
-    def _generate_recommendations(self) -> List[str]:
+    def _generate_recommendations(self) -> list[str]:
         """Generate improvement recommendations"""
         recommendations = []
 
@@ -534,7 +533,7 @@ class OperationalExcellenceValidator:
 
         return recommendations
 
-    def _identify_critical_issues(self) -> List[str]:
+    def _identify_critical_issues(self) -> list[str]:
         """Identify critical issues that must be addressed"""
         critical_issues = []
 
@@ -568,13 +567,13 @@ async def main():
 
     results = await validator.validate_operational_excellence()
 
-    print(f"\n📊 VALIDATION RESULTS")
+    print("\n📊 VALIDATION RESULTS")
     print(
         f"Overall Score: {results['overall_score']}/100 (Target: {results['target_score']})"
     )
     print(f"Status: {results['status'].upper()}")
 
-    print(f"\n📈 CATEGORY BREAKDOWN")
+    print("\n📈 CATEGORY BREAKDOWN")
     for category_name, category_data in results["categories"].items():
         status_icon = (
             "✅"
@@ -586,12 +585,12 @@ async def main():
         )
 
     if results["critical_issues"]:
-        print(f"\n🚨 CRITICAL ISSUES")
+        print("\n🚨 CRITICAL ISSUES")
         for issue in results["critical_issues"]:
             print(f"  • {issue}")
 
     if results["recommendations"]:
-        print(f"\n💡 RECOMMENDATIONS")
+        print("\n💡 RECOMMENDATIONS")
         for rec in results["recommendations"]:
             print(f"  • {rec}")
 
@@ -600,7 +599,7 @@ async def main():
     )
 
     if results["overall_score"] >= results["target_score"]:
-        print(f"\n🎉 CONGRATULATIONS! Operational excellence target achieved!")
+        print("\n🎉 CONGRATULATIONS! Operational excellence target achieved!")
     else:
         gap = results["target_score"] - results["overall_score"]
         print(f"\n🎯 {gap} points needed to reach operational excellence target")

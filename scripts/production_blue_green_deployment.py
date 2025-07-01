@@ -5,13 +5,14 @@ Executes blue-green deployment with traffic splitting and constitutional complia
 """
 
 import asyncio
-import aiohttp
 import json
-import time
-import subprocess
 import os
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional
+import subprocess
+import time
+from datetime import datetime
+from typing import Any
+
+import aiohttp
 
 # Configuration
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -52,6 +53,7 @@ class ProductionDeploymentManager:
         try:
             result = subprocess.run(
                 ["python3", "scripts/production_readiness_validation.py"],
+                check=False,
                 capture_output=True,
                 text=True,
                 cwd="/home/ubuntu/ACGS",
@@ -62,15 +64,14 @@ class ProductionDeploymentManager:
                     "Production Validation", "Production readiness validation passed"
                 )
                 return True
-            else:
-                self.log_event(
-                    "Production Validation Error",
-                    "Production readiness validation failed",
-                )
-                return False
+            self.log_event(
+                "Production Validation Error",
+                "Production readiness validation failed",
+            )
+            return False
 
         except Exception as e:
-            self.log_event("Production Validation Error", f"Validation error: {str(e)}")
+            self.log_event("Production Validation Error", f"Validation error: {e!s}")
             return False
 
     def setup_production_infrastructure(self) -> bool:
@@ -109,7 +110,7 @@ class ProductionDeploymentManager:
 
         except Exception as e:
             self.log_event(
-                "Infrastructure Error", f"Failed to setup infrastructure: {str(e)}"
+                "Infrastructure Error", f"Failed to setup infrastructure: {e!s}"
             )
             return False
 
@@ -121,6 +122,7 @@ class ProductionDeploymentManager:
             # Start all services in production mode
             result = subprocess.run(
                 ["./scripts/start_all_services.sh"],
+                check=False,
                 capture_output=True,
                 text=True,
                 cwd="/home/ubuntu/ACGS",
@@ -136,15 +138,14 @@ class ProductionDeploymentManager:
 
                 # Validate service health
                 return await self.validate_service_health()
-            else:
-                self.log_event(
-                    "Service Deployment Error",
-                    f"Service deployment failed: {result.stderr}",
-                )
-                return False
+            self.log_event(
+                "Service Deployment Error",
+                f"Service deployment failed: {result.stderr}",
+            )
+            return False
 
         except Exception as e:
-            self.log_event("Service Deployment Error", f"Deployment error: {str(e)}")
+            self.log_event("Service Deployment Error", f"Deployment error: {e!s}")
             return False
 
     async def validate_service_health(self) -> bool:
@@ -220,6 +221,7 @@ class ProductionDeploymentManager:
         try:
             result = subprocess.run(
                 ["python3", "scripts/load_test_acgs_pgp.py", "--concurrent", "20"],
+                check=False,
                 capture_output=True,
                 text=True,
                 cwd="/home/ubuntu/ACGS",
@@ -252,18 +254,16 @@ class ProductionDeploymentManager:
                         f"Load test passed: {success_rate}% success, {avg_response_time:.3f}s avg",
                     )
                     return True
-                else:
-                    self.log_event(
-                        "Load Testing Error",
-                        f"Load test failed: {success_rate}% success, {avg_response_time:.3f}s avg",
-                    )
-                    return False
-            else:
-                self.log_event("Load Testing Error", "Load test execution failed")
+                self.log_event(
+                    "Load Testing Error",
+                    f"Load test failed: {success_rate}% success, {avg_response_time:.3f}s avg",
+                )
                 return False
+            self.log_event("Load Testing Error", "Load test execution failed")
+            return False
 
         except Exception as e:
-            self.log_event("Load Testing Error", f"Load test error: {str(e)}")
+            self.log_event("Load Testing Error", f"Load test error: {e!s}")
             return False
 
     def activate_production_monitoring(self) -> bool:
@@ -295,19 +295,13 @@ class ProductionDeploymentManager:
                         "All monitoring configurations validated",
                     )
                     return True
-                else:
-                    self.log_event(
-                        "Monitoring Error", "Missing monitoring configurations"
-                    )
-                    return False
-            else:
-                self.log_event("Monitoring Error", "Monitoring script not found")
+                self.log_event("Monitoring Error", "Missing monitoring configurations")
                 return False
+            self.log_event("Monitoring Error", "Monitoring script not found")
+            return False
 
         except Exception as e:
-            self.log_event(
-                "Monitoring Error", f"Failed to activate monitoring: {str(e)}"
-            )
+            self.log_event("Monitoring Error", f"Failed to activate monitoring: {e!s}")
             return False
 
     def finalize_production_deployment(self) -> bool:
@@ -336,11 +330,11 @@ class ProductionDeploymentManager:
 
         except Exception as e:
             self.log_event(
-                "Finalization Error", f"Failed to finalize deployment: {str(e)}"
+                "Finalization Error", f"Failed to finalize deployment: {e!s}"
             )
             return False
 
-    def generate_deployment_report(self) -> Dict[str, Any]:
+    def generate_deployment_report(self) -> dict[str, Any]:
         """Generate production deployment report."""
         return {
             "deployment_timestamp": datetime.now().isoformat(),
@@ -413,8 +407,8 @@ async def main():
         print("✅ Production ready for traffic")
 
     except Exception as e:
-        manager.log_event("Deployment Error", f"Unexpected error: {str(e)}")
-        print(f"❌ Production deployment failed: {str(e)}")
+        manager.log_event("Deployment Error", f"Unexpected error: {e!s}")
+        print(f"❌ Production deployment failed: {e!s}")
         return 1
 
     finally:
@@ -424,7 +418,7 @@ async def main():
             json.dump(report, f, indent=2)
 
         print(
-            f"\n📄 Deployment report saved to: /home/ubuntu/ACGS/production_deployment_report.json"
+            "\n📄 Deployment report saved to: /home/ubuntu/ACGS/production_deployment_report.json"
         )
 
     return 0

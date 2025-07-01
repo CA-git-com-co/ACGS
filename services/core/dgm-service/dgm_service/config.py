@@ -2,9 +2,6 @@
 Configuration settings for the Darwin Gödel Machine Service.
 """
 
-import os
-from typing import List, Optional
-
 from pydantic import BaseSettings, Field, validator
 
 
@@ -22,11 +19,11 @@ class Settings(BaseSettings):
 
     # Security Configuration
     SECRET_KEY: str = Field(..., env="SECRET_KEY")
-    ALLOWED_ORIGINS: List[str] = Field(
+    ALLOWED_ORIGINS: list[str] = Field(
         default=["http://localhost:3000", "http://localhost:8000"],
         env="ALLOWED_ORIGINS",
     )
-    ALLOWED_HOSTS: List[str] = Field(
+    ALLOWED_HOSTS: list[str] = Field(
         default=["localhost", "127.0.0.1", "0.0.0.0"], env="ALLOWED_HOSTS"
     )
 
@@ -85,8 +82,8 @@ class Settings(BaseSettings):
     )
 
     # Foundation Model Configuration
-    OPENAI_API_KEY: Optional[str] = Field(default=None, env="OPENAI_API_KEY")
-    ANTHROPIC_API_KEY: Optional[str] = Field(default=None, env="ANTHROPIC_API_KEY")
+    OPENAI_API_KEY: str | None = Field(default=None, env="OPENAI_API_KEY")
+    ANTHROPIC_API_KEY: str | None = Field(default=None, env="ANTHROPIC_API_KEY")
     MODEL_TIMEOUT: int = Field(default=30, env="MODEL_TIMEOUT")
     MODEL_MAX_RETRIES: int = Field(default=3, env="MODEL_MAX_RETRIES")
 
@@ -102,7 +99,7 @@ class Settings(BaseSettings):
     # Monitoring and Observability
     PROMETHEUS_ENABLED: bool = Field(default=True, env="PROMETHEUS_ENABLED")
     JAEGER_ENABLED: bool = Field(default=False, env="JAEGER_ENABLED")
-    JAEGER_ENDPOINT: Optional[str] = Field(default=None, env="JAEGER_ENDPOINT")
+    JAEGER_ENDPOINT: str | None = Field(default=None, env="JAEGER_ENDPOINT")
 
     # Rate Limiting
     RATE_LIMIT_ENABLED: bool = Field(default=True, env="RATE_LIMIT_ENABLED")

@@ -4,14 +4,12 @@ Final System Validation and Production Readiness Assessment for ACGS-2
 Executes comprehensive validation, verifies targets, and generates production readiness report.
 """
 
-import os
-import sys
 import json
-import time
-from pathlib import Path
-from typing import Dict, List, Any, Optional
+import sys
 from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 # Add project paths
 project_root = Path(__file__).parent
@@ -23,8 +21,8 @@ class ValidationResult:
     category: str
     status: str  # PASS, FAIL, WARNING, INFO
     score: float  # 0-100
-    details: Dict[str, Any]
-    recommendations: List[str]
+    details: dict[str, Any]
+    recommendations: list[str]
 
 
 class FinalSystemValidator:
@@ -42,7 +40,7 @@ class FinalSystemValidator:
             "major_issues_max": 5,
         }
 
-    def load_all_test_results(self) -> Dict[str, Any]:
+    def load_all_test_results(self) -> dict[str, Any]:
         """Load all test results from the comprehensive testing phases."""
         result_files = [
             "test_coverage_analysis.json",
@@ -63,7 +61,7 @@ class FinalSystemValidator:
             file_path = self.project_root / result_file
             if file_path.exists():
                 try:
-                    with open(file_path, "r") as f:
+                    with open(file_path) as f:
                         data = json.load(f)
                         all_results[result_file.replace(".json", "")] = data
                         print(f"✓ Loaded {result_file}")
@@ -74,7 +72,7 @@ class FinalSystemValidator:
 
         return all_results
 
-    def validate_test_coverage(self, results: Dict[str, Any]) -> ValidationResult:
+    def validate_test_coverage(self, results: dict[str, Any]) -> ValidationResult:
         """Validate test coverage against targets."""
         coverage_data = results.get("test_coverage_analysis", {})
 
@@ -137,7 +135,7 @@ class FinalSystemValidator:
             recommendations,
         )
 
-    def validate_security_posture(self, results: Dict[str, Any]) -> ValidationResult:
+    def validate_security_posture(self, results: dict[str, Any]) -> ValidationResult:
         """Validate security posture and hardening."""
         security_data = results.get("security_validation_results", {})
         resolution_data = results.get("critical_issue_resolution_results", {})
@@ -206,7 +204,7 @@ class FinalSystemValidator:
             recommendations,
         )
 
-    def validate_performance_targets(self, results: Dict[str, Any]) -> ValidationResult:
+    def validate_performance_targets(self, results: dict[str, Any]) -> ValidationResult:
         """Validate performance against established targets."""
         performance_data = results.get("performance_benchmark_results", {})
         wina_data = results.get("wina_performance_test_results", {})
@@ -267,7 +265,7 @@ class FinalSystemValidator:
             recommendations,
         )
 
-    def validate_system_reliability(self, results: Dict[str, Any]) -> ValidationResult:
+    def validate_system_reliability(self, results: dict[str, Any]) -> ValidationResult:
         """Validate system reliability and robustness."""
         # Aggregate reliability metrics from various tests
         core_algorithm_data = results.get("core_algorithm_test_results", {})
@@ -334,8 +332,8 @@ class FinalSystemValidator:
         )
 
     def generate_production_readiness_report(
-        self, results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, results: dict[str, Any]
+    ) -> dict[str, Any]:
         """Generate comprehensive production readiness report."""
         print("Generating Production Readiness Report...")
         print("=" * 60)
@@ -445,7 +443,7 @@ class FinalSystemValidator:
 
         return report
 
-    def run_final_validation(self) -> Dict[str, Any]:
+    def run_final_validation(self) -> dict[str, Any]:
         """Run final comprehensive system validation."""
         print("Starting Final System Validation...")
         print("=" * 60)
@@ -507,9 +505,9 @@ def main():
 ## Executive Summary
 
 **System:** ACGS-2 (Adaptive Constitutional Governance System)  
-**Assessment Date:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}  
-**Overall Status:** {report['overall_assessment']['readiness_status']}  
-**Overall Score:** {report['overall_assessment']['overall_score']:.1f}/100
+**Assessment Date:** {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}  
+**Overall Status:** {report["overall_assessment"]["readiness_status"]}  
+**Overall Score:** {report["overall_assessment"]["overall_score"]:.1f}/100
 
 ## Key Findings
 
@@ -528,16 +526,16 @@ def main():
 ## Recommendations
 
 ### Immediate Actions (Next 1-2 weeks)
-{chr(10).join(f"- {action}" for action in report['recommendations']['immediate_actions'])}
+{chr(10).join(f"- {action}" for action in report["recommendations"]["immediate_actions"])}
 
 ### Production Readiness Checklist
-{chr(10).join(f"- {'✅' if v else '❌'} {k.replace('_', ' ').title()}" for k, v in report['production_readiness_checklist'].items())}
+{chr(10).join(f"- {'✅' if v else '❌'} {k.replace('_', ' ').title()}" for k, v in report["production_readiness_checklist"].items())}
 
 ## Risk Assessment
 
-**High Risk Areas:** {', '.join(report['risk_assessment']['high_risk_areas']) if report['risk_assessment']['high_risk_areas'] else 'None'}  
-**Medium Risk Areas:** {', '.join(report['risk_assessment']['medium_risk_areas']) if report['risk_assessment']['medium_risk_areas'] else 'None'}  
-**Low Risk Areas:** {', '.join(report['risk_assessment']['low_risk_areas']) if report['risk_assessment']['low_risk_areas'] else 'None'}
+**High Risk Areas:** {", ".join(report["risk_assessment"]["high_risk_areas"]) if report["risk_assessment"]["high_risk_areas"] else "None"}  
+**Medium Risk Areas:** {", ".join(report["risk_assessment"]["medium_risk_areas"]) if report["risk_assessment"]["medium_risk_areas"] else "None"}  
+**Low Risk Areas:** {", ".join(report["risk_assessment"]["low_risk_areas"]) if report["risk_assessment"]["low_risk_areas"] else "None"}
 
 ## Conclusion
 
@@ -549,12 +547,12 @@ The ACGS-2 system has undergone comprehensive end-to-end testing and shows stron
 
     # Return appropriate exit code
     readiness_status = report["overall_assessment"]["readiness_status"]
-    if readiness_status == "PRODUCTION_READY":
+    if (
+        readiness_status == "PRODUCTION_READY"
+        or readiness_status == "READY_WITH_MINOR_ISSUES"
+    ):
         return 0
-    elif readiness_status == "READY_WITH_MINOR_ISSUES":
-        return 0
-    else:
-        return 1
+    return 1
 
 
 if __name__ == "__main__":

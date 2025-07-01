@@ -16,6 +16,7 @@ from datetime import datetime
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
+
 from services.core.api.db import get_db
 from services.core.api.job_service import cancel_job, delete_job, get_job_details
 from services.core.api.models import FlywheelRun
@@ -357,9 +358,7 @@ async def collect_governance_traffic(
 
     except Exception as e:
         logger.error(f"Failed to collect governance traffic: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Traffic collection failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Traffic collection failed: {e!s}")
 
 
 @router.get("/constitutional/metrics/{job_id}")
@@ -423,7 +422,7 @@ async def validate_constitutional_compliance(
 
     except Exception as e:
         logger.error(f"Constitutional validation failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Validation failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Validation failed: {e!s}")
 
 
 @router.get("/health")

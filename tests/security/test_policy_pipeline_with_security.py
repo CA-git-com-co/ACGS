@@ -115,7 +115,7 @@ class PolicyPipelineValidator:
                     SecurityTestResult(
                         test_name=f"{service_name.upper()} Service Health + Security",
                         passed=False,
-                        details=f"Connection failed: {str(e)}",
+                        details=f"Connection failed: {e!s}",
                         execution_time_ms=execution_time,
                     )
                 )
@@ -144,20 +144,19 @@ class PolicyPipelineValidator:
                             details=f"Malicious payload correctly blocked with HTTP {response.status}",
                             execution_time_ms=execution_time,
                         )
-                    else:
-                        return SecurityTestResult(
-                            test_name="Security Validation Blocking",
-                            passed=False,
-                            details=f"Malicious payload not blocked: HTTP {response.status}",
-                            execution_time_ms=execution_time,
-                        )
+                    return SecurityTestResult(
+                        test_name="Security Validation Blocking",
+                        passed=False,
+                        details=f"Malicious payload not blocked: HTTP {response.status}",
+                        execution_time_ms=execution_time,
+                    )
 
         except Exception as e:
             execution_time = (time.time() - start_time) * 1000
             return SecurityTestResult(
                 test_name="Security Validation Blocking",
                 passed=False,
-                details=f"Test failed: {str(e)}",
+                details=f"Test failed: {e!s}",
                 execution_time_ms=execution_time,
             )
 
@@ -181,20 +180,19 @@ class PolicyPipelineValidator:
                             details="Legitimate request passed through security middleware",
                             execution_time_ms=execution_time,
                         )
-                    else:
-                        return SecurityTestResult(
-                            test_name="Legitimate Requests Allowed",
-                            passed=False,
-                            details=f"Legitimate request blocked: HTTP {response.status}",
-                            execution_time_ms=execution_time,
-                        )
+                    return SecurityTestResult(
+                        test_name="Legitimate Requests Allowed",
+                        passed=False,
+                        details=f"Legitimate request blocked: HTTP {response.status}",
+                        execution_time_ms=execution_time,
+                    )
 
         except Exception as e:
             execution_time = (time.time() - start_time) * 1000
             return SecurityTestResult(
                 test_name="Legitimate Requests Allowed",
                 passed=False,
-                details=f"Test failed: {str(e)}",
+                details=f"Test failed: {e!s}",
                 execution_time_ms=execution_time,
             )
 
@@ -229,20 +227,19 @@ class PolicyPipelineValidator:
                         details=f"Multiple services responding: {', '.join(services_tested)}",
                         execution_time_ms=execution_time,
                     )
-                else:
-                    return SecurityTestResult(
-                        test_name="Cross-Service Communication",
-                        passed=False,
-                        details=f"Insufficient services available: {', '.join(services_tested)}",
-                        execution_time_ms=execution_time,
-                    )
+                return SecurityTestResult(
+                    test_name="Cross-Service Communication",
+                    passed=False,
+                    details=f"Insufficient services available: {', '.join(services_tested)}",
+                    execution_time_ms=execution_time,
+                )
 
         except Exception as e:
             execution_time = (time.time() - start_time) * 1000
             return SecurityTestResult(
                 test_name="Cross-Service Communication",
                 passed=False,
-                details=f"Test failed: {str(e)}",
+                details=f"Test failed: {e!s}",
                 execution_time_ms=execution_time,
             )
 
@@ -310,7 +307,7 @@ def print_pipeline_report(results: list[SecurityTestResult]):
     print(f"Total Tests: {total_tests}")
     print(f"Passed: {passed_tests}")
     print(f"Failed: {total_tests - passed_tests}")
-    print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
+    print(f"Success Rate: {(passed_tests / total_tests) * 100:.1f}%")
     print()
 
     # Overall assessment

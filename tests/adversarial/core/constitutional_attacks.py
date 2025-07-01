@@ -8,7 +8,7 @@ manipulation vulnerabilities in the ACGS-PGP system.
 import json
 import logging
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 import aiohttp
 
@@ -89,22 +89,21 @@ class ConstitutionalAttackTester:
 
         if attack_vector == "principle_hierarchy_manipulation":
             return await self._test_principle_hierarchy_manipulation(ac_endpoint)
-        elif attack_vector == "amendment_bypass_attempt":
+        if attack_vector == "amendment_bypass_attempt":
             return await self._test_amendment_bypass(ac_endpoint)
-        elif attack_vector == "voting_mechanism_exploit":
+        if attack_vector == "voting_mechanism_exploit":
             return await self._test_voting_mechanism_exploit(ac_endpoint)
-        elif attack_vector == "access_control_circumvention":
+        if attack_vector == "access_control_circumvention":
             return await self._test_access_control_circumvention(ac_endpoint)
-        elif attack_vector == "principle_injection_attack":
+        if attack_vector == "principle_injection_attack":
             return await self._test_principle_injection(ac_endpoint)
-        elif attack_vector == "constitutional_council_bypass":
+        if attack_vector == "constitutional_council_bypass":
             return await self._test_constitutional_council_bypass(ac_endpoint)
-        elif attack_vector == "meta_rule_manipulation":
+        if attack_vector == "meta_rule_manipulation":
             return await self._test_meta_rule_manipulation(ac_endpoint)
-        elif attack_vector == "conflict_resolution_exploit":
+        if attack_vector == "conflict_resolution_exploit":
             return await self._test_conflict_resolution_exploit(ac_endpoint)
-        else:
-            return []
+        return []
 
     async def _test_principle_hierarchy_manipulation(
         self, ac_endpoint: str
@@ -150,7 +149,6 @@ class ConstitutionalAttackTester:
                         json=malicious_principle,
                         timeout=10,
                     ) as response:
-
                         execution_time = (time.time() - start_time) * 1000
 
                         # Check if attack was successful (should be blocked)
@@ -221,7 +219,6 @@ class ConstitutionalAttackTester:
                         json=test_case["payload"],
                         timeout=10,
                     ) as response:
-
                         execution_time = (time.time() - start_time) * 1000
 
                         if response.status == 201:
@@ -298,7 +295,6 @@ class ConstitutionalAttackTester:
                         json=amendment_data,
                         timeout=10,
                     ) as response:
-
                         if response.status == 201:
                             amendment_data = await response.json()
                             amendment_id = amendment_data.get("id")
@@ -312,7 +308,6 @@ class ConstitutionalAttackTester:
                                         json=vote,
                                         timeout=10,
                                     ) as vote_response:
-
                                         execution_time = (
                                             time.time() - start_time
                                         ) * 1000
@@ -350,7 +345,6 @@ class ConstitutionalAttackTester:
                                     json=test_case["payload"],
                                     timeout=10,
                                 ) as vote_response:
-
                                     execution_time = (time.time() - start_time) * 1000
 
                                     if vote_response.status == 201:
@@ -426,7 +420,6 @@ class ConstitutionalAttackTester:
                         headers=test_case["headers"],
                         timeout=10,
                     ) as response:
-
                         execution_time = (time.time() - start_time) * 1000
 
                         if response.status == 201:

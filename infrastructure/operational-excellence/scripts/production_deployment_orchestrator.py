@@ -7,11 +7,9 @@ Enterprise-grade production deployment with comprehensive validation and monitor
 import asyncio
 import json
 import logging
-import subprocess
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
 
 # Configure logging
 logging.basicConfig(
@@ -39,7 +37,7 @@ class ProductionDeploymentOrchestrator:
             "metrics": {},
         }
 
-    async def execute_production_deployment(self) -> Dict:
+    async def execute_production_deployment(self) -> dict:
         """Execute comprehensive production deployment"""
         logger.info(f"Starting production deployment: {self.deployment_id}")
 
@@ -366,7 +364,7 @@ class ProductionDeploymentOrchestrator:
         rollback_results["end_time"] = datetime.utcnow().isoformat()
         self.deployment_results["rollback_plan"] = rollback_results
 
-    async def _run_command(self, command: List[str]) -> Dict:
+    async def _run_command(self, command: list[str]) -> dict:
         """Run shell command and return results"""
         try:
             process = await asyncio.create_subprocess_exec(
@@ -408,18 +406,18 @@ async def main():
 
     results = await orchestrator.execute_production_deployment()
 
-    print(f"\n📊 DEPLOYMENT RESULTS")
+    print("\n📊 DEPLOYMENT RESULTS")
     print(f"Deployment ID: {results['deployment_id']}")
     print(f"Status: {results['status'].upper()}")
 
     if results["status"] == "success":
-        print(f"\n🎉 PRODUCTION DEPLOYMENT SUCCESSFUL!")
-        print(f"✅ All phases completed successfully")
-        print(f"✅ All validations passed")
-        print(f"✅ Monitoring activated")
-        print(f"✅ Production ready")
+        print("\n🎉 PRODUCTION DEPLOYMENT SUCCESSFUL!")
+        print("✅ All phases completed successfully")
+        print("✅ All validations passed")
+        print("✅ Monitoring activated")
+        print("✅ Production ready")
     else:
-        print(f"\n❌ PRODUCTION DEPLOYMENT FAILED")
+        print("\n❌ PRODUCTION DEPLOYMENT FAILED")
         if "error" in results:
             print(f"Error: {results['error']}")
 

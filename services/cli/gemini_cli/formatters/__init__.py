@@ -4,6 +4,7 @@ Output formatters for Gemini CLI
 
 import json
 from typing import Any, Dict, List
+
 from tabulate import tabulate
 
 
@@ -11,10 +12,10 @@ def format_output(data: Any, format_type: str = "table") -> str:
     """Format output based on specified type"""
     if format_type == "json":
         return format_json(data)
-    elif format_type == "table":
+    if format_type == "table":
         return format_table(data)
-    else:  # text
-        return format_text(data)
+    # text
+    return format_text(data)
 
 
 def format_json(data: Any) -> str:
@@ -45,10 +46,9 @@ def format_table(data: Any) -> str:
                     for a in agents
                 ]
                 return tabulate(rows, headers=headers, tablefmt="grid")
-            else:
-                return "No agents found"
+            return "No agents found"
 
-        elif "entries" in data:
+        if "entries" in data:
             # Audit entries
             entries = data.get("entries", [])
             if entries:
@@ -64,10 +64,9 @@ def format_table(data: Any) -> str:
                     for e in entries
                 ]
                 return tabulate(rows, headers=headers, tablefmt="grid")
-            else:
-                return "No audit entries found"
+            return "No audit entries found"
 
-        elif "health" in data:
+        if "health" in data:
             # Health status
             health = data.get("health", {})
             headers = ["Service", "Status"]
@@ -77,7 +76,7 @@ def format_table(data: Any) -> str:
             ]
             return tabulate(rows, headers=headers, tablefmt="grid")
 
-        elif "alerts" in data:
+        if "alerts" in data:
             # Alerts
             alerts = data.get("alerts", [])
             if alerts:
@@ -93,25 +92,22 @@ def format_table(data: Any) -> str:
                     for a in alerts
                 ]
                 return tabulate(rows, headers=headers, tablefmt="grid")
-            else:
-                return "No alerts"
+            return "No alerts"
 
         # Default: key-value pairs
         rows = [[k, v] for k, v in data.items() if k != "error"]
         return tabulate(rows, headers=["Key", "Value"], tablefmt="grid")
 
-    elif isinstance(data, list):
+    if isinstance(data, list):
         if data and isinstance(data[0], dict):
             # List of dicts
             headers = list(data[0].keys())
             rows = [[item.get(h, "") for h in headers] for item in data]
             return tabulate(rows, headers=headers, tablefmt="grid")
-        else:
-            # Simple list
-            return "\n".join(str(item) for item in data)
+        # Simple list
+        return "\n".join(str(item) for item in data)
 
-    else:
-        return str(data)
+    return str(data)
 
 
 def format_text(data: Any) -> str:
@@ -129,8 +125,7 @@ def format_text(data: Any) -> str:
                 lines.append(f"{key}: {value}")
         return "\n".join(lines)
 
-    elif isinstance(data, list):
+    if isinstance(data, list):
         return "\n".join(f"- {format_text(item)}" for item in data)
 
-    else:
-        return str(data)
+    return str(data)

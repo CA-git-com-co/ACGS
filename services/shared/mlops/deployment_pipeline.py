@@ -8,15 +8,15 @@ This module integrates with the ACGS-PGP system to ensure safe
 and reliable model deployments with constitutional compliance.
 """
 
-import logging
 import json
+import logging
 import time
-import subprocess
-from datetime import datetime, timezone
+from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from enum import Enum
-from typing import Dict, List, Optional, Any, Callable
 from pathlib import Path
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -46,10 +46,10 @@ class ValidationResult:
     validation_type: str
     passed: bool
     score: float
-    details: Dict[str, Any]
+    details: dict[str, Any]
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "validation_type": self.validation_type,
@@ -71,24 +71,24 @@ class DeploymentRecord:
     status: DeploymentStatus
 
     # Validation results
-    validation_results: List[ValidationResult] = field(default_factory=list)
+    validation_results: list[ValidationResult] = field(default_factory=list)
 
     # Timestamps
     started_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    completed_at: Optional[datetime] = None
+    completed_at: datetime | None = None
 
     # Configuration
-    deployment_config: Dict[str, Any] = field(default_factory=dict)
+    deployment_config: dict[str, Any] = field(default_factory=dict)
 
     # Constitutional compliance
     constitutional_hash: str = "cdd01ef066bc6cf2"
     constitutional_compliance_verified: bool = False
 
     # Error information
-    error_message: Optional[str] = None
-    rollback_reason: Optional[str] = None
+    error_message: str | None = None
+    rollback_reason: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "deployment_id": self.deployment_id,
@@ -119,7 +119,7 @@ class StagingValidator:
 
     def __init__(self, constitutional_hash: str = "cdd01ef066bc6cf2"):
         self.constitutional_hash = constitutional_hash
-        self.validation_functions: Dict[str, Callable] = {}
+        self.validation_functions: dict[str, Callable] = {}
 
         # Register default validation functions
         self._register_default_validators()
@@ -144,8 +144,8 @@ class StagingValidator:
         logger.info(f"Registered custom validator: {name}")
 
     def validate_deployment(
-        self, deployment_record: DeploymentRecord, validation_config: Dict[str, Any]
-    ) -> List[ValidationResult]:
+        self, deployment_record: DeploymentRecord, validation_config: dict[str, Any]
+    ) -> list[ValidationResult]:
         """
         Run comprehensive validation on staging deployment.
 
@@ -205,7 +205,7 @@ class StagingValidator:
         return validation_results
 
     def _validate_constitutional_compliance(
-        self, deployment_record: DeploymentRecord, config: Dict[str, Any]
+        self, deployment_record: DeploymentRecord, config: dict[str, Any]
     ) -> ValidationResult:
         """Validate constitutional compliance."""
 
@@ -232,7 +232,7 @@ class StagingValidator:
         )
 
     def _validate_performance_metrics(
-        self, deployment_record: DeploymentRecord, config: Dict[str, Any]
+        self, deployment_record: DeploymentRecord, config: dict[str, Any]
     ) -> ValidationResult:
         """Validate performance metrics."""
 
@@ -266,12 +266,14 @@ class StagingValidator:
             details={
                 "metrics": metrics,
                 "thresholds": thresholds,
-                "passed_metrics": dict(zip(metrics.keys(), passed_metrics)),
+                "passed_metrics": dict(
+                    zip(metrics.keys(), passed_metrics, strict=False)
+                ),
             },
         )
 
     def _validate_response_time(
-        self, deployment_record: DeploymentRecord, config: Dict[str, Any]
+        self, deployment_record: DeploymentRecord, config: dict[str, Any]
     ) -> ValidationResult:
         """Validate response time requirements."""
 
@@ -308,7 +310,7 @@ class StagingValidator:
         )
 
     def _validate_health_check(
-        self, deployment_record: DeploymentRecord, config: Dict[str, Any]
+        self, deployment_record: DeploymentRecord, config: dict[str, Any]
     ) -> ValidationResult:
         """Validate service health check."""
 
@@ -348,7 +350,7 @@ class StagingValidator:
         )
 
     def _validate_integration_test(
-        self, deployment_record: DeploymentRecord, config: Dict[str, Any]
+        self, deployment_record: DeploymentRecord, config: dict[str, Any]
     ) -> ValidationResult:
         """Validate integration with ACGS-PGP services."""
 
@@ -395,7 +397,7 @@ class ProductionPromoter:
         logger.info("ProductionPromoter initialized")
 
     def promote_to_production(
-        self, deployment_record: DeploymentRecord, promotion_config: Dict[str, Any]
+        self, deployment_record: DeploymentRecord, promotion_config: dict[str, Any]
     ) -> bool:
         """
         Promote validated model to production.
@@ -435,14 +437,13 @@ class ProductionPromoter:
                     f"Successfully promoted {deployment_record.deployment_id} to production"
                 )
                 return True
-            else:
-                deployment_record.status = DeploymentStatus.FAILED
-                deployment_record.error_message = "Blue-green deployment failed"
+            deployment_record.status = DeploymentStatus.FAILED
+            deployment_record.error_message = "Blue-green deployment failed"
 
-                logger.error(
-                    f"Failed to promote {deployment_record.deployment_id} to production"
-                )
-                return False
+            logger.error(
+                f"Failed to promote {deployment_record.deployment_id} to production"
+            )
+            return False
 
         except Exception as e:
             deployment_record.status = DeploymentStatus.FAILED
@@ -459,7 +460,7 @@ class ProductionPromoter:
         return all(result.passed for result in deployment_record.validation_results)
 
     def _perform_blue_green_deployment(
-        self, deployment_record: DeploymentRecord, config: Dict[str, Any]
+        self, deployment_record: DeploymentRecord, config: dict[str, Any]
     ) -> bool:
         """Perform blue-green deployment."""
 
@@ -485,7 +486,7 @@ class ProductionPromoter:
             ]
 
             for i, step in enumerate(steps):
-                logger.info(f"Blue-green step {i+1}/{len(steps)}: {step}")
+                logger.info(f"Blue-green step {i + 1}/{len(steps)}: {step}")
                 time.sleep(1)  # Simulate deployment time
 
                 # Simulate potential failure
@@ -531,7 +532,7 @@ class ProductionPromoter:
             ]
 
             for i, step in enumerate(rollback_steps):
-                logger.info(f"Rollback step {i+1}/{len(rollback_steps)}: {step}")
+                logger.info(f"Rollback step {i + 1}/{len(rollback_steps)}: {step}")
                 time.sleep(0.5)  # Simulate rollback time
 
             deployment_record.status = DeploymentStatus.ROLLED_BACK
@@ -570,7 +571,7 @@ class DeploymentPipeline:
 
         # Storage for deployment records
         self.storage_path.mkdir(parents=True, exist_ok=True)
-        self.deployments: Dict[str, DeploymentRecord] = {}
+        self.deployments: dict[str, DeploymentRecord] = {}
 
         # Load existing deployments
         self._load_deployments()
@@ -583,7 +584,7 @@ class DeploymentPipeline:
 
         if deployments_file.exists():
             try:
-                with open(deployments_file, "r") as f:
+                with open(deployments_file) as f:
                     deployments_data = json.load(f)
 
                 for deployment_id, deployment_data in deployments_data.items():
@@ -618,7 +619,7 @@ class DeploymentPipeline:
             raise PipelineError(f"Failed to save deployments: {e}")
 
     def create_deployment(
-        self, model_name: str, model_version: str, deployment_config: Dict[str, Any]
+        self, model_name: str, model_version: str, deployment_config: dict[str, Any]
     ) -> DeploymentRecord:
         """
         Create a new deployment record.
@@ -633,7 +634,7 @@ class DeploymentPipeline:
         """
 
         deployment_id = (
-            f"{model_name}_{model_version}_" f"{int(datetime.now().timestamp())}"
+            f"{model_name}_{model_version}_{int(datetime.now().timestamp())}"
         )
 
         deployment_record = DeploymentRecord(
@@ -654,7 +655,7 @@ class DeploymentPipeline:
         return deployment_record
 
     def run_staging_validation(
-        self, deployment_id: str, validation_config: Dict[str, Any]
+        self, deployment_id: str, validation_config: dict[str, Any]
     ) -> bool:
         """
         Run staging validation for a deployment.
@@ -707,7 +708,7 @@ class DeploymentPipeline:
             return False
 
     def promote_to_production(
-        self, deployment_id: str, promotion_config: Dict[str, Any]
+        self, deployment_id: str, promotion_config: dict[str, Any]
     ) -> bool:
         """
         Promote a validated deployment to production.
@@ -770,15 +771,15 @@ class DeploymentPipeline:
 
         return success
 
-    def get_deployment_status(self, deployment_id: str) -> Optional[DeploymentRecord]:
+    def get_deployment_status(self, deployment_id: str) -> DeploymentRecord | None:
         """Get status of a specific deployment."""
         return self.deployments.get(deployment_id)
 
     def list_deployments(
         self,
-        status: Optional[DeploymentStatus] = None,
-        model_name: Optional[str] = None,
-    ) -> List[DeploymentRecord]:
+        status: DeploymentStatus | None = None,
+        model_name: str | None = None,
+    ) -> list[DeploymentRecord]:
         """List deployments with optional filtering."""
         deployments = list(self.deployments.values())
 
@@ -790,7 +791,7 @@ class DeploymentPipeline:
 
         return sorted(deployments, key=lambda d: d.started_at, reverse=True)
 
-    def get_pipeline_stats(self) -> Dict[str, Any]:
+    def get_pipeline_stats(self) -> dict[str, Any]:
         """Get deployment pipeline statistics."""
         total_deployments = len(self.deployments)
 

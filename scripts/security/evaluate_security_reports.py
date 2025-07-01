@@ -11,7 +11,7 @@ from pathlib import Path
 
 def evaluate_security_reports():
     """Evaluate all security reports and determine if security gates pass."""
-    reports_dir = Path(".")
+    reports_dir = Path()
     security_issues = []
 
     # Evaluate Bandit report

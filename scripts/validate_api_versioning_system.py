@@ -9,35 +9,34 @@ including version detection, compatibility, deprecation, and middleware function
 import asyncio
 import json
 import sys
-import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any
 
 # Add the services directory to Python path
 sys.path.insert(0, str(Path(__file__).parent.parent / "services"))
 
 try:
     import httpx
+    import uvicorn
     from fastapi import FastAPI, Request, Response
     from fastapi.responses import JSONResponse
-    import uvicorn
-
-    # Import our versioning components
-    from shared.versioning.version_manager import APIVersion, VersionManager
+    from shared.api_models import APIMetadata, APIResponse, APIStatus
     from shared.versioning.compatibility_manager import (
         CompatibilityManager,
         create_compatibility_manager,
     )
     from shared.versioning.response_transformers import (
-        VersionedResponseBuilder,
         CompatibilityTransformer,
+        VersionedResponseBuilder,
     )
+
+    # Import our versioning components
+    from shared.versioning.version_manager import APIVersion, VersionManager
     from shared.versioning.versioned_router import (
         VersionedRouter,
         create_versioned_router,
     )
-    from shared.api_models import APIResponse, APIStatus, APIMetadata
 
     DEPENDENCIES_AVAILABLE = True
 except ImportError as e:
@@ -53,7 +52,7 @@ class APIVersioningValidator:
         self.test_server_port = 8998
         self.test_server_url = f"http://localhost:{self.test_server_port}"
 
-    def run_validation(self) -> Dict[str, Any]:
+    def run_validation(self) -> dict[str, Any]:
         """Run comprehensive validation of the API versioning system."""
         print("🧪 ACGS-1 API Versioning System Validation")
         print("=" * 60)
@@ -86,7 +85,7 @@ class APIVersioningValidator:
 
         return validation_results
 
-    def _create_dependency_error_report(self) -> Dict[str, Any]:
+    def _create_dependency_error_report(self) -> dict[str, Any]:
         """Create error report when dependencies are missing."""
         return {
             "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -96,7 +95,7 @@ class APIVersioningValidator:
             "message": "Please install required dependencies: pip install httpx fastapi uvicorn pydantic",
         }
 
-    def _test_version_manager(self) -> Dict[str, Any]:
+    def _test_version_manager(self) -> dict[str, Any]:
         """Test the version manager functionality."""
         print("🔍 Testing Version Manager...")
 
@@ -142,7 +141,7 @@ class APIVersioningValidator:
                 "error": str(e),
             }
 
-    def _test_compatibility_manager(self) -> Dict[str, Any]:
+    def _test_compatibility_manager(self) -> dict[str, Any]:
         """Test the compatibility manager functionality."""
         print("🔍 Testing Compatibility Manager...")
 
@@ -191,7 +190,7 @@ class APIVersioningValidator:
                 "error": str(e),
             }
 
-    def _test_response_transformers(self) -> Dict[str, Any]:
+    def _test_response_transformers(self) -> dict[str, Any]:
         """Test response transformation functionality."""
         print("🔍 Testing Response Transformers...")
 
@@ -248,7 +247,7 @@ class APIVersioningValidator:
                 "error": str(e),
             }
 
-    def _test_versioned_router(self) -> Dict[str, Any]:
+    def _test_versioned_router(self) -> dict[str, Any]:
         """Test versioned router functionality."""
         print("🔍 Testing Versioned Router...")
 
@@ -299,7 +298,7 @@ class APIVersioningValidator:
                 "error": str(e),
             }
 
-    async def _test_middleware_integration(self) -> Dict[str, Any]:
+    async def _test_middleware_integration(self) -> dict[str, Any]:
         """Test middleware integration."""
         print("🔍 Testing Middleware Integration...")
 
@@ -344,7 +343,7 @@ class APIVersioningValidator:
                 "error": str(e),
             }
 
-    async def _test_end_to_end_scenarios(self) -> Dict[str, Any]:
+    async def _test_end_to_end_scenarios(self) -> dict[str, Any]:
         """Test end-to-end versioning scenarios."""
         print("🔍 Testing End-to-End Scenarios...")
 
@@ -413,7 +412,7 @@ class APIVersioningValidator:
                 "error": str(e),
             }
 
-    def _generate_summary(self, results: Dict[str, Any]) -> Dict[str, Any]:
+    def _generate_summary(self, results: dict[str, Any]) -> dict[str, Any]:
         """Generate validation summary."""
         total_tests = 0
         passed_tests = 0
@@ -438,7 +437,7 @@ class APIVersioningValidator:
 
     def save_report(
         self,
-        results: Dict[str, Any],
+        results: dict[str, Any],
         output_path: str = "api_versioning_validation_report.json",
     ):
         """Save validation report to file."""

@@ -11,16 +11,17 @@ Implements comprehensive observability including:
 Target: Mean time to detection (MTTD) for issues <5 minutes
 """
 
-import os
-import sys
-import logging
 import asyncio
 import json
+import logging
+import os
+import sys
 import time
-import yaml
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+import yaml
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -75,9 +76,9 @@ class ComprehensiveObservabilityImplementor:
         }
 
         # Observability metrics
-        self.observability_metrics: List[ObservabilityMetric] = []
+        self.observability_metrics: list[ObservabilityMetric] = []
 
-    async def implement_comprehensive_observability(self) -> Dict[str, Any]:
+    async def implement_comprehensive_observability(self) -> dict[str, Any]:
         """Implement comprehensive observability infrastructure."""
         logger.info("👁️ Implementing comprehensive observability...")
 
@@ -130,7 +131,7 @@ class ComprehensiveObservabilityImplementor:
             observability_results["errors"].append(str(e))
             return observability_results
 
-    async def _deploy_distributed_tracing(self) -> Dict[str, Any]:
+    async def _deploy_distributed_tracing(self) -> dict[str, Any]:
         """Deploy distributed tracing infrastructure."""
         logger.info("🔍 Deploying distributed tracing...")
 
@@ -314,7 +315,7 @@ def trace_operation(operation_name: str):
             logger.error(f"Distributed tracing deployment failed: {e}")
             raise
 
-    async def _implement_business_metrics(self) -> Dict[str, Any]:
+    async def _implement_business_metrics(self) -> dict[str, Any]:
         """Implement business metrics dashboards."""
         logger.info("📊 Implementing business metrics dashboards...")
 
@@ -480,7 +481,7 @@ def trace_operation(operation_name: str):
             logger.error(f"Business metrics implementation failed: {e}")
             raise
 
-    async def _configure_log_aggregation(self) -> Dict[str, Any]:
+    async def _configure_log_aggregation(self) -> dict[str, Any]:
         """Configure log aggregation and analysis."""
         logger.info("📝 Configuring log aggregation...")
 
@@ -602,7 +603,7 @@ output {
             logger.error(f"Log aggregation configuration failed: {e}")
             raise
 
-    async def _deploy_alerting_system(self) -> Dict[str, Any]:
+    async def _deploy_alerting_system(self) -> dict[str, Any]:
         """Deploy alerting and anomaly detection system."""
         logger.info("🚨 Deploying alerting system...")
 
@@ -825,7 +826,7 @@ if __name__ == "__main__":
             logger.error(f"Alerting system deployment failed: {e}")
             raise
 
-    async def _implement_realtime_monitoring(self) -> Dict[str, Any]:
+    async def _implement_realtime_monitoring(self) -> dict[str, Any]:
         """Implement real-time monitoring capabilities."""
         logger.info("⚡ Implementing real-time monitoring...")
 
@@ -1056,7 +1057,7 @@ if __name__ == "__main__":
             logger.error(f"Real-time monitoring implementation failed: {e}")
             raise
 
-    async def _calculate_observability_metrics(self) -> Dict[str, Any]:
+    async def _calculate_observability_metrics(self) -> dict[str, Any]:
         """Calculate observability coverage and MTTD metrics."""
         logger.info("📊 Calculating observability metrics...")
 
@@ -1125,7 +1126,7 @@ if __name__ == "__main__":
             logger.error(f"Observability metrics calculation failed: {e}")
             raise
 
-    async def _generate_observability_report(self, results: Dict[str, Any]):
+    async def _generate_observability_report(self, results: dict[str, Any]):
         """Generate comprehensive observability implementation report."""
         report_path = self.project_root / "comprehensive_observability_report.json"
 

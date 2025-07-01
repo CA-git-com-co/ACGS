@@ -149,7 +149,7 @@ async def tool_function_call(command):
             result += "\nError:\n" + error
         return result.strip()
     except Exception as e:
-        return f"Error: {str(e)}"
+        return f"Error: {e!s}"
 
 
 def tool_function(command):

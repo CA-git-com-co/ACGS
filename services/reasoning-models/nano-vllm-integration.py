@@ -27,17 +27,14 @@ import asyncio
 import json
 import logging
 import time
-import os
 from dataclasses import dataclass
-from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
-from pydantic import BaseModel, Field
 import structlog
 
 # Import the Nano-vLLM adapter
-from .nano_vllm_adapter import NanoVLLMAdapter, ModelConfig, create_nano_vllm_adapter
+from .nano_vllm_adapter import NanoVLLMAdapter, create_nano_vllm_adapter
 
 # Configure logging
 logging.basicConfig(
@@ -70,7 +67,7 @@ class ReasoningRequest:
 
     content: str
     domain: ConstitutionalDomain
-    context: Dict[str, Any]
+    context: dict[str, Any]
     reasoning_depth: str = "standard"  # standard, deep, constitutional
     require_citations: bool = True
     max_tokens: int = 2048
@@ -80,11 +77,11 @@ class ReasoningRequest:
 class ReasoningResponse:
     """Response structure from reasoning models."""
 
-    reasoning_chain: List[str]
+    reasoning_chain: list[str]
     conclusion: str
     confidence_score: float
-    constitutional_compliance: Dict[str, float]
-    citations: List[str]
+    constitutional_compliance: dict[str, float]
+    citations: list[str]
     model_used: ReasoningModelType
     processing_time_ms: float
 
@@ -100,7 +97,7 @@ class NanoVLLMReasoningService:
 
     def __init__(self, enable_fallback: bool = True):
         self.enable_fallback = enable_fallback
-        self.adapters: Dict[ReasoningModelType, NanoVLLMAdapter] = {}
+        self.adapters: dict[ReasoningModelType, NanoVLLMAdapter] = {}
         self.fallback_service = None
 
         # Model configurations
@@ -147,7 +144,7 @@ class NanoVLLMReasoningService:
                 logger.info(f"Initialized {model_type.value}")
 
             except Exception as e:
-                logger.error(f"Failed to initialize {model_type.value}: {str(e)}")
+                logger.error(f"Failed to initialize {model_type.value}: {e!s}")
                 if not self.enable_fallback:
                     raise
 
@@ -167,9 +164,9 @@ class NanoVLLMReasoningService:
             self.fallback_service = VLLMReasoningService()
             logger.info("Fallback vLLM service initialized")
         except Exception as e:
-            logger.error(f"Failed to initialize fallback service: {str(e)}")
+            logger.error(f"Failed to initialize fallback service: {e!s}")
 
-    def _load_constitutional_principles(self) -> Dict[str, Any]:
+    def _load_constitutional_principles(self) -> dict[str, Any]:
         """Load constitutional principles for reasoning context."""
         return {
             "core_principles": [
@@ -214,7 +211,7 @@ class NanoVLLMReasoningService:
             "version": "2.0",
         }
 
-    def _load_reasoning_templates(self) -> Dict[str, str]:
+    def _load_reasoning_templates(self) -> dict[str, str]:
         """Load reasoning templates for different domains."""
         return {
             "constitutional_analysis": """
@@ -379,15 +376,14 @@ Begin governance decision analysis:
                     response, selected_model
                 )
 
+            # Fallback to original vLLM service
+            elif self.fallback_service:
+                logger.warning("Using fallback vLLM service")
+                parsed_response = await self.fallback_service.constitutional_reasoning(
+                    request
+                )
             else:
-                # Fallback to original vLLM service
-                if self.fallback_service:
-                    logger.warning("Using fallback vLLM service")
-                    parsed_response = (
-                        await self.fallback_service.constitutional_reasoning(request)
-                    )
-                else:
-                    raise RuntimeError("No reasoning services available")
+                raise RuntimeError("No reasoning services available")
 
             # Calculate processing time
             processing_time = (time.time() - start_time) * 1000
@@ -399,10 +395,10 @@ Begin governance decision analysis:
             return parsed_response
 
         except Exception as e:
-            logger.error(f"Constitutional reasoning failed: {str(e)}")
+            logger.error(f"Constitutional reasoning failed: {e!s}")
             # Return error response
             return ReasoningResponse(
-                reasoning_chain=[f"Error: {str(e)}"],
+                reasoning_chain=[f"Error: {e!s}"],
                 conclusion="Unable to complete reasoning analysis",
                 confidence_score=0.0,
                 constitutional_compliance={},
@@ -440,7 +436,7 @@ Begin governance decision analysis:
         )
 
     def _parse_nano_vllm_response(
-        self, api_response: Dict[str, Any], model_type: ReasoningModelType
+        self, api_response: dict[str, Any], model_type: ReasoningModelType
     ) -> ReasoningResponse:
         """Parse the Nano-vLLM response into structured reasoning response."""
 
@@ -465,7 +461,7 @@ Begin governance decision analysis:
             )
 
         except Exception as e:
-            logger.error(f"Error parsing Nano-vLLM response: {str(e)}")
+            logger.error(f"Error parsing Nano-vLLM response: {e!s}")
             # Return fallback response
             return ReasoningResponse(
                 reasoning_chain=["Error parsing response"],
@@ -477,7 +473,7 @@ Begin governance decision analysis:
                 processing_time_ms=0.0,
             )
 
-    def _extract_reasoning_chain(self, content: str) -> List[str]:
+    def _extract_reasoning_chain(self, content: str) -> list[str]:
         """Extract step-by-step reasoning from model response."""
         # Look for numbered steps or bullet points
         lines = content.split("\n")
@@ -513,7 +509,7 @@ Begin governance decision analysis:
         paragraphs = [p.strip() for p in content.split("\n\n") if p.strip()]
         return paragraphs[-1] if paragraphs else "No conclusion extracted"
 
-    def _extract_compliance_scores(self, content: str) -> Dict[str, float]:
+    def _extract_compliance_scores(self, content: str) -> dict[str, float]:
         """Extract constitutional compliance scores from response."""
         scores = {}
 
@@ -545,7 +541,7 @@ Begin governance decision analysis:
 
         return scores
 
-    def _extract_citations(self, content: str) -> List[str]:
+    def _extract_citations(self, content: str) -> list[str]:
         """Extract citations or references from response."""
         citations = []
 
@@ -618,9 +614,7 @@ Begin governance decision analysis:
                     responses.append(response)
 
                 except Exception as e:
-                    logger.warning(
-                        f"Ensemble model {model_type.value} failed: {str(e)}"
-                    )
+                    logger.warning(f"Ensemble model {model_type.value} failed: {e!s}")
 
         if not responses:
             raise RuntimeError("No models available for ensemble reasoning")
@@ -633,7 +627,7 @@ Begin governance decision analysis:
         return combined_response
 
     def _combine_ensemble_responses(
-        self, responses: List[ReasoningResponse]
+        self, responses: list[ReasoningResponse]
     ) -> ReasoningResponse:
         """Combine multiple reasoning responses into a single ensemble response."""
         if not responses:
@@ -645,7 +639,7 @@ Begin governance decision analysis:
         # Combine reasoning chains
         combined_reasoning = []
         for i, response in enumerate(responses):
-            combined_reasoning.append(f"Model {i+1} Analysis:")
+            combined_reasoning.append(f"Model {i + 1} Analysis:")
             combined_reasoning.extend(response.reasoning_chain)
             combined_reasoning.append("")
 
@@ -684,7 +678,7 @@ Begin governance decision analysis:
             processing_time_ms=0.0,  # Will be set by caller
         )
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Check health of all reasoning models."""
         health_status = {
             "service": "nano-vllm-reasoning",
@@ -717,7 +711,7 @@ Begin governance decision analysis:
                 await adapter.shutdown()
                 logger.info(f"Shutdown {model_type.value}")
             except Exception as e:
-                logger.error(f"Error shutting down {model_type.value}: {str(e)}")
+                logger.error(f"Error shutting down {model_type.value}: {e!s}")
 
         self.adapters.clear()
         logger.info("Nano-vLLM reasoning service shutdown complete")
@@ -769,7 +763,7 @@ async def main():
         await service.shutdown()
 
     except Exception as e:
-        logger.error(f"Example failed: {str(e)}")
+        logger.error(f"Example failed: {e!s}")
 
 
 if __name__ == "__main__":

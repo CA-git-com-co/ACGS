@@ -4,7 +4,7 @@ ACGS-2 Comprehensive Test Runner
 
 This script provides a unified interface for running all types of tests:
 - Unit tests
-- Integration tests  
+- Integration tests
 - End-to-end tests
 - Performance tests
 - Security tests
@@ -19,7 +19,6 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import List, Dict, Optional
 
 
 class TestRunner:
@@ -31,8 +30,8 @@ class TestRunner:
         self.results = {}
 
     def run_command(
-        self, cmd: List[str], description: str, timeout: int = 300
-    ) -> Dict[str, any]:
+        self, cmd: list[str], description: str, timeout: int = 300
+    ) -> dict[str, any]:
         """Run a command and capture results."""
         print(f"\n🔍 {description}")
         if self.verbose:
@@ -43,6 +42,7 @@ class TestRunner:
         try:
             result = subprocess.run(
                 cmd,
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=timeout,
@@ -81,7 +81,7 @@ class TestRunner:
 
     def run_unit_tests(
         self, parallel: bool = False, coverage: bool = False
-    ) -> Dict[str, any]:
+    ) -> dict[str, any]:
         """Run unit tests."""
         cmd = ["pytest", "tests/unit/"]
 
@@ -103,7 +103,7 @@ class TestRunner:
 
         return self.run_command(cmd, "Unit Tests")
 
-    def run_integration_tests(self, parallel: bool = False) -> Dict[str, any]:
+    def run_integration_tests(self, parallel: bool = False) -> dict[str, any]:
         """Run integration tests."""
         cmd = ["pytest", "tests/integration/", "-v", "--tb=short"]
 
@@ -112,31 +112,31 @@ class TestRunner:
 
         return self.run_command(cmd, "Integration Tests", timeout=600)
 
-    def run_e2e_tests(self) -> Dict[str, any]:
+    def run_e2e_tests(self) -> dict[str, any]:
         """Run end-to-end tests."""
         cmd = ["pytest", "tests/e2e/", "-v", "--tb=short", "-s"]
 
         return self.run_command(cmd, "End-to-End Tests", timeout=900)
 
-    def run_performance_tests(self) -> Dict[str, any]:
+    def run_performance_tests(self) -> dict[str, any]:
         """Run performance tests."""
         cmd = ["pytest", "tests/performance/", "-v", "--tb=short", "-m", "not slow"]
 
         return self.run_command(cmd, "Performance Tests", timeout=600)
 
-    def run_security_tests(self) -> Dict[str, any]:
+    def run_security_tests(self) -> dict[str, any]:
         """Run security tests."""
         cmd = ["pytest", "tests/security/", "-v", "--tb=short"]
 
         return self.run_command(cmd, "Security Tests")
 
-    def run_linting(self) -> Dict[str, any]:
+    def run_linting(self) -> dict[str, any]:
         """Run linting checks."""
         cmd = ["python", "scripts/lint.py", "--check-only"]
 
         return self.run_command(cmd, "Code Quality Checks")
 
-    def generate_coverage_report(self) -> Dict[str, any]:
+    def generate_coverage_report(self) -> dict[str, any]:
         """Generate comprehensive coverage report."""
         cmd = [
             "pytest",
@@ -154,7 +154,7 @@ class TestRunner:
 
     def run_all_tests(
         self, parallel: bool = False, coverage: bool = False
-    ) -> Dict[str, any]:
+    ) -> dict[str, any]:
         """Run all test suites."""
         print("🚀 Running Complete ACGS-2 Test Suite")
         print("=" * 50)
@@ -220,9 +220,8 @@ class TestRunner:
         if passed_tests == total_tests:
             print("\n🎉 All tests passed!")
             return True
-        else:
-            print(f"\n💥 {total_tests - passed_tests} test suite(s) failed")
-            return False
+        print(f"\n💥 {total_tests - passed_tests} test suite(s) failed")
+        return False
 
 
 def main():

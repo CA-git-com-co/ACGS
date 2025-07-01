@@ -4,7 +4,7 @@ Comprehensive Security Test Suite for Hardened Sandbox Controller
 
 Tests cover:
 - Zero sandbox escapes in penetration testing
-- Dangerous syscall blocking at kernel level  
+- Dangerous syscall blocking at kernel level
 - Cold start P95 latency <100ms (gVisor) / <200ms (Firecracker)
 - Resource usage within 10% of baseline
 - 100% violation detection rate
@@ -13,16 +13,11 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio
-import json
-import pytest
 import time
 import uuid
-from datetime import datetime, timezone
-from typing import Dict, List, Optional
 
 import httpx
-import subprocess
-import psutil
+import pytest
 
 # Test configuration
 TEST_BASE_URL = "http://localhost:8002"
@@ -351,7 +346,7 @@ print(f"Current time: {{time.time()}}")
             cold_start_ms = result.get("cold_start_time_ms", total_time_ms)
             cold_starts.append(cold_start_ms)
 
-            print(f"Cold start {i+1}: {cold_start_ms:.2f}ms")
+            print(f"Cold start {i + 1}: {cold_start_ms:.2f}ms")
 
         # Calculate P95 latency
         cold_starts.sort()
@@ -414,7 +409,7 @@ print(f"Current time: {{time.time()}}")
 
                 assert (
                     memory_used <= memory_limit * 1.1
-                ), f"Memory usage exceeded limit by >10%"
+                ), "Memory usage exceeded limit by >10%"
 
     @pytest.mark.parametrize("runtime", ["gvisor", "firecracker"])
     async def test_concurrent_execution(self, sandbox_client, runtime):
@@ -468,7 +463,7 @@ print(f"Completed after {sleep_time:.2f}s")
         print(f"  Total time: {total_time:.2f}s")
         print(f"  Successful: {successful}/{concurrent_requests}")
         print(f"  Failed: {failed}/{concurrent_requests}")
-        print(f"  Success rate: {(successful/concurrent_requests)*100:.1f}%")
+        print(f"  Success rate: {(successful / concurrent_requests) * 100:.1f}%")
 
         # Should handle at least 80% successfully
         success_rate = successful / concurrent_requests
@@ -623,7 +618,7 @@ print(f"Result: {result}")
         assert memory_used > 0, "Memory usage should be reported"
         assert memory_used <= 256, "Memory usage should not exceed limit"
 
-        print(f"✅ Resource monitoring working:")
+        print("✅ Resource monitoring working:")
         print(f"   CPU usage: {resource_usage.get('cpu_usage_cores', 0):.3f} cores")
         print(f"   Memory usage: {memory_used}MB")
 
@@ -637,7 +632,6 @@ async def run_penetration_tests():
     print("=" * 60)
 
     async with httpx.AsyncClient(base_url=TEST_BASE_URL) as client:
-
         total_tests = 0
         blocked_tests = 0
 
@@ -689,7 +683,7 @@ async def run_penetration_tests():
         # Calculate security score
         security_score = (blocked_tests / total_tests) * 100 if total_tests > 0 else 0
 
-        print(f"\n🏆 PENETRATION TEST RESULTS:")
+        print("\n🏆 PENETRATION TEST RESULTS:")
         print(f"   Total tests: {total_tests}")
         print(f"   Properly handled: {blocked_tests}")
         print(f"   Security score: {security_score:.1f}%")

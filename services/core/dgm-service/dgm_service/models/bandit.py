@@ -3,7 +3,7 @@ Bandit algorithm state model for DGM service.
 """
 
 import enum
-from typing import Any, Dict
+from typing import Any
 
 from sqlalchemy import JSON, Column, DateTime, Enum, Integer, Numeric, String
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
@@ -77,7 +77,7 @@ class BanditState(Base):
             f"context={self.context_key}, arm={self.arm_id})>"
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "id": str(self.id),

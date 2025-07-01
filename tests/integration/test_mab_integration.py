@@ -267,7 +267,7 @@ async def main():
         print(f"{test_name:.<30} {status}")
 
     print("-" * 60)
-    print(f"Overall: {passed}/{total} tests passed ({passed/total*100:.1f}%)")
+    print(f"Overall: {passed}/{total} tests passed ({passed / total * 100:.1f}%)")
 
     if passed == total:
         print("\n🎉 All MAB integration tests passed!")
@@ -277,9 +277,8 @@ async def main():
         print("3. ✅ MAB integration with GS service ready")
         print("4. 🔄 Ready for Phase 2: Real-world validation")
         return True
-    else:
-        print(f"\n⚠️  {total - passed} test(s) failed. Please review and fix issues.")
-        return False
+    print(f"\n⚠️  {total - passed} test(s) failed. Please review and fix issues.")
+    return False
 
 
 if __name__ == "__main__":

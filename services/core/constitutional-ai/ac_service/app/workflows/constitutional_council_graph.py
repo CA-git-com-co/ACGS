@@ -312,7 +312,7 @@ class ConstitutionalCouncilGraph:
             return {
                 **state,
                 "status": WorkflowStatus.FAILED.value,
-                "error_message": f"Failed to create amendment proposal: {str(e)}",
+                "error_message": f"Failed to create amendment proposal: {e!s}",
                 "current_phase": "proposal_failed",
             }
 
@@ -448,7 +448,7 @@ class ConstitutionalCouncilGraph:
             return {
                 **state,
                 "status": WorkflowStatus.FAILED.value,
-                "error_message": f"Failed to gather stakeholder feedback: {str(e)}",
+                "error_message": f"Failed to gather stakeholder feedback: {e!s}",
                 "current_phase": "feedback_failed",
             }
 
@@ -552,7 +552,7 @@ class ConstitutionalCouncilGraph:
             return {
                 **state,
                 "status": WorkflowStatus.FAILED.value,
-                "error_message": f"Failed to analyze constitutionality: {str(e)}",
+                "error_message": f"Failed to analyze constitutionality: {e!s}",
                 "current_phase": "analysis_failed",
             }
 
@@ -682,7 +682,7 @@ class ConstitutionalCouncilGraph:
             return {
                 **state,
                 "status": WorkflowStatus.FAILED.value,
-                "error_message": f"Failed to conduct voting: {str(e)}",
+                "error_message": f"Failed to conduct voting: {e!s}",
                 "current_phase": "voting_failed",
             }
 
@@ -820,7 +820,7 @@ class ConstitutionalCouncilGraph:
             return {
                 **state,
                 "status": WorkflowStatus.FAILED.value,
-                "error_message": f"Failed to refine amendment: {str(e)}",
+                "error_message": f"Failed to refine amendment: {e!s}",
                 "current_phase": "refinement_failed",
             }
 
@@ -912,7 +912,7 @@ class ConstitutionalCouncilGraph:
             return {
                 **state,
                 "status": WorkflowStatus.FAILED.value,
-                "error_message": f"Failed to finalize amendment: {str(e)}",
+                "error_message": f"Failed to finalize amendment: {e!s}",
                 "current_phase": "finalization_failed",
                 "recovery_initiated": True,
                 "failure_timestamp": datetime.now(timezone.utc).isoformat(),
@@ -1520,14 +1520,13 @@ class ConstitutionalCouncilGraph:
                     "transition_result": transition_result,
                     "updated_amendment": updated_amendment is not None,
                 }
-            else:
-                return {
-                    "success": False,
-                    "error": f"State transition failed: {transition_result['error']}",
-                    "amendment_id": amendment_id,
-                    "current_status": amendment.status,
-                    "target_status": target_status,
-                }
+            return {
+                "success": False,
+                "error": f"State transition failed: {transition_result['error']}",
+                "amendment_id": amendment_id,
+                "current_status": amendment.status,
+                "target_status": target_status,
+            }
 
         except Exception as e:
             logger.error(f"Failed to perform automated status transition: {e}")

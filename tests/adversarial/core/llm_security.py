@@ -8,7 +8,7 @@ including prompt injection, jailbreaking, and manipulation attacks.
 import json
 import logging
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 import aiohttp
 
@@ -151,22 +151,21 @@ class LLMSecurityTester:
 
         if vector == "prompt_injection_attack":
             return await self._test_prompt_injection_attack(gs_endpoint)
-        elif vector == "jailbreaking_attempt":
+        if vector == "jailbreaking_attempt":
             return await self._test_jailbreaking_attempt(gs_endpoint)
-        elif vector == "context_manipulation":
+        if vector == "context_manipulation":
             return await self._test_context_manipulation(gs_endpoint)
-        elif vector == "output_manipulation":
+        if vector == "output_manipulation":
             return await self._test_output_manipulation(gs_endpoint)
-        elif vector == "system_prompt_override":
+        if vector == "system_prompt_override":
             return await self._test_system_prompt_override(gs_endpoint)
-        elif vector == "role_confusion_attack":
+        if vector == "role_confusion_attack":
             return await self._test_role_confusion_attack(gs_endpoint)
-        elif vector == "instruction_hijacking":
+        if vector == "instruction_hijacking":
             return await self._test_instruction_hijacking(gs_endpoint)
-        elif vector == "constitutional_bypass":
+        if vector == "constitutional_bypass":
             return await self._test_constitutional_bypass(gs_endpoint)
-        else:
-            return []
+        return []
 
     async def _test_prompt_injection_attack(
         self, gs_endpoint: str
@@ -199,7 +198,6 @@ class LLMSecurityTester:
                             json=injection_request,
                             timeout=30,
                         ) as response:
-
                             execution_time = (time.time() - start_time) * 1000
 
                             if response.status == 200:
@@ -275,7 +273,6 @@ class LLMSecurityTester:
                             json=jailbreak_request,
                             timeout=30,
                         ) as response:
-
                             execution_time = (time.time() - start_time) * 1000
 
                             if response.status == 200:

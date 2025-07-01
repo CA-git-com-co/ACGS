@@ -28,7 +28,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -56,7 +56,7 @@ class PerformanceOptimizer:
             "availability_percent": 99.9,
         }
 
-    async def implement_advanced_caching_strategies(self) -> Dict[str, Any]:
+    async def implement_advanced_caching_strategies(self) -> dict[str, Any]:
         """Implement advanced Redis caching strategies."""
         logger.info("🚀 Implementing Advanced Caching Strategies...")
 
@@ -141,7 +141,7 @@ class PerformanceOptimizer:
             "expected_performance_gain": "40-70% improvement in cached operations",
         }
 
-    async def deploy_horizontal_scaling_infrastructure(self) -> Dict[str, Any]:
+    async def deploy_horizontal_scaling_infrastructure(self) -> dict[str, Any]:
         """Deploy horizontal scaling infrastructure for >1000 concurrent users."""
         logger.info("🔄 Deploying Horizontal Scaling Infrastructure...")
 
@@ -237,7 +237,7 @@ class PerformanceOptimizer:
             "expected_performance_gain": "300% concurrent user capacity increase",
         }
 
-    def _generate_haproxy_config(self, scaling_config: Dict[str, Any]) -> str:
+    def _generate_haproxy_config(self, scaling_config: dict[str, Any]) -> str:
         """Generate HAProxy configuration for load balancing."""
         config = """
 global
@@ -298,11 +298,13 @@ backend {service}_backend
 
             # Generate server entries for scaling instances
             for i in range(service_config["max_instances"]):
-                config += f"    server {service}_{i+1} 127.0.0.1:{port + i*100} check\n"
+                config += (
+                    f"    server {service}_{i + 1} 127.0.0.1:{port + i * 100} check\n"
+                )
 
         return config
 
-    def _generate_docker_compose_scaling(self, scaling_config: Dict[str, Any]) -> str:
+    def _generate_docker_compose_scaling(self, scaling_config: dict[str, Any]) -> str:
         """Generate Docker Compose configuration for service scaling."""
         config = """version: '3.8'
 
@@ -403,7 +405,7 @@ volumes:
 
         return config
 
-    async def optimize_blockchain_costs(self) -> Dict[str, Any]:
+    async def optimize_blockchain_costs(self) -> dict[str, Any]:
         """Optimize Solana transaction costs to <0.01 SOL per governance action."""
         logger.info("⛓️ Optimizing Blockchain Transaction Costs...")
 
@@ -476,7 +478,7 @@ volumes:
             "cost_reduction_percent": 60,
         }
 
-    async def validate_performance_improvements(self) -> Dict[str, Any]:
+    async def validate_performance_improvements(self) -> dict[str, Any]:
         """Validate that performance improvements meet production targets."""
         logger.info("📊 Validating Performance Improvements...")
 
@@ -528,7 +530,7 @@ volumes:
             "production_ready": performance_score >= 100,
         }
 
-    async def run_comprehensive_optimization(self) -> Dict[str, Any]:
+    async def run_comprehensive_optimization(self) -> dict[str, Any]:
         """Run comprehensive performance optimization for production readiness."""
         logger.info("🚀 Starting Comprehensive Performance Optimization")
         logger.info("=" * 80)

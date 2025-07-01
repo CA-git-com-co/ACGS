@@ -17,7 +17,7 @@ import asyncio
 import json
 import logging
 import sys
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -524,10 +524,9 @@ class ImmediateTestingValidator:
 
         if not failed_phases:
             return "passed"
-        elif len(failed_phases) <= 1:
+        if len(failed_phases) <= 1:
             return "warning"
-        else:
-            return "failed"
+        return "failed"
 
     def _identify_critical_issues(
         self, validation_results: dict[str, Any]

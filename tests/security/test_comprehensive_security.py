@@ -7,13 +7,13 @@ Security tests to improve coverage from current 30% to at least 80%.
 Tests authentication, authorization, encryption, input validation, and security headers.
 """
 
-import pytest
 import asyncio
-import aiohttp
 import json
 import time
-from typing import Dict, Any, List
-from unittest.mock import Mock, patch
+from typing import Any
+
+import aiohttp
+import pytest
 
 # Service endpoints for security testing
 SERVICES = {
@@ -51,7 +51,7 @@ class SecurityTestSuite:
         if self.session:
             await self.session.close()
 
-    async def test_authentication_security(self) -> Dict[str, Any]:
+    async def test_authentication_security(self) -> dict[str, Any]:
         """Test authentication security across all services."""
         print("🔐 Testing Authentication Security...")
 
@@ -159,7 +159,7 @@ class SecurityTestSuite:
         self.results["authentication_tests"] = auth_results
         return auth_results
 
-    async def test_security_headers(self) -> Dict[str, Any]:
+    async def test_security_headers(self) -> dict[str, Any]:
         """Test security headers in service responses."""
         print("🛡️ Testing Security Headers...")
 
@@ -210,7 +210,7 @@ class SecurityTestSuite:
         self.results["security_headers_tests"] = header_results
         return header_results
 
-    async def test_input_validation(self) -> Dict[str, Any]:
+    async def test_input_validation(self) -> dict[str, Any]:
         """Test input validation and sanitization."""
         print("🔍 Testing Input Validation...")
 
@@ -299,7 +299,7 @@ class SecurityTestSuite:
         self.results["input_validation_tests"] = validation_results
         return validation_results
 
-    async def test_rate_limiting_security(self) -> Dict[str, Any]:
+    async def test_rate_limiting_security(self) -> dict[str, Any]:
         """Test rate limiting and DoS protection."""
         print("⚡ Testing Rate Limiting Security...")
 
@@ -354,7 +354,7 @@ class SecurityTestSuite:
         self.results["rate_limiting_tests"] = rate_limit_results
         return rate_limit_results
 
-    async def run_all_security_tests(self) -> Dict[str, Any]:
+    async def run_all_security_tests(self) -> dict[str, Any]:
         """Run all security tests."""
         print("🔒 Running Comprehensive Security Test Suite")
         print("=" * 60)
@@ -404,7 +404,7 @@ class SecurityTestSuite:
         }
 
         print("=" * 60)
-        print(f"🔒 Security Test Results:")
+        print("🔒 Security Test Results:")
         print(f"   Overall Security Score: {overall_score:.1%}")
         print(f"   Authentication: {auth_score}/{total_services} services secure")
         print(f"   Security Headers: {headers_score}/{total_services} services secure")
@@ -412,7 +412,7 @@ class SecurityTestSuite:
             f"   Input Validation: {validation_score}/{total_services} services secure"
         )
         print(f"   Rate Limiting: {rate_limit_score}/{total_services} services secure")
-        print(f"   Target: 80% security coverage")
+        print("   Target: 80% security coverage")
         print(
             f"   Status: {'✅ PASSED' if self.results['summary']['meets_target'] else '❌ FAILED'}"
         )

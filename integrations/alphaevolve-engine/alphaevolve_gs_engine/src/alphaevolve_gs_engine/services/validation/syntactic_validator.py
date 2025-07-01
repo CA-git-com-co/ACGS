@@ -114,12 +114,11 @@ class SyntacticValidator:
                 logger.info(f"Rego policy '{policy_id}' is syntactically valid.")
                 # stdout might contain the parsed AST, not particularly useful here for just validation
                 return True, "Policy is syntactically valid."
-            else:
-                error_message = stderr.strip()
-                logger.warning(
-                    f"Rego policy '{policy_id}' is syntactically invalid. Error: {error_message}"
-                )
-                return False, f"Syntactic error: {error_message}"
+            error_message = stderr.strip()
+            logger.warning(
+                f"Rego policy '{policy_id}' is syntactically invalid. Error: {error_message}"
+            )
+            return False, f"Syntactic error: {error_message}"
 
         except FileNotFoundError:
             logger.error(
@@ -142,7 +141,7 @@ class SyntacticValidator:
                 f"An unexpected error occurred during syntactic validation of policy '{policy_id}': {e}",
                 exc_info=True,
             )
-            return False, f"An unexpected error occurred: {str(e)}"
+            return False, f"An unexpected error occurred: {e!s}"
 
     def validate(
         self, policy_code: str, language: str = "rego", policy_id: str | None = None
@@ -164,11 +163,10 @@ class SyntacticValidator:
         _policy_id = policy_id or "UnnamedPolicy"
         if language.lower() == "rego":
             return self.validate_rego_policy(policy_code, policy_id=_policy_id)
-        else:
-            logger.error(f"Unsupported language for syntactic validation: {language}")
-            raise NotImplementedError(
-                f"Syntactic validation for '{language}' is not implemented."
-            )
+        logger.error(f"Unsupported language for syntactic validation: {language}")
+        raise NotImplementedError(
+            f"Syntactic validation for '{language}' is not implemented."
+        )
 
 
 # Example Usage

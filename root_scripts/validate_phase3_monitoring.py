@@ -83,7 +83,7 @@ class Phase3MonitoringValidator:
 
         except requests.exceptions.RequestException as e:
             result["status"] = "❌ Not accessible"
-            result["issues"].append(f"Connection error: {str(e)}")
+            result["issues"].append(f"Connection error: {e!s}")
 
         return result
 
@@ -121,7 +121,7 @@ class Phase3MonitoringValidator:
 
         except requests.exceptions.RequestException as e:
             result["status"] = "❌ Not accessible"
-            result["issues"].append(f"Connection error: {str(e)}")
+            result["issues"].append(f"Connection error: {e!s}")
 
         return result
 
@@ -171,7 +171,7 @@ class Phase3MonitoringValidator:
 
         except requests.exceptions.RequestException as e:
             result["status"] = "❌ Not accessible"
-            result["issues"].append(f"Connection error: {str(e)}")
+            result["issues"].append(f"Connection error: {e!s}")
 
         return result
 
@@ -238,7 +238,7 @@ class Phase3MonitoringValidator:
 
         except requests.exceptions.RequestException as e:
             result["status"] = "❌ Validation failed"
-            result["issues"].append(f"Validation error: {str(e)}")
+            result["issues"].append(f"Validation error: {e!s}")
 
         return result
 

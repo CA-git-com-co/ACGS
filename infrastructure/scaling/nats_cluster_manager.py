@@ -7,19 +7,16 @@ Advanced NATS clustering with constitutional compliance, auto-scaling, and high 
 import asyncio
 import json
 import logging
-import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Dict, List, Optional, Any
+from typing import Any
 
 import nats
-from nats.errors import TimeoutError, NoServersError
 from prometheus_client import (
     CollectorRegistry,
     Counter,
     Gauge,
-    Histogram,
     start_http_server,
 )
 
@@ -65,7 +62,7 @@ class NATSNode:
     weight: float = 1.0
 
     # Cluster configuration
-    cluster_routes: List[str] = field(default_factory=list)
+    cluster_routes: list[str] = field(default_factory=list)
     cluster_name: str = "acgs-cluster"
 
     # Constitutional compliance
@@ -77,7 +74,7 @@ class NATSNode:
     message_count: int = 0
     bytes_sent: int = 0
     bytes_received: int = 0
-    last_health_check: Optional[datetime] = None
+    last_health_check: datetime | None = None
 
 
 @dataclass
@@ -85,7 +82,7 @@ class StreamConfig:
     """NATS JetStream configuration."""
 
     stream_name: str
-    subjects: List[str]
+    subjects: list[str]
     retention_policy: str = "limits"  # limits, interest, workqueue
     max_msgs: int = 1000000
     max_bytes: int = 1024 * 1024 * 1024  # 1GB
@@ -108,13 +105,13 @@ class NATSClusterManager:
         self.setup_metrics()
 
         # Cluster configuration
-        self.cluster_nodes: Dict[str, NATSNode] = {}
-        self.stream_configs: Dict[str, StreamConfig] = {}
-        self.nats_connections: Dict[str, nats.NATS] = {}
+        self.cluster_nodes: dict[str, NATSNode] = {}
+        self.stream_configs: dict[str, StreamConfig] = {}
+        self.nats_connections: dict[str, nats.NATS] = {}
 
         # Cluster state
         self.cluster_mode = ClusterMode.CLUSTER
-        self.leader_node_id: Optional[str] = None
+        self.leader_node_id: str | None = None
         self.cluster_health_score: float = 100.0
 
         # Auto-scaling configuration
@@ -180,7 +177,7 @@ class NATSClusterManager:
         base_monitor_port = 8222
 
         for i in range(3):
-            node_id = f"nats-node-{i+1}"
+            node_id = f"nats-node-{i + 1}"
 
             # Calculate cluster routes (connect to other nodes)
             cluster_routes = []
@@ -327,7 +324,7 @@ cluster {{
     port: {node.cluster_port}
     
     routes: [
-        {', '.join(f'"{route}"' for route in node.cluster_routes)}
+        {", ".join(f'"{route}"' for route in node.cluster_routes)}
     ]
     
     # Constitutional compliance
@@ -461,7 +458,7 @@ accounts {{
             logger.error(f"Failed to publish constitutional event: {e}")
             return False
 
-    async def get_healthy_connection(self) -> Optional[nats.NATS]:
+    async def get_healthy_connection(self) -> nats.NATS | None:
         """Get a healthy NATS connection."""
         for node_id, connection in self.nats_connections.items():
             node = self.cluster_nodes.get(node_id)
@@ -491,9 +488,8 @@ accounts {{
             if target_nodes > current_nodes:
                 # Scale up
                 return await self.scale_up_cluster(target_nodes - current_nodes)
-            else:
-                # Scale down
-                return await self.scale_down_cluster(current_nodes - target_nodes)
+            # Scale down
+            return await self.scale_down_cluster(current_nodes - target_nodes)
 
         except Exception as e:
             logger.error(f"Error scaling cluster: {e}")
@@ -668,7 +664,7 @@ accounts {{
         except Exception as e:
             logger.error(f"Error updating cluster metrics: {e}")
 
-    def get_cluster_status(self) -> Dict[str, Any]:
+    def get_cluster_status(self) -> dict[str, Any]:
         """Get NATS cluster status."""
         return {
             "cluster_mode": self.cluster_mode.value,

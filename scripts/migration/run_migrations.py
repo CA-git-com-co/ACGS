@@ -26,6 +26,7 @@ def wait_for_postgres(
             # Use pg_isready if available, otherwise try psql
             result = subprocess.run(
                 ["pg_isready", "-h", host, "-p", str(port), "-U", user],
+                check=False,
                 capture_output=True,
                 text=True,
             )
@@ -53,6 +54,7 @@ def wait_for_postgres(
                         "-c",
                         "SELECT 1;",
                     ],
+                    check=False,
                     capture_output=True,
                     text=True,
                     env=env,
@@ -106,6 +108,7 @@ def run_migrations():
         # Run alembic upgrade
         result = subprocess.run(
             [sys.executable, "-m", "alembic", "-c", "alembic.ini", "upgrade", "head"],
+            check=False,
             capture_output=True,
             text=True,
         )
@@ -114,11 +117,10 @@ def run_migrations():
             print("✅ Migrations completed successfully!")
             print(result.stdout)
             return True
-        else:
-            print("❌ Migration failed!")
-            print("STDOUT:", result.stdout)
-            print("STDERR:", result.stderr)
-            return False
+        print("❌ Migration failed!")
+        print("STDOUT:", result.stdout)
+        print("STDERR:", result.stderr)
+        return False
 
     except Exception as e:
         print(f"❌ Error running migrations: {e}")

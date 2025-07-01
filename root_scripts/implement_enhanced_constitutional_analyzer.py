@@ -73,12 +73,11 @@ class EnhancedConstitutionalAnalyzerImplementation:
                     "validation_result": validation_data,
                     "hash_verified": validation_data.get("is_valid", False),
                 }
-            else:
-                return {
-                    "hash_validation": "failed",
-                    "status_code": response.status_code,
-                    "constitutional_hash": CONSTITUTIONAL_HASH,
-                }
+            return {
+                "hash_validation": "failed",
+                "status_code": response.status_code,
+                "constitutional_hash": CONSTITUTIONAL_HASH,
+            }
 
         except Exception as e:
             logger.error(f"Constitutional hash validation failed: {e}")
@@ -219,10 +218,9 @@ class EnhancedConstitutionalAnalyzerImplementation:
         """Assess if the analysis result matches expected compliance level"""
         if expected_compliance == "high":
             return actual_compliant
-        elif expected_compliance == "low":
+        if expected_compliance == "low":
             return not actual_compliant
-        else:
-            return True  # Medium compliance - either result acceptable
+        return True  # Medium compliance - either result acceptable
 
     async def test_real_time_enforcement_integration(self) -> dict[str, Any]:
         """Test real-time enforcement integration with PGC service"""
@@ -257,12 +255,11 @@ class EnhancedConstitutionalAnalyzerImplementation:
                     "processing_time_ms": workflow_result.get("processing_time_ms", 0),
                     "integration_successful": True,
                 }
-            else:
-                return {
-                    "real_time_enforcement": "failed",
-                    "status_code": response.status_code,
-                    "integration_successful": False,
-                }
+            return {
+                "real_time_enforcement": "failed",
+                "status_code": response.status_code,
+                "integration_successful": False,
+            }
 
         except Exception as e:
             logger.error(f"Real-time enforcement integration test failed: {e}")
@@ -310,12 +307,11 @@ class EnhancedConstitutionalAnalyzerImplementation:
                     "analysis_features": list(advanced_analysis.keys()),
                     "embeddings_integration_successful": True,
                 }
-            else:
-                return {
-                    "qwen3_embeddings": "not_available",
-                    "status_code": response.status_code,
-                    "embeddings_integration_successful": False,
-                }
+            return {
+                "qwen3_embeddings": "not_available",
+                "status_code": response.status_code,
+                "embeddings_integration_successful": False,
+            }
 
         except Exception as e:
             logger.error(f"Qwen3 embeddings integration test failed: {e}")
@@ -518,11 +514,10 @@ async def main():
                 "✅ Enhanced Multi-Model Constitutional Analyzer - IMPLEMENTED SUCCESSFULLY"
             )
             return True
-        else:
-            logger.warning(
-                "⚠️ Enhanced Constitutional Analyzer implementation needs improvement"
-            )
-            return False
+        logger.warning(
+            "⚠️ Enhanced Constitutional Analyzer implementation needs improvement"
+        )
+        return False
 
     except Exception as e:
         logger.error(f"❌ Implementation validation failed: {e}")

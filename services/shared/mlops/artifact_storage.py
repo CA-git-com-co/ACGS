@@ -8,16 +8,15 @@ This module ensures full traceability from data to deployment with
 constitutional hash integrity verification.
 """
 
-import logging
-import json
-import hashlib
-import shutil
 import gzip
-from datetime import datetime, timezone, timedelta
-from dataclasses import dataclass, field, asdict
-from typing import Dict, List, Optional, Any, Union
+import hashlib
+import json
+import logging
+import shutil
+from dataclasses import asdict, dataclass, field
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
-import pickle
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -44,21 +43,21 @@ class ArtifactMetadata:
     compression: bool = False
 
     # Lineage information
-    parent_artifacts: List[str] = field(default_factory=list)
-    child_artifacts: List[str] = field(default_factory=list)
-    dependencies: Dict[str, str] = field(default_factory=dict)
+    parent_artifacts: list[str] = field(default_factory=list)
+    child_artifacts: list[str] = field(default_factory=list)
+    dependencies: dict[str, str] = field(default_factory=dict)
 
     # Timestamps
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    accessed_at: Optional[datetime] = None
+    accessed_at: datetime | None = None
 
     # Constitutional compliance
     constitutional_hash: str = "cdd01ef066bc6cf2"
 
     # Additional metadata
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         data = asdict(self)
 
@@ -71,7 +70,7 @@ class ArtifactMetadata:
         return data
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "ArtifactMetadata":
+    def from_dict(cls, data: dict[str, Any]) -> "ArtifactMetadata":
         """Create from dictionary representation."""
         # Parse datetime strings
         if "created_at" in data and isinstance(data["created_at"], str):
@@ -107,7 +106,7 @@ class ArtifactStorage:
         self.metadata_dir.mkdir(exist_ok=True)
 
         # Load existing metadata
-        self.artifacts: Dict[str, ArtifactMetadata] = {}
+        self.artifacts: dict[str, ArtifactMetadata] = {}
         self._load_metadata()
 
         logger.info(f"ArtifactStorage initialized at {storage_root}")
@@ -118,7 +117,7 @@ class ArtifactStorage:
 
         if metadata_file.exists():
             try:
-                with open(metadata_file, "r") as f:
+                with open(metadata_file) as f:
                     metadata_data = json.load(f)
 
                 for artifact_id, artifact_data in metadata_data.items():
@@ -177,10 +176,10 @@ class ArtifactStorage:
         artifact_type: str,
         name: str,
         version: str,
-        source_path: Union[str, Path],
-        parent_artifacts: Optional[List[str]] = None,
-        dependencies: Optional[Dict[str, str]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        source_path: str | Path,
+        parent_artifacts: list[str] | None = None,
+        dependencies: dict[str, str] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> ArtifactMetadata:
         """
         Store an artifact with metadata and lineage tracking.
@@ -283,7 +282,7 @@ class ArtifactStorage:
             raise StorageError(f"Failed to store artifact: {e}")
 
     def retrieve_artifact(
-        self, artifact_id: str, target_path: Optional[Union[str, Path]] = None
+        self, artifact_id: str, target_path: str | Path | None = None
     ) -> Path:
         """
         Retrieve an artifact from storage.
@@ -325,8 +324,7 @@ class ArtifactStorage:
                 )
                 self._decompress_file(storage_path, temp_path)
                 return temp_path
-            else:
-                return storage_path
+            return storage_path
 
         target_path = Path(target_path)
 
@@ -340,22 +338,21 @@ class ArtifactStorage:
             else:
                 # Compressed archive
                 shutil.unpack_archive(storage_path, target_path)
+        elif storage_path.is_file():
+            shutil.copy2(storage_path, target_path)
         else:
-            if storage_path.is_file():
-                shutil.copy2(storage_path, target_path)
-            else:
-                shutil.copytree(storage_path, target_path)
+            shutil.copytree(storage_path, target_path)
 
         logger.info(f"Retrieved artifact {artifact_id} to {target_path}")
         return target_path
 
-    def get_artifact_metadata(self, artifact_id: str) -> Optional[ArtifactMetadata]:
+    def get_artifact_metadata(self, artifact_id: str) -> ArtifactMetadata | None:
         """Get metadata for a specific artifact."""
         return self.artifacts.get(artifact_id)
 
     def list_artifacts(
-        self, artifact_type: Optional[str] = None, name: Optional[str] = None
-    ) -> List[ArtifactMetadata]:
+        self, artifact_type: str | None = None, name: str | None = None
+    ) -> list[ArtifactMetadata]:
         """List artifacts with optional filtering."""
         artifacts = list(self.artifacts.values())
 
@@ -412,7 +409,7 @@ class ArtifactStorage:
         logger.info(f"Deleted artifact {artifact_id}")
         return True
 
-    def get_storage_stats(self) -> Dict[str, Any]:
+    def get_storage_stats(self) -> dict[str, Any]:
         """Get storage statistics."""
         total_size = sum(a.file_size_bytes for a in self.artifacts.values())
 
@@ -451,7 +448,7 @@ class LineageTracker:
 
     def trace_lineage(
         self, artifact_id: str, direction: str = "both"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Trace lineage for an artifact.
 
@@ -485,7 +482,7 @@ class LineageTracker:
 
         return lineage
 
-    def _trace_upstream(self, artifact_id: str, visited: set) -> List[Dict[str, Any]]:
+    def _trace_upstream(self, artifact_id: str, visited: set) -> list[dict[str, Any]]:
         """Recursively trace upstream dependencies."""
         if artifact_id in visited:
             return []
@@ -511,7 +508,7 @@ class LineageTracker:
 
         return upstream
 
-    def _trace_downstream(self, artifact_id: str, visited: set) -> List[Dict[str, Any]]:
+    def _trace_downstream(self, artifact_id: str, visited: set) -> list[dict[str, Any]]:
         """Recursively trace downstream dependencies."""
         if artifact_id in visited:
             return []
@@ -537,7 +534,7 @@ class LineageTracker:
 
         return downstream
 
-    def validate_lineage_integrity(self) -> Dict[str, Any]:
+    def validate_lineage_integrity(self) -> dict[str, Any]:
         """Validate integrity of lineage relationships."""
         issues = []
 
@@ -602,11 +599,11 @@ class ArtifactManager:
         self,
         model_name: str,
         version: str,
-        model_path: Union[str, Path],
-        config_path: Union[str, Path],
-        metrics: Dict[str, float],
-        parent_model_id: Optional[str] = None,
-    ) -> Dict[str, str]:
+        model_path: str | Path,
+        config_path: str | Path,
+        metrics: dict[str, float],
+        parent_model_id: str | None = None,
+    ) -> dict[str, str]:
         """
         Store complete set of model artifacts.
 
@@ -667,7 +664,7 @@ class ArtifactManager:
         return artifact_ids
 
     def _create_metrics_file(
-        self, metrics: Dict[str, float], model_name: str, version: str
+        self, metrics: dict[str, float], model_name: str, version: str
     ) -> Path:
         """Create temporary metrics file."""
         metrics_data = {
@@ -684,7 +681,7 @@ class ArtifactManager:
 
         return temp_file
 
-    def get_model_lineage(self, model_artifact_id: str) -> Dict[str, Any]:
+    def get_model_lineage(self, model_artifact_id: str) -> dict[str, Any]:
         """Get complete lineage for a model."""
         return self.lineage.trace_lineage(model_artifact_id)
 

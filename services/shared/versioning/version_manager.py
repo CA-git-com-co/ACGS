@@ -10,9 +10,6 @@ import re
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Dict, List, Optional, Set, Tuple, Union
-
-from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -64,8 +61,8 @@ class APIVersion:
     major: int
     minor: int
     patch: int
-    prerelease: Optional[str] = None
-    build_metadata: Optional[str] = None
+    prerelease: str | None = None
+    build_metadata: str | None = None
 
     def __post_init__(self):
         """Validate version components."""
@@ -177,10 +174,9 @@ class APIVersion:
         """Determine the type of change between versions."""
         if self.major != other.major:
             return VersionPolicy.MAJOR
-        elif self.minor != other.minor:
+        if self.minor != other.minor:
             return VersionPolicy.MINOR
-        else:
-            return VersionPolicy.PATCH
+        return VersionPolicy.PATCH
 
 
 @dataclass
@@ -189,11 +185,11 @@ class VersionCompatibility:
 
     version: APIVersion
     status: VersionStatus
-    supported_until: Optional[datetime] = None
-    deprecated_since: Optional[datetime] = None
-    sunset_date: Optional[datetime] = None
-    migration_guide_url: Optional[str] = None
-    breaking_changes: List[str] = field(default_factory=list)
+    supported_until: datetime | None = None
+    deprecated_since: datetime | None = None
+    sunset_date: datetime | None = None
+    migration_guide_url: str | None = None
+    breaking_changes: list[str] = field(default_factory=list)
 
     def is_supported(self) -> bool:
         """Check if version is currently supported."""
@@ -209,7 +205,7 @@ class VersionCompatibility:
         """Check if version is deprecated."""
         return self.status in [VersionStatus.DEPRECATED, VersionStatus.SUNSET]
 
-    def days_until_sunset(self) -> Optional[int]:
+    def days_until_sunset(self) -> int | None:
         """Calculate days until version sunset."""
         if not self.sunset_date:
             return None
@@ -229,8 +225,8 @@ class VersionManager:
     def __init__(self, service_name: str, current_version: str = "v1.0.0"):
         self.service_name = service_name
         self.current_version = APIVersion.from_string(current_version)
-        self.supported_versions: Dict[str, VersionCompatibility] = {}
-        self.version_aliases: Dict[str, APIVersion] = {}
+        self.supported_versions: dict[str, VersionCompatibility] = {}
+        self.version_aliases: dict[str, APIVersion] = {}
 
         # Default policies
         self.deprecation_period_days = 180  # 6 months
@@ -256,10 +252,10 @@ class VersionManager:
 
     def register_version(
         self,
-        version: Union[str, APIVersion],
+        version: str | APIVersion,
         status: VersionStatus = VersionStatus.STABLE,
-        migration_guide_url: Optional[str] = None,
-        breaking_changes: Optional[List[str]] = None,
+        migration_guide_url: str | None = None,
+        breaking_changes: list[str] | None = None,
     ) -> VersionCompatibility:
         """Register a new API version."""
         if isinstance(version, str):
@@ -298,9 +294,9 @@ class VersionManager:
 
     def detect_version_from_request(
         self,
-        request_headers: Dict[str, str],
+        request_headers: dict[str, str],
         url_path: str,
-        query_params: Dict[str, str],
+        query_params: dict[str, str],
     ) -> APIVersion:
         """
         Detect API version from multiple sources with priority order:
@@ -352,7 +348,7 @@ class VersionManager:
         # 5. Default to current version
         return self.current_version
 
-    def validate_version(self, version: Union[str, APIVersion]) -> VersionCompatibility:
+    def validate_version(self, version: str | APIVersion) -> VersionCompatibility:
         """
         Validate if a version is supported and return compatibility info.
 
@@ -398,7 +394,7 @@ class VersionManager:
 
     def _find_compatible_version(
         self, requested_version: APIVersion
-    ) -> Optional[APIVersion]:
+    ) -> APIVersion | None:
         """Find a compatible version for the requested version."""
         compatible_versions = []
 
@@ -413,19 +409,19 @@ class VersionManager:
         # Return the highest compatible version
         return max(compatible_versions) if compatible_versions else None
 
-    def get_supported_versions(self) -> List[VersionCompatibility]:
+    def get_supported_versions(self) -> list[VersionCompatibility]:
         """Get all currently supported versions."""
         return [
             comp for comp in self.supported_versions.values() if comp.is_supported()
         ]
 
-    def get_deprecated_versions(self) -> List[VersionCompatibility]:
+    def get_deprecated_versions(self) -> list[VersionCompatibility]:
         """Get all deprecated versions."""
         return [
             comp for comp in self.supported_versions.values() if comp.is_deprecated()
         ]
 
-    def get_version_info(self) -> Dict[str, any]:
+    def get_version_info(self) -> dict[str, any]:
         """Get comprehensive version information for the service."""
         return {
             "service": self.service_name,
@@ -458,7 +454,7 @@ class VersionManager:
             },
         }
 
-    def create_deprecation_headers(self, version: APIVersion) -> Dict[str, str]:
+    def create_deprecation_headers(self, version: APIVersion) -> dict[str, str]:
         """
         Create RFC 8594 compliant deprecation headers.
 
@@ -497,7 +493,7 @@ class VersionManager:
         return headers
 
     def bump_version(
-        self, policy: VersionPolicy, prerelease: Optional[str] = None
+        self, policy: VersionPolicy, prerelease: str | None = None
     ) -> APIVersion:
         """
         Bump version according to semantic versioning rules.

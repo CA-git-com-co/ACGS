@@ -4,13 +4,13 @@ GitHub Actions Workflow Health Monitor
 Comprehensive inspection of all workflow statuses and issues
 """
 
-import subprocess
 import json
-import yaml
-import glob
 import os
+import subprocess
 from datetime import datetime
 from pathlib import Path
+
+import yaml
 
 
 def check_workflow_runs():
@@ -19,6 +19,7 @@ def check_workflow_runs():
         # Get recent commits that might have triggered workflows
         result = subprocess.run(
             ["git", "log", "--oneline", "-10"],
+            check=False,
             capture_output=True,
             text=True,
             cwd="/home/ubuntu/ACGS",
@@ -52,7 +53,7 @@ def analyze_workflow_files():
         workflow_name = workflow_file.name
 
         try:
-            with open(workflow_file, "r") as f:
+            with open(workflow_file) as f:
                 content = f.read()
                 workflow_data = yaml.safe_load(content)
 
@@ -159,7 +160,7 @@ def check_dependencies():
     # Check for common dependency conflicts
     if os.path.exists("/home/ubuntu/ACGS/pyproject.toml"):
         try:
-            with open("/home/ubuntu/ACGS/pyproject.toml", "r") as f:
+            with open("/home/ubuntu/ACGS/pyproject.toml") as f:
                 content = f.read()
                 if (
                     "nemo-skills" in content
@@ -188,7 +189,7 @@ def identify_high_risk_workflows():
 
     for workflow_file in workflow_dir.glob("*.yml"):
         try:
-            with open(workflow_file, "r") as f:
+            with open(workflow_file) as f:
                 content = f.read().lower()
 
             risk_score = 0
@@ -268,7 +269,7 @@ if __name__ == "__main__":
 
     # Print summary
     summary = health_report["summary"]
-    print(f"\n📊 GitHub Actions Health Summary:")
+    print("\n📊 GitHub Actions Health Summary:")
     print(f"  Total Workflows: {summary['total_workflows']}")
     print(f"  Valid Syntax: {summary['valid_syntax']}")
     print(f"  Syntax Errors: {summary['syntax_errors']}")
@@ -277,20 +278,20 @@ if __name__ == "__main__":
     print(f"  Dependency Issues: {summary['dependency_issues']}")
 
     if health_report["high_risk_workflows"]:
-        print(f"\n⚠️ High Risk Workflows:")
+        print("\n⚠️ High Risk Workflows:")
         for workflow in health_report["high_risk_workflows"][:5]:
             print(
                 f"  - {workflow['file']} (risk: {workflow['risk_score']}, factors: {', '.join(workflow['risk_factors'])})"
             )
 
     if health_report["workflow_analysis"]["potential_issues"]:
-        print(f"\n🔧 Issues Found:")
+        print("\n🔧 Issues Found:")
         for issue in health_report["workflow_analysis"]["potential_issues"][:10]:
             print(f"  - {issue}")
 
     if health_report["recommendations"]:
-        print(f"\n💡 Recommendations:")
+        print("\n💡 Recommendations:")
         for rec in health_report["recommendations"]:
             print(f"  - {rec}")
 
-    print(f"\n📋 Detailed report saved to: workflow_health_report_detailed.json")
+    print("\n📋 Detailed report saved to: workflow_health_report_detailed.json")

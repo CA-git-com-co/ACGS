@@ -12,7 +12,7 @@ import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -49,7 +49,7 @@ class ComprehensiveSecurityReport:
         os.makedirs("logs", exist_ok=True)
         os.makedirs("reports/security", exist_ok=True)
 
-    def generate_report(self) -> Dict[str, Any]:
+    def generate_report(self) -> dict[str, Any]:
         """Generate comprehensive security report."""
         logger.info(f"📊 Generating comprehensive security report: {self.report_id}")
 
@@ -91,7 +91,7 @@ class ComprehensiveSecurityReport:
 
             for report_file in security_reports:
                 try:
-                    with open(report_file, "r") as f:
+                    with open(report_file) as f:
                         report_data = json.load(f)
 
                     # Categorize report by type

@@ -1084,17 +1084,17 @@ If principles conflict, resolve using this hierarchy:
         avg_potential = wina_summary.get("average_optimization_potential", 0.0)
         section = f"""
 WINA OPTIMIZATION CONTEXT:
-Optimization Mode: {optimization_context.get('optimization_mode', 'conservative')}
-Target GFLOPs Reduction: {optimization_context.get('target_gflops_reduction', 0.5)}
-Minimum Accuracy Retention: {optimization_context.get('min_accuracy_retention', 0.95)}
+Optimization Mode: {optimization_context.get("optimization_mode", "conservative")}
+Target GFLOPs Reduction: {optimization_context.get("target_gflops_reduction", 0.5)}
+Minimum Accuracy Retention: {optimization_context.get("min_accuracy_retention", 0.95)}
 
 OPTIMIZATION ANALYSIS SUMMARY:
-- Total Principles Analyzed: {wina_summary.get('total_principles', 0)}
-- High Optimization Potential: {wina_summary.get('high_potential_count', 0)}
-- Medium Optimization Potential: {wina_summary.get('medium_potential_count', 0)}
-- Low Optimization Potential: {wina_summary.get('low_potential_count', 0)}
+- Total Principles Analyzed: {wina_summary.get("total_principles", 0)}
+- High Optimization Potential: {wina_summary.get("high_potential_count", 0)}
+- Medium Optimization Potential: {wina_summary.get("medium_potential_count", 0)}
+- Low Optimization Potential: {wina_summary.get("low_potential_count", 0)}
 - Average Optimization Potential: {avg_potential:.3f}
-- Optimization Feasible: {wina_summary.get('optimization_feasible', False)}
+- Optimization Feasible: {wina_summary.get("optimization_feasible", False)}
 
 OPTIMIZATION RECOMMENDATIONS:
 """

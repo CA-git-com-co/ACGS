@@ -662,10 +662,9 @@ class Phase2ServiceOrchestrator:
                             f"Event {event.event_id} queued for retry {event.retry_count}"
                         )
                         return
-                    else:
-                        logger.error(
-                            f"Event {event.event_id} failed after {event.max_retries} retries"
-                        )
+                    logger.error(
+                        f"Event {event.event_id} failed after {event.max_retries} retries"
+                    )
 
         except Exception as e:
             logger.error(f"Event processing failed for {event.event_id}: {e}")

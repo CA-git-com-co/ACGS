@@ -255,7 +255,6 @@ class TransactionOptimizer:
                 len(current_batch) >= max_batch_size
                 or current_batch_cost + tx_cost > cost_target
             ):
-
                 if current_batch:
                     batches.append(current_batch)
                     current_batch = []

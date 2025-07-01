@@ -4,7 +4,7 @@ Production-Ready ML Optimizer with Critical Success Factors
 
 This implementation incorporates the four critical domains for ML success:
 1. Data Excellence (80% of success)
-2. Self-Adaptive Architectures 
+2. Self-Adaptive Architectures
 3. Rigorous Validation
 4. Operational Resilience
 
@@ -22,33 +22,30 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import logging
+import os
+import time
+import warnings
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from typing import Any
+
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Tuple, Any, Optional, Union
-from dataclasses import dataclass
-import joblib
-import os
-import json
-import time
 from scipy import stats
 from scipy.stats import ks_2samp
-import warnings
 
 warnings.filterwarnings("ignore")
 
 # Advanced ML libraries
-from sklearn.experimental import enable_iterative_imputer
-from sklearn.impute import IterativeImputer
-from sklearn.preprocessing import StandardScaler, PolynomialFeatures
-from sklearn.model_selection import StratifiedKFold, TimeSeriesSplit, cross_val_score
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.linear_model import SGDRegressor
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-from sklearn.feature_selection import SelectKBest, f_regression
 import optuna
 from imblearn.over_sampling import SMOTE
-from scipy import stats
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.feature_selection import SelectKBest, f_regression
+from sklearn.impute import IterativeImputer
+from sklearn.linear_model import SGDRegressor
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.model_selection import StratifiedKFold, cross_val_score
+from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 
 # Try to import advanced libraries
 try:
@@ -67,7 +64,7 @@ except ImportError:
 
 # Try to import AI types, but make it optional for testing
 try:
-    from .ai_types import ModelType, RequestType, ContentType, MultimodalRequest
+    from .ai_types import ContentType, ModelType, MultimodalRequest, RequestType
 except ImportError:
     # Fallback for testing without full ACGS environment
     ModelType = RequestType = ContentType = MultimodalRequest = None
@@ -93,10 +90,10 @@ class DataQualityMetrics:
 class ValidationResults:
     """Comprehensive validation results with statistical significance."""
 
-    cv_scores: List[float]
+    cv_scores: list[float]
     mean_score: float
     std_score: float
-    confidence_interval: Tuple[float, float]
+    confidence_interval: tuple[float, float]
     statistical_significance: bool
     p_value: float
     effect_size: float
@@ -121,7 +118,7 @@ class ModelVersion:
 
     version: str
     model: Any
-    performance_metrics: Dict[str, float]
+    performance_metrics: dict[str, float]
     timestamp: datetime
     constitutional_hash: str
     is_active: bool = False
@@ -133,9 +130,9 @@ class OnlineLearningMetrics:
 
     total_updates: int
     average_update_time: float
-    performance_trend: List[float]
+    performance_trend: list[float]
     drift_detected: bool
-    last_rollback: Optional[datetime] = None
+    last_rollback: datetime | None = None
 
 
 @dataclass
@@ -144,9 +141,9 @@ class BootstrapResults:
 
     metric_name: str
     original_value: float
-    bootstrap_samples: List[float]
-    confidence_interval_95: Tuple[float, float]
-    confidence_interval_99: Tuple[float, float]
+    bootstrap_samples: list[float]
+    confidence_interval_95: tuple[float, float]
+    confidence_interval_99: tuple[float, float]
     bootstrap_mean: float
     bootstrap_std: float
     bias_estimate: float
@@ -164,10 +161,10 @@ class StatisticalTestResults:
     is_significant: bool
     effect_size: float
     effect_size_interpretation: str
-    confidence_interval: Tuple[float, float]
-    degrees_of_freedom: Optional[int] = None
-    baseline_value: Optional[float] = None
-    sample_size: Optional[int] = None
+    confidence_interval: tuple[float, float]
+    degrees_of_freedom: int | None = None
+    baseline_value: float | None = None
+    sample_size: int | None = None
 
 
 @dataclass
@@ -178,7 +175,7 @@ class ModelComparisonResults:
     model_2_name: str
     mcnemar_test: StatisticalTestResults
     paired_t_test: StatisticalTestResults
-    effect_size_comparison: Dict[str, float]
+    effect_size_comparison: dict[str, float]
     deployment_recommendation: str
     statistical_justification: str
 
@@ -201,12 +198,12 @@ class RetrainingResults:
     """Results from automated retraining process."""
 
     trigger_reason: str
-    old_model_performance: Dict[str, float]
-    new_model_performance: Dict[str, float]
+    old_model_performance: dict[str, float]
+    new_model_performance: dict[str, float]
     improvement_achieved: bool
     deployment_approved: bool
     retraining_duration_seconds: float
-    validation_results: Dict[str, Any]
+    validation_results: dict[str, Any]
     constitutional_hash_verified: bool
     rollback_required: bool
 
@@ -247,18 +244,18 @@ class MetricTrend:
     trend_direction: str  # 'improving', 'degrading', 'stable'
     change_percentage: float
     trend_significance: bool
-    confidence_interval: Tuple[float, float]
+    confidence_interval: tuple[float, float]
 
 
 @dataclass
 class FeatureImportanceResult:
     """Feature importance analysis results."""
 
-    feature_names: List[str]
-    importance_scores: List[float]
+    feature_names: list[str]
+    importance_scores: list[float]
     importance_type: str  # 'permutation', 'tree_based', 'shap'
-    ranking: List[int]
-    top_features: List[Tuple[str, float]]
+    ranking: list[int]
+    top_features: list[tuple[str, float]]
     constitutional_hash: str
 
 
@@ -268,10 +265,10 @@ class SHAPAnalysisResult:
 
     shap_values: np.ndarray
     expected_value: float
-    feature_names: List[str]
-    sample_explanations: List[Dict[str, Any]]
-    global_importance: Dict[str, float]
-    constitutional_compliance_factors: Dict[str, float]
+    feature_names: list[str]
+    sample_explanations: list[dict[str, Any]]
+    global_importance: dict[str, float]
+    constitutional_compliance_factors: dict[str, float]
     constitutional_hash: str
 
 
@@ -281,8 +278,8 @@ class PredictionConfidence:
 
     prediction: float
     confidence_score: float
-    confidence_interval: Tuple[float, float]
-    uncertainty_sources: Dict[str, float]
+    confidence_interval: tuple[float, float]
+    uncertainty_sources: dict[str, float]
     constitutional_compliance_confidence: float
     explanation: str
 
@@ -301,7 +298,7 @@ class PerformanceAlert:
     alert_message: str
     recommended_action: str
     constitutional_hash: str
-    alert_metadata: Dict[str, Any]
+    alert_metadata: dict[str, Any]
 
 
 @dataclass
@@ -309,13 +306,13 @@ class AlertingSystemStatus:
     """Status of the tiered alerting system."""
 
     system_operational: bool
-    active_alerts: List[PerformanceAlert]
+    active_alerts: list[PerformanceAlert]
     alert_history_count: int
-    monitoring_metrics: List[str]
-    alert_thresholds: Dict[str, Dict[str, float]]
+    monitoring_metrics: list[str]
+    alert_thresholds: dict[str, dict[str, float]]
     last_check_timestamp: datetime
     constitutional_hash: str
-    latency_performance: Dict[str, float]
+    latency_performance: dict[str, float]
 
 
 @dataclass
@@ -331,7 +328,7 @@ class ABTestConfiguration:
     significance_level: float  # Alpha level (e.g., 0.05)
     minimum_effect_size: float  # Minimum detectable effect
     test_duration_hours: int
-    success_metrics: List[str]
+    success_metrics: list[str]
     constitutional_hash: str
 
 
@@ -340,13 +337,13 @@ class ABTestResults:
     """Results from A/B testing analysis."""
 
     test_id: str
-    control_performance: Dict[str, float]
-    treatment_performance: Dict[str, float]
-    statistical_significance: Dict[str, bool]
-    p_values: Dict[str, float]
-    effect_sizes: Dict[str, float]
-    confidence_intervals: Dict[str, Tuple[float, float]]
-    sample_sizes: Dict[str, int]
+    control_performance: dict[str, float]
+    treatment_performance: dict[str, float]
+    statistical_significance: dict[str, bool]
+    p_values: dict[str, float]
+    effect_sizes: dict[str, float]
+    confidence_intervals: dict[str, tuple[float, float]]
+    sample_sizes: dict[str, int]
     test_conclusion: (
         str  # 'treatment_wins', 'control_wins', 'no_difference', 'inconclusive'
     )
@@ -363,7 +360,7 @@ class ShadowDeploymentStatus:
     production_model_id: str
     traffic_percentage: float
     deployment_start_time: datetime
-    performance_comparison: Dict[str, float]
+    performance_comparison: dict[str, float]
     rollback_triggered: bool
     rollback_reason: str
     constitutional_hash: str
@@ -723,7 +720,7 @@ class ABTestingFramework:
         test_name: str,
         control_model,
         treatment_model,
-        config: Dict[str, Any] = None,
+        config: dict[str, Any] = None,
     ) -> ABTestConfiguration:
         """
         Create new A/B test configuration.
@@ -789,7 +786,7 @@ class ABTestingFramework:
 
         return ab_test_config
 
-    def route_traffic(self, test_id: str, request_data: np.ndarray) -> Tuple[str, Any]:
+    def route_traffic(self, test_id: str, request_data: np.ndarray) -> tuple[str, Any]:
         """
         Route traffic between control and treatment models based on traffic split.
 
@@ -979,7 +976,7 @@ class ABTestingFramework:
         )
 
         # Log results
-        logger.info(f"  📊 A/B Test Analysis Results:")
+        logger.info("  📊 A/B Test Analysis Results:")
         logger.info(f"    Test conclusion: {test_conclusion}")
         logger.info(f"    Deployment recommendation: {deployment_recommendation}")
         logger.info(
@@ -988,7 +985,7 @@ class ABTestingFramework:
 
         return results
 
-    def _calculate_group_performance(self, data: List[Dict]) -> Dict[str, float]:
+    def _calculate_group_performance(self, data: list[dict]) -> dict[str, float]:
         """Calculate average performance metrics for a group."""
 
         if not data:
@@ -1009,8 +1006,8 @@ class ABTestingFramework:
 
     def _determine_test_conclusion(
         self,
-        significance: Dict[str, bool],
-        effect_sizes: Dict[str, float],
+        significance: dict[str, bool],
+        effect_sizes: dict[str, float],
         min_effect_size: float,
     ) -> str:
         """Determine overall test conclusion based on statistical results."""
@@ -1031,32 +1028,30 @@ class ABTestingFramework:
             and significant_improvements > 0
         ):
             return "treatment_wins"
-        elif (
+        if (
             significant_degradations > significant_improvements
             and significant_degradations > 0
         ):
             return "control_wins"
-        elif significant_improvements == 0 and significant_degradations == 0:
+        if significant_improvements == 0 and significant_degradations == 0:
             return "no_difference"
-        else:
-            return "inconclusive"
+        return "inconclusive"
 
     def _generate_deployment_recommendation(
         self,
         conclusion: str,
-        significance: Dict[str, bool],
-        effect_sizes: Dict[str, float],
+        significance: dict[str, bool],
+        effect_sizes: dict[str, float],
     ) -> str:
         """Generate deployment recommendation based on test results."""
 
         if conclusion == "treatment_wins":
             return "DEPLOY TREATMENT: Statistically significant improvement detected"
-        elif conclusion == "control_wins":
+        if conclusion == "control_wins":
             return "KEEP CONTROL: Treatment shows significant degradation"
-        elif conclusion == "no_difference":
+        if conclusion == "no_difference":
             return "NO CHANGE: No significant difference detected"
-        else:
-            return "EXTEND TEST: Results inconclusive, need more data"
+        return "EXTEND TEST: Results inconclusive, need more data"
 
     def create_shadow_deployment(
         self, shadow_model, production_model, traffic_percentage: float = 0.1
@@ -1106,7 +1101,7 @@ class ABTestingFramework:
 
     def process_shadow_request(
         self, deployment_id: str, request_data: np.ndarray
-    ) -> Tuple[Any, Dict[str, Any]]:
+    ) -> tuple[Any, dict[str, Any]]:
         """
         Process request through shadow deployment.
 
@@ -1147,7 +1142,7 @@ class ABTestingFramework:
 
         return production_prediction, comparison_data
 
-    def monitor_shadow_deployment(self, deployment_id: str) -> Dict[str, Any]:
+    def monitor_shadow_deployment(self, deployment_id: str) -> dict[str, Any]:
         """
         Monitor shadow deployment performance and check for rollback conditions.
 
@@ -1226,7 +1221,7 @@ class ABTestingFramework:
 
         return monitoring_results
 
-    def get_ab_testing_status(self) -> Dict[str, Any]:
+    def get_ab_testing_status(self) -> dict[str, Any]:
         """Get comprehensive A/B testing framework status."""
 
         return {
@@ -1294,14 +1289,14 @@ class TieredPerformanceAlertingSystem:
             f"Tiered Performance Alerting System initialized with hash: {constitutional_hash}"
         )
 
-    def set_baseline_metrics(self, metrics: Dict[str, float]) -> None:
+    def set_baseline_metrics(self, metrics: dict[str, float]) -> None:
         """Set baseline performance metrics for comparison."""
         self.baseline_metrics = metrics.copy()
         logger.info(f"📊 Baseline metrics set: {list(metrics.keys())}")
 
     def check_performance_alerts(
-        self, current_metrics: Dict[str, float]
-    ) -> List[PerformanceAlert]:
+        self, current_metrics: dict[str, float]
+    ) -> list[PerformanceAlert]:
         """
         Check for performance degradation and generate alerts.
 
@@ -1445,7 +1440,7 @@ class TieredPerformanceAlertingSystem:
         current_value: float,
         baseline_value: float,
         degradation: float,
-    ) -> Tuple[str, str]:
+    ) -> tuple[str, str]:
         """Generate alert message and recommended action."""
 
         # Alert messages
@@ -1488,7 +1483,7 @@ class TieredPerformanceAlertingSystem:
 
         return alert_message, recommended_action
 
-    def _update_active_alerts(self, new_alerts: List[PerformanceAlert]) -> None:
+    def _update_active_alerts(self, new_alerts: list[PerformanceAlert]) -> None:
         """Update active alerts list and move resolved alerts to history."""
 
         # Add new alerts to active list
@@ -1571,7 +1566,7 @@ class TieredPerformanceAlertingSystem:
         """Verify constitutional hash integrity."""
         return self.constitutional_hash == "cdd01ef066bc6cf2"
 
-    def generate_alert_dashboard_data(self) -> Dict[str, Any]:
+    def generate_alert_dashboard_data(self) -> dict[str, Any]:
         """Generate data for alerting dashboard."""
 
         # Get current system status
@@ -1673,7 +1668,7 @@ class ModelInterpretabilityFramework:
         self,
         model,
         X: np.ndarray,
-        feature_names: List[str] = None,
+        feature_names: list[str] = None,
         importance_type: str = "auto",
     ) -> FeatureImportanceResult:
         """
@@ -1741,7 +1736,7 @@ class ModelInterpretabilityFramework:
         # Log results
         logger.info(f"  📊 Top 5 features by {importance_type} importance:")
         for i, (feature_name, score) in enumerate(top_features[:5]):
-            logger.info(f"    {i+1}. {feature_name}: {score:.4f}")
+            logger.info(f"    {i + 1}. {feature_name}: {score:.4f}")
 
         return result
 
@@ -1787,7 +1782,7 @@ class ModelInterpretabilityFramework:
         self,
         model,
         X: np.ndarray,
-        feature_names: List[str] = None,
+        feature_names: list[str] = None,
         sample_size: int = 100,
     ) -> SHAPAnalysisResult:
         """
@@ -1869,7 +1864,7 @@ class ModelInterpretabilityFramework:
         cache_key = f"{len(X)}_{X.shape[1]}_{sample_size}"
         self.shap_analysis_cache[cache_key] = result
 
-        logger.info(f"  📊 SHAP analysis completed:")
+        logger.info("  📊 SHAP analysis completed:")
         logger.info(f"    Expected value: {expected_value:.3f}")
         logger.info(
             f"    Top contributing features: {list(global_importance.keys())[:3]}"
@@ -1904,8 +1899,8 @@ class ModelInterpretabilityFramework:
         return np.array(shap_values)
 
     def _analyze_constitutional_compliance_factors(
-        self, shap_values: np.ndarray, feature_names: List[str]
-    ) -> Dict[str, float]:
+        self, shap_values: np.ndarray, feature_names: list[str]
+    ) -> dict[str, float]:
         """Analyze which features contribute to constitutional compliance."""
 
         if len(shap_values) == 0:
@@ -1929,8 +1924,8 @@ class ModelInterpretabilityFramework:
         return constitutional_factors
 
     def calculate_prediction_confidence(
-        self, model, X: np.ndarray, feature_names: List[str] = None
-    ) -> List[PredictionConfidence]:
+        self, model, X: np.ndarray, feature_names: list[str] = None
+    ) -> list[PredictionConfidence]:
         """
         Calculate prediction confidence scores with uncertainty quantification.
 
@@ -1951,7 +1946,7 @@ class ModelInterpretabilityFramework:
         predictions = model.predict(X)
         confidence_results = []
 
-        for i, (sample, prediction) in enumerate(zip(X, predictions)):
+        for i, (sample, prediction) in enumerate(zip(X, predictions, strict=False)):
             # Calculate confidence using multiple methods
             confidence_score = self._calculate_sample_confidence(
                 model, sample, prediction
@@ -1994,7 +1989,7 @@ class ModelInterpretabilityFramework:
             [c.constitutional_compliance_confidence for c in confidence_results]
         )
 
-        logger.info(f"  📊 Confidence analysis completed:")
+        logger.info("  📊 Confidence analysis completed:")
         logger.info(f"    Average prediction confidence: {avg_confidence:.3f}")
         logger.info(
             f"    Average constitutional confidence: {avg_constitutional_confidence:.3f}"
@@ -2036,7 +2031,7 @@ class ModelInterpretabilityFramework:
 
     def _calculate_confidence_interval(
         self, model, sample: np.ndarray
-    ) -> Tuple[float, float]:
+    ) -> tuple[float, float]:
         """Calculate confidence interval for prediction."""
 
         # Bootstrap-based confidence interval
@@ -2056,8 +2051,8 @@ class ModelInterpretabilityFramework:
         return (float(ci_lower), float(ci_upper))
 
     def _analyze_uncertainty_sources(
-        self, model, sample: np.ndarray, feature_names: List[str]
-    ) -> Dict[str, float]:
+        self, model, sample: np.ndarray, feature_names: list[str]
+    ) -> dict[str, float]:
         """Analyze sources of prediction uncertainty."""
 
         uncertainty_sources = {
@@ -2076,7 +2071,7 @@ class ModelInterpretabilityFramework:
         return uncertainty_sources
 
     def _calculate_constitutional_compliance_confidence(
-        self, sample: np.ndarray, prediction: float, feature_names: List[str]
+        self, sample: np.ndarray, prediction: float, feature_names: list[str]
     ) -> float:
         """Calculate confidence in constitutional compliance of prediction."""
 
@@ -2105,7 +2100,7 @@ class ModelInterpretabilityFramework:
         sample: np.ndarray,
         prediction: float,
         confidence_score: float,
-        feature_names: List[str],
+        feature_names: list[str],
     ) -> str:
         """Generate human-readable explanation for prediction."""
 
@@ -2137,7 +2132,7 @@ class ModelInterpretabilityFramework:
 
         return explanation
 
-    def generate_interpretability_dashboard_data(self) -> Dict[str, Any]:
+    def generate_interpretability_dashboard_data(self) -> dict[str, Any]:
         """Generate data for interpretability dashboard."""
 
         dashboard_data = {
@@ -2225,7 +2220,7 @@ class ComprehensiveMetricsEvaluator:
         # MAPE (Mean Absolute Percentage Error) - handle division by zero
         mape = np.mean(np.abs((y - y_pred) / np.where(y != 0, y, 1))) * 100
 
-        logger.info(f"  📈 Regression Metrics:")
+        logger.info("  📈 Regression Metrics:")
         logger.info(f"    MAE: {mae:.4f}")
         logger.info(f"    RMSE: {rmse:.4f}")
         logger.info(f"    R²: {r2:.4f}")
@@ -2240,7 +2235,7 @@ class ComprehensiveMetricsEvaluator:
             y, y_pred
         )
 
-        logger.info(f"  💼 Business Metrics:")
+        logger.info("  💼 Business Metrics:")
         logger.info(f"    Cost Efficiency: {cost_efficiency:.3f}")
         logger.info(f"    Response Time Accuracy: {response_time_accuracy:.3f}")
         logger.info(
@@ -2254,7 +2249,7 @@ class ComprehensiveMetricsEvaluator:
             model
         )
 
-        logger.info(f"  🔧 Performance Metrics:")
+        logger.info("  🔧 Performance Metrics:")
         logger.info(f"    Prediction Stability: {prediction_stability:.3f}")
         logger.info(f"    Model Confidence: {model_confidence:.3f}")
         logger.info(
@@ -2400,7 +2395,7 @@ class ComprehensiveMetricsEvaluator:
         # Default stability for models without feature importance
         return 0.8
 
-    def analyze_metric_trends(self, window_size: int = 5) -> List[MetricTrend]:
+    def analyze_metric_trends(self, window_size: int = 5) -> list[MetricTrend]:
         """Analyze trends in metrics over time."""
 
         if len(self.metric_history) < 2:
@@ -2490,7 +2485,7 @@ class ComprehensiveMetricsEvaluator:
 
         return trends
 
-    def generate_evaluation_dashboard_data(self) -> Dict[str, Any]:
+    def generate_evaluation_dashboard_data(self) -> dict[str, Any]:
         """Generate data for evaluation dashboard."""
 
         if not self.metric_history:
@@ -2588,9 +2583,9 @@ class AutomatedRetrainingManager:
 
     def check_retraining_triggers(
         self,
-        current_performance: Dict[str, float],
-        data_drift_results: Dict[str, Any] = None,
-    ) -> List[RetrainingTrigger]:
+        current_performance: dict[str, float],
+        data_drift_results: dict[str, Any] = None,
+    ) -> list[RetrainingTrigger]:
         """
         Check all retraining trigger conditions.
 
@@ -2707,7 +2702,7 @@ class AutomatedRetrainingManager:
 
     def execute_automated_retraining(
         self,
-        training_data: Tuple[np.ndarray, np.ndarray],
+        training_data: tuple[np.ndarray, np.ndarray],
         current_model: Any,
         trigger_reason: str,
     ) -> RetrainingResults:
@@ -2816,7 +2811,7 @@ class AutomatedRetrainingManager:
 
     def _measure_model_performance(
         self, model, X: np.ndarray, y: np.ndarray
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Measure comprehensive model performance."""
         y_pred = model.predict(X)
 
@@ -2838,7 +2833,7 @@ class AutomatedRetrainingManager:
         return model
 
     def _validate_model_improvement(
-        self, old_performance: Dict[str, float], new_performance: Dict[str, float]
+        self, old_performance: dict[str, float], new_performance: dict[str, float]
     ) -> bool:
         """Validate that new model shows meaningful improvement."""
 
@@ -2859,7 +2854,7 @@ class AutomatedRetrainingManager:
 
     def _perform_retraining_validation(
         self, old_model: Any, new_model: Any, X: np.ndarray, y: np.ndarray
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Perform comprehensive validation of retrained model."""
 
         # Statistical significance testing would go here
@@ -2925,7 +2920,7 @@ class AutomatedRetrainingManager:
             rollback_required=False,
         )
 
-    def get_retraining_status(self) -> Dict[str, Any]:
+    def get_retraining_status(self) -> dict[str, Any]:
         """Get comprehensive retraining system status."""
         current_time = datetime.now()
         hours_since_last_retraining = (
@@ -2961,7 +2956,7 @@ class BootstrapValidator:
         self,
         data: np.ndarray,
         metric_func: callable = np.mean,
-        confidence_levels: List[float] = [0.95, 0.99],
+        confidence_levels: list[float] = [0.95, 0.99],
     ) -> BootstrapResults:
         """
         Calculate bootstrap confidence intervals for any metric.
@@ -3025,7 +3020,7 @@ class BootstrapValidator:
 
     def bootstrap_model_performance(
         self, model, X: np.ndarray, y: np.ndarray
-    ) -> Dict[str, BootstrapResults]:
+    ) -> dict[str, BootstrapResults]:
         """
         Bootstrap validation for multiple model performance metrics.
 
@@ -3093,7 +3088,7 @@ class BootstrapValidator:
         self,
         original_value: float,
         bootstrap_samples: np.ndarray,
-        confidence_interval: Tuple[float, float],
+        confidence_interval: tuple[float, float],
     ) -> float:
         """Estimate the coverage probability of the confidence interval."""
 
@@ -3113,7 +3108,7 @@ class BootstrapValidator:
         data: np.ndarray,
         metric_func: callable = np.mean,
         n_experiments: int = 100,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Validate bootstrap calibration by running multiple experiments.
 
@@ -3347,7 +3342,7 @@ class OnlineLearningManager:
 
         return rollback_time
 
-    def get_model_info(self) -> Dict[str, Any]:
+    def get_model_info(self) -> dict[str, Any]:
         """Get current model information and version history."""
         return {
             "current_version": self.current_version,
@@ -3489,7 +3484,7 @@ class ProductionMLOptimizer:
 
     def preprocess_data_with_excellence(
         self, X: np.ndarray, y: np.ndarray
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray]:
         """Advanced data preprocessing implementing best practices."""
 
         logger.info("🔧 Applying data excellence preprocessing...")
@@ -3537,7 +3532,7 @@ class ProductionMLOptimizer:
 
     def train_with_adaptive_architecture(
         self, X: np.ndarray, y: np.ndarray
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Self-adaptive training with multi-armed bandit optimization."""
 
         logger.info("🤖 Training with self-adaptive architecture...")
@@ -3645,7 +3640,7 @@ class ProductionMLOptimizer:
 
     def comprehensive_bootstrap_validation(
         self, model, X: np.ndarray, y: np.ndarray
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Comprehensive bootstrap validation for all performance metrics.
 
@@ -3736,8 +3731,8 @@ class ProductionMLOptimizer:
         return comprehensive_results
 
     def monitor_operational_performance(
-        self, current_performance: Dict[str, float]
-    ) -> List[ModelPerformanceAlert]:
+        self, current_performance: dict[str, float]
+    ) -> list[ModelPerformanceAlert]:
         """Real-time operational monitoring with tiered alerting."""
 
         alerts = []
@@ -3793,7 +3788,7 @@ class ProductionMLOptimizer:
 
     def statistical_model_validation(
         self, model, X: np.ndarray, y: np.ndarray, baseline_score: float = 0.5
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Comprehensive statistical validation with significance testing.
 
@@ -3865,7 +3860,7 @@ class ProductionMLOptimizer:
 
     def update_model_incrementally(
         self, X: np.ndarray, y: np.ndarray
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Update model using online learning capabilities."""
 
         logger.info("🔄 Performing incremental model update...")
@@ -3921,7 +3916,7 @@ class ProductionMLOptimizer:
         """Make predictions using the online learning model."""
         return self.online_learner.predict(X)
 
-    def get_online_learning_status(self) -> Dict[str, Any]:
+    def get_online_learning_status(self) -> dict[str, Any]:
         """Get comprehensive status of online learning system."""
         return {
             "online_learner_info": self.online_learner.get_model_info(),
@@ -3932,8 +3927,8 @@ class ProductionMLOptimizer:
         }
 
     def check_automated_retraining_triggers(
-        self, current_performance: Dict[str, float], X_current: np.ndarray = None
-    ) -> List[RetrainingTrigger]:
+        self, current_performance: dict[str, float], X_current: np.ndarray = None
+    ) -> list[RetrainingTrigger]:
         """
         Check all automated retraining trigger conditions.
 
@@ -4013,7 +4008,7 @@ class ProductionMLOptimizer:
             logger.info("  ✅ Baseline performance updated with new model metrics")
 
         # Log retraining summary
-        logger.info(f"  📊 Retraining Summary:")
+        logger.info("  📊 Retraining Summary:")
         logger.info(f"    Trigger: {retraining_results.trigger_reason}")
         logger.info(
             f"    Duration: {retraining_results.retraining_duration_seconds:.1f}s"
@@ -4025,8 +4020,8 @@ class ProductionMLOptimizer:
         return retraining_results
 
     def monitor_and_retrain(
-        self, X: np.ndarray, y: np.ndarray, current_performance: Dict[str, float]
-    ) -> Dict[str, Any]:
+        self, X: np.ndarray, y: np.ndarray, current_performance: dict[str, float]
+    ) -> dict[str, Any]:
         """
         Comprehensive monitoring and automated retraining orchestration.
 
@@ -4099,7 +4094,7 @@ class ProductionMLOptimizer:
 
         return monitoring_results
 
-    def get_retraining_system_status(self) -> Dict[str, Any]:
+    def get_retraining_system_status(self) -> dict[str, Any]:
         """Get comprehensive status of the automated retraining system."""
 
         return {
@@ -4151,7 +4146,7 @@ class ProductionMLOptimizer:
 
         return metrics
 
-    def analyze_metric_trends(self, window_size: int = 5) -> List[MetricTrend]:
+    def analyze_metric_trends(self, window_size: int = 5) -> list[MetricTrend]:
         """Analyze trends in evaluation metrics over time."""
 
         logger.info(f"📈 Analyzing metric trends (window size: {window_size})...")
@@ -4172,7 +4167,7 @@ class ProductionMLOptimizer:
 
         return trends
 
-    def get_evaluation_dashboard_data(self) -> Dict[str, Any]:
+    def get_evaluation_dashboard_data(self) -> dict[str, Any]:
         """Get comprehensive evaluation dashboard data with metric trends and comparisons."""
 
         logger.info("📊 Generating evaluation dashboard data...")
@@ -4199,7 +4194,7 @@ class ProductionMLOptimizer:
 
     def comprehensive_model_evaluation(
         self, model, X: np.ndarray, y: np.ndarray
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Perform comprehensive model evaluation combining all validation frameworks.
 
@@ -4270,7 +4265,7 @@ class ProductionMLOptimizer:
             },
         }
 
-        logger.info(f"  🎯 Evaluation Summary:")
+        logger.info("  🎯 Evaluation Summary:")
         logger.info(
             f"    Overall Quality Score: {evaluation_results['evaluation_summary']['overall_quality_score']:.3f}"
         )
@@ -4284,7 +4279,7 @@ class ProductionMLOptimizer:
         return evaluation_results
 
     def _calculate_overall_quality_score(
-        self, metrics: ComprehensiveMetrics, statistical_results: Dict[str, Any]
+        self, metrics: ComprehensiveMetrics, statistical_results: dict[str, Any]
     ) -> float:
         """Calculate overall quality score combining all evaluation aspects."""
 
@@ -4331,8 +4326,8 @@ class ProductionMLOptimizer:
         return overall_score
 
     def analyze_model_interpretability(
-        self, model, X: np.ndarray, feature_names: List[str] = None
-    ) -> Dict[str, Any]:
+        self, model, X: np.ndarray, feature_names: list[str] = None
+    ) -> dict[str, Any]:
         """
         Comprehensive model interpretability analysis with SHAP values and feature importance.
 
@@ -4359,7 +4354,9 @@ class ProductionMLOptimizer:
         # 3. Prediction confidence analysis
         confidence_analysis = (
             self.interpretability_framework.calculate_prediction_confidence(
-                model, X[:10], feature_names  # Analyze first 10 samples
+                model,
+                X[:10],
+                feature_names,  # Analyze first 10 samples
             )
         )
 
@@ -4423,7 +4420,7 @@ class ProductionMLOptimizer:
         }
 
         # Log interpretability summary
-        logger.info(f"  🎯 Interpretability Summary:")
+        logger.info("  🎯 Interpretability Summary:")
         logger.info(
             f"    Top feature: {feature_importance.top_features[0][0]} (importance: {feature_importance.top_features[0][1]:.3f})"
         )
@@ -4440,8 +4437,8 @@ class ProductionMLOptimizer:
         return interpretability_results
 
     def explain_prediction(
-        self, model, sample: np.ndarray, feature_names: List[str] = None
-    ) -> Dict[str, Any]:
+        self, model, sample: np.ndarray, feature_names: list[str] = None
+    ) -> dict[str, Any]:
         """
         Explain a single prediction with detailed interpretability analysis.
 
@@ -4517,7 +4514,7 @@ class ProductionMLOptimizer:
             },
         }
 
-        logger.info(f"  🎯 Prediction Explanation:")
+        logger.info("  🎯 Prediction Explanation:")
         logger.info(
             f"    Prediction: {prediction:.3f} (confidence: {confidence.confidence_score:.3f})"
         )
@@ -4530,7 +4527,7 @@ class ProductionMLOptimizer:
 
         return explanation
 
-    def get_interpretability_dashboard_data(self) -> Dict[str, Any]:
+    def get_interpretability_dashboard_data(self) -> dict[str, Any]:
         """Get comprehensive interpretability dashboard data."""
 
         logger.info("📊 Generating interpretability dashboard data...")
@@ -4567,7 +4564,7 @@ class ProductionMLOptimizer:
         self,
         feature_importance: FeatureImportanceResult,
         shap_analysis: SHAPAnalysisResult,
-        confidence_analysis: List[PredictionConfidence],
+        confidence_analysis: list[PredictionConfidence],
     ) -> float:
         """Calculate overall transparency score for the model."""
 
@@ -4630,7 +4627,7 @@ class ProductionMLOptimizer:
 
         return auditability_score
 
-    def setup_performance_alerting(self, baseline_metrics: Dict[str, float]) -> None:
+    def setup_performance_alerting(self, baseline_metrics: dict[str, float]) -> None:
         """
         Setup tiered performance alerting system with baseline metrics.
 
@@ -4651,12 +4648,12 @@ class ProductionMLOptimizer:
         )
         logger.info(f"  📊 Monitoring: {list(baseline_metrics.keys())}")
         logger.info(
-            f"  ⚠️ Alert thresholds: Warning (5%), Critical (10%), Emergency (15%)"
+            "  ⚠️ Alert thresholds: Warning (5%), Critical (10%), Emergency (15%)"
         )
 
     def check_performance_alerts(
-        self, current_metrics: Dict[str, float]
-    ) -> List[PerformanceAlert]:
+        self, current_metrics: dict[str, float]
+    ) -> list[PerformanceAlert]:
         """
         Check for performance alerts with sub-40ms latency requirement.
 
@@ -4694,8 +4691,8 @@ class ProductionMLOptimizer:
         return alerts
 
     def monitor_system_performance(
-        self, current_metrics: Dict[str, float]
-    ) -> Dict[str, Any]:
+        self, current_metrics: dict[str, float]
+    ) -> dict[str, Any]:
         """
         Comprehensive system performance monitoring with alerting.
 
@@ -4749,7 +4746,7 @@ class ProductionMLOptimizer:
         }
 
         # Log monitoring summary
-        logger.info(f"  📊 Monitoring Summary:")
+        logger.info("  📊 Monitoring Summary:")
         logger.info(f"    Active alerts: {len(alerts)}")
         logger.info(f"    System operational: {alerting_status.system_operational}")
         logger.info(
@@ -4762,8 +4759,8 @@ class ProductionMLOptimizer:
         return monitoring_results
 
     def _calculate_performance_summary(
-        self, current_metrics: Dict[str, float], alerts: List[PerformanceAlert]
-    ) -> Dict[str, Any]:
+        self, current_metrics: dict[str, float], alerts: list[PerformanceAlert]
+    ) -> dict[str, Any]:
         """Calculate overall performance summary."""
 
         # Count alerts by severity
@@ -4825,7 +4822,7 @@ class ProductionMLOptimizer:
             == "cdd01ef066bc6cf2",
         }
 
-    def get_alerting_dashboard_data(self) -> Dict[str, Any]:
+    def get_alerting_dashboard_data(self) -> dict[str, Any]:
         """Get comprehensive alerting dashboard data."""
 
         logger.info("📊 Generating alerting dashboard data...")
@@ -4853,7 +4850,7 @@ class ProductionMLOptimizer:
         return dashboard_data
 
     def create_ab_test(
-        self, test_name: str, new_model, config: Dict[str, Any] = None
+        self, test_name: str, new_model, config: dict[str, Any] = None
     ) -> ABTestConfiguration:
         """
         Create A/B test for model deployment with statistical rigor.
@@ -4916,7 +4913,7 @@ class ProductionMLOptimizer:
 
     def process_ab_test_request(
         self, test_id: str, request_data: np.ndarray
-    ) -> Tuple[str, Any]:
+    ) -> tuple[str, Any]:
         """
         Process request through A/B test with proper traffic routing.
 
@@ -4939,7 +4936,7 @@ class ProductionMLOptimizer:
         results = self.ab_testing_framework.analyze_ab_test(test_id)
 
         # Log analysis summary
-        logger.info(f"  📊 A/B Test Analysis Summary:")
+        logger.info("  📊 A/B Test Analysis Summary:")
         logger.info(f"    Test conclusion: {results.test_conclusion}")
         logger.info(
             f"    Deployment recommendation: {results.deployment_recommendation}"
@@ -4957,7 +4954,7 @@ class ProductionMLOptimizer:
 
         return results
 
-    def monitor_shadow_deployment(self, deployment_id: str) -> Dict[str, Any]:
+    def monitor_shadow_deployment(self, deployment_id: str) -> dict[str, Any]:
         """
         Monitor shadow deployment with automatic rollback capability.
 
@@ -4977,7 +4974,7 @@ class ProductionMLOptimizer:
                 f"  🚨 Rollback required: {monitoring_results['rollback_reason']}"
             )
         else:
-            logger.info(f"  ✅ Shadow deployment healthy")
+            logger.info("  ✅ Shadow deployment healthy")
 
         logger.info(
             f"    Constitutional hash verified: {monitoring_results['constitutional_hash_verified']}"
@@ -4985,7 +4982,7 @@ class ProductionMLOptimizer:
 
         return monitoring_results
 
-    def get_ab_testing_dashboard_data(self) -> Dict[str, Any]:
+    def get_ab_testing_dashboard_data(self) -> dict[str, Any]:
         """Get comprehensive A/B testing dashboard data."""
 
         logger.info("📊 Generating A/B testing dashboard data...")
@@ -5017,8 +5014,8 @@ class ProductionMLOptimizer:
         return framework_status
 
     def train_production_model(
-        self, X: Union[np.ndarray, pd.DataFrame], y: Union[np.ndarray, pd.Series]
-    ) -> Dict[str, Any]:
+        self, X: np.ndarray | pd.DataFrame, y: np.ndarray | pd.Series
+    ) -> dict[str, Any]:
         """
         Train production model with comprehensive MLOps pipeline.
 
@@ -5081,7 +5078,6 @@ class ProductionMLOptimizer:
         logger.info("-" * 40)
 
         # Check if we're in test mode for faster execution
-        import os
 
         test_mode = os.environ.get("ACGS_TEST_MODE", "false").lower() == "true"
         if test_mode:
@@ -5206,9 +5202,7 @@ class ProductionMLOptimizer:
         logger.info("=" * 60)
         logger.info("✅ All four critical domains successfully implemented:")
         logger.info(
-            "  1. Data Excellence: Quality score {:.3f}".format(
-                data_quality.quality_score
-            )
+            f"  1. Data Excellence: Quality score {data_quality.quality_score:.3f}"
         )
         logger.info(
             "  2. Self-Adaptive Architecture: {} selected".format(
@@ -5216,21 +5210,17 @@ class ProductionMLOptimizer:
             )
         )
         logger.info(
-            "  3. Rigorous Validation: {:.3f} ± {:.3f}".format(
-                validation_results.mean_score, validation_results.std_score
-            )
+            f"  3. Rigorous Validation: {validation_results.mean_score:.3f} ± {validation_results.std_score:.3f}"
         )
-        logger.info(
-            "  4. Operational Excellence: {} alerts generated".format(len(alerts))
-        )
+        logger.info(f"  4. Operational Excellence: {len(alerts)} alerts generated")
         logger.info(f"  Constitutional Hash: {self.constitutional_hash} ✓")
         logger.info(f"  Training Duration: {training_duration:.2f}s")
 
         return results
 
     def predict_optimal_routing(
-        self, data: Union[np.ndarray, pd.DataFrame]
-    ) -> Union[np.ndarray, float]:
+        self, data: np.ndarray | pd.DataFrame
+    ) -> np.ndarray | float:
         """
         Make optimal routing predictions using the trained production model.
 
@@ -5304,11 +5294,10 @@ class ProductionMLOptimizer:
             # Return single value if single prediction, array otherwise
             if len(final_predictions) == 1:
                 return float(final_predictions[0])
-            else:
-                return final_predictions
+            return final_predictions
 
         except Exception as e:
-            logger.error(f"Prediction failed: {str(e)}")
+            logger.error(f"Prediction failed: {e!s}")
             # Fallback to simple heuristic prediction
             return self._fallback_prediction(X_input)
 
@@ -5316,7 +5305,7 @@ class ProductionMLOptimizer:
         """Verify constitutional hash integrity."""
         return self.constitutional_hash == "cdd01ef066bc6cf2"
 
-    def _generate_synthetic_training_data(self) -> Tuple[np.ndarray, np.ndarray]:
+    def _generate_synthetic_training_data(self) -> tuple[np.ndarray, np.ndarray]:
         """Generate synthetic training data for fallback scenarios."""
         np.random.seed(42)
 
@@ -5373,7 +5362,7 @@ class ProductionMLOptimizer:
         )
         return min(1.0, max(0.95, final_adjustment))  # Ensure minimum 0.95
 
-    def _fallback_prediction(self, X_input: np.ndarray) -> Union[float, np.ndarray]:
+    def _fallback_prediction(self, X_input: np.ndarray) -> float | np.ndarray:
         """Provide fallback prediction when main model fails."""
         logger.warning("Using fallback prediction method")
 
@@ -5415,10 +5404,9 @@ class ProductionMLOptimizer:
 
         if len(final_predictions) == 1:
             return float(final_predictions[0])
-        else:
-            return final_predictions
+        return final_predictions
 
-    def _fast_training_for_tests(self, X: np.ndarray, y: np.ndarray) -> Dict[str, Any]:
+    def _fast_training_for_tests(self, X: np.ndarray, y: np.ndarray) -> dict[str, Any]:
         """
         Fast training method for integration tests.
         Uses simple RandomForestRegressor without extensive hyperparameter optimization.
@@ -5499,7 +5487,7 @@ class MultiArmedBanditOptimizer:
         self.algorithm_counts = {}
         self.epsilon = 0.1  # Exploration rate
 
-    def select_algorithm(self, algorithms: List[str]) -> str:
+    def select_algorithm(self, algorithms: list[str]) -> str:
         """Select algorithm using epsilon-greedy strategy."""
 
         # Initialize new algorithms
@@ -5513,13 +5501,12 @@ class MultiArmedBanditOptimizer:
             count == 0 for count in self.algorithm_counts.values()
         ):
             return np.random.choice(list(algorithms))
-        else:
-            # Select algorithm with highest average reward
-            avg_rewards = {
-                algo: self.algorithm_rewards[algo] / max(self.algorithm_counts[algo], 1)
-                for algo in algorithms
-            }
-            return max(avg_rewards, key=avg_rewards.get)
+        # Select algorithm with highest average reward
+        avg_rewards = {
+            algo: self.algorithm_rewards[algo] / max(self.algorithm_counts[algo], 1)
+            for algo in algorithms
+        }
+        return max(avg_rewards, key=avg_rewards.get)
 
     def update_reward(self, algorithm: str, reward: float):
         """Update algorithm reward."""
@@ -5530,7 +5517,7 @@ class MultiArmedBanditOptimizer:
 class AdaptiveHyperparameterOptimizer:
     """Adaptive hyperparameter optimization."""
 
-    def optimize(self, model, X: np.ndarray, y: np.ndarray) -> Dict[str, Any]:
+    def optimize(self, model, X: np.ndarray, y: np.ndarray) -> dict[str, Any]:
         """Optimize hyperparameters using Optuna."""
 
         def objective(trial):
@@ -5574,7 +5561,7 @@ class RigorousValidator:
 
     def nested_cross_validation(
         self, model, X: np.ndarray, y: np.ndarray
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Nested cross-validation for unbiased performance estimation."""
         # Implementation would go here
         return {"nested_cv_score": 0.85}
@@ -5587,13 +5574,13 @@ class OperationalMonitor:
         self.alerts = []
 
     def check_performance(
-        self, metrics: Dict[str, float]
-    ) -> List[ModelPerformanceAlert]:
+        self, metrics: dict[str, float]
+    ) -> list[ModelPerformanceAlert]:
         """Check performance and generate alerts."""
         # Implementation would go here
         return []
 
-    def train_production_model(self) -> Dict[str, Any]:
+    def train_production_model(self) -> dict[str, Any]:
         """Complete production training pipeline implementing all critical factors."""
 
         logger.info("🚀 Starting Production ML Training Pipeline")
@@ -5690,9 +5677,7 @@ class OperationalMonitor:
         logger.info("=" * 60)
         logger.info("✅ All four critical domains successfully implemented:")
         logger.info(
-            "  1. Data Excellence: Quality score {:.3f}".format(
-                data_quality.quality_score
-            )
+            f"  1. Data Excellence: Quality score {data_quality.quality_score:.3f}"
         )
         logger.info(
             "  2. Self-Adaptive Architecture: {} selected".format(
@@ -5700,17 +5685,13 @@ class OperationalMonitor:
             )
         )
         logger.info(
-            "  3. Rigorous Validation: {:.3f} ± {:.3f}".format(
-                validation_results.mean_score, validation_results.std_score
-            )
+            f"  3. Rigorous Validation: {validation_results.mean_score:.3f} ± {validation_results.std_score:.3f}"
         )
-        logger.info(
-            "  4. Operational Excellence: {} alerts generated".format(len(alerts))
-        )
+        logger.info(f"  4. Operational Excellence: {len(alerts)} alerts generated")
 
         return results
 
-    def _generate_training_data(self) -> Tuple[np.ndarray, np.ndarray]:
+    def _generate_training_data(self) -> tuple[np.ndarray, np.ndarray]:
         """Generate synthetic training data for demonstration."""
         np.random.seed(42)
 

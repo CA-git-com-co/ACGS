@@ -3,9 +3,7 @@ Agent management commands for Gemini CLI
 """
 
 import argparse
-from typing import Dict, Any
-import asyncio
-from datetime import datetime
+from typing import Any
 
 
 def add_arguments(parser: argparse.ArgumentParser):
@@ -46,7 +44,7 @@ def add_arguments(parser: argparse.ArgumentParser):
     delete_parser.add_argument("--force", action="store_true", help="Force deletion")
 
 
-async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
+async def handle_command(args: argparse.Namespace, client) -> dict[str, Any]:
     """Handle agent commands"""
 
     if args.agent_command == "create":
@@ -60,12 +58,12 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
             return {
                 "agent_id": result["agent_id"],
                 "api_key": result["api_key"],
-                "message": f"Agent created successfully. Save the API key - it won't be shown again!",
+                "message": "Agent created successfully. Save the API key - it won't be shown again!",
                 "capabilities": result.get("capabilities", []),
             }
         return result
 
-    elif args.agent_command == "list":
+    if args.agent_command == "list":
         # List agents
         agents = client.list_agents()
 
@@ -74,7 +72,7 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
 
         return {"agents": agents, "count": len(agents)}
 
-    elif args.agent_command == "get":
+    if args.agent_command == "get":
         # Get agent details
         agent = client.get_agent(args.agent_id)
 
@@ -87,16 +85,15 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
             "total_operations": len(operations) if operations else 0,
         }
 
-    elif args.agent_command == "update":
+    if args.agent_command == "update":
         # Update agent (would need to implement in ACGSClient)
         return {"error": "Agent update not yet implemented", "agent_id": args.agent_id}
 
-    elif args.agent_command == "delete":
+    if args.agent_command == "delete":
         # Delete agent (would need to implement in ACGSClient)
         return {
             "error": "Agent deletion not yet implemented",
             "agent_id": args.agent_id,
         }
 
-    else:
-        return {"error": "Unknown agent command"}
+    return {"error": "Unknown agent command"}

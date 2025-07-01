@@ -5,7 +5,7 @@ Provides standardized test fixtures for Constitutional Council tests with Pydant
 """
 
 from dataclasses import dataclass
-from datetime import timezone, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Any
 
@@ -16,7 +16,6 @@ from services.core.constitutional_ai.app.schemas import (
     ACAmendmentCreate,
     ACAmendmentVoteCreate,
 )
-
 from services.shared.models import User
 
 

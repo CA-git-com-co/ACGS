@@ -72,6 +72,7 @@ class EmergencyRollbackSystem:
                     # Kill processes on service ports
                     subprocess.run(
                         f"pkill -f 'uvicorn.*:{port}'",
+                        check=False,
                         shell=True,
                         capture_output=True,
                         text=True,
@@ -84,7 +85,7 @@ class EmergencyRollbackSystem:
                         logger.info(f"✅ Stopped {service_name} on port {port}")
                     else:
                         # Force kill if still running
-                        subprocess.run(f"fuser -k {port}/tcp", shell=True)
+                        subprocess.run(f"fuser -k {port}/tcp", check=False, shell=True)
                         time.sleep(1)
                         if not self._is_service_running(port):
                             stopped_services.append(service_name)
@@ -128,6 +129,7 @@ class EmergencyRollbackSystem:
             if start_script.exists():
                 subprocess.run(
                     ["bash", str(start_script)],
+                    check=False,
                     cwd=self.project_root,
                     capture_output=True,
                     text=True,
@@ -154,8 +156,7 @@ class EmergencyRollbackSystem:
                     "stop_result": stop_result,
                     "timestamp": datetime.now().isoformat(),
                 }
-            else:
-                return {"status": "failed", "error": "Start script not found"}
+            return {"status": "failed", "error": "Start script not found"}
 
         except Exception as e:
             logger.error(f"❌ Emergency restart failed: {e}")
@@ -174,6 +175,7 @@ class EmergencyRollbackSystem:
             # Stop the specific service
             subprocess.run(
                 f"pkill -f 'uvicorn.*:{port}'",
+                check=False,
                 shell=True,
                 capture_output=True,
                 text=True,
@@ -190,11 +192,10 @@ class EmergencyRollbackSystem:
                     "isolated": True,
                     "timestamp": datetime.now().isoformat(),
                 }
-            else:
-                return {
-                    "status": "failed",
-                    "error": f"Failed to isolate {service_name}",
-                }
+            return {
+                "status": "failed",
+                "error": f"Failed to isolate {service_name}",
+            }
 
         except Exception as e:
             logger.error(f"❌ Service isolation failed: {e}")
@@ -581,16 +582,14 @@ class EmergencyRollbackSystem:
                             "constitution_hash_verified": True,
                             "constitution_hash": constitution_hash,
                         }
-                    else:
-                        return {
-                            "status": "failed",
-                            "error": f"Constitution hash mismatch: expected cdd01ef066bc6cf2, got {constitution_hash}",
-                        }
-                else:
                     return {
                         "status": "failed",
-                        "error": f"Constitutional endpoint returned {response.status_code}",
+                        "error": f"Constitution hash mismatch: expected cdd01ef066bc6cf2, got {constitution_hash}",
                     }
+                return {
+                    "status": "failed",
+                    "error": f"Constitutional endpoint returned {response.status_code}",
+                }
 
             except Exception as e:
                 return {

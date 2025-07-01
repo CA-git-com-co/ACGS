@@ -22,7 +22,6 @@ import logging
 import re
 import time
 from pathlib import Path
-from typing import Dict
 
 # Configure logging
 logging.basicConfig(
@@ -67,7 +66,7 @@ class CryptographicUpgrader:
             (r"hexdigest\(\)\[:16\]", "hexdigest()[:32]"),  # Full SHA-256 hash length
         ]
 
-    def upgrade_all_files(self) -> Dict:
+    def upgrade_all_files(self) -> dict:
         """Upgrade cryptographic implementations in all target files."""
         logger.info("🔒 Starting cryptographic implementation upgrade")
 
@@ -88,7 +87,7 @@ class CryptographicUpgrader:
                         logger.info(f"ℹ️ No changes needed in {file_path}")
 
                 except Exception as e:
-                    error_msg = f"Error upgrading {file_path}: {str(e)}"
+                    error_msg = f"Error upgrading {file_path}: {e!s}"
                     logger.error(error_msg)
                     self.errors.append(error_msg)
             else:
@@ -104,11 +103,11 @@ class CryptographicUpgrader:
 
         return summary
 
-    def upgrade_file(self, file_path: Path) -> Dict:
+    def upgrade_file(self, file_path: Path) -> dict:
         """Upgrade cryptographic implementations in a single file."""
         try:
             # Read file content
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 original_content = f.read()
 
             modified_content = original_content
@@ -148,17 +147,16 @@ class CryptographicUpgrader:
                     "replacements": replacements,
                     "file_path": str(file_path),
                 }
-            else:
-                return {
-                    "modified": False,
-                    "replacements": [],
-                    "file_path": str(file_path),
-                }
+            return {
+                "modified": False,
+                "replacements": [],
+                "file_path": str(file_path),
+            }
 
         except Exception as e:
-            raise Exception(f"Failed to upgrade {file_path}: {str(e)}")
+            raise Exception(f"Failed to upgrade {file_path}: {e!s}")
 
-    def _generate_upgrade_summary(self, upgrade_time: float) -> Dict:
+    def _generate_upgrade_summary(self, upgrade_time: float) -> dict:
         """Generate upgrade summary report."""
         total_files = len(self.target_files)
         modified_files = len(self.files_modified)
@@ -197,7 +195,7 @@ class CryptographicUpgrader:
             ],
         }
 
-    def _save_upgrade_report(self, summary: Dict):
+    def _save_upgrade_report(self, summary: dict):
         """Save upgrade report to file."""
         report_path = "cryptographic_upgrade_report.json"
 
@@ -206,7 +204,7 @@ class CryptographicUpgrader:
 
         logger.info(f"📄 Upgrade report saved to {report_path}")
 
-    def validate_upgrades(self) -> Dict:
+    def validate_upgrades(self) -> dict:
         """Validate that all MD5 instances have been successfully replaced."""
         logger.info("🔍 Validating cryptographic upgrades")
 
@@ -222,7 +220,7 @@ class CryptographicUpgrader:
 
             if full_path.exists():
                 try:
-                    with open(full_path, "r", encoding="utf-8") as f:
+                    with open(full_path, encoding="utf-8") as f:
                         content = f.read()
 
                     # Check for remaining MD5 instances
@@ -247,7 +245,7 @@ class CryptographicUpgrader:
                     validation_results["files_checked"].append(str(file_path))
 
                 except Exception as e:
-                    error_msg = f"Error validating {file_path}: {str(e)}"
+                    error_msg = f"Error validating {file_path}: {e!s}"
                     validation_results["validation_errors"].append(error_msg)
                     validation_results["validation_passed"] = False
 
@@ -280,12 +278,12 @@ def main():
     print(f"Upgrade Time: {summary['upgrade_summary']['upgrade_time']}")
 
     if summary["modified_files"]:
-        print(f"\n✅ Modified Files:")
+        print("\n✅ Modified Files:")
         for file_path in summary["modified_files"]:
             print(f"   - {file_path}")
 
     if summary["errors"]:
-        print(f"\n❌ Errors:")
+        print("\n❌ Errors:")
         for error in summary["errors"]:
             print(f"   - {error}")
 
@@ -298,7 +296,7 @@ def main():
         print(f"   - {component}")
 
     # Validation results
-    print(f"\n🔍 Validation Results:")
+    print("\n🔍 Validation Results:")
     if validation["validation_passed"]:
         print("   ✅ All MD5 instances successfully replaced with SHA-256")
     else:

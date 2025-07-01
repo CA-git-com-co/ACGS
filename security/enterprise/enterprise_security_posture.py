@@ -5,13 +5,11 @@ Comprehensive security framework for enterprise deployment including SOC 2 Type 
 """
 
 import json
-import time
-import hashlib
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone, timedelta
-from enum import Enum
 import logging
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -43,11 +41,11 @@ class SecurityControl:
     name: str
     description: str
     control_type: SecurityControlType
-    compliance_standards: List[ComplianceStandard]
+    compliance_standards: list[ComplianceStandard]
     implementation_status: str
     effectiveness_rating: float
     last_tested: str
-    evidence_artifacts: List[str]
+    evidence_artifacts: list[str]
     constitutional_hash: str
 
 
@@ -61,7 +59,7 @@ class ThreatModel:
     likelihood: str  # "LOW", "MEDIUM", "HIGH", "CRITICAL"
     impact: str  # "LOW", "MEDIUM", "HIGH", "CRITICAL"
     risk_score: float
-    mitigation_controls: List[str]
+    mitigation_controls: list[str]
     residual_risk: str
     constitutional_compliance_impact: bool
 
@@ -74,9 +72,9 @@ class SecurityAssessment:
     assessment_type: str
     assessment_date: str
     assessor: str
-    scope: List[str]
-    findings: List[Dict[str, Any]]
-    recommendations: List[str]
+    scope: list[str]
+    findings: list[dict[str, Any]]
+    recommendations: list[str]
     overall_rating: str
     constitutional_compliance_validated: bool
 
@@ -91,7 +89,7 @@ class EnterpriseSecurityPosture:
         self.security_assessments = []
         self.compliance_frameworks = {}
 
-    async def implement_enterprise_security_posture(self) -> Dict[str, Any]:
+    async def implement_enterprise_security_posture(self) -> dict[str, Any]:
         """Implement comprehensive enterprise security posture"""
         print("🛡️ ACGS Enterprise Security Posture Implementation")
         print("=" * 55)
@@ -117,13 +115,13 @@ class EnterpriseSecurityPosture:
         # Generate security posture report
         posture_report = self.generate_security_posture_report()
 
-        print(f"\n🔒 Enterprise Security Posture Summary:")
+        print("\n🔒 Enterprise Security Posture Summary:")
         print(f"  SOC 2 Controls Implemented: {len(soc2_controls)}")
         print(f"  Threat Models Created: {len(threat_models)}")
         print(f"  Security Assessments: {len(self.security_assessments)}")
         print(f"  Compliance Frameworks: {len(self.compliance_frameworks)}")
         print(f"  Overall Security Rating: {posture_report['overall_security_rating']}")
-        print(f"  Constitutional Compliance: ✅ Validated")
+        print("  Constitutional Compliance: ✅ Validated")
 
         return {
             "implementation_timestamp": datetime.now(timezone.utc).isoformat(),
@@ -137,7 +135,7 @@ class EnterpriseSecurityPosture:
             "posture_report": posture_report,
         }
 
-    async def implement_soc2_type_ii_controls(self) -> Dict[str, SecurityControl]:
+    async def implement_soc2_type_ii_controls(self) -> dict[str, SecurityControl]:
         """Implement SOC 2 Type II security controls"""
         print("  📋 Implementing SOC 2 Type II controls...")
 
@@ -281,7 +279,7 @@ class EnterpriseSecurityPosture:
 
         return soc2_controls
 
-    async def conduct_comprehensive_threat_modeling(self) -> Dict[str, ThreatModel]:
+    async def conduct_comprehensive_threat_modeling(self) -> dict[str, ThreatModel]:
         """Conduct comprehensive threat modeling assessment"""
         print("  🎯 Conducting comprehensive threat modeling...")
 
@@ -376,7 +374,7 @@ class EnterpriseSecurityPosture:
 
         return threat_models
 
-    async def implement_security_assessment_framework(self) -> Dict[str, Any]:
+    async def implement_security_assessment_framework(self) -> dict[str, Any]:
         """Implement comprehensive security assessment framework"""
         print("  🔍 Implementing security assessment framework...")
 
@@ -464,12 +462,12 @@ class EnterpriseSecurityPosture:
             "assessments_completed": len(self.security_assessments),
         }
 
-        print(f"    ✅ Assessment framework established")
+        print("    ✅ Assessment framework established")
         print(f"    ✅ {len(self.security_assessments)} assessments completed")
 
         return assessment_framework
 
-    async def establish_compliance_monitoring(self) -> Dict[str, Any]:
+    async def establish_compliance_monitoring(self) -> dict[str, Any]:
         """Establish continuous compliance monitoring"""
         print("  📊 Establishing compliance monitoring...")
 
@@ -531,7 +529,7 @@ class EnterpriseSecurityPosture:
 
         return monitoring_capabilities
 
-    async def implement_advanced_threat_detection(self) -> Dict[str, Any]:
+    async def implement_advanced_threat_detection(self) -> dict[str, Any]:
         """Implement advanced threat detection capabilities"""
         print("  🚨 Implementing advanced threat detection...")
 
@@ -580,12 +578,12 @@ class EnterpriseSecurityPosture:
         print(
             f"    ✅ Behavioral analytics with {threat_detection_capabilities['behavioral_analytics']['detection_accuracy']:.1f}% accuracy"
         )
-        print(f"    ✅ Constitutional AI protection enabled")
-        print(f"    ✅ Automated incident response configured")
+        print("    ✅ Constitutional AI protection enabled")
+        print("    ✅ Automated incident response configured")
 
         return threat_detection_capabilities
 
-    async def create_security_governance_framework(self) -> Dict[str, Any]:
+    async def create_security_governance_framework(self) -> dict[str, Any]:
         """Create comprehensive security governance framework"""
         print("  🏛️ Creating security governance framework...")
 
@@ -641,13 +639,13 @@ class EnterpriseSecurityPosture:
             },
         }
 
-        print(f"    ✅ Security governance structure established")
-        print(f"    ✅ Policies and procedures implemented")
-        print(f"    ✅ Risk management framework operational")
+        print("    ✅ Security governance structure established")
+        print("    ✅ Policies and procedures implemented")
+        print("    ✅ Risk management framework operational")
 
         return governance_framework
 
-    def generate_security_posture_report(self) -> Dict[str, Any]:
+    def generate_security_posture_report(self) -> dict[str, Any]:
         """Generate comprehensive security posture report"""
 
         # Calculate overall security rating
@@ -763,7 +761,7 @@ async def test_enterprise_security_posture():
         json.dump(results, f, indent=2, default=str)
 
     print(f"\n📄 Detailed results saved: enterprise_security_posture_{timestamp}.json")
-    print(f"\n✅ Enterprise Security Posture: IMPLEMENTED")
+    print("\n✅ Enterprise Security Posture: IMPLEMENTED")
 
 
 if __name__ == "__main__":

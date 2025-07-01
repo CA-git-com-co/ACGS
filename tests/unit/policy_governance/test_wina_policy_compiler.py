@@ -2,11 +2,7 @@
 Unit tests for services.core.policy-governance.pgc_service.app.core.wina_policy_compiler
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.policy_governance.pgc_service.app.core.wina_policy_compiler import (
-    WINACompilationMetrics,
-    WINACompilationResult,
     WINAPolicyCompiler,
 )
 

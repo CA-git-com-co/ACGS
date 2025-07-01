@@ -2,18 +2,10 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.workflows.structured_output_models
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.governance_synthesis.gs_service.app.workflows.structured_output_models import (
-    PolicyType,
-    ConstitutionalComplianceLevel,
-    ViolationType,
-    ConstitutionalViolation,
     ConstitutionalFidelityScore,
-    RegoPolicy,
-    PolicySynthesisRequest,
     PolicySynthesisResponse,
-    ModelSpecializationConfig,
+    RegoPolicy,
     WorkflowState,
 )
 

@@ -14,21 +14,18 @@ Key objectives:
 - Maintain comprehensive documentation for all 5 governance workflows
 """
 
-import os
-import sys
 import json
-import shutil
 import logging
-from pathlib import Path
+import sys
 from datetime import datetime
-from typing import Dict, List, Set
+from pathlib import Path
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
         logging.FileHandler(
-            f'documentation_restructuring_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log'
+            f"documentation_restructuring_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
         ),
         logging.StreamHandler(),
     ],
@@ -132,7 +129,7 @@ class DocumentationRestructurer:
             logger.error(f"README consolidation failed: {e}")
             return False
 
-    def _create_consolidated_docs(self, categorized_readmes: Dict[str, List[Path]]):
+    def _create_consolidated_docs(self, categorized_readmes: dict[str, list[Path]]):
         """Create consolidated documentation files"""
 
         # Architecture documentation

@@ -12,16 +12,15 @@ comprehensive penetration testing focusing on:
 Target: No critical or high-severity vulnerabilities in audit report
 """
 
-import os
-import sys
-import logging
 import asyncio
 import json
+import logging
+import sys
 import time
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+from typing import Any
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -97,9 +96,9 @@ class ExternalSecurityAudit:
         }
 
         # Audit findings
-        self.findings: List[SecurityFinding] = []
+        self.findings: list[SecurityFinding] = []
 
-    async def conduct_security_audit(self) -> Dict[str, Any]:
+    async def conduct_security_audit(self) -> dict[str, Any]:
         """Conduct comprehensive security audit."""
         logger.info("🔒 Starting external security audit simulation...")
 
@@ -149,7 +148,7 @@ class ExternalSecurityAudit:
             audit_results["errors"].append(str(e))
             return audit_results
 
-    async def _audit_input_validation(self) -> Dict[str, Any]:
+    async def _audit_input_validation(self) -> dict[str, Any]:
         """Audit input validation implementation."""
         logger.info("🔍 Auditing input validation security...")
 
@@ -190,7 +189,7 @@ class ExternalSecurityAudit:
                 else:
                     # Create finding for unprotected input
                     finding = SecurityFinding(
-                        id=f"INPUT-{len(self.findings)+1:03d}",
+                        id=f"INPUT-{len(self.findings) + 1:03d}",
                         title=f"Input Validation Bypass: {test['test']}",
                         severity=test["severity"],
                         description=f"Input validation failed to block {test['test']} attack pattern",
@@ -208,7 +207,7 @@ class ExternalSecurityAudit:
             logger.error(f"Input validation audit failed: {e}")
             raise
 
-    async def _audit_authentication_flows(self) -> Dict[str, Any]:
+    async def _audit_authentication_flows(self) -> dict[str, Any]:
         """Audit authentication and authorization flows."""
         logger.info("🔐 Auditing authentication and authorization...")
 
@@ -263,7 +262,7 @@ class ExternalSecurityAudit:
             logger.error(f"Authentication audit failed: {e}")
             raise
 
-    async def _audit_api_security(self) -> Dict[str, Any]:
+    async def _audit_api_security(self) -> dict[str, Any]:
         """Audit API security implementation."""
         logger.info("🌐 Auditing API security...")
 
@@ -296,7 +295,7 @@ class ExternalSecurityAudit:
             logger.error(f"API security audit failed: {e}")
             raise
 
-    async def _audit_infrastructure_security(self) -> Dict[str, Any]:
+    async def _audit_infrastructure_security(self) -> dict[str, Any]:
         """Audit infrastructure security."""
         logger.info("🏗️ Auditing infrastructure security...")
 
@@ -329,7 +328,7 @@ class ExternalSecurityAudit:
             logger.error(f"Infrastructure security audit failed: {e}")
             raise
 
-    async def _audit_compliance(self) -> Dict[str, Any]:
+    async def _audit_compliance(self) -> dict[str, Any]:
         """Audit compliance and configuration."""
         logger.info("📋 Auditing compliance and configuration...")
 
@@ -361,7 +360,7 @@ class ExternalSecurityAudit:
             logger.error(f"Compliance audit failed: {e}")
             raise
 
-    async def _analyze_audit_findings(self) -> Dict[str, Any]:
+    async def _analyze_audit_findings(self) -> dict[str, Any]:
         """Analyze audit findings and determine overall security posture."""
         logger.info("📊 Analyzing audit findings...")
 
@@ -402,7 +401,7 @@ class ExternalSecurityAudit:
 
         return analysis_results
 
-    async def _generate_audit_report(self, results: Dict[str, Any]):
+    async def _generate_audit_report(self, results: dict[str, Any]):
         """Generate comprehensive security audit report."""
         report_path = self.project_root / "external_security_audit_report.json"
 

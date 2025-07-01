@@ -14,26 +14,24 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import logging
-import json
-import numpy as np
-import pandas as pd
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Callable, Union
-from dataclasses import dataclass, asdict
-from enum import Enum
 import warnings
+from dataclasses import asdict, dataclass
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Any
+
+import numpy as np
 
 warnings.filterwarnings("ignore")
 
 # Import retraining system components
 from automated_model_retraining import (
-    ModelMetadata,
-    ModelStatus,
-    RetrainingTrigger,
     AutomatedRetrainingOrchestrator,
     ConstitutionalComplianceValidator,
+    ModelMetadata,
+    ModelStatus,
 )
-from nats_event_broker import NATSEventBroker, ACGSEvent
+from nats_event_broker import ACGSEvent, NATSEventBroker
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +53,7 @@ class ModelDeployment:
     model_id: str
     version: str
     strategy: DeploymentStrategy
-    target_services: List[str]
+    target_services: list[str]
     traffic_percentage: float
     health_check_url: str
     rollback_threshold: float
@@ -70,7 +68,7 @@ class ModelPerformanceSnapshot:
     model_id: str
     version: str
     timestamp: str
-    metrics: Dict[str, float]
+    metrics: dict[str, float]
     service_id: str
     constitutional_compliance_score: float
     constitutional_hash: str
@@ -85,9 +83,9 @@ class ModelAlert:
     alert_type: str  # 'performance', 'compliance', 'availability'
     severity: str  # 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'
     message: str
-    metrics: Dict[str, Any]
+    metrics: dict[str, Any]
     triggered_at: str
-    resolved_at: Optional[str]
+    resolved_at: str | None
     constitutional_hash: str
 
 
@@ -104,10 +102,10 @@ class ModelLifecycleManager:
         self.compliance_validator = ConstitutionalComplianceValidator()
 
         # Model registry and tracking
-        self.model_registry: Dict[str, ModelMetadata] = {}
-        self.deployment_registry: Dict[str, ModelDeployment] = {}
-        self.performance_history: Dict[str, List[ModelPerformanceSnapshot]] = {}
-        self.active_alerts: Dict[str, ModelAlert] = {}
+        self.model_registry: dict[str, ModelMetadata] = {}
+        self.deployment_registry: dict[str, ModelDeployment] = {}
+        self.performance_history: dict[str, list[ModelPerformanceSnapshot]] = {}
+        self.active_alerts: dict[str, ModelAlert] = {}
 
         # Lifecycle configuration
         self.lifecycle_config = {
@@ -127,7 +125,7 @@ class ModelLifecycleManager:
             "throughput_rps": {"warning": 50, "critical": 25},
         }
 
-        logger.info(f"Model Lifecycle Manager initialized")
+        logger.info("Model Lifecycle Manager initialized")
 
     async def initialize(self):
         """Initialize the model lifecycle manager."""
@@ -206,7 +204,7 @@ class ModelLifecycleManager:
         return True
 
     async def deploy_model(
-        self, model_id: str, deployment_config: Dict[str, Any]
+        self, model_id: str, deployment_config: dict[str, Any]
     ) -> bool:
         """Deploy a model using specified deployment strategy."""
 
@@ -253,12 +251,12 @@ class ModelLifecycleManager:
         try:
             if deployment.strategy == DeploymentStrategy.BLUE_GREEN:
                 return await self._blue_green_deployment(deployment)
-            elif deployment.strategy == DeploymentStrategy.CANARY:
+            if deployment.strategy == DeploymentStrategy.CANARY:
                 return await self._canary_deployment(deployment)
-            elif deployment.strategy == DeploymentStrategy.ROLLING:
+            if deployment.strategy == DeploymentStrategy.ROLLING:
                 return await self._rolling_deployment(deployment)
-            else:  # IMMEDIATE
-                return await self._immediate_deployment(deployment)
+            # IMMEDIATE
+            return await self._immediate_deployment(deployment)
 
         except Exception as e:
             logger.error(f"❌ Deployment failed: {e}")
@@ -276,11 +274,10 @@ class ModelLifecycleManager:
 
         if health_ok:
             # Switch traffic
-            logger.info(f"✅ Traffic switched to new version")
+            logger.info("✅ Traffic switched to new version")
             return True
-        else:
-            logger.error(f"❌ Health check failed, rolling back")
-            return False
+        logger.error("❌ Health check failed, rolling back")
+        return False
 
     async def _canary_deployment(self, deployment: ModelDeployment) -> bool:
         """Execute canary deployment."""
@@ -302,13 +299,13 @@ class ModelLifecycleManager:
             )
 
             if not performance_ok:
-                logger.error(f"❌ Canary performance degraded, rolling back")
+                logger.error("❌ Canary performance degraded, rolling back")
                 return False
 
             # Increase traffic gradually
             current_traffic = min(current_traffic * 2, target_traffic)
 
-        logger.info(f"✅ Canary deployment completed")
+        logger.info("✅ Canary deployment completed")
         return True
 
     async def _rolling_deployment(self, deployment: ModelDeployment) -> bool:
@@ -325,7 +322,7 @@ class ModelLifecycleManager:
                 logger.error(f"❌ Health check failed for {service}")
                 return False
 
-        logger.info(f"✅ Rolling deployment completed")
+        logger.info("✅ Rolling deployment completed")
         return True
 
     async def _immediate_deployment(self, deployment: ModelDeployment) -> bool:
@@ -346,9 +343,8 @@ class ModelLifecycleManager:
         if health_score > 0.9:
             logger.info(f"✅ Health check passed: {health_score:.3f}")
             return True
-        else:
-            logger.warning(f"⚠️ Health check failed: {health_score:.3f}")
-            return False
+        logger.warning(f"⚠️ Health check failed: {health_score:.3f}")
+        return False
 
     async def _monitor_canary_performance(
         self, deployment: ModelDeployment, traffic_percentage: float
@@ -361,11 +357,10 @@ class ModelLifecycleManager:
         if performance_score > 0.8:
             logger.info(f"✅ Canary performance good: {performance_score:.3f}")
             return True
-        else:
-            logger.warning(f"⚠️ Canary performance degraded: {performance_score:.3f}")
-            return False
+        logger.warning(f"⚠️ Canary performance degraded: {performance_score:.3f}")
+        return False
 
-    async def _handle_model_metrics(self, event_data: Dict[str, Any], msg):
+    async def _handle_model_metrics(self, event_data: dict[str, Any], msg):
         """Handle incoming model performance metrics."""
 
         model_id = event_data.get("model_id")
@@ -416,12 +411,11 @@ class ModelLifecycleManager:
                     severity = "CRITICAL"
                 elif value >= thresholds["warning"]:
                     severity = "HIGH"
-            else:
-                # Lower is worse
-                if value <= thresholds["critical"]:
-                    severity = "CRITICAL"
-                elif value <= thresholds["warning"]:
-                    severity = "HIGH"
+            # Lower is worse
+            elif value <= thresholds["critical"]:
+                severity = "CRITICAL"
+            elif value <= thresholds["warning"]:
+                severity = "HIGH"
 
             if severity:
                 await self._create_alert(
@@ -442,7 +436,7 @@ class ModelLifecycleManager:
         alert_type: str,
         severity: str,
         message: str,
-        metrics: Dict[str, Any],
+        metrics: dict[str, Any],
     ):
         """Create a model alert."""
 
@@ -499,11 +493,11 @@ class ModelLifecycleManager:
 
         logger.warning(f"🚨 Model alert created: {alert_id} - {message}")
 
-    async def _handle_deployment_event(self, event_data: Dict[str, Any], msg):
+    async def _handle_deployment_event(self, event_data: dict[str, Any], msg):
         """Handle deployment-related events."""
         logger.info(f"📦 Deployment event: {event_data.get('event_type', 'unknown')}")
 
-    async def _handle_retraining_completion(self, event_data: Dict[str, Any], msg):
+    async def _handle_retraining_completion(self, event_data: dict[str, Any], msg):
         """Handle retraining completion events."""
 
         model_id = event_data.get("payload", {}).get("model_id")

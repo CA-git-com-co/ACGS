@@ -82,7 +82,6 @@ class PolicyManager:
                 or not self._last_refresh_time
                 or (now - self._last_refresh_time > self._refresh_interval)
             ):
-
                 print("PolicyManager: Refreshing policies from Integrity Service...")
                 try:
                     # Fetch verified rules from Integrity Service

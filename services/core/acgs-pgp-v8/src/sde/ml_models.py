@@ -6,29 +6,28 @@ and recovery recommendation in the ACGS-PGP v8 system.
 """
 
 import logging
-import pickle
-import numpy as np
-import pandas as pd
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
-from dataclasses import dataclass, field
+from typing import Any
+
+import numpy as np
 
 # ML dependencies
 try:
+    import joblib
+    from sklearn.cluster import DBSCAN
+    from sklearn.decomposition import PCA
     from sklearn.ensemble import (
-        RandomForestClassifier,
-        IsolationForest,
         GradientBoostingClassifier,
+        IsolationForest,
+        RandomForestClassifier,
     )
     from sklearn.feature_extraction.text import TfidfVectorizer
-    from sklearn.preprocessing import StandardScaler, LabelEncoder
-    from sklearn.model_selection import train_test_split, cross_val_score
     from sklearn.metrics import classification_report, confusion_matrix
+    from sklearn.model_selection import cross_val_score, train_test_split
     from sklearn.pipeline import Pipeline
-    from sklearn.decomposition import PCA
-    from sklearn.cluster import DBSCAN
-    import joblib
+    from sklearn.preprocessing import LabelEncoder, StandardScaler
 
     SKLEARN_AVAILABLE = True
 except ImportError:
@@ -37,15 +36,13 @@ except ImportError:
 # Deep learning dependencies (optional)
 try:
     import torch
-    import torch.nn as nn
-    import torch.optim as optim
+    from torch import nn, optim
     from torch.utils.data import DataLoader, TensorDataset
 
     TORCH_AVAILABLE = True
 except ImportError:
     TORCH_AVAILABLE = False
 
-from .models import ErrorCategory, ErrorSeverity, RecoveryStrategy
 
 logger = logging.getLogger(__name__)
 
@@ -56,9 +53,9 @@ class TrainingData:
 
     features: np.ndarray
     labels: np.ndarray
-    feature_names: List[str]
-    label_names: List[str]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    feature_names: list[str]
+    label_names: list[str]
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         """Validate training data after initialization."""
@@ -79,7 +76,7 @@ class ModelMetrics:
     f1_score: float
     confusion_matrix: np.ndarray
     classification_report: str
-    cross_val_scores: List[float]
+    cross_val_scores: list[float]
     training_time: float
     model_size_mb: float
 
@@ -118,7 +115,7 @@ class ErrorClassificationModel:
 
         logger.info(f"Initialized {model_type} error classification model")
 
-    def extract_features(self, error_data: Dict[str, Any]) -> np.ndarray:
+    def extract_features(self, error_data: dict[str, Any]) -> np.ndarray:
         """
         Extract features from error data for ML processing.
 
@@ -310,9 +307,9 @@ class ErrorClassificationModel:
         """Calculate model performance metrics."""
         from sklearn.metrics import (
             accuracy_score,
+            f1_score,
             precision_score,
             recall_score,
-            f1_score,
         )
 
         # Basic metrics
@@ -345,7 +342,7 @@ class ErrorClassificationModel:
             model_size_mb=model_size_mb,
         )
 
-    def predict(self, error_data: Dict[str, Any]) -> Tuple[str, float, Dict[str, Any]]:
+    def predict(self, error_data: dict[str, Any]) -> tuple[str, float, dict[str, Any]]:
         """
         Predict error classification and severity.
 
@@ -397,11 +394,11 @@ class ErrorClassificationModel:
 
         return predicted_class, confidence, additional_info
 
-    def _get_feature_importance(self) -> Dict[str, float]:
+    def _get_feature_importance(self) -> dict[str, float]:
         """Get feature importance scores."""
         if hasattr(self.model, "feature_importances_"):
             importance_scores = self.model.feature_importances_
-            return dict(zip(self.feature_names, importance_scores))
+            return dict(zip(self.feature_names, importance_scores, strict=False))
         return {}
 
     def save_model(self, file_path: Path):
@@ -480,7 +477,7 @@ class AnomalyDetectionModel:
             f"Initialized anomaly detection model with contamination {contamination}"
         )
 
-    def train(self, normal_data: np.ndarray) -> Dict[str, Any]:
+    def train(self, normal_data: np.ndarray) -> dict[str, Any]:
         """
         Train anomaly detection model on normal system behavior.
 
@@ -513,7 +510,7 @@ class AnomalyDetectionModel:
         logger.info(f"Anomaly detection model trained on {len(normal_data)} samples")
         return metrics
 
-    def detect_anomaly(self, data: np.ndarray) -> Tuple[bool, float]:
+    def detect_anomaly(self, data: np.ndarray) -> tuple[bool, float]:
         """
         Detect if data point is anomalous.
 
@@ -549,8 +546,8 @@ class RecoveryRecommendationModel:
         logger.info("Initialized recovery recommendation model")
 
     def train(
-        self, error_descriptions: List[str], recovery_strategies: List[str]
-    ) -> Dict[str, Any]:
+        self, error_descriptions: list[str], recovery_strategies: list[str]
+    ) -> dict[str, Any]:
         """
         Train recovery recommendation model.
 
@@ -587,7 +584,7 @@ class RecoveryRecommendationModel:
         )
         return metrics
 
-    def recommend_recovery(self, error_description: str) -> Tuple[str, float]:
+    def recommend_recovery(self, error_description: str) -> tuple[str, float]:
         """
         Recommend recovery strategy for error.
 
@@ -721,7 +718,7 @@ class TrainingDataGenerator:
             metadata={"generation_seed": self.seed, "n_samples": n_samples},
         )
 
-    def _generate_sample_features(self, pattern: Dict[str, Any]) -> List[float]:
+    def _generate_sample_features(self, pattern: dict[str, Any]) -> list[float]:
         """Generate sample features based on error pattern."""
         features = []
 
@@ -788,7 +785,7 @@ class TrainingDataGenerator:
 
     def generate_recovery_recommendation_data(
         self, n_samples: int = 500
-    ) -> Tuple[List[str], List[str]]:
+    ) -> tuple[list[str], list[str]]:
         """Generate training data for recovery recommendations."""
         error_descriptions = []
         recovery_strategies = []
@@ -868,7 +865,7 @@ class MLModelTrainer:
 
         logger.info(f"ML model trainer initialized with models directory: {models_dir}")
 
-    def train_all_models(self) -> Dict[str, Any]:
+    def train_all_models(self) -> dict[str, Any]:
         """Train all ML models and save them."""
         results = {}
 
@@ -890,7 +887,7 @@ class MLModelTrainer:
         logger.info("All ML models trained successfully")
         return results
 
-    def _train_error_classification_model(self) -> Dict[str, Any]:
+    def _train_error_classification_model(self) -> dict[str, Any]:
         """Train error classification model."""
         # Generate training data
         training_data = self.data_generator.generate_error_classification_data(
@@ -924,7 +921,7 @@ class MLModelTrainer:
 
         return model_results
 
-    def _train_anomaly_detection_model(self) -> Dict[str, Any]:
+    def _train_anomaly_detection_model(self) -> dict[str, Any]:
         """Train anomaly detection model."""
         # Generate normal system behavior data
         normal_data = []
@@ -958,7 +955,7 @@ class MLModelTrainer:
             logger.error(f"Failed to train anomaly detection model: {e}")
             return {"error": str(e)}
 
-    def _train_recovery_recommendation_model(self) -> Dict[str, Any]:
+    def _train_recovery_recommendation_model(self) -> dict[str, Any]:
         """Train recovery recommendation model."""
         try:
             # Generate training data

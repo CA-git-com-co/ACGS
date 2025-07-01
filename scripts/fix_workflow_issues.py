@@ -5,9 +5,10 @@ Version: 3.0.0
 Last Updated: 2025-06-27
 """
 
-import yaml
 import os
 from pathlib import Path
+
+import yaml
 
 
 def fix_python_version_issues():
@@ -17,7 +18,7 @@ def fix_python_version_issues():
 
     for workflow_file in workflow_dir.glob("*.yml"):
         try:
-            with open(workflow_file, "r") as f:
+            with open(workflow_file) as f:
                 content = f.read()
 
             # Fix Python 3.13 to 3.11 (3.13 may not be available)
@@ -51,7 +52,7 @@ def check_yaml_syntax():
 
     for workflow_file in workflow_dir.glob("*.yml"):
         try:
-            with open(workflow_file, "r") as f:
+            with open(workflow_file) as f:
                 yaml.safe_load(f)
         except yaml.YAMLError as e:
             issues.append(f"{workflow_file.name}: YAML syntax error - {e}")
@@ -88,10 +89,9 @@ def main():
         for issue in yaml_issues:
             print(f"  ❌ {issue}")
         return 1
-    else:
-        print("  ✅ All YAML files have valid syntax")
+    print("  ✅ All YAML files have valid syntax")
 
-    print(f"\n🎉 Workflow fixes completed!")
+    print("\n🎉 Workflow fixes completed!")
     return 0
 
 

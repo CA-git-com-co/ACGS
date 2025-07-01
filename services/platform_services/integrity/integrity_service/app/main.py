@@ -201,7 +201,7 @@ async def add_security_headers(request, call_next):
 # Apply comprehensive audit logging
 if AUDIT_LOGGING_AVAILABLE:
     apply_audit_logging_to_service(app, "integrity_service")
-    print(f"✅ Comprehensive audit logging applied to integrity service")
+    print("✅ Comprehensive audit logging applied to integrity service")
     print("🔒 Audit features enabled:")
     print("   - Tamper-proof logs with cryptographic integrity")
     print("   - Compliance tracking (SOC 2, ISO 27001, NIST)")
@@ -210,7 +210,7 @@ if AUDIT_LOGGING_AVAILABLE:
     print("   - Automated log retention and archival")
     print("   - Performance metrics and alerting")
 else:
-    print(f"⚠️ Audit logging not available for integrity service")
+    print("⚠️ Audit logging not available for integrity service")
 
 # Apply production-grade security middleware
 if SECURITY_MIDDLEWARE_AVAILABLE:
@@ -221,9 +221,9 @@ if SECURITY_MIDDLEWARE_AVAILABLE:
         enable_threat_detection=True,
     )
     apply_production_security_middleware(app, "integrity_service", security_config)
-    print(f"✅ Production security middleware applied to integrity service")
+    print("✅ Production security middleware applied to integrity service")
 else:
-    print(f"⚠️ Security middleware not available for integrity service")
+    print("⚠️ Security middleware not available for integrity service")
 
 
 # Add enhanced security middleware

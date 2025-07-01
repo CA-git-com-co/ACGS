@@ -9,11 +9,8 @@ Prometheus, Grafana, and constitutional compliance monitoring.
 import asyncio
 import json
 import logging
-import subprocess
-import time
-from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 import yaml
 
@@ -61,7 +58,7 @@ class ProductionMonitoringSetup:
         self.monitoring_dir = Path("monitoring")
         self.config_dir = self.monitoring_dir / "config"
 
-    async def setup_comprehensive_monitoring(self) -> Dict[str, Any]:
+    async def setup_comprehensive_monitoring(self) -> dict[str, Any]:
         """Set up comprehensive production monitoring."""
         try:
             self.logger.info("Starting comprehensive monitoring setup")

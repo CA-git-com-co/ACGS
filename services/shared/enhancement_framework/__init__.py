@@ -34,8 +34,8 @@ __author__ = "ACGS-1 Development Team"
 __all__ = [
     "ACGSServiceEnhancer",
     "ACGSServiceTemplate",
-    "ConstitutionalComplianceValidator",
-    "PerformanceEnhancer",
-    "MonitoringIntegrator",
     "CacheEnhancer",
+    "ConstitutionalComplianceValidator",
+    "MonitoringIntegrator",
+    "PerformanceEnhancer",
 ]

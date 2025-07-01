@@ -15,34 +15,33 @@ Port: 8010
 
 import asyncio
 import logging
-import json
+import sys
+from datetime import datetime
+from typing import Any
+
+import numpy as np
+import pandas as pd
 import uvicorn
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import BackgroundTasks, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from typing import Dict, List, Any, Optional
-import pandas as pd
-import numpy as np
-from datetime import datetime
-import sys
-import os
 
 # Add core modules to path
 sys.path.append("../../core/acgs-pgp-v8")
-from event_driven_data_quality import EventDrivenDataQualityFramework, QualityEvent
-from nats_event_broker import NATSEventBroker, ACGSEvent
+from event_driven_data_quality import EventDrivenDataQualityFramework
+from nats_event_broker import ACGSEvent, NATSEventBroker
 
 logger = logging.getLogger(__name__)
 
 
 # Pydantic models for API
 class QualityAssessmentRequest(BaseModel):
-    data: List[Dict[str, Any]] = Field(..., description="Data records to assess")
+    data: list[dict[str, Any]] = Field(..., description="Data records to assess")
     service_id: str = Field(default="unknown", description="Source service ID")
-    target_column: Optional[str] = Field(
+    target_column: str | None = Field(
         None, description="Target column for classification analysis"
     )
-    timestamp_column: Optional[str] = Field(None, description="Timestamp column name")
+    timestamp_column: str | None = Field(None, description="Timestamp column name")
     constitutional_hash: str = Field(
         ..., description="Constitutional hash for validation"
     )
@@ -54,8 +53,8 @@ class QualityAssessmentResponse(BaseModel):
     missing_value_rate: float
     outlier_rate: float
     freshness_score: float
-    violations: List[Dict[str, Any]]
-    recommendations: List[str]
+    violations: list[dict[str, Any]]
+    recommendations: list[str]
     constitutional_hash: str
     timestamp: str
 
@@ -214,7 +213,7 @@ class DataQualityMicroservice:
             except Exception as e:
                 logger.error(f"❌ Quality assessment failed: {e}")
                 raise HTTPException(
-                    status_code=500, detail=f"Quality assessment failed: {str(e)}"
+                    status_code=500, detail=f"Quality assessment failed: {e!s}"
                 )
 
         @self.app.post("/monitor/start")
@@ -244,7 +243,7 @@ class DataQualityMicroservice:
                 "timestamp": datetime.now().isoformat(),
             }
 
-    def _generate_recommendations(self, metrics) -> List[str]:
+    def _generate_recommendations(self, metrics) -> list[str]:
         """Generate quality improvement recommendations."""
 
         recommendations = []
@@ -274,7 +273,7 @@ class DataQualityMicroservice:
 
         return recommendations
 
-    def _extract_violations(self, metrics) -> List[Dict[str, Any]]:
+    def _extract_violations(self, metrics) -> list[dict[str, Any]]:
         """Extract quality violations from metrics."""
 
         violations = []
@@ -364,7 +363,7 @@ class DataQualityMicroservice:
                 logger.error(f"❌ Error in continuous monitoring: {e}")
                 await asyncio.sleep(5)
 
-    def _generate_sample_data(self) -> List[Dict[str, Any]]:
+    def _generate_sample_data(self) -> list[dict[str, Any]]:
         """Generate sample data for monitoring demo."""
 
         data = []

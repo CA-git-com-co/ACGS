@@ -2,11 +2,10 @@
 Gemini CLI Configuration with MCP support and maximum capabilities
 """
 
-import os
-from pathlib import Path
-from typing import Dict, List, Optional
-from dataclasses import dataclass, field
 import json
+import os
+from dataclasses import dataclass, field
+from pathlib import Path
 
 
 @dataclass
@@ -14,9 +13,9 @@ class MCPServerConfig:
     """Configuration for MCP (Model Context Protocol) servers"""
 
     name: str
-    command: List[str]
-    env: Dict[str, str] = field(default_factory=dict)
-    args: List[str] = field(default_factory=list)
+    command: list[str]
+    env: dict[str, str] = field(default_factory=dict)
+    args: list[str] = field(default_factory=list)
     enabled: bool = True
 
 
@@ -38,7 +37,7 @@ class GeminiConfig:
     """Main Gemini CLI configuration"""
 
     # API Configuration
-    api_key: Optional[str] = None
+    api_key: str | None = None
     model: str = "gemini-1.5-pro"
     temperature: float = 0.7
     max_tokens: int = 8192
@@ -59,12 +58,12 @@ class GeminiConfig:
     tools: GeminiToolConfig = field(default_factory=GeminiToolConfig)
 
     # MCP Servers Configuration
-    mcp_servers: List[MCPServerConfig] = field(default_factory=list)
+    mcp_servers: list[MCPServerConfig] = field(default_factory=list)
 
     # Logging and Monitoring
     telemetry_enabled: bool = True
     log_level: str = "INFO"
-    log_file: Optional[str] = None
+    log_file: str | None = None
 
     # Performance Configuration
     request_timeout: int = 300
@@ -75,7 +74,7 @@ class GeminiConfig:
     def load_from_file(cls, config_path: Path) -> "GeminiConfig":
         """Load configuration from JSON file"""
         if config_path.exists():
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 data = json.load(f)
                 # Convert MCP server configs
                 if "mcp_servers" in data:
@@ -135,7 +134,7 @@ class GeminiConfig:
             json.dump(data, f, indent=2)
 
 
-def get_default_mcp_servers() -> List[MCPServerConfig]:
+def get_default_mcp_servers() -> list[MCPServerConfig]:
     """Get default MCP server configurations for maximum capability"""
     return [
         # File system MCP server
@@ -199,7 +198,7 @@ def get_default_config() -> GeminiConfig:
 
 
 # Global configuration instance
-_config: Optional[GeminiConfig] = None
+_config: GeminiConfig | None = None
 
 
 def get_config() -> GeminiConfig:

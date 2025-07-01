@@ -78,21 +78,20 @@ class LoadBalancer:
         # Apply load balancing strategy
         if strategy == LoadBalancingStrategy.ROUND_ROBIN:
             return self._round_robin_select(healthy_instances)
-        elif strategy == LoadBalancingStrategy.LEAST_CONNECTIONS:
+        if strategy == LoadBalancingStrategy.LEAST_CONNECTIONS:
             return self._least_connections_select(healthy_instances)
-        elif strategy == LoadBalancingStrategy.WEIGHTED_ROUND_ROBIN:
+        if strategy == LoadBalancingStrategy.WEIGHTED_ROUND_ROBIN:
             return self._weighted_round_robin_select(healthy_instances)
-        elif strategy == LoadBalancingStrategy.LEAST_RESPONSE_TIME:
+        if strategy == LoadBalancingStrategy.LEAST_RESPONSE_TIME:
             return self._least_response_time_select(healthy_instances)
-        elif strategy == LoadBalancingStrategy.CONSISTENT_HASH:
+        if strategy == LoadBalancingStrategy.CONSISTENT_HASH:
             return self._consistent_hash_select(
                 healthy_instances, hash_key or session_id
             )
-        elif strategy == LoadBalancingStrategy.RANDOM:
+        if strategy == LoadBalancingStrategy.RANDOM:
             return self._random_select(healthy_instances)
-        else:
-            # Fallback to least response time
-            return self._least_response_time_select(healthy_instances)
+        # Fallback to least response time
+        return self._least_response_time_select(healthy_instances)
 
     def _round_robin_select(self, instances: list[ServiceInstance]) -> ServiceInstance:
         """Round robin selection."""

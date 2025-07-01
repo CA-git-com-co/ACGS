@@ -45,10 +45,9 @@ async def test_direct_ollama():
                         f"Response: {data.get('response', 'No response field')[:200]}..."
                     )
                     return True
-                else:
-                    error_text = await response.text()
-                    print(f"Error response: {error_text}")
-                    return False
+                error_text = await response.text()
+                print(f"Error response: {error_text}")
+                return False
 
     except Exception as e:
         print(f"Direct API test failed: {e}")
@@ -119,12 +118,10 @@ async def test_model_availability():
                     if target_model in model_names:
                         print(f"✅ Target model '{target_model}' is available")
                         return True
-                    else:
-                        print(f"❌ Target model '{target_model}' not found")
-                        return False
-                else:
-                    print(f"Failed to get models: {response.status}")
+                    print(f"❌ Target model '{target_model}' not found")
                     return False
+                print(f"Failed to get models: {response.status}")
+                return False
 
     except Exception as e:
         print(f"Model availability test failed: {e}")

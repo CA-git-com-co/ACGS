@@ -17,8 +17,8 @@ import json
 import logging
 import statistics
 import time
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Any, Optional
+from datetime import datetime, timezone
+from typing import Any
 
 import httpx
 from pydantic import BaseModel
@@ -119,7 +119,7 @@ class ACGSAvailabilityCostValidator:
                         if current_downtime_start is None:
                             current_downtime_start = time.time()
 
-            except Exception as e:
+            except Exception:
                 failed_checks += 1
                 response_time = (time.time() - check_start) * 1000
                 response_times.append(response_time)
@@ -187,7 +187,7 @@ class ACGSAvailabilityCostValidator:
 
         return cost_sol
 
-    async def validate_cost_efficiency(self) -> Dict[str, Any]:
+    async def validate_cost_efficiency(self) -> dict[str, Any]:
         """Validate cost efficiency across all services"""
         logger.info("💰 Validating cost efficiency...")
 
@@ -264,7 +264,7 @@ class ACGSAvailabilityCostValidator:
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-    async def quick_availability_check(self) -> Dict[str, Any]:
+    async def quick_availability_check(self) -> dict[str, Any]:
         """Quick availability check across all services"""
         logger.info("⚡ Quick availability check...")
 
@@ -352,7 +352,7 @@ class ACGSAvailabilityCostValidator:
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-    async def run_availability_cost_validation(self) -> Dict[str, Any]:
+    async def run_availability_cost_validation(self) -> dict[str, Any]:
         """Run comprehensive availability and cost validation"""
         logger.info("🚀 Starting ACGS-PGP Availability and Cost Validation...")
 
@@ -448,14 +448,14 @@ async def main():
 
         # Print detailed results
         availability = results["results"]["availability_check"]
-        print(f"\nAvailability Check:")
+        print("\nAvailability Check:")
         print(
             f"  Services Meeting Target: {availability['services_meeting_availability_target']}/{availability['total_services']}"
         )
         print(f"  Overall Rate: {availability['overall_availability_rate']:.1f}%")
 
         cost = results["results"]["cost_validation"]
-        print(f"\nCost Validation:")
+        print("\nCost Validation:")
         print(
             f"  Average Cost per Action: {cost['average_cost_per_action_sol']:.6f} SOL"
         )
@@ -478,9 +478,8 @@ async def main():
         if results["summary"]["overall_status"] == "passed":
             print("✅ Availability and cost validation passed!")
             return 0
-        else:
-            print("❌ Some availability or cost targets not met.")
-            return 1
+        print("❌ Some availability or cost targets not met.")
+        return 1
 
     except Exception as e:
         logger.error(f"Availability and cost validation failed: {e}")

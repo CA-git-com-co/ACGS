@@ -178,9 +178,8 @@ class ApplicationsStructureValidator:
             if len(issues_found) > 5:
                 print(f"       ... and {len(issues_found) - 5} more")
             return False
-        else:
-            print("     ✅ No problematic import patterns found")
-            return True
+        print("     ✅ No problematic import patterns found")
+        return True
 
     def test_build_compatibility(self) -> bool:
         """Test that applications can still be built (basic check)"""
@@ -215,7 +214,7 @@ class ApplicationsStructureValidator:
         total = len(self.test_results)
 
         print(f"Tests Passed: {passed}/{total}")
-        print(f"Success Rate: {(passed/total)*100:.1f}%")
+        print(f"Success Rate: {(passed / total) * 100:.1f}%")
 
         print("\nDetailed Results:")
         for test_name, result in self.test_results:
@@ -239,8 +238,8 @@ class ApplicationsStructureValidator:
 ## Summary
 - **Tests Run**: {total}
 - **Tests Passed**: {passed}
-- **Success Rate**: {(passed/total)*100:.1f}%
-- **Status**: {'✅ READY FOR MERGE' if passed == total else '❌ NEEDS ATTENTION'}
+- **Success Rate**: {(passed / total) * 100:.1f}%
+- **Status**: {"✅ READY FOR MERGE" if passed == total else "❌ NEEDS ATTENTION"}
 
 ## Test Results
 """

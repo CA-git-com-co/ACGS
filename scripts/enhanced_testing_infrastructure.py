@@ -9,7 +9,7 @@ import json
 import logging
 import subprocess
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -73,7 +73,7 @@ class EnhancedTestingInfrastructure:
                     )
 
             except Exception as e:
-                logger.error(f"💥 {suite_name} crashed: {str(e)}")
+                logger.error(f"💥 {suite_name} crashed: {e!s}")
                 self.test_results["test_suites"][suite_name] = {
                     "status": "CRASHED",
                     "duration_seconds": time.time() - suite_start,
@@ -118,6 +118,7 @@ class EnhancedTestingInfrastructure:
                     "-v",
                     "--tb=short",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -163,6 +164,7 @@ class EnhancedTestingInfrastructure:
                     "-v",
                     "--tb=short",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -236,6 +238,7 @@ class EnhancedTestingInfrastructure:
             # Run Anchor tests
             result = subprocess.run(
                 ["anchor", "test", "--skip-local-validator"],
+                check=False,
                 cwd=self.project_root / "blockchain",
                 capture_output=True,
                 text=True,
@@ -328,6 +331,7 @@ class EnhancedTestingInfrastructure:
                     "security",
                     "-v",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,

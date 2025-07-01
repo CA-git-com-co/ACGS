@@ -2,27 +2,27 @@
 """
 MICE Implementation Demonstration for ACGS-PGP v8
 
-Demonstrates MICE (Multiple Imputation by Chained Equations) achieving 
+Demonstrates MICE (Multiple Imputation by Chained Equations) achieving
 15-20% improvement over basic imputation methods through controlled scenarios
 that highlight MICE's theoretical advantages.
 
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
+import json
 import logging
+import os
+import warnings
+from dataclasses import asdict, dataclass
+from datetime import datetime
+
 import numpy as np
 import pandas as pd
-from datetime import datetime
-from sklearn.experimental import enable_iterative_imputer
-from sklearn.impute import IterativeImputer, SimpleImputer
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split
+from sklearn.impute import IterativeImputer
 from sklearn.metrics import mean_absolute_error, r2_score
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-import json
-import os
-from dataclasses import dataclass, asdict
-import warnings
 
 warnings.filterwarnings("ignore")
 

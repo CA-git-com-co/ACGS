@@ -435,7 +435,7 @@ class MemoryOptimizer:
                     ):  # Convert MB to bytes
                         logger.warning(
                             f"Potential memory leak detected: {stat.traceback.format()[-1]} "
-                            f"grew by {stat.size_diff / (1024*1024):.1f} MB"
+                            f"grew by {stat.size_diff / (1024 * 1024):.1f} MB"
                         )
 
             # Keep only recent snapshots

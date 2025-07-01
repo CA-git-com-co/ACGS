@@ -272,7 +272,7 @@ class ServiceStabilizationManager:
                 )
                 updated_status = updated_health.get("status", "unknown")
 
-                print(f"   Check {i+1}/6: {updated_status}")
+                print(f"   Check {i + 1}/6: {updated_status}")
 
                 if updated_status == "healthy":
                     print(f"✅ Service {service_name} recovered successfully!")

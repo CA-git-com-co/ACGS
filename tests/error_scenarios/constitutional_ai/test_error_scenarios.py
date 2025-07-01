@@ -2,9 +2,6 @@
 Error scenario tests for constitutional-ai
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-
 
 class TestErrorScenarios:
     """Error scenario test suite for constitutional-ai."""

@@ -9,15 +9,15 @@ import hashlib
 import json
 import logging
 import time
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 import httpx
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import padding, rsa
 
 from ..core.config import settings
 
@@ -33,15 +33,15 @@ class AuditEntry:
     service: str
     event_type: str
     event_description: str
-    agent_id: Optional[str]
-    user_id: Optional[str]
-    resource: Optional[str]
+    agent_id: str | None
+    user_id: str | None
+    resource: str | None
     action: str
     outcome: str
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
     constitutional_hash: str
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "id": self.id,
@@ -74,9 +74,9 @@ class IntegrityProof:
     signature: str
     timestamp: datetime
     entry_count: int
-    previous_batch_hash: Optional[str]
-    blockchain_tx_id: Optional[str]
-    blockchain_confirmation: Optional[str]
+    previous_batch_hash: str | None
+    blockchain_tx_id: str | None
+    blockchain_confirmation: str | None
 
 
 class IntegrityManager:
@@ -94,8 +94,8 @@ class IntegrityManager:
     def __init__(self):
         self.private_key = None
         self.public_key = None
-        self.audit_buffer: List[AuditEntry] = []
-        self.integrity_proofs: List[IntegrityProof] = []
+        self.audit_buffer: list[AuditEntry] = []
+        self.integrity_proofs: list[IntegrityProof] = []
         self.http_client = httpx.AsyncClient(timeout=30.0)
 
         # Initialize cryptographic keys
@@ -257,7 +257,7 @@ class IntegrityManager:
 
         return proof
 
-    def _create_merkle_tree(self, hashes: List[str]) -> str:
+    def _create_merkle_tree(self, hashes: list[str]) -> str:
         """
         Create Merkle tree from list of hashes.
 
@@ -350,7 +350,7 @@ class IntegrityManager:
             logger.error(f"Signature verification error: {e}")
             return False
 
-    async def _anchor_to_blockchain(self, proof: IntegrityProof) -> Dict[str, Any]:
+    async def _anchor_to_blockchain(self, proof: IntegrityProof) -> dict[str, Any]:
         """
         Anchor integrity proof to blockchain.
 
@@ -387,8 +387,8 @@ class IntegrityManager:
             raise
 
     async def _mock_blockchain_anchor(
-        self, anchor_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, anchor_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Mock blockchain anchoring for development."""
         await asyncio.sleep(0.1)  # Simulate network delay
 
@@ -399,13 +399,13 @@ class IntegrityManager:
             "gas_used": 21000,
         }
 
-    async def _anchor_to_solana(self, anchor_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def _anchor_to_solana(self, anchor_data: dict[str, Any]) -> dict[str, Any]:
         """Anchor to Solana blockchain."""
         # This would integrate with Solana SDK
         # For now, return mock data
         return await self._mock_blockchain_anchor(anchor_data)
 
-    async def _anchor_to_ethereum(self, anchor_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def _anchor_to_ethereum(self, anchor_data: dict[str, Any]) -> dict[str, Any]:
         """Anchor to Ethereum blockchain."""
         # This would integrate with Web3.py
         # For now, return mock data
@@ -457,7 +457,7 @@ class IntegrityManager:
 
     async def generate_integrity_report(
         self, start_date: datetime, end_date: datetime
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Generate integrity report for a date range.
 
@@ -508,7 +508,7 @@ class IntegrityManager:
 
         return report
 
-    def _verify_proof_chain(self, proofs: List[IntegrityProof]) -> bool:
+    def _verify_proof_chain(self, proofs: list[IntegrityProof]) -> bool:
         """Verify the integrity of a chain of proofs."""
         if not proofs:
             return True
@@ -530,7 +530,7 @@ class IntegrityManager:
 
         return True
 
-    async def force_batch_processing(self) -> Optional[IntegrityProof]:
+    async def force_batch_processing(self) -> IntegrityProof | None:
         """Force processing of current batch even if not full."""
         if self.audit_buffer:
             return await self._process_batch()

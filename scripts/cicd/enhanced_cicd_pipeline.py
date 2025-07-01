@@ -18,15 +18,14 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio
-import json
 import logging
 import os
 import sys
-import time
-import yaml
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any
+
+import yaml
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -94,7 +93,7 @@ class EnhancedCICDPipeline:
             ],
         }
 
-    async def implement_enhanced_cicd(self) -> Dict[str, Any]:
+    async def implement_enhanced_cicd(self) -> dict[str, Any]:
         """Implement enhanced CI/CD pipeline."""
         logger.info("🚀 Implementing Enhanced CI/CD Pipeline")
         logger.info(f"Constitutional Hash: {self.constitutional_hash}")

@@ -21,7 +21,7 @@ import json
 import logging
 import sys
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -87,9 +87,9 @@ class ACGSCriticalExecutor:
         successful_phases = 0
 
         for phase_num, phase_name, phase_func in phases:
-            logger.info(f"\n{'='*80}")
+            logger.info(f"\n{'=' * 80}")
             logger.info(f"📋 PHASE {phase_num}: {phase_name}")
-            logger.info(f"{'='*80}")
+            logger.info(f"{'=' * 80}")
 
             phase_start = time.time()
 
@@ -122,7 +122,7 @@ class ACGSCriticalExecutor:
                     )
 
             except Exception as e:
-                logger.error(f"💥 Phase {phase_num} crashed: {str(e)}")
+                logger.error(f"💥 Phase {phase_num} crashed: {e!s}")
                 self.execution_report["phases_executed"][f"Phase_{phase_num}"] = {
                     "name": phase_name,
                     "status": "CRASHED",
@@ -250,10 +250,9 @@ class ACGSCriticalExecutor:
                 # For metrics where lower is better (cost, response time)
                 if values["achieved"] <= values["threshold"]:
                     criteria_met += 1
-            else:
-                # For metrics where higher is better
-                if values["achieved"] >= values["threshold"]:
-                    criteria_met += 1
+            # For metrics where higher is better
+            elif values["achieved"] >= values["threshold"]:
+                criteria_met += 1
 
         self.execution_report["success_criteria_met"] = criteria_met
         self.execution_report["overall_success_rate"] = (
@@ -348,15 +347,12 @@ async def main():
         if report["overall_success_rate"] >= 95:
             print("\n🎉 SUCCESS: All critical action items completed successfully!")
             return 0
-        else:
-            print(
-                "\n⚠️  WARNING: Some critical action items did not meet success criteria."
-            )
-            return 1
+        print("\n⚠️  WARNING: Some critical action items did not meet success criteria.")
+        return 1
 
     except Exception as e:
-        logger.error(f"💥 Execution failed: {str(e)}")
-        print(f"\n❌ EXECUTION FAILED: {str(e)}")
+        logger.error(f"💥 Execution failed: {e!s}")
+        print(f"\n❌ EXECUTION FAILED: {e!s}")
         return 1
 
 

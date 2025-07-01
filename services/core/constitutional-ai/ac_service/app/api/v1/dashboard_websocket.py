@@ -312,8 +312,7 @@ async def start_dashboard(db: AsyncSession = Depends(get_async_db)):
         if not dashboard.dashboard_active:
             await dashboard.start_dashboard()
             return {"message": "Dashboard started successfully", "status": "active"}
-        else:
-            return {"message": "Dashboard already active", "status": "active"}
+        return {"message": "Dashboard already active", "status": "active"}
 
     except Exception as e:
         logger.error(f"Failed to start dashboard: {e}")
@@ -329,8 +328,7 @@ async def stop_dashboard(db: AsyncSession = Depends(get_async_db)):
         if dashboard.dashboard_active:
             await dashboard.stop_dashboard()
             return {"message": "Dashboard stopped successfully", "status": "inactive"}
-        else:
-            return {"message": "Dashboard already inactive", "status": "inactive"}
+        return {"message": "Dashboard already inactive", "status": "inactive"}
 
     except Exception as e:
         logger.error(f"Failed to stop dashboard: {e}")

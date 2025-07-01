@@ -13,24 +13,24 @@ Options:
     --verify    Run verification tests after cache clearing
 """
 
-import asyncio
 import argparse
+import asyncio
 import logging
 import sys
 import time
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Any
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.shared.multi_level_cache import MultiLevelCacheManager
 from services.shared.constitutional_cache import ConstitutionalCache
+from services.shared.multi_level_cache import MultiLevelCacheManager
 from services.shared.multimodal_ai_service import (
-    get_multimodal_service,
+    ContentType,
     MultimodalRequest,
     RequestType,
-    ContentType,
+    get_multimodal_service,
 )
 
 # Configure logging
@@ -218,7 +218,7 @@ class ConstitutionalCacheCleaner:
         for cache_type, count in self.cleared_counts.items():
             logger.info(f"     {cache_type}: {count} entries")
 
-    async def verify_constitutional_compliance(self) -> Dict[str, Any]:
+    async def verify_constitutional_compliance(self) -> dict[str, Any]:
         """Verify constitutional compliance after cache clearing."""
         logger.info("🔍 Verifying constitutional compliance...")
 
@@ -304,13 +304,11 @@ async def main():
                     "🎉 Cache clearing and verification completed successfully!"
                 )
                 return 0
-            else:
-                logger.error("❌ Verification failed after cache clearing")
-                return 1
-        else:
-            logger.info("🎉 Cache clearing completed successfully!")
-            logger.info("💡 Run with --verify to test constitutional compliance")
-            return 0
+            logger.error("❌ Verification failed after cache clearing")
+            return 1
+        logger.info("🎉 Cache clearing completed successfully!")
+        logger.info("💡 Run with --verify to test constitutional compliance")
+        return 0
 
     except Exception as e:
         logger.error(f"❌ Cache clearing failed: {e}")

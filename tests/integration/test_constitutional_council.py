@@ -63,7 +63,6 @@ async def test_constitutional_council_implementation():
     print("=" * 60)
 
     async with ACTestClient(BASE_URL) as client:
-
         # Test 1: Create a principle (prerequisite for amendments)
         print("\n1. Creating a test principle...")
         principle_data = {

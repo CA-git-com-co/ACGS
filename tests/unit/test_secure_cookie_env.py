@@ -8,7 +8,7 @@ import pytest
 def reload_endpoints():
     """Reload endpoints with minimal dependencies."""
     # Provide placeholder for missing security helper
-    import services.platform.authentication.app.core.security as security
+    from services.platform.authentication.app.core import security
 
     if not hasattr(security, "get_current_active_user_from_cookie"):
         security.get_current_active_user_from_cookie = lambda: None
@@ -21,7 +21,7 @@ def reload_endpoints():
     spec.loader.exec_module(schemas_mod)
     sys.modules["src.backend.auth_service.app.schemas"] = schemas_mod
 
-    import services.platform.authentication.app.api.endpoints as endpoints
+    from services.platform.authentication.app.api import endpoints
 
     importlib.reload(endpoints)
     return endpoints

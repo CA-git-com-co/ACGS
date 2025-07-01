@@ -4,10 +4,10 @@
 import asyncio
 
 from services.shared.ai_types import (
-    MultimodalRequest,
-    RequestType,
     ContentType,
     ModelType,
+    MultimodalRequest,
+    RequestType,
 )
 from services.shared.ml_routing_optimizer import MLRoutingOptimizer
 

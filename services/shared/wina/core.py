@@ -544,11 +544,10 @@ class WINAOptimizer:
 
         if result.success:
             return result.optimized_output, result.performance_metrics
-        else:
-            logger.warning(
-                f"WINA optimization failed: {result.error_message}, falling back to standard inference"
-            )
-            return await llm_client.generate_text(prompt, **kwargs), {}
+        logger.warning(
+            f"WINA optimization failed: {result.error_message}, falling back to standard inference"
+        )
+        return await llm_client.generate_text(prompt, **kwargs), {}
 
     async def get_optimization_metrics(self) -> dict[str, Any]:
         """

@@ -24,11 +24,9 @@ Formal Verification Comments:
 """
 
 import asyncio
-import json
 import logging
 import time
-from typing import Dict, Any, List
-from unittest.mock import Mock, patch, AsyncMock
+from unittest.mock import Mock, patch
 
 import pytest
 import requests
@@ -62,7 +60,7 @@ class TestServiceIntegration:
         }
         yield
         # Cleanup after test
-        logger.info(f"Test completed in {(time.time() - self.start_time)*1000:.2f}ms")
+        logger.info(f"Test completed in {(time.time() - self.start_time) * 1000:.2f}ms")
 
     def test_service_health_validation(self):
         """
@@ -104,7 +102,7 @@ class TestServiceIntegration:
                         logger.info(f"✅ {service}: Healthy ({response_time:.2f}ms)")
 
                 except Exception as e:
-                    logger.warning(f"⚠️ {service}: {str(e)}")
+                    logger.warning(f"⚠️ {service}: {e!s}")
 
             # Assertions
             success_rate = healthy_services / len(services)
@@ -355,7 +353,7 @@ class TestServiceIntegration:
                 # Assertions for individual test case
                 assert (
                     response.status_code == 200
-                ), f"Compliance validation failed for case {i+1}"
+                ), f"Compliance validation failed for case {i + 1}"
                 assert (
                     response_time <= 500
                 ), f"Compliance check too slow: {response_time:.2f}ms"
@@ -373,7 +371,7 @@ class TestServiceIntegration:
                     ), f"Expected failing score for: {test_case['content'][:50]}..."
 
                 logger.info(
-                    f"✅ Compliance test {i+1}: {actual_score:.2f} ({'PASS' if actual_score >= 0.8 else 'FAIL'})"
+                    f"✅ Compliance test {i + 1}: {actual_score:.2f} ({'PASS' if actual_score >= 0.8 else 'FAIL'})"
                 )
 
             # Overall compliance assertions
@@ -475,7 +473,7 @@ class TestServiceIntegration:
             service_time_variance <= 50
         ), f"Service response time variance too high: {service_time_variance:.2f}ms"
 
-        logger.info(f"✅ Performance assertions passed:")
+        logger.info("✅ Performance assertions passed:")
         logger.info(f"  Average service time: {avg_service_time:.2f}ms")
         logger.info(f"  Average workflow time: {avg_workflow_time:.2f}ms")
         logger.info(f"  Average memory usage: {avg_memory:.1f}%")
@@ -599,7 +597,6 @@ class TestBlockchainIntegration:
             "max_response_time_ms": 2000,
             "cluster": "devnet",
         }
-        yield
 
     def test_blockchain_cost_validation(self):
         """
@@ -648,7 +645,6 @@ class TestBlockchainIntegration:
         # ensures: All operations within time limits
         # sha256: blockchain_performance_test_v1.0
         """
-        import asyncio
 
         async def simulate_blockchain_operation(
             operation_name: str, duration_ms: float

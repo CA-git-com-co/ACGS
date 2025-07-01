@@ -9,18 +9,18 @@ AI decision transparency and auditability.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import sys
-import os
-import numpy as np
 import logging
-from datetime import datetime
+import os
+import sys
+
+import numpy as np
 
 # Add the services directory to the path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from production_ml_optimizer import (
-    ProductionMLOptimizer,
     ModelInterpretabilityFramework,
+    ProductionMLOptimizer,
 )
 
 # Configure logging
@@ -83,7 +83,7 @@ def test_feature_importance_analysis():
     )  # Up to 10 or number of features
     assert importance_result.constitutional_hash == "cdd01ef066bc6cf2"
 
-    logger.info(f"  📊 Feature Importance Analysis:")
+    logger.info("  📊 Feature Importance Analysis:")
     logger.info(f"    Importance type: {importance_result.importance_type}")
     logger.info(
         f"    Top feature: {importance_result.top_features[0][0]} ({importance_result.top_features[0][1]:.3f})"
@@ -129,7 +129,7 @@ def test_shap_analysis():
     assert len(shap_result.global_importance) == X.shape[1]
     assert shap_result.constitutional_hash == "cdd01ef066bc6cf2"
 
-    logger.info(f"  📊 SHAP Analysis:")
+    logger.info("  📊 SHAP Analysis:")
     logger.info(f"    Expected value: {shap_result.expected_value:.3f}")
     logger.info(f"    Samples analyzed: {len(shap_result.shap_values)}")
     logger.info(f"    Global importance features: {len(shap_result.global_importance)}")
@@ -160,7 +160,9 @@ def test_prediction_confidence():
     # Test prediction confidence
     feature_names = [f"feature_{i}" for i in range(X.shape[1])]
     confidence_results = framework.calculate_prediction_confidence(
-        model, X[:10], feature_names  # First 10 samples
+        model,
+        X[:10],
+        feature_names,  # First 10 samples
     )
 
     # Validate results
@@ -185,7 +187,7 @@ def test_prediction_confidence():
         [c.constitutional_compliance_confidence for c in confidence_results]
     )
 
-    logger.info(f"  📊 Prediction Confidence:")
+    logger.info("  📊 Prediction Confidence:")
     logger.info(f"    Samples analyzed: {len(confidence_results)}")
     logger.info(f"    Average confidence: {avg_confidence:.3f}")
     logger.info(
@@ -248,7 +250,7 @@ def test_production_ml_optimizer_integration():
     assert "transparency_score" in summary
     assert "auditability_score" in summary
 
-    logger.info(f"  📊 Interpretability Integration:")
+    logger.info("  📊 Interpretability Integration:")
     logger.info(f"    Top feature: {feature_importance['top_features'][0][0]}")
     logger.info(
         f"    Average confidence: {prediction_confidence['average_confidence']:.3f}"
@@ -301,7 +303,7 @@ def test_prediction_explanation():
     assert "hash_verified" in constitutional
     assert constitutional["hash_verified"] == True
 
-    logger.info(f"  📊 Prediction Explanation:")
+    logger.info("  📊 Prediction Explanation:")
     logger.info(f"    Prediction: {prediction_details['value']:.3f}")
     logger.info(f"    Confidence: {prediction_details['confidence_score']:.3f}")
     logger.info(
@@ -366,7 +368,7 @@ def test_interpretability_dashboard():
     assert status["interpretability_framework_operational"] == True
     assert status["constitutional_hash_integrity"] == True
 
-    logger.info(f"  📊 Dashboard Data Generated:")
+    logger.info("  📊 Dashboard Data Generated:")
     logger.info(f"    Constitutional hash verified: {verification['verified']}")
     logger.info(
         f"    Feature importance analyses: {status['feature_importance_analyses']}"

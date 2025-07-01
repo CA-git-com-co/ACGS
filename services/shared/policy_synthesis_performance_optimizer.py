@@ -130,7 +130,7 @@ class PolicySynthesisPerformanceOptimizer:
                 "consensus_timeout": 8.0,
                 "enable_response_streaming": False,
             }
-        elif self.optimization_level == OptimizationLevel.ENHANCED:
+        if self.optimization_level == OptimizationLevel.ENHANCED:
             return {
                 "enable_parallel_processing": True,
                 "enable_intelligent_caching": True,
@@ -140,16 +140,16 @@ class PolicySynthesisPerformanceOptimizer:
                 "consensus_timeout": 5.0,
                 "enable_response_streaming": True,
             }
-        else:  # MAXIMUM
-            return {
-                "enable_parallel_processing": True,
-                "enable_intelligent_caching": True,
-                "enable_model_preloading": True,
-                "enable_speculative_execution": True,
-                "max_parallel_models": 6,
-                "consensus_timeout": 3.0,
-                "enable_response_streaming": True,
-            }
+        # MAXIMUM
+        return {
+            "enable_parallel_processing": True,
+            "enable_intelligent_caching": True,
+            "enable_model_preloading": True,
+            "enable_speculative_execution": True,
+            "max_parallel_models": 6,
+            "consensus_timeout": 3.0,
+            "enable_response_streaming": True,
+        }
 
     async def initialize(self):
         """Initialize performance optimizer."""

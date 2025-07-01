@@ -14,7 +14,8 @@ import json
 import platform
 import sys
 import time
-from typing import Dict, List, Any
+from typing import Any
+
 import aiohttp
 
 # Service endpoints
@@ -42,7 +43,7 @@ class CrossPlatformCompatibilityTest:
             "summary": {},
         }
 
-    def _get_platform_info(self) -> Dict[str, Any]:
+    def _get_platform_info(self) -> dict[str, Any]:
         """Get current platform information."""
         return {
             "system": platform.system(),
@@ -55,7 +56,7 @@ class CrossPlatformCompatibilityTest:
             "architecture": platform.architecture(),
         }
 
-    async def test_environment_compatibility(self) -> Dict[str, Any]:
+    async def test_environment_compatibility(self) -> dict[str, Any]:
         """Test environment compatibility across services."""
         print("🌍 Testing Environment Compatibility...")
 
@@ -112,7 +113,7 @@ class CrossPlatformCompatibilityTest:
         )
         return self.results["environment_tests"]
 
-    async def test_cpu_fallback_scenarios(self) -> Dict[str, Any]:
+    async def test_cpu_fallback_scenarios(self) -> dict[str, Any]:
         """Test CPU-only fallback scenarios."""
         print("🖥️ Testing CPU Fallback Scenarios...")
 
@@ -197,7 +198,7 @@ class CrossPlatformCompatibilityTest:
         )
         return self.results["cpu_fallback_tests"]
 
-    async def test_cross_platform_features(self) -> Dict[str, Any]:
+    async def test_cross_platform_features(self) -> dict[str, Any]:
         """Test cross-platform specific features."""
         print("🔄 Testing Cross-Platform Features...")
 
@@ -251,7 +252,7 @@ class CrossPlatformCompatibilityTest:
 
             # Test file exists and can be read
             if os.path.exists(temp_path):
-                with open(temp_path, "r") as f:
+                with open(temp_path) as f:
                     content = f.read()
                 os.unlink(temp_path)
                 return content == "test"
@@ -283,7 +284,11 @@ class CrossPlatformCompatibilityTest:
 
             # Test basic process execution
             result = subprocess.run(
-                [sys.executable, "--version"], capture_output=True, text=True, timeout=5
+                [sys.executable, "--version"],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=5,
             )
             return result.returncode == 0 and "Python" in result.stdout
         except Exception:
@@ -300,7 +305,7 @@ class CrossPlatformCompatibilityTest:
         except Exception:
             return False
 
-    async def run_all_tests(self) -> Dict[str, Any]:
+    async def run_all_tests(self) -> dict[str, Any]:
         """Run all cross-platform compatibility tests."""
         print("🌍 Running Cross-Platform Compatibility Test Suite")
         print("=" * 60)
@@ -330,7 +335,7 @@ class CrossPlatformCompatibilityTest:
         }
 
         print("=" * 60)
-        print(f"🌍 Cross-Platform Compatibility Results:")
+        print("🌍 Cross-Platform Compatibility Results:")
         print(
             f"   Environment Compatibility: {'✅ PASSED' if env_passed else '❌ FAILED'}"
         )

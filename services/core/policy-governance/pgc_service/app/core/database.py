@@ -6,7 +6,7 @@ Policy Governance Compiler (PGC) service.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class DatabaseManager:
     """Database manager for PGC service."""
 
-    def __init__(self, connection_string: Optional[str] = None):
+    def __init__(self, connection_string: str | None = None):
         """Initialize database manager."""
         self.connection_string = connection_string or "sqlite:///pgc_service.db"
         self.connected = False
@@ -37,8 +37,8 @@ class DatabaseManager:
         logger.info("Database connection closed")
 
     async def execute_query(
-        self, query: str, params: Optional[Dict[str, Any]] = None
-    ) -> List[Dict[str, Any]]:
+        self, query: str, params: dict[str, Any] | None = None
+    ) -> list[dict[str, Any]]:
         """Execute a database query."""
         if not self.connected:
             raise RuntimeError("Database not connected")
@@ -53,7 +53,7 @@ class DatabaseManager:
 
 
 # Global database manager instance
-_db_manager: Optional[DatabaseManager] = None
+_db_manager: DatabaseManager | None = None
 
 
 def get_database_manager() -> DatabaseManager:

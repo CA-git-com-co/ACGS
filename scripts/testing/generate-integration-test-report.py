@@ -22,11 +22,11 @@ import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 try:
-    import matplotlib.pyplot as plt
     import matplotlib.dates as mdates
+    import matplotlib.pyplot as plt
 
     MATPLOTLIB_AVAILABLE = True
 except ImportError:
@@ -42,11 +42,11 @@ class IntegrationTestReportGenerator:
 
     def generate_report(
         self,
-        test_results: Dict[str, Any],
-        formats: List[str] = ["json", "html", "markdown"],
+        test_results: dict[str, Any],
+        formats: list[str] = ["json", "html", "markdown"],
         include_metrics: bool = True,
         include_charts: bool = False,
-    ) -> Dict[str, str]:
+    ) -> dict[str, str]:
         """Generate test reports in specified formats."""
 
         generated_files = {}
@@ -79,7 +79,7 @@ class IntegrationTestReportGenerator:
 
         return generated_files
 
-    def _generate_json_report(self, test_results: Dict[str, Any], output_file: Path):
+    def _generate_json_report(self, test_results: dict[str, Any], output_file: Path):
         """Generate JSON format report."""
 
         enhanced_results = {
@@ -96,7 +96,7 @@ class IntegrationTestReportGenerator:
 
     def _generate_html_report(
         self,
-        test_results: Dict[str, Any],
+        test_results: dict[str, Any],
         output_file: Path,
         include_metrics: bool = True,
     ):
@@ -148,25 +148,25 @@ class IntegrationTestReportGenerator:
 <body>
     <div class="header">
         <h1>Constitutional Trainer Integration Test Report</h1>
-        <p>Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}</p>
-        <p>Environment: {test_results.get('environment', {}).get('constitutional_trainer_url', 'N/A')}</p>
+        <p>Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC")}</p>
+        <p>Environment: {test_results.get("environment", {}).get("constitutional_trainer_url", "N/A")}</p>
     </div>
     
     <div class="summary">
         <div class="metric-card">
-            <div class="metric-value">{summary.get('total_tests', 0)}</div>
+            <div class="metric-value">{summary.get("total_tests", 0)}</div>
             <div class="metric-label">Total Tests</div>
         </div>
         <div class="metric-card">
-            <div class="metric-value" style="color: #4CAF50;">{summary.get('passed', 0)}</div>
+            <div class="metric-value" style="color: #4CAF50;">{summary.get("passed", 0)}</div>
             <div class="metric-label">Passed</div>
         </div>
         <div class="metric-card">
-            <div class="metric-value" style="color: #f44336;">{summary.get('failed', 0)}</div>
+            <div class="metric-value" style="color: #f44336;">{summary.get("failed", 0)}</div>
             <div class="metric-label">Failed</div>
         </div>
         <div class="metric-card">
-            <div class="metric-value">{summary.get('success_rate', 0):.1f}%</div>
+            <div class="metric-value">{summary.get("success_rate", 0):.1f}%</div>
             <div class="metric-label">Success Rate</div>
         </div>
     </div>
@@ -184,15 +184,15 @@ class IntegrationTestReportGenerator:
         </tr>
         <tr>
             <td>Average Response Time</td>
-            <td>{performance.get('avg_response_time_ms', 0):.2f} ms</td>
+            <td>{performance.get("avg_response_time_ms", 0):.2f} ms</td>
             <td>&lt; 2000 ms</td>
-            <td>{'✅ Pass' if performance.get('avg_response_time_ms', 0) < 2000 else '❌ Fail'}</td>
+            <td>{"✅ Pass" if performance.get("avg_response_time_ms", 0) < 2000 else "❌ Fail"}</td>
         </tr>
         <tr>
             <td>Max Response Time</td>
-            <td>{performance.get('max_response_time_ms', 0):.2f} ms</td>
+            <td>{performance.get("max_response_time_ms", 0):.2f} ms</td>
             <td>&lt; 2000 ms</td>
-            <td>{'✅ Pass' if performance.get('performance_target_met', False) else '❌ Fail'}</td>
+            <td>{"✅ Pass" if performance.get("performance_target_met", False) else "❌ Fail"}</td>
         </tr>
     </table>
 """
@@ -207,9 +207,9 @@ class IntegrationTestReportGenerator:
 
             html_content += f"""
     <div class="test-case {status_class}">
-        <h3>{test_case.get('name', 'Unknown Test')}</h3>
+        <h3>{test_case.get("name", "Unknown Test")}</h3>
         <p><strong>Status:</strong> {status.upper()}</p>
-        <p><strong>Duration:</strong> {test_case.get('duration', 0):.2f} seconds</p>
+        <p><strong>Duration:</strong> {test_case.get("duration", 0):.2f} seconds</p>
 """
 
             if "response_time_ms" in test_case:
@@ -230,7 +230,7 @@ class IntegrationTestReportGenerator:
 
     def _generate_markdown_report(
         self,
-        test_results: Dict[str, Any],
+        test_results: dict[str, Any],
         output_file: Path,
         include_metrics: bool = True,
     ):
@@ -242,18 +242,18 @@ class IntegrationTestReportGenerator:
 
         md_content = f"""# Constitutional Trainer Integration Test Report
 
-**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}  
-**Environment:** {test_results.get('environment', {}).get('constitutional_trainer_url', 'N/A')}
+**Generated:** {datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC")}  
+**Environment:** {test_results.get("environment", {}).get("constitutional_trainer_url", "N/A")}
 
 ## Summary
 
 | Metric | Value |
 |--------|-------|
-| Total Tests | {summary.get('total_tests', 0)} |
-| Passed | {summary.get('passed', 0)} |
-| Failed | {summary.get('failed', 0)} |
-| Errors | {summary.get('errors', 0)} |
-| Success Rate | {summary.get('success_rate', 0):.1f}% |
+| Total Tests | {summary.get("total_tests", 0)} |
+| Passed | {summary.get("passed", 0)} |
+| Failed | {summary.get("failed", 0)} |
+| Errors | {summary.get("errors", 0)} |
+| Success Rate | {summary.get("success_rate", 0):.1f}% |
 
 """
 
@@ -262,8 +262,8 @@ class IntegrationTestReportGenerator:
 
 | Metric | Value | Target | Status |
 |--------|-------|--------|--------|
-| Average Response Time | {performance.get('avg_response_time_ms', 0):.2f} ms | < 2000 ms | {'✅ Pass' if performance.get('avg_response_time_ms', 0) < 2000 else '❌ Fail'} |
-| Max Response Time | {performance.get('max_response_time_ms', 0):.2f} ms | < 2000 ms | {'✅ Pass' if performance.get('performance_target_met', False) else '❌ Fail'} |
+| Average Response Time | {performance.get("avg_response_time_ms", 0):.2f} ms | < 2000 ms | {"✅ Pass" if performance.get("avg_response_time_ms", 0) < 2000 else "❌ Fail"} |
+| Max Response Time | {performance.get("max_response_time_ms", 0):.2f} ms | < 2000 ms | {"✅ Pass" if performance.get("performance_target_met", False) else "❌ Fail"} |
 
 """
 
@@ -275,10 +275,10 @@ class IntegrationTestReportGenerator:
                 status, "❓"
             )
 
-            md_content += f"""### {status_emoji} {test_case.get('name', 'Unknown Test')}
+            md_content += f"""### {status_emoji} {test_case.get("name", "Unknown Test")}
 
 - **Status:** {status.upper()}
-- **Duration:** {test_case.get('duration', 0):.2f} seconds
+- **Duration:** {test_case.get("duration", 0):.2f} seconds
 """
 
             if "response_time_ms" in test_case:
@@ -295,8 +295,8 @@ class IntegrationTestReportGenerator:
             f.write(md_content)
 
     def _generate_performance_charts(
-        self, test_results: Dict[str, Any], charts_dir: Path
-    ) -> List[str]:
+        self, test_results: dict[str, Any], charts_dir: Path
+    ) -> list[str]:
         """Generate performance charts."""
 
         if not MATPLOTLIB_AVAILABLE:
@@ -374,7 +374,7 @@ def main():
             print(f"Error: Input file not found: {args.input_file}")
             sys.exit(1)
 
-        with open(args.input_file, "r") as f:
+        with open(args.input_file) as f:
             test_results = json.load(f)
     else:
         # Look for recent test results
@@ -389,7 +389,7 @@ def main():
         latest_file = max(files, key=os.path.getctime)
         print(f"Using latest test results: {latest_file}")
 
-        with open(latest_file, "r") as f:
+        with open(latest_file) as f:
             test_results = json.load(f)
 
     # Determine formats

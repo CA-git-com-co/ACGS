@@ -74,6 +74,7 @@ class PolicyFormatRouter:
         try:
             result = subprocess.run(
                 [self.opa_executable_path, "version"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -81,9 +82,8 @@ class PolicyFormatRouter:
             if result.returncode == 0:
                 logger.info(f"OPA available: {result.stdout.strip()}")
                 return True
-            else:
-                logger.warning(f"OPA not available: {result.stderr}")
-                return False
+            logger.warning(f"OPA not available: {result.stderr}")
+            return False
         except Exception as e:
             logger.warning(f"OPA check failed: {e}")
             return False
@@ -173,24 +173,23 @@ class PolicyFormatRouter:
                     import_dependencies=validation.missing_imports,
                 )
 
-            elif source_framework == PolicyFramework.JSON:
+            if source_framework == PolicyFramework.JSON:
                 return self._convert_json_to_rego(content, policy_name)
 
-            elif source_framework == PolicyFramework.YAML:
+            if source_framework == PolicyFramework.YAML:
                 return self._convert_yaml_to_rego(content, policy_name)
 
-            elif source_framework == PolicyFramework.DATALOG:
+            if source_framework == PolicyFramework.DATALOG:
                 return self._convert_datalog_to_rego(content, policy_name)
 
-            else:
-                return PolicyConversionResult(
-                    success=False,
-                    converted_content=None,
-                    target_framework=PolicyFramework.REGO,
-                    error_message=f"Unsupported source framework: {source_framework}",
-                    warnings=[],
-                    import_dependencies=[],
-                )
+            return PolicyConversionResult(
+                success=False,
+                converted_content=None,
+                target_framework=PolicyFramework.REGO,
+                error_message=f"Unsupported source framework: {source_framework}",
+                warnings=[],
+                import_dependencies=[],
+            )
 
         except Exception as e:
             logger.error(f"Conversion error: {e}")
@@ -388,7 +387,7 @@ class PolicyFormatRouter:
                 rego_lines.extend(
                     [
                         "allow {",
-                        f"    # Statement {i+1}",
+                        f"    # Statement {i + 1}",
                         f"    input.action in {json.dumps(actions if isinstance(actions, list) else [actions])}",
                         f"    input.resource in {json.dumps(resources if isinstance(resources, list) else [resources])}",
                         "}",
@@ -428,7 +427,7 @@ class PolicyFormatRouter:
                 field = condition["field"].replace(".", "_")
                 value = condition["equals"]
                 return f'input.{field} == "{value}"'
-            elif "field" in condition and "in" in condition:
+            if "field" in condition and "in" in condition:
                 field = condition["field"].replace(".", "_")
                 values = condition["in"]
                 value_list = ", ".join([f'"{v}"' for v in values])
@@ -463,6 +462,7 @@ class PolicyFormatRouter:
             # Run OPA parse
             result = subprocess.run(
                 [self.opa_executable_path, "parse", temp_file],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -483,13 +483,12 @@ class PolicyFormatRouter:
                     warnings=[],
                     missing_imports=missing_imports,
                 )
-            else:
-                return PolicyValidationResult(
-                    is_valid=False,
-                    error_message=result.stderr,
-                    warnings=[],
-                    missing_imports=[],
-                )
+            return PolicyValidationResult(
+                is_valid=False,
+                error_message=result.stderr,
+                warnings=[],
+                missing_imports=[],
+            )
 
         except Exception as e:
             return PolicyValidationResult(

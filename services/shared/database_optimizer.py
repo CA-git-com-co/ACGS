@@ -606,32 +606,31 @@ def monitor_db_performance(operation_name: str):
                         raise
 
             return async_wrapper
-        else:
 
-            def sync_wrapper(*args, **kwargs):
-                # requires: Valid input parameters
-                # ensures: Correct function execution
-                # sha256: func_hash
-                start_time = time.time()
-                try:
-                    result = func(*args, **kwargs)
-                    duration = time.time() - start_time
-                    logger.info(
-                        f"Database operation completed: {operation_name}",
-                        duration_seconds=duration,
-                        success=True,
-                    )
-                    return result
-                except Exception as e:
-                    duration = time.time() - start_time
-                    logger.error(
-                        f"Database operation failed: {operation_name}",
-                        duration_seconds=duration,
-                        error=str(e),
-                        success=False,
-                    )
-                    raise
+        def sync_wrapper(*args, **kwargs):
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
+            start_time = time.time()
+            try:
+                result = func(*args, **kwargs)
+                duration = time.time() - start_time
+                logger.info(
+                    f"Database operation completed: {operation_name}",
+                    duration_seconds=duration,
+                    success=True,
+                )
+                return result
+            except Exception as e:
+                duration = time.time() - start_time
+                logger.error(
+                    f"Database operation failed: {operation_name}",
+                    duration_seconds=duration,
+                    error=str(e),
+                    success=False,
+                )
+                raise
 
-            return sync_wrapper
+        return sync_wrapper
 
     return decorator

@@ -10,12 +10,12 @@ import logging
 import time
 import uuid
 from datetime import datetime, timezone
-from typing import Dict, List, Optional
 
 import aiohttp
-import docker
 import pytest
 import pytest_asyncio
+
+import docker
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

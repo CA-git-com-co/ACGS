@@ -5,24 +5,22 @@ Comprehensive horizontal scaling capabilities with auto-scaling, load balancing,
 """
 
 import asyncio
-import json
 import logging
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Dict, List, Optional, Any
+from typing import Any
 
 import aiohttp
-import docker
-import psutil
 from prometheus_client import (
     CollectorRegistry,
     Counter,
     Gauge,
-    Histogram,
     start_http_server,
 )
+
+import docker
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -94,7 +92,7 @@ class ServiceInstance:
     response_time: float = 0.0
     constitutional_compliance_score: float = 100.0
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    last_health_check: Optional[datetime] = None
+    last_health_check: datetime | None = None
 
 
 @dataclass
@@ -160,13 +158,13 @@ class HorizontalScalingManager:
         }
 
         # Scaling policies
-        self.scaling_policies: Dict[str, ScalingPolicy] = {}
-        self.service_instances: Dict[str, List[ServiceInstance]] = {}
-        self.load_balancer_configs: Dict[str, LoadBalancerConfig] = {}
+        self.scaling_policies: dict[str, ScalingPolicy] = {}
+        self.service_instances: dict[str, list[ServiceInstance]] = {}
+        self.load_balancer_configs: dict[str, LoadBalancerConfig] = {}
 
         # Scaling state
-        self.last_scaling_action: Dict[str, datetime] = {}
-        self.scaling_history: List[Dict] = []
+        self.last_scaling_action: dict[str, datetime] = {}
+        self.scaling_history: list[dict] = []
 
         # Initialize default policies
         self.initialize_default_scaling_policies()
@@ -441,8 +439,8 @@ class HorizontalScalingManager:
             return False
 
     def select_instances_for_removal(
-        self, instances: List[ServiceInstance], count: int
-    ) -> List[ServiceInstance]:
+        self, instances: list[ServiceInstance], count: int
+    ) -> list[ServiceInstance]:
         """Select instances for removal based on health and performance."""
         # Sort by health status and performance metrics
         sorted_instances = sorted(
@@ -675,7 +673,7 @@ class HorizontalScalingManager:
         except Exception as e:
             logger.error(f"Error evaluating scaling for {service_name}: {e}")
 
-    def get_scaling_status(self) -> Dict[str, Any]:
+    def get_scaling_status(self) -> dict[str, Any]:
         """Get horizontal scaling status."""
         status = {
             "services": {},

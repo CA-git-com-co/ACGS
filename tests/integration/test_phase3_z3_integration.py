@@ -84,7 +84,7 @@ class Phase3TestRunner:
                 )
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Exception: {str(e)}")
+            self.log_test_result(test_name, False, f"Exception: {e!s}")
 
     async def test_tiered_validation_automated(self):
         """Test automated tier validation."""
@@ -123,7 +123,7 @@ class Phase3TestRunner:
                 )
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Exception: {str(e)}")
+            self.log_test_result(test_name, False, f"Exception: {e!s}")
 
     async def test_tiered_validation_hitl(self):
         """Test human-in-the-loop tier validation."""
@@ -163,7 +163,7 @@ class Phase3TestRunner:
                 )
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Exception: {str(e)}")
+            self.log_test_result(test_name, False, f"Exception: {e!s}")
 
     async def test_tiered_validation_rigorous(self):
         """Test rigorous tier validation."""
@@ -212,7 +212,7 @@ class Phase3TestRunner:
                 )
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Exception: {str(e)}")
+            self.log_test_result(test_name, False, f"Exception: {e!s}")
 
     async def test_safety_property_checking(self):
         """Test safety property verification."""
@@ -270,7 +270,7 @@ class Phase3TestRunner:
                 )
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Exception: {str(e)}")
+            self.log_test_result(test_name, False, f"Exception: {e!s}")
 
     async def test_conflict_detection(self):
         """Test conflict detection between rule sets."""
@@ -315,7 +315,7 @@ class Phase3TestRunner:
                 )
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Exception: {str(e)}")
+            self.log_test_result(test_name, False, f"Exception: {e!s}")
 
     async def test_validation_status_endpoint(self):
         """Test validation status retrieval."""
@@ -344,7 +344,7 @@ class Phase3TestRunner:
                 )
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Exception: {str(e)}")
+            self.log_test_result(test_name, False, f"Exception: {e!s}")
 
     async def test_performance_benchmarks(self):
         """Test performance of Z3 integration."""
@@ -389,7 +389,7 @@ class Phase3TestRunner:
                 )
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Exception: {str(e)}")
+            self.log_test_result(test_name, False, f"Exception: {e!s}")
 
     async def run_all_tests(self):
         """Run all Phase 3 tests."""
@@ -424,7 +424,7 @@ class Phase3TestRunner:
         print(f"Total Tests: {total_tests}")
         print(f"Passed: {passed_tests}")
         print(f"Failed: {failed_tests}")
-        print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
+        print(f"Success Rate: {(passed_tests / total_tests) * 100:.1f}%")
 
         if failed_tests > 0:
             print("\n❌ Failed Tests:")

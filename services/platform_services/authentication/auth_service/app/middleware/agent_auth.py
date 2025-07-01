@@ -7,16 +7,13 @@ Integrates with the agent identity management system.
 
 import logging
 import os
-from typing import Optional, Dict, Any, Callable
-from datetime import datetime
-
-import redis.asyncio as aioredis
+from typing import Any
 
 import httpx
+import redis.asyncio as aioredis
 from fastapi import HTTPException, Request, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
 
 from ..models.agent import Agent
 from ..services.agent_service import AgentService
@@ -39,7 +36,7 @@ class AgentAuthenticationMiddleware:
     def __init__(
         self,
         auth_service_url: str = "http://localhost:8006",
-        redis_url: Optional[str] = None,
+        redis_url: str | None = None,
     ):
         self.auth_service_url = auth_service_url
         self.agent_service = AgentService()
@@ -50,7 +47,7 @@ class AgentAuthenticationMiddleware:
 
     async def authenticate_agent(
         self, request: Request, db: AsyncSession, require_active: bool = True
-    ) -> Optional[Agent]:
+    ) -> Agent | None:
         """
         Authenticate an agent from the request.
 
@@ -161,7 +158,7 @@ class AgentAuthenticationMiddleware:
         request: Request,
         db: AsyncSession,
         operation_type: str,
-        operation_context: Optional[Dict[str, Any]] = None,
+        operation_context: dict[str, Any] | None = None,
     ) -> Agent:
         """
         Require agent authentication and operation-specific authorization.
@@ -189,7 +186,7 @@ class AgentAuthenticationMiddleware:
 
         return agent
 
-    async def _extract_credentials(self, request: Request) -> Optional[Dict[str, str]]:
+    async def _extract_credentials(self, request: Request) -> dict[str, str] | None:
         """Extract agent credentials from request."""
         credentials = {}
 
@@ -216,7 +213,7 @@ class AgentAuthenticationMiddleware:
 
         return credentials if credentials else None
 
-    def _get_client_ip(self, request: Request) -> Optional[str]:
+    def _get_client_ip(self, request: Request) -> str | None:
         """Get client IP address from request."""
         # Check X-Forwarded-For header first (for proxy/load balancer)
         forwarded_for = request.headers.get("X-Forwarded-For")
@@ -268,7 +265,7 @@ class AgentAuthenticationMiddleware:
             return True
 
     def _is_high_risk_operation(
-        self, operation_type: str, operation_context: Dict[str, Any]
+        self, operation_type: str, operation_context: dict[str, Any]
     ) -> bool:
         """Determine if operation requires HITL approval."""
         high_risk_operations = {
@@ -295,7 +292,7 @@ class AgentAuthenticationMiddleware:
         return False
 
     async def _request_hitl_approval(
-        self, agent: Agent, operation_type: str, operation_context: Dict[str, Any]
+        self, agent: Agent, operation_type: str, operation_context: dict[str, Any]
     ) -> None:
         """Request HITL approval for high-risk operation."""
         try:
@@ -370,7 +367,7 @@ async def require_agent_perms(permissions: list[str]):
 
 
 async def require_operation_auth(
-    operation_type: str, operation_context: Optional[Dict[str, Any]] = None
+    operation_type: str, operation_context: dict[str, Any] | None = None
 ):
     """FastAPI dependency factory for operation-specific authorization."""
 

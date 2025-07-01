@@ -15,22 +15,20 @@ Key objectives:
 - Preserve end-to-end governance workflow tests
 """
 
-import os
-import sys
 import json
+import logging
 import shutil
 import subprocess
-import logging
-from pathlib import Path
+import sys
 from datetime import datetime
-from typing import Dict, List, Set, Tuple
+from pathlib import Path
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
         logging.FileHandler(
-            f'testing_optimization_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log'
+            f"testing_optimization_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
         ),
         logging.StreamHandler(),
     ],
@@ -286,6 +284,7 @@ clean-test:
                     "--cov-report=json:tests/coverage/coverage.json",
                     "--cov-report=term",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -294,7 +293,7 @@ clean-test:
             # Parse coverage results
             coverage_file = self.project_root / "tests/coverage/coverage.json"
             if coverage_file.exists():
-                with open(coverage_file, "r") as f:
+                with open(coverage_file) as f:
                     coverage_data = json.load(f)
 
                 total_coverage = coverage_data.get("totals", {}).get(
@@ -321,6 +320,7 @@ clean-test:
             # Test unit tests
             unit_result = subprocess.run(
                 ["pytest", "tests/unit/", "-v", "--tb=short"],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -330,6 +330,7 @@ clean-test:
             # Test integration tests (with shorter timeout)
             integration_result = subprocess.run(
                 ["pytest", "tests/integration/", "-v", "--tb=short", "-x"],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -339,6 +340,7 @@ clean-test:
             # Test Anchor programs
             anchor_result = subprocess.run(
                 ["anchor", "test"],
+                check=False,
                 cwd=self.project_root / "blockchain",
                 capture_output=True,
                 text=True,

@@ -19,9 +19,9 @@ import logging
 import traceback
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
-from fastapi import HTTPException, Request, Response, status
+from fastapi import HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
@@ -58,8 +58,8 @@ class ACGSError(Exception):
         error_code: str,
         category: ErrorCategory = ErrorCategory.SYSTEM,
         severity: ErrorSeverity = ErrorSeverity.MEDIUM,
-        details: Optional[Dict[str, Any]] = None,
-        cause: Optional[Exception] = None,
+        details: dict[str, Any] | None = None,
+        cause: Exception | None = None,
     ):
         super().__init__(message)
         self.message = message
@@ -165,9 +165,9 @@ class ErrorResponse(BaseModel):
     category: ErrorCategory
     severity: ErrorSeverity
     timestamp: datetime
-    details: Dict[str, Any] = {}
-    trace_id: Optional[str] = None
-    service: Optional[str] = None
+    details: dict[str, Any] = {}
+    trace_id: str | None = None
+    service: str | None = None
 
 
 class ErrorHandler:
@@ -179,9 +179,9 @@ class ErrorHandler:
 
     def handle_error(
         self,
-        error: Union[Exception, ACGSError],
-        request: Optional[Request] = None,
-        trace_id: Optional[str] = None,
+        error: Exception | ACGSError,
+        request: Request | None = None,
+        trace_id: str | None = None,
     ) -> JSONResponse:
         """Handle and format errors consistently."""
 
@@ -237,8 +237,8 @@ class ErrorHandler:
     def _log_error(
         self,
         error: ACGSError,
-        request: Optional[Request] = None,
-        trace_id: Optional[str] = None,
+        request: Request | None = None,
+        trace_id: str | None = None,
     ):
         """Log error with structured format."""
 

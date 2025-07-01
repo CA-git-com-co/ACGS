@@ -55,7 +55,7 @@ class DeploymentValidator:
                                 f"⚠️ {service_name}: unhealthy ({response.status})"
                             )
                 except Exception as e:
-                    self.services_health[service_name] = f"error ({str(e)})"
+                    self.services_health[service_name] = f"error ({e!s})"
                     logger.warning(f"❌ {service_name}: error - {e}")
 
         success_rate = healthy_services / len(services)
@@ -81,6 +81,7 @@ class DeploymentValidator:
             try:
                 result = subprocess.run(
                     ["anchor", "build"],
+                    check=False,
                     cwd=blockchain_dir,
                     capture_output=True,
                     text=True,
@@ -162,9 +163,8 @@ class DeploymentValidator:
                         await response.json()
                         logger.info("✅ GS synthesis endpoint working")
                         return True
-                    else:
-                        logger.warning(f"GS synthesis failed: {response.status}")
-                        return False
+                    logger.warning(f"GS synthesis failed: {response.status}")
+                    return False
         except Exception as e:
             logger.warning(f"GS integration test failed: {e}")
             return False
@@ -189,9 +189,8 @@ class DeploymentValidator:
                     if response.status in [200, 403]:  # 200 = allowed, 403 = denied
                         logger.info("✅ PGC compliance endpoint working")
                         return True
-                    else:
-                        logger.warning(f"PGC compliance failed: {response.status}")
-                        return False
+                    logger.warning(f"PGC compliance failed: {response.status}")
+                    return False
         except Exception as e:
             logger.warning(f"PGC integration test failed: {e}")
             return False
@@ -211,9 +210,8 @@ class DeploymentValidator:
                             f"✅ Constitutional AI endpoint working ({len(principles)} principles)"
                         )
                         return True
-                    else:
-                        logger.warning(f"Constitutional AI failed: {response.status}")
-                        return False
+                    logger.warning(f"Constitutional AI failed: {response.status}")
+                    return False
         except Exception as e:
             logger.warning(f"Constitutional AI integration test failed: {e}")
             return False

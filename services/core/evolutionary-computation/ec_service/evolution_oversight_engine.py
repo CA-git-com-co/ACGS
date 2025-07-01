@@ -4,14 +4,12 @@ ACGS Evolution Oversight Engine
 Implements automated fitness scoring and regression detection for constitutional evolution
 """
 
-import json
-import time
-import statistics
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone
 import logging
-import hashlib
+import statistics
+import time
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -38,10 +36,10 @@ class EvolutionCandidate:
     candidate_id: str
     policy_version: str
     constitutional_hash: str
-    policy_changes: Dict[str, Any]
+    policy_changes: dict[str, Any]
     fitness_metrics: FitnessMetrics
     generation: int
-    parent_id: Optional[str]
+    parent_id: str | None
     timestamp: str
 
 
@@ -77,7 +75,7 @@ class EvolutionOversightEngine:
         self.rollback_history = []
 
     def calculate_fitness_score(
-        self, policy_data: Dict[str, Any], performance_data: Dict[str, Any]
+        self, policy_data: dict[str, Any], performance_data: dict[str, Any]
     ) -> FitnessMetrics:
         """Calculate comprehensive fitness score for a constitutional policy"""
 
@@ -121,7 +119,7 @@ class EvolutionOversightEngine:
             overall_fitness=overall_fitness,
         )
 
-    def evaluate_constitutional_compliance(self, policy_data: Dict[str, Any]) -> float:
+    def evaluate_constitutional_compliance(self, policy_data: dict[str, Any]) -> float:
         """Evaluate constitutional compliance score"""
         # Check constitutional hash
         if policy_data.get("constitutional_hash") != self.constitutional_hash:
@@ -145,7 +143,7 @@ class EvolutionOversightEngine:
 
         return (completeness_score + consistency_score) / 2
 
-    def evaluate_performance(self, performance_data: Dict[str, Any]) -> float:
+    def evaluate_performance(self, performance_data: dict[str, Any]) -> float:
         """Evaluate performance metrics"""
         latency_score = self.score_latency(performance_data.get("p99_latency_ms", 10))
         throughput_score = self.score_throughput(
@@ -157,7 +155,7 @@ class EvolutionOversightEngine:
 
         return (latency_score + throughput_score + error_rate_score) / 3
 
-    def evaluate_safety(self, policy_data: Dict[str, Any]) -> float:
+    def evaluate_safety(self, policy_data: dict[str, Any]) -> float:
         """Evaluate safety score"""
         safety_policies = policy_data.get("safety", {})
 
@@ -173,7 +171,7 @@ class EvolutionOversightEngine:
 
         return safety_coverage / len(critical_policies)
 
-    def evaluate_fairness(self, policy_data: Dict[str, Any]) -> float:
+    def evaluate_fairness(self, policy_data: dict[str, Any]) -> float:
         """Evaluate fairness score"""
         fairness_policies = policy_data.get("fairness", {})
 
@@ -191,7 +189,7 @@ class EvolutionOversightEngine:
         return fairness_coverage / len(fairness_principles)
 
     def evaluate_efficiency(
-        self, policy_data: Dict[str, Any], performance_data: Dict[str, Any]
+        self, policy_data: dict[str, Any], performance_data: dict[str, Any]
     ) -> float:
         """Evaluate efficiency score"""
         # Combine policy efficiency and performance efficiency
@@ -208,7 +206,7 @@ class EvolutionOversightEngine:
         return (policy_efficiency + latency_efficiency + resource_efficiency) / 3
 
     def evaluate_robustness(
-        self, policy_data: Dict[str, Any], performance_data: Dict[str, Any]
+        self, policy_data: dict[str, Any], performance_data: dict[str, Any]
     ) -> float:
         """Evaluate robustness score"""
         # Policy robustness
@@ -221,7 +219,7 @@ class EvolutionOversightEngine:
 
         return (policy_robustness + error_recovery_score + availability_score) / 3
 
-    def evaluate_transparency(self, policy_data: Dict[str, Any]) -> float:
+    def evaluate_transparency(self, policy_data: dict[str, Any]) -> float:
         """Evaluate transparency score"""
         transparency_policies = policy_data.get("transparency", {})
 
@@ -238,7 +236,7 @@ class EvolutionOversightEngine:
 
         return transparency_coverage / len(transparency_requirements)
 
-    def evaluate_user_satisfaction(self, policy_data: Dict[str, Any]) -> float:
+    def evaluate_user_satisfaction(self, policy_data: dict[str, Any]) -> float:
         """Evaluate user satisfaction score (mock implementation)"""
         # In production, this would integrate with user feedback systems
         # For now, return a score based on policy complexity and coverage
@@ -251,44 +249,41 @@ class EvolutionOversightEngine:
         # Optimal policy count is around 20-30
         if 20 <= total_policies <= 30:
             return 1.0
-        elif 15 <= total_policies < 20 or 30 < total_policies <= 35:
+        if 15 <= total_policies < 20 or 30 < total_policies <= 35:
             return 0.8
-        elif 10 <= total_policies < 15 or 35 < total_policies <= 40:
+        if 10 <= total_policies < 15 or 35 < total_policies <= 40:
             return 0.6
-        else:
-            return 0.4
+        return 0.4
 
     def score_latency(self, latency_ms: float) -> float:
         """Score latency performance (lower is better)"""
         if latency_ms <= 1:
             return 1.0
-        elif latency_ms <= 5:
+        if latency_ms <= 5:
             return 0.9
-        elif latency_ms <= 10:
+        if latency_ms <= 10:
             return 0.7
-        elif latency_ms <= 50:
+        if latency_ms <= 50:
             return 0.5
-        else:
-            return 0.2
+        return 0.2
 
     def score_throughput(self, rps: float) -> float:
         """Score throughput performance (higher is better)"""
         if rps >= 1000:
             return 1.0
-        elif rps >= 500:
+        if rps >= 500:
             return 0.8
-        elif rps >= 100:
+        if rps >= 100:
             return 0.6
-        elif rps >= 50:
+        if rps >= 50:
             return 0.4
-        else:
-            return 0.2
+        return 0.2
 
     def score_error_rate(self, error_rate: float) -> float:
         """Score error rate (lower is better)"""
         return max(0.0, 1.0 - error_rate * 10)
 
-    def check_policy_consistency(self, policy_data: Dict[str, Any]) -> float:
+    def check_policy_consistency(self, policy_data: dict[str, Any]) -> float:
         """Check internal policy consistency"""
         # Simple consistency check - in production this would be more sophisticated
         inconsistencies = 0
@@ -313,7 +308,7 @@ class EvolutionOversightEngine:
 
     def detect_regression(
         self, current_metrics: FitnessMetrics
-    ) -> List[RegressionAlert]:
+    ) -> list[RegressionAlert]:
         """Detect performance regression in fitness metrics"""
         alerts = []
 
@@ -389,25 +384,23 @@ class EvolutionOversightEngine:
         """Determine severity of regression"""
         if regression_ratio > threshold * 3:
             return "CRITICAL"
-        elif regression_ratio > threshold * 2:
+        if regression_ratio > threshold * 2:
             return "HIGH"
-        elif regression_ratio > threshold * 1.5:
+        if regression_ratio > threshold * 1.5:
             return "MEDIUM"
-        else:
-            return "LOW"
+        return "LOW"
 
     def get_recommended_action(self, metric_name: str, severity: str) -> str:
         """Get recommended action for regression"""
         if severity == "CRITICAL":
             return f"IMMEDIATE ROLLBACK: Critical regression in {metric_name}"
-        elif severity == "HIGH":
+        if severity == "HIGH":
             return f"URGENT REVIEW: High regression in {metric_name}, consider rollback"
-        elif severity == "MEDIUM":
+        if severity == "MEDIUM":
             return f"INVESTIGATE: Medium regression in {metric_name}, monitor closely"
-        else:
-            return f"MONITOR: Low regression in {metric_name}, continue observation"
+        return f"MONITOR: Low regression in {metric_name}, continue observation"
 
-    def should_trigger_rollback(self, alerts: List[RegressionAlert]) -> bool:
+    def should_trigger_rollback(self, alerts: list[RegressionAlert]) -> bool:
         """Determine if automatic rollback should be triggered"""
         critical_alerts = [
             alert for alert in alerts if alert.regression_severity == "CRITICAL"
@@ -417,7 +410,7 @@ class EvolutionOversightEngine:
         # Trigger rollback if any critical alerts or multiple high alerts
         return len(critical_alerts) > 0 or len(high_alerts) >= 2
 
-    def execute_rollback(self, candidate: EvolutionCandidate) -> Dict[str, Any]:
+    def execute_rollback(self, candidate: EvolutionCandidate) -> dict[str, Any]:
         """Execute automated rollback to previous version"""
         rollback_info = {
             "rollback_id": f"rollback_{int(time.time())}",
@@ -431,7 +424,7 @@ class EvolutionOversightEngine:
         self.rollback_history.append(rollback_info)
         return rollback_info
 
-    def analyze_evolution_trends(self) -> Dict[str, Any]:
+    def analyze_evolution_trends(self) -> dict[str, Any]:
         """Analyze evolution trends over time"""
         if len(self.fitness_history) < 2:
             return {
@@ -530,7 +523,7 @@ def test_evolution_oversight_engine():
     print(f"  Overall Fitness: {fitness.overall_fitness:.3f}")
 
     # Test regression detection
-    print(f"\n🔍 Testing regression detection...")
+    print("\n🔍 Testing regression detection...")
     engine.fitness_history.append(fitness)
 
     # Simulate degraded performance
@@ -552,7 +545,7 @@ def test_evolution_oversight_engine():
     print(f"  Should trigger rollback: {should_rollback}")
 
     # Test trend analysis
-    print(f"\n📈 Analyzing evolution trends...")
+    print("\n📈 Analyzing evolution trends...")
     engine.fitness_history.append(degraded_fitness)
     trends = engine.analyze_evolution_trends()
 
@@ -560,7 +553,7 @@ def test_evolution_oversight_engine():
     print(f"  Current Fitness: {trends['current_fitness']:.3f}")
     print(f"  Evaluation Count: {trends['evaluation_count']}")
 
-    print(f"\n✅ Evolution Oversight Engine: OPERATIONAL")
+    print("\n✅ Evolution Oversight Engine: OPERATIONAL")
 
 
 if __name__ == "__main__":

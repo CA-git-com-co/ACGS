@@ -16,7 +16,7 @@ import logging
 import statistics
 import time
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 import aiohttp

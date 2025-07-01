@@ -5,17 +5,15 @@ Implements various multi-armed bandit algorithms for selecting
 improvement strategies with conservative exploration.
 """
 
-import asyncio
 import logging
 import math
 import random
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import numpy as np
 
-from ..config import settings
 from ..database import get_db_session
 from ..models.bandit import BanditAlgorithmType, BanditState
 
@@ -50,7 +48,7 @@ class BanditAlgorithm:
         self.decay_rate = decay_rate
 
         # Arm statistics
-        self.arms: Dict[str, Dict[str, Any]] = {}
+        self.arms: dict[str, dict[str, Any]] = {}
         self.total_pulls = 0
 
         # Algorithm-specific parameters
@@ -205,7 +203,7 @@ class BanditAlgorithm:
             logger.error(f"Failed to update arm {arm_id}: {e}")
             raise
 
-    async def get_performance_report(self) -> Dict[str, Any]:
+    async def get_performance_report(self) -> dict[str, Any]:
         """Get comprehensive performance report."""
         try:
             await self._load_all_arms()
@@ -265,7 +263,7 @@ class BanditAlgorithm:
                 "performance_history": [],
             }
 
-    async def _select_ucb(self, safe_arms: List[str]) -> str:
+    async def _select_ucb(self, safe_arms: list[str]) -> str:
         """Select arm using Upper Confidence Bound algorithm."""
         if self.total_pulls == 0:
             return random.choice(safe_arms)
@@ -284,16 +282,15 @@ class BanditAlgorithm:
 
         return max(ucb_values.keys(), key=lambda x: ucb_values[x])
 
-    async def _select_epsilon_greedy(self, safe_arms: List[str]) -> str:
+    async def _select_epsilon_greedy(self, safe_arms: list[str]) -> str:
         """Select arm using epsilon-greedy algorithm."""
         if random.random() < self.epsilon:
             # Explore: random selection
             return random.choice(safe_arms)
-        else:
-            # Exploit: select best arm
-            return max(safe_arms, key=lambda x: self.arms[x]["average_reward"])
+        # Exploit: select best arm
+        return max(safe_arms, key=lambda x: self.arms[x]["average_reward"])
 
-    async def _select_thompson_sampling(self, safe_arms: List[str]) -> str:
+    async def _select_thompson_sampling(self, safe_arms: list[str]) -> str:
         """Select arm using Thompson sampling."""
         # Simplified Thompson sampling using Beta distribution
         samples = {}
@@ -309,7 +306,7 @@ class BanditAlgorithm:
 
         return max(samples.keys(), key=lambda x: samples[x])
 
-    async def _select_exp3(self, safe_arms: List[str]) -> str:
+    async def _select_exp3(self, safe_arms: list[str]) -> str:
         """Select arm using EXP3 algorithm."""
         # Simplified EXP3 implementation
         weights = {}
@@ -337,7 +334,7 @@ class BanditAlgorithm:
 
         return random.choice(safe_arms)
 
-    async def _filter_safe_arms(self) -> List[str]:
+    async def _filter_safe_arms(self) -> list[str]:
         """Filter arms based on safety constraints."""
         safe_arms = []
 
@@ -430,7 +427,7 @@ class BanditAlgorithm:
         except Exception as e:
             logger.error(f"Failed to load all arms: {e}")
 
-    async def _get_performance_history(self) -> List[Dict[str, Any]]:
+    async def _get_performance_history(self) -> list[dict[str, Any]]:
         """Get performance history for visualization."""
         # This would typically query a separate performance history table
         # For now, return empty list

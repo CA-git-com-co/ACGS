@@ -127,12 +127,11 @@ class EnhancedMultiModelTester:
                     "authentication_valid": True,
                     "success_rate": 100.0,
                 }
-            else:
-                return {
-                    "status": "failed",
-                    "error": "Empty response from API",
-                    "success_rate": 0.0,
-                }
+            return {
+                "status": "failed",
+                "error": "Empty response from API",
+                "success_rate": 0.0,
+            }
 
         except Exception as e:
             return {"status": "failed", "error": str(e), "success_rate": 0.0}
@@ -185,7 +184,7 @@ class EnhancedMultiModelTester:
                     print(f"   ❌ {model}: Empty or insufficient response")
 
             except Exception as e:
-                print(f"   ❌ {model}: {str(e)}")
+                print(f"   ❌ {model}: {e!s}")
                 model_results[model] = {
                     "status": "failed",
                     "error": str(e),

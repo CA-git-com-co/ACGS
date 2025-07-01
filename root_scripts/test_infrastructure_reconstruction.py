@@ -7,16 +7,12 @@ Comprehensive reconstruction of the test infrastructure to achieve >80% test cov
 while organizing scattered test files into a standardized, maintainable structure.
 """
 
-import os
-import sys
 import json
-import shutil
 import logging
-from pathlib import Path
-from datetime import datetime
-from typing import Dict, List, Any, Optional
 import subprocess
-import re
+import sys
+from datetime import datetime
+from pathlib import Path
 
 # Configure logging
 logging.basicConfig(
@@ -101,18 +97,17 @@ class TestInfrastructureReconstructor:
 
         if "unit" in path_str or "unit" in name:
             return "unit"
-        elif "integration" in path_str or "integration" in name:
+        if "integration" in path_str or "integration" in name:
             return "integration"
-        elif "e2e" in path_str or "end_to_end" in path_str or "e2e" in name:
+        if "e2e" in path_str or "end_to_end" in path_str or "e2e" in name:
             return "e2e"
-        elif "performance" in path_str or "perf" in name:
+        if "performance" in path_str or "perf" in name:
             return "performance"
-        elif "security" in path_str or "security" in name:
+        if "security" in path_str or "security" in name:
             return "security"
-        elif "conftest" in name or "config" in name:
+        if "conftest" in name or "config" in name:
             return "configuration"
-        else:
-            return "general"
+        return "general"
 
     def _detect_language(self, test_file: Path) -> str:
         """Detect programming language of test file"""
@@ -120,16 +115,15 @@ class TestInfrastructureReconstructor:
 
         if suffix == ".py":
             return "python"
-        elif suffix in [".js", ".jsx"]:
+        if suffix in [".js", ".jsx"]:
             return "javascript"
-        elif suffix in [".ts", ".tsx"]:
+        if suffix in [".ts", ".tsx"]:
             return "typescript"
-        elif suffix == ".rs":
+        if suffix == ".rs":
             return "rust"
-        else:
-            return "unknown"
+        return "unknown"
 
-    def _analyze_test_organization(self, test_files: Dict):
+    def _analyze_test_organization(self, test_files: dict):
         """Analyze current test organization patterns"""
         logger.info("📊 Analyzing test organization patterns...")
 
@@ -250,7 +244,7 @@ class TestInfrastructureReconstructor:
 
         created_dirs = []
 
-        def create_directory_structure(base_path: Path, structure: Dict):
+        def create_directory_structure(base_path: Path, structure: dict):
             for name, content in structure.items():
                 dir_path = base_path / name
                 dir_path.mkdir(parents=True, exist_ok=True)
@@ -501,6 +495,7 @@ def security_context():
                     "--tb=no",
                     "-q",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -510,7 +505,7 @@ def security_context():
             # Parse coverage results
             coverage_file = self.project_root / "tests" / "coverage" / "coverage.json"
             if coverage_file.exists():
-                with open(coverage_file, "r") as f:
+                with open(coverage_file) as f:
                     coverage_data = json.load(f)
 
                 self.reconstruction_report["coverage_analysis"] = {

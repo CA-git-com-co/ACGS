@@ -18,10 +18,9 @@ import json
 import logging
 import time
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional
+from typing import Any
 
 import httpx
-import yaml
 from pydantic import BaseModel
 
 # Configure logging
@@ -47,9 +46,9 @@ class IntegrationTestResult(BaseModel):
     test_name: str
     status: str
     response_time_ms: float
-    details: Dict[str, Any]
+    details: dict[str, Any]
     timestamp: datetime
-    error: Optional[str] = None
+    error: str | None = None
 
 
 class ACGSServiceIntegrationTester:
@@ -91,10 +90,10 @@ class ACGSServiceIntegrationTester:
                 base_url="http://localhost:8006",
             ),
         }
-        self.test_results: List[IntegrationTestResult] = []
+        self.test_results: list[IntegrationTestResult] = []
         self.constitutional_hash = "cdd01ef066bc6cf2"
 
-    async def test_fv_pgc_integration(self) -> Dict[str, Any]:
+    async def test_fv_pgc_integration(self) -> dict[str, Any]:
         """Test FV↔PGC service integration with data flow validation"""
         logger.info("🔄 Testing FV↔PGC service integration...")
 
@@ -161,7 +160,7 @@ class ACGSServiceIntegrationTester:
 
         return integration_results
 
-    async def _test_service_health(self, service_key: str) -> Dict[str, Any]:
+    async def _test_service_health(self, service_key: str) -> dict[str, Any]:
         """Test individual service health"""
         service = self.services[service_key]
         start_time = time.time()
@@ -180,14 +179,13 @@ class ACGSServiceIntegrationTester:
                         "response_time_ms": response_time,
                         "details": health_data,
                     }
-                else:
-                    return {
-                        "status": "unhealthy",
-                        "service": service.name,
-                        "port": service.port,
-                        "response_time_ms": response_time,
-                        "error": f"HTTP {response.status_code}",
-                    }
+                return {
+                    "status": "unhealthy",
+                    "service": service.name,
+                    "port": service.port,
+                    "response_time_ms": response_time,
+                    "error": f"HTTP {response.status_code}",
+                }
 
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
@@ -199,7 +197,7 @@ class ACGSServiceIntegrationTester:
                 "error": str(e),
             }
 
-    async def _test_fv_to_pgc_flow(self) -> Dict[str, Any]:
+    async def _test_fv_to_pgc_flow(self) -> dict[str, Any]:
         """Test FV→PGC policy verification flow"""
         logger.info("Testing FV→PGC policy verification flow...")
 
@@ -258,18 +256,17 @@ class ACGSServiceIntegrationTester:
                             ),
                         },
                     }
-                else:
-                    return {
-                        "name": "FV→PGC Flow Test",
-                        "status": "failed",
-                        "error": f"PGC validation failed: HTTP {pgc_response.status_code}",
-                        "details": {"pgc_response": pgc_response.text},
-                    }
+                return {
+                    "name": "FV→PGC Flow Test",
+                    "status": "failed",
+                    "error": f"PGC validation failed: HTTP {pgc_response.status_code}",
+                    "details": {"pgc_response": pgc_response.text},
+                }
 
         except Exception as e:
             return {"name": "FV→PGC Flow Test", "status": "failed", "error": str(e)}
 
-    async def _test_pgc_to_fv_flow(self) -> Dict[str, Any]:
+    async def _test_pgc_to_fv_flow(self) -> dict[str, Any]:
         """Test PGC→FV compliance validation flow"""
         logger.info("Testing PGC→FV compliance validation flow...")
 
@@ -306,18 +303,17 @@ class ACGSServiceIntegrationTester:
                             ),
                         },
                     }
-                else:
-                    return {
-                        "name": "PGC→FV Flow Test",
-                        "status": "failed",
-                        "error": f"FV compliance check failed: HTTP {fv_response.status_code}",
-                        "details": {"fv_response": fv_response.text},
-                    }
+                return {
+                    "name": "PGC→FV Flow Test",
+                    "status": "failed",
+                    "error": f"FV compliance check failed: HTTP {fv_response.status_code}",
+                    "details": {"fv_response": fv_response.text},
+                }
 
         except Exception as e:
             return {"name": "PGC→FV Flow Test", "status": "failed", "error": str(e)}
 
-    async def _test_bidirectional_flow(self) -> Dict[str, Any]:
+    async def _test_bidirectional_flow(self) -> dict[str, Any]:
         """Test bidirectional FV↔PGC integration"""
         logger.info("Testing bidirectional FV↔PGC integration...")
 
@@ -360,7 +356,7 @@ class ACGSServiceIntegrationTester:
         """Verify constitutional hash in response headers"""
         return response.headers.get("x-constitutional-hash") == self.constitutional_hash
 
-    async def run_integration_tests(self) -> Dict[str, Any]:
+    async def run_integration_tests(self) -> dict[str, Any]:
         """Run comprehensive service integration tests"""
         logger.info("🚀 Starting ACGS-PGP Service Integration Tests...")
 
@@ -418,9 +414,8 @@ async def main():
         if results["overall_status"] == "passed":
             print("✅ All integration tests passed successfully!")
             return 0
-        else:
-            print("❌ Some integration tests failed. Check results for details.")
-            return 1
+        print("❌ Some integration tests failed. Check results for details.")
+        return 1
 
     except Exception as e:
         logger.error(f"Integration testing failed: {e}")

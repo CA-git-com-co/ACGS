@@ -13,19 +13,17 @@ Target: >95% test coverage for error catalog module
 """
 
 import pytest
-from typing import Dict, Any
 
 from services.shared.errors.error_catalog import (
-    ErrorSeverity,
     ErrorCategory,
-    ServiceCode,
-    ErrorDefinition,
     ErrorCodeRegistry,
-    error_registry,
+    ErrorDefinition,
+    ErrorSeverity,
+    ServiceCode,
+    export_error_catalog,
+    get_category_errors,
     get_error_definition,
     get_service_errors,
-    get_category_errors,
-    export_error_catalog,
 )
 
 

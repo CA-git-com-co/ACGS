@@ -6,20 +6,18 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio
-import hashlib
 import json
 import logging
 import os
 import time
-import xxhash
-from collections import defaultdict
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any
 
 import redis.asyncio as redis
 import uvicorn
+import xxhash
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -56,7 +54,7 @@ class PerformanceMetrics:
 
     request_count: int = 0
     total_latency_ns: int = 0
-    latencies: List[float] = field(default_factory=list)
+    latencies: list[float] = field(default_factory=list)
     cache_hits: int = 0
     cache_misses: int = 0
     l1_hits: int = 0
@@ -76,7 +74,7 @@ class PerformanceMetrics:
         if len(self.latencies) > 10000:
             self.latencies = self.latencies[-10000:]
 
-    def get_percentiles(self) -> Dict[str, float]:
+    def get_percentiles(self) -> dict[str, float]:
         """Calculate latency percentiles"""
         if not self.latencies:
             return {"p50": 0.0, "p95": 0.0, "p99": 0.0}
@@ -107,15 +105,15 @@ class PerformanceMetrics:
 class PolicyCache:
     """Two-tier caching system for policy evaluation results"""
 
-    def __init__(self, redis_client: Optional[redis.Redis] = None):
+    def __init__(self, redis_client: redis.Redis | None = None):
         self.redis_client = redis_client
-        self.l1_cache: Dict[str, Tuple[Dict[str, Any], float]] = (
+        self.l1_cache: dict[str, tuple[dict[str, Any], float]] = (
             {}
         )  # (result, timestamp)
         self.l1_size = 0
         self.max_l1_size = L1_CACHE_SIZE
 
-    def _generate_cache_key(self, input_data: Dict[str, Any]) -> str:
+    def _generate_cache_key(self, input_data: dict[str, Any]) -> str:
         """Generate fast cache key using decision-affecting fields only"""
         # Extract only fields that affect policy decisions
         cache_fields = {
@@ -153,8 +151,8 @@ class PolicyCache:
         return xxhash.xxh64(json_str.encode()).hexdigest()
 
     async def get(
-        self, input_data: Dict[str, Any], metrics: PerformanceMetrics
-    ) -> Optional[Dict[str, Any]]:
+        self, input_data: dict[str, Any], metrics: PerformanceMetrics
+    ) -> dict[str, Any] | None:
         """Get cached result with L1 -> L2 fallback"""
         cache_key = self._generate_cache_key(input_data)
         current_time = time.time()
@@ -166,10 +164,9 @@ class PolicyCache:
                 metrics.cache_hits += 1
                 metrics.l1_hits += 1
                 return result
-            else:
-                # Expired, remove from L1
-                del self.l1_cache[cache_key]
-                self.l1_size -= 1
+            # Expired, remove from L1
+            del self.l1_cache[cache_key]
+            self.l1_size -= 1
 
         # Check L2 cache (Redis)
         if self.redis_client:
@@ -188,7 +185,7 @@ class PolicyCache:
         metrics.cache_misses += 1
         return None
 
-    async def set(self, input_data: Dict[str, Any], result: Dict[str, Any]) -> None:
+    async def set(self, input_data: dict[str, Any], result: dict[str, Any]) -> None:
         """Set result in both L1 and L2 caches"""
         cache_key = self._generate_cache_key(input_data)
         current_time = time.time()
@@ -207,7 +204,7 @@ class PolicyCache:
             except Exception as e:
                 logger.warning(f"Redis cache set failed: {e}")
 
-    def _set_l1(self, cache_key: str, result: Dict[str, Any], timestamp: float) -> None:
+    def _set_l1(self, cache_key: str, result: dict[str, Any], timestamp: float) -> None:
         """Set result in L1 cache with LRU eviction"""
         # Remove if already exists
         if cache_key in self.l1_cache:
@@ -224,7 +221,7 @@ class PolicyCache:
         self.l1_cache[cache_key] = (result, timestamp)
         self.l1_size += 1
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get cache statistics"""
         return {
             "l1_size": self.l1_size,
@@ -255,7 +252,7 @@ class PartialEvaluator:
             "process.spawn_root",
         }
 
-    def can_partial_evaluate(self, input_data: Dict[str, Any]) -> bool:
+    def can_partial_evaluate(self, input_data: dict[str, Any]) -> bool:
         """Check if request can be partially evaluated"""
         request_type = input_data.get("type")
         action = input_data.get("action")
@@ -271,7 +268,7 @@ class PartialEvaluator:
         # Must be a known safe or dangerous action
         return action in self.safe_actions or action in self.dangerous_actions
 
-    def partial_evaluate(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def partial_evaluate(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """Perform partial evaluation for known scenarios"""
         action = input_data.get("action")
         context = input_data.get("context", {})
@@ -346,8 +343,8 @@ class EmbeddedOPAEvaluator:
         logger.info(f"Loaded OPA policies from {self.policy_bundle_path}")
 
     def evaluate(
-        self, input_data: Dict[str, Any], query: str = "data.acgs.main.decision"
-    ) -> Dict[str, Any]:
+        self, input_data: dict[str, Any], query: str = "data.acgs.main.decision"
+    ) -> dict[str, Any]:
         """Evaluate policy using embedded OPA"""
         if not self.opa:
             raise RuntimeError("OPA policies not loaded")
@@ -363,7 +360,7 @@ class EmbeddedOPAEvaluator:
                 "allow": False,
                 "compliance_score": 0.0,
                 "constitutional_hash": CONSTITUTIONAL_HASH,
-                "reasons": [f"Policy evaluation error: {str(e)}"],
+                "reasons": [f"Policy evaluation error: {e!s}"],
                 "evaluation_details": {},
                 "error": True,
             }
@@ -378,12 +375,12 @@ class BatchProcessor:
         self.evaluator = evaluator
         self.cache = cache
         self.partial_evaluator = partial_evaluator
-        self.pending_requests: List[Tuple[Dict[str, Any], asyncio.Future]] = []
-        self.batch_timer: Optional[asyncio.Task] = None
+        self.pending_requests: list[tuple[dict[str, Any], asyncio.Future]] = []
+        self.batch_timer: asyncio.Task | None = None
 
     async def evaluate(
-        self, input_data: Dict[str, Any], metrics: PerformanceMetrics
-    ) -> Dict[str, Any]:
+        self, input_data: dict[str, Any], metrics: PerformanceMetrics
+    ) -> dict[str, Any]:
         """Add request to batch or process immediately"""
         # Create future for result
         future = asyncio.Future()
@@ -438,8 +435,8 @@ class BatchProcessor:
                     future.set_exception(e)
 
     async def _evaluate_single(
-        self, input_data: Dict[str, Any], metrics: PerformanceMetrics
-    ) -> Dict[str, Any]:
+        self, input_data: dict[str, Any], metrics: PerformanceMetrics
+    ) -> dict[str, Any]:
         """Evaluate single request with caching and partial evaluation"""
         start_time = time.perf_counter_ns()
 
@@ -477,7 +474,7 @@ class BatchProcessor:
             end_time = time.perf_counter_ns()
             metrics.add_latency(end_time - start_time)
 
-    def _fallback_evaluate(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def _fallback_evaluate(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """Fallback evaluation when OPA is not available"""
         # Basic safety check
         action = input_data.get("action", "")
@@ -519,12 +516,12 @@ class PolicyRequest(BaseModel):
     constitutional_hash: str = Field(
         ..., description="Constitutional hash for verification"
     )
-    action: Optional[str] = Field(None, description="Action to evaluate")
-    context: Optional[Dict[str, Any]] = Field(None, description="Evaluation context")
-    evolution_request: Optional[Dict[str, Any]] = Field(
+    action: str | None = Field(None, description="Action to evaluate")
+    context: dict[str, Any] | None = Field(None, description="Evaluation context")
+    evolution_request: dict[str, Any] | None = Field(
         None, description="Evolution request details"
     )
-    data_request: Optional[Dict[str, Any]] = Field(
+    data_request: dict[str, Any] | None = Field(
         None, description="Data access request details"
     )
 
@@ -535,19 +532,17 @@ class PolicyResponse(BaseModel):
     allow: bool = Field(..., description="Whether the request is allowed")
     compliance_score: float = Field(..., description="Compliance score (0.0-1.0)")
     constitutional_hash: str = Field(..., description="Constitutional hash")
-    reasons: List[str] = Field(
+    reasons: list[str] = Field(
         default_factory=list, description="Reasons for the decision"
     )
-    evaluation_details: Dict[str, Any] = Field(
+    evaluation_details: dict[str, Any] = Field(
         default_factory=dict, description="Detailed evaluation results"
     )
-    partial_evaluation: Optional[bool] = Field(
+    partial_evaluation: bool | None = Field(
         None, description="Whether partial evaluation was used"
     )
-    cache_hit: Optional[bool] = Field(
-        None, description="Whether result came from cache"
-    )
-    latency_ms: Optional[float] = Field(
+    cache_hit: bool | None = Field(None, description="Whether result came from cache")
+    latency_ms: float | None = Field(
         None, description="Evaluation latency in milliseconds"
     )
 
@@ -558,8 +553,8 @@ class HealthResponse(BaseModel):
     status: str = Field(..., description="Service status")
     constitutional_hash: str = Field(..., description="Constitutional hash")
     version: str = Field(..., description="Service version")
-    performance: Dict[str, Any] = Field(..., description="Performance metrics")
-    cache_stats: Dict[str, Any] = Field(..., description="Cache statistics")
+    performance: dict[str, Any] = Field(..., description="Performance metrics")
+    cache_stats: dict[str, Any] = Field(..., description="Cache statistics")
 
 
 class MetricsResponse(BaseModel):
@@ -567,23 +562,23 @@ class MetricsResponse(BaseModel):
 
     request_count: int = Field(..., description="Total requests processed")
     avg_latency_ms: float = Field(..., description="Average latency in milliseconds")
-    percentiles: Dict[str, float] = Field(..., description="Latency percentiles")
+    percentiles: dict[str, float] = Field(..., description="Latency percentiles")
     cache_hit_rate: float = Field(..., description="Overall cache hit rate")
     l1_hit_rate: float = Field(..., description="L1 cache hit rate")
     l2_hit_rate: float = Field(..., description="L2 cache hit rate")
     partial_eval_rate: float = Field(..., description="Partial evaluation rate")
-    batch_stats: Dict[str, float] = Field(
+    batch_stats: dict[str, float] = Field(
         ..., description="Batch processing statistics"
     )
-    targets_met: Dict[str, bool] = Field(
+    targets_met: dict[str, bool] = Field(
         ..., description="Whether performance targets are met"
     )
 
 
 # Global state
 metrics = PerformanceMetrics()
-cache: Optional[PolicyCache] = None
-batch_processor: Optional[BatchProcessor] = None
+cache: PolicyCache | None = None
+batch_processor: BatchProcessor | None = None
 
 
 @asynccontextmanager
@@ -700,8 +695,8 @@ async def evaluate_policy(request: PolicyRequest) -> PolicyResponse:
 
 @app.get("/v1/data/acgs/main/allow")
 async def evaluate_policy_simple(
-    type: str, constitutional_hash: str, action: Optional[str] = None
-) -> Dict[str, bool]:
+    type: str, constitutional_hash: str, action: str | None = None
+) -> dict[str, bool]:
     """Simple boolean policy evaluation"""
     if constitutional_hash != CONSTITUTIONAL_HASH:
         return {"allow": False}

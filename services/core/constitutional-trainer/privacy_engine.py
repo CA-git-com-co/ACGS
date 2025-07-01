@@ -5,17 +5,16 @@ Differential privacy implementation for constitutional AI training with ACGS-1 L
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import json
 import logging
 import time
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 import torch
-import torch.nn as nn
 from opacus import PrivacyEngine
 from opacus.accountants import RDPAccountant
 from opacus.utils.batch_memory_manager import BatchMemoryManager
 from opacus.validators import ModuleValidator
+from torch import nn
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +79,7 @@ class ConstitutionalPrivacyEngine:
         data_loader: torch.utils.data.DataLoader,
         noise_multiplier: float = None,
         max_grad_norm: float = None,
-    ) -> Tuple[nn.Module, torch.optim.Optimizer, torch.utils.data.DataLoader]:
+    ) -> tuple[nn.Module, torch.optim.Optimizer, torch.utils.data.DataLoader]:
         """Make training differentially private with constitutional constraints."""
 
         if noise_multiplier is not None:
@@ -107,7 +106,7 @@ class ConstitutionalPrivacyEngine:
             )
 
             # Log privacy parameters
-            logger.info(f"Differential privacy applied successfully:")
+            logger.info("Differential privacy applied successfully:")
             logger.info(f"  - Noise multiplier: {self.privacy_engine.noise_multiplier}")
             logger.info(f"  - Max grad norm: {self.max_grad_norm}")
             logger.info(f"  - Target epsilon: {self.target_epsilon}")
@@ -128,7 +127,7 @@ class ConstitutionalPrivacyEngine:
         target_epsilon: float,
         target_delta: float = 1e-5,
         max_grad_norm: float = 1.0,
-    ) -> Tuple[nn.Module, torch.optim.Optimizer, torch.utils.data.DataLoader]:
+    ) -> tuple[nn.Module, torch.optim.Optimizer, torch.utils.data.DataLoader]:
         """Make training private with specific epsilon target."""
 
         self.target_epsilon = target_epsilon
@@ -145,7 +144,7 @@ class ConstitutionalPrivacyEngine:
             max_grad_norm=max_grad_norm,
         )
 
-    def get_privacy_spent(self) -> Dict[str, float]:
+    def get_privacy_spent(self) -> dict[str, float]:
         """Get current privacy budget consumption."""
         try:
             epsilon = self.privacy_engine.get_epsilon(delta=self.target_delta)
@@ -181,7 +180,7 @@ class ConstitutionalPrivacyEngine:
                 "error": str(e),
             }
 
-    def check_privacy_budget(self) -> Dict[str, Any]:
+    def check_privacy_budget(self) -> dict[str, Any]:
         """Check if privacy budget is within acceptable limits."""
         privacy_spent = self.get_privacy_spent()
 
@@ -210,7 +209,7 @@ class ConstitutionalPrivacyEngine:
 
     def validate_constitutional_privacy_compliance(
         self, training_data: Any
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate that privacy measures comply with constitutional requirements."""
 
         compliance_check = {
@@ -254,7 +253,7 @@ class ConstitutionalPrivacyEngine:
 
         return compliance_check
 
-    def get_privacy_metrics_for_monitoring(self) -> Dict[str, Any]:
+    def get_privacy_metrics_for_monitoring(self) -> dict[str, Any]:
         """Get privacy metrics formatted for monitoring systems."""
 
         privacy_spent = self.get_privacy_spent()
@@ -299,7 +298,7 @@ class ConstitutionalPrivacyEngine:
             optimizer=None,  # Will be set when used
         )
 
-    def log_privacy_event(self, event_type: str, details: Dict[str, Any]):
+    def log_privacy_event(self, event_type: str, details: dict[str, Any]):
         """Log privacy-related events for audit purposes."""
 
         privacy_event = {
@@ -316,7 +315,7 @@ class ConstitutionalPrivacyEngine:
         # For now, just log locally
         return privacy_event
 
-    def emergency_privacy_halt(self, reason: str) -> Dict[str, Any]:
+    def emergency_privacy_halt(self, reason: str) -> dict[str, Any]:
         """Emergency halt of training due to privacy budget exhaustion."""
 
         halt_event = {
@@ -335,7 +334,7 @@ class ConstitutionalPrivacyEngine:
 
         return halt_event
 
-    def get_privacy_accountant_state(self) -> Dict[str, Any]:
+    def get_privacy_accountant_state(self) -> dict[str, Any]:
         """Get detailed state of the privacy accountant."""
 
         try:

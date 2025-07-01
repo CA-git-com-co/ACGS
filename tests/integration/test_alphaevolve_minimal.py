@@ -354,9 +354,8 @@ def run_all_tests():
             "🚀 ACGS-PGP system ready for production deployment with enhanced capabilities!"
         )
         return True
-    else:
-        print(f"⚠️  {failed} tests failed. Please review the implementation.")
-        return False
+    print(f"⚠️  {failed} tests failed. Please review the implementation.")
+    return False
 
 
 if __name__ == "__main__":

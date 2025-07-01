@@ -26,8 +26,6 @@ except ImportError:
     # Mock numpy for testing
     class MockNumpy:
         def random(self):
-            import random
-
             return MockRandom()
 
         def mean(self, data):
@@ -56,7 +54,7 @@ try:
 except ImportError:
     # Mock implementations for testing
     from dataclasses import dataclass
-    from typing import Any, Dict, Optional
+    from typing import Any
 
     @dataclass
     class FormalVerificationProperty:
@@ -988,23 +986,22 @@ class AutomaticRecoveryOrchestrator:
         try:
             if action.strategy == RecoveryStrategy.MODEL_REROUTING:
                 return await self._execute_model_rerouting(action, request_id)
-            elif action.strategy == RecoveryStrategy.CIRCUIT_BREAKER:
+            if action.strategy == RecoveryStrategy.CIRCUIT_BREAKER:
                 return await self._execute_circuit_breaker(action, request_id)
-            elif action.strategy == RecoveryStrategy.TRAFFIC_REDISTRIBUTION:
+            if action.strategy == RecoveryStrategy.TRAFFIC_REDISTRIBUTION:
                 return await self._execute_traffic_redistribution(action, request_id)
-            elif action.strategy == RecoveryStrategy.CONFIGURATION_ADJUSTMENT:
+            if action.strategy == RecoveryStrategy.CONFIGURATION_ADJUSTMENT:
                 return await self._execute_configuration_adjustment(action, request_id)
-            elif action.strategy == RecoveryStrategy.FALLBACK_ACTIVATION:
+            if action.strategy == RecoveryStrategy.FALLBACK_ACTIVATION:
                 return await self._execute_fallback_activation(action, request_id)
-            elif action.strategy == RecoveryStrategy.EMERGENCY_SAFEGUARDS:
+            if action.strategy == RecoveryStrategy.EMERGENCY_SAFEGUARDS:
                 return await self._execute_emergency_safeguards(action, request_id)
-            elif action.strategy == RecoveryStrategy.MODEL_RETRAINING:
+            if action.strategy == RecoveryStrategy.MODEL_RETRAINING:
                 return await self._execute_model_retraining(action, request_id)
-            else:
-                logger.warning(
-                    f"Request {request_id}: Unknown recovery strategy: {action.strategy}"
-                )
-                return False
+            logger.warning(
+                f"Request {request_id}: Unknown recovery strategy: {action.strategy}"
+            )
+            return False
         except Exception as e:
             logger.error(
                 f"Request {request_id}: Error executing strategy {action.strategy}: {e}"
@@ -1492,9 +1489,11 @@ class EnhancedMultiModelValidator:
 
         # Stage 1: Multi-model synthesis (Parallel synthesis by multiple models)
         # `responses` here are the initial synthesis attempts from various models.
-        synthesis_results, synthesis_errors, synthesis_metrics_details = (
-            await self._parallel_synthesis(input_data, request_id)
-        )
+        (
+            synthesis_results,
+            synthesis_errors,
+            synthesis_metrics_details,
+        ) = await self._parallel_synthesis(input_data, request_id)
 
         if not synthesis_results:
             logger.error(
@@ -1532,14 +1531,16 @@ class EnhancedMultiModelValidator:
         # Stage 5: Consensus decision
         # This is the core logic to determine the final policy and confidence.
         # It will use validation_matrix, semantic_scores, formal_verification_results.
-        final_policy, final_confidence, consensus_details = (
-            await self._weighted_consensus_decision(
-                synthesis_results,
-                validation_matrix,
-                semantic_scores,
-                formal_verification_results,
-                request_id,
-            )
+        (
+            final_policy,
+            final_confidence,
+            consensus_details,
+        ) = await self._weighted_consensus_decision(
+            synthesis_results,
+            validation_matrix,
+            semantic_scores,
+            formal_verification_results,
+            request_id,
         )
 
         metrics = self._calculate_overall_reliability_metrics(
@@ -1668,7 +1669,7 @@ class EnhancedMultiModelValidator:
                 model_name
             ]  # Get model_info again using the returned model_name
             if isinstance(result, Exception):
-                error_message = f"Model {model_name}: {str(result)}"
+                error_message = f"Model {model_name}: {result!s}"
                 errors.append(error_message)
                 logger.warning(
                     f"Request {request_id}: Model {model_name} failed during synthesis: {result}"
@@ -2932,36 +2933,35 @@ class EnhancedBiasDetectionFramework:
         """Backward compatibility method for bias mitigation."""
         if self.config.proactive_bias_mitigation:
             return await self.mitigate_bias_proactive(output)
-        else:
-            # Use original simple mitigation
-            bias_analysis = await self.detect_bias(output)
+        # Use original simple mitigation
+        bias_analysis = await self.detect_bias(output)
 
-            if bias_analysis["bias_score"] > 0.3:
-                mitigated_response = (
-                    output.raw_llm_response.replace(
-                        "normal users with standard capabilities",
-                        "all users with appropriate access permissions",
-                    )
-                    + "\n[High bias mitigation applied]"
+        if bias_analysis["bias_score"] > 0.3:
+            mitigated_response = (
+                output.raw_llm_response.replace(
+                    "normal users with standard capabilities",
+                    "all users with appropriate access permissions",
                 )
-            elif bias_analysis["bias_score"] > 0.0:
-                mitigated_response = (
-                    output.raw_llm_response.replace("normal users", "authorized users")
-                    + "\n[Bias mitigation applied]"
-                )
-            else:
-                mitigated_response = (
-                    output.raw_llm_response.replace(
-                        "normal users with standard capabilities",
-                        "users with appropriate authorization levels",
-                    )
-                    + "\n[Preventive bias mitigation applied]"
-                )
-
-            return LLMStructuredOutput(
-                interpretations=output.interpretations,
-                raw_llm_response=mitigated_response,
+                + "\n[High bias mitigation applied]"
             )
+        elif bias_analysis["bias_score"] > 0.0:
+            mitigated_response = (
+                output.raw_llm_response.replace("normal users", "authorized users")
+                + "\n[Bias mitigation applied]"
+            )
+        else:
+            mitigated_response = (
+                output.raw_llm_response.replace(
+                    "normal users with standard capabilities",
+                    "users with appropriate authorization levels",
+                )
+                + "\n[Preventive bias mitigation applied]"
+            )
+
+        return LLMStructuredOutput(
+            interpretations=output.interpretations,
+            raw_llm_response=mitigated_response,
+        )
 
 
 class EnhancedSemanticFaithfulnessValidator:
@@ -3233,17 +3233,16 @@ class EnhancedSemanticFaithfulnessValidator:
                 "principle_coverage": comprehensive_result["word_overlap"]["score"],
                 "validation_passed": comprehensive_result["validation_passed"],
             }
-        else:
-            # Use original simple validation
-            word_overlap_result = await self._calculate_word_overlap(
-                principle_text, policy_output
-            )
-            return {
-                "faithfulness_score": word_overlap_result["score"],
-                "word_overlap": word_overlap_result["overlap"],
-                "principle_coverage": word_overlap_result["score"],
-                "validation_passed": word_overlap_result["score"] >= 0.6,
-            }
+        # Use original simple validation
+        word_overlap_result = await self._calculate_word_overlap(
+            principle_text, policy_output
+        )
+        return {
+            "faithfulness_score": word_overlap_result["score"],
+            "word_overlap": word_overlap_result["overlap"],
+            "principle_coverage": word_overlap_result["score"],
+            "validation_passed": word_overlap_result["score"] >= 0.6,
+        }
 
 
 class SemanticFaithfulnessValidator:
@@ -3378,13 +3377,14 @@ class EnhancedLLMReliabilityFramework:
                 )
                 # Attempt rule-based fallback immediately if no policy is synthesized
                 if self.config.rule_based_fallback_enabled:
-                    fallback_policy, fallback_message = (
-                        await self._apply_rule_based_fallback(
-                            input_data,
-                            ultra_reliable_result.error_message
-                            or "No policy synthesized by consensus.",
-                            None,  # No current best policy to pass
-                        )
+                    (
+                        fallback_policy,
+                        fallback_message,
+                    ) = await self._apply_rule_based_fallback(
+                        input_data,
+                        ultra_reliable_result.error_message
+                        or "No policy synthesized by consensus.",
+                        None,  # No current best policy to pass
                     )
                     if fallback_policy:
                         output = fallback_policy
@@ -3603,12 +3603,13 @@ class EnhancedLLMReliabilityFramework:
                         logger.info(
                             f"Request {process_request_id}: Attempting rule-based fallback."
                         )
-                        fallback_policy, fallback_message = (
-                            await self._apply_rule_based_fallback(
-                                input_data,
-                                ultra_reliable_result.error_message,
-                                output,  # Pass the current best policy (output from consensus)
-                            )
+                        (
+                            fallback_policy,
+                            fallback_message,
+                        ) = await self._apply_rule_based_fallback(
+                            input_data,
+                            ultra_reliable_result.error_message,
+                            output,  # Pass the current best policy (output from consensus)
                         )
                         if fallback_policy:
                             output = fallback_policy
@@ -3761,7 +3762,7 @@ class EnhancedLLMReliabilityFramework:
             # In case of an unexpected error, apply emergency safeguards as a last resort
             final_policy = await self._apply_emergency_safeguards(
                 LLMStructuredOutput(
-                    interpretations=[], raw_llm_response=f"Unexpected error: {str(e)}"
+                    interpretations=[], raw_llm_response=f"Unexpected error: {e!s}"
                 ),
                 ReliabilityMetrics(
                     success_rate=0.0,
@@ -3893,9 +3894,8 @@ class EnhancedLLMReliabilityFramework:
             )
             if rerouted_policy:
                 return rerouted_policy, reroute_message
-            else:
-                logger.warning(f"Re-routing to healthy model failed: {reroute_message}")
-                return None, reroute_message
+            logger.warning(f"Re-routing to healthy model failed: {reroute_message}")
+            return None, reroute_message
 
         logger.info(
             "No specific rule-based fallback applied and no active models for re-routing."
@@ -3945,13 +3945,14 @@ class EnhancedLLMReliabilityFramework:
             logger.info(f"Re-routing request to model: {target_model_name}")
             # Re-process the input data using the selected healthy model
             # This will bypass the full consensus process and directly call the model
-            rerouted_output, _ = (
-                await self.multi_model_validator._call_individual_model_for_synthesis(
-                    target_model_name,
-                    target_model_info,
-                    input_data,
-                    input_data.principle_id,  # Using principle_id as request_id for simplicity here
-                )
+            (
+                rerouted_output,
+                _,
+            ) = await self.multi_model_validator._call_individual_model_for_synthesis(
+                target_model_name,
+                target_model_info,
+                input_data,
+                input_data.principle_id,  # Using principle_id as request_id for simplicity here
             )
 
             if rerouted_output:
@@ -3962,8 +3963,7 @@ class EnhancedLLMReliabilityFramework:
                     rerouted_output,
                     f"Re-routed to {target_model_name} due to previous failure.",
                 )
-            else:
-                return None, f"Re-routed model {target_model_name} returned no output."
+            return None, f"Re-routed model {target_model_name} returned no output."
 
         except Exception as e:
             logger.error(

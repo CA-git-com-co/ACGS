@@ -10,7 +10,6 @@ import os
 
 # Import messaging components directly to avoid full service dependencies
 import sys
-from datetime import datetime
 from unittest.mock import AsyncMock, patch
 from uuid import uuid4
 
@@ -21,9 +20,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../.."))
 from dgm_service.messaging.event_publisher import EventPublisher
 from dgm_service.messaging.event_subscriber import EventSubscriber
 from dgm_service.messaging.message_types import (
-    EventPriority,
     EventType,
-    create_improvement_event,
 )
 from dgm_service.messaging.nats_client import NATSClient, NATSConfig
 

@@ -2,24 +2,8 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.services.qec_error_correction_service
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.governance_synthesis.gs_service.app.services.qec_error_correction_service import (
-    ConflictType,
-    ResolutionStrategy,
-    ErrorCorrectionStatus,
-    ConflictDetectionResult,
-    ErrorCorrectionResult,
-    PolicyRefinementSuggestion,
-    ConflictDetectionEngine,
-    AutomaticResolutionWorkflow,
-    SemanticValidationEngine,
-    PolicyRefinementSuggester,
-    ConflictComplexityScorer,
-    ParallelConflictProcessor,
     QECErrorCorrectionService,
-    ConflictComplexityScorer,
-    ParallelConflictProcessor,
 )
 
 

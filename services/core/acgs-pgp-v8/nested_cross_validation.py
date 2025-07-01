@@ -15,30 +15,29 @@ Target: Prevent 5-15% optimistic bias through rigorous validation.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
+import json
 import logging
+import os
+import warnings
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from typing import Any
+
+import lightgbm as lgb
 import numpy as np
 import pandas as pd
-from datetime import datetime
-from typing import Dict, List, Tuple, Any, Optional, Union
-from dataclasses import dataclass, asdict
-import json
-import os
-import time
-import warnings
+import xgboost as xgb
+from scipy import stats
+from sklearn.base import BaseEstimator, clone
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import r2_score
 from sklearn.model_selection import (
-    StratifiedKFold,
+    GridSearchCV,
     KFold,
     TimeSeriesSplit,
     cross_val_score,
-    GridSearchCV,
 )
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-from sklearn.preprocessing import StandardScaler, LabelEncoder
-from sklearn.base import BaseEstimator, RegressorMixin, clone
-import xgboost as xgb
-import lightgbm as lgb
-from scipy import stats
+from sklearn.preprocessing import StandardScaler
 
 warnings.filterwarnings("ignore")
 
@@ -54,8 +53,8 @@ class NestedCVResults:
     """Results from nested cross-validation."""
 
     # Performance estimates
-    outer_cv_scores: List[float]
-    inner_cv_scores: List[List[float]]
+    outer_cv_scores: list[float]
+    inner_cv_scores: list[list[float]]
     mean_outer_score: float
     std_outer_score: float
 
@@ -66,13 +65,13 @@ class NestedCVResults:
     bias_percentage: float
 
     # Statistical validation
-    confidence_interval_95: Tuple[float, float]
+    confidence_interval_95: tuple[float, float]
     statistical_significance: bool
     p_value: float
 
     # Best parameters from each fold
-    best_parameters_per_fold: List[Dict[str, Any]]
-    parameter_stability: Dict[str, float]
+    best_parameters_per_fold: list[dict[str, Any]]
+    parameter_stability: dict[str, float]
 
     # Temporal validation (if applicable)
     temporal_validation_used: bool
@@ -94,7 +93,7 @@ class NestedCrossValidator:
 
     def create_cv_strategy(
         self, X: np.ndarray, y: np.ndarray, is_temporal: bool = False
-    ) -> Tuple[Any, Any]:
+    ) -> tuple[Any, Any]:
         """Create appropriate CV strategy based on data characteristics."""
 
         if is_temporal:
@@ -117,7 +116,7 @@ class NestedCrossValidator:
 
         return outer_cv, inner_cv
 
-    def define_parameter_grid(self, algorithm: str) -> Dict[str, List]:
+    def define_parameter_grid(self, algorithm: str) -> dict[str, list]:
         """Define parameter grid for hyperparameter optimization."""
 
         if algorithm == "random_forest":
@@ -127,38 +126,36 @@ class NestedCrossValidator:
                 "min_samples_split": [2, 5, 10],
                 "min_samples_leaf": [1, 2, 4],
             }
-        elif algorithm == "xgboost":
+        if algorithm == "xgboost":
             return {
                 "n_estimators": [50, 100, 200],
                 "max_depth": [3, 6, 9],
                 "learning_rate": [0.01, 0.1, 0.2],
                 "subsample": [0.8, 0.9, 1.0],
             }
-        elif algorithm == "lightgbm":
+        if algorithm == "lightgbm":
             return {
                 "n_estimators": [50, 100, 200],
                 "max_depth": [3, 6, 9],
                 "learning_rate": [0.01, 0.1, 0.2],
                 "num_leaves": [31, 50, 100],
             }
-        else:
-            raise ValueError(f"Unsupported algorithm: {algorithm}")
+        raise ValueError(f"Unsupported algorithm: {algorithm}")
 
     def create_model(self, algorithm: str) -> BaseEstimator:
         """Create base model for given algorithm."""
 
         if algorithm == "random_forest":
             return RandomForestRegressor(random_state=self.random_state, n_jobs=-1)
-        elif algorithm == "xgboost":
+        if algorithm == "xgboost":
             return xgb.XGBRegressor(
                 random_state=self.random_state, n_jobs=-1, verbosity=0
             )
-        elif algorithm == "lightgbm":
+        if algorithm == "lightgbm":
             return lgb.LGBMRegressor(
                 random_state=self.random_state, n_jobs=-1, verbose=-1
             )
-        else:
-            raise ValueError(f"Unsupported algorithm: {algorithm}")
+        raise ValueError(f"Unsupported algorithm: {algorithm}")
 
     def nested_cross_validate(
         self, X: np.ndarray, y: np.ndarray, algorithm: str, is_temporal: bool = False
@@ -290,7 +287,7 @@ class NestedCrossValidator:
             timestamp=datetime.now().isoformat(),
         )
 
-        logger.info(f"✅ Nested CV complete:")
+        logger.info("✅ Nested CV complete:")
         logger.info(
             f"  - Nested CV score: {mean_outer_score:.3f} ± {std_outer_score:.3f}"
         )
@@ -303,8 +300,8 @@ class NestedCrossValidator:
         return results
 
     def _analyze_parameter_stability(
-        self, best_parameters_per_fold: List[Dict[str, Any]]
-    ) -> Dict[str, float]:
+        self, best_parameters_per_fold: list[dict[str, Any]]
+    ) -> dict[str, float]:
         """Analyze stability of best parameters across folds."""
         if not best_parameters_per_fold:
             return {}
@@ -346,7 +343,7 @@ class NestedCrossValidator:
         return stability_scores
 
     def _detect_temporal_leakage(
-        self, nested_scores: List[float], simple_scores: List[float]
+        self, nested_scores: list[float], simple_scores: list[float]
     ) -> bool:
         """Detect potential temporal leakage by comparing score patterns."""
 
@@ -368,7 +365,7 @@ class NestedCrossValidator:
 
     def generate_test_dataset(
         self, n_samples: int = 1000, is_temporal: bool = False
-    ) -> Tuple[pd.DataFrame, pd.Series]:
+    ) -> tuple[pd.DataFrame, pd.Series]:
         """Generate test dataset for nested CV evaluation."""
         logger.info(
             f"Generating test dataset with {n_samples} samples (temporal: {is_temporal})..."
@@ -436,7 +433,7 @@ class NestedCrossValidator:
         results: NestedCVResults,
         algorithm: str,
         output_dir: str = "nested_cv_results",
-    ) -> Tuple[str, str]:
+    ) -> tuple[str, str]:
         """Save nested cross-validation results."""
         logger.info("Saving nested CV results...")
 
@@ -552,7 +549,7 @@ class NestedCrossValidator:
             # Temporal Validation (if applicable)
             if results.temporal_validation_used:
                 f.write("## ⏰ Temporal Validation\n\n")
-                f.write(f"- **Temporal validation used:** ✅ Yes\n")
+                f.write("- **Temporal validation used:** ✅ Yes\n")
                 f.write(
                     f"- **Temporal leakage detected:** {'❌ Yes' if results.temporal_leakage_detected else '✅ No'}\n"
                 )
@@ -603,7 +600,7 @@ class NestedCrossValidator:
                 criteria_met += 0.5
 
             f.write(
-                f"\n**Overall Success Rate:** {criteria_met}/{total_criteria} ({criteria_met/total_criteria*100:.0f}%)\n\n"
+                f"\n**Overall Success Rate:** {criteria_met}/{total_criteria} ({criteria_met / total_criteria * 100:.0f}%)\n\n"
             )
 
             # Technical Configuration
@@ -617,9 +614,9 @@ class NestedCrossValidator:
             f.write("- **Scoring metric:** R² Score\n")
             f.write("- **Random state:** 42\n\n")
 
-            f.write(f"### Constitutional Compliance\n")
+            f.write("### Constitutional Compliance\n")
             f.write(f"- **Hash:** {results.constitutional_hash}\n")
-            f.write(f"- **Integrity:** ✅ Verified\n\n")
+            f.write("- **Integrity:** ✅ Verified\n\n")
 
             # Recommendations
             f.write("## 💡 Recommendations\n\n")
@@ -669,7 +666,7 @@ def main():
 
         for algorithm in algorithms:
             logger.info(
-                f"\n🔧 Step 1.{len(all_results)+1}: Testing {algorithm} with nested CV..."
+                f"\n🔧 Step 1.{len(all_results) + 1}: Testing {algorithm} with nested CV..."
             )
 
             # Perform nested cross-validation
@@ -704,7 +701,7 @@ def main():
         X_temporal_scaled = scaler.fit_transform(X_temporal)
 
         # Test one algorithm with temporal validation
-        logger.info(f"\n🔧 Step 2.1: Testing random_forest with temporal CV...")
+        logger.info("\n🔧 Step 2.1: Testing random_forest with temporal CV...")
         temporal_results = validator.nested_cross_validate(
             X_temporal_scaled, y_temporal.values, "random_forest", is_temporal=True
         )
@@ -714,7 +711,7 @@ def main():
             temporal_results, "random_forest_temporal", "nested_cv_results"
         )
 
-        logger.info(f"  📊 Temporal Random Forest Results:")
+        logger.info("  📊 Temporal Random Forest Results:")
         logger.info(
             f"    - Nested CV: {temporal_results.nested_cv_score:.3f} ± {temporal_results.std_outer_score:.3f}"
         )
@@ -731,10 +728,10 @@ def main():
         avg_bias = np.mean(biases)
         max_bias = max(biases)
 
-        logger.info(f"📊 Bias Analysis:")
+        logger.info("📊 Bias Analysis:")
         logger.info(f"  - Average bias: {avg_bias:.1f}%")
         logger.info(f"  - Maximum bias: {max_bias:.1f}%")
-        logger.info(f"  - Bias target: <15%")
+        logger.info("  - Bias target: <15%")
 
         # Check success criteria
         successful_validations = 0
@@ -753,9 +750,9 @@ def main():
         # Check temporal validation
         if not temporal_results.temporal_leakage_detected:
             successful_validations += 1
-            logger.info(f"  ✅ temporal: No leakage detected")
+            logger.info("  ✅ temporal: No leakage detected")
         else:
-            logger.info(f"  ⚠️ temporal: Leakage detected")
+            logger.info("  ⚠️ temporal: Leakage detected")
 
         logger.info(f"🔒 Constitutional Hash: {validator.constitutional_hash} ✅")
         logger.info("=" * 60)

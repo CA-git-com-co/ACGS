@@ -7,11 +7,11 @@ into SMT-LIB format for formal verification with Z3 solver.
 
 import logging
 import re
-import yaml
-from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any
 
+import yaml
 import z3
 
 logger = logging.getLogger(__name__)
@@ -33,7 +33,7 @@ class SMTVariable:
     name: str
     var_type: str  # bool, int, string
     z3_var: Any
-    domain: Optional[List[str]] = None
+    domain: list[str] | None = None
 
 
 @dataclass
@@ -56,8 +56,8 @@ class PolicySMTCompiler:
 
     def __init__(self):
         """Initialize the policy-to-SMT compiler."""
-        self.variables: Dict[str, SMTVariable] = {}
-        self.constraints: List[SMTConstraint] = []
+        self.variables: dict[str, SMTVariable] = {}
+        self.constraints: list[SMTConstraint] = []
         self.constitutional_hash = "cdd01ef066bc6cf2"
 
         # Predefined domains for common policy elements
@@ -72,7 +72,7 @@ class PolicySMTCompiler:
 
     def compile_governance_policy(
         self, policy_content: str, policy_id: str
-    ) -> List[SMTConstraint]:
+    ) -> list[SMTConstraint]:
         """
         Compile governance policy to SMT constraints.
 
@@ -117,7 +117,7 @@ class PolicySMTCompiler:
 
     def compile_constitutional_principles(
         self, principles_file: str
-    ) -> List[SMTConstraint]:
+    ) -> list[SMTConstraint]:
         """
         Compile constitutional principles from YAML file to SMT constraints.
 
@@ -128,7 +128,7 @@ class PolicySMTCompiler:
             List of SMT constraints for constitutional principles
         """
         try:
-            with open(principles_file, "r") as f:
+            with open(principles_file) as f:
                 principles_data = yaml.safe_load(f)
 
             constraints = []
@@ -166,7 +166,7 @@ class PolicySMTCompiler:
 
     def _compile_rego_policy(
         self, rego_content: str, policy_id: str
-    ) -> List[SMTConstraint]:
+    ) -> list[SMTConstraint]:
         """Compile OPA Rego policy to SMT constraints."""
         constraints = []
 
@@ -206,7 +206,7 @@ class PolicySMTCompiler:
 
         return constraints
 
-    def _parse_rego_conditions(self, rule_body: str) -> List[Any]:
+    def _parse_rego_conditions(self, rule_body: str) -> list[Any]:
         """Parse conditions from Rego rule body."""
         conditions = []
 
@@ -237,7 +237,7 @@ class PolicySMTCompiler:
 
         return conditions
 
-    def _create_equality_condition(self, left: str, right: str) -> Optional[Any]:
+    def _create_equality_condition(self, left: str, right: str) -> Any | None:
         """Create SMT equality condition."""
         try:
             # Handle input.role == "admin" style conditions
@@ -258,7 +258,7 @@ class PolicySMTCompiler:
             )
             return None
 
-    def _create_input_condition(self, condition_line: str) -> Optional[Any]:
+    def _create_input_condition(self, condition_line: str) -> Any | None:
         """Create SMT condition for input validation."""
         try:
             # Handle input.field patterns
@@ -279,8 +279,8 @@ class PolicySMTCompiler:
             return None
 
     def _compile_constitutional_principle(
-        self, principle_name: str, principle_data: Dict[str, Any]
-    ) -> List[SMTConstraint]:
+        self, principle_name: str, principle_data: dict[str, Any]
+    ) -> list[SMTConstraint]:
         """Compile constitutional principle to SMT constraints."""
         constraints = []
 
@@ -348,9 +348,7 @@ class PolicySMTCompiler:
 
         return constraints
 
-    def _process_complex_requirement(
-        self, requirement: Dict[str, Any]
-    ) -> Optional[Any]:
+    def _process_complex_requirement(self, requirement: dict[str, Any]) -> Any | None:
         """Process complex requirement with conditions."""
         try:
             if "condition" in requirement:
@@ -366,7 +364,7 @@ class PolicySMTCompiler:
                     )
                     return metric_var.z3_var >= z3.RealVal(str(threshold))
 
-                elif condition.get("type") == "boolean":
+                if condition.get("type") == "boolean":
                     # Boolean condition
                     field = condition.get("field")
                     value = condition.get("value", True)
@@ -403,7 +401,7 @@ class PolicySMTCompiler:
         self.variables[name] = smt_var
         return smt_var
 
-    def generate_formal_properties(self) -> List[SMTConstraint]:
+    def generate_formal_properties(self) -> list[SMTConstraint]:
         """Generate formal properties for verification."""
         properties = []
 
@@ -481,7 +479,7 @@ class PolicySMTCompiler:
             logger.error(f"Failed to export SMT-LIB: {e}")
             return ""
 
-    def get_compilation_summary(self) -> Dict[str, Any]:
+    def get_compilation_summary(self) -> dict[str, Any]:
         """Get summary of compilation results."""
         try:
             constraint_counts = {}

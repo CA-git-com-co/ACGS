@@ -19,16 +19,15 @@ Usage:
     python execute_comprehensive_cleanup.py
 """
 
-import os
-import sys
-import shutil
+import argparse
 import json
 import logging
-import argparse
+import os
+import shutil
 import subprocess
+import sys
 from datetime import datetime
-from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -74,8 +73,8 @@ class CleanupExecutor:
         }
 
     def run_command(
-        self, cmd: List[str], cwd: Optional[str] = None, capture_output: bool = True
-    ) -> Dict[str, Any]:
+        self, cmd: list[str], cwd: str | None = None, capture_output: bool = True
+    ) -> dict[str, Any]:
         """Run a command and return the result"""
         try:
             if cwd is None:
@@ -96,7 +95,7 @@ class CleanupExecutor:
             logger.error(f"Error running command: {e}")
             return {"success": False, "error": str(e)}
 
-    def phase_1_analysis(self) -> Dict[str, Any]:
+    def phase_1_analysis(self) -> dict[str, Any]:
         """Phase 1: Analyze the codebase and generate cleanup plan"""
         logger.info("=== Phase 1: Analysis ===")
 
@@ -117,7 +116,7 @@ class CleanupExecutor:
                 # Parse the plan file
                 plan_file = os.path.join(ROOT_DIR, f"cleanup_plan_{TIMESTAMP}.json")
                 if os.path.exists(plan_file):
-                    with open(plan_file, "r") as f:
+                    with open(plan_file) as f:
                         plan_data = json.load(f)
 
                     phase_results["success"] = True
@@ -136,7 +135,7 @@ class CleanupExecutor:
         self.results["phases"]["analysis"] = phase_results
         return phase_results
 
-    def phase_2_backup(self) -> Dict[str, Any]:
+    def phase_2_backup(self) -> dict[str, Any]:
         """Phase 2: Create a full backup of the codebase"""
         logger.info("=== Phase 2: Backup ===")
 
@@ -168,7 +167,7 @@ class CleanupExecutor:
                     # Copy file
                     try:
                         shutil.copy2(src_path, dst_path)
-                    except (IOError, OSError) as e:
+                    except OSError as e:
                         logger.warning(f"Error copying {rel_path}: {e}")
 
             # Calculate backup size
@@ -188,7 +187,7 @@ class CleanupExecutor:
         self.results["phases"]["backup"] = phase_results
         return phase_results
 
-    def phase_3_test_before(self) -> Dict[str, Any]:
+    def phase_3_test_before(self) -> dict[str, Any]:
         """Phase 3: Run tests to establish baseline functionality"""
         logger.info("=== Phase 3: Test Before ===")
 
@@ -251,7 +250,7 @@ class CleanupExecutor:
         self.results["phases"]["test_before"] = phase_results
         return phase_results
 
-    def phase_4_cleanup(self) -> Dict[str, Any]:
+    def phase_4_cleanup(self) -> dict[str, Any]:
         """Phase 4: Execute the cleanup plan"""
         logger.info("=== Phase 4: Cleanup ===")
 
@@ -301,7 +300,7 @@ class CleanupExecutor:
         self.results["phases"]["cleanup"] = phase_results
         return phase_results
 
-    def phase_5_test_after(self) -> Dict[str, Any]:
+    def phase_5_test_after(self) -> dict[str, Any]:
         """Phase 5: Verify system functionality after cleanup"""
         logger.info("=== Phase 5: Test After ===")
 
@@ -374,7 +373,7 @@ class CleanupExecutor:
         self.results["phases"]["test_after"] = phase_results
         return phase_results
 
-    def phase_6_format(self) -> Dict[str, Any]:
+    def phase_6_format(self) -> dict[str, Any]:
         """Phase 6: Apply code formatting and style standards"""
         logger.info("=== Phase 6: Format ===")
 
@@ -418,7 +417,7 @@ class CleanupExecutor:
         self.results["phases"]["format"] = phase_results
         return phase_results
 
-    def phase_7_final_validation(self) -> Dict[str, Any]:
+    def phase_7_final_validation(self) -> dict[str, Any]:
         """Phase 7: Comprehensive validation of system functionality"""
         logger.info("=== Phase 7: Final Validation ===")
 
@@ -562,7 +561,7 @@ class CleanupExecutor:
         summary_file = os.path.join(ROOT_DIR, f"CLEANUP_SUMMARY_{TIMESTAMP}.md")
 
         with open(summary_file, "w") as f:
-            f.write(f"# ACGS-1 Codebase Cleanup and Reorganization Summary\n\n")
+            f.write("# ACGS-1 Codebase Cleanup and Reorganization Summary\n\n")
             f.write(f"**Date:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
 
             f.write("## Overall Status\n\n")
@@ -710,9 +709,8 @@ def main():
                 "✅ Comprehensive cleanup and reorganization completed successfully!"
             )
             return 0
-        else:
-            logger.error("❌ Comprehensive cleanup and reorganization failed!")
-            return 1
+        logger.error("❌ Comprehensive cleanup and reorganization failed!")
+        return 1
 
     except KeyboardInterrupt:
         logger.error("\nOperation cancelled by user")

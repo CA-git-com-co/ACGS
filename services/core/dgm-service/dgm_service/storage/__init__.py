@@ -17,8 +17,8 @@ from .workspace_manager import WorkspaceManager
 
 __all__ = [
     "ArchiveManager",
-    "MetricsStorage",
-    "ComplianceStorage",
-    "WorkspaceManager",
     "CacheManager",
+    "ComplianceStorage",
+    "MetricsStorage",
+    "WorkspaceManager",
 ]

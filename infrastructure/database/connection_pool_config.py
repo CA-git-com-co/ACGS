@@ -6,10 +6,9 @@ Centralized configuration for database connection pooling across all services.
 Optimized for >1000 concurrent users, >99.9% availability, <500ms response.
 """
 
+import logging
 import os
 from dataclasses import dataclass
-from typing import Dict, Optional
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -168,7 +167,7 @@ class ServiceConnectionPools:
             config.port = int(os.getenv("PGBOUNCER_PORT"))
 
     @classmethod
-    def get_all_configs(cls) -> Dict[str, ConnectionPoolConfig]:
+    def get_all_configs(cls) -> dict[str, ConnectionPoolConfig]:
         """Get all service connection pool configurations."""
         return {
             service: cls.get_config(service) for service in cls.SERVICE_CONFIGS.keys()

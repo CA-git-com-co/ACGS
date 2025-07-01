@@ -15,14 +15,13 @@ import json
 import logging
 import sys
 import time
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any
 
 import httpx
-import pytest
-from dataclasses import dataclass
-from colorama import init, Fore, Style
+from colorama import Fore, Style, init
 
 # Initialize colorama for colored output
 init()
@@ -38,8 +37,8 @@ class TestResult:
     test_name: str
     status: str  # passed, failed, skipped
     duration_ms: int
-    error_message: Optional[str] = None
-    details: Dict[str, Any] = None
+    error_message: str | None = None
+    details: dict[str, Any] = None
 
 
 @dataclass
@@ -50,7 +49,7 @@ class ServiceHealth:
     url: str
     healthy: bool
     response_time_ms: int
-    error: Optional[str] = None
+    error: str | None = None
 
 
 class ACGSTestRunner:
@@ -65,13 +64,13 @@ class ACGSTestRunner:
             "formal_verification": "http://localhost:8010",
             "audit_integrity": "http://localhost:8011",
         }
-        self.test_results: List[TestResult] = []
+        self.test_results: list[TestResult] = []
         self.http_client = httpx.AsyncClient(timeout=30.0)
 
-    async def run_all_tests(self) -> Dict[str, Any]:
+    async def run_all_tests(self) -> dict[str, Any]:
         """Run the complete test suite."""
         print(f"{Fore.CYAN}🧪 ACGS Comprehensive Test Suite{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{'='*50}{Style.RESET_ALL}\n")
+        print(f"{Fore.CYAN}{'=' * 50}{Style.RESET_ALL}\n")
 
         start_time = time.time()
 
@@ -105,7 +104,7 @@ class ACGSTestRunner:
         await self.http_client.aclose()
         return summary
 
-    async def test_service_health(self) -> Dict[str, Any]:
+    async def test_service_health(self) -> dict[str, Any]:
         """Test health of all ACGS services."""
         health_results = []
 
@@ -150,7 +149,7 @@ class ACGSTestRunner:
                         error=str(e),
                     )
                 )
-                print(f"  ❌ {service_name}: Connection failed - {str(e)}")
+                print(f"  ❌ {service_name}: Connection failed - {e!s}")
 
         healthy_count = sum(1 for h in health_results if h.healthy)
         return {
@@ -160,7 +159,7 @@ class ACGSTestRunner:
             "all_healthy": healthy_count == len(health_results),
         }
 
-    async def run_unit_tests(self) -> Dict[str, Any]:
+    async def run_unit_tests(self) -> dict[str, Any]:
         """Run unit tests for individual components."""
         print("  📝 Unit testing individual service components...")
 
@@ -190,7 +189,7 @@ class ACGSTestRunner:
             "results": [r.__dict__ for r in unit_test_results],
         }
 
-    async def run_integration_tests(self) -> Dict[str, Any]:
+    async def run_integration_tests(self) -> dict[str, Any]:
         """Run integration tests between services."""
         print("  🔗 Testing service-to-service integration...")
 
@@ -220,7 +219,7 @@ class ACGSTestRunner:
             "results": [r.__dict__ for r in integration_results],
         }
 
-    async def test_end_to_end_workflows(self) -> Dict[str, Any]:
+    async def test_end_to_end_workflows(self) -> dict[str, Any]:
         """Test complete end-to-end workflows."""
         print("  🔄 Testing complete ACGS workflows...")
 
@@ -250,7 +249,7 @@ class ACGSTestRunner:
             "results": [r.__dict__ for r in e2e_results],
         }
 
-    async def run_performance_tests(self) -> Dict[str, Any]:
+    async def run_performance_tests(self) -> dict[str, Any]:
         """Run performance and load tests."""
         print("  ⚡ Running performance and load tests...")
 
@@ -280,7 +279,7 @@ class ACGSTestRunner:
             "results": [r.__dict__ for r in perf_results],
         }
 
-    async def run_security_tests(self) -> Dict[str, Any]:
+    async def run_security_tests(self) -> dict[str, Any]:
         """Run security validation tests."""
         print("  🔒 Running security validation tests...")
 
@@ -593,7 +592,7 @@ class ACGSTestRunner:
         """Test audit log integrity."""
         return TestResult("Audit Log Integrity", "passed", 100)
 
-    def _print_phase_results(self, phase_name: str, results: Dict[str, Any]):
+    def _print_phase_results(self, phase_name: str, results: dict[str, Any]):
         """Print results for a test phase."""
         if "error" in results:
             print(f"  ❌ {phase_name} failed: {results['error']}")
@@ -617,11 +616,11 @@ class ACGSTestRunner:
                 print(f"  ⚠️  {healthy}/{total} services healthy")
 
     def _generate_summary_report(
-        self, all_results: Dict[str, Any], total_time: float
-    ) -> Dict[str, Any]:
+        self, all_results: dict[str, Any], total_time: float
+    ) -> dict[str, Any]:
         """Generate comprehensive test summary report."""
         print(f"\n{Fore.CYAN}📊 Test Summary Report{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{'='*50}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{'=' * 50}{Style.RESET_ALL}")
 
         total_tests = 0
         total_passed = 0
@@ -660,24 +659,24 @@ class ACGSTestRunner:
 
         # Performance summary
         print(f"\n{Fore.CYAN}Performance Metrics:{Style.RESET_ALL}")
-        print(f"• HITL Decision Time: <5ms ✅")
-        print(f"• Sandbox Startup: <500ms ✅")
-        print(f"• End-to-End Operation: <2s ✅")
-        print(f"• Database Response: <50ms ✅")
+        print("• HITL Decision Time: <5ms ✅")
+        print("• Sandbox Startup: <500ms ✅")
+        print("• End-to-End Operation: <2s ✅")
+        print("• Database Response: <50ms ✅")
 
         # Security summary
         print(f"\n{Fore.CYAN}Security Validation:{Style.RESET_ALL}")
-        print(f"• Authentication bypass prevention ✅")
-        print(f"• Sandbox escape prevention ✅")
-        print(f"• Injection attack prevention ✅")
-        print(f"• Audit log integrity ✅")
+        print("• Authentication bypass prevention ✅")
+        print("• Sandbox escape prevention ✅")
+        print("• Injection attack prevention ✅")
+        print("• Audit log integrity ✅")
 
         # Constitutional compliance
         print(f"\n{Fore.CYAN}Constitutional Compliance:{Style.RESET_ALL}")
-        print(f"• Constitutional Hash: cdd01ef066bc6cf2 ✅")
-        print(f"• Human oversight enforcement ✅")
-        print(f"• Audit trail completeness ✅")
-        print(f"• Policy violation detection ✅")
+        print("• Constitutional Hash: cdd01ef066bc6cf2 ✅")
+        print("• Human oversight enforcement ✅")
+        print("• Audit trail completeness ✅")
+        print("• Policy violation detection ✅")
 
         return {
             "overall_status": "passed" if total_failed == 0 else "failed",

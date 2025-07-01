@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Start ACGS services with fixed configurations."""
+
 import os
+import subprocess
 import sys
 import time
-import subprocess
-import asyncio
 from pathlib import Path
 
 
@@ -50,9 +50,8 @@ def start_service(service_name: str, port: int, working_dir: str) -> bool:
         if process.poll() is None:
             print(f"✅ {service_name} started successfully (PID: {process.pid})")
             return True
-        else:
-            print(f"❌ {service_name} failed to start")
-            return False
+        print(f"❌ {service_name} failed to start")
+        return False
 
     except Exception as e:
         print(f"❌ Failed to start {service_name}: {e}")

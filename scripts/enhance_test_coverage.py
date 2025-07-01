@@ -6,13 +6,12 @@ Enhances test coverage across all 7 core services to achieve >95% coverage
 for constitutional compliance and critical functionality.
 """
 
-import os
-import sys
 import json
-import subprocess
 import logging
+import subprocess
+import sys
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -37,7 +36,7 @@ class TestCoverageEnhancer:
         }
         self.constitutional_hash = "cdd01ef066bc6cf2"
 
-    def run_coverage_analysis(self) -> Dict[str, Any]:
+    def run_coverage_analysis(self) -> dict[str, Any]:
         """Run comprehensive test coverage analysis."""
         logger.info("🔍 Running test coverage analysis...")
 
@@ -64,6 +63,7 @@ class TestCoverageEnhancer:
                         "--cov-report=term-missing",
                         "-v",
                     ],
+                    check=False,
                     cwd=self.project_root,
                     capture_output=True,
                     text=True,
@@ -163,8 +163,8 @@ class TestServiceIntegration:
             logger.info(f"Created test file: {test_file}")
 
     def generate_coverage_report(
-        self, coverage_results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, coverage_results: dict[str, Any]
+    ) -> dict[str, Any]:
         """Generate comprehensive coverage report."""
         logger.info("📊 Generating coverage report...")
 
@@ -221,7 +221,7 @@ class TestServiceIntegration:
 
         return report
 
-    def run_enhancement(self) -> Dict[str, Any]:
+    def run_enhancement(self) -> dict[str, Any]:
         """Run complete test coverage enhancement."""
         logger.info("🚀 Starting ACGS-PGP test coverage enhancement...")
 

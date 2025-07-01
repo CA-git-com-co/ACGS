@@ -5,7 +5,7 @@ ACGS-1 Phase 3 Production Readiness Validation Script
 This script performs comprehensive validation of the ACGS-1 system to ensure
 it meets all production requirements including:
 - Service availability and performance
-- End-to-end workflow functionality  
+- End-to-end workflow functionality
 - Security and compliance
 - Monitoring and alerting
 - SLA compliance (>99% uptime, <500ms response times)
@@ -16,9 +16,10 @@ This is the final validation before marking Phase 3 as complete.
 import asyncio
 import json
 import logging
-import time
 import statistics
-from typing import Dict, List, Any
+import time
+from typing import Any
+
 import httpx
 
 # Configure logging
@@ -44,7 +45,7 @@ class ProductionReadinessValidator:
             "ec": {"port": 8006, "name": "Evolutionary Computation Service"},
         }
 
-    async def validate_sla_compliance(self) -> Dict[str, Any]:
+    async def validate_sla_compliance(self) -> dict[str, Any]:
         """Validate SLA compliance: >99% uptime, <500ms response times."""
         logger.info("🎯 Validating SLA Compliance")
 
@@ -179,7 +180,7 @@ class ProductionReadinessValidator:
 
         return sla_results
 
-    async def _make_request(self, url: str) -> Dict[str, Any]:
+    async def _make_request(self, url: str) -> dict[str, Any]:
         """Make a single HTTP request and return timing info."""
         try:
             async with httpx.AsyncClient(timeout=10) as client:
@@ -194,7 +195,7 @@ class ProductionReadinessValidator:
         except Exception as e:
             return {"error": str(e), "success": False}
 
-    async def validate_security_compliance(self) -> Dict[str, Any]:
+    async def validate_security_compliance(self) -> dict[str, Any]:
         """Validate security and compliance requirements."""
         logger.info("🔒 Validating Security Compliance")
 
@@ -244,7 +245,7 @@ class ProductionReadinessValidator:
                     response.status_code in [401, 403, 404]
                 )  # Expected for protected endpoint
 
-        except Exception as e:
+        except Exception:
             auth_tests.append(False)
 
         security_results["access_control"] = {
@@ -296,7 +297,7 @@ class ProductionReadinessValidator:
 
         return security_results
 
-    async def validate_production_readiness(self) -> Dict[str, Any]:
+    async def validate_production_readiness(self) -> dict[str, Any]:
         """Run comprehensive production readiness validation."""
         logger.info("🚀 Starting ACGS-1 Production Readiness Validation")
 
@@ -331,6 +332,7 @@ class ProductionReadinessValidator:
 
             result = subprocess.run(
                 ["python3", "scripts/validate_services.py"],
+                check=False,
                 capture_output=True,
                 text=True,
                 cwd="/home/ubuntu/ACGS",
@@ -344,6 +346,7 @@ class ProductionReadinessValidator:
             logger.info("🔄 Running Workflow Validation")
             result = subprocess.run(
                 ["python3", "scripts/validate_workflows.py"],
+                check=False,
                 capture_output=True,
                 text=True,
                 cwd="/home/ubuntu/ACGS",
@@ -423,7 +426,7 @@ class ProductionReadinessValidator:
 
         return validation_results
 
-    def print_readiness_report(self, results: Dict[str, Any]):
+    def print_readiness_report(self, results: dict[str, Any]):
         """Print comprehensive production readiness report."""
         print("\n" + "=" * 80)
         print("🏭 ACGS-1 PHASE 3 PRODUCTION READINESS REPORT")
@@ -439,7 +442,7 @@ class ProductionReadinessValidator:
         print(f"📊 Readiness Score: {overall['readiness_score']:.1%}")
 
         # Readiness factors
-        print(f"\n📋 READINESS FACTORS:")
+        print("\n📋 READINESS FACTORS:")
         factors = overall.get("readiness_factors", {})
         for factor, status in factors.items():
             icon = "✅" if status else "❌"
@@ -448,7 +451,7 @@ class ProductionReadinessValidator:
         # SLA Compliance Details
         sla = results.get("sla_compliance", {})
         if sla:
-            print(f"\n🎯 SLA COMPLIANCE:")
+            print("\n🎯 SLA COMPLIANCE:")
             print(
                 f"  Overall: {'✅ PASS' if sla.get('overall_compliance') else '❌ FAIL'}"
             )
@@ -478,24 +481,24 @@ class ProductionReadinessValidator:
         # Security Compliance
         security = results.get("security_compliance", {})
         if security:
-            print(f"\n🔒 SECURITY COMPLIANCE:")
+            print("\n🔒 SECURITY COMPLIANCE:")
             score = security.get("overall_security_score", 0)
             print(f"  Security Score: {score:.1%} (Target: >80%)")
 
         # Critical Issues
         if overall["critical_issues"]:
-            print(f"\n❌ CRITICAL ISSUES:")
+            print("\n❌ CRITICAL ISSUES:")
             for issue in overall["critical_issues"]:
                 print(f"  • {issue}")
 
         # Recommendations
         if overall["recommendations"]:
-            print(f"\n💡 RECOMMENDATIONS:")
+            print("\n💡 RECOMMENDATIONS:")
             for rec in overall["recommendations"]:
                 print(f"  • {rec}")
 
         # Final verdict
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         if overall["ready_for_production"]:
             print("🎉 ACGS-1 IS READY FOR PRODUCTION DEPLOYMENT!")
             print("   All systems operational, SLA targets met, security compliant.")

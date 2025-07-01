@@ -12,7 +12,7 @@ from enum import Enum
 from typing import Any
 
 import numpy as np
-import scipy.stats as stats
+from scipy import stats
 
 logger = logging.getLogger(__name__)
 
@@ -393,7 +393,7 @@ class ABTestingFramework:
         """Get results for a specific test."""
         if test_id in self.active_tests:
             return self.active_tests[test_id]
-        elif test_id in self.completed_tests:
+        if test_id in self.completed_tests:
             return self.completed_tests[test_id]
         return None
 

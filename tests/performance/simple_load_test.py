@@ -20,7 +20,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 
@@ -39,7 +39,7 @@ class LoadTestResult:
     status_code: int
     success: bool
     timestamp: float
-    error: Optional[str] = None
+    error: str | None = None
 
 
 @dataclass
@@ -49,7 +49,7 @@ class LoadTestConfig:
     concurrent_users: int = 50
     duration_seconds: int = 60
     target_response_time_ms: float = 500.0
-    services: Dict[str, int] = None
+    services: dict[str, int] = None
 
     def __post_init__(self):
         if self.services is None:
@@ -69,7 +69,7 @@ class SimpleLoadTester:
 
     def __init__(self, config: LoadTestConfig):
         self.config = config
-        self.results: List[LoadTestResult] = []
+        self.results: list[LoadTestResult] = []
         self.start_time = 0
         self.end_time = 0
 
@@ -126,7 +126,7 @@ class SimpleLoadTester:
 
         return user_results
 
-    async def run_load_test(self) -> Dict[str, Any]:
+    async def run_load_test(self) -> dict[str, Any]:
         """Execute the load test with multiple concurrent users."""
         logger.info(
             f"🚀 Starting load test with {self.config.concurrent_users} users for {self.config.duration_seconds}s"
@@ -165,7 +165,7 @@ class SimpleLoadTester:
         # Generate report
         return self.generate_report()
 
-    def generate_report(self) -> Dict[str, Any]:
+    def generate_report(self) -> dict[str, Any]:
         """Generate comprehensive load test report."""
         if not self.results:
             return {"error": "No results collected"}
@@ -292,7 +292,7 @@ class SimpleLoadTester:
 
     def generate_recommendations(
         self, success_rate: float, p95_response_time: float
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate performance improvement recommendations."""
         recommendations = []
 

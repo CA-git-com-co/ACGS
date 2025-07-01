@@ -27,7 +27,7 @@ import json
 import logging
 import statistics
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -374,8 +374,8 @@ class EnhancedPolicySynthesisValidator:
         test_requests = []
         for i in range(10):  # Test with multiple requests
             request = EnhancedSynthesisRequest(
-                title=f"Performance Test Policy {i+1}",
-                description=f"Policy for performance testing iteration {i+1}",
+                title=f"Performance Test Policy {i + 1}",
+                description=f"Policy for performance testing iteration {i + 1}",
                 constitutional_principles=["CP-001"],
                 domain_context={"scope": "performance", "iteration": i + 1},
                 risk_strategy=RiskStrategy.STANDARD,
@@ -434,8 +434,8 @@ class EnhancedPolicySynthesisValidator:
         concurrent_requests = []
         for i in range(5):
             request = EnhancedSynthesisRequest(
-                title=f"Concurrent Policy {i+1}",
-                description=f"Policy for concurrent testing {i+1}",
+                title=f"Concurrent Policy {i + 1}",
+                description=f"Policy for concurrent testing {i + 1}",
                 constitutional_principles=["CP-001"],
                 domain_context={"scope": "concurrency", "id": i + 1},
                 risk_strategy=RiskStrategy.STANDARD,
@@ -505,11 +505,10 @@ class EnhancedPolicySynthesisValidator:
                         f"Performance targets not met: {', '.join(failed_targets)}"
                     )
 
+            elif test_result.get("success", False):
+                successful_tests += 1
             else:
-                if test_result.get("success", False):
-                    successful_tests += 1
-                else:
-                    warnings.append(f"{test_name} test had issues")
+                warnings.append(f"{test_name} test had issues")
 
         # Determine overall status
         if len(critical_failures) > 0:
@@ -607,9 +606,9 @@ async def main():
 
     # Print summary
     summary = results["summary"]
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("ENHANCED POLICY SYNTHESIS ENGINE VALIDATION SUMMARY")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"Status: {summary['status']}")
     print(
         f"Tests: {summary['successful_tests']}/{summary['total_tests']} passed ({summary['success_rate']:.1%})"

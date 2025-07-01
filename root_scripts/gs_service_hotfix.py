@@ -99,9 +99,8 @@ def apply_gs_service_hotfix():
         print(f"✅ Hot-fix applied successfully! {changes_made} changes made.")
         print("🔄 The service should automatically reload due to --reload flag")
         return True
-    else:
-        print("ℹ️ No changes needed - URLs already use localhost")
-        return True
+    print("ℹ️ No changes needed - URLs already use localhost")
+    return True
 
 
 def create_environment_override():

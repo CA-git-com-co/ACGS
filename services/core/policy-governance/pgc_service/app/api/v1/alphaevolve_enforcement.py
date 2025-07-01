@@ -215,7 +215,7 @@ async def evaluate_ec_batch(request_data: dict[str, Any]):
         logger.error(f"Error during EC batch evaluation: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"EC batch evaluation failed: {str(e)}",
+            detail=f"EC batch evaluation failed: {e!s}",
         )
 
 
@@ -272,7 +272,7 @@ async def evaluate_single_proposal(request_data: dict[str, Any]):
         logger.error(f"Error during single proposal evaluation: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Single proposal evaluation failed: {str(e)}",
+            detail=f"Single proposal evaluation failed: {e!s}",
         )
 
 
@@ -332,7 +332,7 @@ async def _evaluate_proposals_parallel(
                 decision="deny",
                 latency_ms=1.0,
                 governance_penalty=1.0,
-                explanation=f"Evaluation error: {str(decision)}",
+                explanation=f"Evaluation error: {decision!s}",
             )
             valid_decisions.append(fallback_decision)
         else:
@@ -419,7 +419,7 @@ async def _evaluate_single_proposal_optimized(
             decision="deny",
             latency_ms=latency_ms,
             governance_penalty=1.0,
-            explanation=f"Evaluation error: {str(e)}",
+            explanation=f"Evaluation error: {e!s}",
         )
 
 

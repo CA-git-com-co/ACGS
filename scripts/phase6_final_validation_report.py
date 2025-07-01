@@ -16,7 +16,7 @@ import json
 import logging
 import os
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -36,10 +36,10 @@ class SystemValidationReport(BaseModel):
     overall_status: str
     system_health_score: float
     operational_readiness: str
-    phase_results: Dict[str, Any]
-    executive_summary: Dict[str, Any]
-    recommendations: List[str]
-    next_steps: List[str]
+    phase_results: dict[str, Any]
+    executive_summary: dict[str, Any]
+    recommendations: list[str]
+    next_steps: list[str]
 
 
 class ACGSFinalValidator:
@@ -56,7 +56,7 @@ class ACGSFinalValidator:
             "emergency_rto_seconds": 1800,
         }
 
-    def load_phase_results(self) -> Dict[str, Any]:
+    def load_phase_results(self) -> dict[str, Any]:
         """Load results from all testing phases"""
         logger.info("📊 Loading results from all testing phases...")
 
@@ -75,7 +75,7 @@ class ACGSFinalValidator:
         for phase_name, filename in phase_files.items():
             try:
                 if os.path.exists(filename):
-                    with open(filename, "r") as f:
+                    with open(filename) as f:
                         phase_results[phase_name] = json.load(f)
                     logger.info(f"✅ Loaded {phase_name} results from {filename}")
                 else:
@@ -90,7 +90,7 @@ class ACGSFinalValidator:
 
         return phase_results
 
-    def calculate_system_health_score(self, phase_results: Dict[str, Any]) -> float:
+    def calculate_system_health_score(self, phase_results: dict[str, Any]) -> float:
         """Calculate overall system health score (0-100)"""
         logger.info("🏥 Calculating system health score...")
 
@@ -124,16 +124,15 @@ class ACGSFinalValidator:
                     ) * 100
                 else:
                     phase_score = 30  # Partial credit for attempted tests
-            else:
-                # Try to extract success metrics
-                if "executive_summary" in phase_data:
-                    exec_summary = phase_data["executive_summary"]
-                    if "overall_success_rate" in exec_summary:
-                        phase_score = exec_summary["overall_success_rate"]
-                    else:
-                        phase_score = 50  # Default for unclear status
+            # Try to extract success metrics
+            elif "executive_summary" in phase_data:
+                exec_summary = phase_data["executive_summary"]
+                if "overall_success_rate" in exec_summary:
+                    phase_score = exec_summary["overall_success_rate"]
                 else:
-                    phase_score = 50
+                    phase_score = 50  # Default for unclear status
+            else:
+                phase_score = 50
 
             weighted_score = phase_score * weight
             scores.append(weighted_score)
@@ -146,7 +145,7 @@ class ACGSFinalValidator:
         return total_score
 
     def assess_operational_readiness(
-        self, health_score: float, phase_results: Dict[str, Any]
+        self, health_score: float, phase_results: dict[str, Any]
     ) -> str:
         """Assess operational readiness based on health score and critical metrics"""
         logger.info("🚀 Assessing operational readiness...")
@@ -189,19 +188,18 @@ class ACGSFinalValidator:
 
         if health_score >= 85 and critical_passed >= 3:
             return "production_ready"
-        elif health_score >= 70 and critical_passed >= 2:
+        if health_score >= 70 and critical_passed >= 2:
             return "staging_ready"
-        elif health_score >= 50:
+        if health_score >= 50:
             return "development_ready"
-        else:
-            return "needs_remediation"
+        return "needs_remediation"
 
     def generate_executive_summary(
         self,
-        phase_results: Dict[str, Any],
+        phase_results: dict[str, Any],
         health_score: float,
         operational_readiness: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate executive summary with key metrics"""
         logger.info("📋 Generating executive summary...")
 
@@ -300,8 +298,8 @@ class ACGSFinalValidator:
         }
 
     def generate_recommendations(
-        self, phase_results: Dict[str, Any], health_score: float
-    ) -> List[str]:
+        self, phase_results: dict[str, Any], health_score: float
+    ) -> list[str]:
         """Generate specific recommendations based on test results"""
         logger.info("💡 Generating recommendations...")
 
@@ -479,16 +477,13 @@ def main():
         if report.overall_status == "PASSED":
             print("✅ ACGS-PGP system validation PASSED - Ready for deployment!")
             return 0
-        elif report.overall_status == "CONDITIONAL_PASS":
+        if report.overall_status == "CONDITIONAL_PASS":
             print(
                 "⚠️ ACGS-PGP system validation CONDITIONAL PASS - Address recommendations before production"
             )
             return 0
-        else:
-            print(
-                "❌ ACGS-PGP system validation FAILED - Critical issues must be resolved"
-            )
-            return 1
+        print("❌ ACGS-PGP system validation FAILED - Critical issues must be resolved")
+        return 1
 
     except Exception as e:
         logger.error(f"Final validation failed: {e}")

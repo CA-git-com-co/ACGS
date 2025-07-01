@@ -2,7 +2,7 @@
 System configuration model for DGM service.
 """
 
-from typing import Any, Dict
+from typing import Any
 
 from sqlalchemy import Boolean, Column, DateTime, String, Text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
@@ -50,7 +50,7 @@ class SystemConfiguration(Base):
     def __repr__(self):
         return f"<SystemConfiguration(key={self.key}, category={self.category})>"
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "id": str(self.id),

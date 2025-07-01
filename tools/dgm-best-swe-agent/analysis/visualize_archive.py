@@ -19,15 +19,12 @@ def to_eval_quantity_enum(eval_quantity, halluc=False):
     if halluc:
         if eval_quantity <= 1.5:
             return EvalQuantity.SMALL
-        else:
-            return EvalQuantity.BIG
-    else:
-        if eval_quantity <= 10:
-            return EvalQuantity.SMALL
-        elif eval_quantity <= 60:
-            return EvalQuantity.MED
-        else:
-            return EvalQuantity.BIG
+        return EvalQuantity.BIG
+    if eval_quantity <= 10:
+        return EvalQuantity.SMALL
+    if eval_quantity <= 60:
+        return EvalQuantity.MED
+    return EvalQuantity.BIG
 
 
 def get_evalquantity(dgm_dir, node_id, metadata_name="metadata.json", halluc=False):
@@ -449,7 +446,7 @@ def get_evalswe_command(dgm_dir, node_id):
     """
     root_dir = os.path.abspath("./")  # should be the root of this repo
     patch_paths = get_model_patch_paths(root_dir, dgm_dir, node_id)
-    model_patch_paths = f"\"{','.join(patch_paths)}\""
+    model_patch_paths = f'"{",".join(patch_paths)}"'
     model_name_or_path = f"dgmnode_{node_id}"
     command = (
         "python test_swebench.py --full_eval --num_samples 50 "

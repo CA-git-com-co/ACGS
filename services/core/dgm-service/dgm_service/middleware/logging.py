@@ -10,7 +10,7 @@ import logging
 import time
 import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -36,10 +36,10 @@ class StructuredLogger:
 
     def _create_base_context(
         self,
-        request_id: Optional[str] = None,
-        user_id: Optional[str] = None,
-        session_id: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        request_id: str | None = None,
+        user_id: str | None = None,
+        session_id: str | None = None,
+    ) -> dict[str, Any]:
         """Create base logging context."""
         return {
             "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -56,9 +56,9 @@ class StructuredLogger:
     def info(
         self,
         message: str,
-        extra: Optional[Dict[str, Any]] = None,
-        request_id: Optional[str] = None,
-        user_id: Optional[str] = None,
+        extra: dict[str, Any] | None = None,
+        request_id: str | None = None,
+        user_id: str | None = None,
     ):
         """Log info level message."""
         context = self._create_base_context(request_id, user_id)
@@ -68,9 +68,9 @@ class StructuredLogger:
     def warning(
         self,
         message: str,
-        extra: Optional[Dict[str, Any]] = None,
-        request_id: Optional[str] = None,
-        user_id: Optional[str] = None,
+        extra: dict[str, Any] | None = None,
+        request_id: str | None = None,
+        user_id: str | None = None,
     ):
         """Log warning level message."""
         context = self._create_base_context(request_id, user_id)
@@ -80,10 +80,10 @@ class StructuredLogger:
     def error(
         self,
         message: str,
-        error: Optional[Exception] = None,
-        extra: Optional[Dict[str, Any]] = None,
-        request_id: Optional[str] = None,
-        user_id: Optional[str] = None,
+        error: Exception | None = None,
+        extra: dict[str, Any] | None = None,
+        request_id: str | None = None,
+        user_id: str | None = None,
     ):
         """Log error level message."""
         context = self._create_base_context(request_id, user_id)
@@ -101,9 +101,9 @@ class StructuredLogger:
     def debug(
         self,
         message: str,
-        extra: Optional[Dict[str, Any]] = None,
-        request_id: Optional[str] = None,
-        user_id: Optional[str] = None,
+        extra: dict[str, Any] | None = None,
+        request_id: str | None = None,
+        user_id: str | None = None,
     ):
         """Log debug level message."""
         context = self._create_base_context(request_id, user_id)
@@ -111,7 +111,7 @@ class StructuredLogger:
         self.logger.debug(json.dumps(context))
 
     def log_request(
-        self, request: Request, request_id: str, user_id: Optional[str] = None
+        self, request: Request, request_id: str, user_id: str | None = None
     ):
         """Log incoming HTTP request."""
         context = self._create_base_context(request_id, user_id)
@@ -141,7 +141,7 @@ class StructuredLogger:
         response: Response,
         request_id: str,
         duration_ms: float,
-        user_id: Optional[str] = None,
+        user_id: str | None = None,
     ):
         """Log HTTP response."""
         context = self._create_base_context(request_id, user_id)
@@ -172,8 +172,8 @@ class StructuredLogger:
         improvement_id: str,
         event_type: str,
         message: str,
-        extra: Optional[Dict[str, Any]] = None,
-        request_id: Optional[str] = None,
+        extra: dict[str, Any] | None = None,
+        request_id: str | None = None,
     ):
         """Log DGM improvement events."""
         context = self._create_base_context(request_id)
@@ -196,9 +196,9 @@ class StructuredLogger:
         validation_id: str,
         principle: str,
         compliance_score: float,
-        violations: List[str],
+        violations: list[str],
         message: str,
-        request_id: Optional[str] = None,
+        request_id: str | None = None,
     ):
         """Log constitutional compliance events."""
         context = self._create_base_context(request_id)
@@ -222,9 +222,9 @@ class StructuredLogger:
         self,
         metric_name: str,
         metric_value: float,
-        threshold: Optional[float] = None,
+        threshold: float | None = None,
         message: str = "",
-        request_id: Optional[str] = None,
+        request_id: str | None = None,
     ):
         """Log performance events."""
         context = self._create_base_context(request_id)

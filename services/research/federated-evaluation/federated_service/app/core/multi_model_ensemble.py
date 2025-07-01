@@ -244,7 +244,7 @@ class MultiModelEnsembleCoordinator:
             return ensemble_decision
 
         except Exception as e:
-            logger.error(f"Error in ensemble coordination: {str(e)}")
+            logger.error(f"Error in ensemble coordination: {e!s}")
             # Return fallback decision
             return await self._generate_fallback_decision(constitutional_query, str(e))
 
@@ -329,7 +329,7 @@ class MultiModelEnsembleCoordinator:
             return model_response
 
         except Exception as e:
-            logger.error(f"Error querying model {model_type.value}: {str(e)}")
+            logger.error(f"Error querying model {model_type.value}: {e!s}")
             # Return error response
             return ModelResponse(
                 model_id=model_config["model_id"],
@@ -467,10 +467,9 @@ class MultiModelEnsembleCoordinator:
         # Analyze query to determine best strategy
         if query.priority_level == "high":
             return await self._constitutional_priority_aggregation(responses)
-        elif query.required_confidence > 0.95:
+        if query.required_confidence > 0.95:
             return await self._confidence_weighted_aggregation(responses)
-        else:
-            return await self._weighted_average_aggregation(responses)
+        return await self._weighted_average_aggregation(responses)
 
     # Helper methods (simplified implementations)
     async def _prepare_model_prompt(

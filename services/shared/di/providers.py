@@ -243,7 +243,7 @@ class ServiceFactory:
 
         except Exception as e:
             raise ACGSException(
-                f"Failed to create service {service_type}: {str(e)}",
+                f"Failed to create service {service_type}: {e!s}",
                 "SERVICE_CREATION_FAILED",
             )
 

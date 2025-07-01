@@ -2,22 +2,15 @@
 Database migrations for DGM service.
 """
 
-import asyncio
 import logging
-from typing import Any, Dict
+from typing import Any
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from ..models import (
-    BanditState,
     Base,
-    ConstitutionalComplianceLog,
-    DGMArchive,
-    ImprovementWorkspace,
-    PerformanceMetric,
-    SystemConfiguration,
 )
 
 logger = logging.getLogger(__name__)
@@ -42,7 +35,7 @@ class DGMMigrationManager:
         )
         logger.info("DGM migration manager initialized")
 
-    async def create_schema(self) -> Dict[str, Any]:
+    async def create_schema(self) -> dict[str, Any]:
         """Create DGM schema and tables."""
         result = {
             "schema_created": False,
@@ -132,7 +125,7 @@ class DGMMigrationManager:
             except Exception as e:
                 logger.warning(f"Index creation warning: {e}")
 
-    async def verify_schema(self) -> Dict[str, Any]:
+    async def verify_schema(self) -> dict[str, Any]:
         """Verify DGM schema integrity."""
         verification_report = {
             "schema_exists": False,
@@ -194,7 +187,7 @@ class DGMMigrationManager:
 
         return verification_report
 
-    async def rollback_schema(self) -> Dict[str, Any]:
+    async def rollback_schema(self) -> dict[str, Any]:
         """Rollback DGM schema (DANGEROUS - USE WITH CAUTION)."""
         rollback_result = {
             "tables_dropped": [],
@@ -244,7 +237,7 @@ class DGMMigrationManager:
 
         return rollback_result
 
-    async def check_data_integrity(self) -> Dict[str, Any]:
+    async def check_data_integrity(self) -> dict[str, Any]:
         """Perform comprehensive data integrity checks."""
         integrity_result = {
             "checks_passed": 0,
@@ -366,7 +359,7 @@ class DGMMigrationManager:
 
         return integrity_result
 
-    async def migrate_data(self, source_data: Dict[str, Any] = None) -> Dict[str, Any]:
+    async def migrate_data(self, source_data: dict[str, Any] = None) -> dict[str, Any]:
         """Migrate data from external sources or initialize with defaults."""
         migration_result = {
             "configurations_created": 0,
@@ -435,7 +428,7 @@ class DGMMigrationManager:
 
         return migration_result
 
-    async def backup_schema(self, backup_name: str = None) -> Dict[str, Any]:
+    async def backup_schema(self, backup_name: str = None) -> dict[str, Any]:
         """Create a backup of the current DGM schema."""
         if not backup_name:
             from datetime import datetime
@@ -452,7 +445,7 @@ class DGMMigrationManager:
         try:
             async with self.session_factory() as session:
                 # Create backup schema
-                await session.execute(text(f"CREATE SCHEMA IF NOT EXISTS dgm_backups"))
+                await session.execute(text("CREATE SCHEMA IF NOT EXISTS dgm_backups"))
                 await session.execute(
                     text(f"CREATE SCHEMA IF NOT EXISTS dgm_backups.{backup_name}")
                 )
@@ -491,7 +484,7 @@ class DGMMigrationManager:
 
         return backup_result
 
-    async def restore_from_backup(self, backup_name: str) -> Dict[str, Any]:
+    async def restore_from_backup(self, backup_name: str) -> dict[str, Any]:
         """Restore DGM schema from a backup."""
         restore_result = {
             "backup_name": backup_name,
@@ -563,7 +556,7 @@ class DGMMigrationManager:
 
 async def run_dgm_migrations(
     database_url: str, operation: str = "create"
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Run DGM database migrations."""
     manager = DGMMigrationManager(database_url)
     await manager.initialize()
@@ -575,17 +568,16 @@ async def run_dgm_migrations(
                 data_result = await manager.migrate_data()
                 result.update(data_result)
             return result
-        elif operation == "verify":
+        if operation == "verify":
             return await manager.verify_schema()
-        elif operation == "rollback":
+        if operation == "rollback":
             return await manager.rollback_schema()
-        elif operation.startswith("backup"):
+        if operation.startswith("backup"):
             backup_name = operation.split(":")[-1] if ":" in operation else None
             return await manager.backup_schema(backup_name)
-        elif operation.startswith("restore"):
+        if operation.startswith("restore"):
             backup_name = operation.split(":")[-1]
             return await manager.restore_from_backup(backup_name)
-        else:
-            raise ValueError(f"Unknown operation: {operation}")
+        raise ValueError(f"Unknown operation: {operation}")
     finally:
         await manager.cleanup()

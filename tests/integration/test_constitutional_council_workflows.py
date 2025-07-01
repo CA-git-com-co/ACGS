@@ -23,7 +23,7 @@ Target Metrics:
 import asyncio
 import json
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import httpx
@@ -356,7 +356,7 @@ class ConstitutionalCouncilWorkflowTests:
                     }
 
         except Exception as e:
-            print(f"  ⚠️  WebSocket test skipped: {str(e)}")
+            print(f"  ⚠️  WebSocket test skipped: {e!s}")
             self.workflow_results["real_time_updates"] = {
                 "websocket_latency_seconds": None,
                 "notification_received": False,
@@ -442,7 +442,7 @@ class ConstitutionalCouncilWorkflowTests:
             print("🚀 LangGraph StateGraph integration ready for production")
 
         except Exception as e:
-            print(f"\n❌ Workflow test execution failed: {str(e)}")
+            print(f"\n❌ Workflow test execution failed: {e!s}")
             raise
         finally:
             await self.client.aclose()

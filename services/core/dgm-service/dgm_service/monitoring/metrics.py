@@ -7,7 +7,6 @@ constitutional compliance, and system health.
 
 import time
 from enum import Enum
-from typing import Any, Dict, List, Optional
 
 from prometheus_client import (
     CONTENT_TYPE_LATEST,
@@ -16,7 +15,6 @@ from prometheus_client import (
     Gauge,
     Histogram,
     Info,
-    Summary,
     generate_latest,
 )
 
@@ -41,7 +39,7 @@ class DGMMetrics:
     operations, performance, and constitutional compliance.
     """
 
-    def __init__(self, registry: Optional[CollectorRegistry] = None):
+    def __init__(self, registry: CollectorRegistry | None = None):
         self.registry = registry or CollectorRegistry()
         self._initialize_metrics()
 
@@ -320,8 +318,8 @@ class MetricsCollector:
         self,
         status: str,
         priority: str,
-        duration: Optional[float] = None,
-        strategy: Optional[str] = None,
+        duration: float | None = None,
+        strategy: str | None = None,
     ):
         """Record improvement metrics."""
         self.dgm_metrics.improvements_total.labels(
@@ -342,7 +340,7 @@ class MetricsCollector:
         self.dgm_metrics.improvement_success_rate.set(rate)
 
     def record_constitutional_validation(
-        self, result: str, principle: str, score: float, violations: List[str]
+        self, result: str, principle: str, score: float, violations: list[str]
     ):
         """Record constitutional validation metrics."""
         self.dgm_metrics.constitutional_validations_total.labels(
@@ -353,7 +351,8 @@ class MetricsCollector:
 
         for violation in violations:
             self.dgm_metrics.constitutional_violations_total.labels(
-                principle=principle, severity="high"  # Could be parameterized
+                principle=principle,
+                severity="high",  # Could be parameterized
             ).inc()
 
     def update_average_compliance_score(self, score: float):

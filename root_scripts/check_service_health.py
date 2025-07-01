@@ -6,8 +6,6 @@ This script checks the health and readiness of all 7 core services.
 """
 
 import requests
-import time
-from pathlib import Path
 
 
 def check_service_health():
@@ -47,9 +45,8 @@ def check_service_health():
     if healthy_services == total_services:
         print("🎉 All services are healthy!")
         return True
-    else:
-        print("⚠️  Some services need attention")
-        return False
+    print("⚠️  Some services need attention")
+    return False
 
 
 if __name__ == "__main__":

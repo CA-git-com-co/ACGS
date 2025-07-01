@@ -4,7 +4,6 @@ import json
 import os
 import shutil
 
-import docker
 from llm import create_client, extract_json_between_markers, get_response_from_llm
 from polyglot.harness import harness as polyglot_harness
 from prompts.diagnose_improvement_prompt import get_diagnose_improvement_prompt
@@ -32,6 +31,8 @@ from utils.evo_utils import (
     get_model_patch_paths,
     is_compiled_self_improve,
 )
+
+import docker
 
 dataset = None
 diagnose_model = "o1-2024-12-17"
@@ -87,8 +88,7 @@ def diagnose_problem(
                 max_attempts=max_attempts - 1,
                 polyglot=polyglot,
             )
-        else:
-            return None
+        return None
     return problem_statement
 
 
@@ -159,8 +159,7 @@ def diagnose_improvement(
                 patch_files=patch_files,
                 max_attempts=max_attempts - 1,
             )
-        else:
-            return None
+        return None
     return improvement_diagnosis
 
 
@@ -324,7 +323,6 @@ def self_improve(
     run_baseline=None,
     polyglot=False,
 ):
-
     global dataset
     if polyglot:
         with open("polyglot/polyglot_benchmark_metadata.json") as f:
@@ -496,7 +494,7 @@ def self_improve(
             if not patch_content.strip():
                 raise Exception("Model patch file is empty")
     except Exception as e:
-        safe_log(f"Failed to read model patch file: {str(e)}")
+        safe_log(f"Failed to read model patch file: {e!s}")
         save_metadata(metadata, output_dir)
         return metadata
 

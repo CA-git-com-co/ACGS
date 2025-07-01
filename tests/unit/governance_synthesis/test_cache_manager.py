@@ -2,12 +2,6 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.cache_manager
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance_synthesis.gs_service.app.cache_manager import (
-    Gs_serviceCacheManager,
-)
-
 
 class TestGs_serviceCacheManager:
     """Test suite for Gs_serviceCacheManager."""

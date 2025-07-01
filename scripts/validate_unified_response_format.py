@@ -12,20 +12,21 @@ Usage:
     python scripts/validate_unified_response_format.py --detailed
 """
 
+import argparse
 import asyncio
 import json
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any
-import argparse
+from typing import Any
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 try:
     import httpx
+
     from services.shared.response.unified_response import validate_response_format
 
     DEPENDENCIES_AVAILABLE = True
@@ -198,8 +199,8 @@ class UnifiedResponseValidator:
         }
 
     def validate_response_format_local(
-        self, response_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, response_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Validate response format locally without external dependencies."""
         validation_result = {
             "is_valid": True,
@@ -253,8 +254,8 @@ class UnifiedResponseValidator:
         return validation_result
 
     async def test_endpoint(
-        self, service_key: str, endpoint: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, service_key: str, endpoint: dict[str, Any]
+    ) -> dict[str, Any]:
         """Test a single endpoint for unified response format compliance."""
         service = self.services[service_key]
         url = f"{service['base_url']}{endpoint['path']}"
@@ -351,7 +352,7 @@ class UnifiedResponseValidator:
 
         return result
 
-    async def validate_service(self, service_key: str) -> Dict[str, Any]:
+    async def validate_service(self, service_key: str) -> dict[str, Any]:
         """Validate all endpoints for a specific service."""
         service = self.services[service_key]
 
@@ -399,7 +400,7 @@ class UnifiedResponseValidator:
 
         return service_results
 
-    async def validate_all_services(self, target_service: Optional[str] = None) -> None:
+    async def validate_all_services(self, target_service: str | None = None) -> None:
         """Validate all services or a specific service."""
         print("🧪 ACGS-1 Unified Response Format Validation")
         print("=" * 60)

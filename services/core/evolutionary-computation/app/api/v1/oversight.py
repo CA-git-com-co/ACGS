@@ -170,7 +170,7 @@ async def coordinate_oversight(
     except Exception as e:
         logger.error(f"Oversight coordination failed: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Oversight coordination failed: {str(e)}"
+            status_code=500, detail=f"Oversight coordination failed: {e!s}"
         )
 
 
@@ -285,7 +285,7 @@ async def batch_coordinate_oversight(
     except Exception as e:
         logger.error(f"Batch oversight coordination failed: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Batch oversight coordination failed: {str(e)}"
+            status_code=500, detail=f"Batch oversight coordination failed: {e!s}"
         )
 
 
@@ -369,5 +369,5 @@ async def oversight_health_check(
     except Exception as e:
         logger.error(f"Oversight health check failed: {e}")
         raise HTTPException(
-            status_code=503, detail=f"Oversight system unhealthy: {str(e)}"
+            status_code=503, detail=f"Oversight system unhealthy: {e!s}"
         )

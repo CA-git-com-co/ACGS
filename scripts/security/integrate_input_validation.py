@@ -19,12 +19,11 @@ Target Services:
 - Governance Synthesis Service (gs_service)
 """
 
-import os
-import sys
-import logging
 import asyncio
+import logging
+import sys
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -32,9 +31,6 @@ sys.path.insert(0, str(project_root))
 
 from services.shared.security_validation import (
     SecurityInputValidator,
-    SecurityValidationMiddleware,
-    validate_policy_input,
-    validate_governance_input,
 )
 
 logger = logging.getLogger(__name__)
@@ -88,7 +84,7 @@ class SecurityValidationIntegrator:
             "NoSQL injection",
         ]
 
-    async def integrate_validation(self) -> Dict[str, Any]:
+    async def integrate_validation(self) -> dict[str, Any]:
         """Integrate security validation into all target endpoints."""
         logger.info("🔒 Starting security validation integration...")
 
@@ -133,8 +129,8 @@ class SecurityValidationIntegrator:
             return integration_results
 
     async def _integrate_service_validation(
-        self, service_name: str, endpoint_files: List[str]
-    ) -> Dict[str, Any]:
+        self, service_name: str, endpoint_files: list[str]
+    ) -> dict[str, Any]:
         """Integrate validation for a specific service."""
         service_results = {
             "endpoints_processed": 0,
@@ -167,18 +163,18 @@ class SecurityValidationIntegrator:
 
             except Exception as e:
                 logger.error(f"Error processing {endpoint_file}: {e}")
-                service_results["errors"].append(f"{endpoint_file}: {str(e)}")
+                service_results["errors"].append(f"{endpoint_file}: {e!s}")
                 service_results["success"] = False
 
         return service_results
 
-    async def _process_endpoint_file(self, endpoint_path: Path) -> Dict[str, Any]:
+    async def _process_endpoint_file(self, endpoint_path: Path) -> dict[str, Any]:
         """Process a single endpoint file to add validation."""
         endpoint_results = {"validations_added": 0, "errors": []}
 
         try:
             # Read the file content
-            with open(endpoint_path, "r", encoding="utf-8") as f:
+            with open(endpoint_path, encoding="utf-8") as f:
                 content = f.read()
 
             # Check if validation is already integrated
@@ -265,7 +261,7 @@ class SecurityValidationIntegrator:
         if any(keyword in filename.lower() for keyword in ["policy", "governance"]):
             if "policy" in endpoint_line.lower():
                 return "@validate_policy_input"
-            elif "governance" in endpoint_line.lower():
+            if "governance" in endpoint_line.lower():
                 return "@validate_governance_input"
 
         # Default validation for constitutional AI endpoints
@@ -274,7 +270,7 @@ class SecurityValidationIntegrator:
 
         return "@validate_policy_input"  # Default fallback
 
-    async def _generate_integration_report(self, results: Dict[str, Any]):
+    async def _generate_integration_report(self, results: dict[str, Any]):
         """Generate a comprehensive integration report."""
         report_path = self.project_root / "security_validation_integration_report.json"
 

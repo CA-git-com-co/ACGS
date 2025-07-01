@@ -11,10 +11,11 @@ Constitutional Hash: cdd01ef066bc6cf2
 import asyncio
 import json
 import logging
-import yaml
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any
+
+import yaml
 
 # Configure logging
 logging.basicConfig(
@@ -32,7 +33,7 @@ class MultiRegionDeployer:
         self.regions = {}
         self.deployment_status = {}
 
-    async def deploy_multi_region_architecture(self) -> Dict[str, Any]:
+    async def deploy_multi_region_architecture(self) -> dict[str, Any]:
         """Deploy ACGS across multiple regions with constitutional compliance."""
         logger.info("🌍 Starting Multi-Region ACGS Deployment")
         logger.info(f"📜 Constitutional Hash: {self.constitutional_hash}")
@@ -240,7 +241,7 @@ class MultiRegionDeployer:
                     "deployment_time": datetime.now(timezone.utc).isoformat(),
                 }
 
-    async def _deploy_region_services(self, region_name: str, region_config: Dict):
+    async def _deploy_region_services(self, region_name: str, region_config: dict):
         """Deploy ACGS services for a specific region."""
         logger.info(f"🔧 Deploying services for {region_name}")
 
@@ -274,7 +275,7 @@ class MultiRegionDeployer:
             with open(service_path, "w") as f:
                 yaml.dump(service_deployment, f, default_flow_style=False)
 
-    async def _deploy_region_databases(self, region_name: str, region_config: Dict):
+    async def _deploy_region_databases(self, region_name: str, region_config: dict):
         """Deploy databases for a specific region."""
         logger.info(f"🗄️ Deploying databases for {region_name}")
 
@@ -306,7 +307,7 @@ class MultiRegionDeployer:
             with open(db_path, "w") as f:
                 yaml.dump(db_deployment, f, default_flow_style=False)
 
-    async def _configure_region_compliance(self, region_name: str, region_config: Dict):
+    async def _configure_region_compliance(self, region_name: str, region_config: dict):
         """Configure constitutional compliance for a specific region."""
         logger.info(f"📋 Configuring compliance for {region_name}")
 
@@ -438,7 +439,7 @@ class MultiRegionDeployer:
 
         logger.info("📊 Global monitoring configured")
 
-    async def _validate_deployment(self) -> Dict[str, Any]:
+    async def _validate_deployment(self) -> dict[str, Any]:
         """Validate the multi-region deployment."""
         logger.info("✅ Validating deployment")
 

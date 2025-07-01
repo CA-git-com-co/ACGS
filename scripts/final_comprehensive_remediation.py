@@ -57,7 +57,7 @@ class FinalRemediator:
         except TimeoutError:
             return False, f"Command timed out after {timeout} seconds"
         except Exception as e:
-            return False, f"Command execution failed: {str(e)}"
+            return False, f"Command execution failed: {e!s}"
 
     async def fix_rust_dependencies_pragmatic(self) -> bool:
         """Pragmatic fix for Rust dependencies - accept warnings, fix critical only."""
@@ -99,14 +99,12 @@ class FinalRemediator:
                 if success:
                     logger.info("✅ Critical Rust vulnerabilities resolved")
                     return True
-                else:
-                    logger.warning(
-                        "⚠️ Some Rust warnings remain, but critical issues may be resolved"
-                    )
-                    return True  # Accept warnings for now
-            else:
-                logger.warning(f"⚠️ Cargo update failed, but continuing: {output}")
-                return True  # Pragmatic approach - don't block on this
+                logger.warning(
+                    "⚠️ Some Rust warnings remain, but critical issues may be resolved"
+                )
+                return True  # Accept warnings for now
+            logger.warning(f"⚠️ Cargo update failed, but continuing: {output}")
+            return True  # Pragmatic approach - don't block on this
 
         except Exception as e:
             logger.error(f"❌ Error in Rust dependency fix: {e}")
@@ -210,9 +208,8 @@ if __name__ == "__main__":
             if success:
                 logger.info("✅ Minimal test suite created and passing")
                 return True
-            else:
-                logger.warning(f"⚠️ Minimal test issues: {output}")
-                return False
+            logger.warning(f"⚠️ Minimal test issues: {output}")
+            return False
 
         except Exception as e:
             logger.error(f"❌ Error creating minimal test suite: {e}")
@@ -421,7 +418,7 @@ async def main():
             sys.exit(1)
 
     except Exception as e:
-        logger.error(f"💥 Final remediation failed: {str(e)}")
+        logger.error(f"💥 Final remediation failed: {e!s}")
         sys.exit(1)
 
 

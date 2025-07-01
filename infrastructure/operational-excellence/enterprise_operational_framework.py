@@ -7,21 +7,13 @@ Implements mature DevOps practices for 98+/100 production readiness score
 import asyncio
 import json
 import logging
-import os
-import subprocess
-import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 
-import aiohttp
-import psutil
 import yaml
 from prometheus_client import (
     CollectorRegistry,
     Gauge,
-    Counter,
-    Histogram,
     start_http_server,
 )
 
@@ -58,15 +50,15 @@ class EnterpriseOperationalFramework:
             {"name": "ec-service", "port": 8006, "health_endpoint": "/health"},
         ]
 
-    def _load_config(self) -> Dict:
+    def _load_config(self) -> dict:
         """Load operational configuration"""
         config_path = Path(__file__).parent / "config" / "operational-config.yaml"
         if config_path.exists():
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 return yaml.safe_load(f)
         return self._default_config()
 
-    def _default_config(self) -> Dict:
+    def _default_config(self) -> dict:
         """Default operational configuration"""
         return {
             "monitoring": {
@@ -138,7 +130,7 @@ class EnterpriseOperationalFramework:
             registry=self.metrics_registry,
         )
 
-    async def assess_operational_excellence(self) -> Dict:
+    async def assess_operational_excellence(self) -> dict:
         """
         Comprehensive operational excellence assessment
         Returns current score and improvement recommendations
@@ -197,7 +189,7 @@ class EnterpriseOperationalFramework:
         )
         return assessment
 
-    async def _assess_deployment_pipeline(self) -> Dict:
+    async def _assess_deployment_pipeline(self) -> dict:
         """Assess deployment pipeline maturity (25 points max)"""
         score = 0
         details = []
@@ -210,9 +202,7 @@ class EnterpriseOperationalFramework:
             details.append("❌ CI/CD pipeline missing")
 
         # Check automated testing (5 points)
-        test_files = list(Path(".").rglob("test_*.py")) + list(
-            Path(".").rglob("*_test.py")
-        )
+        test_files = list(Path().rglob("test_*.py")) + list(Path().rglob("*_test.py"))
         if len(test_files) >= 10:
             score += 5
             details.append(
@@ -253,7 +243,7 @@ class EnterpriseOperationalFramework:
             "details": details,
         }
 
-    async def _assess_infrastructure_as_code(self) -> Dict:
+    async def _assess_infrastructure_as_code(self) -> dict:
         """Assess Infrastructure as Code implementation (20 points max)"""
         score = 0
         details = []
@@ -304,7 +294,7 @@ class EnterpriseOperationalFramework:
             "details": details,
         }
 
-    async def _assess_monitoring_observability(self) -> Dict:
+    async def _assess_monitoring_observability(self) -> dict:
         """Assess monitoring and observability (20 points max)"""
         score = 0
         details = []
@@ -350,7 +340,7 @@ class EnterpriseOperationalFramework:
             "details": details,
         }
 
-    async def _assess_disaster_recovery(self) -> Dict:
+    async def _assess_disaster_recovery(self) -> dict:
         """Assess disaster recovery capabilities (15 points max)"""
         score = 0
         details = []
@@ -366,7 +356,7 @@ class EnterpriseOperationalFramework:
             details.append("❌ Insufficient backup procedures")
 
         # Check disaster recovery documentation (5 points)
-        dr_docs = list(Path(".").rglob("*disaster*recovery*"))
+        dr_docs = list(Path().rglob("*disaster*recovery*"))
         if dr_docs:
             score += 5
             details.append("✅ Disaster recovery documentation")
@@ -387,7 +377,7 @@ class EnterpriseOperationalFramework:
             "details": details,
         }
 
-    async def _assess_security_compliance(self) -> Dict:
+    async def _assess_security_compliance(self) -> dict:
         """Assess security and compliance (10 points max)"""
         score = 0
         details = []
@@ -417,14 +407,14 @@ class EnterpriseOperationalFramework:
             "details": details,
         }
 
-    async def _assess_documentation(self) -> Dict:
+    async def _assess_documentation(self) -> dict:
         """Assess documentation and runbooks (10 points max)"""
         score = 0
         details = []
 
         # Check operational runbooks (5 points)
-        runbook_files = list(Path(".").rglob("*runbook*")) + list(
-            Path(".").rglob("*RUNBOOK*")
+        runbook_files = list(Path().rglob("*runbook*")) + list(
+            Path().rglob("*RUNBOOK*")
         )
         if len(runbook_files) >= 3:
             score += 5
@@ -435,8 +425,8 @@ class EnterpriseOperationalFramework:
             details.append("❌ Insufficient operational runbooks")
 
         # Check deployment guides (5 points)
-        deployment_guides = list(Path(".").rglob("*DEPLOYMENT*")) + list(
-            Path(".").rglob("*deployment*guide*")
+        deployment_guides = list(Path().rglob("*DEPLOYMENT*")) + list(
+            Path().rglob("*deployment*guide*")
         )
         if len(deployment_guides) >= 3:
             score += 5
@@ -453,7 +443,7 @@ class EnterpriseOperationalFramework:
             "details": details,
         }
 
-    def _generate_recommendations(self, assessment: Dict) -> List[str]:
+    def _generate_recommendations(self, assessment: dict) -> list[str]:
         """Generate improvement recommendations based on assessment"""
         recommendations = []
 
@@ -484,6 +474,6 @@ if __name__ == "__main__":
     with open("/tmp/operational_excellence_assessment.json", "w") as f:
         json.dump(assessment, f, indent=2)
 
-    print(f"Operational Excellence Assessment Complete")
+    print("Operational Excellence Assessment Complete")
     print(f"Overall Score: {assessment['overall_score']}/100")
-    print(f"Assessment saved to: /tmp/operational_excellence_assessment.json")
+    print("Assessment saved to: /tmp/operational_excellence_assessment.json")

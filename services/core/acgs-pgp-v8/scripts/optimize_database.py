@@ -128,7 +128,7 @@ def print_optimization_summary(summary: dict):
     print("ACGS-PGP v8 Database Optimization Summary")
     print("=" * 60)
 
-    print(f"\n📊 Query Performance:")
+    print("\n📊 Query Performance:")
     print(f"  Total Queries: {summary['total_queries']}")
     print(f"  Total Execution Time: {summary['total_execution_time']:.3f}s")
     print(f"  Average Query Time: {summary['average_query_time']:.3f}s")
@@ -136,7 +136,7 @@ def print_optimization_summary(summary: dict):
         f"  Slow Queries: {summary['slow_query_count']} ({summary['slow_query_percentage']:.1f}%)"
     )
 
-    print(f"\n🔍 Query Types:")
+    print("\n🔍 Query Types:")
     for qtype, count in summary["query_types"].items():
         print(f"  {qtype}: {count}")
 
@@ -151,8 +151,9 @@ async def test_database_performance():
     logger.info("🧪 Testing database performance...")
 
     try:
-        import asyncpg
         import time
+
+        import asyncpg
 
         database_url = os.getenv(
             "DATABASE_URL",
@@ -186,11 +187,11 @@ async def test_database_performance():
         await conn.close()
 
         # Print performance results
-        print(f"\n🚀 Performance Test Results:")
-        print(f"  Connection Time: {connection_time*1000:.2f}ms")
-        print(f"  Simple Query Time: {query_time*1000:.2f}ms")
+        print("\n🚀 Performance Test Results:")
+        print(f"  Connection Time: {connection_time * 1000:.2f}ms")
+        print(f"  Simple Query Time: {query_time * 1000:.2f}ms")
         if complex_query_time is not None:
-            print(f"  Complex Query Time: {complex_query_time*1000:.2f}ms")
+            print(f"  Complex Query Time: {complex_query_time * 1000:.2f}ms")
             print(f"  Recent Policies: {count}")
 
         # Performance benchmarks

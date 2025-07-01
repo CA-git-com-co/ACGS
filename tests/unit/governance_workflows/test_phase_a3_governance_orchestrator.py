@@ -2,18 +2,6 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.workflows.phase_a3_governance_orchestrator
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance_synthesis.gs_service.app.workflows.phase_a3_governance_orchestrator import (
-    WorkflowType,
-    WorkflowStatus,
-    WorkflowStepStatus,
-    WorkflowStep,
-    WorkflowInstance,
-    ServiceClient,
-    PhaseA3GovernanceOrchestrator,
-)
-
 
 class TestWorkflowType:
     """Test suite for WorkflowType."""

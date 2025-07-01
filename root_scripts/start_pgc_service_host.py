@@ -132,9 +132,8 @@ async def test_pgc_service():
                         f"✅ PGC Service health check passed: {health_data.get('status', 'unknown')}"
                     )
                     return True
-                else:
-                    print(f"❌ PGC Service health check failed: HTTP {response.status}")
-                    return False
+                print(f"❌ PGC Service health check failed: HTTP {response.status}")
+                return False
 
     except Exception as e:
         print(f"❌ PGC Service connectivity test failed: {e}")
@@ -179,15 +178,14 @@ def main():
         print(f"📄 Logs will be available at: {log_file}")
 
         return 0
-    else:
-        print("\n❌ PGC Service failed to start properly")
-        print("🔧 Stopping the process...")
-        try:
-            process.terminate()
-            process.wait(timeout=5)
-        except:
-            process.kill()
-        return 1
+    print("\n❌ PGC Service failed to start properly")
+    print("🔧 Stopping the process...")
+    try:
+        process.terminate()
+        process.wait(timeout=5)
+    except:
+        process.kill()
+    return 1
 
 
 if __name__ == "__main__":

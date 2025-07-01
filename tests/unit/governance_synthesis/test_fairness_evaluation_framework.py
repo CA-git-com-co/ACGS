@@ -2,13 +2,7 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.services.fairness_evaluation_framework
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.governance_synthesis.gs_service.app.services.fairness_evaluation_framework import (
-    DomainType,
-    ProtectedAttribute,
-    FairnessMetric,
-    DomainFairnessConfig,
     FairnessEvaluationFramework,
 )
 

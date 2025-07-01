@@ -5,11 +5,9 @@ ACGS-1 Cleanup Completion Validation
 This script validates that the cleanup was successful and all critical components are preserved.
 """
 
-import os
 import json
-import subprocess
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 
 class CleanupValidation:
@@ -265,7 +263,7 @@ class CleanupValidation:
                     ]:
                         try:
                             with open(
-                                file_path, "r", encoding="utf-8", errors="ignore"
+                                file_path, encoding="utf-8", errors="ignore"
                             ) as f:
                                 content = f.read()
                                 if "cdd01ef066bc6cf2" in content:
@@ -299,7 +297,7 @@ class CleanupValidation:
             "passed_validations": passed,
             "failed_validations": failed,
             "overall_status": "PASSED" if failed == 0 else "FAILED",
-            "success_rate": f"{(passed/total)*100:.1f}%",
+            "success_rate": f"{(passed / total) * 100:.1f}%",
         }
 
         return failed == 0

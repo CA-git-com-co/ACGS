@@ -30,7 +30,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -62,7 +62,7 @@ class PerformanceValidationOrchestrator:
         self.validation_start_time = None
         self.validation_end_time = None
 
-    async def run_comprehensive_validation(self) -> Dict[str, Any]:
+    async def run_comprehensive_validation(self) -> dict[str, Any]:
         """Run comprehensive performance validation across all frameworks."""
         logger.info("🚀 Starting ACGS-1 Comprehensive Performance Validation")
         logger.info("=" * 80)
@@ -122,7 +122,7 @@ class PerformanceValidationOrchestrator:
             await self._save_comprehensive_results(error_report)
             raise
 
-    async def _run_gsm8k_benchmark(self) -> Dict[str, Any]:
+    async def _run_gsm8k_benchmark(self) -> dict[str, Any]:
         """Run GSM8K constitutional governance benchmark."""
         logger.info("  🧮 Running GSM8K Constitutional Governance Benchmark...")
 
@@ -149,7 +149,7 @@ class PerformanceValidationOrchestrator:
             logger.error(f"  ❌ GSM8K benchmark failed: {e}")
             return {"error": str(e), "accuracy_percentage": 0.0}
 
-    async def _run_load_testing(self) -> Dict[str, Any]:
+    async def _run_load_testing(self) -> dict[str, Any]:
         """Run comprehensive load testing."""
         logger.info("  🚀 Running Load Testing with 1000+ Concurrent Users...")
 
@@ -191,7 +191,7 @@ class PerformanceValidationOrchestrator:
                 },
             }
 
-    async def _run_security_testing(self) -> Dict[str, Any]:
+    async def _run_security_testing(self) -> dict[str, Any]:
         """Run comprehensive security penetration testing."""
         logger.info("  🔐 Running Security Penetration Testing...")
 
@@ -224,7 +224,7 @@ class PerformanceValidationOrchestrator:
                 "vulnerability_summary": {"CRITICAL": 999},
             }
 
-    async def _run_blockchain_testing(self) -> Dict[str, Any]:
+    async def _run_blockchain_testing(self) -> dict[str, Any]:
         """Run blockchain stress testing."""
         logger.info("  ⛓️ Running Blockchain Stress Testing...")
 
@@ -265,7 +265,7 @@ class PerformanceValidationOrchestrator:
                 "overall_metrics": {"success_rate_percent": 0.0, "avg_cost_sol": 999.0},
             }
 
-    async def _validate_system_health(self) -> Dict[str, Any]:
+    async def _validate_system_health(self) -> dict[str, Any]:
         """Validate overall system health and service availability."""
         logger.info("  🏥 Validating System Health...")
 
@@ -343,7 +343,7 @@ class PerformanceValidationOrchestrator:
             logger.error(f"  ❌ System health validation failed: {e}")
             return {"error": str(e), "overall_metrics": {"availability_percent": 0.0}}
 
-    def _generate_validation_report(self) -> Dict[str, Any]:
+    def _generate_validation_report(self) -> dict[str, Any]:
         """Generate comprehensive validation report."""
         total_duration = (
             self.validation_end_time - self.validation_start_time
@@ -388,7 +388,7 @@ class PerformanceValidationOrchestrator:
 
         return validation_report
 
-    def _extract_key_metrics(self) -> Dict[str, float]:
+    def _extract_key_metrics(self) -> dict[str, float]:
         """Extract key performance metrics from test results."""
         metrics = {}
 
@@ -434,8 +434,8 @@ class PerformanceValidationOrchestrator:
         return metrics
 
     def _validate_performance_targets(
-        self, metrics: Dict[str, float]
-    ) -> Dict[str, bool]:
+        self, metrics: dict[str, float]
+    ) -> dict[str, bool]:
         """Validate measured metrics against performance targets."""
         validation = {}
 
@@ -475,8 +475,8 @@ class PerformanceValidationOrchestrator:
         return validation
 
     def _generate_recommendations(
-        self, metrics: Dict[str, float], validation: Dict[str, bool]
-    ) -> List[str]:
+        self, metrics: dict[str, float], validation: dict[str, bool]
+    ) -> list[str]:
         """Generate actionable recommendations based on validation results."""
         recommendations = []
 
@@ -507,21 +507,20 @@ class PerformanceValidationOrchestrator:
 
         return recommendations
 
-    def _calculate_readiness_level(self, validation: Dict[str, bool]) -> str:
+    def _calculate_readiness_level(self, validation: dict[str, bool]) -> str:
         """Calculate overall system readiness level."""
         passed_targets = sum(validation.values())
         total_targets = len(validation)
 
         if passed_targets == total_targets:
             return "PRODUCTION_READY"
-        elif passed_targets >= total_targets * 0.8:
+        if passed_targets >= total_targets * 0.8:
             return "STAGING_READY"
-        elif passed_targets >= total_targets * 0.6:
+        if passed_targets >= total_targets * 0.6:
             return "DEVELOPMENT_READY"
-        else:
-            return "NEEDS_IMPROVEMENT"
+        return "NEEDS_IMPROVEMENT"
 
-    def _generate_next_steps(self, validation: Dict[str, bool]) -> List[str]:
+    def _generate_next_steps(self, validation: dict[str, bool]) -> list[str]:
         """Generate next steps based on validation results."""
         if all(validation.values()):
             return [
@@ -530,16 +529,15 @@ class PerformanceValidationOrchestrator:
                 "🔄 Implement automated performance regression testing",
                 "📈 Monitor real-world performance metrics",
             ]
-        else:
-            failed_targets = [k for k, v in validation.items() if not v]
-            return [
-                f"🔧 Address failed targets: {', '.join(failed_targets)}",
-                "🧪 Re-run validation after improvements",
-                "📋 Update performance optimization roadmap",
-                "👥 Coordinate with development team for remediation",
-            ]
+        failed_targets = [k for k, v in validation.items() if not v]
+        return [
+            f"🔧 Address failed targets: {', '.join(failed_targets)}",
+            "🧪 Re-run validation after improvements",
+            "📋 Update performance optimization roadmap",
+            "👥 Coordinate with development team for remediation",
+        ]
 
-    async def _save_comprehensive_results(self, validation_report: Dict[str, Any]):
+    async def _save_comprehensive_results(self, validation_report: dict[str, Any]):
         """Save comprehensive validation results."""
         # Save main validation report
         report_file = self.output_dir / "comprehensive_validation_report.json"

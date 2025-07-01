@@ -596,16 +596,15 @@ class AsyncVotingManager:
                 "vote_queued": True,
                 "processing_time": time.time() - start_time,
             }
-        else:
-            # Process synchronously
-            result = await self._process_vote_background(
-                db, amendment_id, vote_data, voter_id
-            )
-            return {
-                "success": result["success"],
-                "vote_recorded": True,
-                "processing_time": time.time() - start_time,
-            }
+        # Process synchronously
+        result = await self._process_vote_background(
+            db, amendment_id, vote_data, voter_id
+        )
+        return {
+            "success": result["success"],
+            "vote_recorded": True,
+            "processing_time": time.time() - start_time,
+        }
 
     async def _validate_vote(
         self, db: AsyncSession, amendment_id: int, voter_id: int

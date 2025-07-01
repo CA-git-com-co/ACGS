@@ -371,15 +371,14 @@ class WeightedConsensusEngine:
                 participating_models=[],
                 model_votes=[],
             )
-        else:
-            return ConsensusResult(
-                final_decision="no_consensus",
-                confidence_score=0.0,
-                consensus_strategy=ConsensusStrategy.UNANIMOUS_REQUIRED,
-                agreement_score=0.0,
-                participating_models=[],
-                model_votes=[],
-            )
+        return ConsensusResult(
+            final_decision="no_consensus",
+            confidence_score=0.0,
+            consensus_strategy=ConsensusStrategy.UNANIMOUS_REQUIRED,
+            agreement_score=0.0,
+            participating_models=[],
+            model_votes=[],
+        )
 
     def _supermajority_consensus(self, votes: list[ModelVote]) -> ConsensusResult:
         """Require supermajority (2/3) agreement."""

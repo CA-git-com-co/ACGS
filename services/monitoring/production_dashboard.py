@@ -16,19 +16,19 @@ Constitutional Hash: cdd01ef066bc6cf2
 import asyncio
 import json
 import logging
-import time
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional
-from pathlib import Path
 import sys
+import time
+from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from services.shared.multimodal_ai_service import get_multimodal_service
-from services.shared.multi_level_cache import get_cache_manager
-from services.shared.ml_routing_optimizer import get_ml_optimizer
 from services.shared.ai_types import ModelType
+from services.shared.ml_routing_optimizer import get_ml_optimizer
+from services.shared.multi_level_cache import get_cache_manager
+from services.shared.multimodal_ai_service import get_multimodal_service
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -62,7 +62,7 @@ class ProductionDashboard:
             logger.error(f"❌ Dashboard initialization failed: {e}")
             raise
 
-    async def collect_real_time_metrics(self) -> Dict[str, Any]:
+    async def collect_real_time_metrics(self) -> dict[str, Any]:
         """Collect real-time system metrics."""
 
         try:
@@ -115,7 +115,7 @@ class ProductionDashboard:
         secs = int(seconds % 60)
         return f"{hours:02d}:{minutes:02d}:{secs:02d}"
 
-    async def generate_cost_analysis(self) -> Dict[str, Any]:
+    async def generate_cost_analysis(self) -> dict[str, Any]:
         """Generate cost tracking and optimization analysis."""
 
         try:
@@ -211,8 +211,8 @@ class ProductionDashboard:
             return {"error": str(e)}
 
     def _generate_cost_recommendations(
-        self, model_usage: Dict[str, int], current_savings: float
-    ) -> List[str]:
+        self, model_usage: dict[str, int], current_savings: float
+    ) -> list[str]:
         """Generate cost optimization recommendations."""
         recommendations = []
 
@@ -251,7 +251,7 @@ class ProductionDashboard:
 
         return recommendations[:3]  # Return top 3 recommendations
 
-    async def generate_performance_dashboard(self) -> Dict[str, Any]:
+    async def generate_performance_dashboard(self) -> dict[str, Any]:
         """Generate comprehensive performance dashboard."""
 
         try:
@@ -302,8 +302,8 @@ class ProductionDashboard:
             }
 
     def _calculate_performance_scores(
-        self, service_metrics: Dict, cache_metrics: Dict
-    ) -> Dict[str, float]:
+        self, service_metrics: dict, cache_metrics: dict
+    ) -> dict[str, float]:
         """Calculate performance scores for different aspects."""
 
         scores = {
@@ -372,24 +372,23 @@ class ProductionDashboard:
 
         return scores
 
-    def _determine_health_status(self, performance_scores: Dict[str, float]) -> str:
+    def _determine_health_status(self, performance_scores: dict[str, float]) -> str:
         """Determine overall system health status."""
         overall_score = performance_scores.get("overall", 0)
 
         if overall_score >= 90:
             return "EXCELLENT"
-        elif overall_score >= 80:
+        if overall_score >= 80:
             return "GOOD"
-        elif overall_score >= 70:
+        if overall_score >= 70:
             return "FAIR"
-        elif overall_score >= 60:
+        if overall_score >= 60:
             return "POOR"
-        else:
-            return "CRITICAL"
+        return "CRITICAL"
 
     def _generate_alerts(
-        self, performance_scores: Dict, cost_analysis: Dict
-    ) -> List[Dict[str, str]]:
+        self, performance_scores: dict, cost_analysis: dict
+    ) -> list[dict[str, str]]:
         """Generate system alerts based on metrics."""
         alerts = []
 
@@ -437,8 +436,8 @@ class ProductionDashboard:
         return alerts
 
     def _generate_system_recommendations(
-        self, performance_scores: Dict, cost_analysis: Dict
-    ) -> List[str]:
+        self, performance_scores: dict, cost_analysis: dict
+    ) -> list[str]:
         """Generate system optimization recommendations."""
         recommendations = []
 
@@ -464,7 +463,7 @@ class ProductionDashboard:
 
         return recommendations[:5]  # Return top 5 recommendations
 
-    async def save_dashboard_data(self, dashboard_data: Dict[str, Any]):
+    async def save_dashboard_data(self, dashboard_data: dict[str, Any]):
         """Save dashboard data to file."""
         try:
             # Ensure data directory exists
@@ -485,7 +484,7 @@ class ProductionDashboard:
         except Exception as e:
             logger.error(f"❌ Failed to save dashboard data: {e}")
 
-    async def generate_dashboard_data(self) -> Dict[str, Any]:
+    async def generate_dashboard_data(self) -> dict[str, Any]:
         """Generate comprehensive dashboard data for visualization."""
 
         try:
@@ -527,7 +526,7 @@ class ProductionDashboard:
                 "last_updated": datetime.now().isoformat(),
             }
 
-    async def run_dashboard_update(self) -> Dict[str, Any]:
+    async def run_dashboard_update(self) -> dict[str, Any]:
         """Run a single dashboard update cycle."""
         logger.info("📊 Updating production dashboard...")
 
@@ -601,21 +600,20 @@ async def main():
             # Show recommendations
             recommendations = dashboard_data.get("recommendations", [])
             if recommendations:
-                logger.info(f"\n💡 Recommendations:")
+                logger.info("\n💡 Recommendations:")
                 for i, rec in enumerate(recommendations[:3], 1):
                     logger.info(f"  {i}. {rec}")
 
             logger.info("\n🎉 Production dashboard deployed successfully!")
             return 0
-        else:
-            logger.error("❌ Dashboard deployment failed")
-            return 1
+        logger.error("❌ Dashboard deployment failed")
+        return 1
 
     except Exception as e:
         logger.error(f"❌ Dashboard execution failed: {e}")
         return 1
 
-    async def generate_dashboard_data(self) -> Dict[str, Any]:
+    async def generate_dashboard_data(self) -> dict[str, Any]:
         """Generate comprehensive dashboard data for visualization."""
 
         try:

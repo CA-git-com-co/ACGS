@@ -168,13 +168,12 @@ class ChaosEngineeringTests:
                 # Fail first 2 attempts, succeed on 3rd
                 if call_count <= 2:
                     raise httpx.ConnectError("Temporary failure")
-                else:
-                    # Return successful response
-                    response = AsyncMock()
-                    response.status_code = 200
-                    response.json.return_value = {"status": "ok"}
-                    response.content = b'{"status": "ok"}'
-                    return response
+                # Return successful response
+                response = AsyncMock()
+                response.status_code = 200
+                response.json.return_value = {"status": "ok"}
+                response.content = b'{"status": "ok"}'
+                return response
 
             with patch.object(
                 enhanced_service_client.http_client, "get", side_effect=mock_request

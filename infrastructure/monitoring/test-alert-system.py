@@ -13,7 +13,7 @@ import logging
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -115,7 +115,7 @@ class AlertSystemTester:
             return success
 
         except Exception as e:
-            logger.error(f"❌ Alert system testing failed: {str(e)}")
+            logger.error(f"❌ Alert system testing failed: {e!s}")
             return False
 
     async def test_alert_rules_loaded(self):
@@ -175,7 +175,7 @@ class AlertSystemTester:
 
         except Exception as e:
             result.error_message = str(e)
-            logger.error(f"❌ Alert rules test failed: {str(e)}")
+            logger.error(f"❌ Alert rules test failed: {e!s}")
 
         self.test_results.append(result)
 
@@ -232,7 +232,7 @@ class AlertSystemTester:
 
         except Exception as e:
             result.error_message = str(e)
-            logger.error(f"❌ Alert rule evaluation test failed: {str(e)}")
+            logger.error(f"❌ Alert rule evaluation test failed: {e!s}")
 
         self.test_results.append(result)
 
@@ -314,7 +314,7 @@ class AlertSystemTester:
 
         except Exception as e:
             result.error_message = str(e)
-            logger.error(f"❌ Alertmanager API test failed: {str(e)}")
+            logger.error(f"❌ Alertmanager API test failed: {e!s}")
 
         self.test_results.append(result)
 
@@ -365,7 +365,7 @@ class AlertSystemTester:
 
         except Exception as e:
             result.error_message = str(e)
-            logger.error(f"❌ Alert correlation test failed: {str(e)}")
+            logger.error(f"❌ Alert correlation test failed: {e!s}")
 
         self.test_results.append(result)
 
@@ -407,7 +407,7 @@ class AlertSystemTester:
 
         except Exception as e:
             result.error_message = str(e)
-            logger.error(f"❌ Alert notification latency test failed: {str(e)}")
+            logger.error(f"❌ Alert notification latency test failed: {e!s}")
 
         self.test_results.append(result)
 
@@ -483,7 +483,7 @@ class AlertSystemTester:
 
         except Exception as e:
             result.error_message = str(e)
-            logger.error(f"❌ Alert system stress test failed: {str(e)}")
+            logger.error(f"❌ Alert system stress test failed: {e!s}")
 
         self.test_results.append(result)
 
@@ -570,7 +570,7 @@ class AlertSystemTester:
 
         except Exception as e:
             result.error_message = str(e)
-            logger.error(f"❌ Alert recovery test failed: {str(e)}")
+            logger.error(f"❌ Alert recovery test failed: {e!s}")
 
         self.test_results.append(result)
 
@@ -648,7 +648,7 @@ class AlertSystemTester:
 
             logger.info(f"✅ Alert system test report saved to: {report_file}")
         except Exception as e:
-            logger.error(f"❌ Failed to save report: {str(e)}")
+            logger.error(f"❌ Failed to save report: {e!s}")
 
 
 async def main():
@@ -694,7 +694,7 @@ async def main():
         logger.info("⚠️ Alert system tests interrupted by user")
         sys.exit(130)
     except Exception as e:
-        logger.error(f"❌ Alert system tests failed with error: {str(e)}")
+        logger.error(f"❌ Alert system tests failed with error: {e!s}")
         sys.exit(1)
 
 

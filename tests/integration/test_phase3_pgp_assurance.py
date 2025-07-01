@@ -61,9 +61,8 @@ class Phase3PGPAssuranceTestRunner:
             if response.status_code == 200:
                 self.log_test_result(test_name, True, "Service is healthy")
                 return True
-            else:
-                self.log_test_result(test_name, False, f"HTTP {response.status_code}")
-                return False
+            self.log_test_result(test_name, False, f"HTTP {response.status_code}")
+            return False
 
         except Exception as e:
             self.log_test_result(test_name, False, f"Connection error: {e}")
@@ -82,9 +81,8 @@ class Phase3PGPAssuranceTestRunner:
                 result = response.json()
                 self.log_test_result(test_name, True, f"Status: {result.get('status')}")
                 return True
-            else:
-                self.log_test_result(test_name, False, f"HTTP {response.status_code}")
-                return False
+            self.log_test_result(test_name, False, f"HTTP {response.status_code}")
+            return False
 
         except Exception as e:
             self.log_test_result(test_name, False, f"Connection error: {e}")
@@ -113,11 +111,10 @@ class Phase3PGPAssuranceTestRunner:
                     test_name, True, f"Generated key: {self.generated_key_id}"
                 )
                 return True
-            else:
-                self.log_test_result(
-                    test_name, False, f"HTTP {response.status_code}: {response.text}"
-                )
-                return False
+            self.log_test_result(
+                test_name, False, f"HTTP {response.status_code}: {response.text}"
+            )
+            return False
 
         except Exception as e:
             self.log_test_result(test_name, False, f"Error: {e}")
@@ -152,11 +149,10 @@ class Phase3PGPAssuranceTestRunner:
                     test_name, True, f"Signature ID: {result['signature_id']}"
                 )
                 return True
-            else:
-                self.log_test_result(
-                    test_name, False, f"HTTP {response.status_code}: {response.text}"
-                )
-                return False
+            self.log_test_result(
+                test_name, False, f"HTTP {response.status_code}: {response.text}"
+            )
+            return False
 
         except Exception as e:
             self.log_test_result(test_name, False, f"Error: {e}")
@@ -193,11 +189,10 @@ class Phase3PGPAssuranceTestRunner:
                     f"Verification: {verification_result}",
                 )
                 return verification_result
-            else:
-                self.log_test_result(
-                    test_name, False, f"HTTP {response.status_code}: {response.text}"
-                )
-                return False
+            self.log_test_result(
+                test_name, False, f"HTTP {response.status_code}: {response.text}"
+            )
+            return False
 
         except Exception as e:
             self.log_test_result(test_name, False, f"Error: {e}")
@@ -230,11 +225,10 @@ class Phase3PGPAssuranceTestRunner:
                 self.merkle_root_hash = result["root_hash"]
                 self.log_test_result(test_name, True, f"Tree ID: {self.merkle_tree_id}")
                 return True
-            else:
-                self.log_test_result(
-                    test_name, False, f"HTTP {response.status_code}: {response.text}"
-                )
-                return False
+            self.log_test_result(
+                test_name, False, f"HTTP {response.status_code}: {response.text}"
+            )
+            return False
 
         except Exception as e:
             self.log_test_result(test_name, False, f"Error: {e}")
@@ -260,11 +254,10 @@ class Phase3PGPAssuranceTestRunner:
                 matches = retrieved_hash == self.merkle_root_hash
                 self.log_test_result(test_name, matches, f"Hash matches: {matches}")
                 return matches
-            else:
-                self.log_test_result(
-                    test_name, False, f"HTTP {response.status_code}: {response.text}"
-                )
-                return False
+            self.log_test_result(
+                test_name, False, f"HTTP {response.status_code}: {response.text}"
+            )
+            return False
 
         except Exception as e:
             self.log_test_result(test_name, False, f"Error: {e}")
@@ -291,11 +284,10 @@ class Phase3PGPAssuranceTestRunner:
                 self.timestamp_token = result["timestamp_token"]
                 self.log_test_result(test_name, True, "Timestamp created")
                 return True
-            else:
-                self.log_test_result(
-                    test_name, False, f"HTTP {response.status_code}: {response.text}"
-                )
-                return False
+            self.log_test_result(
+                test_name, False, f"HTTP {response.status_code}: {response.text}"
+            )
+            return False
 
         except Exception as e:
             self.log_test_result(test_name, False, f"Error: {e}")
@@ -326,11 +318,10 @@ class Phase3PGPAssuranceTestRunner:
                     f"Verification: {verification_result}",
                 )
                 return verification_result
-            else:
-                self.log_test_result(
-                    test_name, False, f"HTTP {response.status_code}: {response.text}"
-                )
-                return False
+            self.log_test_result(
+                test_name, False, f"HTTP {response.status_code}: {response.text}"
+            )
+            return False
 
         except Exception as e:
             self.log_test_result(test_name, False, f"Error: {e}")
@@ -378,9 +369,8 @@ class Phase3PGPAssuranceTestRunner:
         if passed_tests == total_tests:
             print("🎉 All Phase 3 PGP Assurance tests passed!")
             return True
-        else:
-            print("💥 Some Phase 3 PGP Assurance tests failed!")
-            return False
+        print("💥 Some Phase 3 PGP Assurance tests failed!")
+        return False
 
 
 async def main():

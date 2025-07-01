@@ -19,7 +19,7 @@ import json
 import logging
 import sys
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 # Add project root to path
@@ -88,7 +88,7 @@ class AlphaEvolveNextPhaseExecutor:
             )
 
         except Exception as e:
-            logger.error(f"❌ Execution failed: {str(e)}")
+            logger.error(f"❌ Execution failed: {e!s}")
             self.results["error"] = str(e)
             self.results["success"] = False
             raise
@@ -545,7 +545,7 @@ async def main():
             print("📋 Review execution results for details")
 
     except Exception as e:
-        print(f"\n❌ EXECUTION FAILED: {str(e)}")
+        print(f"\n❌ EXECUTION FAILED: {e!s}")
         print("📋 Check logs for detailed error information")
         return 1
 

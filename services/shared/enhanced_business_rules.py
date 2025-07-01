@@ -3,10 +3,9 @@ Enhanced Business Rule Validation for ACGS-2
 Improves edge case handling and validation robustness.
 """
 
-from typing import Any, Dict, List, Optional, Union
 import re
-import json
 from datetime import datetime, timezone
+from typing import Any
 
 
 class EnhancedBusinessRuleValidator:
@@ -16,7 +15,7 @@ class EnhancedBusinessRuleValidator:
         self.validation_errors = []
         self.warnings = []
 
-    def validate_governance_proposal(self, proposal: Dict[str, Any]) -> Dict[str, Any]:
+    def validate_governance_proposal(self, proposal: dict[str, Any]) -> dict[str, Any]:
         """Validate governance proposal with enhanced edge case handling."""
         self.validation_errors.clear()
         self.warnings.clear()
@@ -111,7 +110,7 @@ class EnhancedBusinessRuleValidator:
 
         return result
 
-    def validate_policy_document(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def validate_policy_document(self, policy: dict[str, Any]) -> dict[str, Any]:
         """Validate policy document with comprehensive checks."""
         self.validation_errors.clear()
         self.warnings.clear()
@@ -172,8 +171,8 @@ class EnhancedBusinessRuleValidator:
         return result
 
     def validate_constitutional_compliance(
-        self, document: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, document: dict[str, Any]
+    ) -> dict[str, Any]:
         """Validate constitutional compliance with edge case handling."""
         self.validation_errors.clear()
         self.warnings.clear()
@@ -252,16 +251,16 @@ class EnhancedBusinessRuleValidator:
 enhanced_validator = EnhancedBusinessRuleValidator()
 
 
-def validate_governance_proposal(proposal: Dict[str, Any]) -> Dict[str, Any]:
+def validate_governance_proposal(proposal: dict[str, Any]) -> dict[str, Any]:
     """Main function for validating governance proposals."""
     return enhanced_validator.validate_governance_proposal(proposal)
 
 
-def validate_policy_document(policy: Dict[str, Any]) -> Dict[str, Any]:
+def validate_policy_document(policy: dict[str, Any]) -> dict[str, Any]:
     """Main function for validating policy documents."""
     return enhanced_validator.validate_policy_document(policy)
 
 
-def validate_constitutional_compliance(document: Dict[str, Any]) -> Dict[str, Any]:
+def validate_constitutional_compliance(document: dict[str, Any]) -> dict[str, Any]:
     """Main function for validating constitutional compliance."""
     return enhanced_validator.validate_constitutional_compliance(document)

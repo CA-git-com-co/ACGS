@@ -15,7 +15,7 @@ import statistics
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import aiohttp
@@ -497,7 +497,7 @@ class MonitoringLoadTester:
 
             logger.info(f"📄 Detailed results saved to: {report_file}")
         except Exception as e:
-            logger.error(f"❌ Failed to save results: {str(e)}")
+            logger.error(f"❌ Failed to save results: {e!s}")
 
     def summarize_errors(self, error_details: list[str]) -> dict[str, int]:
         """Summarize error details for reporting."""
@@ -566,7 +566,7 @@ async def main():
         logger.info("⚠️ Load test interrupted by user")
         sys.exit(130)
     except Exception as e:
-        logger.error(f"❌ Load test failed with error: {str(e)}")
+        logger.error(f"❌ Load test failed with error: {e!s}")
         sys.exit(1)
 
 

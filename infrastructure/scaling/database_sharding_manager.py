@@ -6,13 +6,12 @@ Advanced database sharding strategies with constitutional compliance and automat
 
 import asyncio
 import hashlib
-import json
 import logging
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Any
 
 import asyncpg
 from prometheus_client import (
@@ -67,10 +66,10 @@ class DatabaseShard:
     max_connections: int = 100
 
     # Sharding configuration
-    shard_key_start: Optional[str] = None
-    shard_key_end: Optional[str] = None
-    hash_range_start: Optional[int] = None
-    hash_range_end: Optional[int] = None
+    shard_key_start: str | None = None
+    shard_key_end: str | None = None
+    hash_range_start: int | None = None
+    hash_range_end: int | None = None
 
     # Constitutional compliance
     constitutional_compliance_required: bool = True
@@ -80,7 +79,7 @@ class DatabaseShard:
     connection_count: int = 0
     query_count: int = 0
     data_size_mb: float = 0.0
-    last_health_check: Optional[datetime] = None
+    last_health_check: datetime | None = None
 
 
 @dataclass
@@ -93,7 +92,7 @@ class ShardingRule:
     strategy: ShardingStrategy
 
     # Rule configuration
-    target_shards: List[str] = field(default_factory=list)
+    target_shards: list[str] = field(default_factory=list)
     replication_factor: int = 1
 
     # Constitutional compliance
@@ -110,16 +109,16 @@ class DatabaseShardingManager:
         self.setup_metrics()
 
         # Sharding configuration
-        self.shards: Dict[str, DatabaseShard] = {}
-        self.sharding_rules: Dict[str, ShardingRule] = {}
-        self.connection_pools: Dict[str, asyncpg.Pool] = {}
+        self.shards: dict[str, DatabaseShard] = {}
+        self.sharding_rules: dict[str, ShardingRule] = {}
+        self.connection_pools: dict[str, asyncpg.Pool] = {}
 
         # Routing cache
-        self.routing_cache: Dict[str, str] = {}
+        self.routing_cache: dict[str, str] = {}
         self.cache_ttl = 300  # 5 minutes
 
         # Migration state
-        self.active_migrations: Dict[str, Dict] = {}
+        self.active_migrations: dict[str, dict] = {}
 
         # Initialize default sharding configuration
         self.initialize_default_shards()
@@ -312,14 +311,13 @@ class DatabaseShardingManager:
         try:
             if rule.strategy == ShardingStrategy.CONSTITUTIONAL_BASED:
                 return await self.route_constitutional_data(rule, shard_key_value)
-            elif rule.strategy == ShardingStrategy.HASH_BASED:
+            if rule.strategy == ShardingStrategy.HASH_BASED:
                 return await self.route_hash_based(rule, shard_key_value)
-            elif rule.strategy == ShardingStrategy.RANGE_BASED:
+            if rule.strategy == ShardingStrategy.RANGE_BASED:
                 return await self.route_range_based(rule, shard_key_value)
-            elif rule.strategy == ShardingStrategy.DIRECTORY_BASED:
+            if rule.strategy == ShardingStrategy.DIRECTORY_BASED:
                 return await self.route_directory_based(rule, shard_key_value)
-            else:
-                return rule.target_shards[0] if rule.target_shards else "shard_primary"
+            return rule.target_shards[0] if rule.target_shards else "shard_primary"
 
         except Exception as e:
             logger.error(f"Error determining shard: {e}")
@@ -375,18 +373,14 @@ class DatabaseShardingManager:
                 if len(rule.target_shards) > 0
                 else "shard_primary"
             )
-        elif str_value < "s":  # M-R
+        if str_value < "s":  # M-R
             return (
                 rule.target_shards[1]
                 if len(rule.target_shards) > 1
                 else "shard_primary"
             )
-        else:  # S-Z
-            return (
-                rule.target_shards[2]
-                if len(rule.target_shards) > 2
-                else "shard_primary"
-            )
+        # S-Z
+        return rule.target_shards[2] if len(rule.target_shards) > 2 else "shard_primary"
 
     async def route_directory_based(
         self, rule: ShardingRule, shard_key_value: Any
@@ -413,7 +407,7 @@ class DatabaseShardingManager:
         params: tuple = (),
         table_name: str = "",
         shard_key_value: Any = None,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Execute query on appropriate shard."""
         try:
             # Route to appropriate shard
@@ -436,20 +430,19 @@ class DatabaseShardingManager:
                         shard_id=shard_id, query_type="SELECT"
                     ).inc()
                     return [dict(row) for row in result]
-                else:
-                    result = await connection.execute(query, *params)
-                    self.shard_query_count.labels(
-                        shard_id=shard_id, query_type="WRITE"
-                    ).inc()
-                    return [{"affected_rows": result}]
+                result = await connection.execute(query, *params)
+                self.shard_query_count.labels(
+                    shard_id=shard_id, query_type="WRITE"
+                ).inc()
+                return [{"affected_rows": result}]
 
         except Exception as e:
             logger.error(f"Error executing query on shard: {e}")
             raise
 
     async def execute_distributed_query(
-        self, query: str, params: tuple = (), target_shards: List[str] = None
-    ) -> Dict[str, List[Dict]]:
+        self, query: str, params: tuple = (), target_shards: list[str] = None
+    ) -> dict[str, list[dict]]:
         """Execute query across multiple shards."""
         if target_shards is None:
             target_shards = list(self.shards.keys())
@@ -476,7 +469,7 @@ class DatabaseShardingManager:
 
     async def execute_query_on_shard(
         self, shard_id: str, query: str, params: tuple = ()
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Execute query on specific shard."""
         pool = self.connection_pools.get(shard_id)
         if not pool:
@@ -486,9 +479,8 @@ class DatabaseShardingManager:
             if query.strip().upper().startswith("SELECT"):
                 result = await connection.fetch(query, *params)
                 return [dict(row) for row in result]
-            else:
-                result = await connection.execute(query, *params)
-                return [{"affected_rows": result}]
+            result = await connection.execute(query, *params)
+            return [{"affected_rows": result}]
 
     async def rebalance_shards(self) -> bool:
         """Rebalance data across shards."""
@@ -520,7 +512,7 @@ class DatabaseShardingManager:
             logger.error(f"Error during shard rebalancing: {e}")
             return False
 
-    async def collect_shard_statistics(self) -> Dict[str, Dict]:
+    async def collect_shard_statistics(self) -> dict[str, dict]:
         """Collect statistics for all shards."""
         stats = {}
 
@@ -566,7 +558,7 @@ class DatabaseShardingManager:
 
         return stats
 
-    def identify_imbalanced_shards(self, shard_stats: Dict[str, Dict]) -> List[str]:
+    def identify_imbalanced_shards(self, shard_stats: dict[str, dict]) -> list[str]:
         """Identify shards that need rebalancing."""
         if len(shard_stats) < 2:
             return []
@@ -620,7 +612,7 @@ class DatabaseShardingManager:
             shard = self.shards[shard_id]
             shard.status = ShardStatus.OFFLINE
 
-    def get_sharding_status(self) -> Dict[str, Any]:
+    def get_sharding_status(self) -> dict[str, Any]:
         """Get database sharding status."""
         return {
             "total_shards": len(self.shards),

@@ -21,8 +21,6 @@ import os
 import sys
 import time
 from pathlib import Path
-from typing import Dict
-
 
 # Add the project root to Python path
 project_root = Path(__file__).parent.parent
@@ -87,7 +85,7 @@ class AuditLoggingDeployer:
         self.failed_services = []
         self.successful_services = []
 
-    async def deploy_to_all_services(self) -> Dict:
+    async def deploy_to_all_services(self) -> dict:
         """Deploy audit logging to all services."""
         logger.info("📝 Starting comprehensive audit logging deployment")
 
@@ -120,7 +118,7 @@ class AuditLoggingDeployer:
                     )
 
             except Exception as e:
-                error_msg = f"Deployment error for {service_config['name']}: {str(e)}"
+                error_msg = f"Deployment error for {service_config['name']}: {e!s}"
                 logger.error(error_msg)
                 self.deployment_results[service_id] = {
                     "success": False,
@@ -183,7 +181,7 @@ class AuditLoggingDeployer:
         except Exception as e:
             logger.warning(f"⚠️ Could not generate encryption keys: {e}")
 
-    async def _deploy_to_service(self, service_id: str, service_config: Dict) -> Dict:
+    async def _deploy_to_service(self, service_id: str, service_config: dict) -> dict:
         """Deploy audit logging to a specific service."""
         try:
             # Check if service file exists
@@ -213,12 +211,11 @@ class AuditLoggingDeployer:
                     ],
                     "timestamp": time.time(),
                 }
-            else:
-                return {
-                    "success": False,
-                    "error": "Failed to apply audit logging to service file",
-                    "timestamp": time.time(),
-                }
+            return {
+                "success": False,
+                "error": "Failed to apply audit logging to service file",
+                "timestamp": time.time(),
+            }
 
         except Exception as e:
             return {"success": False, "error": str(e), "timestamp": time.time()}
@@ -229,7 +226,7 @@ class AuditLoggingDeployer:
         """Apply audit logging to service file."""
         try:
             # Read current service file
-            with open(service_path, "r") as f:
+            with open(service_path) as f:
                 content = f.read()
 
             # Check if audit logging is already applied
@@ -304,15 +301,14 @@ else:
 
                 logger.info(f"Audit logging applied to {service_path}")
                 return True
-            else:
-                logger.warning(f"Could not find FastAPI app creation in {service_path}")
-                return False
+            logger.warning(f"Could not find FastAPI app creation in {service_path}")
+            return False
 
         except Exception as e:
             logger.error(f"Error applying audit logging to {service_path}: {e}")
             return False
 
-    def _generate_deployment_summary(self, deployment_time: float) -> Dict:
+    def _generate_deployment_summary(self, deployment_time: float) -> dict:
         """Generate deployment summary."""
         total_services = len(SERVICES)
         successful_count = len(self.successful_services)
@@ -345,7 +341,7 @@ else:
             ],
         }
 
-    async def _save_deployment_report(self, summary: Dict):
+    async def _save_deployment_report(self, summary: dict):
         """Save deployment report to file."""
         report_path = Path("audit_logging_deployment_report.json")
 

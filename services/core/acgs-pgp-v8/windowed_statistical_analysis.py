@@ -14,16 +14,17 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import logging
+import warnings
+from collections import deque
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+from typing import Any
+
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Callable, Union
-from dataclasses import dataclass, asdict
-from collections import deque
 from scipy import stats
-from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import IsolationForest
-import warnings
+from sklearn.preprocessing import StandardScaler
 
 warnings.filterwarnings("ignore")
 
@@ -36,8 +37,8 @@ class WindowConfig:
 
     window_type: str  # 'tumbling', 'sliding', 'session'
     size_seconds: int
-    slide_seconds: Optional[int] = None  # For sliding windows
-    session_timeout_seconds: Optional[int] = None  # For session windows
+    slide_seconds: int | None = None  # For sliding windows
+    session_timeout_seconds: int | None = None  # For session windows
     max_records: int = 10000
     min_records: int = 10
 
@@ -54,25 +55,25 @@ class StatisticalMetrics:
     constitutional_hash: str
 
     # Basic statistics
-    mean_values: Dict[str, float]
-    std_values: Dict[str, float]
-    min_values: Dict[str, float]
-    max_values: Dict[str, float]
-    median_values: Dict[str, float]
+    mean_values: dict[str, float]
+    std_values: dict[str, float]
+    min_values: dict[str, float]
+    max_values: dict[str, float]
+    median_values: dict[str, float]
 
     # Advanced statistics
-    skewness_values: Dict[str, float]
-    kurtosis_values: Dict[str, float]
-    percentiles: Dict[str, Dict[str, float]]  # {column: {p25: val, p75: val, ...}}
+    skewness_values: dict[str, float]
+    kurtosis_values: dict[str, float]
+    percentiles: dict[str, dict[str, float]]  # {column: {p25: val, p75: val, ...}}
 
     # Anomaly detection
     anomaly_count: int
     anomaly_rate: float
-    anomaly_scores: List[float]
+    anomaly_scores: list[float]
 
     # Trend analysis
-    trend_direction: Dict[str, str]  # 'increasing', 'decreasing', 'stable'
-    trend_strength: Dict[str, float]  # correlation coefficient
+    trend_direction: dict[str, str]  # 'increasing', 'decreasing', 'stable'
+    trend_strength: dict[str, float]  # correlation coefficient
 
     # Quality indicators
     completeness_rate: float
@@ -98,8 +99,8 @@ class WindowManager:
         logger.info(f"Window Manager initialized: {config.window_type} window")
 
     def add_record(
-        self, record: Dict[str, Any], timestamp: datetime = None
-    ) -> Optional[List[Dict[str, Any]]]:
+        self, record: dict[str, Any], timestamp: datetime = None
+    ) -> list[dict[str, Any]] | None:
         """Add a record to the window and return completed windows if any."""
 
         if timestamp is None:
@@ -128,7 +129,7 @@ class WindowManager:
 
         return completed_windows if completed_windows else None
 
-    def _check_tumbling_window(self, current_time: datetime) -> List[Dict[str, Any]]:
+    def _check_tumbling_window(self, current_time: datetime) -> list[dict[str, Any]]:
         """Check if tumbling window should be completed."""
 
         if not self.window_start_time:
@@ -140,7 +141,6 @@ class WindowManager:
             window_duration >= self.config.size_seconds
             or len(self.current_window_data) >= self.config.max_records
         ):
-
             # Complete current window
             window_data = list(self.current_window_data)
 
@@ -161,7 +161,7 @@ class WindowManager:
 
         return []
 
-    def _check_sliding_window(self, current_time: datetime) -> List[Dict[str, Any]]:
+    def _check_sliding_window(self, current_time: datetime) -> list[dict[str, Any]]:
         """Check if sliding window should be completed."""
 
         if not self.window_start_time or not self.config.slide_seconds:
@@ -170,7 +170,6 @@ class WindowManager:
         slide_duration = (current_time - self.window_start_time).total_seconds()
 
         if slide_duration >= self.config.slide_seconds:
-
             # Create window from data within the window size
             window_cutoff = current_time - timedelta(seconds=self.config.size_seconds)
             window_data = [
@@ -195,7 +194,7 @@ class WindowManager:
 
         return []
 
-    def _check_session_window(self, current_time: datetime) -> List[Dict[str, Any]]:
+    def _check_session_window(self, current_time: datetime) -> list[dict[str, Any]]:
         """Check if session window should be completed."""
 
         if not self.last_activity_time or not self.config.session_timeout_seconds:
@@ -204,7 +203,6 @@ class WindowManager:
         inactivity_duration = (current_time - self.last_activity_time).total_seconds()
 
         if inactivity_duration >= self.config.session_timeout_seconds:
-
             # Complete session window
             window_data = list(self.current_window_data)
 
@@ -240,9 +238,9 @@ class StatisticalAnalyzer:
         # Anomaly detection models
         self.anomaly_detectors = {}
 
-        logger.info(f"Statistical Analyzer initialized")
+        logger.info("Statistical Analyzer initialized")
 
-    async def analyze_window(self, window_data: Dict[str, Any]) -> StatisticalMetrics:
+    async def analyze_window(self, window_data: dict[str, Any]) -> StatisticalMetrics:
         """Perform comprehensive statistical analysis on window data."""
 
         # Convert window data to DataFrame
@@ -302,8 +300,8 @@ class StatisticalAnalyzer:
         return metrics
 
     async def _compute_basic_statistics(
-        self, df: pd.DataFrame, numeric_columns: List[str]
-    ) -> Dict[str, Any]:
+        self, df: pd.DataFrame, numeric_columns: list[str]
+    ) -> dict[str, Any]:
         """Compute basic statistical measures."""
 
         return {
@@ -315,8 +313,8 @@ class StatisticalAnalyzer:
         }
 
     async def _compute_advanced_statistics(
-        self, df: pd.DataFrame, numeric_columns: List[str]
-    ) -> Dict[str, Any]:
+        self, df: pd.DataFrame, numeric_columns: list[str]
+    ) -> dict[str, Any]:
         """Compute advanced statistical measures."""
 
         skewness = {}
@@ -349,8 +347,8 @@ class StatisticalAnalyzer:
         }
 
     async def _detect_anomalies(
-        self, df: pd.DataFrame, numeric_columns: List[str]
-    ) -> Dict[str, Any]:
+        self, df: pd.DataFrame, numeric_columns: list[str]
+    ) -> dict[str, Any]:
         """Detect anomalies in the window data."""
 
         if len(df) < 10:  # Need minimum records for anomaly detection
@@ -380,8 +378,8 @@ class StatisticalAnalyzer:
             return {"anomaly_count": 0, "anomaly_rate": 0.0, "anomaly_scores": []}
 
     async def _analyze_trends(
-        self, df: pd.DataFrame, numeric_columns: List[str]
-    ) -> Dict[str, Any]:
+        self, df: pd.DataFrame, numeric_columns: list[str]
+    ) -> dict[str, Any]:
         """Analyze trends in the window data."""
 
         trend_direction = {}
@@ -389,8 +387,8 @@ class StatisticalAnalyzer:
 
         if len(df) < 3:  # Need minimum records for trend analysis
             return {
-                "trend_direction": {col: "stable" for col in numeric_columns},
-                "trend_strength": {col: 0.0 for col in numeric_columns},
+                "trend_direction": dict.fromkeys(numeric_columns, "stable"),
+                "trend_strength": dict.fromkeys(numeric_columns, 0.0),
             }
 
         # Create time index for trend analysis
@@ -425,7 +423,7 @@ class StatisticalAnalyzer:
 
         return {"trend_direction": trend_direction, "trend_strength": trend_strength}
 
-    async def _assess_data_quality(self, df: pd.DataFrame) -> Dict[str, Any]:
+    async def _assess_data_quality(self, df: pd.DataFrame) -> dict[str, Any]:
         """Assess data quality metrics for the window."""
 
         total_cells = df.size
@@ -456,11 +454,11 @@ class WindowedAnalyticsEngine:
 
     def __init__(self):
         self.constitutional_hash = "cdd01ef066bc6cf2"
-        self.window_managers: Dict[str, WindowManager] = {}
+        self.window_managers: dict[str, WindowManager] = {}
         self.statistical_analyzer = StatisticalAnalyzer()
-        self.metrics_history: List[StatisticalMetrics] = []
+        self.metrics_history: list[StatisticalMetrics] = []
 
-        logger.info(f"Windowed Analytics Engine initialized")
+        logger.info("Windowed Analytics Engine initialized")
 
     def create_window(self, window_name: str, config: WindowConfig):
         """Create a new analysis window."""
@@ -468,8 +466,8 @@ class WindowedAnalyticsEngine:
         logger.info(f"✅ Created window: {window_name} ({config.window_type})")
 
     async def process_record(
-        self, window_name: str, record: Dict[str, Any]
-    ) -> List[StatisticalMetrics]:
+        self, window_name: str, record: dict[str, Any]
+    ) -> list[StatisticalMetrics]:
         """Process a record through the specified window."""
 
         if window_name not in self.window_managers:
@@ -479,7 +477,7 @@ class WindowedAnalyticsEngine:
         # Validate constitutional hash
         if "constitutional_hash" in record:
             if record["constitutional_hash"] != self.constitutional_hash:
-                logger.warning(f"⚠️ Constitutional hash mismatch in record")
+                logger.warning("⚠️ Constitutional hash mismatch in record")
                 return []
 
         # Add record to window
@@ -501,7 +499,7 @@ class WindowedAnalyticsEngine:
 
     def get_recent_metrics(
         self, window_name: str = None, limit: int = 10
-    ) -> List[StatisticalMetrics]:
+    ) -> list[StatisticalMetrics]:
         """Get recent statistical metrics."""
 
         if window_name:
@@ -564,7 +562,7 @@ async def demo_windowed_analysis():
 
     # Display summary
     recent_metrics = engine.get_recent_metrics(limit=5)
-    print(f"\n📈 Recent analysis summary:")
+    print("\n📈 Recent analysis summary:")
     for metrics in recent_metrics:
         print(
             f"  - {metrics.window_id}: {metrics.record_count} records, "

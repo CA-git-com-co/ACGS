@@ -9,8 +9,7 @@ import json
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Optional, Tuple
+from datetime import datetime, timezone
 
 import aiohttp
 import numpy as np
@@ -50,7 +49,7 @@ class ValidationResult:
     target_value: float
     compliant: bool
     deviation_percentage: float
-    constitutional_compliance_score: Optional[float] = None
+    constitutional_compliance_score: float | None = None
 
 
 @dataclass
@@ -60,9 +59,9 @@ class ContinuousMonitoringSession:
     session_id: str
     start_time: datetime
     duration_hours: int
-    services: List[str]
-    sla_targets: List[SLATarget]
-    results: List[ValidationResult] = field(default_factory=list)
+    services: list[str]
+    sla_targets: list[SLATarget]
+    results: list[ValidationResult] = field(default_factory=list)
     alerts_triggered: int = 0
     compliance_rate: float = 0.0
 
@@ -118,7 +117,7 @@ class ErrorRateValidator:
         }
 
         # Monitoring sessions
-        self.active_sessions: Dict[str, ContinuousMonitoringSession] = {}
+        self.active_sessions: dict[str, ContinuousMonitoringSession] = {}
 
         logger.info("Error Rate Validator initialized")
 
@@ -225,7 +224,7 @@ class ErrorRateValidator:
         except Exception as e:
             logger.error(f"Failed to validate SLA for {service_name}: {e}")
 
-    async def collect_service_metrics(self, service_name: str) -> Dict[str, float]:
+    async def collect_service_metrics(self, service_name: str) -> dict[str, float]:
         """Collect current metrics for a service."""
         metrics = {}
 
@@ -268,7 +267,7 @@ class ErrorRateValidator:
 
     async def get_prometheus_metric(
         self, session: aiohttp.ClientSession, query: str
-    ) -> Optional[float]:
+    ) -> float | None:
         """Get a metric value from Prometheus."""
         try:
             url = "http://localhost:9090/api/v1/query"
@@ -284,7 +283,7 @@ class ErrorRateValidator:
 
     async def get_constitutional_compliance(
         self, session: aiohttp.ClientSession, service_name: str
-    ) -> Optional[float]:
+    ) -> float | None:
         """Get constitutional compliance score for a service."""
         if service_name not in ["ac-service", "pgc-service"]:
             return (
@@ -309,7 +308,7 @@ class ErrorRateValidator:
 
     async def get_service_availability(
         self, session: aiohttp.ClientSession, service_name: str
-    ) -> Optional[float]:
+    ) -> float | None:
         """Get service availability."""
         try:
             port = self.services[service_name]
@@ -403,9 +402,7 @@ class ErrorRateValidator:
                 service=service_name, hash=CONSTITUTIONAL_HASH
             ).set(0.0)
 
-    async def start_72_hour_monitoring(
-        self, services: Optional[List[str]] = None
-    ) -> str:
+    async def start_72_hour_monitoring(self, services: list[str] | None = None) -> str:
         """Start a 72-hour continuous monitoring session."""
         session_id = f"72h_monitor_{int(time.time())}"
 
@@ -556,7 +553,7 @@ class ErrorRateValidator:
             f"{session.alerts_triggered} alerts triggered"
         )
 
-    async def save_session_report(self, report: Dict):
+    async def save_session_report(self, report: dict):
         """Save session report to file."""
         try:
             import os
@@ -573,7 +570,7 @@ class ErrorRateValidator:
         except Exception as e:
             logger.error(f"Failed to save session report: {e}")
 
-    def get_active_sessions(self) -> Dict[str, Dict]:
+    def get_active_sessions(self) -> dict[str, dict]:
         """Get information about active monitoring sessions."""
         return {
             session_id: {

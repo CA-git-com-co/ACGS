@@ -21,7 +21,7 @@ import os
 import subprocess
 import time
 from dataclasses import dataclass
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -214,7 +214,7 @@ class PolicySynthesisDeploymentOrchestrator:
             logger.error(f"❌ Phase 1 failed: {e}")
             phase_metrics.success = False
             phase_metrics.error_count += 1
-            phase_metrics.warnings.append(f"Phase 1 error: {str(e)}")
+            phase_metrics.warnings.append(f"Phase 1 error: {e!s}")
 
         finally:
             phase_metrics.end_time = datetime.now(timezone.utc)
@@ -250,6 +250,7 @@ class PolicySynthesisDeploymentOrchestrator:
 
             result = subprocess.run(
                 deploy_cmd,
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -264,12 +265,11 @@ class PolicySynthesisDeploymentOrchestrator:
                     "services_deployed": health_check["healthy_services"],
                     "deployment_time": time.time(),
                 }
-            else:
-                return {
-                    "success": False,
-                    "error": result.stderr,
-                    "stdout": result.stdout,
-                }
+            return {
+                "success": False,
+                "error": result.stderr,
+                "stdout": result.stdout,
+            }
 
         except Exception as e:
             return {"success": False, "error": str(e)}
@@ -286,7 +286,7 @@ class PolicySynthesisDeploymentOrchestrator:
         try:
             # Check Docker
             docker_result = subprocess.run(
-                ["docker", "--version"], capture_output=True, text=True
+                ["docker", "--version"], check=False, capture_output=True, text=True
             )
             checks["docker_available"] = docker_result.returncode == 0
 
@@ -306,6 +306,7 @@ class PolicySynthesisDeploymentOrchestrator:
             try:
                 db_check = subprocess.run(
                     ["docker", "exec", "acgs-postgres-prod", "pg_isready"],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=10,
@@ -338,7 +339,7 @@ class PolicySynthesisDeploymentOrchestrator:
                 health_cmd = ["curl", "-f", "-s", f"http://localhost:{port}/health"]
 
                 result = subprocess.run(
-                    health_cmd, capture_output=True, text=True, timeout=10
+                    health_cmd, check=False, capture_output=True, text=True, timeout=10
                 )
 
                 if result.returncode == 0:
@@ -374,6 +375,7 @@ class PolicySynthesisDeploymentOrchestrator:
 
             result = subprocess.run(
                 monitoring_deploy_cmd,
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -391,12 +393,11 @@ class PolicySynthesisDeploymentOrchestrator:
                     "prometheus_url": "http://localhost:9090",
                     "grafana_url": "http://localhost:3002",
                 }
-            else:
-                return {
-                    "success": False,
-                    "error": result.stderr,
-                    "stdout": result.stdout,
-                }
+            return {
+                "success": False,
+                "error": result.stderr,
+                "stdout": result.stdout,
+            }
 
         except Exception as e:
             return {"success": False, "error": str(e)}
@@ -708,12 +709,11 @@ class PolicySynthesisDeploymentOrchestrator:
                     "synthesis_quality": result.get("quality_score", 0),
                     "confidence": result.get("confidence", 0),
                 }
-            else:
-                return {
-                    "success": False,
-                    "status_code": response.status_code,
-                    "error": response.text,
-                }
+            return {
+                "success": False,
+                "status_code": response.status_code,
+                "error": response.text,
+            }
 
         except Exception as e:
             return {"success": False, "error": str(e)}
@@ -744,12 +744,11 @@ class PolicySynthesisDeploymentOrchestrator:
                     "participating_models": result.get("participating_models", []),
                     "consensus_score": result.get("consensus_score", 0),
                 }
-            else:
-                return {
-                    "success": False,
-                    "status_code": response.status_code,
-                    "error": response.text,
-                }
+            return {
+                "success": False,
+                "status_code": response.status_code,
+                "error": response.text,
+            }
 
         except Exception as e:
             return {"success": False, "error": str(e)}
@@ -850,7 +849,7 @@ class PolicySynthesisDeploymentOrchestrator:
             logger.error(f"❌ Phase 2 failed: {e}")
             phase_metrics.success = False
             phase_metrics.error_count += 1
-            phase_metrics.warnings.append(f"Phase 2 error: {str(e)}")
+            phase_metrics.warnings.append(f"Phase 2 error: {e!s}")
 
         finally:
             phase_metrics.end_time = datetime.now(timezone.utc)
@@ -918,7 +917,7 @@ class PolicySynthesisDeploymentOrchestrator:
             logger.error(f"❌ Phase 3 failed: {e}")
             phase_metrics.success = False
             phase_metrics.error_count += 1
-            phase_metrics.warnings.append(f"Phase 3 error: {str(e)}")
+            phase_metrics.warnings.append(f"Phase 3 error: {e!s}")
 
         finally:
             phase_metrics.end_time = datetime.now(timezone.utc)
@@ -982,7 +981,7 @@ class PolicySynthesisDeploymentOrchestrator:
             logger.error(f"❌ Phase 4 failed: {e}")
             phase_metrics.success = False
             phase_metrics.error_count += 1
-            phase_metrics.warnings.append(f"Phase 4 error: {str(e)}")
+            phase_metrics.warnings.append(f"Phase 4 error: {e!s}")
 
         finally:
             phase_metrics.end_time = datetime.now(timezone.utc)
@@ -1043,7 +1042,7 @@ class PolicySynthesisDeploymentOrchestrator:
             logger.error(f"❌ Phase 5 failed: {e}")
             phase_metrics.success = False
             phase_metrics.error_count += 1
-            phase_metrics.warnings.append(f"Phase 5 error: {str(e)}")
+            phase_metrics.warnings.append(f"Phase 5 error: {e!s}")
 
         finally:
             phase_metrics.end_time = datetime.now(timezone.utc)

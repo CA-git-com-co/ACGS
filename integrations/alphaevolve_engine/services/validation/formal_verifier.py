@@ -7,7 +7,7 @@ integration system, including property verification and mock implementations.
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class PropertyType(Enum):
@@ -29,7 +29,7 @@ class FormalVerificationProperty:
     formal_specification: str
     expected_result: bool = True
     timeout_seconds: int = 30
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
 
 
 @dataclass
@@ -40,21 +40,21 @@ class VerificationResult:
     verified: bool
     confidence: float
     execution_time_ms: float
-    counterexample: Optional[str] = None
-    error_message: Optional[str] = None
-    metadata: Optional[Dict[str, Any]] = None
+    counterexample: str | None = None
+    error_message: str | None = None
+    metadata: dict[str, Any] | None = None
 
 
 class MockFormalVerifier:
     """Mock formal verifier for testing and development."""
 
     def __init__(self):
-        self.verification_history: List[VerificationResult] = []
+        self.verification_history: list[VerificationResult] = []
 
     async def verify_property(
         self,
         property_def: FormalVerificationProperty,
-        context: Optional[Dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
     ) -> VerificationResult:
         """Verify a formal property (mock implementation)."""
 
@@ -89,9 +89,9 @@ class MockFormalVerifier:
 
     async def verify_multiple_properties(
         self,
-        properties: List[FormalVerificationProperty],
-        context: Optional[Dict[str, Any]] = None,
-    ) -> List[VerificationResult]:
+        properties: list[FormalVerificationProperty],
+        context: dict[str, Any] | None = None,
+    ) -> list[VerificationResult]:
         """Verify multiple properties."""
         results = []
         for prop in properties:
@@ -99,7 +99,7 @@ class MockFormalVerifier:
             results.append(result)
         return results
 
-    def get_verification_history(self) -> List[VerificationResult]:
+    def get_verification_history(self) -> list[VerificationResult]:
         """Get verification history."""
         return self.verification_history.copy()
 
@@ -113,8 +113,7 @@ def create_formal_verifier(verifier_type: str = "mock") -> MockFormalVerifier:
     """Create a formal verifier instance."""
     if verifier_type == "mock":
         return MockFormalVerifier()
-    else:
-        raise ValueError(f"Unknown verifier type: {verifier_type}")
+    raise ValueError(f"Unknown verifier type: {verifier_type}")
 
 
 # Predefined properties for common verification scenarios
@@ -143,6 +142,6 @@ COMMON_PROPERTIES = {
 }
 
 
-def get_common_property(property_name: str) -> Optional[FormalVerificationProperty]:
+def get_common_property(property_name: str) -> FormalVerificationProperty | None:
     """Get a common verification property by name."""
     return COMMON_PROPERTIES.get(property_name)

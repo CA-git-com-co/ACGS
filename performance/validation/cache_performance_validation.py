@@ -5,14 +5,14 @@ Validates 95.8% cache hit rate claims under realistic enterprise workloads
 """
 
 import asyncio
-import time
-import statistics
-import random
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone
 import json
 import logging
+import random
+import statistics
+import time
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -128,7 +128,7 @@ class CachePerformanceValidator:
             "write_back": "Write Back",
         }
 
-    async def validate_cache_performance(self) -> Dict[str, Any]:
+    async def validate_cache_performance(self) -> dict[str, Any]:
         """Comprehensive cache performance validation"""
         print("🚀 ACGS Cache Performance Validation Suite")
         print("=" * 45)
@@ -176,7 +176,7 @@ class CachePerformanceValidator:
                 validation_results[scenario["name"]] = result
 
                 # Display results
-                print(f"   📊 Results:")
+                print("   📊 Results:")
                 print(f"     Hit Rate: {result.hit_rate_percentage:.2f}%")
                 print(f"     Avg Response: {result.avg_response_time_ms:.2f}ms")
                 print(f"     P99 Response: {result.p99_response_time_ms:.2f}ms")
@@ -188,11 +188,11 @@ class CachePerformanceValidator:
                     await asyncio.sleep(10)
 
             # Test cache invalidation
-            print(f"\n🔄 Testing cache invalidation performance...")
+            print("\n🔄 Testing cache invalidation performance...")
             invalidation_result = await self.test_cache_invalidation(redis)
 
             # Test cache strategies
-            print(f"\n⚙️ Testing cache strategies...")
+            print("\n⚙️ Testing cache strategies...")
             strategy_results = await self.test_cache_strategies(redis)
 
             # Generate comprehensive analysis
@@ -200,7 +200,7 @@ class CachePerformanceValidator:
                 validation_results, invalidation_result, strategy_results
             )
 
-            print(f"\n📊 Cache Performance Analysis:")
+            print("\n📊 Cache Performance Analysis:")
             print(f"  Average Hit Rate: {analysis['average_hit_rate']:.2f}%")
             print(
                 f"  Target Achievement: {'✅ PASSED' if analysis['target_achieved'] else '❌ FAILED'}"
@@ -386,7 +386,7 @@ class CachePerformanceValidator:
 
         return result
 
-    async def test_cache_strategies(self, redis) -> Dict[str, Any]:
+    async def test_cache_strategies(self, redis) -> dict[str, Any]:
         """Test different cache strategies"""
         print("   ⚙️ Testing cache strategies...")
 
@@ -404,7 +404,7 @@ class CachePerformanceValidator:
 
         return strategy_results
 
-    async def test_lru_strategy(self, redis) -> Dict[str, Any]:
+    async def test_lru_strategy(self, redis) -> dict[str, Any]:
         """Test LRU cache strategy"""
         # Create keys with access pattern
         keys = [f"lru_test_{i}" for i in range(100)]
@@ -432,7 +432,7 @@ class CachePerformanceValidator:
             "performance": "Optimal for access patterns",
         }
 
-    async def test_ttl_strategy(self, redis) -> Dict[str, Any]:
+    async def test_ttl_strategy(self, redis) -> dict[str, Any]:
         """Test TTL cache strategy"""
         # Create keys with different TTLs
         short_ttl_keys = [f"ttl_short_{i}" for i in range(50)]
@@ -462,10 +462,10 @@ class CachePerformanceValidator:
 
     def analyze_cache_performance(
         self,
-        test_results: Dict[str, CacheTestResult],
+        test_results: dict[str, CacheTestResult],
         invalidation_result: CacheInvalidationResult,
-        strategy_results: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        strategy_results: dict[str, Any],
+    ) -> dict[str, Any]:
         """Analyze overall cache performance"""
 
         # Calculate average hit rate across all tests
@@ -524,7 +524,7 @@ class CachePerformanceValidator:
 
     def generate_cache_recommendations(
         self, hit_rate: float, memory_usage: float, response_time: float
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate cache optimization recommendations"""
         recommendations = []
 
@@ -563,7 +563,7 @@ async def test_cache_performance_validation():
         json.dump(results, f, indent=2, default=str)
 
     print(f"\n📄 Detailed results saved: cache_performance_validation_{timestamp}.json")
-    print(f"\n✅ Cache Performance Validation: COMPLETE")
+    print("\n✅ Cache Performance Validation: COMPLETE")
 
 
 if __name__ == "__main__":

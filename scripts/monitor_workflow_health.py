@@ -5,9 +5,8 @@ GitHub Actions Workflow Health Monitor
 This script monitors the health of GitHub Actions workflows after systematic fixes.
 """
 
-import subprocess
 import json
-import time
+import subprocess
 from datetime import datetime
 
 
@@ -53,7 +52,7 @@ def analyze_workflow_health():
 
     if isinstance(workflows, dict) and "error" in workflows:
         print(f"❌ Failed to get workflow status: {workflows['error']}")
-        return
+        return None
 
     # Categorize workflows
     success_workflows = []
@@ -106,7 +105,7 @@ def analyze_workflow_health():
     total_workflows = len(success_workflows) + len(failed_workflows)
     if total_workflows > 0:
         success_rate = (len(success_workflows) / total_workflows) * 100
-        print(f"\n📈 Health Metrics:")
+        print("\n📈 Health Metrics:")
         print(
             f"   Success Rate: {success_rate:.1f}% ({len(success_workflows)}/{total_workflows})"
         )
@@ -133,7 +132,7 @@ def analyze_workflow_health():
     with open("workflow_health_report.json", "w") as f:
         json.dump(report, f, indent=2)
 
-    print(f"\n💾 Detailed report saved to: workflow_health_report.json")
+    print("\n💾 Detailed report saved to: workflow_health_report.json")
 
     return report
 

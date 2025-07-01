@@ -280,9 +280,8 @@ class RealTimeComplianceEngine:
             if cache_age < 300:  # 5 minutes
                 logger.debug(f"Cache hit for action {context.action_id}")
                 return cached_result
-            else:
-                # Remove expired cache entry
-                del self.validation_cache[cache_key]
+            # Remove expired cache entry
+            del self.validation_cache[cache_key]
 
         return None
 
@@ -443,18 +442,17 @@ class RealTimeComplianceEngine:
 
         if rule_type == "constitutional":
             return await self._evaluate_constitutional_rule(context, rule)
-        elif rule_type == "authorization":
+        if rule_type == "authorization":
             return await self._evaluate_authorization_rule(context, rule)
-        elif rule_type == "governance":
+        if rule_type == "governance":
             return await self._evaluate_governance_rule(context, rule)
-        else:
-            return {
-                "passed": True,
-                "violation": None,
-                "warning": f"Unknown rule type: {rule_type}",
-                "recommendation": "Review rule configuration",
-                "details": {"rule_id": rule["id"]},
-            }
+        return {
+            "passed": True,
+            "violation": None,
+            "warning": f"Unknown rule type: {rule_type}",
+            "recommendation": "Review rule configuration",
+            "details": {"rule_id": rule["id"]},
+        }
 
     async def _evaluate_constitutional_rule(
         self, context: ActionContext, rule: dict[str, Any]
@@ -553,10 +551,9 @@ class RealTimeComplianceEngine:
 
             if compliance_score < 0.5 or violation_count > 2:
                 return EnforcementAction.DENY
-            elif compliance_score < 0.8:
+            if compliance_score < 0.8:
                 return EnforcementAction.REQUIRE_APPROVAL
-            else:
-                return EnforcementAction.MODIFY
+            return EnforcementAction.MODIFY
 
         # Special handling for critical actions
         if context.action_type == ActionType.CONSTITUTIONAL_AMENDMENT:

@@ -166,7 +166,7 @@ class Settings(BaseSettings):
         """Assemble CORS origins from environment variable or list."""
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
-        elif isinstance(v, list | str):
+        if isinstance(v, list | str):
             return v
         raise ValueError(v)
 
@@ -176,7 +176,7 @@ class Settings(BaseSettings):
         """Assemble allowed hosts from environment variable or list."""
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
-        elif isinstance(v, list | str):
+        if isinstance(v, list | str):
             return v
         raise ValueError(v)
 
@@ -186,7 +186,7 @@ class Settings(BaseSettings):
         """Assemble allowed IPs from environment variable or list."""
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
-        elif isinstance(v, list | str):
+        if isinstance(v, list | str):
             return v
         raise ValueError(v)
 

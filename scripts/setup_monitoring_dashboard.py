@@ -7,11 +7,11 @@ and alerting for the ACGS-PGP system with constitutional compliance tracking.
 """
 
 import json
-import os
 import sys
 import time
 from datetime import datetime, timezone
-from typing import Dict, List, Any
+from typing import Any
+
 import requests
 
 
@@ -32,7 +32,7 @@ class ACGSMonitoringDashboard:
         self.prometheus_url = "http://localhost:9090"
         self.constitutional_hash = "cdd01ef066bc6cf2"
 
-    def collect_service_metrics(self) -> Dict[str, Any]:
+    def collect_service_metrics(self) -> dict[str, Any]:
         """Collect comprehensive metrics from all ACGS services."""
         metrics = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -97,7 +97,7 @@ class ACGSMonitoringDashboard:
 
         return metrics
 
-    def collect_constitutional_compliance_metrics(self) -> Dict[str, Any]:
+    def collect_constitutional_compliance_metrics(self) -> dict[str, Any]:
         """Collect constitutional compliance metrics."""
         compliance_metrics = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -169,7 +169,7 @@ class ACGSMonitoringDashboard:
 
         return compliance_metrics
 
-    def generate_prometheus_metrics(self, metrics: Dict[str, Any]) -> str:
+    def generate_prometheus_metrics(self, metrics: dict[str, Any]) -> str:
         """Generate Prometheus-format metrics from collected data."""
         prometheus_metrics = []
         timestamp = int(time.time() * 1000)  # Prometheus timestamp in milliseconds
@@ -178,10 +178,10 @@ class ACGSMonitoringDashboard:
         system_health = metrics["system_health"]
         prometheus_metrics.extend(
             [
-                f'acgs_healthy_services_total {system_health["healthy_services"]} {timestamp}',
-                f'acgs_total_services_total {system_health["total_services"]} {timestamp}',
-                f'acgs_health_percentage {system_health["health_percentage"]} {timestamp}',
-                f'acgs_average_response_time_seconds {system_health["average_response_time"]} {timestamp}',
+                f"acgs_healthy_services_total {system_health['healthy_services']} {timestamp}",
+                f"acgs_total_services_total {system_health['total_services']} {timestamp}",
+                f"acgs_health_percentage {system_health['health_percentage']} {timestamp}",
+                f"acgs_average_response_time_seconds {system_health['average_response_time']} {timestamp}",
             ]
         )
 
@@ -199,7 +199,7 @@ class ACGSMonitoringDashboard:
 
         return "\n".join(prometheus_metrics)
 
-    def create_grafana_dashboard_config(self) -> Dict[str, Any]:
+    def create_grafana_dashboard_config(self) -> dict[str, Any]:
         """Create Grafana dashboard configuration."""
         dashboard = {
             "dashboard": {
@@ -276,7 +276,7 @@ class ACGSMonitoringDashboard:
         }
         return dashboard
 
-    def setup_alerting_rules(self) -> Dict[str, Any]:
+    def setup_alerting_rules(self) -> dict[str, Any]:
         """Setup Prometheus alerting rules for ACGS-PGP."""
         alerting_rules = {
             "groups": [
@@ -334,7 +334,7 @@ class ACGSMonitoringDashboard:
         }
         return alerting_rules
 
-    def generate_monitoring_report(self) -> Dict[str, Any]:
+    def generate_monitoring_report(self) -> dict[str, Any]:
         """Generate comprehensive monitoring report."""
         print("🔍 Collecting ACGS-PGP monitoring data...")
 
@@ -393,7 +393,7 @@ def main():
         # Save report to file
         with open("acgs_monitoring_report.json", "w") as f:
             json.dump(report, f, indent=2)
-        print(f"\n💾 Report saved to: acgs_monitoring_report.json")
+        print("\n💾 Report saved to: acgs_monitoring_report.json")
 
     elif command == "setup-dashboard":
         dashboard_config = dashboard.create_grafana_dashboard_config()

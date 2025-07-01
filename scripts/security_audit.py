@@ -19,7 +19,7 @@ import hashlib
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from enum import Enum
 
 import aiohttp
@@ -145,7 +145,7 @@ class SecurityAuditor:
                         category="CSRF Protection",
                         level=SecurityLevel.MEDIUM,
                         title="CSRF Test Inconclusive",
-                        description=f"Could not test CSRF protection on {service}: {str(e)}",
+                        description=f"Could not test CSRF protection on {service}: {e!s}",
                         service=service,
                         recommendation="Verify CSRF protection implementation manually",
                     )
@@ -221,7 +221,7 @@ class SecurityAuditor:
                         category="JWT Validation",
                         level=SecurityLevel.MEDIUM,
                         title="JWT Test Inconclusive",
-                        description=f"Could not test JWT validation on {service}: {str(e)}",
+                        description=f"Could not test JWT validation on {service}: {e!s}",
                         service=service,
                         recommendation="Verify JWT validation implementation manually",
                     )
@@ -279,7 +279,7 @@ class SecurityAuditor:
                     category="RBAC",
                     level=SecurityLevel.MEDIUM,
                     title="RBAC Test Inconclusive",
-                    description=f"Could not test RBAC on {service}: {str(e)}",
+                    description=f"Could not test RBAC on {service}: {e!s}",
                     service=service,
                     recommendation="Verify RBAC implementation manually",
                 )
@@ -367,7 +367,7 @@ class SecurityAuditor:
                     category="Authentication",
                     level=SecurityLevel.MEDIUM,
                     title="Authentication Test Inconclusive",
-                    description=f"Could not test authentication workflow: {str(e)}",
+                    description=f"Could not test authentication workflow: {e!s}",
                     service="auth_service",
                     recommendation="Verify authentication security manually",
                 )
@@ -441,7 +441,7 @@ class SecurityAuditor:
                     category="Cryptographic Integrity",
                     level=SecurityLevel.MEDIUM,
                     title="Cryptographic Test Inconclusive",
-                    description=f"Could not test cryptographic integrity: {str(e)}",
+                    description=f"Could not test cryptographic integrity: {e!s}",
                     service="integrity_service",
                     recommendation="Verify cryptographic implementation manually",
                 )
@@ -496,7 +496,7 @@ class SecurityAuditor:
                     category="Cross-Service Security",
                     level=SecurityLevel.MEDIUM,
                     title="Cross-Service Security Test Inconclusive",
-                    description=f"Could not test cross-service security: {str(e)}",
+                    description=f"Could not test cross-service security: {e!s}",
                     service="multiple",
                     recommendation="Verify service-to-service authentication manually",
                 )

@@ -6,11 +6,10 @@ constitutional compliance, and system health monitoring.
 """
 
 import logging
-import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
 from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +31,7 @@ class WINAMetric:
     metric_type: MetricType
     value: float
     timestamp: datetime
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -56,7 +55,7 @@ class WINAMetrics:
     to provide insights into performance and constitutional compliance.
     """
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         """
         Initialize WINA metrics system.
 
@@ -64,14 +63,14 @@ class WINAMetrics:
             config: WINA configuration dictionary
         """
         self.config = config
-        self.metrics_storage: List[WINAMetric] = []
+        self.metrics_storage: list[WINAMetric] = []
         self.collection_interval = config.get("monitoring", {}).get(
             "metrics_collection_interval", 10
         )
         self.retention_period = timedelta(days=7)  # Keep metrics for 7 days
 
         # Performance tracking
-        self.performance_metrics: Dict[str, List[float]] = {
+        self.performance_metrics: dict[str, list[float]] = {
             "gflops_reduction": [],
             "accuracy_preservation": [],
             "constitutional_compliance": [],
@@ -89,7 +88,7 @@ class WINAMetrics:
         metric_id: str,
         metric_type: MetricType,
         value: float,
-        metadata: Dict[str, Any] = None,
+        metadata: dict[str, Any] = None,
     ):
         """
         Record a new WINA metric.
@@ -167,7 +166,7 @@ class WINAMetrics:
 
     def get_metrics_summary(
         self, metric_type: MetricType = None, time_range: timedelta = None
-    ) -> Dict[str, MetricsSummary]:
+    ) -> dict[str, MetricsSummary]:
         """
         Get summary of metrics for analysis.
 
@@ -193,7 +192,7 @@ class WINAMetrics:
             ]
 
             # Group by metric type
-            grouped_metrics: Dict[MetricType, List[WINAMetric]] = {}
+            grouped_metrics: dict[MetricType, list[WINAMetric]] = {}
             for metric in filtered_metrics:
                 if metric.metric_type not in grouped_metrics:
                     grouped_metrics[metric.metric_type] = []
@@ -224,7 +223,7 @@ class WINAMetrics:
             logger.error(f"Failed to generate metrics summary: {e}")
             return {}
 
-    def get_performance_trends(self) -> Dict[str, Any]:
+    def get_performance_trends(self) -> dict[str, Any]:
         """
         Get performance trends for WINA optimization.
 
@@ -344,7 +343,7 @@ class WINAMetrics:
                 ]
                 return json.dumps(metrics_data, indent=2)
 
-            elif format_type == "csv":
+            if format_type == "csv":
                 lines = ["metric_id,metric_type,value,timestamp"]
                 for m in self.metrics_storage:
                     lines.append(
@@ -352,8 +351,7 @@ class WINAMetrics:
                     )
                 return "\n".join(lines)
 
-            else:
-                raise ValueError(f"Unsupported export format: {format_type}")
+            raise ValueError(f"Unsupported export format: {format_type}")
 
         except Exception as e:
             logger.error(f"Failed to export metrics: {e}")

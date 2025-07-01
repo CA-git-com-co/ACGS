@@ -13,14 +13,16 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio
-import logging
 import json
+import logging
+import warnings
+from collections.abc import AsyncGenerator, Callable
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from typing import Any
+
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Callable, AsyncGenerator
-from dataclasses import dataclass, asdict
-import warnings
 
 warnings.filterwarnings("ignore")
 
@@ -50,9 +52,9 @@ class DriftEvent:
     service_id: str
     drift_detected: bool
     retraining_required: bool
-    features_with_drift: List[str]
+    features_with_drift: list[str]
     drift_severity: str
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class EventDrivenDriftDetector:
@@ -61,11 +63,11 @@ class EventDrivenDriftDetector:
     def __init__(self, nats_url: str = "nats://localhost:4222"):
         self.constitutional_hash = "cdd01ef066bc6cf2"
         self.nats_url = nats_url
-        self.nats_client: Optional[NATS] = None
+        self.nats_client: NATS | None = None
         self.drift_detector = DataDriftDetector()
 
         # Reference datasets for drift comparison
-        self.reference_datasets: Dict[str, pd.DataFrame] = {}
+        self.reference_datasets: dict[str, pd.DataFrame] = {}
 
         # Drift monitoring configuration
         self.monitoring_config = {
@@ -76,14 +78,14 @@ class EventDrivenDriftDetector:
         }
 
         # Event handlers registry
-        self.event_handlers: Dict[str, List[Callable]] = {
+        self.event_handlers: dict[str, list[Callable]] = {
             "drift_detected": [],
             "retraining_required": [],
             "model_updated": [],
             "drift_resolved": [],
         }
 
-        logger.info(f"Event-driven drift detector initialized")
+        logger.info("Event-driven drift detector initialized")
         logger.info(f"Constitutional hash: {self.constitutional_hash}")
 
     async def connect_to_nats(self) -> bool:
@@ -221,12 +223,11 @@ class EventDrivenDriftDetector:
 
         if drift_result.retraining_required:
             return "CRITICAL"
-        elif total_drift_features >= 3:
+        if total_drift_features >= 3:
             return "HIGH"
-        elif total_drift_features >= 1:
+        if total_drift_features >= 1:
             return "MEDIUM"
-        else:
-            return "LOW"
+        return "LOW"
 
     async def _trigger_retraining_event(self, drift_event: DriftEvent):
         """Trigger model retraining event."""

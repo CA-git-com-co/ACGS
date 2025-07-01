@@ -4,17 +4,15 @@ ACGS-1 Constitutional Document Analysis API Endpoints
 FastAPI implementation for constitutional document OCR and analysis
 """
 
-import asyncio
 import base64
-import json
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import uvicorn
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from ocr_service import ConstitutionalOCRService, DocumentMetadata, OCRAnalysisResult
+from ocr_service import ConstitutionalOCRService, DocumentMetadata
 from pydantic import BaseModel, Field
 
 # Configure logging
@@ -56,7 +54,7 @@ class DocumentAnalysisRequest(BaseModel):
         default="constitution", description="Type of document being analyzed"
     )
     jurisdiction: str = Field(default="federal", description="Jurisdiction level")
-    metadata: Dict[str, Any] = Field(
+    metadata: dict[str, Any] = Field(
         default_factory=dict, description="Additional document metadata"
     )
 
@@ -65,7 +63,7 @@ class ConstitutionalQARequest(BaseModel):
     """Request model for constitutional Q&A"""
 
     question: str = Field(..., description="Constitutional question to answer")
-    document_context: Dict[str, Any] = Field(
+    document_context: dict[str, Any] = Field(
         default_factory=dict, description="Document context including images and text"
     )
     reasoning_depth: str = Field(
@@ -89,13 +87,13 @@ class DocumentVerificationRequest(BaseModel):
 class ProcessAnalysisRequest(BaseModel):
     """Request model for governance process analysis"""
 
-    process_images: List[str] = Field(
+    process_images: list[str] = Field(
         ..., description="Base64 encoded process diagram images"
     )
     process_type: str = Field(
         default="governance_workflow", description="Type of process being analyzed"
     )
-    analysis_focus: List[str] = Field(
+    analysis_focus: list[str] = Field(
         default_factory=list, description="Specific aspects to focus on"
     )
 
@@ -182,10 +180,8 @@ async def analyze_document(request: DocumentAnalysisRequest):
         return response_data
 
     except Exception as e:
-        logger.error(f"Document analysis failed: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Document analysis failed: {str(e)}"
-        )
+        logger.error(f"Document analysis failed: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Document analysis failed: {e!s}")
 
 
 @app.post("/api/v1/constitutional/qa")
@@ -229,10 +225,8 @@ async def constitutional_qa(request: ConstitutionalQARequest):
         return response_data
 
     except Exception as e:
-        logger.error(f"Constitutional Q&A failed: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Constitutional Q&A failed: {str(e)}"
-        )
+        logger.error(f"Constitutional Q&A failed: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Constitutional Q&A failed: {e!s}")
 
 
 @app.post("/api/v1/document/verify")
@@ -283,9 +277,9 @@ async def verify_document(request: DocumentVerificationRequest):
         return response_data
 
     except Exception as e:
-        logger.error(f"Document verification failed: {str(e)}")
+        logger.error(f"Document verification failed: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Document verification failed: {str(e)}"
+            status_code=500, detail=f"Document verification failed: {e!s}"
         )
 
 
@@ -351,10 +345,8 @@ async def analyze_governance_process(request: ProcessAnalysisRequest):
         return response_data
 
     except Exception as e:
-        logger.error(f"Process analysis failed: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Process analysis failed: {str(e)}"
-        )
+        logger.error(f"Process analysis failed: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Process analysis failed: {e!s}")
 
 
 # File upload endpoint for easier testing
@@ -390,9 +382,9 @@ async def upload_and_analyze_document(
         return await analyze_document(request)
 
     except Exception as e:
-        logger.error(f"File upload and analysis failed: {str(e)}")
+        logger.error(f"File upload and analysis failed: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"File upload and analysis failed: {str(e)}"
+            status_code=500, detail=f"File upload and analysis failed: {e!s}"
         )
 
 

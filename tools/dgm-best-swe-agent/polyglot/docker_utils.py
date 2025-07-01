@@ -100,9 +100,7 @@ def remove_image(client, image_id, logger=None):
     except Exception as e:
         if raise_error:
             raise e
-        log_error(
-            f"Failed to remove image {image_id}: {e}\n" f"{traceback.format_exc()}"
-        )
+        log_error(f"Failed to remove image {image_id}: {e}\n{traceback.format_exc()}")
 
 
 def cleanup_container(client, container, logger):

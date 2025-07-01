@@ -9,7 +9,7 @@ circuit breakers, and comprehensive monitoring for >99.9% availability.
 import logging
 import os
 from contextlib import asynccontextmanager
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 import asyncpg
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -222,7 +222,7 @@ class EnhancedDatabaseClient:
     async def execute_query(
         self,
         query: str,
-        params: Optional[Union[Dict, List]] = None,
+        params: dict | list | None = None,
         use_raw: bool = False,
     ) -> Any:
         """Execute query with resilience and performance optimization."""
@@ -239,8 +239,8 @@ class EnhancedDatabaseClient:
                 return result
 
     async def fetch_one(
-        self, query: str, params: Optional[Union[Dict, List]] = None
-    ) -> Optional[Dict[str, Any]]:
+        self, query: str, params: dict | list | None = None
+    ) -> dict[str, Any] | None:
         """Fetch single record with resilience."""
         async with self.get_raw_connection() as conn:
             if params:
@@ -255,9 +255,9 @@ class EnhancedDatabaseClient:
     async def fetch_all(
         self,
         query: str,
-        params: Optional[Union[Dict, List]] = None,
+        params: dict | list | None = None,
         use_read_replica: bool = True,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Fetch all records with resilience and optional read replica routing."""
         if use_read_replica and self.read_replica_config.read_replicas:
             # Use read replica for read operations
@@ -285,7 +285,7 @@ class EnhancedDatabaseClient:
 
             return [dict(row) for row in rows]
 
-    async def execute_transaction(self, operations: List[Dict[str, Any]]) -> bool:
+    async def execute_transaction(self, operations: list[dict[str, Any]]) -> bool:
         """Execute multiple operations in a transaction with resilience."""
 
         async def _execute_transaction():
@@ -305,7 +305,7 @@ class EnhancedDatabaseClient:
             _execute_transaction
         )
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Perform comprehensive health check."""
         health_status = {
             "service": self.service_name,
@@ -373,7 +373,7 @@ class EnhancedDatabaseClient:
 
 
 # Global database clients for each service
-_database_clients: Dict[str, EnhancedDatabaseClient] = {}
+_database_clients: dict[str, EnhancedDatabaseClient] = {}
 
 
 async def get_database_client(service_name: str) -> EnhancedDatabaseClient:

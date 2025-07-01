@@ -6,14 +6,12 @@ Fixes common import issues across all 7 core services
 
 import os
 import re
-import sys
-from pathlib import Path
 
 
 def fix_fastapi_middleware_imports(file_path):
     """Fix fastapi.middleware.base imports to use starlette.middleware.base"""
     try:
-        with open(file_path, "r") as f:
+        with open(file_path) as f:
             content = f.read()
 
         # Fix the import statement
@@ -38,7 +36,7 @@ def fix_fastapi_middleware_imports(file_path):
 def fix_prometheus_middleware_imports(file_path):
     """Fix prometheus_middleware imports to use correct path"""
     try:
-        with open(file_path, "r") as f:
+        with open(file_path) as f:
             content = f.read()
 
         # Fix prometheus middleware imports
@@ -66,7 +64,7 @@ def fix_prometheus_middleware_imports(file_path):
 def fix_security_middleware_imports(file_path):
     """Fix security_middleware imports to use correct path"""
     try:
-        with open(file_path, "r") as f:
+        with open(file_path) as f:
             content = f.read()
 
         # Fix security middleware imports
@@ -94,7 +92,7 @@ def fix_security_middleware_imports(file_path):
 def fix_audit_logger_imports(file_path):
     """Fix comprehensive_audit_logger imports to use correct path"""
     try:
-        with open(file_path, "r") as f:
+        with open(file_path) as f:
             content = f.read()
 
         # Fix audit logger imports

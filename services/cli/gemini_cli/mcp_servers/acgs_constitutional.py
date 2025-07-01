@@ -6,18 +6,17 @@ Provides constitutional compliance checking and policy verification
 import asyncio
 import json
 import logging
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass
 import os
 import sys
+from dataclasses import dataclass
+from typing import Any
 
 # Add parent directory to path for imports
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 )
 
-from mcp import Server, Tool, Resource
-from mcp.types import TextContent
+from mcp import Resource, Server, Tool
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +43,7 @@ class ACGSConstitutionalServer:
         self._setup_tools()
         self._setup_resources()
 
-    def _load_principles(self) -> Dict[str, ConstitutionalPrinciple]:
+    def _load_principles(self) -> dict[str, ConstitutionalPrinciple]:
         """Load constitutional principles"""
         return {
             "non_maleficence": ConstitutionalPrinciple(
@@ -84,7 +83,7 @@ class ACGSConstitutionalServer:
 
         @self.server.tool()
         async def check_constitutional_compliance(
-            action: str, context: Dict[str, Any], strict_mode: bool = True
+            action: str, context: dict[str, Any], strict_mode: bool = True
         ) -> Tool:
             """Check if an action complies with constitutional principles"""
             return Tool(
@@ -136,7 +135,7 @@ class ACGSConstitutionalServer:
             )
 
         @self.server.tool()
-        async def analyze_risk(operation: Dict[str, Any]) -> Tool:
+        async def analyze_risk(operation: dict[str, Any]) -> Tool:
             """Analyze constitutional risk of an operation"""
             return Tool(
                 name="analyze_risk",
@@ -223,8 +222,8 @@ class ACGSConstitutionalServer:
             )
 
     async def _check_compliance(
-        self, action: str, context: Dict, strict_mode: bool
-    ) -> Dict:
+        self, action: str, context: dict, strict_mode: bool
+    ) -> dict:
         """Check compliance implementation"""
         compliance_score = 0.0
         violations = []
@@ -269,7 +268,7 @@ class ACGSConstitutionalServer:
             "constitutional_hash": self.constitutional_hash,
         }
 
-    async def _verify_policy(self, policy_text: str, policy_type: str) -> Dict:
+    async def _verify_policy(self, policy_text: str, policy_type: str) -> dict:
         """Verify policy implementation"""
         issues = []
         suggestions = []
@@ -292,7 +291,7 @@ class ACGSConstitutionalServer:
             "constitutional_hash": self.constitutional_hash,
         }
 
-    async def _analyze_risk(self, operation: Dict) -> Dict:
+    async def _analyze_risk(self, operation: dict) -> dict:
         """Analyze risk implementation"""
         risk_factors = []
         risk_score = 0.0

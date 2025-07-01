@@ -11,7 +11,7 @@ import json
 import logging
 import sys
 import time
-from typing import Any, Dict
+from typing import Any
 
 import httpx
 
@@ -28,7 +28,7 @@ class FrameworkValidator:
         self.client = httpx.AsyncClient(timeout=30.0)
         self.validation_results = {}
 
-    async def validate_framework(self) -> Dict[str, Any]:
+    async def validate_framework(self) -> dict[str, Any]:
         """Run comprehensive validation of the enhancement framework."""
         logger.info("🔍 Starting ACGS-1 Enhancement Framework Validation")
 
@@ -66,7 +66,7 @@ class FrameworkValidator:
                         f"❌ {test_name}: FAILED - {test_result.get('error', 'Unknown error')}"
                     )
             except Exception as e:
-                logger.error(f"❌ {test_name}: EXCEPTION - {str(e)}")
+                logger.error(f"❌ {test_name}: EXCEPTION - {e!s}")
                 results["tests"][test_name] = {
                     "passed": False,
                     "error": str(e),
@@ -92,7 +92,7 @@ class FrameworkValidator:
 
         return results
 
-    async def test_service_health(self) -> Dict[str, Any]:
+    async def test_service_health(self) -> dict[str, Any]:
         """Test basic service health and availability."""
         try:
             # Test root endpoint
@@ -138,7 +138,7 @@ class FrameworkValidator:
         except Exception as e:
             return {"passed": False, "error": str(e)}
 
-    async def test_constitutional_compliance(self) -> Dict[str, Any]:
+    async def test_constitutional_compliance(self) -> dict[str, Any]:
         """Test constitutional compliance validation."""
         try:
             # Test with valid constitutional hash
@@ -182,7 +182,7 @@ class FrameworkValidator:
         except Exception as e:
             return {"passed": False, "error": str(e)}
 
-    async def test_performance_optimization(self) -> Dict[str, Any]:
+    async def test_performance_optimization(self) -> dict[str, Any]:
         """Test performance optimization features."""
         try:
             # Measure response times
@@ -222,7 +222,7 @@ class FrameworkValidator:
         except Exception as e:
             return {"passed": False, "error": str(e)}
 
-    async def test_monitoring_integration(self) -> Dict[str, Any]:
+    async def test_monitoring_integration(self) -> dict[str, Any]:
         """Test monitoring and metrics integration."""
         try:
             # Test metrics endpoint
@@ -248,7 +248,7 @@ class FrameworkValidator:
         except Exception as e:
             return {"passed": False, "error": str(e)}
 
-    async def test_cache_functionality(self) -> Dict[str, Any]:
+    async def test_cache_functionality(self) -> dict[str, Any]:
         """Test cache functionality (if available)."""
         try:
             # Test cache stats endpoint (if available)
@@ -271,7 +271,7 @@ class FrameworkValidator:
         except Exception as e:
             return {"passed": False, "error": str(e)}
 
-    async def test_api_endpoints(self) -> Dict[str, Any]:
+    async def test_api_endpoints(self) -> dict[str, Any]:
         """Test that existing API endpoints are preserved."""
         try:
             # Test standard endpoints
@@ -312,7 +312,7 @@ class FrameworkValidator:
         except Exception as e:
             return {"passed": False, "error": str(e)}
 
-    async def test_error_handling(self) -> Dict[str, Any]:
+    async def test_error_handling(self) -> dict[str, Any]:
         """Test error handling and graceful degradation."""
         try:
             # Test non-existent endpoint
@@ -370,7 +370,7 @@ async def main():
         with open("framework_validation_results.json", "w") as f:
             json.dump(results, f, indent=2)
 
-        print(f"\nDetailed results saved to: framework_validation_results.json")
+        print("\nDetailed results saved to: framework_validation_results.json")
 
         # Exit with appropriate code
         if results["overall_status"] == "passed":

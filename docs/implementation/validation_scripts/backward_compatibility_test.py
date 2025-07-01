@@ -10,14 +10,12 @@ import asyncio
 import json
 import logging
 import time
-from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 import httpx
-import pytest
-from fastapi.testclient import TestClient
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -31,10 +29,10 @@ class EndpointTest:
     service: str
     endpoint: str
     method: str
-    test_data: Optional[Dict[str, Any]] = None
+    test_data: dict[str, Any] | None = None
     expected_status: int = 200
     auth_required: bool = True
-    version_header: Optional[str] = None
+    version_header: str | None = None
 
 
 @dataclass
@@ -47,9 +45,9 @@ class CompatibilityTestResult:
     success: bool
     response_time_ms: float
     status_code: int
-    error_message: Optional[str] = None
-    version_detected: Optional[str] = None
-    headers_present: Dict[str, bool] = field(default_factory=dict)
+    error_message: str | None = None
+    version_detected: str | None = None
+    headers_present: dict[str, bool] = field(default_factory=dict)
 
 
 class BackwardCompatibilityValidator:
@@ -62,7 +60,7 @@ class BackwardCompatibilityValidator:
 
     def __init__(self, base_url: str = "http://localhost:8000"):
         self.base_url = base_url
-        self.test_results: List[CompatibilityTestResult] = []
+        self.test_results: list[CompatibilityTestResult] = []
         self.services = [
             "constitutional-ai",
             "authentication",
@@ -77,7 +75,7 @@ class BackwardCompatibilityValidator:
         # Load endpoint definitions
         self.endpoints = self._load_endpoint_definitions()
 
-    def _load_endpoint_definitions(self) -> List[EndpointTest]:
+    def _load_endpoint_definitions(self) -> list[EndpointTest]:
         """Load all endpoint definitions for testing."""
         endpoints = []
 
@@ -333,7 +331,7 @@ class BackwardCompatibilityValidator:
         )
         return endpoints
 
-    async def run_compatibility_tests(self) -> Dict[str, Any]:
+    async def run_compatibility_tests(self) -> dict[str, Any]:
         """Run comprehensive backward compatibility tests."""
         logger.info("🔍 Starting backward compatibility validation...")
 
@@ -379,7 +377,7 @@ class BackwardCompatibilityValidator:
         )
         return report
 
-    async def _test_endpoints_baseline(self) -> Dict[str, Any]:
+    async def _test_endpoints_baseline(self) -> dict[str, Any]:
         """Test all endpoints without versioning middleware (baseline)."""
         logger.info("📊 Testing baseline (without versioning middleware)...")
 
@@ -393,7 +391,7 @@ class BackwardCompatibilityValidator:
 
         return self._aggregate_results(results, "baseline")
 
-    async def _test_endpoints_with_versioning(self) -> Dict[str, Any]:
+    async def _test_endpoints_with_versioning(self) -> dict[str, Any]:
         """Test all endpoints with versioning middleware enabled."""
         logger.info("🔄 Testing with versioning middleware enabled...")
 
@@ -484,8 +482,8 @@ class BackwardCompatibilityValidator:
             )
 
     def _aggregate_results(
-        self, results: List[CompatibilityTestResult], test_type: str
-    ) -> Dict[str, Any]:
+        self, results: list[CompatibilityTestResult], test_type: str
+    ) -> dict[str, Any]:
         """Aggregate test results into summary statistics."""
         total_tests = len(results)
         successful_tests = len([r for r in results if r.success])
@@ -541,8 +539,8 @@ class BackwardCompatibilityValidator:
         }
 
     def _compare_results(
-        self, baseline: Dict[str, Any], versioned: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, baseline: dict[str, Any], versioned: dict[str, Any]
+    ) -> dict[str, Any]:
         """Compare baseline and versioned results to identify breaking changes."""
         baseline_success = baseline["summary"]["successful_tests"]
         versioned_success = versioned["summary"]["successful_tests"]
@@ -583,7 +581,7 @@ class BackwardCompatibilityValidator:
             ),
         }
 
-    def save_report(self, report: Dict[str, Any], output_path: Path):
+    def save_report(self, report: dict[str, Any], output_path: Path):
         """Save compatibility test report to file."""
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -615,7 +613,7 @@ async def main():
     print(f"⏱️  Test Duration: {summary['test_duration_seconds']}s")
 
     criteria = report["success_criteria"]
-    print(f"\n🎯 SUCCESS CRITERIA:")
+    print("\n🎯 SUCCESS CRITERIA:")
     print(
         f"   ✅ Zero Breaking Changes: {'PASS' if criteria['zero_breaking_changes'] else 'FAIL'}"
     )
@@ -627,7 +625,7 @@ async def main():
     )
 
     analysis = report["compatibility_analysis"]
-    print(f"\n📈 COMPATIBILITY ANALYSIS:")
+    print("\n📈 COMPATIBILITY ANALYSIS:")
     print(f"   Breaking Changes: {analysis['breaking_changes']}")
     print(
         f"   Functional Endpoints: {analysis['functional_endpoints_percentage']:.1f}%"
@@ -635,7 +633,7 @@ async def main():
     print(f"   Avg Latency Increase: {analysis['avg_latency_increase_ms']:.2f}ms")
 
     if analysis["breaking_changes"] > 0:
-        print(f"\n⚠️  BREAKING CHANGES DETECTED:")
+        print("\n⚠️  BREAKING CHANGES DETECTED:")
         for change in analysis["breaking_change_details"]:
             print(f"   - {change['method']} {change['endpoint']} ({change['service']})")
             print(

@@ -5,16 +5,14 @@ ACGS-1 Lite integration for constitutional AI training with critique-revision cy
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import asyncio
-import json
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any
 
 import aiohttp
 import torch
-import torch.nn as nn
 from datasets import Dataset
 from peft import LoraConfig, TaskType, get_peft_model
 from transformers import (
@@ -108,9 +106,7 @@ class ConstitutionalTrainer:
             logger.error(f"Failed to initialize model {self.model_name}: {e}")
             raise
 
-    def _configure_lora(
-        self, lora_config: Optional[Dict[str, Any]] = None
-    ) -> LoraConfig:
+    def _configure_lora(self, lora_config: dict[str, Any] | None = None) -> LoraConfig:
         """Configure LoRA for parameter-efficient fine-tuning."""
         default_config = {
             "r": 16,
@@ -128,11 +124,11 @@ class ConstitutionalTrainer:
 
     async def train_with_constitutional_constraints(
         self,
-        training_data: List[Dict[str, Any]],
-        lora_config: Optional[Dict[str, Any]] = None,
-        privacy_config: Optional[Dict[str, Any]] = None,
-        progress_callback: Optional[Callable[[float], None]] = None,
-    ) -> Dict[str, Any]:
+        training_data: list[dict[str, Any]],
+        lora_config: dict[str, Any] | None = None,
+        privacy_config: dict[str, Any] | None = None,
+        progress_callback: Callable[[float], None] | None = None,
+    ) -> dict[str, Any]:
         """Train model with constitutional constraints and critique-revision cycles."""
 
         try:
@@ -193,8 +189,8 @@ class ConstitutionalTrainer:
             raise
 
     async def _preprocess_training_data(
-        self, training_data: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
+        self, training_data: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         """Preprocess training data with constitutional validation."""
         processed_data = []
 
@@ -204,9 +200,10 @@ class ConstitutionalTrainer:
                 response = item["response"]
 
                 # Apply critique-revision cycle to improve constitutional compliance
-                improved_response, compliance_score = (
-                    await self._critique_revision_cycle(prompt, response)
-                )
+                (
+                    improved_response,
+                    compliance_score,
+                ) = await self._critique_revision_cycle(prompt, response)
 
                 # Only include data that meets constitutional threshold
                 if compliance_score >= self.config.compliance_threshold:
@@ -239,7 +236,7 @@ class ConstitutionalTrainer:
 
     async def _critique_revision_cycle(
         self, prompt: str, response: str
-    ) -> Tuple[str, float]:
+    ) -> tuple[str, float]:
         """Execute critique-revision cycle for constitutional compliance improvement."""
         current_response = response
         best_score = 0.0
@@ -279,7 +276,7 @@ class ConstitutionalTrainer:
         return best_response, best_score
 
     async def _generate_constitutional_critique(
-        self, prompt: str, response: str, violations: List[str]
+        self, prompt: str, response: str, violations: list[str]
     ) -> str:
         """Generate constitutional critique for response improvement."""
         violations_text = (
@@ -358,10 +355,10 @@ class ConstitutionalTrainer:
 
     async def _execute_constitutional_training(
         self,
-        processed_data: List[Dict[str, Any]],
-        privacy_config: Optional[Dict[str, Any]],
-        progress_callback: Optional[Callable[[float], None]],
-    ) -> Dict[str, Any]:
+        processed_data: list[dict[str, Any]],
+        privacy_config: dict[str, Any] | None,
+        progress_callback: Callable[[float], None] | None,
+    ) -> dict[str, Any]:
         """Execute the actual constitutional training process."""
 
         # Prepare dataset
@@ -453,13 +450,15 @@ class ConstitutionalTrainer:
 
         return training_metrics
 
-    def _prepare_dataset(self, processed_data: List[Dict[str, Any]]) -> Dataset:
+    def _prepare_dataset(self, processed_data: list[dict[str, Any]]) -> Dataset:
         """Prepare dataset for training."""
 
         def tokenize_function(examples):
             # Combine prompt and response for causal language modeling
             texts = []
-            for prompt, response in zip(examples["prompt"], examples["response"]):
+            for prompt, response in zip(
+                examples["prompt"], examples["response"], strict=False
+            ):
                 text = f"{prompt}\n\n{response}{self.tokenizer.eos_token}"
                 texts.append(text)
 
@@ -505,10 +504,12 @@ class ConstitutionalTrainer:
 
             for prompt in test_prompts:
                 response = await self._generate_response(prompt)
-                is_compliant, score, violations = (
-                    await self.validator.validate_response(
-                        response, {"prompt": prompt, "validation_type": "final"}
-                    )
+                (
+                    is_compliant,
+                    score,
+                    violations,
+                ) = await self.validator.validate_response(
+                    response, {"prompt": prompt, "validation_type": "final"}
                 )
                 compliance_scores.append(score)
 
@@ -523,7 +524,7 @@ class ConstitutionalTrainer:
             logger.error(f"Final constitutional validation failed: {e}")
             return 0.0
 
-    async def _log_training_completion(self, training_results: Dict[str, Any]):
+    async def _log_training_completion(self, training_results: dict[str, Any]):
         """Log training completion to Audit Engine."""
         audit_event = {
             "event_type": "constitutional_training_completed",

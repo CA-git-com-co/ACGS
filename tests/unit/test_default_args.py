@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import pytest
-
 from nemo_skills.pipeline.cli import generate, wrap_arguments
 
 

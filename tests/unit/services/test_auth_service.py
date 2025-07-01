@@ -6,10 +6,11 @@ Tests for the core authentication functionality including JWT token management,
 user authentication, and authorization mechanisms.
 """
 
-import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
 from datetime import datetime, timedelta
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import jwt
+import pytest
 
 # Mark all tests in this module as unit tests
 pytestmark = pytest.mark.unit
@@ -228,7 +229,7 @@ class TestAuthService:
         # Test security headers presence
         for header, value in expected_headers.items():
             assert header in expected_headers
-            assert expected_headers[header] == value
+            assert value == value
 
     @pytest.mark.asyncio
     async def test_session_management(self, sample_user):

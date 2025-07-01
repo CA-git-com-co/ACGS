@@ -10,4 +10,4 @@ from .encryption import EncryptionManager
 from .secrets_manager import SecretsManager
 from .security_scanner import SecurityScanner
 
-__all__ = ["EncryptionManager", "AuditLogger", "SecurityScanner", "SecretsManager"]
+__all__ = ["AuditLogger", "EncryptionManager", "SecretsManager", "SecurityScanner"]

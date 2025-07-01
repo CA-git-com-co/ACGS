@@ -55,7 +55,7 @@ class AuthenticationTester:
 
         try:
             result = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=timeout
+                cmd, check=False, capture_output=True, text=True, timeout=timeout
             )
             output_lines = result.stdout.strip().split("\n")
 
@@ -100,11 +100,10 @@ class AuthenticationTester:
             self.success_count += 1
             print(f"✅ User registration successful: {self.test_username}")
             return True
-        else:
-            print(
-                f"❌ User registration failed: {result['status_code']} - {result.get('response', 'No response')}"
-            )
-            return False
+        print(
+            f"❌ User registration failed: {result['status_code']} - {result.get('response', 'No response')}"
+        )
+        return False
 
     def test_user_login(self) -> bool:
         """Test user login and token acquisition."""
@@ -126,9 +125,8 @@ class AuthenticationTester:
                     self.success_count += 1
                     print("✅ User login successful, token acquired")
                     return True
-                else:
-                    print("❌ Login successful but no access token in response")
-                    return False
+                print("❌ Login successful but no access token in response")
+                return False
             except json.JSONDecodeError:
                 print(f"❌ Login response not valid JSON: {result['response']}")
                 return False
@@ -160,9 +158,8 @@ class AuthenticationTester:
                     self.success_count += 1
                     print("✅ Authenticated request successful")
                     return True
-                else:
-                    print("❌ Authenticated request returned wrong user data")
-                    return False
+                print("❌ Authenticated request returned wrong user data")
+                return False
             except json.JSONDecodeError:
                 print("❌ Authenticated request response not valid JSON")
                 return False
@@ -197,9 +194,8 @@ class AuthenticationTester:
                     self.success_count += 1
                     print("✅ Token refresh successful")
                     return True
-                else:
-                    print("❌ Token refresh did not return new token")
-                    return False
+                print("❌ Token refresh did not return new token")
+                return False
             except json.JSONDecodeError:
                 print("❌ Token refresh response not valid JSON")
                 return False
@@ -228,11 +224,10 @@ class AuthenticationTester:
             self.success_count += 1
             print("✅ User logout successful")
             return True
-        else:
-            print(
-                f"❌ User logout failed: {result['status_code']} - {result.get('response', 'No response')}"
-            )
-            return False
+        print(
+            f"❌ User logout failed: {result['status_code']} - {result.get('response', 'No response')}"
+        )
+        return False
 
     def test_role_based_access(self) -> bool:
         """Test role-based access control."""
@@ -259,9 +254,8 @@ class AuthenticationTester:
             self.success_count += 1
             print(f"✅ RBAC test completed (status: {result['status_code']})")
             return True
-        else:
-            print(f"❌ RBAC test failed: {result['status_code']}")
-            return False
+        print(f"❌ RBAC test failed: {result['status_code']}")
+        return False
 
     def run_authentication_tests(self) -> bool:
         """Run complete authentication workflow tests."""
@@ -294,11 +288,10 @@ class AuthenticationTester:
                 f"✅ SUCCESS: Authentication workflow passed with {success_rate:.1f}% success rate"
             )
             return True
-        else:
-            print(
-                f"❌ FAILED: Authentication workflow failed. Target: {target_success_rate}%, Actual: {success_rate:.1f}%"
-            )
-            return False
+        print(
+            f"❌ FAILED: Authentication workflow failed. Target: {target_success_rate}%, Actual: {success_rate:.1f}%"
+        )
+        return False
 
 
 def main():

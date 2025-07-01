@@ -16,7 +16,8 @@ import json
 import logging
 import time
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Any
+
 import httpx
 import jwt as pyjwt
 
@@ -49,7 +50,7 @@ class ACGSPenetrationTester:
             "low_issues": 0,
         }
 
-    async def test_authentication_bypass(self) -> List[Dict]:
+    async def test_authentication_bypass(self) -> list[dict]:
         """Test for authentication bypass vulnerabilities."""
         logger.info("Testing authentication bypass...")
         vulnerabilities = []
@@ -86,7 +87,7 @@ class ACGSPenetrationTester:
                                     "type": "Authentication Bypass",
                                     "service": service_name,
                                     "endpoint": test_case["endpoint"],
-                                    "description": f"Protected endpoint accessible without authentication",
+                                    "description": "Protected endpoint accessible without authentication",
                                     "status_code": response.status_code,
                                 }
                             )
@@ -97,7 +98,7 @@ class ACGSPenetrationTester:
 
         return vulnerabilities
 
-    async def test_jwt_security(self) -> List[Dict]:
+    async def test_jwt_security(self) -> list[dict]:
         """Test JWT token security."""
         logger.info("Testing JWT security...")
         vulnerabilities = []
@@ -141,7 +142,7 @@ class ACGSPenetrationTester:
 
         return vulnerabilities
 
-    async def test_input_validation(self) -> List[Dict]:
+    async def test_input_validation(self) -> list[dict]:
         """Test input validation vulnerabilities."""
         logger.info("Testing input validation...")
         vulnerabilities = []
@@ -216,7 +217,7 @@ class ACGSPenetrationTester:
 
         return vulnerabilities
 
-    async def test_rate_limiting(self) -> List[Dict]:
+    async def test_rate_limiting(self) -> list[dict]:
         """Test rate limiting effectiveness."""
         logger.info("Testing rate limiting...")
         vulnerabilities = []
@@ -257,7 +258,7 @@ class ACGSPenetrationTester:
 
         return vulnerabilities
 
-    async def test_cors_configuration(self) -> List[Dict]:
+    async def test_cors_configuration(self) -> list[dict]:
         """Test CORS configuration."""
         logger.info("Testing CORS configuration...")
         vulnerabilities = []
@@ -310,7 +311,7 @@ class ACGSPenetrationTester:
 
         return vulnerabilities
 
-    async def run_all_tests(self) -> Dict[str, Any]:
+    async def run_all_tests(self) -> dict[str, Any]:
         """Run all penetration tests."""
         logger.info("Starting comprehensive penetration testing...")
 

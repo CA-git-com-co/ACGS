@@ -5,13 +5,12 @@ Performance tests for Academic Submission System.
 Tests validation speed, memory usage, and scalability.
 """
 
-import pytest
-import time
-import psutil
-import os
 import concurrent.futures
-from pathlib import Path
+import os
+import time
 
+import psutil
+import pytest
 from quality_assurance.submission_validator import SubmissionValidator
 
 
@@ -414,7 +413,6 @@ class TestResourceUsage:
     def test_cpu_usage_efficiency(self, complete_paper):
         """Test CPU usage during validation."""
         import threading
-        import time
 
         cpu_percentages = []
         monitoring = True

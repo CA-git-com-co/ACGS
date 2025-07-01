@@ -10,7 +10,7 @@ import logging
 import statistics
 import time
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 import aiohttp
 
@@ -35,7 +35,7 @@ class APIPerformanceTester:
 
     async def test_service_health(
         self, session: aiohttp.ClientSession, service: str, port: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test individual service health endpoint performance."""
         url = f"{self.base_url}:{port}/health"
         response_times = []
@@ -58,7 +58,7 @@ class APIPerformanceTester:
                         errors += 1
 
             except Exception as e:
-                logger.warning(f"Request {i+1} failed for {service}: {e}")
+                logger.warning(f"Request {i + 1} failed for {service}: {e}")
                 errors += 1
 
         if response_times:
@@ -73,17 +73,16 @@ class APIPerformanceTester:
                 "total_requests": 10,
                 "errors": errors,
             }
-        else:
-            return {
-                "service": service,
-                "port": port,
-                "status": "unavailable",
-                "errors": errors,
-            }
+        return {
+            "service": service,
+            "port": port,
+            "status": "unavailable",
+            "errors": errors,
+        }
 
     async def test_load_balancer_performance(
         self, session: aiohttp.ClientSession
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test HAProxy load balancer performance."""
         url = f"{self.base_url}:8090/health"
         response_times = []
@@ -108,7 +107,7 @@ class APIPerformanceTester:
                         errors += 1
 
             except Exception as e:
-                logger.warning(f"Load balancer request {i+1} failed: {e}")
+                logger.warning(f"Load balancer request {i + 1} failed: {e}")
                 errors += 1
 
         if response_times:
@@ -123,13 +122,12 @@ class APIPerformanceTester:
                 "total_requests": 20,
                 "errors": errors,
             }
-        else:
-            return {
-                "service": "haproxy_load_balancer",
-                "port": 8090,
-                "status": "unavailable",
-                "errors": errors,
-            }
+        return {
+            "service": "haproxy_load_balancer",
+            "port": 8090,
+            "status": "unavailable",
+            "errors": errors,
+        }
 
     async def run_concurrent_load_test(
         self,
@@ -137,7 +135,7 @@ class APIPerformanceTester:
         service: str,
         port: int,
         concurrent_requests: int = 50,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Run concurrent load test on a service."""
         url = f"{self.base_url}:{port}/health"
 
@@ -182,13 +180,12 @@ class APIPerformanceTester:
                 "total_duration_seconds": round(total_time, 2),
                 "requests_per_second": round(concurrent_requests / total_time, 2),
             }
-        else:
-            return {
-                "service": service,
-                "status": "failed_load_test",
-                "concurrent_requests": concurrent_requests,
-                "successful_requests": 0,
-            }
+        return {
+            "service": service,
+            "status": "failed_load_test",
+            "concurrent_requests": concurrent_requests,
+            "successful_requests": 0,
+        }
 
     async def run_performance_tests(self):
         """Run comprehensive performance tests."""
@@ -226,8 +223,8 @@ class APIPerformanceTester:
             }
 
     def _generate_summary(
-        self, health_results: List[Dict], load_results: List[Dict]
-    ) -> Dict[str, Any]:
+        self, health_results: list[dict], load_results: list[dict]
+    ) -> dict[str, Any]:
         """Generate performance summary."""
         available_services = [r for r in health_results if r.get("success_rate", 0) > 0]
         avg_response_times = [
@@ -325,7 +322,7 @@ class APIPerformanceTester:
 
         # Summary
         summary = self.results["summary"]
-        print(f"\n📈 Performance Summary:")
+        print("\n📈 Performance Summary:")
         print("-" * 30)
         print(
             f"Available Services: {summary['available_services']}/{summary['total_services_tested']}"

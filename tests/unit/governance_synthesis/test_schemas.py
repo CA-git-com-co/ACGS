@@ -2,48 +2,9 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.schemas
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.governance_synthesis.gs_service.app.schemas import (
-    GSTemplateBase,
-    GSTemplateCreate,
-    GSTemplateUpdate,
-    GSTemplateResponse,
-    GSTemplateListResponse,
-    GSPolicyBase,
     GSPolicyCreate,
-    GSPolicyUpdateRequest,
-    GSPolicyResponse,
-    GSPolicyListResponse,
     SynthesisRequest,
-    ACPrinciple,
-    GeneratedRuleInfo,
-    SynthesisResponse,
-    LLMInterpretationInput,
-    LLMSuggestedAtom,
-    LLMSuggestedRule,
-    LLMStructuredOutput,
-    ConstitutionalSynthesisInput,
-    ConstitutionalComplianceInfo,
-    ConstitutionallyCompliantRule,
-    ConstitutionalSynthesisOutput,
-    PolicyRuleBase,
-    PolicyRuleCreate,
-    PolicyRule,
-    FVPolicyRuleRef,
-    FVVerificationRequest,
-    FVVerificationResult,
-    FVVerificationResponse,
-    ECProposal,
-    ECGovernanceDecision,
-    ECConstitutionalPromptingInput,
-    ECConstitutionalPromptingOutput,
-    ECGovernanceRequest,
-    ECGovernanceResponse,
-    Config,
-    Config,
-    Config,
-    Config,
 )
 
 

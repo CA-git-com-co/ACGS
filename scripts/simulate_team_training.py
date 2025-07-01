@@ -8,11 +8,11 @@ including workshops, hands-on training, and certification tracking.
 
 import json
 import logging
-from datetime import datetime, timezone, timedelta
-from pathlib import Path
-from typing import Dict, List, Any
-from dataclasses import dataclass
 import random
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -55,7 +55,7 @@ class TeamTrainingSimulator:
         self.team_members = self._create_team_members()
         self.training_sessions = []
 
-    def _create_team_members(self) -> List[TeamMember]:
+    def _create_team_members(self) -> list[TeamMember]:
         """Create simulated team members across different roles."""
         members = []
 
@@ -90,7 +90,7 @@ class TeamTrainingSimulator:
 
         return members
 
-    def simulate_training_program(self) -> Dict[str, Any]:
+    def simulate_training_program(self) -> dict[str, Any]:
         """Simulate the complete training program."""
         logger.info("🎓 Starting API Versioning Team Training Simulation...")
 
@@ -226,7 +226,7 @@ class TeamTrainingSimulator:
 
     def _generate_training_report(
         self, start_date: datetime, end_date: datetime
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate comprehensive training report."""
         total_members = len(self.team_members)
         certified_members = len([m for m in self.team_members if m.certified])
@@ -360,13 +360,13 @@ def main():
     print(f"🎓 Certification Rate: {summary['certification_rate']}%")
     print(f"😊 Avg Satisfaction: {summary['avg_satisfaction_score']}/5.0")
 
-    print(f"\n📊 TEAM BREAKDOWN:")
+    print("\n📊 TEAM BREAKDOWN:")
     for team, stats in report["team_statistics"].items():
         print(
             f"   {team}: {stats['certified_members']}/{stats['total_members']} certified ({stats['certification_rate']}%)"
         )
 
-    print(f"\n🎯 SUCCESS CRITERIA:")
+    print("\n🎯 SUCCESS CRITERIA:")
     criteria = report["success_criteria"]
     print(
         f"   Training Completion: {criteria['completion_rate_achieved']}% (target: {criteria['completion_rate_target']}%)"

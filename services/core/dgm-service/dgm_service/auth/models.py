@@ -5,7 +5,6 @@ Authentication models for DGM Service.
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
 
 
 class DGMPermissions(Enum):
@@ -47,9 +46,9 @@ class Permission:
     """Permission model."""
 
     name: str
-    description: Optional[str] = None
-    resource: Optional[str] = None
-    action: Optional[str] = None
+    description: str | None = None
+    resource: str | None = None
+    action: str | None = None
 
 
 @dataclass
@@ -57,8 +56,8 @@ class UserRole:
     """User role model."""
 
     name: str
-    permissions: List[str]
-    description: Optional[str] = None
+    permissions: list[str]
+    description: str | None = None
     is_system_role: bool = False
 
 
@@ -68,15 +67,15 @@ class User:
 
     id: str
     username: str
-    email: Optional[str] = None
-    full_name: Optional[str] = None
-    roles: List[UserRole] = None
-    permissions: List[Permission] = None
+    email: str | None = None
+    full_name: str | None = None
+    roles: list[UserRole] = None
+    permissions: list[Permission] = None
     is_active: bool = True
     is_admin: bool = False
-    created_at: Optional[datetime] = None
-    last_login: Optional[datetime] = None
-    cached_at: Optional[datetime] = None
+    created_at: datetime | None = None
+    last_login: datetime | None = None
+    cached_at: datetime | None = None
 
     def __post_init__(self):
         if self.roles is None:
@@ -106,7 +105,7 @@ class User:
         """Check if user has a specific role."""
         return any(role.name == role_name for role in self.roles)
 
-    def get_all_permissions(self) -> List[str]:
+    def get_all_permissions(self) -> list[str]:
         """Get all permissions from roles and direct assignments."""
         all_permissions = set()
 
@@ -172,10 +171,10 @@ class AuthContext:
 
     user: User
     token: str
-    permissions: List[str]
-    roles: List[str]
+    permissions: list[str]
+    roles: list[str]
     is_service_account: bool = False
-    service_name: Optional[str] = None
+    service_name: str | None = None
 
     def has_permission(self, permission: str) -> bool:
         """Check if context has permission."""

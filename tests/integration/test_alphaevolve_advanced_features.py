@@ -15,7 +15,7 @@ import asyncio
 import sys
 import time
 import uuid
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -569,7 +569,7 @@ class TestFederatedLearningOrchestrator:
         print("✅ Reliability target validation completed")
         print(f"   Successful decisions: {successful_decisions}/{total_decisions}")
         print(
-            f"   Reliability rate: {reliability_rate:.4f} ({reliability_rate*100:.2f}%)"
+            f"   Reliability rate: {reliability_rate:.4f} ({reliability_rate * 100:.2f}%)"
         )
 
 

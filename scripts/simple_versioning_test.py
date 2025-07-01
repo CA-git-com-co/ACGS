@@ -6,7 +6,6 @@ Basic test to verify our versioning components are working without complex impor
 """
 
 import sys
-import os
 from pathlib import Path
 
 # Add the services directory to Python path
@@ -67,7 +66,7 @@ def test_api_models():
     try:
         # Import API models
         sys.path.insert(0, str(services_path / "shared"))
-        from api_models import APIResponse, APIStatus, APIMetadata
+        from api_models import APIMetadata, APIResponse, APIStatus
 
         # Test basic response
         response = APIResponse(
@@ -129,12 +128,12 @@ def test_file_structure():
             missing_files.append(file_path)
             print(f"  ❌ {file_path} - MISSING")
 
-    print(f"\n📊 File Structure Summary:")
+    print("\n📊 File Structure Summary:")
     print(f"  Existing: {len(existing_files)}")
     print(f"  Missing: {len(missing_files)}")
 
     if missing_files:
-        print(f"\n⚠️ Missing Files:")
+        print("\n⚠️ Missing Files:")
         for file_path in missing_files:
             print(f"    - {file_path}")
 
@@ -236,7 +235,7 @@ def main():
         status = "✅ PASS" if result else "❌ FAIL"
         print(f"{status} {test_name}")
 
-    print(f"\nOverall: {passed}/{total} tests passed ({passed/total*100:.1f}%)")
+    print(f"\nOverall: {passed}/{total} tests passed ({passed / total * 100:.1f}%)")
 
     if passed == total:
         print("\n🎉 All tests passed! API versioning system is properly implemented.")
@@ -246,14 +245,13 @@ def main():
         print("  3. Validate CI/CD pipeline integration")
         print("  4. Begin phased rollout according to implementation plan")
         return 0
-    else:
-        print(f"\n⚠️ {total - passed} tests failed. Review implementation.")
-        print("\n🔧 RECOMMENDED ACTIONS:")
-        print("  1. Check missing files and create them")
-        print("  2. Fix import issues")
-        print("  3. Validate file contents and structure")
-        print("  4. Re-run tests after fixes")
-        return 1
+    print(f"\n⚠️ {total - passed} tests failed. Review implementation.")
+    print("\n🔧 RECOMMENDED ACTIONS:")
+    print("  1. Check missing files and create them")
+    print("  2. Fix import issues")
+    print("  3. Validate file contents and structure")
+    print("  4. Re-run tests after fixes")
+    return 1
 
 
 if __name__ == "__main__":

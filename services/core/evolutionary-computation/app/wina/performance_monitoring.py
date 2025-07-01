@@ -5,13 +5,11 @@ Comprehensive performance monitoring for WINA optimization components
 with constitutional compliance tracking and system health metrics.
 """
 
-import asyncio
 import logging
-import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
 from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -97,7 +95,7 @@ class WINAConstitutionalComplianceMetrics:
     compliance_rate: float
     violation_count: int
     average_compliance_score: float
-    principle_scores: Dict[str, float]
+    principle_scores: dict[str, float]
     enforcement_actions: int
     timestamp: datetime = field(default_factory=datetime.now)
 
@@ -123,11 +121,11 @@ class WINAPerformanceCollector:
         self.collection_interval = self._get_collection_interval()
 
         # Metrics storage
-        self.system_health_metrics: List[WINASystemHealthMetrics] = []
-        self.neuron_activation_metrics: List[WINANeuronActivationMetrics] = []
-        self.gating_metrics: List[WINADynamicGatingMetrics] = []
-        self.integration_metrics: List[WINAIntegrationPerformanceMetrics] = []
-        self.constitutional_metrics: List[WINAConstitutionalComplianceMetrics] = []
+        self.system_health_metrics: list[WINASystemHealthMetrics] = []
+        self.neuron_activation_metrics: list[WINANeuronActivationMetrics] = []
+        self.gating_metrics: list[WINADynamicGatingMetrics] = []
+        self.integration_metrics: list[WINAIntegrationPerformanceMetrics] = []
+        self.constitutional_metrics: list[WINAConstitutionalComplianceMetrics] = []
 
         # Performance tracking
         self.collection_start_time = datetime.now()
@@ -173,8 +171,9 @@ class WINAPerformanceCollector:
             # Simulate system health collection
             # In real implementation, this would collect actual system metrics
 
-            import psutil
             import random
+
+            import psutil
 
             # Get actual system metrics where possible
             cpu_usage = psutil.cpu_percent(interval=0.1)
@@ -298,7 +297,7 @@ class WINAPerformanceCollector:
         compliance_rate: float,
         violation_count: int,
         average_score: float,
-        principle_scores: Dict[str, float],
+        principle_scores: dict[str, float],
         enforcement_actions: int,
     ):
         """Record constitutional compliance metrics."""
@@ -317,7 +316,7 @@ class WINAPerformanceCollector:
         except Exception as e:
             logger.error(f"Failed to record constitutional compliance metrics: {e}")
 
-    def get_performance_summary(self, time_range: timedelta = None) -> Dict[str, Any]:
+    def get_performance_summary(self, time_range: timedelta = None) -> dict[str, Any]:
         """
         Get comprehensive performance summary.
 
@@ -374,8 +373,8 @@ class WINAPerformanceCollector:
             return {"error": str(e)}
 
     def _summarize_health_metrics(
-        self, metrics: List[WINASystemHealthMetrics]
-    ) -> Dict[str, Any]:
+        self, metrics: list[WINASystemHealthMetrics]
+    ) -> dict[str, Any]:
         """Summarize system health metrics."""
         if not metrics:
             return {"status": "no_data"}
@@ -396,8 +395,8 @@ class WINAPerformanceCollector:
         }
 
     def _summarize_gating_metrics(
-        self, metrics: List[WINADynamicGatingMetrics]
-    ) -> Dict[str, Any]:
+        self, metrics: list[WINADynamicGatingMetrics]
+    ) -> dict[str, Any]:
         """Summarize gating performance metrics."""
         if not metrics:
             return {"status": "no_data"}
@@ -420,8 +419,8 @@ class WINAPerformanceCollector:
         }
 
     def _summarize_constitutional_metrics(
-        self, metrics: List[WINAConstitutionalComplianceMetrics]
-    ) -> Dict[str, Any]:
+        self, metrics: list[WINAConstitutionalComplianceMetrics]
+    ) -> dict[str, Any]:
         """Summarize constitutional compliance metrics."""
         if not metrics:
             return {"status": "no_data"}
@@ -440,8 +439,8 @@ class WINAPerformanceCollector:
         }
 
     def _summarize_integration_metrics(
-        self, metrics: List[WINAIntegrationPerformanceMetrics]
-    ) -> Dict[str, Any]:
+        self, metrics: list[WINAIntegrationPerformanceMetrics]
+    ) -> dict[str, Any]:
         """Summarize service integration metrics."""
         if not metrics:
             return {"status": "no_data"}
@@ -483,7 +482,7 @@ class WINAPerformanceCollector:
         except Exception as e:
             logger.error(f"Failed to check health alerts: {e}")
 
-    def _get_alert_status(self) -> Dict[str, Any]:
+    def _get_alert_status(self) -> dict[str, Any]:
         """Get current alert status."""
         # This would integrate with actual alerting system
         return {
@@ -492,7 +491,7 @@ class WINAPerformanceCollector:
             "last_alert_time": None,
         }
 
-    def _generate_performance_recommendations(self) -> List[str]:
+    def _generate_performance_recommendations(self) -> list[str]:
         """Generate performance improvement recommendations."""
         recommendations = []
 

@@ -132,14 +132,14 @@ services = MockServices()
 
 # Export all mock classes for direct import
 __all__ = [
-    "ConstitutionalPrinciple",
     "ConstitutionalDistanceCalculator",
-    "ErrorPredictionModel",
-    "RecoveryStrategyDispatcher",
-    "ValidationDSLParser",
     "ConstitutionalFidelityMonitor",
+    "ConstitutionalPrinciple",
+    "ErrorPredictionModel",
     "FailureType",
+    "RecoveryStrategyDispatcher",
     "SynthesisAttemptLog",
+    "ValidationDSLParser",
     "core",
     "services",
 ]

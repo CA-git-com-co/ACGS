@@ -123,7 +123,7 @@ class ACGSGroqTester:
                     prompt = f"""
 As an AI governance expert, analyze this constitutional principle and generate a policy rule:
 
-Principle: "{self.test_scenarios[0]['principle']}"
+Principle: "{self.test_scenarios[0]["principle"]}"
 
 Generate a structured policy rule that implements this principle in a governance system.
 Include specific conditions and actions.

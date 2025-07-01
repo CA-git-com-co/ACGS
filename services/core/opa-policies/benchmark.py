@@ -4,13 +4,11 @@ ACGS-1 Lite Policy Engine Optimization Benchmark Script
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import asyncio
-import json
-import statistics
-import time
-from typing import Dict, List
-import sys
 import argparse
+import asyncio
+import statistics
+import sys
+import time
 
 import httpx
 
@@ -38,15 +36,14 @@ class PolicyEngineBenchmark:
                 response = await client.get(f"{self.base_url}/v1/data/acgs/main/health")
                 if response.status_code == 200:
                     data = response.json()
-                    print(f"✅ Service is healthy")
+                    print("✅ Service is healthy")
                     print(f"   Version: {data.get('version', 'unknown')}")
                     print(
                         f"   Constitutional Hash: {data.get('constitutional_hash', 'unknown')}"
                     )
                     return True
-                else:
-                    print(f"❌ Service health check failed: {response.status_code}")
-                    return False
+                print(f"❌ Service health check failed: {response.status_code}")
+                return False
         except Exception as e:
             print(f"❌ Failed to connect to service: {e}")
             return False
@@ -83,7 +80,7 @@ class PolicyEngineBenchmark:
 
     async def benchmark_baseline_latency(
         self, num_requests: int = 5000
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Benchmark baseline policy evaluation latency"""
         print(f"\n📊 Running baseline latency benchmark ({num_requests} requests)...")
 
@@ -108,7 +105,7 @@ class PolicyEngineBenchmark:
             for i in range(num_requests):
                 if i % 500 == 0 and i > 0:
                     print(
-                        f"   Progress: {i}/{num_requests} ({i/num_requests*100:.1f}%)"
+                        f"   Progress: {i}/{num_requests} ({i / num_requests * 100:.1f}%)"
                     )
 
                 request_start = time.perf_counter_ns()
@@ -163,9 +160,9 @@ class PolicyEngineBenchmark:
         )
         return results
 
-    async def benchmark_cache_effectiveness(self) -> Dict[str, float]:
+    async def benchmark_cache_effectiveness(self) -> dict[str, float]:
         """Benchmark cache hit rates and performance impact"""
-        print(f"\n🗄️  Running cache effectiveness benchmark...")
+        print("\n🗄️  Running cache effectiveness benchmark...")
 
         # Test request that should be cacheable
         cacheable_request = {
@@ -225,9 +222,9 @@ class PolicyEngineBenchmark:
             )
             return results
 
-    async def benchmark_different_scenarios(self) -> Dict[str, Dict[str, float]]:
+    async def benchmark_different_scenarios(self) -> dict[str, dict[str, float]]:
         """Benchmark different policy evaluation scenarios"""
-        print(f"\n🎭 Running multi-scenario benchmark...")
+        print("\n🎭 Running multi-scenario benchmark...")
 
         scenarios = {
             "safe_action": {
@@ -337,12 +334,12 @@ class PolicyEngineBenchmark:
                 else:
                     results[scenario_name] = {"error": "No successful requests"}
 
-        print(f"✅ Multi-scenario benchmark completed")
+        print("✅ Multi-scenario benchmark completed")
         return results
 
     async def benchmark_concurrent_load(
         self, concurrent_users: int = 50, requests_per_user: int = 100
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Benchmark concurrent load handling"""
         print(
             f"\n⚡ Running concurrent load benchmark ({concurrent_users} users, {requests_per_user} requests each)..."
@@ -360,7 +357,7 @@ class PolicyEngineBenchmark:
             },
         }
 
-        async def user_session(user_id: int) -> List[float]:
+        async def user_session(user_id: int) -> list[float]:
             """Simulate a single user session"""
             latencies = []
             async with httpx.AsyncClient(timeout=30.0) as client:
@@ -419,15 +416,14 @@ class PolicyEngineBenchmark:
         )
         return results
 
-    async def get_service_metrics(self) -> Dict[str, any]:
+    async def get_service_metrics(self) -> dict[str, any]:
         """Get current service metrics"""
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
                 response = await client.get(f"{self.base_url}/v1/metrics")
                 if response.status_code == 200:
                     return response.json()
-                else:
-                    return {"error": f"Metrics request failed: {response.status_code}"}
+                return {"error": f"Metrics request failed: {response.status_code}"}
         except Exception as e:
             return {"error": f"Failed to get metrics: {e}"}
 
@@ -440,10 +436,10 @@ class PolicyEngineBenchmark:
         # Baseline latency results
         if "baseline" in self.results:
             baseline = self.results["baseline"]
-            print(f"\n📊 BASELINE LATENCY PERFORMANCE:")
+            print("\n📊 BASELINE LATENCY PERFORMANCE:")
             print(f"   Total Requests: {baseline.get('total_requests', 0)}")
             print(
-                f"   Success Rate:   {baseline.get('successful_requests', 0)}/{baseline.get('total_requests', 0)} ({baseline.get('successful_requests', 0)/baseline.get('total_requests', 1)*100:.1f}%)"
+                f"   Success Rate:   {baseline.get('successful_requests', 0)}/{baseline.get('total_requests', 0)} ({baseline.get('successful_requests', 0) / baseline.get('total_requests', 1) * 100:.1f}%)"
             )
             print(
                 f"   Throughput:     {baseline.get('requests_per_second', 0):.0f} RPS"
@@ -459,7 +455,7 @@ class PolicyEngineBenchmark:
         # Cache effectiveness results
         if "cache" in self.results:
             cache = self.results["cache"]
-            print(f"\n🗄️  CACHE EFFECTIVENESS:")
+            print("\n🗄️  CACHE EFFECTIVENESS:")
             print(f"   Cache Miss:     {cache.get('cache_miss_latency_ms', 0):.3f} ms")
             print(
                 f"   Cache Hit Avg:  {cache.get('cache_hit_avg_latency_ms', 0):.3f} ms"
@@ -472,7 +468,7 @@ class PolicyEngineBenchmark:
         # Scenario results
         if "scenarios" in self.results:
             scenarios = self.results["scenarios"]
-            print(f"\n🎭 SCENARIO PERFORMANCE:")
+            print("\n🎭 SCENARIO PERFORMANCE:")
             for scenario_name, scenario_data in scenarios.items():
                 if "error" not in scenario_data:
                     print(f"   {scenario_name.replace('_', ' ').title()}:")
@@ -482,10 +478,10 @@ class PolicyEngineBenchmark:
         # Concurrent load results
         if "concurrent" in self.results:
             concurrent = self.results["concurrent"]
-            print(f"\n⚡ CONCURRENT LOAD PERFORMANCE:")
+            print("\n⚡ CONCURRENT LOAD PERFORMANCE:")
             print(f"   Concurrent Users: {concurrent.get('concurrent_users', 0)}")
             print(
-                f"   Success Rate:     {concurrent.get('successful_requests', 0)}/{concurrent.get('total_requests', 0)} ({concurrent.get('successful_requests', 0)/concurrent.get('total_requests', 1)*100:.1f}%)"
+                f"   Success Rate:     {concurrent.get('successful_requests', 0)}/{concurrent.get('total_requests', 0)} ({concurrent.get('successful_requests', 0) / concurrent.get('total_requests', 1) * 100:.1f}%)"
             )
             print(f"   Overall RPS:      {concurrent.get('overall_rps', 0):.0f}")
             print(f"   P99 Latency:      {concurrent.get('p99_latency_ms', 0):.3f} ms")
@@ -496,7 +492,7 @@ class PolicyEngineBenchmark:
             metrics = self.results["service_metrics"]
             if "error" not in metrics:
                 targets = metrics.get("targets_met", {})
-                print(f"\n📈 SERVICE METRICS:")
+                print("\n📈 SERVICE METRICS:")
                 print(f"   Total Requests:    {metrics.get('request_count', 0)}")
                 print(f"   Cache Hit Rate:    {metrics.get('cache_hit_rate', 0):.1%}")
                 print(f"   L1 Hit Rate:       {metrics.get('l1_hit_rate', 0):.1%}")
@@ -505,7 +501,7 @@ class PolicyEngineBenchmark:
                     f"   Partial Eval Rate: {metrics.get('partial_eval_rate', 0):.1%}"
                 )
 
-                print(f"\n🎯 TARGET ACHIEVEMENT:")
+                print("\n🎯 TARGET ACHIEVEMENT:")
                 print(
                     f"   P50 < 0.5ms:  {'✅' if targets.get('p50_under_0_5ms') else '❌'}"
                 )

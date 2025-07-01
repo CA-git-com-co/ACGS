@@ -328,7 +328,9 @@ class TestDGMModels:
         )
 
         config2 = SystemConfiguration(
-            key="test_config", value="value2", category="test"  # Same key
+            key="test_config",
+            value="value2",
+            category="test",  # Same key
         )
 
         test_db_session.add(config1)

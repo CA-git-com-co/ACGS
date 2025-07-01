@@ -5,18 +5,15 @@ Comprehensive chaos engineering and fault injection testing for ACGS microservic
 """
 
 import asyncio
-import json
 import logging
-import random
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from enum import Enum
-from typing import Dict, List, Optional, Any, Callable
+from typing import Any
 
 import aiohttp
-import docker
 import psutil
 from prometheus_client import (
     CollectorRegistry,
@@ -25,6 +22,8 @@ from prometheus_client import (
     Histogram,
     start_http_server,
 )
+
+import docker
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -66,15 +65,15 @@ class ChaosExperiment:
     experiment_id: str
     name: str
     chaos_type: ChaosType
-    target_services: List[str]
+    target_services: list[str]
 
     # Experiment parameters
     duration_seconds: int = 300  # 5 minutes default
     intensity: float = 0.5  # 0.0 to 1.0
 
     # Conditions
-    steady_state_hypothesis: Dict[str, Any] = field(default_factory=dict)
-    rollback_conditions: List[str] = field(default_factory=list)
+    steady_state_hypothesis: dict[str, Any] = field(default_factory=dict)
+    rollback_conditions: list[str] = field(default_factory=list)
 
     # Safety measures
     blast_radius: str = "single_service"  # single_service, service_group, system_wide
@@ -82,9 +81,9 @@ class ChaosExperiment:
 
     # Execution metadata
     status: ExperimentStatus = ExperimentStatus.PLANNED
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
-    results: Dict[str, Any] = field(default_factory=dict)
+    start_time: datetime | None = None
+    end_time: datetime | None = None
+    results: dict[str, Any] = field(default_factory=dict)
 
     # Constitutional compliance
     constitutional_hash: str = CONSTITUTIONAL_HASH
@@ -98,9 +97,9 @@ class SystemMetrics:
     timestamp: datetime
 
     # Service metrics
-    service_response_times: Dict[str, float] = field(default_factory=dict)
-    service_error_rates: Dict[str, float] = field(default_factory=dict)
-    service_availability: Dict[str, bool] = field(default_factory=dict)
+    service_response_times: dict[str, float] = field(default_factory=dict)
+    service_error_rates: dict[str, float] = field(default_factory=dict)
+    service_availability: dict[str, bool] = field(default_factory=dict)
 
     # Infrastructure metrics
     cpu_usage: float = 0.0
@@ -142,8 +141,8 @@ class ACGSChaosFramework:
         }
 
         # Active experiments
-        self.active_experiments: Dict[str, ChaosExperiment] = {}
-        self.experiment_history: List[ChaosExperiment] = []
+        self.active_experiments: dict[str, ChaosExperiment] = {}
+        self.experiment_history: list[ChaosExperiment] = []
 
         # Safety mechanisms
         self.safety_enabled = True
@@ -208,7 +207,7 @@ class ACGSChaosFramework:
         logger.info("ACGS Chaos Engineering Framework started")
 
     async def create_experiment(
-        self, experiment_config: Dict[str, Any]
+        self, experiment_config: dict[str, Any]
     ) -> ChaosExperiment:
         """Create a new chaos experiment."""
         experiment = ChaosExperiment(
@@ -244,7 +243,7 @@ class ACGSChaosFramework:
 
             # Check concurrent experiments limit
             if len(self.active_experiments) >= self.max_concurrent_experiments:
-                logger.error(f"Maximum concurrent experiments limit reached")
+                logger.error("Maximum concurrent experiments limit reached")
                 return False
 
             # Validate steady state
@@ -849,7 +848,7 @@ class ACGSChaosFramework:
                 logger.error(f"Error in safety monitoring loop: {e}")
                 await asyncio.sleep(30)
 
-    def get_framework_status(self) -> Dict[str, Any]:
+    def get_framework_status(self) -> dict[str, Any]:
         """Get chaos framework status."""
         return {
             "active_experiments": len(self.active_experiments),

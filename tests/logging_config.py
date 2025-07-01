@@ -239,7 +239,7 @@ def log_test_failure(
 
     logger.error(f"❌ FAILED: {test_name}")
     logger.error(f"Error Type: {type(error).__name__}")
-    logger.error(f"Error Message: {str(error)}")
+    logger.error(f"Error Message: {error!s}")
     logger.error(f"Traceback:\n{traceback_str}")
     logger.error("-" * 80)
 

@@ -263,7 +263,7 @@ if __name__ == "__main__":
     }
 
     logger.info(f"🚀 Starting Enhanced PGC Service on port {config['port']}")
-    logger.info(f"📊 Constitutional Hash: cdd01ef066bc6cf2")
-    logger.info(f"⚡ Performance Target: <500ms response times, >99.5% availability")
+    logger.info("📊 Constitutional Hash: cdd01ef066bc6cf2")
+    logger.info("⚡ Performance Target: <500ms response times, >99.5% availability")
 
     uvicorn.run(app, **config)

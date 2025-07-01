@@ -7,8 +7,9 @@ import logging
 import re
 import secrets
 import time
+from collections.abc import Callable
 from functools import wraps
-from typing import Any, Callable, Dict
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +17,7 @@ logger = logging.getLogger(__name__)
 class SecurityMiddleware:
     """Comprehensive security middleware for ACGS-1"""
 
-    def __init__(self, config: Dict[str, Any] = None):
+    def __init__(self, config: dict[str, Any] = None):
         self.config = config or {}
         self.rate_limits = {}
         self.failed_attempts = {}

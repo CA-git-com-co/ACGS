@@ -4,7 +4,6 @@ ACGS-PGP Service Startup Validation Script
 Tests all 7 core services can start successfully and validates resource limits
 """
 
-import asyncio
 import json
 import os
 import signal
@@ -108,8 +107,8 @@ class ServiceValidator:
 
     def check_service_health(self, port, timeout=10):
         """Check if service is responding on health endpoint"""
-        import urllib.request
         import urllib.error
+        import urllib.request
 
         health_url = f"http://127.0.0.1:{port}/health"
 
@@ -192,7 +191,7 @@ class ServiceValidator:
                 print(f"❌ {service_id}: {health_msg}")
 
         # Stop all services
-        print(f"\n🔄 Stopping all services...")
+        print("\n🔄 Stopping all services...")
         for service_id, process in self.processes.items():
             self.stop_service(process)
             print(f"🛑 Stopped {service_id}")
@@ -213,13 +212,13 @@ class ServiceValidator:
         print(f"❌ Failed: {len(failed)}/7 services")
 
         if successful:
-            print(f"\n✅ Successfully started services:")
+            print("\n✅ Successfully started services:")
             for service_id in successful:
                 port = self.results[service_id]["port"]
                 print(f"   - {service_id} (port {port})")
 
         if failed:
-            print(f"\n❌ Failed to start services:")
+            print("\n❌ Failed to start services:")
             for service_id in failed:
                 error = self.results[service_id]["error"]
                 port = self.results[service_id]["port"]
@@ -241,14 +240,13 @@ class ServiceValidator:
                 indent=2,
             )
 
-        print(f"\n📄 Detailed report saved to: service_startup_validation_report.json")
+        print("\n📄 Detailed report saved to: service_startup_validation_report.json")
 
         if len(successful) == 7:
-            print(f"\n🎉 All 7 services started successfully!")
+            print("\n🎉 All 7 services started successfully!")
             return True
-        else:
-            print(f"\n⚠️ {len(failed)} services failed to start")
-            return False
+        print(f"\n⚠️ {len(failed)} services failed to start")
+        return False
 
 
 def main():

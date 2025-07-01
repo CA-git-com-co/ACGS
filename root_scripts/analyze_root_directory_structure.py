@@ -4,19 +4,17 @@ ACGS-1 Root Directory Analysis Script
 Analyzes all files in the root directory and categorizes them for cleanup and reorganization.
 """
 
-import os
 import json
 import re
-from datetime import datetime, timedelta
-from pathlib import Path
 from collections import defaultdict
-import stat
+from datetime import datetime
+from pathlib import Path
 
 
 def analyze_root_directory():
     """Analyze all files in the root directory and categorize them."""
 
-    root_path = Path(".")
+    root_path = Path()
     analysis = {
         "timestamp": datetime.now().isoformat(),
         "total_files": 0,
@@ -105,7 +103,7 @@ def analyze_root_directory():
             if file_size > 10 * 1024 * 1024:  # > 10MB
                 analysis["size_analysis"][
                     file_name
-                ] = f"{file_size / (1024*1024):.1f}MB"
+                ] = f"{file_size / (1024 * 1024):.1f}MB"
 
             # Age analysis
             if file_age_days > 30:

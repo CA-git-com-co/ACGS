@@ -294,10 +294,9 @@ class ConstitutionalFidelityMonitor:
 
         if recent_avg > earlier_avg + trend_threshold:
             return "improving"
-        elif recent_avg < earlier_avg - trend_threshold:
+        if recent_avg < earlier_avg - trend_threshold:
             return "degrading"
-        else:
-            return "stable"
+        return "stable"
 
     def register_alert_handler(self, handler: callable):
         """
@@ -420,44 +419,42 @@ class ConstitutionalFidelityMonitor:
             if existing_alert:
                 del self.active_alerts[alert_key]
                 logger.info("Fidelity returned to normal levels")
-        else:
-            # Create or update alert
-            if not existing_alert or existing_alert.level != current_level:
-                alert = FidelityAlert(
-                    level=current_level,
-                    title=f"Constitutional Fidelity {current_level.value.upper()}",
-                    description=self._get_alert_description(current_level, fidelity),
-                    timestamp=datetime.now(),
-                    components_affected=self._get_affected_components(fidelity),
-                    recommended_actions=self._get_recommended_actions(
-                        current_level, fidelity
-                    ),
-                    metadata={"fidelity_score": fidelity.composite_score},
-                )
+        # Create or update alert
+        elif not existing_alert or existing_alert.level != current_level:
+            alert = FidelityAlert(
+                level=current_level,
+                title=f"Constitutional Fidelity {current_level.value.upper()}",
+                description=self._get_alert_description(current_level, fidelity),
+                timestamp=datetime.now(),
+                components_affected=self._get_affected_components(fidelity),
+                recommended_actions=self._get_recommended_actions(
+                    current_level, fidelity
+                ),
+                metadata={"fidelity_score": fidelity.composite_score},
+            )
 
-                self.active_alerts[alert_key] = alert
+            self.active_alerts[alert_key] = alert
 
-                # Notify alert handlers
-                for handler in self.alert_handlers:
-                    try:
-                        (
-                            await handler(alert)
-                            if asyncio.iscoroutinefunction(handler)
-                            else handler(alert)
-                        )
-                    except Exception as e:
-                        logger.error(f"Error in alert handler {handler.__name__}: {e}")
+            # Notify alert handlers
+            for handler in self.alert_handlers:
+                try:
+                    (
+                        await handler(alert)
+                        if asyncio.iscoroutinefunction(handler)
+                        else handler(alert)
+                    )
+                except Exception as e:
+                    logger.error(f"Error in alert handler {handler.__name__}: {e}")
 
     def _determine_fidelity_level(self, score: float) -> FidelityLevel:
         """Determine fidelity alert level based on score."""
         if score >= self.thresholds.green:
             return FidelityLevel.GREEN
-        elif score >= self.thresholds.amber:
+        if score >= self.thresholds.amber:
             return FidelityLevel.AMBER
-        elif score >= self.thresholds.red:
+        if score >= self.thresholds.red:
             return FidelityLevel.RED
-        else:
-            return FidelityLevel.CRITICAL
+        return FidelityLevel.CRITICAL
 
     def _get_alert_description(
         self, level: FidelityLevel, fidelity: FidelityComponents

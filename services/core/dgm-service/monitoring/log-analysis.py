@@ -11,11 +11,10 @@ import asyncio
 import json
 import re
 import sys
-import time
 from collections import defaultdict, deque
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiofiles
 import requests
@@ -37,7 +36,7 @@ class LogAnalyzer:
         self.alert_thresholds = self._load_alert_thresholds()
         self.running = False
 
-    def _load_patterns(self) -> Dict[str, re.Pattern]:
+    def _load_patterns(self) -> dict[str, re.Pattern]:
         """Load log analysis patterns."""
         return {
             "error": re.compile(r'"level":\s*"ERROR"'),
@@ -60,7 +59,7 @@ class LogAnalyzer:
             "cache_miss": re.compile(r'"cache_hit_rate":\s*([0-9.]+)'),
         }
 
-    def _load_alert_thresholds(self) -> Dict[str, Dict[str, Any]]:
+    def _load_alert_thresholds(self) -> dict[str, dict[str, Any]]:
         """Load alerting thresholds."""
         return {
             "error_rate": {
@@ -94,7 +93,7 @@ class LogAnalyzer:
     async def analyze_log_file(self, file_path: Path) -> None:
         """Analyze a single log file."""
         try:
-            async with aiofiles.open(file_path, "r") as f:
+            async with aiofiles.open(file_path) as f:
                 async for line in f:
                     await self.analyze_log_line(line.strip(), file_path.name)
         except Exception as e:
@@ -114,7 +113,7 @@ class LogAnalyzer:
             await self.process_unstructured_log(line, source)
 
     async def process_structured_log(
-        self, log_data: Dict[str, Any], source: str
+        self, log_data: dict[str, Any], source: str
     ) -> None:
         """Process structured JSON log entry."""
         timestamp = datetime.fromisoformat(
@@ -152,7 +151,7 @@ class LogAnalyzer:
         self.metrics[f"{source}_total"] += 1
 
     async def check_patterns(
-        self, log_data: Dict[str, Any], event: Dict[str, Any]
+        self, log_data: dict[str, Any], event: dict[str, Any]
     ) -> None:
         """Check log data against known patterns."""
         # Constitutional violations
@@ -196,7 +195,7 @@ class LogAnalyzer:
             await self.trigger_alert("low_cache_hit_rate", event, "warning")
 
     async def trigger_alert(
-        self, alert_type: str, event: Dict[str, Any], severity: str
+        self, alert_type: str, event: dict[str, Any], severity: str
     ) -> None:
         """Trigger an alert."""
         alert = {
@@ -217,7 +216,7 @@ class LogAnalyzer:
         # Send to alertmanager if configured
         await self.send_to_alertmanager(alert)
 
-    async def send_to_alertmanager(self, alert: Dict[str, Any]) -> None:
+    async def send_to_alertmanager(self, alert: dict[str, Any]) -> None:
         """Send alert to Alertmanager."""
         try:
             alertmanager_url = "http://dgm-alertmanager:9093/api/v1/alerts"

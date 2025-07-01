@@ -175,7 +175,7 @@ class PolicySynthesisPerformanceTester:
                 level_results["policy_results"].append(policy_result)
 
                 logger.info(
-                    f"✅ {policy['title']}: {response_time*1000:.1f}ms (Target: <2000ms)"
+                    f"✅ {policy['title']}: {response_time * 1000:.1f}ms (Target: <2000ms)"
                 )
 
             except Exception as e:

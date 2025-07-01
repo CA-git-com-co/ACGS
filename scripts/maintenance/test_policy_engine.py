@@ -5,9 +5,8 @@ Tests the constitutional policy evaluation service
 """
 
 import asyncio
-import json
 import time
-from typing import Dict, Any
+from typing import Any
 
 
 # Mock test for Policy Engine functionality
@@ -86,7 +85,7 @@ class MockPolicyEngineTest:
         print("✅ Human review criteria test passed")
         self.test_results.append(("human_review", "PASS"))
 
-    async def _mock_evaluate_policy(self, request: Dict[str, Any]) -> Dict[str, Any]:
+    async def _mock_evaluate_policy(self, request: dict[str, Any]) -> dict[str, Any]:
         """Mock policy evaluation based on our OPA rules"""
         action = request["action"]
         data = request["input_data"]
@@ -108,7 +107,7 @@ class MockPolicyEngineTest:
                 "policy_version": "1.0.0",
             }
 
-        elif action == "execute_in_sandbox":
+        if action == "execute_in_sandbox":
             violations = []
             if data["memory_mb"] > 2048:
                 violations.append("memory_limit_exceeded")
@@ -127,7 +126,7 @@ class MockPolicyEngineTest:
                 "policy_version": "1.0.0",
             }
 
-        elif action == "require_human_review":
+        if action == "require_human_review":
             violations = []
             if data["risk_score"] >= 0.8:
                 violations.append("high_risk_score")

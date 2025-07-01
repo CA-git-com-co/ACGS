@@ -5,7 +5,6 @@ End-to-end testing of the constitutional governance system
 """
 
 import asyncio
-import json
 import time
 from datetime import datetime, timezone
 

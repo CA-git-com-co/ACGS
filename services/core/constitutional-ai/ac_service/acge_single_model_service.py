@@ -3,35 +3,29 @@ ACGE Phase 2 Single Model Constitutional AI Service
 Transition from multi-model consensus to single highly-aligned ACGE model architecture
 """
 
-import asyncio
 import logging
-import time
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
-
-import httpx
-from fastapi import FastAPI, HTTPException, Request, Response, Depends, status
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from prometheus_client import Counter, Histogram, Gauge
-from pydantic import BaseModel
+import os
 
 # Import existing AC service components
 import sys
-import os
+import time
+from datetime import datetime, timezone
+from typing import Any
+
+import httpx
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from prometheus_client import Counter, Gauge, Histogram
+from pydantic import BaseModel
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+from app.api.v1.constitutional_validation import ConstitutionalValidationRequest
 from app.services.constitutional_validation_service import (
     ConstitutionalValidationService,
 )
-from app.api.v1.constitutional_validation import ConstitutionalValidationRequest
 
 # ACGE integration
-from services.platform.authentication.auth_service.acge_integration import (
-    ACGEAuthIntegration,
-    constitutional_auth_dependency,
-)
 
 # Service configuration
 SERVICE_NAME = "acgs-ac-service-acge"
@@ -84,10 +78,10 @@ SINGLE_MODEL_SUCCESS_RATE = Gauge(
 class ACGEValidationRequest(BaseModel):
     """Enhanced validation request for ACGE single model."""
 
-    policy: Dict[str, Any]
+    policy: dict[str, Any]
     validation_mode: str = "comprehensive"
     include_reasoning: bool = True
-    principles: Optional[List[Dict]] = None
+    principles: list[dict] | None = None
     acge_enabled: bool = True
     single_model_mode: bool = True
     constitutional_hash: str = CONSTITUTIONAL_HASH
@@ -100,9 +94,9 @@ class ACGEValidationResponse(BaseModel):
     compliance_score: float
     confidence_score: float
     constitutional_alignment: float
-    violations: List[Dict] = []
-    recommendations: List[str] = []
-    acge_analysis: Dict[str, Any] = {}
+    violations: list[dict] = []
+    recommendations: list[str] = []
+    acge_analysis: dict[str, Any] = {}
     model_type: str = "acge_single"
     processing_time_ms: float
     constitutional_hash: str
@@ -152,9 +146,8 @@ class ACGESingleModelService:
                 ).inc()
 
                 return result
-            else:
-                # Fallback to multi-model if ACGE disabled
-                return await self._fallback_to_multi_model(request, "acge_disabled")
+            # Fallback to multi-model if ACGE disabled
+            return await self._fallback_to_multi_model(request, "acge_disabled")
 
         except Exception as e:
             logger.error(f"ACGE model validation failed: {e}")
@@ -167,21 +160,20 @@ class ACGESingleModelService:
             # Attempt fallback if available
             if self.fallback_service and not MULTI_MODEL_DISABLED:
                 return await self._fallback_to_multi_model(request, "acge_error")
-            else:
-                # Return error response
-                processing_time = (time.time() - start_time) * 1000
-                return ACGEValidationResponse(
-                    valid=False,
-                    compliance_score=0.0,
-                    confidence_score=0.0,
-                    constitutional_alignment=0.0,
-                    violations=[{"type": "validation_error", "message": str(e)}],
-                    recommendations=["Review policy and retry validation"],
-                    acge_analysis={"error": str(e)},
-                    processing_time_ms=processing_time,
-                    constitutional_hash=self.constitutional_hash,
-                    fallback_used=False,
-                )
+            # Return error response
+            processing_time = (time.time() - start_time) * 1000
+            return ACGEValidationResponse(
+                valid=False,
+                compliance_score=0.0,
+                confidence_score=0.0,
+                constitutional_alignment=0.0,
+                violations=[{"type": "validation_error", "message": str(e)}],
+                recommendations=["Review policy and retry validation"],
+                acge_analysis={"error": str(e)},
+                processing_time_ms=processing_time,
+                constitutional_hash=self.constitutional_hash,
+                fallback_used=False,
+            )
 
     async def _validate_with_acge_model(
         self, request: ACGEValidationRequest
@@ -320,7 +312,7 @@ class ACGESingleModelService:
                 status_code=500, detail=f"Both ACGE and fallback validation failed: {e}"
             )
 
-    async def get_model_status(self) -> Dict[str, Any]:
+    async def get_model_status(self) -> dict[str, Any]:
         """Get current model status and configuration."""
         try:
             # Check ACGE model health

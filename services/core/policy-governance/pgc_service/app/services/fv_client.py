@@ -94,7 +94,7 @@ class CircuitBreaker:
             self.last_failure_time = time.time() * 1000
 
             if self.state == "half-open" or self.failures >= self.failure_threshold:
-                logger.warning(f"Circuit transitioning to open due to: {str(e)}")
+                logger.warning(f"Circuit transitioning to open due to: {e!s}")
                 self.state = "open"
 
             raise
@@ -181,7 +181,7 @@ class FVServiceClient:
 
             except Exception as e:
                 logger.warning(
-                    f"Request to {url} failed (attempt {attempt+1}/{self.retry_attempts}): {str(e)}"
+                    f"Request to {url} failed (attempt {attempt + 1}/{self.retry_attempts}): {e!s}"
                 )
                 if attempt < self.retry_attempts - 1:
                     await asyncio.sleep(self.retry_delay_ms / 1000)
@@ -228,10 +228,10 @@ class FVServiceClient:
             logger.error(f"HTTP error: {e.response.status_code} - {e.response.text}")
             raise
         except httpx.RequestError as e:
-            logger.error(f"Request error: {str(e)}")
+            logger.error(f"Request error: {e!s}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error: {str(e)}")
+            logger.error(f"Unexpected error: {e!s}")
             raise
         finally:
             duration_ms = (time.time() - start_time) * 1000

@@ -7,7 +7,6 @@ constitutional hash verification, and governance adherence.
 
 import hashlib
 from datetime import datetime, timedelta
-from unittest.mock import AsyncMock, patch
 from uuid import uuid4
 
 import pytest

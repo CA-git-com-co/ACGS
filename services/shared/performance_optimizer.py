@@ -153,12 +153,12 @@ class CircuitBreakerState:
 
         if self.state == "closed":
             return True
-        elif self.state == "open":
+        if self.state == "open":
             if current_time - self.last_failure_time > self.recovery_timeout:
                 self.state = "half_open"
                 return True
             return False
-        elif self.state == "half_open":
+        if self.state == "half_open":
             return True
 
         return False
@@ -200,8 +200,7 @@ class FallbackCache:
             if time.time() < expires_at:
                 self.stats["hits"] += 1
                 return value
-            else:
-                del self.cache[key]
+            del self.cache[key]
 
         self.stats["misses"] += 1
         return None
@@ -289,8 +288,7 @@ class AsyncBatchProcessor:
         """Execute individual operation."""
         if asyncio.iscoroutinefunction(operation):
             return await operation(*args, **kwargs)
-        else:
-            return operation(*args, **kwargs)
+        return operation(*args, **kwargs)
 
 
 class IntelligentCache:
@@ -330,8 +328,7 @@ class IntelligentCache:
             if time.time() < cache_entry["expires_at"]:
                 self.cache_stats["hits"] += 1
                 return cache_entry["data"]
-            else:
-                del self.local_cache[cache_key]
+            del self.local_cache[cache_key]
 
         # Try backend cache
         try:

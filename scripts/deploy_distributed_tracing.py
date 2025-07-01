@@ -19,9 +19,10 @@ import subprocess
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import aiohttp
+
 import docker
 
 # Configure logging
@@ -70,7 +71,7 @@ class DistributedTracingDeployer:
             "zipkin": 9411,
         }
 
-    async def deploy_tracing_infrastructure(self) -> Dict[str, Any]:
+    async def deploy_tracing_infrastructure(self) -> dict[str, Any]:
         """Deploy complete distributed tracing infrastructure."""
         logger.info("🔍 Starting Distributed Tracing Infrastructure Deployment")
         logger.info("=" * 70)
@@ -140,7 +141,7 @@ class DistributedTracingDeployer:
 
         return deployment_results
 
-    async def _deploy_jaeger_infrastructure(self) -> Dict[str, Any]:
+    async def _deploy_jaeger_infrastructure(self) -> dict[str, Any]:
         """Deploy Jaeger tracing infrastructure."""
         deployment_results = {
             "docker_compose_created": False,
@@ -163,6 +164,7 @@ class DistributedTracingDeployer:
             logger.info("🚀 Starting Jaeger infrastructure...")
             result = subprocess.run(
                 ["docker-compose", "-f", str(docker_compose_file), "up", "-d"],
+                check=False,
                 capture_output=True,
                 text=True,
                 cwd=self.jaeger_dir,
@@ -215,7 +217,7 @@ class DistributedTracingDeployer:
 
         return deployment_results
 
-    async def _deploy_otel_collector(self) -> Dict[str, Any]:
+    async def _deploy_otel_collector(self) -> dict[str, Any]:
         """Deploy OpenTelemetry Collector."""
         deployment_results = {
             "otel_config_exists": False,
@@ -249,6 +251,7 @@ class DistributedTracingDeployer:
                         "localhost",
                         str(self.tracing_endpoints["otel_collector_grpc"]),
                     ],
+                    check=False,
                     capture_output=True,
                     timeout=5,
                 )
@@ -296,7 +299,7 @@ class DistributedTracingDeployer:
 
         return deployment_results
 
-    async def _validate_tracing_infrastructure(self) -> Dict[str, Any]:
+    async def _validate_tracing_infrastructure(self) -> dict[str, Any]:
         """Validate tracing infrastructure components."""
         validation_results = {
             "jaeger_ui_functional": False,
@@ -376,7 +379,7 @@ class DistributedTracingDeployer:
 
         return validation_results
 
-    async def _instrument_services(self) -> Dict[str, Any]:
+    async def _instrument_services(self) -> dict[str, Any]:
         """Instrument services with OpenTelemetry tracing."""
         instrumentation_results = {
             "tracing_library_available": False,
@@ -464,7 +467,7 @@ class DistributedTracingDeployer:
 
         return instrumentation_results
 
-    async def _validate_tracing_performance(self) -> Dict[str, Any]:
+    async def _validate_tracing_performance(self) -> dict[str, Any]:
         """Validate tracing performance impact."""
         performance_results = {
             "baseline_response_times": {},
@@ -528,7 +531,7 @@ class DistributedTracingDeployer:
 
         return performance_results
 
-    async def _test_end_to_end_tracing(self) -> Dict[str, Any]:
+    async def _test_end_to_end_tracing(self) -> dict[str, Any]:
         """Test end-to-end distributed tracing."""
         testing_results = {
             "trace_generation_test": False,
@@ -608,7 +611,7 @@ class DistributedTracingDeployer:
 
         return testing_results
 
-    def _calculate_deployment_success(self, deployment_results: Dict[str, Any]) -> bool:
+    def _calculate_deployment_success(self, deployment_results: dict[str, Any]) -> bool:
         """Calculate overall deployment success."""
         try:
             success_criteria = [

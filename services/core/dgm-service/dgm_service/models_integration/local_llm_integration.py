@@ -10,7 +10,7 @@ import json
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 # Note: llama-cpp-python would be imported here when available
 # from llama_cpp import Llama
@@ -48,12 +48,12 @@ class LLMRequest:
     """Request structure for LLM inference."""
 
     prompt: str
-    system_prompt: Optional[str] = None
-    max_tokens: Optional[int] = None
-    temperature: Optional[float] = None
-    stop_sequences: Optional[List[str]] = None
-    request_id: Optional[str] = None
-    context: Optional[Dict[str, Any]] = None
+    system_prompt: str | None = None
+    max_tokens: int | None = None
+    temperature: float | None = None
+    stop_sequences: list[str] | None = None
+    request_id: str | None = None
+    context: dict[str, Any] | None = None
 
 
 @dataclass
@@ -63,8 +63,8 @@ class LLMResponse:
     text: str
     tokens_used: int
     finish_reason: str
-    request_id: Optional[str] = None
-    metadata: Optional[Dict[str, Any]] = None
+    request_id: str | None = None
+    metadata: dict[str, Any] | None = None
 
 
 class LocalLLMManager:
@@ -181,8 +181,8 @@ Always provide structured, evidence-based responses with clear reasoning.
             raise
 
     async def check_constitutional_compliance(
-        self, content: str, context: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+        self, content: str, context: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """Check constitutional compliance of content."""
         request = LLMRequest(
             prompt=f"Evaluate the constitutional compliance of the following content:\n\n{content}",
@@ -207,8 +207,8 @@ Always provide structured, evidence-based responses with clear reasoning.
             }
 
     async def research_assist(
-        self, query: str, context: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+        self, query: str, context: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """Provide research assistance for complex queries."""
         request = LLMRequest(
             prompt=f"Research Query: {query}\n\nProvide a comprehensive analysis including key insights, relevant connections, and actionable recommendations.",
@@ -229,9 +229,9 @@ Always provide structured, evidence-based responses with clear reasoning.
     async def generate_improvement_suggestions(
         self,
         system_description: str,
-        performance_metrics: Dict[str, float],
-        constraints: List[str],
-    ) -> List[Dict[str, Any]]:
+        performance_metrics: dict[str, float],
+        constraints: list[str],
+    ) -> list[dict[str, Any]]:
         """Generate improvement suggestions for the DGM system."""
         prompt = f"""
 System Description: {system_description}
@@ -308,9 +308,9 @@ Format as JSON array with each suggestion containing:
                     "reasoning": "The content appears to align with constitutional principles with minor recommendations for enhancement.",
                 }
             )
-        elif "research" in request.prompt.lower():
+        if "research" in request.prompt.lower():
             return "Based on the research query, I've identified several key areas for investigation: 1) Current state analysis, 2) Gap identification, 3) Potential solutions, and 4) Implementation strategies. The analysis suggests focusing on incremental improvements with measurable outcomes."
-        elif "improvement" in request.prompt.lower():
+        if "improvement" in request.prompt.lower():
             return json.dumps(
                 [
                     {
@@ -323,8 +323,7 @@ Format as JSON array with each suggestion containing:
                     }
                 ]
             )
-        else:
-            return "I understand your request and am processing it according to my capabilities and constitutional guidelines."
+        return "I understand your request and am processing it according to my capabilities and constitutional guidelines."
 
     async def shutdown(self):
         """Shutdown the local LLM."""

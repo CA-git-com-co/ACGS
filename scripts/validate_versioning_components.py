@@ -7,14 +7,14 @@ all services to be running. Tests the versioning middleware,
 managers, and compatibility systems directly.
 """
 
-import sys
+import asyncio
 import json
 import logging
-import asyncio
+import sys
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -34,7 +34,7 @@ class ValidationResult:
     test_name: str
     success: bool
     message: str
-    details: Optional[Dict[str, Any]] = None
+    details: dict[str, Any] | None = None
 
 
 class VersioningComponentValidator:
@@ -50,10 +50,10 @@ class VersioningComponentValidator:
     """
 
     def __init__(self):
-        self.results: List[ValidationResult] = []
+        self.results: list[ValidationResult] = []
         self.components_available = self._check_component_availability()
 
-    def _check_component_availability(self) -> Dict[str, bool]:
+    def _check_component_availability(self) -> dict[str, bool]:
         """Check which versioning components are available for testing."""
         components = {}
 
@@ -104,7 +104,7 @@ class VersioningComponentValidator:
 
         return components
 
-    def validate_version_manager(self) -> List[ValidationResult]:
+    def validate_version_manager(self) -> list[ValidationResult]:
         """Validate version manager functionality."""
         results = []
 
@@ -217,7 +217,7 @@ class VersioningComponentValidator:
 
         return results
 
-    def validate_compatibility_manager(self) -> List[ValidationResult]:
+    def validate_compatibility_manager(self) -> list[ValidationResult]:
         """Validate compatibility manager functionality."""
         results = []
 
@@ -279,7 +279,7 @@ class VersioningComponentValidator:
 
         return results
 
-    def validate_response_transformers(self) -> List[ValidationResult]:
+    def validate_response_transformers(self) -> list[ValidationResult]:
         """Validate response transformer functionality."""
         results = []
 
@@ -335,7 +335,7 @@ class VersioningComponentValidator:
 
         return results
 
-    async def run_all_validations(self) -> Dict[str, Any]:
+    async def run_all_validations(self) -> dict[str, Any]:
         """Run all validation tests."""
         logger.info("🔍 Starting ACGS-1 API Versioning Components Validation...")
 
@@ -436,19 +436,19 @@ async def main():
     print(f"📈 Success Rate: {summary['success_rate']}%")
     print(f"⏱️  Duration: {summary['duration_seconds']}s")
 
-    print(f"\n🧩 COMPONENT AVAILABILITY:")
+    print("\n🧩 COMPONENT AVAILABILITY:")
     for component, available in report["component_availability"].items():
         status = "✅ Available" if available else "❌ Not Available"
         print(f"   {component}: {status}")
 
-    print(f"\n🎯 SUCCESS CRITERIA:")
+    print("\n🎯 SUCCESS CRITERIA:")
     criteria = report["success_criteria"]
     for criterion, passed in criteria.items():
         status = "PASS" if passed else "FAIL"
         print(f"   {criterion}: {status}")
 
     if report["validation_summary"]["failed_tests"] > 0:
-        print(f"\n⚠️  FAILED TESTS:")
+        print("\n⚠️  FAILED TESTS:")
         for component, results in report["component_results"].items():
             for test in results["tests"]:
                 if not test["success"]:

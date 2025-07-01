@@ -9,14 +9,11 @@ Ensures >95% constitutional compliance maintained across all operations
 while validating governance framework effectiveness.
 """
 
+import logging
 import sys
-import time
-import hashlib
-import json
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Tuple
-import logging
+from typing import Any
 
 # Add project paths
 project_root = Path(__file__).parent.parent.parent
@@ -67,7 +64,7 @@ class ConstitutionalComplianceValidator:
         logger.info("Constitutional Compliance Validator initialized")
         logger.info(f"Constitutional hash: {constitutional_hash}")
 
-    def validate_hash_integrity(self) -> Dict[str, Any]:
+    def validate_hash_integrity(self) -> dict[str, Any]:
         """Validate constitutional hash integrity across all components."""
         logger.info("=== Validating Constitutional Hash Integrity ===")
 
@@ -100,7 +97,7 @@ class ConstitutionalComplianceValidator:
 
                 try:
                     # Read file content
-                    with open(full_path, "r", encoding="utf-8") as f:
+                    with open(full_path, encoding="utf-8") as f:
                         content = f.read()
 
                     # Check for constitutional hash presence
@@ -165,7 +162,7 @@ class ConstitutionalComplianceValidator:
 
         return hash_validation_results
 
-    def validate_compliance_scoring(self) -> Dict[str, Any]:
+    def validate_compliance_scoring(self) -> dict[str, Any]:
         """Validate compliance scoring mechanisms."""
         logger.info("=== Validating Compliance Scoring Mechanisms ===")
 
@@ -269,7 +266,7 @@ class ConstitutionalComplianceValidator:
 
         return compliance_scoring_results
 
-    def validate_audit_trail_coverage(self) -> Dict[str, Any]:
+    def validate_audit_trail_coverage(self) -> dict[str, Any]:
         """Validate audit trail coverage and completeness."""
         logger.info("=== Validating Audit Trail Coverage ===")
 
@@ -346,7 +343,7 @@ class ConstitutionalComplianceValidator:
 
         return audit_trail_results
 
-    def validate_dgm_safety_patterns(self) -> Dict[str, Any]:
+    def validate_dgm_safety_patterns(self) -> dict[str, Any]:
         """Validate DGM safety patterns integration and effectiveness."""
         logger.info("=== Validating DGM Safety Patterns ===")
 
@@ -446,7 +443,7 @@ class ConstitutionalComplianceValidator:
 
         return dgm_safety_results
 
-    def validate_governance_framework(self) -> Dict[str, Any]:
+    def validate_governance_framework(self) -> dict[str, Any]:
         """Validate overall governance framework effectiveness."""
         logger.info("=== Validating Governance Framework ===")
 
@@ -550,7 +547,7 @@ class ConstitutionalComplianceValidator:
 
         return governance_results
 
-    def _simulate_compliance_scoring(self, scenario: Dict[str, Any]) -> float:
+    def _simulate_compliance_scoring(self, scenario: dict[str, Any]) -> float:
         """Simulate compliance scoring for a given scenario."""
         # Base compliance score
         base_score = 0.95
@@ -578,7 +575,7 @@ class ConstitutionalComplianceValidator:
 
         return random.random() < 0.95
 
-    def _simulate_dgm_safety_check(self, pattern: Dict[str, Any]) -> float:
+    def _simulate_dgm_safety_check(self, pattern: dict[str, Any]) -> float:
         """Simulate DGM safety pattern effectiveness check."""
         # Critical patterns should be highly effective
         if pattern.get("critical", False):
@@ -596,7 +593,7 @@ class ConstitutionalComplianceValidator:
         # Ensure effectiveness is within valid range
         return max(0.0, min(1.0, effectiveness))
 
-    def _simulate_governance_effectiveness(self, component: Dict[str, Any]) -> float:
+    def _simulate_governance_effectiveness(self, component: dict[str, Any]) -> float:
         """Simulate governance component effectiveness assessment."""
         # Different components have different baseline effectiveness
         component_baselines = {
@@ -619,7 +616,7 @@ class ConstitutionalComplianceValidator:
         # Ensure effectiveness is within valid range
         return max(0.0, min(1.0, effectiveness))
 
-    def run_comprehensive_compliance_validation(self) -> Dict[str, Any]:
+    def run_comprehensive_compliance_validation(self) -> dict[str, Any]:
         """Run comprehensive constitutional compliance validation."""
         logger.info("🔒 Starting Comprehensive Constitutional Compliance Validation")
         logger.info("=" * 80)
@@ -673,7 +670,7 @@ class ConstitutionalComplianceValidator:
             logger.error(f"❌ Constitutional compliance validation failed: {e}")
             return {"error": str(e)}
 
-    def _calculate_overall_compliance(self) -> Dict[str, Any]:
+    def _calculate_overall_compliance(self) -> dict[str, Any]:
         """Calculate overall compliance metrics."""
 
         # Extract target achievement status
@@ -753,7 +750,7 @@ class ConstitutionalComplianceValidator:
             "weights": weights,
         }
 
-    def _generate_compliance_recommendations(self) -> List[str]:
+    def _generate_compliance_recommendations(self) -> list[str]:
         """Generate compliance improvement recommendations."""
         recommendations = []
 
@@ -793,7 +790,7 @@ class ConstitutionalComplianceValidator:
 
         return recommendations
 
-    def _print_compliance_summary(self, report: Dict[str, Any]):
+    def _print_compliance_summary(self, report: dict[str, Any]):
         """Print constitutional compliance validation summary."""
         print("\n" + "=" * 80)
         print("🔒 CONSTITUTIONAL COMPLIANCE VALIDATION SUMMARY")
@@ -841,7 +838,7 @@ class ConstitutionalComplianceValidator:
 
         # Recommendations
         if report.get("recommendations"):
-            print(f"\n📋 Recommendations:")
+            print("\n📋 Recommendations:")
             for i, rec in enumerate(report["recommendations"][:5], 1):  # Show first 5
                 print(f"  {i}. {rec}")
 

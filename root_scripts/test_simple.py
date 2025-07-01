@@ -2,6 +2,7 @@
 """
 Simple standalone test that doesn't require conftest.py
 """
+
 import pytest
 
 

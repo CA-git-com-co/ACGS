@@ -5,14 +5,14 @@ Generates version-specific client SDKs from OpenAPI specifications with
 automatic compatibility layers and validation.
 """
 
-import logging
 import json
+import logging
 import subprocess
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
+from pathlib import Path
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -48,12 +48,12 @@ class SDKConfig:
     package_name: str = "acgs-sdk"
     package_version: str = "1.0.0"
     api_version: str = "v1.0.0"
-    compatibility_versions: List[str] = field(default_factory=list)
+    compatibility_versions: list[str] = field(default_factory=list)
     include_examples: bool = True
     include_tests: bool = True
     include_docs: bool = True
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "language": self.language.value,
@@ -74,12 +74,12 @@ class SDKGenerationResult:
 
     success: bool
     output_path: Path
-    generated_files: List[str] = field(default_factory=list)
-    errors: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
+    generated_files: list[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
     generation_time_seconds: float = 0.0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "success": self.success,
@@ -212,7 +212,7 @@ class SDKGenerator:
             )
 
         except Exception as e:
-            result.errors.append(f"SDK generation failed: {str(e)}")
+            result.errors.append(f"SDK generation failed: {e!s}")
             logger.error(f"SDK generation failed: {e}")
 
         finally:
@@ -221,16 +221,15 @@ class SDKGenerator:
 
         return result
 
-    def _load_openapi_spec(self, spec_path: Path) -> Optional[Dict[str, Any]]:
+    def _load_openapi_spec(self, spec_path: Path) -> dict[str, Any] | None:
         """Load and validate OpenAPI specification."""
         try:
-            with open(spec_path, "r") as f:
+            with open(spec_path) as f:
                 if spec_path.suffix.lower() in [".yaml", ".yml"]:
                     import yaml
 
                     return yaml.safe_load(f)
-                else:
-                    return json.load(f)
+                return json.load(f)
         except Exception as e:
             logger.error(f"Failed to load OpenAPI spec: {e}")
             return None
@@ -279,7 +278,7 @@ class SDKGenerator:
                 )
 
             # Execute OpenAPI Generator
-            result = subprocess.run(cmd, capture_output=True, text=True)
+            result = subprocess.run(cmd, check=False, capture_output=True, text=True)
 
             if result.returncode != 0:
                 logger.error(f"OpenAPI Generator failed: {result.stderr}")
@@ -539,7 +538,7 @@ Official {config.language.value.title()} SDK for ACGS-1 APIs.
 ## API Version Support
 
 - Current API Version: {config.api_version}
-- Compatible Versions: {', '.join(config.compatibility_versions)}
+- Compatible Versions: {", ".join(config.compatibility_versions)}
 
 ## Documentation
 
@@ -616,16 +615,15 @@ For support, please visit [ACGS Documentation](https://docs.acgs.ai).
             logger.error(f"SDK validation failed: {e}")
             return False
 
-    def _get_required_files(self, config: SDKConfig) -> List[str]:
+    def _get_required_files(self, config: SDKConfig) -> list[str]:
         """Get list of required files for the SDK."""
         if config.language == SDKLanguage.PYTHON:
             return ["setup.py", "requirements.txt", "README.md"]
-        elif config.language == SDKLanguage.JAVASCRIPT:
+        if config.language == SDKLanguage.JAVASCRIPT:
             return ["package.json", "README.md"]
-        elif config.language == SDKLanguage.JAVA:
+        if config.language == SDKLanguage.JAVA:
             return ["pom.xml", "README.md"]
-        else:
-            return ["README.md"]
+        return ["README.md"]
 
     def _run_language_validation(self, config: SDKConfig, output_path: Path) -> bool:
         """Run language-specific validation."""
@@ -636,8 +634,8 @@ For support, please visit [ACGS Documentation](https://docs.acgs.ai).
         self,
         openapi_spec_path: Path,
         api_version: str,
-        languages: List[SDKLanguage] = None,
-    ) -> Dict[SDKLanguage, SDKGenerationResult]:
+        languages: list[SDKLanguage] = None,
+    ) -> dict[SDKLanguage, SDKGenerationResult]:
         """Generate SDKs for all specified languages."""
         if languages is None:
             languages = list(SDKLanguage)

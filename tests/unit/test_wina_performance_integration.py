@@ -5,7 +5,7 @@ This test suite verifies the complete integration of WINA performance monitoring
 with the EC oversight coordinator and API endpoints.
 """
 
-from datetime import timezone, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, Mock
 
 import pytest

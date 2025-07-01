@@ -6,16 +6,12 @@ tamper-proof storage, and compliance reporting.
 """
 
 import asyncio
-import json
 import logging
 import time
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 from uuid import UUID, uuid4
-
-from ..config import settings
-from ..database import get_db_session
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +52,7 @@ class AuditLogger:
     def __init__(self):
         self.service_name = "dgm-service"
         self.audit_queue: asyncio.Queue = asyncio.Queue()
-        self.processing_task: Optional[asyncio.Task] = None
+        self.processing_task: asyncio.Task | None = None
         self.running = False
 
         # Audit configuration
@@ -98,10 +94,10 @@ class AuditLogger:
         event_type: AuditEventType,
         severity: AuditSeverity,
         message: str,
-        user_id: Optional[str] = None,
-        resource_id: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None,
-        request_id: Optional[str] = None,
+        user_id: str | None = None,
+        resource_id: str | None = None,
+        details: dict[str, Any] | None = None,
+        request_id: str | None = None,
     ):
         """
         Log an audit event.
@@ -143,8 +139,8 @@ class AuditLogger:
         user_id: str,
         success: bool,
         method: str = "jwt",
-        details: Optional[Dict[str, Any]] = None,
-        request_id: Optional[str] = None,
+        details: dict[str, Any] | None = None,
+        request_id: str | None = None,
     ):
         """Log authentication event."""
         severity = AuditSeverity.LOW if success else AuditSeverity.MEDIUM
@@ -171,10 +167,10 @@ class AuditLogger:
         self,
         user_id: str,
         permission: str,
-        resource_id: Optional[str],
+        resource_id: str | None,
         granted: bool,
-        details: Optional[Dict[str, Any]] = None,
-        request_id: Optional[str] = None,
+        details: dict[str, Any] | None = None,
+        request_id: str | None = None,
     ):
         """Log authorization event."""
         severity = AuditSeverity.LOW if granted else AuditSeverity.MEDIUM
@@ -201,8 +197,8 @@ class AuditLogger:
         improvement_id: UUID,
         event_type: str,
         user_id: str,
-        details: Optional[Dict[str, Any]] = None,
-        request_id: Optional[str] = None,
+        details: dict[str, Any] | None = None,
+        request_id: str | None = None,
     ):
         """Log improvement-related event."""
         severity_map = {
@@ -235,10 +231,10 @@ class AuditLogger:
         self,
         validation_id: UUID,
         compliance_score: float,
-        violations: List[str],
-        user_id: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None,
-        request_id: Optional[str] = None,
+        violations: list[str],
+        user_id: str | None = None,
+        details: dict[str, Any] | None = None,
+        request_id: str | None = None,
     ):
         """Log constitutional compliance event."""
         severity = AuditSeverity.CRITICAL if violations else AuditSeverity.LOW
@@ -267,9 +263,9 @@ class AuditLogger:
         self,
         event_description: str,
         severity: AuditSeverity,
-        user_id: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None,
-        request_id: Optional[str] = None,
+        user_id: str | None = None,
+        details: dict[str, Any] | None = None,
+        request_id: str | None = None,
     ):
         """Log security-related event."""
         await self.log_event(
@@ -287,8 +283,8 @@ class AuditLogger:
         old_value: Any,
         new_value: Any,
         user_id: str,
-        details: Optional[Dict[str, Any]] = None,
-        request_id: Optional[str] = None,
+        details: dict[str, Any] | None = None,
+        request_id: str | None = None,
     ):
         """Log configuration change event."""
         message = f"Configuration changed: {config_key}"
@@ -315,8 +311,8 @@ class AuditLogger:
         resource_id: str,
         action: str,
         user_id: str,
-        details: Optional[Dict[str, Any]] = None,
-        request_id: Optional[str] = None,
+        details: dict[str, Any] | None = None,
+        request_id: str | None = None,
     ):
         """Log data access event."""
         message = f"Data access: {action} on {resource_type} {resource_id}"
@@ -370,7 +366,7 @@ class AuditLogger:
         if batch:
             await self._flush_batch(batch)
 
-    async def _flush_batch(self, events: List[Dict[str, Any]]):
+    async def _flush_batch(self, events: list[dict[str, Any]]):
         """Flush a batch of audit events to storage."""
         try:
             # Store in database
@@ -402,7 +398,7 @@ class AuditLogger:
         if remaining_events:
             await self._flush_batch(remaining_events)
 
-    async def _store_events_in_database(self, events: List[Dict[str, Any]]):
+    async def _store_events_in_database(self, events: list[dict[str, Any]]):
         """Store audit events in database."""
         try:
             # This would store events in an audit_log table
@@ -412,7 +408,7 @@ class AuditLogger:
         except Exception as e:
             logger.error(f"Failed to store events in database: {e}")
 
-    async def _store_events_in_files(self, events: List[Dict[str, Any]]):
+    async def _store_events_in_files(self, events: list[dict[str, Any]]):
         """Store audit events in log files."""
         try:
             # This would write events to structured log files
@@ -422,7 +418,7 @@ class AuditLogger:
         except Exception as e:
             logger.error(f"Failed to store events in files: {e}")
 
-    async def _send_to_remote_audit_service(self, events: List[Dict[str, Any]]):
+    async def _send_to_remote_audit_service(self, events: list[dict[str, Any]]):
         """Send audit events to remote audit service."""
         try:
             # This would send events to a centralized audit service
@@ -436,9 +432,9 @@ class AuditLogger:
         self,
         start_date: datetime,
         end_date: datetime,
-        event_types: Optional[List[AuditEventType]] = None,
-        user_id: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        event_types: list[AuditEventType] | None = None,
+        user_id: str | None = None,
+    ) -> dict[str, Any]:
         """Generate audit report for specified criteria."""
         try:
             # This would query audit logs and generate a report

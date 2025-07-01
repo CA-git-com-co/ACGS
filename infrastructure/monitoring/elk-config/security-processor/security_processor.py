@@ -15,22 +15,19 @@ Features:
 """
 
 import asyncio
-import json
-import logging
 import os
 import time
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from enum import Enum
+from typing import Any
 
 import aiohttp
 import structlog
-from elasticsearch import AsyncElasticsearch
-from fastapi import FastAPI, HTTPException, BackgroundTasks
-from fastapi.responses import JSONResponse
-from prometheus_client import Counter, Histogram, Gauge, start_http_server
 import uvicorn
+from elasticsearch import AsyncElasticsearch
+from fastapi import BackgroundTasks, FastAPI, HTTPException
+from prometheus_client import Counter, Gauge, Histogram, start_http_server
 from pydantic import BaseModel, Field
 
 # Configure structured logging
@@ -94,11 +91,11 @@ class SecurityEvent:
     timestamp: datetime
     event_type: str
     severity: SeverityLevel
-    source_ip: Optional[str]
-    user_id: Optional[str]
+    source_ip: str | None
+    user_id: str | None
     description: str
     risk_score: int
-    raw_data: Dict[str, Any]
+    raw_data: dict[str, Any]
 
 
 @dataclass
@@ -114,18 +111,18 @@ class SecurityEventModel(BaseModel):
     timestamp: str
     event_type: str
     severity: str
-    source_ip: Optional[str] = None
-    user_id: Optional[str] = None
+    source_ip: str | None = None
+    user_id: str | None = None
     description: str
     risk_score: int = Field(ge=0, le=100)
-    metadata: Dict[str, Any] = {}
+    metadata: dict[str, Any] = {}
 
 
 class SecurityProcessor:
     def __init__(self):
         self.es_client = None
-        self.threat_intelligence: Dict[str, ThreatIntelligence] = {}
-        self.active_threats: List[SecurityEvent] = []
+        self.threat_intelligence: dict[str, ThreatIntelligence] = {}
+        self.active_threats: list[SecurityEvent] = []
         self.risk_threshold_critical = 80
         self.risk_threshold_high = 60
         self.risk_threshold_medium = 40
@@ -233,7 +230,7 @@ class SecurityProcessor:
                 logger.error("Error processing security events", error=str(e))
                 await asyncio.sleep(30)
 
-    async def analyze_security_event(self, event_data: Dict[str, Any]):
+    async def analyze_security_event(self, event_data: dict[str, Any]):
         """Analyze individual security event and determine threat level"""
         start_time = time.time()
 
@@ -333,7 +330,7 @@ class SecurityProcessor:
         return False
 
     async def count_recent_failures(
-        self, source_ip: Optional[str], user_id: Optional[str]
+        self, source_ip: str | None, user_id: str | None
     ) -> int:
         """Count recent authentication failures for IP/user"""
         try:
@@ -500,7 +497,7 @@ class SecurityProcessor:
         )
         # Implementation would integrate with incident management system
 
-    async def increase_monitoring(self, ip_address: str, user_id: Optional[str]):
+    async def increase_monitoring(self, ip_address: str, user_id: str | None):
         """Increase monitoring for specific IP/user"""
         logger.info("Increasing monitoring", ip=ip_address, user_id=user_id)
         # Implementation would adjust monitoring thresholds
@@ -673,7 +670,7 @@ async def health_check():
             "threat_intelligence_count": len(security_processor.threat_intelligence),
         }
     except Exception as e:
-        raise HTTPException(status_code=503, detail=f"Health check failed: {str(e)}")
+        raise HTTPException(status_code=503, detail=f"Health check failed: {e!s}")
 
 
 @app.get("/metrics")
@@ -739,7 +736,7 @@ async def process_security_event(
         }
 
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Invalid event data: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Invalid event data: {e!s}")
 
 
 @app.get("/threat-intelligence/{ip_address}")
@@ -754,10 +751,7 @@ async def get_threat_intelligence(ip_address: str):
             "last_seen": threat.last_seen.isoformat(),
             "source": threat.source,
         }
-    else:
-        raise HTTPException(
-            status_code=404, detail="No threat intelligence found for IP"
-        )
+    raise HTTPException(status_code=404, detail="No threat intelligence found for IP")
 
 
 if __name__ == "__main__":

@@ -1,19 +1,19 @@
 """ACGS Shared Middleware Components"""
 
 from .error_handling import (
+    ConstitutionalComplianceError,
     ErrorHandlingMiddleware,
+    HealthCheckError,
+    SecurityValidationError,
     StandardErrorResponse,
     setup_error_handlers,
-    ConstitutionalComplianceError,
-    SecurityValidationError,
-    HealthCheckError,
 )
 
 __all__ = [
+    "ConstitutionalComplianceError",
     "ErrorHandlingMiddleware",
+    "HealthCheckError",
+    "SecurityValidationError",
     "StandardErrorResponse",
     "setup_error_handlers",
-    "ConstitutionalComplianceError",
-    "SecurityValidationError",
-    "HealthCheckError",
 ]

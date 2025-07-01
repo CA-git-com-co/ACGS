@@ -9,8 +9,8 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from services.shared.auth import get_current_active_user as get_current_user
 from services.shared.auth import (
+    get_current_active_user as get_current_user,
     require_admin,
     require_policy_manager,
 )
@@ -84,7 +84,7 @@ async def get_current_fidelity(
         logger.error(f"Failed to get current fidelity: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Fidelity calculation failed: {str(e)}",
+            detail=f"Fidelity calculation failed: {e!s}",
         )
 
 
@@ -130,7 +130,7 @@ async def get_fidelity_history(
         logger.error(f"Failed to get fidelity history: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"History retrieval failed: {str(e)}",
+            detail=f"History retrieval failed: {e!s}",
         )
 
 
@@ -162,7 +162,7 @@ async def get_fidelity_trend(
         logger.error(f"Failed to get fidelity trend: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Trend analysis failed: {str(e)}",
+            detail=f"Trend analysis failed: {e!s}",
         )
 
 
@@ -200,7 +200,7 @@ async def get_active_alerts(
         logger.error(f"Failed to get active alerts: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Alert retrieval failed: {str(e)}",
+            detail=f"Alert retrieval failed: {e!s}",
         )
 
 
@@ -229,7 +229,7 @@ async def start_monitoring(
         logger.error(f"Failed to start monitoring: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Monitoring start failed: {str(e)}",
+            detail=f"Monitoring start failed: {e!s}",
         )
 
 
@@ -257,7 +257,7 @@ async def stop_monitoring(
         logger.error(f"Failed to stop monitoring: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Monitoring stop failed: {str(e)}",
+            detail=f"Monitoring stop failed: {e!s}",
         )
 
 
@@ -303,7 +303,7 @@ async def get_monitoring_status(
         logger.error(f"Failed to get monitoring status: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Status retrieval failed: {str(e)}",
+            detail=f"Status retrieval failed: {e!s}",
         )
 
 
@@ -355,5 +355,5 @@ async def force_recalculation(
         logger.error(f"Failed to recalculate fidelity: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Recalculation failed: {str(e)}",
+            detail=f"Recalculation failed: {e!s}",
         )

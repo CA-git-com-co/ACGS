@@ -5,12 +5,9 @@ Comprehensive analysis of three critical directories after cleanup.
 """
 
 import json
-import os
-import subprocess
-import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 
 class PostCleanupAnalyzer:
@@ -30,7 +27,7 @@ class PostCleanupAnalyzer:
             "validation_status": {},
         }
 
-    def analyze_blockchain_directory(self) -> Dict[str, Any]:
+    def analyze_blockchain_directory(self) -> dict[str, Any]:
         """Analyze blockchain directory structure and Quantumagi deployment."""
         print("🔍 Analyzing blockchain directory...")
 
@@ -66,7 +63,7 @@ class PostCleanupAnalyzer:
         constitution_file = blockchain_dir / "constitution_data.json"
         if constitution_file.exists():
             try:
-                with open(constitution_file, "r") as f:
+                with open(constitution_file) as f:
                     constitution_data = json.load(f)
                     stored_hash = constitution_data.get("constitution", {}).get("hash")
                     analysis["quantumagi_deployment"][
@@ -111,7 +108,7 @@ class PostCleanupAnalyzer:
 
         return analysis
 
-    def analyze_core_directory(self) -> Dict[str, Any]:
+    def analyze_core_directory(self) -> dict[str, Any]:
         """Analyze core directory and compare with services/core."""
         print("🔍 Analyzing core directory...")
 
@@ -160,7 +157,7 @@ class PostCleanupAnalyzer:
 
         return analysis
 
-    def analyze_tools_directory(self) -> Dict[str, Any]:
+    def analyze_tools_directory(self) -> dict[str, Any]:
         """Analyze tools directory for conflicts and operational status."""
         print("🔍 Analyzing tools directory...")
 
@@ -227,7 +224,7 @@ class PostCleanupAnalyzer:
 
     def _generate_directory_structure(
         self, directory: Path, max_depth: int = 2
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate directory structure report."""
         structure = {
             "total_files": 0,
@@ -268,8 +265,8 @@ class PostCleanupAnalyzer:
         return structure
 
     def _find_potential_duplicates(
-        self, core_files: List[Path], services_files: List[Path]
-    ) -> List[str]:
+        self, core_files: list[Path], services_files: list[Path]
+    ) -> list[str]:
         """Find potential duplicate files between core and services/core."""
         core_names = {f.name for f in core_files}
         services_names = {f.name for f in services_files}
@@ -278,23 +275,22 @@ class PostCleanupAnalyzer:
     def _analyze_file_purpose(self, file_path: Path) -> str:
         """Analyze file purpose from content."""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read(500)  # Read first 500 chars
                 if "constitutional" in content.lower():
                     return "constitutional_governance"
-                elif "multi_model" in content.lower() or "consensus" in content.lower():
+                if "multi_model" in content.lower() or "consensus" in content.lower():
                     return "multi_model_consensus"
-                elif "wina" in content.lower() or "oversight" in content.lower():
+                if "wina" in content.lower() or "oversight" in content.lower():
                     return "oversight_coordination"
-                else:
-                    return "utility_module"
+                return "utility_module"
         except:
             return "unknown"
 
     def _check_services_imports(self, file_path: Path) -> bool:
         """Check if file imports from services directory."""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
                 return "from services" in content or "import services" in content
         except:
@@ -305,30 +301,27 @@ class PostCleanupAnalyzer:
         if tool_path.suffix == ".py":
             if "benchmark" in tool_path.name.lower():
                 return "performance_testing"
-            elif "cleanup" in tool_path.name.lower():
+            if "cleanup" in tool_path.name.lower():
                 return "maintenance"
-            else:
-                return "development_utility"
-        elif tool_path.suffix == ".md":
+            return "development_utility"
+        if tool_path.suffix == ".md":
             return "documentation"
-        else:
-            return "configuration"
+        return "configuration"
 
     def _classify_tool_directory(self, tool_dir: Path) -> str:
         """Classify tool directory."""
         name = tool_dir.name.lower()
         if "nemo" in name:
             return "ai_framework"
-        elif "swe" in name or "agent" in name:
+        if "swe" in name or "agent" in name:
             return "development_agent"
-        elif "evaluation" in name:
+        if "evaluation" in name:
             return "testing_framework"
-        elif "inspector" in name:
+        if "inspector" in name:
             return "debugging_tool"
-        else:
-            return "utility_collection"
+        return "utility_collection"
 
-    def generate_optimization_recommendations(self) -> List[Dict[str, Any]]:
+    def generate_optimization_recommendations(self) -> list[dict[str, Any]]:
         """Generate optimization recommendations."""
         recommendations = []
 
@@ -381,7 +374,7 @@ class PostCleanupAnalyzer:
 
         return recommendations
 
-    def run_complete_analysis(self) -> Dict[str, Any]:
+    def run_complete_analysis(self) -> dict[str, Any]:
         """Run complete post-cleanup analysis."""
         print("🚀 Starting ACGS-1 Post-Cleanup Analysis...")
         print("=" * 50)
@@ -409,7 +402,7 @@ class PostCleanupAnalyzer:
         print("✅ Analysis completed successfully!")
         return self.report
 
-    def _validate_quantumagi_deployment(self) -> Dict[str, Any]:
+    def _validate_quantumagi_deployment(self) -> dict[str, Any]:
         """Validate Quantumagi deployment status."""
         blockchain_analysis = self.report["analysis_results"].get("blockchain", {})
 
@@ -464,7 +457,7 @@ class PostCleanupAnalyzer:
 
         return validation
 
-    def _generate_risk_assessment(self) -> Dict[str, Any]:
+    def _generate_risk_assessment(self) -> dict[str, Any]:
         """Generate risk assessment for identified issues."""
         risk_assessment = {
             "critical_risks": [],
@@ -546,7 +539,7 @@ if __name__ == "__main__":
     for rec in report["optimization_recommendations"]:
         print(f"   {rec['priority']}: {rec['description']}")
 
-    print(f"\n⚠️  Risk Assessment:")
+    print("\n⚠️  Risk Assessment:")
     risks = report["risk_assessment"]
     print(f"   Critical: {len(risks['critical_risks'])}")
     print(f"   High: {len(risks['high_risks'])}")

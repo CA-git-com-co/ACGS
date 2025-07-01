@@ -11,7 +11,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class ModelType(Enum):
@@ -52,7 +52,7 @@ class ModelMetrics:
     quality_score: float
     constitutional_compliance: bool
     cache_hit: bool = False
-    cache_level: Optional[str] = None
+    cache_level: str | None = None
 
 
 @dataclass
@@ -62,21 +62,21 @@ class MultimodalRequest:
     request_id: str
     request_type: RequestType
     content_type: ContentType
-    text_content: Optional[str] = None
-    image_url: Optional[str] = None
-    image_data: Optional[str] = None  # Base64 encoded
+    text_content: str | None = None
+    image_url: str | None = None
+    image_data: str | None = None  # Base64 encoded
     priority: str = "medium"  # low, medium, high
-    constitutional_context: Optional[Dict[str, Any]] = None
+    constitutional_context: dict[str, Any] | None = None
 
     def __post_init__(self):
         """Validate request after initialization."""
         if self.content_type == ContentType.TEXT_ONLY and not self.text_content:
             raise ValueError("Text content required for TEXT_ONLY requests")
-        elif self.content_type == ContentType.IMAGE_ONLY and not (
+        if self.content_type == ContentType.IMAGE_ONLY and not (
             self.image_url or self.image_data
         ):
             raise ValueError("Image URL or data required for IMAGE_ONLY requests")
-        elif self.content_type == ContentType.TEXT_AND_IMAGE:
+        if self.content_type == ContentType.TEXT_AND_IMAGE:
             if not self.text_content or not (self.image_url or self.image_data):
                 raise ValueError(
                     "Both text and image required for TEXT_AND_IMAGE requests"
@@ -94,10 +94,10 @@ class MultimodalResponse:
     confidence_score: float
     metrics: ModelMetrics
     constitutional_hash: str
-    violations: List[str] = None
-    warnings: List[str] = None
+    violations: list[str] = None
+    warnings: list[str] = None
     timestamp: str = None
-    cache_info: Optional[Dict[str, Any]] = None
+    cache_info: dict[str, Any] | None = None
 
     def __post_init__(self):
         """Set defaults after initialization."""

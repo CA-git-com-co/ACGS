@@ -234,24 +234,23 @@ class ScenarioBasedSemanticValidator(SemanticValidator):
                 # For rules returning sets or objects, it might be `[{"result": [...]}]` or `[{"result": {...}}]`.
                 # If the query is just `x=1;y=2;{x,y}` it might be `[{"result": [{"x":1,"y":2}]}]` (if x,y are in a set)
                 # or more complex. The current logic is a common case.
+                # If the output doesn't fit the `[{"result": ...}]` pattern directly,
+                # it could be that the query itself produced a raw value or a different structure.
+                # For instance, `opa eval "count(input.items)"` might return `[{"result": 3}]`.
+                # If `opa_output` is `[{"some_other_key": ...}]` or just `[]` for undefined, this needs care.
+                # If the query is undefined, OPA eval usually returns an empty list `[]` or no output.
+                # If `opa_output` is `[]`, it means the query was undefined or produced no results.
+                # This should often be treated as `None` or `False` depending on context.
+                elif not opa_output:  # Empty list means undefined
+                    eval_result = None  # Or False, depending on interpretation for boolean queries
                 else:
-                    # If the output doesn't fit the `[{"result": ...}]` pattern directly,
-                    # it could be that the query itself produced a raw value or a different structure.
-                    # For instance, `opa eval "count(input.items)"` might return `[{"result": 3}]`.
-                    # If `opa_output` is `[{"some_other_key": ...}]` or just `[]` for undefined, this needs care.
-                    # If the query is undefined, OPA eval usually returns an empty list `[]` or no output.
-                    # If `opa_output` is `[]`, it means the query was undefined or produced no results.
-                    # This should often be treated as `None` or `False` depending on context.
-                    if not opa_output:  # Empty list means undefined
-                        eval_result = None  # Or False, depending on interpretation for boolean queries
-                    else:
-                        # Fallback: take the whole first element if structure is unexpected but non-empty
-                        # This is a guess and might need adjustment.
-                        eval_result = (
-                            opa_output[0]
-                            if isinstance(opa_output, list) and opa_output
-                            else opa_output
-                        )
+                    # Fallback: take the whole first element if structure is unexpected but non-empty
+                    # This is a guess and might need adjustment.
+                    eval_result = (
+                        opa_output[0]
+                        if isinstance(opa_output, list) and opa_output
+                        else opa_output
+                    )
 
                 logger.debug(
                     f"OPA eval successful for '{policy_id_for_log}', query '{query_path}'. Raw output: {result.stdout[:200]}, Parsed result: {eval_result}"

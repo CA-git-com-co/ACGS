@@ -8,7 +8,6 @@ Based on AlphaEvolve-ACGS Integration System research paper improvements.
 """
 
 import logging
-import random
 import secrets
 import time
 from dataclasses import dataclass
@@ -312,11 +311,11 @@ class BoundaryConditionTester:
         secure_random = secrets.SystemRandom()
         if len(test_string) == 0:
             return secure_random.random() > 0.2  # 80% chance of handling empty strings
-        elif len(test_string) > 5000:
+        if len(test_string) > 5000:
             return (
                 secure_random.random() > 0.4
             )  # 60% chance of handling very long strings
-        elif "\x00" in test_string:
+        if "\x00" in test_string:
             return secure_random.random() > 0.5  # 50% chance of handling null bytes
         return secure_random.random() > 0.1  # 90% chance for normal strings
 
@@ -419,10 +418,9 @@ class MutationTester:
             return (
                 secure_random.random() > 0.1
             )  # 90% chance of passing for small changes
-        elif similarity > 0.7:
+        if similarity > 0.7:
             return secure_random.random() > 0.3  # 70% chance for medium changes
-        else:
-            return secure_random.random() > 0.6  # 40% chance for large changes
+        return secure_random.random() > 0.6  # 40% chance for large changes
 
     def _calculate_similarity(self, original: str, mutated: str) -> float:
         """Calculate similarity between original and mutated content."""
@@ -450,12 +448,11 @@ class MutationTester:
 
         if similarity > 0.95:
             return VulnerabilityLevel.CRITICAL  # Very small change caused failure
-        elif similarity > 0.8:
+        if similarity > 0.8:
             return VulnerabilityLevel.HIGH
-        elif similarity > 0.6:
+        if similarity > 0.6:
             return VulnerabilityLevel.MEDIUM
-        else:
-            return VulnerabilityLevel.LOW
+        return VulnerabilityLevel.LOW
 
 
 class AdversarialRobustnessTester:

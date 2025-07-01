@@ -4,12 +4,13 @@ Enterprise-grade Python SDK for Autonomous Coding Governance System
 """
 
 import asyncio
-import aiohttp
 import json
-from typing import Dict, List, Optional, Any, Union
+import logging
 from dataclasses import dataclass
 from datetime import datetime
-import logging
+from typing import Any, Dict, List, Optional, Union
+
+import aiohttp
 
 logger = logging.getLogger(__name__)
 
@@ -24,8 +25,8 @@ class ValidationResult:
     validation_id: str
     compliant: bool
     compliance_score: float
-    violations: List[str]
-    recommendations: List[str]
+    violations: list[str]
+    recommendations: list[str]
     constitutional_hash: str
     processing_time_ms: float
 
@@ -47,8 +48,8 @@ class GovernanceDecision:
 
     decision: str
     confidence: float
-    applied_policies: List[str]
-    conditions: List[str]
+    applied_policies: list[str]
+    conditions: list[str]
     constitutional_compliance: bool
 
 
@@ -58,7 +59,7 @@ class VerificationResult:
 
     verification_id: str
     status: str
-    properties_verified: List[Dict[str, Any]]
+    properties_verified: list[dict[str, Any]]
     constitutional_compliance: bool
     verification_time_ms: float
 
@@ -122,7 +123,7 @@ class ConstitutionalService:
             processing_time_ms=response["processing_time_ms"],
         )
 
-    async def list_policies(self) -> List[PolicyInfo]:
+    async def list_policies(self) -> list[PolicyInfo]:
         """List available constitutional policies"""
 
         response = await self.client._request("GET", "/constitutional/policies")
@@ -139,8 +140,8 @@ class ConstitutionalService:
         ]
 
     async def create_policy(
-        self, name: str, description: str, rules: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, name: str, description: str, rules: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """Create new constitutional policy"""
 
         payload = {
@@ -159,12 +160,12 @@ class GovernanceService:
     def __init__(self, client):
         self.client = client
 
-    async def get_status(self) -> Dict[str, Any]:
+    async def get_status(self) -> dict[str, Any]:
         """Get governance system status"""
         return await self.client._request("GET", "/governance/status")
 
     async def evaluate(
-        self, context: Dict[str, Any], policies: List[str]
+        self, context: dict[str, Any], policies: list[str]
     ) -> GovernanceDecision:
         """Evaluate governance decision"""
 
@@ -192,7 +193,7 @@ class VerificationService:
         self.client = client
 
     async def verify(
-        self, content: str, verification_type: str, properties: List[str]
+        self, content: str, verification_type: str, properties: list[str]
     ) -> VerificationResult:
         """Perform formal verification"""
 
@@ -220,7 +221,7 @@ class AuthService:
     def __init__(self, client):
         self.client = client
 
-    async def login(self, username: str, password: str) -> Dict[str, Any]:
+    async def login(self, username: str, password: str) -> dict[str, Any]:
         """Authenticate user and obtain access token"""
 
         payload = {
@@ -231,7 +232,7 @@ class AuthService:
 
         return await self.client._request("POST", "/auth/login", payload)
 
-    async def refresh_token(self, refresh_token: str) -> Dict[str, Any]:
+    async def refresh_token(self, refresh_token: str) -> dict[str, Any]:
         """Refresh access token"""
 
         payload = {
@@ -241,7 +242,7 @@ class AuthService:
 
         return await self.client._request("POST", "/auth/refresh", payload)
 
-    async def validate_token(self) -> Dict[str, Any]:
+    async def validate_token(self) -> dict[str, Any]:
         """Validate current token"""
         return await self.client._request("GET", "/auth/validate")
 
@@ -299,8 +300,8 @@ class ACGSClient:
             self.session = None
 
     async def _request(
-        self, method: str, endpoint: str, data: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
+        self, method: str, endpoint: str, data: dict[str, Any] = None
+    ) -> dict[str, Any]:
         """Make HTTP request to ACGS API"""
 
         await self._ensure_session()
@@ -318,7 +319,6 @@ class ACGSClient:
             async with self.session.request(
                 method, url, headers=headers, json=data if data else None
             ) as response:
-
                 # Handle rate limiting
                 if response.status == 429:
                     raise RateLimitError("Rate limit exceeded")
@@ -358,7 +358,7 @@ class ACGSClient:
                 return response_data
 
         except aiohttp.ClientError as e:
-            raise ACGSError(f"Network error: {str(e)}")
+            raise ACGSError(f"Network error: {e!s}")
 
 
 # Synchronous wrapper for backwards compatibility
@@ -386,7 +386,7 @@ class SyncACGSClient:
 
         return self._run_async(_validate())
 
-    def list_policies(self) -> List[PolicyInfo]:
+    def list_policies(self) -> list[PolicyInfo]:
         """Synchronous policy listing"""
 
         async def _list_policies():
@@ -396,7 +396,7 @@ class SyncACGSClient:
         return self._run_async(_list_policies())
 
     def evaluate_governance(
-        self, context: Dict[str, Any], policies: List[str]
+        self, context: dict[str, Any], policies: list[str]
     ) -> GovernanceDecision:
         """Synchronous governance evaluation"""
 
@@ -407,7 +407,7 @@ class SyncACGSClient:
         return self._run_async(_evaluate())
 
     def verify(
-        self, content: str, verification_type: str, properties: List[str]
+        self, content: str, verification_type: str, properties: list[str]
     ) -> VerificationResult:
         """Synchronous formal verification"""
 
@@ -435,7 +435,7 @@ async def validate_content(content: str, api_key: str, **kwargs) -> ValidationRe
 
 
 async def evaluate_governance(
-    context: Dict[str, Any], policies: List[str], api_key: str
+    context: dict[str, Any], policies: list[str], api_key: str
 ) -> GovernanceDecision:
     """Convenience function for governance evaluation"""
     async with ACGSClient(api_key=api_key) as client:
@@ -445,15 +445,15 @@ async def evaluate_governance(
 # Export main classes and functions
 __all__ = [
     "ACGSClient",
-    "SyncACGSClient",
-    "ValidationResult",
-    "PolicyInfo",
-    "GovernanceDecision",
-    "VerificationResult",
     "ACGSError",
-    "ValidationError",
     "AuthenticationError",
+    "GovernanceDecision",
+    "PolicyInfo",
     "RateLimitError",
-    "validate_content",
+    "SyncACGSClient",
+    "ValidationError",
+    "ValidationResult",
+    "VerificationResult",
     "evaluate_governance",
+    "validate_content",
 ]

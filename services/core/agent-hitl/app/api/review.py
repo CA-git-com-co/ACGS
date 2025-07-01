@@ -5,21 +5,19 @@ RESTful API for agent operation reviews and human oversight.
 """
 
 import logging
-from typing import Dict, List, Optional, Any
 from datetime import datetime
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from ..core.config import settings
 from ..models.review import (
+    AgentConfidenceProfile,
     AgentOperationReview,
     ReviewFeedback,
-    AgentConfidenceProfile,
     ReviewStatus,
-    EscalationLevel,
 )
 from ..services.decision_engine import DecisionEngine
 
@@ -43,20 +41,20 @@ class OperationReviewRequest(BaseModel):
     operation_description: str = Field(
         ..., description="Detailed description of the operation"
     )
-    operation_context: Dict[str, Any] = Field(
+    operation_context: dict[str, Any] = Field(
         default_factory=dict, description="Additional context"
     )
-    operation_target: Optional[str] = Field(None, description="Target of the operation")
-    request_id: Optional[str] = Field(None, description="Optional request identifier")
-    session_id: Optional[str] = Field(None, description="Optional session identifier")
+    operation_target: str | None = Field(None, description="Target of the operation")
+    request_id: str | None = Field(None, description="Optional request identifier")
+    session_id: str | None = Field(None, description="Optional session identifier")
 
 
 class ReviewDecisionRequest(BaseModel):
     """Request model for human review decision."""
 
     decision: str = Field(..., description="Decision: approved or rejected")
-    decision_reason: Optional[str] = Field(None, description="Reason for the decision")
-    reviewer_notes: Optional[str] = Field(None, description="Additional reviewer notes")
+    decision_reason: str | None = Field(None, description="Reason for the decision")
+    reviewer_notes: str | None = Field(None, description="Additional reviewer notes")
 
 
 class ReviewFeedbackRequest(BaseModel):
@@ -64,14 +62,12 @@ class ReviewFeedbackRequest(BaseModel):
 
     feedback_type: str = Field(..., description="Type of feedback")
     feedback_value: str = Field(..., description="Feedback value (correct/incorrect)")
-    feedback_reason: Optional[str] = Field(None, description="Reason for feedback")
-    suggested_confidence: Optional[float] = Field(
+    feedback_reason: str | None = Field(None, description="Reason for feedback")
+    suggested_confidence: float | None = Field(
         None, description="Suggested confidence score"
     )
-    suggested_risk_score: Optional[float] = Field(
-        None, description="Suggested risk score"
-    )
-    improvement_notes: Optional[str] = Field(None, description="Notes for improvement")
+    suggested_risk_score: float | None = Field(None, description="Suggested risk score")
+    improvement_notes: str | None = Field(None, description="Notes for improvement")
 
 
 class ReviewResponse(BaseModel):
@@ -87,11 +83,11 @@ class ReviewResponse(BaseModel):
     risk_level: str
     status: str
     escalation_level: int
-    decision: Optional[str]
-    decision_reason: Optional[str]
+    decision: str | None
+    decision_reason: str | None
     created_at: str
-    decided_at: Optional[str]
-    processing_time_ms: Optional[int]
+    decided_at: str | None
+    processing_time_ms: int | None
 
     class Config:
         from_attributes = True
@@ -100,7 +96,7 @@ class ReviewResponse(BaseModel):
 class ReviewListResponse(BaseModel):
     """Response model for review list."""
 
-    reviews: List[ReviewResponse]
+    reviews: list[ReviewResponse]
     total: int
     page: int
     page_size: int
@@ -111,7 +107,7 @@ class ReviewListResponse(BaseModel):
 from ..core.database import get_db
 
 
-def get_client_ip(request: Request) -> Optional[str]:
+def get_client_ip(request: Request) -> str | None:
     """Extract client IP from request."""
     return request.client.host if request.client else None
 
@@ -197,9 +193,9 @@ async def evaluate_operation(
 
 @router.get("/", response_model=ReviewListResponse)
 async def list_reviews(
-    agent_id: Optional[str] = None,
-    status_filter: Optional[str] = None,
-    escalation_level: Optional[int] = None,
+    agent_id: str | None = None,
+    status_filter: str | None = None,
+    escalation_level: int | None = None,
     page: int = 1,
     page_size: int = 50,
     db: AsyncSession = Depends(get_db),

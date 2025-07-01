@@ -103,9 +103,8 @@ class EnhancedGSEngine:
                     "rule_content": rule_content,
                 },
             )
-        else:
-            # Fallback to LLM-based synthesis
-            return self._llm_synthesis_fallback(principle, target_context)
+        # Fallback to LLM-based synthesis
+        return self._llm_synthesis_fallback(principle, target_context)
 
     def _select_template(self, principle: dict[str, Any], context: str) -> str:
         """Select appropriate formal specification template."""
@@ -115,12 +114,11 @@ class EnhancedGSEngine:
             keyword in content for keyword in ["access", "permission", "authorization"]
         ):
             return "access_control"
-        elif any(keyword in content for keyword in ["data", "privacy", "protection"]):
+        if any(keyword in content for keyword in ["data", "privacy", "protection"]):
             return "data_protection"
-        elif any(keyword in content for keyword in ["fair", "bias", "discrimination"]):
+        if any(keyword in content for keyword in ["fair", "bias", "discrimination"]):
             return "fairness_constraint"
-        else:
-            return "access_control"  # Default template
+        return "access_control"  # Default template
 
     def _extract_parameters(
         self, principle: dict[str, Any], template_name: str
@@ -313,14 +311,13 @@ class XAIExplainer:
         """Categorize the type of validation failure."""
         if "syntax" in failure_reason.lower():
             return "syntax_error"
-        elif "semantic" in failure_reason.lower():
+        if "semantic" in failure_reason.lower():
             return "semantic_error"
-        elif "conflict" in failure_reason.lower():
+        if "conflict" in failure_reason.lower():
             return "conflict_error"
-        elif "safety" in failure_reason.lower():
+        if "safety" in failure_reason.lower():
             return "safety_violation"
-        else:
-            return "unknown_error"
+        return "unknown_error"
 
     def _identify_root_cause(
         self, rule: str, principle: dict[str, Any], failure_reason: str
@@ -329,12 +326,11 @@ class XAIExplainer:
         # Analyze rule structure and principle content
         if len(rule.strip()) == 0:
             return "Empty rule generated - principle may be too abstract"
-        elif "undefined" in failure_reason.lower():
+        if "undefined" in failure_reason.lower():
             return "Undefined references in rule - missing context or predicates"
-        elif "ambiguous" in failure_reason.lower():
+        if "ambiguous" in failure_reason.lower():
             return "Ambiguous principle interpretation - needs clarification"
-        else:
-            return "Complex interaction between principle and rule generation logic"
+        return "Complex interaction between principle and rule generation logic"
 
     def _generate_suggestions(
         self, rule: str, principle: dict[str, Any], failure_reason: str
@@ -376,8 +372,7 @@ class XAIExplainer:
         # Simple heuristic based on failure reason specificity
         if len(failure_reason.split()) > 5:
             return 0.8  # More detailed failure reasons get higher confidence
-        else:
-            return 0.6  # Generic failure reasons get lower confidence
+        return 0.6  # Generic failure reasons get lower confidence
 
 
 def main():

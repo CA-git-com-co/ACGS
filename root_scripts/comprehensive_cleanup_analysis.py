@@ -17,15 +17,11 @@ PRESERVATION REQUIREMENTS:
 - Database migrations, schemas, and configuration files
 """
 
-import os
-import sys
-import json
 import hashlib
+import json
 import re
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Set, Tuple
-import difflib
+from pathlib import Path
 
 
 class ACGSCleanupAnalyzer:
@@ -102,7 +98,7 @@ class ACGSCleanupAnalyzer:
         except Exception:
             return ""
 
-    def is_critical_file(self, file_path: Path) -> Tuple[bool, str]:
+    def is_critical_file(self, file_path: Path) -> tuple[bool, str]:
         """Check if file is critical and should be preserved."""
         file_str = str(file_path)
 
@@ -112,7 +108,7 @@ class ACGSCleanupAnalyzer:
                     return True, category
         return False, ""
 
-    def find_exact_duplicates(self) -> Dict[str, List[str]]:
+    def find_exact_duplicates(self) -> dict[str, list[str]]:
         """Find files with identical content."""
         hash_to_files = {}
 
@@ -128,7 +124,7 @@ class ACGSCleanupAnalyzer:
         duplicates = {h: files for h, files in hash_to_files.items() if len(files) > 1}
         return duplicates
 
-    def find_similar_files(self) -> List[Dict]:
+    def find_similar_files(self) -> list[dict]:
         """Find files with similar names but different content."""
         similar_groups = []
         files_by_name = {}
@@ -215,7 +211,7 @@ class ACGSCleanupAnalyzer:
         print(f"✅ Found {len(exact_duplicates)} exact duplicate groups")
         print(f"✅ Found {len(similar_files)} similar file groups")
 
-    def find_version_variants(self) -> List[Dict]:
+    def find_version_variants(self) -> list[dict]:
         """Find files that appear to be different versions of the same component."""
         version_patterns = [
             r"(.+)_v(\d+)",
@@ -360,7 +356,7 @@ class ACGSCleanupAnalyzer:
 
         self.analysis_results["summary"] = summary
 
-        print(f"📊 Analysis complete:")
+        print("📊 Analysis complete:")
         print(f"   - {summary['total_exact_duplicates']} exact duplicate groups")
         print(f"   - {summary['total_similar_files']} similar file groups")
         print(f"   - {summary['total_obsolete_files']} obsolete files")

@@ -10,7 +10,7 @@ import json
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -31,7 +31,7 @@ class OperationalRunbooksManager:
     def __init__(self):
         self.runbook_results = []
 
-    def finalize_operational_runbooks(self) -> Dict[str, Any]:
+    def finalize_operational_runbooks(self) -> dict[str, Any]:
         """Finalize all operational runbooks."""
         logger.info("📚 Finalizing operational runbooks...")
 
@@ -64,7 +64,7 @@ class OperationalRunbooksManager:
                 raise FileNotFoundError("Emergency procedures document not found")
 
             # Validate content structure
-            with open(emergency_doc, "r") as f:
+            with open(emergency_doc) as f:
                 content = f.read()
 
             required_sections = [
@@ -132,7 +132,7 @@ class OperationalRunbooksManager:
             if not troubleshooting_doc.exists():
                 raise FileNotFoundError("Troubleshooting guide not found")
 
-            with open(troubleshooting_doc, "r") as f:
+            with open(troubleshooting_doc) as f:
                 content = f.read()
 
             # Validate common issues coverage
@@ -403,7 +403,7 @@ class OperationalRunbooksManager:
             cross_references_valid = True
             try:
                 # Check if emergency procedures reference troubleshooting guide
-                with open("docs/operations/EMERGENCY_PROCEDURES.md", "r") as f:
+                with open("docs/operations/EMERGENCY_PROCEDURES.md") as f:
                     emergency_content = f.read()
                     if "TROUBLESHOOTING_GUIDE.md" not in emergency_content:
                         cross_references_valid = False
@@ -437,7 +437,7 @@ class OperationalRunbooksManager:
 
     def _generate_runbook_report(
         self, start_time: datetime, end_time: datetime, duration: float
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate comprehensive runbook report."""
         successful_components = len(
             [r for r in self.runbook_results if r["status"] == "success"]
@@ -524,14 +524,14 @@ def main():
     print(f"❌ Failed: {summary['failed_components']}")
     print(f"📈 Success Rate: {summary['success_rate']}%")
 
-    print(f"\n🎯 SUCCESS CRITERIA:")
+    print("\n🎯 SUCCESS CRITERIA:")
     criteria = report["success_criteria"]
     for criterion, passed in criteria.items():
         status = "PASS" if passed else "FAIL"
         print(f"   {criterion}: {status}")
 
     if summary["failed_components"] > 0:
-        print(f"\n❌ FAILED COMPONENTS:")
+        print("\n❌ FAILED COMPONENTS:")
         for result in report["component_results"]:
             if result["status"] == "failed":
                 print(

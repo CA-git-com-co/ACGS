@@ -139,8 +139,8 @@ async def register_quantum_policy(request: QuantumPolicyRegistration):
         }
 
     except Exception as e:
-        logger.error(f"Quantum policy registration failed: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
+        logger.error(f"Quantum policy registration failed: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Registration failed: {e!s}")
 
 
 @router.post("/quantum/enforce", response_model=QuantumEnforcementResponse)
@@ -237,7 +237,7 @@ async def quantum_policy_enforcement(request: QuantumEnforcementRequest):
 
     except grpc.RpcError as e:
         # Fallback to direct OPA evaluation if QPE is unavailable
-        logger.warning(f"QPE service unavailable, falling back to direct OPA: {str(e)}")
+        logger.warning(f"QPE service unavailable, falling back to direct OPA: {e!s}")
 
         fallback_result = await _fallback_opa_evaluation(
             request.policy_id, request.context
@@ -260,8 +260,8 @@ async def quantum_policy_enforcement(request: QuantumEnforcementRequest):
         )
 
     except Exception as e:
-        logger.error(f"Quantum enforcement failed: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Enforcement failed: {str(e)}")
+        logger.error(f"Quantum enforcement failed: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Enforcement failed: {e!s}")
 
 
 @router.post("/quantum/observe", response_model=dict[str, Any])
@@ -295,8 +295,8 @@ async def trigger_observer_effect(request: QuantumObservationRequest):
         }
 
     except Exception as e:
-        logger.error(f"Observer effect failed: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Observation failed: {str(e)}")
+        logger.error(f"Observer effect failed: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Observation failed: {e!s}")
 
 
 @router.post("/quantum/uncertainty", response_model=dict[str, Any])
@@ -330,8 +330,8 @@ async def update_uncertainty_parameter(request: UncertaintyUpdateRequest):
         }
 
     except Exception as e:
-        logger.error(f"Uncertainty update failed: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Update failed: {str(e)}")
+        logger.error(f"Uncertainty update failed: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Update failed: {e!s}")
 
 
 @router.get("/quantum/state/{policy_id}", response_model=dict[str, Any])
@@ -381,8 +381,8 @@ async def get_quantum_state(policy_id: str):
         }
 
     except Exception as e:
-        logger.error(f"Get quantum state failed: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Query failed: {str(e)}")
+        logger.error(f"Get quantum state failed: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Query failed: {e!s}")
 
 
 @router.get("/quantum/health", response_model=dict[str, Any])
@@ -410,7 +410,7 @@ async def quantum_health_check():
         }
 
     except Exception as e:
-        logger.error(f"Quantum health check failed: {str(e)}")
+        logger.error(f"Quantum health check failed: {e!s}")
         return {
             "qpe_service": {"healthy": False, "error": str(e)},
             "client_metrics": qpe_client.get_metrics(),
@@ -454,5 +454,5 @@ async def _fallback_opa_evaluation(policy_id: str, context: dict[str, Any]) -> b
         return response.result.get("allow", False)
 
     except Exception as e:
-        logger.error(f"Fallback OPA evaluation failed: {str(e)}")
+        logger.error(f"Fallback OPA evaluation failed: {e!s}")
         return False  # Fail closed for security

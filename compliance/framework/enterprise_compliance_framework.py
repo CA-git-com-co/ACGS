@@ -5,13 +5,12 @@ Implements comprehensive compliance framework for enterprise security standards
 """
 
 import json
-import time
-import hashlib
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone, timedelta
-from enum import Enum
 import logging
+import time
+from dataclasses import asdict, dataclass
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -48,13 +47,13 @@ class ComplianceControl:
     description: str
     requirement: str
     implementation_status: ComplianceStatus
-    evidence_required: List[str]
-    evidence_provided: List[str]
+    evidence_required: list[str]
+    evidence_provided: list[str]
     risk_level: str  # "LOW", "MEDIUM", "HIGH", "CRITICAL"
     owner: str
     last_assessed: str
     next_review: str
-    remediation_plan: Optional[str]
+    remediation_plan: str | None
     constitutional_hash: str
 
 
@@ -71,8 +70,8 @@ class ComplianceAssessment:
     controls_assessed: int
     controls_compliant: int
     controls_non_compliant: int
-    critical_findings: List[str]
-    recommendations: List[str]
+    critical_findings: list[str]
+    recommendations: list[str]
     next_assessment_due: str
 
 
@@ -515,7 +514,7 @@ class EnterpriseComplianceFramework:
         self.assessments[assessment.assessment_id] = assessment
         return assessment
 
-    def generate_compliance_report(self) -> Dict[str, Any]:
+    def generate_compliance_report(self) -> dict[str, Any]:
         """Generate comprehensive compliance report"""
 
         # Run assessments for all applicable standards
@@ -552,8 +551,8 @@ class EnterpriseComplianceFramework:
         }
 
     def generate_overall_recommendations(
-        self, assessments: Dict[str, ComplianceAssessment]
-    ) -> List[str]:
+        self, assessments: dict[str, ComplianceAssessment]
+    ) -> list[str]:
         """Generate overall compliance recommendations"""
         recommendations = []
 
@@ -610,7 +609,7 @@ def test_compliance_framework():
     print("\n📊 Generating compliance report...")
     report = framework.generate_compliance_report()
 
-    print(f"\n📈 Compliance Report Summary:")
+    print("\n📈 Compliance Report Summary:")
     print(f"  Overall Compliance: {report['overall_compliance_percentage']:.1f}%")
     print(f"  Standards Assessed: {report['standards_assessed']}")
     print(f"  Total Controls: {report['total_controls']}")
@@ -623,7 +622,7 @@ def test_compliance_framework():
         json.dump(report, f, indent=2, default=str)
 
     print(f"\n📄 Detailed report saved: compliance_report_{timestamp}.json")
-    print(f"\n✅ Enterprise Compliance Framework: OPERATIONAL")
+    print("\n✅ Enterprise Compliance Framework: OPERATIONAL")
 
 
 if __name__ == "__main__":

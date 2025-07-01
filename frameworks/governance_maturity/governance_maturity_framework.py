@@ -10,11 +10,10 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import json
 import logging
+from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional, Tuple
 from enum import Enum
-from dataclasses import dataclass, asdict
-from pathlib import Path
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -54,11 +53,11 @@ class MaturityIndicator:
     name: str
     description: str
     domain: GovernanceDomain
-    level_1_criteria: List[str]  # Initial
-    level_2_criteria: List[str]  # Managed
-    level_3_criteria: List[str]  # Defined
-    level_4_criteria: List[str]  # Quantitatively Managed
-    level_5_criteria: List[str]  # Optimizing
+    level_1_criteria: list[str]  # Initial
+    level_2_criteria: list[str]  # Managed
+    level_3_criteria: list[str]  # Defined
+    level_4_criteria: list[str]  # Quantitatively Managed
+    level_5_criteria: list[str]  # Optimizing
     weight: float = 1.0
     constitutional_hash: str = "cdd01ef066bc6cf2"
 
@@ -70,10 +69,10 @@ class AssessmentResult:
     organization_id: str
     assessment_date: datetime
     overall_maturity_level: float
-    domain_scores: Dict[GovernanceDomain, float]
-    indicator_scores: Dict[str, int]
-    recommendations: List[str]
-    improvement_roadmap: List[Dict[str, Any]]
+    domain_scores: dict[GovernanceDomain, float]
+    indicator_scores: dict[str, int]
+    recommendations: list[str]
+    improvement_roadmap: list[dict[str, Any]]
     constitutional_compliance_score: float
     constitutional_hash: str = "cdd01ef066bc6cf2"
 
@@ -84,9 +83,9 @@ class GovernanceMaturityFramework:
     def __init__(self):
         self.constitutional_hash = "cdd01ef066bc6cf2"
         self.indicators = self._initialize_indicators()
-        self.assessment_history: List[AssessmentResult] = []
+        self.assessment_history: list[AssessmentResult] = []
 
-    def _initialize_indicators(self) -> Dict[str, MaturityIndicator]:
+    def _initialize_indicators(self) -> dict[str, MaturityIndicator]:
         """Initialize the maturity indicators for all domains."""
         indicators = {}
 
@@ -250,7 +249,7 @@ class GovernanceMaturityFramework:
         return indicators
 
     def conduct_assessment(
-        self, organization_id: str, responses: Dict[str, int]
+        self, organization_id: str, responses: dict[str, int]
     ) -> AssessmentResult:
         """Conduct a comprehensive governance maturity assessment."""
         logger.info(
@@ -307,8 +306,8 @@ class GovernanceMaturityFramework:
         return result
 
     def _generate_recommendations(
-        self, domain_scores: Dict[GovernanceDomain, float], responses: Dict[str, int]
-    ) -> List[str]:
+        self, domain_scores: dict[GovernanceDomain, float], responses: dict[str, int]
+    ) -> list[str]:
         """Generate improvement recommendations based on assessment results."""
         recommendations = []
 
@@ -346,8 +345,8 @@ class GovernanceMaturityFramework:
         return recommendations
 
     def _create_improvement_roadmap(
-        self, domain_scores: Dict[GovernanceDomain, float], responses: Dict[str, int]
-    ) -> List[Dict[str, Any]]:
+        self, domain_scores: dict[GovernanceDomain, float], responses: dict[str, int]
+    ) -> list[dict[str, Any]]:
         """Create a prioritized improvement roadmap."""
         roadmap = []
 
@@ -399,7 +398,7 @@ class GovernanceMaturityFramework:
 
         return roadmap
 
-    def generate_assessment_report(self, result: AssessmentResult) -> Dict[str, Any]:
+    def generate_assessment_report(self, result: AssessmentResult) -> dict[str, Any]:
         """Generate a comprehensive assessment report."""
         return {
             "executive_summary": {
@@ -436,29 +435,27 @@ class GovernanceMaturityFramework:
         """Get the maturity level name for a given score."""
         if score < 1.5:
             return "Initial"
-        elif score < 2.5:
+        if score < 2.5:
             return "Managed"
-        elif score < 3.5:
+        if score < 3.5:
             return "Defined"
-        elif score < 4.5:
+        if score < 4.5:
             return "Quantitatively Managed"
-        else:
-            return "Optimizing"
+        return "Optimizing"
 
     def _get_domain_status(self, score: float) -> str:
         """Get the status description for a domain score."""
         if score < 2.0:
             return "Needs Immediate Attention"
-        elif score < 3.0:
+        if score < 3.0:
             return "Requires Improvement"
-        elif score < 4.0:
+        if score < 4.0:
             return "Good"
-        else:
-            return "Excellent"
+        return "Excellent"
 
     def _identify_strengths(
-        self, domain_scores: Dict[GovernanceDomain, float]
-    ) -> List[str]:
+        self, domain_scores: dict[GovernanceDomain, float]
+    ) -> list[str]:
         """Identify organizational strengths."""
         strengths = []
         for domain, score in domain_scores.items():
@@ -469,8 +466,8 @@ class GovernanceMaturityFramework:
         return strengths
 
     def _identify_improvement_areas(
-        self, domain_scores: Dict[GovernanceDomain, float]
-    ) -> List[str]:
+        self, domain_scores: dict[GovernanceDomain, float]
+    ) -> list[str]:
         """Identify areas for improvement."""
         areas = []
         for domain, score in domain_scores.items():
@@ -481,8 +478,8 @@ class GovernanceMaturityFramework:
         return areas
 
     def _identify_critical_gaps(
-        self, domain_scores: Dict[GovernanceDomain, float]
-    ) -> List[str]:
+        self, domain_scores: dict[GovernanceDomain, float]
+    ) -> list[str]:
         """Identify critical gaps requiring immediate attention."""
         gaps = []
         for domain, score in domain_scores.items():
@@ -490,7 +487,7 @@ class GovernanceMaturityFramework:
                 gaps.append(f"Critical gap in {domain.value.replace('_', ' ')}")
         return gaps
 
-    def _generate_next_steps(self, result: AssessmentResult) -> List[str]:
+    def _generate_next_steps(self, result: AssessmentResult) -> list[str]:
         """Generate immediate next steps."""
         next_steps = []
 
@@ -520,9 +517,9 @@ class GovernanceMaturityFramework:
             json.dump(report, f, indent=2, default=str)
         logger.info(f"Assessment saved to {filepath}")
 
-    def load_assessment(self, filepath: str) -> Dict[str, Any]:
+    def load_assessment(self, filepath: str) -> dict[str, Any]:
         """Load assessment result from file."""
-        with open(filepath, "r") as f:
+        with open(filepath) as f:
             return json.load(f)
 
 

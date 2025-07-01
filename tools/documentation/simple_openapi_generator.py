@@ -9,15 +9,14 @@ It generates comprehensive OpenAPI 3.0 specifications based on predefined servic
 configurations and integrates with the unified response format and error handling.
 """
 
-import os
-import sys
-import json
-import yaml
-from pathlib import Path
-from typing import Dict, List, Any, Optional
-from datetime import datetime
 import argparse
+import json
 import logging
+import sys
+from pathlib import Path
+from typing import Any
+
+import yaml
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -98,7 +97,7 @@ class SimpleOpenAPIGenerator:
 
         self.global_schemas = self._create_global_schemas()
 
-    def _create_global_schemas(self) -> Dict[str, Any]:
+    def _create_global_schemas(self) -> dict[str, Any]:
         """Create global schemas for unified responses and error handling."""
         return {
             "UnifiedResponse": {
@@ -299,7 +298,7 @@ class SimpleOpenAPIGenerator:
             },
         }
 
-    def generate_service_spec(self, service_key: str) -> Dict[str, Any]:
+    def generate_service_spec(self, service_key: str) -> dict[str, Any]:
         """Generate OpenAPI specification for a specific service."""
 
         config = self.service_configs.get(service_key)
@@ -372,8 +371,8 @@ class SimpleOpenAPIGenerator:
         return spec
 
     def _generate_service_paths(
-        self, service_key: str, config: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, service_key: str, config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Generate API paths for a service."""
 
         paths = {
@@ -443,7 +442,7 @@ class SimpleOpenAPIGenerator:
 
         return paths
 
-    def _get_auth_paths(self) -> Dict[str, Any]:
+    def _get_auth_paths(self) -> dict[str, Any]:
         """Get authentication service paths."""
         return {
             "/auth/register": {
@@ -522,7 +521,7 @@ class SimpleOpenAPIGenerator:
             },
         }
 
-    def _get_ac_paths(self) -> Dict[str, Any]:
+    def _get_ac_paths(self) -> dict[str, Any]:
         """Get constitutional AI service paths."""
         return {
             "/api/v1/constitutional/principles": {
@@ -546,7 +545,7 @@ class SimpleOpenAPIGenerator:
             }
         }
 
-    def _get_integrity_paths(self) -> Dict[str, Any]:
+    def _get_integrity_paths(self) -> dict[str, Any]:
         """Get integrity service paths."""
         return {
             "/api/v1/integrity/audit-log": {
@@ -570,7 +569,7 @@ class SimpleOpenAPIGenerator:
             }
         }
 
-    def _get_fv_paths(self) -> Dict[str, Any]:
+    def _get_fv_paths(self) -> dict[str, Any]:
         """Get formal verification service paths."""
         return {
             "/api/v1/verification/verify": {
@@ -594,7 +593,7 @@ class SimpleOpenAPIGenerator:
             }
         }
 
-    def _get_gs_paths(self) -> Dict[str, Any]:
+    def _get_gs_paths(self) -> dict[str, Any]:
         """Get governance synthesis service paths."""
         return {
             "/api/v1/synthesis/generate": {
@@ -618,7 +617,7 @@ class SimpleOpenAPIGenerator:
             }
         }
 
-    def _get_pgc_paths(self) -> Dict[str, Any]:
+    def _get_pgc_paths(self) -> dict[str, Any]:
         """Get policy governance service paths."""
         return {
             "/api/v1/enforcement/policies": {
@@ -642,7 +641,7 @@ class SimpleOpenAPIGenerator:
             }
         }
 
-    def _get_ec_paths(self) -> Dict[str, Any]:
+    def _get_ec_paths(self) -> dict[str, Any]:
         """Get evolutionary computation service paths."""
         return {
             "/api/v1/evolution/optimize": {
@@ -666,7 +665,7 @@ class SimpleOpenAPIGenerator:
             }
         }
 
-    def _get_dgm_paths(self) -> Dict[str, Any]:
+    def _get_dgm_paths(self) -> dict[str, Any]:
         """Get Darwin Gödel Machine service paths."""
         return {
             "/api/v1/dgm/workspace": {
@@ -693,8 +692,8 @@ class SimpleOpenAPIGenerator:
     def save_spec(
         self,
         service_key: str,
-        spec: Dict[str, Any],
-        formats: List[str] = ["json", "yaml"],
+        spec: dict[str, Any],
+        formats: list[str] = ["json", "yaml"],
     ):
         """Save OpenAPI specification in multiple formats."""
 
@@ -718,7 +717,7 @@ class SimpleOpenAPIGenerator:
         if "html" in formats:
             self._generate_html_docs(service_key, spec)
 
-    def _generate_html_docs(self, service_key: str, spec: Dict[str, Any]):
+    def _generate_html_docs(self, service_key: str, spec: dict[str, Any]):
         """Generate HTML documentation using Swagger UI."""
 
         config = self.service_configs[service_key]
@@ -727,7 +726,7 @@ class SimpleOpenAPIGenerator:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{config['name']} API Documentation</title>
+    <title>{config["name"]} API Documentation</title>
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@4.15.5/swagger-ui.css" />
 </head>
 <body>
@@ -754,8 +753,8 @@ class SimpleOpenAPIGenerator:
         logger.info(f"Generated HTML docs: {html_path}")
 
     def generate_all_specs(
-        self, formats: List[str] = ["json", "yaml", "html"]
-    ) -> Dict[str, Dict[str, Any]]:
+        self, formats: list[str] = ["json", "yaml", "html"]
+    ) -> dict[str, dict[str, Any]]:
         """Generate OpenAPI specifications for all services."""
 
         specs = {}

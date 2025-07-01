@@ -2,12 +2,6 @@
 Unit tests for services.core.policy-governance.pgc_service.app.core.database
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.policy_governance.pgc_service.app.core.database import (
-    DatabaseManager,
-)
-
 
 class TestDatabaseManager:
     """Test suite for DatabaseManager."""

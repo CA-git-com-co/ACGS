@@ -326,7 +326,7 @@ class SVDTransformation:
                 "reconstruction_error": reconstruction_error,
                 "relative_reconstruction_error": relative_reconstruction_error,
                 "numerical_rank": len(S),
-                "effective_rank": torch.sum(S > 1e-10 * S[0]).item(),
+                "effective_rank": torch.sum(1e-10 * S[0] < S).item(),
             }
 
             return stability_metrics

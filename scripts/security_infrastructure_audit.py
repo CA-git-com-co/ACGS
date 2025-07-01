@@ -402,18 +402,17 @@ class ACGSSecurityAuditor:
         """Calculate security grade based on score."""
         if score >= 95:
             return "A+"
-        elif score >= 90:
+        if score >= 90:
             return "A"
-        elif score >= 85:
+        if score >= 85:
             return "B+"
-        elif score >= 80:
+        if score >= 80:
             return "B"
-        elif score >= 75:
+        if score >= 75:
             return "C+"
-        elif score >= 70:
+        if score >= 70:
             return "C"
-        else:
-            return "F"
+        return "F"
 
     def generate_recommendations(self) -> list[str]:
         """Generate security recommendations based on audit results."""

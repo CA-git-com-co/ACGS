@@ -16,10 +16,11 @@ import asyncio
 import logging
 import os
 import time
-from dataclasses import dataclass, field
-from datetime import datetime, timezone, timedelta
-from typing import Any, Dict, Optional, Callable
+from collections.abc import Callable
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from enum import Enum
+from typing import Any
 
 # For Kubernetes leader election (when available)
 try:
@@ -54,9 +55,9 @@ class LeaderElectionConfig:
     cluster_name: str = "acgs-cluster"
 
     # Callbacks
-    on_started_leading: Optional[Callable] = None
-    on_stopped_leading: Optional[Callable] = None
-    on_new_leader: Optional[Callable[[str], None]] = None
+    on_started_leading: Callable | None = None
+    on_stopped_leading: Callable | None = None
+    on_new_leader: Callable[[str], None] | None = None
 
 
 @dataclass
@@ -64,12 +65,12 @@ class LeadershipInfo:
     """Information about current leadership."""
 
     is_leader: bool = False
-    leader_identity: Optional[str] = None
-    leadership_acquired_at: Optional[datetime] = None
-    lease_expires_at: Optional[datetime] = None
+    leader_identity: str | None = None
+    leadership_acquired_at: datetime | None = None
+    lease_expires_at: datetime | None = None
     election_count: int = 0
     state: LeadershipState = LeadershipState.CANDIDATE
-    last_heartbeat: Optional[datetime] = None
+    last_heartbeat: datetime | None = None
     health_status: str = "unknown"
 
 
@@ -93,11 +94,11 @@ class LeaderElectionService:
         self.leadership_info = LeadershipInfo()
         self.identity = self._generate_identity()
         self.running = False
-        self.election_task: Optional[asyncio.Task] = None
-        self.heartbeat_task: Optional[asyncio.Task] = None
+        self.election_task: asyncio.Task | None = None
+        self.heartbeat_task: asyncio.Task | None = None
 
         # Kubernetes client (if available)
-        self.k8s_client: Optional[client.CoordinationV1Api] = None
+        self.k8s_client: client.CoordinationV1Api | None = None
         self.lease_name = f"{config.service_name}-leader"
 
         # Fallback storage for non-Kubernetes environments
@@ -336,7 +337,7 @@ class LeaderElectionService:
 
             if os.path.exists(self.fallback_leader_file):
                 # Read existing leader info
-                with open(self.fallback_leader_file, "r") as f:
+                with open(self.fallback_leader_file) as f:
                     data = f.read().strip().split(",")
                     if len(data) >= 2:
                         leader_identity = data[0]
@@ -443,10 +444,9 @@ class LeaderElectionService:
                     self.k8s_client.delete_namespaced_lease(
                         name=self.lease_name, namespace=self.config.namespace
                     )
-                else:
-                    # Remove fallback file
-                    if os.path.exists(self.fallback_leader_file):
-                        os.remove(self.fallback_leader_file)
+                # Remove fallback file
+                elif os.path.exists(self.fallback_leader_file):
+                    os.remove(self.fallback_leader_file)
 
                 await self._lose_leadership()
                 self.logger.info("Released leadership")
@@ -502,7 +502,7 @@ class LeaderElectionService:
         """Check if this instance is the current leader."""
         return self.leadership_info.is_leader
 
-    def get_leader_identity(self) -> Optional[str]:
+    def get_leader_identity(self) -> str | None:
         """Get the identity of the current leader."""
         return self.leadership_info.leader_identity
 
@@ -510,7 +510,7 @@ class LeaderElectionService:
         """Get detailed leadership information."""
         return self.leadership_info
 
-    def get_health_status(self) -> Dict[str, Any]:
+    def get_health_status(self) -> dict[str, Any]:
         """Get health status information."""
         return {
             "service_name": self.config.service_name,
@@ -542,9 +542,9 @@ class LeaderElectionService:
 async def create_leader_election_service(
     service_name: str,
     namespace: str = "default",
-    on_started_leading: Optional[Callable] = None,
-    on_stopped_leading: Optional[Callable] = None,
-    on_new_leader: Optional[Callable[[str], None]] = None,
+    on_started_leading: Callable | None = None,
+    on_stopped_leading: Callable | None = None,
+    on_new_leader: Callable[[str], None] | None = None,
     **kwargs,
 ) -> LeaderElectionService:
     """
@@ -587,7 +587,6 @@ def leader_required(func):
     async def wrapper(self, *args, **kwargs):
         if hasattr(self, "leader_election") and self.leader_election.is_leader():
             return await func(self, *args, **kwargs)
-        else:
-            raise Exception(f"Operation {func.__name__} requires leadership")
+        raise Exception(f"Operation {func.__name__} requires leadership")
 
     return wrapper

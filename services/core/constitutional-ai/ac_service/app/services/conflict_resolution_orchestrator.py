@@ -224,13 +224,12 @@ class ConflictResolutionOrchestrator:
                 )
 
                 return False, resolution_result, escalation_request
-            else:
-                # Mark as failed
-                await self._update_conflict_status(
-                    db, conflict, "failed", resolution_result, user_id
-                )
+            # Mark as failed
+            await self._update_conflict_status(
+                db, conflict, "failed", resolution_result, user_id
+            )
 
-                return False, resolution_result, None
+            return False, resolution_result, None
 
         except Exception as e:
             logger.error(f"Automatic resolution failed for conflict {conflict_id}: {e}")
@@ -239,7 +238,7 @@ class ConflictResolutionOrchestrator:
             if conflict:
                 emergency_escalation = (
                     await self.escalator._create_emergency_escalation(
-                        db, conflict, f"Resolution error: {str(e)}"
+                        db, conflict, f"Resolution error: {e!s}"
                     )
                 )
                 await self.trigger_escalation(db, emergency_escalation, user_id)

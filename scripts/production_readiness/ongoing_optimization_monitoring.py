@@ -27,7 +27,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -59,7 +59,7 @@ class OngoingOptimizationMonitor:
             "constitutional_compliance": 0.95,
         }
 
-    def setup_continuous_monitoring(self) -> Dict[str, Any]:
+    def setup_continuous_monitoring(self) -> dict[str, Any]:
         """Setup continuous performance monitoring and alerting."""
         logger.info("📊 Setting up Continuous Performance Monitoring...")
 
@@ -132,7 +132,7 @@ class OngoingOptimizationMonitor:
             ],
         }
 
-    def _generate_optimization_dashboard(self) -> Dict[str, Any]:
+    def _generate_optimization_dashboard(self) -> dict[str, Any]:
         """Generate optimization-focused dashboard configuration."""
         return {
             "dashboard": {
@@ -195,7 +195,7 @@ class OngoingOptimizationMonitor:
             }
         }
 
-    def implement_proactive_optimization(self) -> Dict[str, Any]:
+    def implement_proactive_optimization(self) -> dict[str, Any]:
         """Implement proactive optimization strategies."""
         logger.info("🔧 Implementing Proactive Optimization Strategies...")
 
@@ -300,7 +300,7 @@ class OngoingOptimizationMonitor:
             "config_file": str(config_dir / "proactive_optimization_config.json"),
         }
 
-    def setup_continuous_improvement_pipeline(self) -> Dict[str, Any]:
+    def setup_continuous_improvement_pipeline(self) -> dict[str, Any]:
         """Setup continuous improvement pipeline for ongoing optimization."""
         logger.info("🔄 Setting up Continuous Improvement Pipeline...")
 
@@ -411,7 +411,7 @@ class OngoingOptimizationMonitor:
             ],
         }
 
-    def validate_ongoing_optimization(self) -> Dict[str, Any]:
+    def validate_ongoing_optimization(self) -> dict[str, Any]:
         """Validate ongoing optimization implementation."""
         logger.info("✅ Validating Ongoing Optimization Implementation...")
 
@@ -465,7 +465,7 @@ class OngoingOptimizationMonitor:
             "production_optimization_ready": optimization_score >= 100,
         }
 
-    def run_ongoing_optimization_setup(self) -> Dict[str, Any]:
+    def run_ongoing_optimization_setup(self) -> dict[str, Any]:
         """Run comprehensive ongoing optimization and monitoring setup."""
         logger.info("🚀 Starting Ongoing Optimization and Monitoring Setup")
         logger.info("=" * 80)

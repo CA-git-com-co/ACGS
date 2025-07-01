@@ -327,7 +327,7 @@ class ViolationEscalationService:
                 required_severity = conditions.get("severity", "critical")
                 return violation.severity == required_severity
 
-            elif rule.trigger_type == EscalationTrigger.VIOLATION_COUNT:
+            if rule.trigger_type == EscalationTrigger.VIOLATION_COUNT:
                 # Count recent violations of same type
                 time_window = conditions.get("time_window_hours", 1)
                 threshold_time = datetime.now(timezone.utc) - timedelta(
@@ -346,7 +346,7 @@ class ViolationEscalationService:
                 count = result.scalar()
                 return count >= conditions.get("count_threshold", 5)
 
-            elif rule.trigger_type == EscalationTrigger.TIME_THRESHOLD:
+            if rule.trigger_type == EscalationTrigger.TIME_THRESHOLD:
                 # Check if violation has been unresolved for too long
                 max_unresolved_minutes = conditions.get("max_unresolved_minutes", 30)
                 threshold_time = datetime.now(timezone.utc) - timedelta(

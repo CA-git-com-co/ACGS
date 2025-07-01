@@ -12,14 +12,14 @@ This script validates system performance post-reorganization with:
 """
 
 import json
-import time
 import logging
-import requests
-import threading
-import psutil
 import statistics
+import threading
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Dict, List, Any, Optional
+
+import psutil
+import requests
 
 # Configure logging
 logging.basicConfig(
@@ -621,15 +621,14 @@ def main():
             for i, rec in enumerate(report["recommendations"], 1):
                 logger.info(f"{i}. {rec}")
 
-        logger.info(f"\n📄 Detailed report saved to: performance_test_report.json")
+        logger.info("\n📄 Detailed report saved to: performance_test_report.json")
 
         # Exit with appropriate code
         if report["summary"]["success_rate"] >= 80:
             logger.info("✅ Performance testing completed successfully!")
             return 0
-        else:
-            logger.error("❌ Performance testing completed with issues")
-            return 1
+        logger.error("❌ Performance testing completed with issues")
+        return 1
 
     except Exception as e:
         logger.error(f"Performance testing failed: {e}")

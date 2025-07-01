@@ -15,8 +15,9 @@ import logging
 import random
 import time
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional, Tuple
 from pathlib import Path
+from typing import Any
+
 import numpy as np
 
 # Configure logging
@@ -43,7 +44,7 @@ class AdvancedPolicySynthesisValidator:
             "overall_assessment": {},
         }
 
-    async def validate_policy_synthesis(self) -> Dict[str, Any]:
+    async def validate_policy_synthesis(self) -> dict[str, Any]:
         """Perform comprehensive policy synthesis validation."""
         logger.info("🔬 Starting Advanced Policy Synthesis Validation")
         logger.info(f"Constitutional Hash: {self.constitutional_hash}")
@@ -91,7 +92,7 @@ class AdvancedPolicySynthesisValidator:
             self.validation_results["error"] = str(e)
             raise
 
-    async def _validate_synthesis_reliability(self) -> Dict[str, Any]:
+    async def _validate_synthesis_reliability(self) -> dict[str, Any]:
         """Validate 99.92% reliability target for policy synthesis."""
         logger.info("🎯 Validating synthesis reliability")
 
@@ -154,7 +155,7 @@ class AdvancedPolicySynthesisValidator:
 
         return reliability_data
 
-    async def _simulate_policy_synthesis(self) -> Dict[str, Any]:
+    async def _simulate_policy_synthesis(self) -> dict[str, Any]:
         """Simulate policy synthesis with realistic success/failure patterns."""
         # Realistic failure modes and their probabilities
         failure_modes = {
@@ -193,7 +194,7 @@ class AdvancedPolicySynthesisValidator:
             "processing_time_ms": random.uniform(50, 200),
         }
 
-    async def _conduct_stress_testing(self) -> Dict[str, Any]:
+    async def _conduct_stress_testing(self) -> dict[str, Any]:
         """Conduct stress testing of the synthesis pipeline."""
         logger.info("💪 Conducting synthesis pipeline stress testing")
 
@@ -258,7 +259,7 @@ class AdvancedPolicySynthesisValidator:
         )
         return stress_results
 
-    async def _run_stress_scenario(self, scenario: Dict[str, Any]) -> Dict[str, Any]:
+    async def _run_stress_scenario(self, scenario: dict[str, Any]) -> dict[str, Any]:
         """Run individual stress test scenario."""
         scenario_name = scenario["name"]
         start_time = time.time()
@@ -285,7 +286,7 @@ class AdvancedPolicySynthesisValidator:
                     "constitutional_compliance": True,
                 }
 
-            elif scenario_name == "Large Policy Sets":
+            if scenario_name == "Large Policy Sets":
                 # Simulate synthesis with large policy sets
                 large_synthesis_time = (
                     scenario["policy_count"] * 0.001
@@ -304,7 +305,7 @@ class AdvancedPolicySynthesisValidator:
                     "constitutional_compliance": True,
                 }
 
-            elif scenario_name == "Rapid Fire Requests":
+            if scenario_name == "Rapid Fire Requests":
                 # Simulate rapid consecutive requests
                 requests_made = 0
                 end_time = start_time + scenario["duration_seconds"]
@@ -329,16 +330,15 @@ class AdvancedPolicySynthesisValidator:
                     "constitutional_compliance": True,
                 }
 
-            else:
-                # Generic stress test
-                await asyncio.sleep(scenario.get("duration_seconds", 30))
+            # Generic stress test
+            await asyncio.sleep(scenario.get("duration_seconds", 30))
 
-                return {
-                    "scenario": scenario_name,
-                    "passed": True,
-                    "duration_seconds": time.time() - start_time,
-                    "constitutional_compliance": True,
-                }
+            return {
+                "scenario": scenario_name,
+                "passed": True,
+                "duration_seconds": time.time() - start_time,
+                "constitutional_compliance": True,
+            }
 
         except Exception as e:
             return {
@@ -349,7 +349,7 @@ class AdvancedPolicySynthesisValidator:
                 "constitutional_compliance": False,
             }
 
-    async def _validate_llm_dependency_mitigation(self) -> Dict[str, Any]:
+    async def _validate_llm_dependency_mitigation(self) -> dict[str, Any]:
         """Validate LLM dependency mitigation strategies."""
         logger.info("🛡️ Validating LLM dependency mitigation")
 
@@ -426,7 +426,7 @@ class AdvancedPolicySynthesisValidator:
         )
         return mitigation_results
 
-    async def _optimize_synthesis_success_rate(self) -> Dict[str, Any]:
+    async def _optimize_synthesis_success_rate(self) -> dict[str, Any]:
         """Optimize synthesis success rate through various techniques."""
         logger.info("⚡ Optimizing synthesis success rate")
 
@@ -492,7 +492,7 @@ class AdvancedPolicySynthesisValidator:
         )
         return optimization_results
 
-    async def _improve_formal_verification_coverage(self) -> Dict[str, Any]:
+    async def _improve_formal_verification_coverage(self) -> dict[str, Any]:
         """Improve formal verification coverage for synthesized policies."""
         logger.info("🔍 Improving formal verification coverage")
 
@@ -583,7 +583,7 @@ class AdvancedPolicySynthesisValidator:
         )
         return verification_results
 
-    async def _generate_overall_assessment(self) -> Dict[str, Any]:
+    async def _generate_overall_assessment(self) -> dict[str, Any]:
         """Generate overall assessment of policy synthesis validation."""
         logger.info("📋 Generating overall assessment")
 

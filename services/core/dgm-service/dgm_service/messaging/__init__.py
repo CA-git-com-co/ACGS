@@ -17,13 +17,13 @@ from .message_types import (
 from .nats_client import NATSClient, NATSConfig
 
 __all__ = [
-    "NATSClient",
-    "NATSConfig",
+    "BanditEvent",
+    "ConstitutionalEvent",
+    "DGMEvent",
     "EventPublisher",
     "EventSubscriber",
-    "DGMEvent",
     "ImprovementEvent",
+    "NATSClient",
+    "NATSConfig",
     "PerformanceEvent",
-    "ConstitutionalEvent",
-    "BanditEvent",
 ]

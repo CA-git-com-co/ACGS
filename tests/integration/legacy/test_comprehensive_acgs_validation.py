@@ -150,17 +150,16 @@ class ACGSTestSuite:
                         {"status_code": response.status, "response": data},
                     )
                     return True
-                else:
-                    self.log_test_result(
-                        f"{service.name} Health Check",
-                        "FAIL",
-                        response_time,
-                        {
-                            "status_code": response.status,
-                            "error": f"Unexpected status code: {response.status}",
-                        },
-                    )
-                    return False
+                self.log_test_result(
+                    f"{service.name} Health Check",
+                    "FAIL",
+                    response_time,
+                    {
+                        "status_code": response.status,
+                        "error": f"Unexpected status code: {response.status}",
+                    },
+                )
+                return False
 
         except Exception as e:
             response_time = time.time() - start_time
@@ -217,18 +216,17 @@ class ACGSTestSuite:
                         },
                     )
                     return True
-                else:
-                    error_text = await response.text()
-                    self.log_test_result(
-                        "Authentication Flow",
-                        "FAIL",
-                        response_time,
-                        {
-                            "status_code": response.status,
-                            "error": f"Login failed: {error_text}",
-                        },
-                    )
-                    return False
+                error_text = await response.text()
+                self.log_test_result(
+                    "Authentication Flow",
+                    "FAIL",
+                    response_time,
+                    {
+                        "status_code": response.status,
+                        "error": f"Login failed: {error_text}",
+                    },
+                )
+                return False
 
         except Exception as e:
             response_time = time.time() - start_time
@@ -287,17 +285,16 @@ class ACGSTestSuite:
                         {"status_code": response.status, "principle_id": principle_id},
                     )
                     return True
-                else:
-                    self.log_test_result(
-                        "AC Service CRUD Operations",
-                        "FAIL",
-                        response_time,
-                        {
-                            "status_code": response.status,
-                            "error": "Failed to create principle",
-                        },
-                    )
-                    return False
+                self.log_test_result(
+                    "AC Service CRUD Operations",
+                    "FAIL",
+                    response_time,
+                    {
+                        "status_code": response.status,
+                        "error": "Failed to create principle",
+                    },
+                )
+                return False
 
         except Exception as e:
             response_time = time.time() - start_time
@@ -339,17 +336,16 @@ class ACGSTestSuite:
                         {"status_code": response.status, "policy_id": policy.get("id")},
                     )
                     return True
-                else:
-                    self.log_test_result(
-                        "Integrity Service Policy Storage",
-                        "FAIL",
-                        response_time,
-                        {
-                            "status_code": response.status,
-                            "error": "Failed to store policy",
-                        },
-                    )
-                    return False
+                self.log_test_result(
+                    "Integrity Service Policy Storage",
+                    "FAIL",
+                    response_time,
+                    {
+                        "status_code": response.status,
+                        "error": "Failed to store policy",
+                    },
+                )
+                return False
 
         except Exception as e:
             response_time = time.time() - start_time
@@ -397,17 +393,16 @@ class ACGSTestSuite:
                         },
                     )
                     return True
-                else:
-                    self.log_test_result(
-                        "FV Service Z3 Integration",
-                        "FAIL",
-                        response_time,
-                        {
-                            "status_code": response.status,
-                            "error": "Z3 verification failed",
-                        },
-                    )
-                    return False
+                self.log_test_result(
+                    "FV Service Z3 Integration",
+                    "FAIL",
+                    response_time,
+                    {
+                        "status_code": response.status,
+                        "error": "Z3 verification failed",
+                    },
+                )
+                return False
 
         except Exception as e:
             response_time = time.time() - start_time
@@ -452,17 +447,16 @@ class ACGSTestSuite:
                         },
                     )
                     return True
-                else:
-                    self.log_test_result(
-                        "GS Service LLM Integration",
-                        "FAIL",
-                        response_time,
-                        {
-                            "status_code": response.status,
-                            "error": "Policy synthesis failed",
-                        },
-                    )
-                    return False
+                self.log_test_result(
+                    "GS Service LLM Integration",
+                    "FAIL",
+                    response_time,
+                    {
+                        "status_code": response.status,
+                        "error": "Policy synthesis failed",
+                    },
+                )
+                return False
 
         except Exception as e:
             response_time = time.time() - start_time
@@ -507,17 +501,16 @@ class ACGSTestSuite:
                         },
                     )
                     return True
-                else:
-                    self.log_test_result(
-                        "PGC Service OPA Integration",
-                        "FAIL",
-                        response_time,
-                        {
-                            "status_code": response.status,
-                            "error": "Policy evaluation failed",
-                        },
-                    )
-                    return False
+                self.log_test_result(
+                    "PGC Service OPA Integration",
+                    "FAIL",
+                    response_time,
+                    {
+                        "status_code": response.status,
+                        "error": "Policy evaluation failed",
+                    },
+                )
+                return False
 
         except Exception as e:
             response_time = time.time() - start_time

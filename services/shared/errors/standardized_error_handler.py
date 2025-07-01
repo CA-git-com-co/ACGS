@@ -19,14 +19,14 @@ import traceback
 import uuid
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 import structlog
 from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from ..response.unified_response import ResponseMetadata, UnifiedResponse
+from ..response.unified_response import ResponseMetadata
 from .error_catalog import ErrorCatalog, ErrorCategory, ErrorSeverity, ServiceCode
 
 logger = structlog.get_logger(__name__)
@@ -63,11 +63,11 @@ class ErrorDetail(BaseModel):
     severity: str = Field(..., description="Error severity level")
     retryable: bool = Field(..., description="Whether the operation can be retried")
     resolution_guidance: str = Field(..., description="How to resolve this error")
-    context: Dict[str, Any] = Field(default_factory=dict, description="Error context")
+    context: dict[str, Any] = Field(default_factory=dict, description="Error context")
     timestamp: str = Field(..., description="Error occurrence timestamp")
     request_id: str = Field(..., description="Request correlation ID")
     service: str = Field(..., description="Service where error occurred")
-    stack_trace: Optional[str] = Field(None, description="Stack trace for debugging")
+    stack_trace: str | None = Field(None, description="Stack trace for debugging")
 
 
 class StandardizedErrorResponse(BaseModel):
@@ -75,7 +75,7 @@ class StandardizedErrorResponse(BaseModel):
 
     success: bool = Field(False, description="Always false for error responses")
     error: ErrorDetail = Field(..., description="Error details")
-    data: Optional[Any] = Field(None, description="Additional error data")
+    data: Any | None = Field(None, description="Additional error data")
     metadata: ResponseMetadata = Field(..., description="Response metadata")
 
 
@@ -161,8 +161,8 @@ class ErrorHandler:
     def create_error_response(
         self,
         error_code: str,
-        context: Optional[Dict[str, Any]] = None,
-        request_id: Optional[str] = None,
+        context: dict[str, Any] | None = None,
+        request_id: str | None = None,
         include_stack_trace: bool = False,
     ) -> StandardizedErrorResponse:
         """Create standardized error response."""
@@ -204,8 +204,8 @@ class ErrorHandler:
     def handle_exception(
         self,
         exception: Exception,
-        request: Optional[Request] = None,
-        context: Optional[Dict[str, Any]] = None,
+        request: Request | None = None,
+        context: dict[str, Any] | None = None,
     ) -> JSONResponse:
         """Handle exception and return standardized error response."""
 
@@ -322,16 +322,16 @@ def create_dgm_error_handler() -> ErrorHandler:
 
 # Export main classes and functions
 __all__ = [
-    "ErrorHandler",
-    "StandardizedErrorResponse",
     "ErrorDetail",
+    "ErrorHandler",
     "HTTPStatusCode",
-    "create_auth_error_handler",
+    "StandardizedErrorResponse",
     "create_ac_error_handler",
-    "create_integrity_error_handler",
+    "create_auth_error_handler",
+    "create_dgm_error_handler",
+    "create_ec_error_handler",
     "create_fv_error_handler",
     "create_gs_error_handler",
+    "create_integrity_error_handler",
     "create_pgc_error_handler",
-    "create_ec_error_handler",
-    "create_dgm_error_handler",
 ]

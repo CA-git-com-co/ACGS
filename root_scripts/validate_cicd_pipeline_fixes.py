@@ -124,7 +124,7 @@ class CICDFixesValidator:
             except Exception as e:
                 logger.error(f"Error validating {workflow_file.name}: {e}")
                 trigger_fixes["trigger_improvements"].append(
-                    f"❌ {workflow_file.name}: Validation error - {str(e)}"
+                    f"❌ {workflow_file.name}: Validation error - {e!s}"
                 )
 
         self.validation_report["fixes_implemented"][

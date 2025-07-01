@@ -3,10 +3,10 @@
 Test script for Phi-4 reasoning model running on llama.cpp server
 """
 
-import requests
 import json
 import time
-import sys
+
+import requests
 
 
 def test_server_connection(base_url="http://localhost:8080"):
@@ -73,31 +73,28 @@ def chat_with_phi4(message, base_url="http://localhost:8080", stream=True):
 
                 print("\n" + "-" * 60)
                 return True
-            else:
-                print(f"❌ Error: HTTP {response.status_code}")
-                print(response.text)
-                return False
-        else:
-            response = requests.post(
-                f"{base_url}/v1/chat/completions",
-                json=payload,
-                headers={"Content-Type": "application/json"},
-                timeout=300,
-            )
+            print(f"❌ Error: HTTP {response.status_code}")
+            print(response.text)
+            return False
+        response = requests.post(
+            f"{base_url}/v1/chat/completions",
+            json=payload,
+            headers={"Content-Type": "application/json"},
+            timeout=300,
+        )
 
-            if response.status_code == 200:
-                result = response.json()
-                content = result["choices"][0]["message"]["content"]
-                print(f"🤔 Question: {message}")
-                print("🧠 Phi-4 Response:")
-                print("-" * 60)
-                print(content)
-                print("-" * 60)
-                return True
-            else:
-                print(f"❌ Error: HTTP {response.status_code}")
-                print(response.text)
-                return False
+        if response.status_code == 200:
+            result = response.json()
+            content = result["choices"][0]["message"]["content"]
+            print(f"🤔 Question: {message}")
+            print("🧠 Phi-4 Response:")
+            print("-" * 60)
+            print(content)
+            print("-" * 60)
+            return True
+        print(f"❌ Error: HTTP {response.status_code}")
+        print(response.text)
+        return False
 
     except Exception as e:
         print(f"❌ Error communicating with server: {e}")

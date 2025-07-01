@@ -6,27 +6,25 @@ Integrates with existing authentication and authorization systems.
 """
 
 import logging
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..db.database import get_async_db as get_db
 from ..core.security import (
-    get_current_active_user,
-    authorize_roles,
     authorize_permissions,
+    get_current_active_user,
 )
+from ..db.database import get_async_db as get_db
 from ..models import User
 from ..schemas.agent import (
+    AgentAuditLogResponse,
     AgentCreate,
-    AgentUpdate,
-    AgentResponse,
-    AgentStatusUpdate,
     AgentCredentials,
     AgentListResponse,
+    AgentResponse,
     AgentSearchRequest,
-    AgentAuditLogResponse,
+    AgentStatusUpdate,
+    AgentUpdate,
 )
 from ..services.agent_service import AgentService
 
@@ -38,7 +36,7 @@ router = APIRouter(prefix="/agents", tags=["Agent Management"])
 agent_service = AgentService()
 
 
-def get_client_ip(request: Request) -> Optional[str]:
+def get_client_ip(request: Request) -> str | None:
     """Extract client IP from request."""
     return request.client.host if request.client else None
 
@@ -326,7 +324,7 @@ async def update_agent_status(
         )
 
 
-@router.get("/{agent_id}/audit-logs", response_model=List[AgentAuditLogResponse])
+@router.get("/{agent_id}/audit-logs", response_model=list[AgentAuditLogResponse])
 async def get_agent_audit_logs(
     agent_id: str,
     limit: int = 50,

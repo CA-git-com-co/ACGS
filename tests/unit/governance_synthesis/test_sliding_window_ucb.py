@@ -2,12 +2,7 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.core.sliding_window_ucb
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.governance_synthesis.gs_service.app.core.sliding_window_ucb import (
-    SlidingWindowConfig,
-    ArmWindow,
-    ChangeDetectionResult,
     SlidingWindowUCB,
 )
 

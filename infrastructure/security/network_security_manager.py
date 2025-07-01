@@ -5,16 +5,12 @@ Advanced network-level security controls including mTLS, network policies, DDoS 
 """
 
 import asyncio
-import json
 import logging
-import ssl
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Any
+from typing import Any
 
-import aiohttp
-import cryptography
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -22,7 +18,6 @@ from prometheus_client import (
     CollectorRegistry,
     Counter,
     Gauge,
-    Histogram,
     start_http_server,
 )
 
@@ -43,10 +38,10 @@ class NetworkSecurityPolicy:
     policy_type: str  # ingress, egress, mtls, ddos_protection
 
     # Policy rules
-    allowed_sources: List[str] = field(default_factory=list)
-    allowed_destinations: List[str] = field(default_factory=list)
-    allowed_ports: List[int] = field(default_factory=list)
-    protocols: List[str] = field(default_factory=list)
+    allowed_sources: list[str] = field(default_factory=list)
+    allowed_destinations: list[str] = field(default_factory=list)
+    allowed_ports: list[int] = field(default_factory=list)
+    protocols: list[str] = field(default_factory=list)
 
     # Security settings
     require_mtls: bool = True
@@ -92,16 +87,16 @@ class NetworkSecurityManager:
         }
 
         # Security policies
-        self.network_policies: Dict[str, NetworkSecurityPolicy] = {}
-        self.security_events: List[SecurityEvent] = []
+        self.network_policies: dict[str, NetworkSecurityPolicy] = {}
+        self.security_events: list[SecurityEvent] = []
 
         # mTLS configuration
         self.ca_cert = None
         self.ca_key = None
-        self.service_certificates: Dict[str, Dict] = {}
+        self.service_certificates: dict[str, dict] = {}
 
         # Rate limiting and DDoS protection
-        self.rate_limiters: Dict[str, Dict] = {}
+        self.rate_limiters: dict[str, dict] = {}
         self.blocked_ips: set = set()
 
         logger.info("Network Security Manager initialized")
@@ -625,10 +620,9 @@ class NetworkSecurityManager:
         """Get policy key for a service."""
         if service_name in ["ac-service", "pgc-service", "ec-service"]:
             return "critical_services"
-        elif service_name == "auth-service":
+        if service_name == "auth-service":
             return "auth_service"
-        else:
-            return "internal_services"
+        return "internal_services"
 
     async def security_monitoring_loop(self):
         """Continuous security monitoring loop."""
@@ -723,7 +717,7 @@ class NetworkSecurityManager:
             f"DDoS mitigation activated for {target_service}",
         )
 
-    async def analyze_intrusion_patterns(self, events: List[SecurityEvent]):
+    async def analyze_intrusion_patterns(self, events: list[SecurityEvent]):
         """Analyze events for intrusion patterns."""
         # Group events by source IP
         ip_events = {}
@@ -798,14 +792,13 @@ class NetworkSecurityManager:
             # Calculate overall compliance
             if factors:
                 return sum(factors) / len(factors)
-            else:
-                return 1.0
+            return 1.0
 
         except Exception as e:
             logger.error(f"Error calculating security compliance: {e}")
             return 0.0
 
-    def get_security_status(self) -> Dict[str, Any]:
+    def get_security_status(self) -> dict[str, Any]:
         """Get network security status."""
         return {
             "network_policies": len(self.network_policies),

@@ -16,8 +16,6 @@ Features:
 - Traffic encryption and monitoring
 """
 
-import base64
-import json
 import ssl
 import time
 import uuid
@@ -25,7 +23,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import structlog
 from cryptography import x509
@@ -73,15 +71,15 @@ class ServiceIdentity:
     service_id: str
     namespace: str
     trust_level: ServiceTrustLevel
-    allowed_protocols: List[CommunicationProtocol]
-    certificate_arn: Optional[str] = None
-    public_key: Optional[bytes] = None
-    private_key: Optional[bytes] = None
-    certificate: Optional[bytes] = None
+    allowed_protocols: list[CommunicationProtocol]
+    certificate_arn: str | None = None
+    public_key: bytes | None = None
+    private_key: bytes | None = None
+    certificate: bytes | None = None
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    expires_at: Optional[datetime] = None
+    expires_at: datetime | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "service_name": self.service_name,
@@ -102,16 +100,16 @@ class ServiceCommunicationRule:
     rule_id: str
     source_service: str
     target_service: str
-    allowed_protocols: List[CommunicationProtocol]
+    allowed_protocols: list[CommunicationProtocol]
     required_trust_level: ServiceTrustLevel
     network_policy: NetworkPolicy
     encryption_required: bool = True
     authentication_required: bool = True
     authorization_required: bool = True
-    rate_limit_per_minute: Optional[int] = None
-    allowed_endpoints: Optional[List[str]] = None
+    rate_limit_per_minute: int | None = None
+    allowed_endpoints: list[str] | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "rule_id": self.rule_id,
@@ -132,13 +130,13 @@ class ServiceMeshSecurityManager:
     """Comprehensive service mesh security manager."""
 
     def __init__(
-        self, ca_cert_path: Optional[Path] = None, ca_key_path: Optional[Path] = None
+        self, ca_cert_path: Path | None = None, ca_key_path: Path | None = None
     ):
         """Initialize service mesh security manager."""
-        self.service_identities: Dict[str, ServiceIdentity] = {}
-        self.communication_rules: Dict[str, ServiceCommunicationRule] = {}
-        self.certificates: Dict[str, x509.Certificate] = {}
-        self.private_keys: Dict[str, rsa.RSAPrivateKey] = {}
+        self.service_identities: dict[str, ServiceIdentity] = {}
+        self.communication_rules: dict[str, ServiceCommunicationRule] = {}
+        self.certificates: dict[str, x509.Certificate] = {}
+        self.private_keys: dict[str, rsa.RSAPrivateKey] = {}
 
         # Certificate Authority setup
         self.ca_cert_path = ca_cert_path

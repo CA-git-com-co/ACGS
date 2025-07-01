@@ -2,8 +2,6 @@
 Unit tests for services.core.policy-governance.pgc_service.app.middleware.enhanced_security
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.policy_governance.pgc_service.app.middleware.enhanced_security import (
     EnhancedSecurityMiddleware,
 )

@@ -10,7 +10,7 @@ import re
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -43,11 +43,11 @@ class ThreatPattern:
 
     id: str
     category: ThreatCategory
-    patterns: List[str]
+    patterns: list[str]
     description: str
     risk_level: RiskLevel
     mitigation_strategy: str
-    constitutional_principles_affected: List[str]
+    constitutional_principles_affected: list[str]
 
 
 @dataclass
@@ -59,7 +59,7 @@ class SafetyViolation:
     risk_level: RiskLevel
     pattern_matched: str
     confidence_score: float
-    affected_principles: List[str]
+    affected_principles: list[str]
     mitigation_required: bool
     timestamp: float = field(default_factory=time.time)
 
@@ -80,7 +80,7 @@ class ConstitutionalSafetyValidator:
             "privacy_rights",
         }
 
-    def _initialize_threat_patterns(self) -> List[ThreatPattern]:
+    def _initialize_threat_patterns(self) -> list[ThreatPattern]:
         """Initialize constitutional threat detection patterns."""
         return [
             ThreatPattern(
@@ -223,8 +223,8 @@ class ConstitutionalSafetyValidator:
         ]
 
     def validate_content(
-        self, content: str, context: Optional[Dict[str, Any]] = None
-    ) -> Tuple[bool, List[SafetyViolation]]:
+        self, content: str, context: dict[str, Any] | None = None
+    ) -> tuple[bool, list[SafetyViolation]]:
         """
         Validate content against constitutional safety principles.
 
@@ -292,8 +292,8 @@ class ConstitutionalSafetyValidator:
         return min(0.95, base_confidence + confidence_boost)
 
     def _validate_context(
-        self, content: str, context: Dict[str, Any]
-    ) -> List[SafetyViolation]:
+        self, content: str, context: dict[str, Any]
+    ) -> list[SafetyViolation]:
         """Perform context-based validation."""
         violations = []
 
@@ -333,7 +333,7 @@ class ConstitutionalSafetyValidator:
 
         return violations
 
-    def get_mitigation_strategy(self, violation: SafetyViolation) -> Dict[str, Any]:
+    def get_mitigation_strategy(self, violation: SafetyViolation) -> dict[str, Any]:
         """Get appropriate mitigation strategy for a violation."""
         pattern_def = next(
             (
@@ -378,7 +378,7 @@ class ConstitutionalEthicsFramework:
 
         self.safety_validator = ConstitutionalSafetyValidator()
 
-    def evaluate_ethical_compliance(self, request: Dict[str, Any]) -> Dict[str, Any]:
+    def evaluate_ethical_compliance(self, request: dict[str, Any]) -> dict[str, Any]:
         """Evaluate a request for ethical compliance."""
         content = request.get("content", "")
         action = request.get("action", "")
@@ -469,8 +469,8 @@ class ConstitutionalEthicsFramework:
         return min(1.0, base_score)
 
     def _generate_recommendations(
-        self, violations: List[SafetyViolation], ethical_scores: Dict[str, float]
-    ) -> List[str]:
+        self, violations: list[SafetyViolation], ethical_scores: dict[str, float]
+    ) -> list[str]:
         """Generate recommendations based on violations and ethical scores."""
         recommendations = []
 
@@ -508,8 +508,8 @@ class ConstitutionalEthicsFramework:
 
 
 # Global instances
-_safety_validator: Optional[ConstitutionalSafetyValidator] = None
-_ethics_framework: Optional[ConstitutionalEthicsFramework] = None
+_safety_validator: ConstitutionalSafetyValidator | None = None
+_ethics_framework: ConstitutionalEthicsFramework | None = None
 
 
 def get_safety_validator() -> ConstitutionalSafetyValidator:
@@ -529,27 +529,27 @@ def get_ethics_framework() -> ConstitutionalEthicsFramework:
 
 
 def validate_constitutional_safety(
-    content: str, context: Optional[Dict[str, Any]] = None
-) -> Tuple[bool, List[SafetyViolation]]:
+    content: str, context: dict[str, Any] | None = None
+) -> tuple[bool, list[SafetyViolation]]:
     """Convenience function for constitutional safety validation."""
     return get_safety_validator().validate_content(content, context)
 
 
-def evaluate_constitutional_ethics(request: Dict[str, Any]) -> Dict[str, Any]:
+def evaluate_constitutional_ethics(request: dict[str, Any]) -> dict[str, Any]:
     """Convenience function for constitutional ethics evaluation."""
     return get_ethics_framework().evaluate_ethical_compliance(request)
 
 
 # Export main components
 __all__ = [
-    "ThreatCategory",
-    "RiskLevel",
-    "ThreatPattern",
-    "SafetyViolation",
-    "ConstitutionalSafetyValidator",
     "ConstitutionalEthicsFramework",
-    "get_safety_validator",
-    "get_ethics_framework",
-    "validate_constitutional_safety",
+    "ConstitutionalSafetyValidator",
+    "RiskLevel",
+    "SafetyViolation",
+    "ThreatCategory",
+    "ThreatPattern",
     "evaluate_constitutional_ethics",
+    "get_ethics_framework",
+    "get_safety_validator",
+    "validate_constitutional_safety",
 ]

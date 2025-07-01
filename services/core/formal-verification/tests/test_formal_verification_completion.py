@@ -6,10 +6,11 @@ and formal verification capabilities for safety-critical applications.
 """
 
 import asyncio
-import pytest
 import tempfile
-import yaml
 from pathlib import Path
+
+import pytest
+import yaml
 
 # Test configuration for 99.92% reliability target
 TEST_CONFIG = {
@@ -88,8 +89,8 @@ class TestFormalVerificationCompletion:
     async def test_z3_solver_integration(self):
         """Test Z3 SMT solver integration and basic functionality."""
         try:
-            import sys
             import os
+            import sys
 
             sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
@@ -252,7 +253,6 @@ class TestFormalVerificationCompletion:
         try:
             from ..fv_service.app.core.policy_smt_compiler import (
                 PolicySMTCompiler,
-                PolicyType,
             )
 
             compiler = PolicySMTCompiler()
@@ -451,7 +451,7 @@ async def run_formal_verification_tests():
             logger.info(f"✅ {test_name} PASSED")
         except Exception as e:
             results["failed"] += 1
-            results["errors"].append(f"{test_name}: {str(e)}")
+            results["errors"].append(f"{test_name}: {e!s}")
             logger.error(f"❌ {test_name} FAILED: {e}")
 
     # Print summary
@@ -459,9 +459,9 @@ async def run_formal_verification_tests():
     success_rate = results["passed"] / total_tests if total_tests > 0 else 0
     reliability_achieved = success_rate >= TEST_CONFIG["reliability_target"]
 
-    print(f"\n{'='*70}")
-    print(f"FORMAL VERIFICATION COMPLETION TEST RESULTS")
-    print(f"{'='*70}")
+    print(f"\n{'=' * 70}")
+    print("FORMAL VERIFICATION COMPLETION TEST RESULTS")
+    print(f"{'=' * 70}")
     print(f"Total Tests: {total_tests}")
     print(f"Passed: {results['passed']}")
     print(f"Failed: {results['failed']}")
@@ -470,11 +470,11 @@ async def run_formal_verification_tests():
     print(f"Target Achieved: {'✅ YES' if reliability_achieved else '❌ NO'}")
 
     if results["errors"]:
-        print(f"\nErrors:")
+        print("\nErrors:")
         for error in results["errors"]:
             print(f"  - {error}")
 
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
 
     return reliability_achieved
 

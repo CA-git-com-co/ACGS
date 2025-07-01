@@ -2,11 +2,11 @@
 Claude 3.5 Sonnet client implementation.
 """
 
-import asyncio
 import json
 import logging
 import time
-from typing import Any, AsyncGenerator, Dict
+from collections.abc import AsyncGenerator
+from typing import Any
 
 import httpx
 from tenacity import (
@@ -106,8 +106,7 @@ class ClaudeClient(ModelClient):
 
                     return model_response
 
-                else:
-                    await self._handle_error_response(response)
+                await self._handle_error_response(response)
 
         except Exception as e:
             self._record_failure()
@@ -138,7 +137,6 @@ class ClaudeClient(ModelClient):
                     headers=self.headers,
                     json=payload,
                 ) as response:
-
                     if response.status_code != 200:
                         await self._handle_error_response(response)
 
@@ -165,7 +163,7 @@ class ClaudeClient(ModelClient):
             logger.error(f"Claude streaming request failed: {e}")
             raise
 
-    def _prepare_payload(self, request: ModelRequest) -> Dict[str, Any]:
+    def _prepare_payload(self, request: ModelRequest) -> dict[str, Any]:
         """Prepare API request payload."""
         messages = []
 
@@ -191,13 +189,13 @@ class ClaudeClient(ModelClient):
         return payload
 
     def _parse_response(
-        self, result: Dict[str, Any], start_time: float
+        self, result: dict[str, Any], start_time: float
     ) -> ModelResponse:
         """Parse API response."""
         content = ""
 
         # Extract content from response
-        if "content" in result and result["content"]:
+        if result.get("content"):
             for content_block in result["content"]:
                 if content_block.get("type") == "text":
                     content += content_block.get("text", "")
@@ -235,16 +233,15 @@ class ClaudeClient(ModelClient):
 
         if response.status_code == 401:
             raise AuthenticationError(f"Authentication failed: {error_message}")
-        elif response.status_code == 429:
+        if response.status_code == 429:
             raise RateLimitError(f"Rate limit exceeded: {error_message}")
-        elif response.status_code == 400 and "token" in error_message.lower():
+        if response.status_code == 400 and "token" in error_message.lower():
             raise TokenLimitError(f"Token limit exceeded: {error_message}")
-        elif response.status_code >= 500:
+        if response.status_code >= 500:
             raise ModelUnavailableError(f"Claude service unavailable: {error_message}")
-        else:
-            raise ModelClientError(f"Claude API error ({error_type}): {error_message}")
+        raise ModelClientError(f"Claude API error ({error_type}): {error_message}")
 
-    def _update_usage(self, usage: Dict[str, int]):
+    def _update_usage(self, usage: dict[str, int]):
         """Update usage statistics."""
         prompt_tokens = usage.get("prompt_tokens", 0)
         completion_tokens = usage.get("completion_tokens", 0)
@@ -256,7 +253,7 @@ class ClaudeClient(ModelClient):
         output_cost = (completion_tokens / 1000) * self.output_cost_per_1k
         self.total_cost += input_cost + output_cost
 
-    def _calculate_cost(self, usage: Dict[str, int]) -> float:
+    def _calculate_cost(self, usage: dict[str, int]) -> float:
         """Calculate cost for this request."""
         prompt_tokens = usage.get("prompt_tokens", 0)
         completion_tokens = usage.get("completion_tokens", 0)

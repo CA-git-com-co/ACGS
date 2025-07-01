@@ -255,10 +255,12 @@ class EnhancedConstitutionalAnalyzer:
             )
 
             # Determine conflict status based on similarity and content analysis
-            conflict_detected, severity, description = (
-                await self._analyze_potential_conflict(
-                    principle1, principle2, similarity_score
-                )
+            (
+                conflict_detected,
+                severity,
+                description,
+            ) = await self._analyze_potential_conflict(
+                principle1, principle2, similarity_score
             )
 
             # Generate resolution suggestions using multi-model manager
@@ -309,7 +311,7 @@ class EnhancedConstitutionalAnalyzer:
                 severity=ConflictSeverity.NONE,
                 confidence_score=0.0,
                 similarity_score=0.0,
-                conflict_description=f"Analysis failed: {str(e)}",
+                conflict_description=f"Analysis failed: {e!s}",
                 resolution_suggestions=[],
                 analysis_metadata={
                     "error": str(e),
@@ -515,30 +517,29 @@ class EnhancedConstitutionalAnalyzer:
                 ConflictSeverity.NONE,
                 "Principles are highly similar and compatible",
             )
-        elif similarity_score > 0.7:
+        if similarity_score > 0.7:
             return (
                 False,
                 ConflictSeverity.LOW,
                 "Principles are compatible with minor differences",
             )
-        elif similarity_score > 0.5:
+        if similarity_score > 0.5:
             return (
                 True,
                 ConflictSeverity.MEDIUM,
                 "Moderate differences detected, review recommended",
             )
-        elif similarity_score > 0.3:
+        if similarity_score > 0.3:
             return (
                 True,
                 ConflictSeverity.HIGH,
                 "Significant differences detected, resolution needed",
             )
-        else:
-            return (
-                True,
-                ConflictSeverity.CRITICAL,
-                "Fundamental contradictions detected",
-            )
+        return (
+            True,
+            ConflictSeverity.CRITICAL,
+            "Fundamental contradictions detected",
+        )
 
     async def _generate_conflict_resolution_suggestions(
         self,
@@ -621,26 +622,25 @@ class EnhancedConstitutionalAnalyzer:
                 "Consider constitutional amendment process",
                 "Implement staged resolution with stakeholder consultation",
             ]
-        elif severity == ConflictSeverity.HIGH:
+        if severity == ConflictSeverity.HIGH:
             return [
                 "Develop detailed implementation guidelines",
                 "Establish context-specific application rules",
                 "Create conflict resolution procedures",
                 "Implement human oversight for edge cases",
             ]
-        elif severity == ConflictSeverity.MEDIUM:
+        if severity == ConflictSeverity.MEDIUM:
             return [
                 "Clarify principle scope and boundaries",
                 "Develop compatibility guidelines",
                 "Implement monitoring for potential issues",
                 "Create documentation for consistent application",
             ]
-        else:
-            return [
-                "Monitor for potential issues",
-                "Document current interpretation",
-                "Regular review recommended",
-            ]
+        return [
+            "Monitor for potential issues",
+            "Document current interpretation",
+            "Regular review recommended",
+        ]
 
     async def _calculate_confidence_score(
         self,
@@ -760,7 +760,7 @@ class EnhancedConstitutionalAnalyzer:
             return {
                 "is_violation": True,
                 "severity": "unknown",
-                "description": f"Analysis error: {str(e)}",
+                "description": f"Analysis error: {e!s}",
                 "remediation": "Manual review required",
                 "principle_id": principle.id,
                 "compliance_score": compliance_score,

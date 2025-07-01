@@ -3,9 +3,9 @@ Constitutional compliance model for DGM service.
 """
 
 import enum
-from typing import Any, Dict
+from typing import Any
 
-from sqlalchemy import JSON, Boolean, Column, DateTime, Enum, Numeric, String, Text
+from sqlalchemy import JSON, Boolean, Column, DateTime, Enum, Numeric, String
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
@@ -91,7 +91,7 @@ class ConstitutionalComplianceLog(Base):
             f"level={self.compliance_level}, score={self.compliance_score})>"
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "id": str(self.id),

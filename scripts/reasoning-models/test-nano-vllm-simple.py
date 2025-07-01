@@ -5,7 +5,6 @@ Simple test script for Nano-vLLM adapter functionality.
 
 import asyncio
 import sys
-import os
 from pathlib import Path
 
 # Add the services directory to the path
@@ -57,7 +56,7 @@ async def test_adapter():
         return True
 
     except Exception as e:
-        print(f"❌ Test failed: {str(e)}")
+        print(f"❌ Test failed: {e!s}")
         import traceback
 
         traceback.print_exc()
@@ -71,9 +70,8 @@ async def main():
     if success:
         print("\n🎉 Nano-vLLM adapter test PASSED!")
         return 0
-    else:
-        print("\n❌ Nano-vLLM adapter test FAILED!")
-        return 1
+    print("\n❌ Nano-vLLM adapter test FAILED!")
+    return 1
 
 
 if __name__ == "__main__":

@@ -16,10 +16,11 @@ from datetime import datetime
 from typing import Any
 
 import asyncpg
-import docker
 import httpx
 import psutil
 import redis.asyncio as redis
+
+import docker
 
 from ..generation_engine.models import LogicalSemanticUnit
 from .models import Stabilizer, StabilizerResult, StabilizerStatus, SyndromeVector
@@ -257,7 +258,7 @@ class StabilizerExecutionEnvironment:
 
         except Exception as e:
             result.status = StabilizerStatus.FAILED
-            result.add_log(f"Execution failed: {str(e)}", "ERROR")
+            result.add_log(f"Execution failed: {e!s}", "ERROR")
             logger.error(f"Execution {execution_id} failed: {e}")
             raise
 
@@ -374,7 +375,7 @@ class StabilizerExecutionEnvironment:
                 if filename.endswith(".json"):
                     filepath = os.path.join(self.stabilizer_registry_path, filename)
                     try:
-                        with open(filepath, "r") as f:
+                        with open(filepath) as f:
                             stabilizer_data = json.load(f)
                             stabilizer = Stabilizer(**stabilizer_data)
                             self.stabilizer_registry[stabilizer.id] = stabilizer
@@ -450,7 +451,7 @@ class StabilizerExecutionEnvironment:
 
         except Exception as e:
             result.status = StabilizerStatus.FAILED
-            result.add_log(f"Stabilizer execution failed: {str(e)}", "ERROR")
+            result.add_log(f"Stabilizer execution failed: {e!s}", "ERROR")
             logger.error(f"Stabilizer execution failed: {execution_id} - {e}")
             raise
 
@@ -491,7 +492,7 @@ class StabilizerExecutionEnvironment:
         except Exception as e:
             return {
                 "success": False,
-                "error": f"Container execution failed: {str(e)}",
+                "error": f"Container execution failed: {e!s}",
                 "details": {},
             }
 
@@ -524,8 +525,7 @@ class StabilizerExecutionEnvironment:
                 return await self.circuit_breakers["redis"].call(
                     self.redis_pool.get, key
                 )
-            else:
-                return await self.redis_pool.get(key)
+            return await self.redis_pool.get(key)
         except Exception as e:
             logger.warning(f"Cache get failed for key {key}: {e}")
             return None
@@ -561,17 +561,15 @@ class StabilizerExecutionEnvironment:
                     if fetch_one:
                         result = await conn.fetchrow(query, *args)
                         return dict(result) if result else None
-                    elif fetch_all:
+                    if fetch_all:
                         results = await conn.fetch(query, *args)
                         return [dict(row) for row in results]
-                    else:
-                        await conn.execute(query, *args)
-                        return True
+                    await conn.execute(query, *args)
+                    return True
 
             if self.enable_circuit_breaker:
                 return await self.circuit_breakers["postgres"].call(_execute)
-            else:
-                return await _execute()
+            return await _execute()
 
         except Exception as e:
             logger.warning(f"Database execution failed: {e}")
@@ -591,8 +589,7 @@ class StabilizerExecutionEnvironment:
 
             if self.enable_circuit_breaker:
                 return await self.circuit_breakers["http"].call(_request)
-            else:
-                return await _request()
+            return await _request()
 
         except Exception as e:
             logger.warning(f"HTTP request failed {method} {url}: {e}")

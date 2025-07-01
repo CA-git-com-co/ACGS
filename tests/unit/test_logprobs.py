@@ -83,7 +83,7 @@ def test_cross_model_logprobs_consistency():
         time.sleep(120)  # Wait for the server to finish generating
         jsonl_file = Path(output_dir) / "eval-results" / "gsm8k" / "output-rs0.jsonl"
 
-        with open(jsonl_file, "r") as f:
+        with open(jsonl_file) as f:
             outputs = [json.loads(line) for line in f.readlines()]
         for output in outputs:
             _test_individual_generations(output, server_type)
@@ -91,7 +91,7 @@ def test_cross_model_logprobs_consistency():
         output = outputs[0]
         logprobs = output["logprobs"]
         tokens = output["tokens"]
-        outputs_map[server_type] = list(zip(tokens, logprobs))
+        outputs_map[server_type] = list(zip(tokens, logprobs, strict=False))
 
     if "vllm" not in outputs_map or "trtllm" not in outputs_map:
         pytest.skip("Not enough models available to compare top_logprobs consistency")
@@ -108,7 +108,7 @@ def test_cross_model_logprobs_consistency():
             "Skipping logprobs comparison for LLAMA model as they do not match between TRTLLM and VLLM"
         )
     for (token, logprob), (other_token, other_logprob) in zip(
-        outputs_map[server_type], outputs_map[other_server_type]
+        outputs_map[server_type], outputs_map[other_server_type], strict=False
     ):
         assert token.replace("Ġ", " ") == other_token.replace(
             "Ġ", " "

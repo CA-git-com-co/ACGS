@@ -4,20 +4,18 @@ ACGS Enterprise Cryptographic Key Management System
 Implements PKI infrastructure, key rotation, and certificate management
 """
 
-import json
-import time
-import hashlib
-import secrets
-import base64
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone, timedelta
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import rsa, padding
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography import x509
-from cryptography.x509.oid import NameOID
 import logging
+import secrets
+import time
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
+from typing import Any
+
+from cryptography import x509
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import padding, rsa
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.x509.oid import NameOID
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +45,7 @@ class Certificate:
     serial_number: str
     not_before: str
     not_after: str
-    key_usage: List[str]
+    key_usage: list[str]
     status: str  # "valid", "expired", "revoked"
     certificate_pem: str
 
@@ -186,7 +184,7 @@ class EnterpriseKeyManagementSystem:
         return new_key_id
 
     def issue_certificate(
-        self, subject_name: str, key_usage: List[str], validity_days: int = 365
+        self, subject_name: str, key_usage: list[str], validity_days: int = 365
     ) -> str:
         """Issue a new X.509 certificate"""
         # Generate key pair for certificate
@@ -292,7 +290,7 @@ class EnterpriseKeyManagementSystem:
             ciphertext = encryptor.update(padded_data) + encryptor.finalize()
             return iv + ciphertext
 
-        elif key_metadata.key_type == "RSA":
+        if key_metadata.key_type == "RSA":
             # RSA encryption
             public_key = key_info["key_data"].public_key()
             ciphertext = public_key.encrypt(
@@ -305,10 +303,9 @@ class EnterpriseKeyManagementSystem:
             )
             return ciphertext
 
-        else:
-            raise ValueError(
-                f"Encryption not supported for key type: {key_metadata.key_type}"
-            )
+        raise ValueError(
+            f"Encryption not supported for key type: {key_metadata.key_type}"
+        )
 
     def decrypt_data(self, ciphertext: bytes, key_id: str) -> bytes:
         """Decrypt data using specified key"""
@@ -332,7 +329,7 @@ class EnterpriseKeyManagementSystem:
             padding_length = padded_data[-1]
             return padded_data[:-padding_length]
 
-        elif key_metadata.key_type == "RSA":
+        if key_metadata.key_type == "RSA":
             # RSA decryption
             plaintext = key_info["key_data"].decrypt(
                 ciphertext,
@@ -344,12 +341,11 @@ class EnterpriseKeyManagementSystem:
             )
             return plaintext
 
-        else:
-            raise ValueError(
-                f"Decryption not supported for key type: {key_metadata.key_type}"
-            )
+        raise ValueError(
+            f"Decryption not supported for key type: {key_metadata.key_type}"
+        )
 
-    def check_key_expiration(self) -> List[str]:
+    def check_key_expiration(self) -> list[str]:
         """Check for keys that need rotation"""
         expiring_keys = []
         current_time = datetime.now(timezone.utc)
@@ -365,7 +361,7 @@ class EnterpriseKeyManagementSystem:
 
         return expiring_keys
 
-    def get_key_inventory(self) -> Dict[str, Any]:
+    def get_key_inventory(self) -> dict[str, Any]:
         """Get inventory of all keys and certificates"""
         key_stats = {
             "total_keys": len(self.keys),
@@ -481,7 +477,7 @@ def test_key_management_system():
     print(f"  CA Initialized: {inventory['ca_initialized']}")
     print(f"  Constitutional Hash: {inventory['constitutional_hash']}")
 
-    print(f"\n✅ Key Management System: OPERATIONAL")
+    print("\n✅ Key Management System: OPERATIONAL")
 
 
 if __name__ == "__main__":

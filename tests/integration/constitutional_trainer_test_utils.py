@@ -19,12 +19,7 @@ import os
 import subprocess
 import time
 import uuid
-from datetime import datetime
-from typing import Any, Dict, List, Optional
-from unittest.mock import AsyncMock
-
-import aiohttp
-import yaml
+from typing import Any
 
 
 class ServiceDeploymentManager:
@@ -163,9 +158,8 @@ metadata:
             if process.returncode == 0:
                 self.deployed_services.append(f"mock-{service_name}")
                 return True
-            else:
-                print(f"   ❌ Mock deployment failed: {stderr.decode()}")
-                return False
+            print(f"   ❌ Mock deployment failed: {stderr.decode()}")
+            return False
 
         except Exception as e:
             print(f"   ❌ Mock deployment error: {e}")
@@ -356,8 +350,8 @@ class TestDataGenerator:
 
     @staticmethod
     def generate_training_request(
-        model_name: Optional[str] = None, include_invalid_data: bool = False
-    ) -> Dict[str, Any]:
+        model_name: str | None = None, include_invalid_data: bool = False
+    ) -> dict[str, Any]:
         """Generate a training request with test data."""
 
         if model_name is None:
@@ -385,7 +379,7 @@ class TestDataGenerator:
         return base_request
 
     @staticmethod
-    def generate_training_data(include_invalid: bool = False) -> List[Dict[str, str]]:
+    def generate_training_data(include_invalid: bool = False) -> list[dict[str, str]]:
         """Generate training data samples."""
 
         valid_data = [

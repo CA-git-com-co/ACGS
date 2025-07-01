@@ -52,11 +52,11 @@ class ACServiceClient:
             return None
         except httpx.RequestError as e:
             print(
-                f"Request error fetching principle {principle_id} from AC Service: {str(e)}"
+                f"Request error fetching principle {principle_id} from AC Service: {e!s}"
             )
             return None
         except Exception as e:  # Catch other potential errors like JSON decoding
-            print(f"Unexpected error fetching principle {principle_id}: {str(e)}")
+            print(f"Unexpected error fetching principle {principle_id}: {e!s}")
             return None
 
     async def list_principles(self, auth_token: str | None = None) -> list[ACPrinciple]:
@@ -82,10 +82,10 @@ class ACServiceClient:
             )
             return []
         except httpx.RequestError as e:
-            print(f"Request error listing principles from AC Service: {str(e)}")
+            print(f"Request error listing principles from AC Service: {e!s}")
             return []
         except Exception as e:
-            print(f"Unexpected error listing principles: {str(e)}")
+            print(f"Unexpected error listing principles: {e!s}")
             return []
 
     async def get_principles_for_context(
@@ -130,12 +130,10 @@ class ACServiceClient:
             )
             return []
         except httpx.RequestError as e:
-            print(f"Request error fetching principles for context {context}: {str(e)}")
+            print(f"Request error fetching principles for context {context}: {e!s}")
             return []
         except Exception as e:
-            print(
-                f"Unexpected error fetching principles for context {context}: {str(e)}"
-            )
+            print(f"Unexpected error fetching principles for context {context}: {e!s}")
             return []
 
     async def get_principles_by_category(
@@ -159,12 +157,10 @@ class ACServiceClient:
             )
             return []
         except httpx.RequestError as e:
-            print(f"Request error fetching principles by category {category}: {str(e)}")
+            print(f"Request error fetching principles by category {category}: {e!s}")
             return []
         except Exception as e:
-            print(
-                f"Unexpected error fetching principles by category {category}: {str(e)}"
-            )
+            print(f"Unexpected error fetching principles by category {category}: {e!s}")
             return []
 
     async def search_principles_by_keywords(
@@ -188,10 +184,10 @@ class ACServiceClient:
             )
             return []
         except httpx.RequestError as e:
-            print(f"Request error searching principles by keywords: {str(e)}")
+            print(f"Request error searching principles by keywords: {e!s}")
             return []
         except Exception as e:
-            print(f"Unexpected error searching principles by keywords: {str(e)}")
+            print(f"Unexpected error searching principles by keywords: {e!s}")
             return []
 
     async def close(self):

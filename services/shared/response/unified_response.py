@@ -31,7 +31,7 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import orjson
 from fastapi import Request
@@ -81,11 +81,11 @@ class ResponseMetadata:
     request_id: str
     version: str
     service: str
-    execution_time_ms: Optional[float] = None
+    execution_time_ms: float | None = None
 
     @classmethod
     def create(
-        cls, service: str, version: str = "1.0.0", request_id: Optional[str] = None
+        cls, service: str, version: str = "1.0.0", request_id: str | None = None
     ) -> "ResponseMetadata":
         """Create response metadata with current timestamp and generated request ID."""
         return cls(
@@ -100,13 +100,13 @@ class UnifiedResponse(BaseModel):
     """Unified response model for all ACGS services."""
 
     success: bool = Field(..., description="Indicates if the request was successful")
-    data: Optional[Any] = Field(None, description="Response data payload")
+    data: Any | None = Field(None, description="Response data payload")
     message: str = Field("", description="Human-readable response message")
     metadata: ResponseMetadata = Field(..., description="Response metadata")
-    pagination: Optional[PaginationMetadata] = Field(
+    pagination: PaginationMetadata | None = Field(
         None, description="Pagination information for paginated responses"
     )
-    error: Optional[Dict[str, Any]] = Field(
+    error: dict[str, Any] | None = Field(
         None, description="Error details when success=false"
     )
 
@@ -125,7 +125,7 @@ class UnifiedResponse(BaseModel):
         message: str = "Operation completed successfully",
         service: str = "acgs-service",
         version: str = "1.0.0",
-        pagination: Optional[PaginationMetadata] = None,
+        pagination: PaginationMetadata | None = None,
     ) -> "UnifiedResponse":
         """Create a successful response."""
         return cls(
@@ -146,7 +146,7 @@ class UnifiedResponse(BaseModel):
         cls,
         error_code: str,
         error_message: str,
-        error_details: Optional[Dict[str, Any]] = None,
+        error_details: dict[str, Any] | None = None,
         service: str = "acgs-service",
         version: str = "1.0.0",
         data: Any = None,
@@ -178,8 +178,8 @@ class ResponseBuilder:
         """Initialize response builder with service information."""
         self.service_name = service_name
         self.version = version
-        self.request_id: Optional[str] = None
-        self.execution_start_time: Optional[float] = None
+        self.request_id: str | None = None
+        self.execution_start_time: float | None = None
 
     def set_request_context(self, request: Request) -> "ResponseBuilder":
         """Set request context for tracking."""
@@ -207,7 +207,7 @@ class ResponseBuilder:
         self,
         data: Any = None,
         message: str = "Request completed successfully",
-        pagination: Optional[PaginationMetadata] = None,
+        pagination: PaginationMetadata | None = None,
     ) -> UnifiedResponse:
         """Create a successful response."""
         return UnifiedResponse(
@@ -219,7 +219,7 @@ class ResponseBuilder:
         )
 
     def error(
-        self, message: str, data: Any = None, error_code: Optional[str] = None
+        self, message: str, data: Any = None, error_code: str | None = None
     ) -> UnifiedResponse:
         """Create an error response."""
         error_data = data
@@ -235,7 +235,7 @@ class ResponseBuilder:
 
     def paginated_success(
         self,
-        data: List[Any],
+        data: list[Any],
         page: int,
         limit: int,
         total: int,
@@ -306,7 +306,7 @@ def create_dgm_response_builder() -> ResponseBuilder:
 
 
 # Utility functions for backward compatibility
-def create_legacy_response(data: Any, status: str = "success") -> Dict[str, Any]:
+def create_legacy_response(data: Any, status: str = "success") -> dict[str, Any]:
     """Create legacy response format for backward compatibility."""
     return {
         "status": status,
@@ -316,7 +316,7 @@ def create_legacy_response(data: Any, status: str = "success") -> Dict[str, Any]
 
 
 def migrate_legacy_response(
-    legacy_response: Dict[str, Any], service_name: str
+    legacy_response: dict[str, Any], service_name: str
 ) -> UnifiedResponse:
     """Migrate legacy response format to unified format."""
     builder = ResponseBuilder(service_name)
@@ -326,11 +326,10 @@ def migrate_legacy_response(
             data=legacy_response.get("data"),
             message=legacy_response.get("message", "Request completed successfully"),
         )
-    else:
-        return builder.error(
-            message=legacy_response.get("message", "Request failed"),
-            data=legacy_response.get("data"),
-        )
+    return builder.error(
+        message=legacy_response.get("message", "Request failed"),
+        data=legacy_response.get("data"),
+    )
 
 
 # FastAPI dependency for response building
@@ -362,7 +361,7 @@ async def get_response_builder(request: Request) -> ResponseBuilder:
 
 
 # Response validation utilities
-def validate_response_format(response_data: Dict[str, Any]) -> bool:
+def validate_response_format(response_data: dict[str, Any]) -> bool:
     """Validate that response follows unified format."""
     required_fields = ["success", "data", "message", "metadata"]
 
@@ -426,21 +425,21 @@ class UnifiedResponseMiddleware:
 
 # Export main classes and functions
 __all__ = [
-    "UnifiedResponse",
-    "ResponseBuilder",
-    "UnifiedJSONResponse",
     "PaginationMetadata",
+    "ResponseBuilder",
     "ResponseMetadata",
     "ResponseStatus",
-    "get_response_builder",
-    "validate_response_format",
-    "create_auth_response_builder",
+    "UnifiedJSONResponse",
+    "UnifiedResponse",
+    "UnifiedResponseMiddleware",
     "create_ac_response_builder",
-    "create_integrity_response_builder",
+    "create_auth_response_builder",
+    "create_dgm_response_builder",
+    "create_ec_response_builder",
     "create_fv_response_builder",
     "create_gs_response_builder",
+    "create_integrity_response_builder",
     "create_pgc_response_builder",
-    "create_ec_response_builder",
-    "create_dgm_response_builder",
-    "UnifiedResponseMiddleware",
+    "get_response_builder",
+    "validate_response_format",
 ]

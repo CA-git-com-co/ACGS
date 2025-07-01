@@ -17,12 +17,13 @@ import json
 import logging
 import subprocess
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-import docker
 import requests
+
+import docker
 
 # Configure logging
 logging.basicConfig(
@@ -106,7 +107,7 @@ class CriticalActionItemsCoordinator:
                     )
 
             except Exception as e:
-                logger.error(f"💥 {phase_name} crashed: {str(e)}")
+                logger.error(f"💥 {phase_name} crashed: {e!s}")
                 self.execution_report["phases"][phase_name] = {
                     "status": "CRASHED",
                     "duration_seconds": time.time() - phase_start,
@@ -301,6 +302,7 @@ class CriticalActionItemsCoordinator:
                     "-c",
                     "SELECT 1;",
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -308,10 +310,9 @@ class CriticalActionItemsCoordinator:
 
             if result.returncode == 0:
                 return "CONNECTED"
-            else:
-                return f"FAILED: {result.stderr}"
+            return f"FAILED: {result.stderr}"
         except Exception as e:
-            return f"ERROR: {str(e)}"
+            return f"ERROR: {e!s}"
 
     async def validate_security_middleware(self) -> str:
         """Validate security middleware health endpoint bypass."""
@@ -333,14 +334,13 @@ class CriticalActionItemsCoordinator:
                     if response.status_code != 200:
                         failed_endpoints.append(f"{endpoint}: {response.status_code}")
                 except Exception as e:
-                    failed_endpoints.append(f"{endpoint}: {str(e)}")
+                    failed_endpoints.append(f"{endpoint}: {e!s}")
 
             if not failed_endpoints:
                 return "ALL_BYPASSED"
-            else:
-                return f"PARTIAL: {failed_endpoints}"
+            return f"PARTIAL: {failed_endpoints}"
         except Exception as e:
-            return f"ERROR: {str(e)}"
+            return f"ERROR: {e!s}"
 
     async def restart_all_services(self) -> str:
         """Restart all ACGS services to apply configuration changes."""
@@ -364,6 +364,7 @@ class CriticalActionItemsCoordinator:
                         "restart",
                         service,
                     ],
+                    check=False,
                     cwd=self.project_root,
                     capture_output=True,
                     text=True,
@@ -377,7 +378,7 @@ class CriticalActionItemsCoordinator:
             await asyncio.sleep(30)
             return "ALL_RESTARTED"
         except Exception as e:
-            return f"ERROR: {str(e)}"
+            return f"ERROR: {e!s}"
 
     async def validate_all_health_endpoints(self) -> str:
         """Validate all service health endpoints are responding correctly."""
@@ -401,14 +402,13 @@ class CriticalActionItemsCoordinator:
                             f"{service}: HTTP {response.status_code}"
                         )
                 except Exception as e:
-                    unhealthy_services.append(f"{service}: {str(e)}")
+                    unhealthy_services.append(f"{service}: {e!s}")
 
             if not unhealthy_services:
                 return "ALL_HEALTHY"
-            else:
-                return f"UNHEALTHY: {unhealthy_services}"
+            return f"UNHEALTHY: {unhealthy_services}"
         except Exception as e:
-            return f"ERROR: {str(e)}"
+            return f"ERROR: {e!s}"
 
     async def run_comprehensive_tests(self) -> str:
         """Run the comprehensive test suite and measure coverage."""
@@ -424,6 +424,7 @@ class CriticalActionItemsCoordinator:
                     "--tb=short",
                     "-v",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -444,12 +445,11 @@ class CriticalActionItemsCoordinator:
 
                     if coverage_percent >= 80:
                         return f"PASSED: {coverage_percent:.1f}% coverage"
-                    else:
-                        return f"LOW_COVERAGE: {coverage_percent:.1f}% (target: 80%)"
+                    return f"LOW_COVERAGE: {coverage_percent:.1f}% (target: 80%)"
             else:
                 return f"NO_COVERAGE_DATA: {result.returncode}"
         except Exception as e:
-            return f"ERROR: {str(e)}"
+            return f"ERROR: {e!s}"
 
     async def setup_e2e_tests(self) -> str:
         """Set up end-to-end integration tests for governance workflows."""
@@ -476,7 +476,7 @@ class CriticalActionItemsCoordinator:
 
             return "CONFIGURED"
         except Exception as e:
-            return f"ERROR: {str(e)}"
+            return f"ERROR: {e!s}"
 
     async def deploy_performance_monitoring(self) -> str:
         """Deploy real-time performance monitoring with Prometheus and Grafana."""
@@ -507,7 +507,7 @@ class CriticalActionItemsCoordinator:
 
             return "DEPLOYED"
         except Exception as e:
-            return f"ERROR: {str(e)}"
+            return f"ERROR: {e!s}"
 
     async def run_anchor_tests(self) -> str:
         """Run Anchor program tests for blockchain components."""
@@ -515,6 +515,7 @@ class CriticalActionItemsCoordinator:
             # Run Anchor tests
             result = subprocess.run(
                 ["anchor", "test"],
+                check=False,
                 cwd=self.project_root / "blockchain",
                 capture_output=True,
                 text=True,
@@ -523,10 +524,9 @@ class CriticalActionItemsCoordinator:
 
             if result.returncode == 0:
                 return "PASSED"
-            else:
-                return f"FAILED: {result.stderr}"
+            return f"FAILED: {result.stderr}"
         except Exception as e:
-            return f"ERROR: {str(e)}"
+            return f"ERROR: {e!s}"
 
     async def implement_transaction_batching(self) -> str:
         """Implement transaction batching for Solana operations."""
@@ -549,7 +549,7 @@ class CriticalActionItemsCoordinator:
             ] = 0.008
             return "CONFIGURED"
         except Exception as e:
-            return f"ERROR: {str(e)}"
+            return f"ERROR: {e!s}"
 
     async def optimize_formal_verification(self) -> str:
         """Optimize formal verification pipeline with caching."""
@@ -577,7 +577,7 @@ class CriticalActionItemsCoordinator:
             ] = 1.5
             return "OPTIMIZED"
         except Exception as e:
-            return f"ERROR: {str(e)}"
+            return f"ERROR: {e!s}"
 
     async def implement_redis_caching(self) -> str:
         """Implement Redis caching for performance optimization."""
@@ -594,7 +594,7 @@ class CriticalActionItemsCoordinator:
             requests.get("http://localhost:6380", timeout=5)
             return "IMPLEMENTED"
         except Exception as e:
-            return f"ERROR: {str(e)}"
+            return f"ERROR: {e!s}"
 
     async def enhance_constitutional_council_security(self) -> str:
         """Implement Constitutional Council security enhancements."""
@@ -616,7 +616,7 @@ class CriticalActionItemsCoordinator:
 
             return "ENHANCED"
         except Exception as e:
-            return f"ERROR: {str(e)}"
+            return f"ERROR: {e!s}"
 
     async def expand_formal_verification(self) -> str:
         """Expand formal verification coverage to all governance operations."""
@@ -644,7 +644,7 @@ class CriticalActionItemsCoordinator:
 
             return "EXPANDED"
         except Exception as e:
-            return f"ERROR: {str(e)}"
+            return f"ERROR: {e!s}"
 
     async def create_implementation_guides(self) -> str:
         """Create comprehensive implementation guides."""
@@ -672,7 +672,7 @@ class CriticalActionItemsCoordinator:
 
             return "CREATED"
         except Exception as e:
-            return f"ERROR: {str(e)}"
+            return f"ERROR: {e!s}"
 
     async def final_system_validation(self) -> str:
         """Run final comprehensive system validation."""
@@ -690,10 +690,9 @@ class CriticalActionItemsCoordinator:
 
             if all_passed:
                 return "VALIDATED"
-            else:
-                return f"PARTIAL: {validation_results}"
+            return f"PARTIAL: {validation_results}"
         except Exception as e:
-            return f"ERROR: {str(e)}"
+            return f"ERROR: {e!s}"
 
     async def final_validation(self) -> None:
         """Perform final validation and update success criteria."""
@@ -708,10 +707,9 @@ class CriticalActionItemsCoordinator:
                     # Lower is better for vulnerabilities
                     if values["achieved"] <= values["target"]:
                         achieved_targets += 1
-                else:
-                    # Higher is better for other metrics
-                    if values["achieved"] >= values["target"]:
-                        achieved_targets += 1
+                # Higher is better for other metrics
+                elif values["achieved"] >= values["target"]:
+                    achieved_targets += 1
 
             success_rate = (achieved_targets / total_targets) * 100
             self.execution_report["criteria_success_rate"] = success_rate

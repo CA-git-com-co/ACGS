@@ -162,7 +162,7 @@ class EnhancedEditTool:
 
         if content.count(old_str) > 1:
             return f"Error: Multiple occurrences of '{old_str}' found. Replacement requires a unique match."
-        elif content.count(old_str) == 0:
+        if content.count(old_str) == 0:
             return f"Error: String '{old_str}' not found in file."
 
         new_content = content.replace(old_str, new_str)
@@ -385,7 +385,7 @@ class DarwinGodelMachine:
                         and test_details[test_name] == "FAILED"
                     ):
                         error_messages.append(
-                            f"{test_name}: {next((l for l in lines[lines.index(line)+1:] if l.strip()), '')}"
+                            f"{test_name}: {next((l for l in lines[lines.index(line) + 1 :] if l.strip()), '')}"
                         )
 
         # Generic counting for other languages or as fallback
@@ -427,7 +427,7 @@ class DarwinGodelMachine:
             stats["test_details"] = test_details
 
         except Exception as e:
-            output = f"Error running tests: {str(e)}"
+            output = f"Error running tests: {e!s}"
             success = False
             stats = {
                 "passed": 0,
@@ -638,16 +638,13 @@ Focus on producing working, tested code that follows best practices for {self.la
             return max(
                 self.solution_archive, key=lambda x: x.test_stats.get("passed", 0)
             )
-        else:
-            # Performance-based selection
-            successful_solutions = [s for s in self.solution_archive if s.test_success]
-            if successful_solutions:
-                return max(
-                    successful_solutions, key=lambda x: x.test_stats.get("passed", 0)
-                )
+        # Performance-based selection
+        successful_solutions = [s for s in self.solution_archive if s.test_success]
+        if successful_solutions:
             return max(
-                self.solution_archive, key=lambda x: x.test_stats.get("passed", 0)
+                successful_solutions, key=lambda x: x.test_stats.get("passed", 0)
             )
+        return max(self.solution_archive, key=lambda x: x.test_stats.get("passed", 0))
 
     def evolve(self) -> SolutionAttempt | None:
         """

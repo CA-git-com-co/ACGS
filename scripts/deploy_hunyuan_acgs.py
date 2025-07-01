@@ -8,14 +8,14 @@ and performance validation.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import subprocess
-import time
-import requests
+import argparse
 import json
 import logging
-import argparse
-from datetime import datetime, timezone
+import subprocess
+import time
 from pathlib import Path
+
+import requests
 
 # Configure logging
 logging.basicConfig(
@@ -193,7 +193,9 @@ class HunyuanACGSDeployer:
                 "10",
             ]
 
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+            result = subprocess.run(
+                cmd, check=False, capture_output=True, text=True, timeout=60
+            )
 
             if result.returncode == 0:
                 logger.info("✅ ACGS-PGP load tests passed")
@@ -239,7 +241,9 @@ class HunyuanACGSDeployer:
         try:
             if follow:
                 # For follow mode, don't capture output
-                subprocess.run(["docker-compose", "-f", self.compose_file] + args)
+                subprocess.run(
+                    ["docker-compose", "-f", self.compose_file] + args, check=False
+                )
             else:
                 output = self._run_compose_command(args)
                 print(output)

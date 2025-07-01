@@ -1,7 +1,8 @@
-import onnxruntime_genai as og
 import argparse
-import time
 import json
+import time
+
+import onnxruntime_genai as og
 
 
 def main(args):
@@ -104,7 +105,7 @@ def main(args):
             prompt_time = first_token_timestamp - started_timestamp
             run_time = time.time() - first_token_timestamp
             print(
-                f"Prompt length: {len(input_tokens)}, New tokens: {len(new_tokens)}, Time to first: {(prompt_time):.2f}s, Prompt tokens per second: {len(input_tokens)/prompt_time:.2f} tps, New tokens per second: {len(new_tokens)/run_time:.2f} tps"
+                f"Prompt length: {len(input_tokens)}, New tokens: {len(new_tokens)}, Time to first: {(prompt_time):.2f}s, Prompt tokens per second: {len(input_tokens) / prompt_time:.2f} tps, New tokens per second: {len(new_tokens) / run_time:.2f} tps"
             )
 
 

@@ -9,7 +9,7 @@ import json
 import logging
 import time
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -29,7 +29,7 @@ class InfrastructureDeployer:
 
     async def deploy_complete_infrastructure(
         self, environment: str = "development"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Deploy complete infrastructure using Terraform and Ansible"""
         logger.info(f"🚀 Starting Complete Infrastructure Deployment for {environment}")
         logger.info("=" * 80)
@@ -91,7 +91,7 @@ class InfrastructureDeployer:
             logger.error(f"❌ Infrastructure deployment failed: {e}")
             return {"status": "failed", "error": str(e), "results": results}
 
-    async def validate_prerequisites(self) -> Dict[str, Any]:
+    async def validate_prerequisites(self) -> dict[str, Any]:
         """Validate deployment prerequisites"""
         logger.info("🔍 Validating prerequisites...")
 
@@ -154,7 +154,7 @@ class InfrastructureDeployer:
 
         return validation
 
-    async def terraform_init(self) -> Dict[str, Any]:
+    async def terraform_init(self) -> dict[str, Any]:
         """Initialize Terraform"""
         logger.info("🏗️ Initializing Terraform...")
 
@@ -172,7 +172,7 @@ class InfrastructureDeployer:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def terraform_plan(self, environment: str) -> Dict[str, Any]:
+    async def terraform_plan(self, environment: str) -> dict[str, Any]:
         """Plan Terraform deployment"""
         logger.info(f"📋 Planning Terraform deployment for {environment}...")
 
@@ -200,7 +200,7 @@ class InfrastructureDeployer:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def terraform_apply(self, environment: str) -> Dict[str, Any]:
+    async def terraform_apply(self, environment: str) -> dict[str, Any]:
         """Apply Terraform infrastructure"""
         logger.info(f"🚀 Applying Terraform infrastructure for {environment}...")
 
@@ -219,7 +219,7 @@ class InfrastructureDeployer:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def get_terraform_outputs(self) -> Dict[str, Any]:
+    async def get_terraform_outputs(self) -> dict[str, Any]:
         """Get Terraform outputs"""
         logger.info("📤 Extracting Terraform outputs...")
 
@@ -231,14 +231,13 @@ class InfrastructureDeployer:
             if result["returncode"] == 0:
                 outputs = json.loads(result["stdout"])
                 return {"status": "success", "outputs": outputs}
-            else:
-                return {"status": "failed", "error": result["stderr"]}
+            return {"status": "failed", "error": result["stderr"]}
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
     async def generate_ansible_inventory(
-        self, terraform_outputs: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, terraform_outputs: dict[str, Any]
+    ) -> dict[str, Any]:
         """Generate Ansible inventory from Terraform outputs"""
         logger.info("📝 Generating Ansible inventory...")
 
@@ -289,7 +288,7 @@ class InfrastructureDeployer:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def run_ansible_deployment(self, environment: str) -> Dict[str, Any]:
+    async def run_ansible_deployment(self, environment: str) -> dict[str, Any]:
         """Run Ansible deployment"""
         logger.info(f"⚙️ Running Ansible deployment for {environment}...")
 
@@ -319,7 +318,7 @@ class InfrastructureDeployer:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def validate_infrastructure(self) -> Dict[str, Any]:
+    async def validate_infrastructure(self) -> dict[str, Any]:
         """Validate deployed infrastructure"""
         logger.info("✅ Validating infrastructure deployment...")
 
@@ -417,7 +416,7 @@ class InfrastructureDeployer:
 
         return validation_results
 
-    async def setup_monitoring(self) -> Dict[str, Any]:
+    async def setup_monitoring(self) -> dict[str, Any]:
         """Setup monitoring and alerting"""
         logger.info("📊 Setting up monitoring and alerting...")
 
@@ -498,8 +497,8 @@ governance_config = {{
             f.write(vars_content)
 
     async def generate_deployment_documentation(
-        self, results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, results: dict[str, Any]
+    ) -> dict[str, Any]:
         """Generate deployment documentation"""
         logger.info("📚 Generating deployment documentation...")
 
@@ -536,7 +535,7 @@ governance_config = {{
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def run_command(self, cmd: List[str], cwd: Path = None) -> Dict[str, Any]:
+    async def run_command(self, cmd: list[str], cwd: Path = None) -> dict[str, Any]:
         """Run shell command"""
         try:
             process = await asyncio.create_subprocess_exec(
@@ -556,7 +555,7 @@ governance_config = {{
         except Exception as e:
             return {"returncode": -1, "stdout": "", "stderr": str(e)}
 
-    def generate_deployment_summary(self, results: Dict[str, Any]) -> Dict[str, Any]:
+    def generate_deployment_summary(self, results: dict[str, Any]) -> dict[str, Any]:
         """Generate deployment summary"""
         summary = {
             "components_deployed": 0,

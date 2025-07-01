@@ -2,15 +2,8 @@
 Unit tests for services.core.constitutional-ai.ac_service.app.monitoring.scalability_metrics
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.constitutional_ai.ac_service.app.monitoring.scalability_metrics import (
-    MetricType,
-    GovernancePhase,
-    ScalabilityMetric,
     DemocraticParticipationMetrics,
-    PerformanceMetrics,
-    ScalabilityMetricsCollector,
 )
 
 

@@ -3,22 +3,19 @@ Constitutional compliance endpoints.
 """
 
 import logging
-from typing import Dict, List, Optional
 from datetime import datetime, timedelta
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
 
+from ...core.constitutional_validator import ConstitutionalValidator
 from ...database import get_db_session
 from ...models.compliance import ComplianceLevel, ConstitutionalComplianceLog
-
-from ...core.constitutional_validator import ConstitutionalValidator
 from ...network.service_client import ACGSServiceClient
 from .models import (
     ConstitutionalValidationRequest,
     ConstitutionalValidationResponse,
-    ErrorResponse,
 )
 
 router = APIRouter()
@@ -112,7 +109,7 @@ async def validate_constitutional_compliance(
         logger.error(f"Constitutional validation failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Constitutional validation failed: {str(e)}",
+            detail=f"Constitutional validation failed: {e!s}",
         )
 
 
@@ -139,17 +136,15 @@ async def get_constitutional_principles(
         logger.error(f"Failed to get constitutional principles: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get constitutional principles: {str(e)}",
+            detail=f"Failed to get constitutional principles: {e!s}",
         )
 
 
 @router.get("/compliance/history")
 async def get_compliance_history(
-    improvement_id: Optional[UUID] = Query(
-        None, description="Filter by improvement ID"
-    ),
+    improvement_id: UUID | None = Query(None, description="Filter by improvement ID"),
     days: int = Query(30, ge=1, le=365, description="Number of days to include"),
-    min_score: Optional[float] = Query(
+    min_score: float | None = Query(
         None, ge=0, le=1, description="Minimum compliance score"
     ),
 ):
@@ -196,8 +191,8 @@ async def get_compliance_history(
             compliant_count / total_validations if total_validations else 0.0
         )
 
-        violations_by_principle: Dict[str, int] = {}
-        daily_scores_map: Dict[str, List[float]] = {}
+        violations_by_principle: dict[str, int] = {}
+        daily_scores_map: dict[str, list[float]] = {}
 
         for log in logs:
             for violation in log.violations or []:
@@ -236,7 +231,7 @@ async def get_compliance_history(
         logger.error(f"Failed to get compliance history: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get compliance history: {str(e)}",
+            detail=f"Failed to get compliance history: {e!s}",
         )
 
 
@@ -280,7 +275,7 @@ async def report_compliance_violation(
         logger.error(f"Failed to report compliance violation: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to report compliance violation: {str(e)}",
+            detail=f"Failed to report compliance violation: {e!s}",
         )
 
 
@@ -312,7 +307,7 @@ async def get_compliance_summary():
         logger.error(f"Failed to get compliance summary: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get compliance summary: {str(e)}",
+            detail=f"Failed to get compliance summary: {e!s}",
         )
 
 
@@ -342,7 +337,7 @@ async def get_governance_oversight_status():
         logger.error(f"Failed to get governance oversight status: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get governance oversight status: {str(e)}",
+            detail=f"Failed to get governance oversight status: {e!s}",
         )
 
 
@@ -381,7 +376,7 @@ async def submit_governance_review(
         logger.error(f"Failed to submit governance review: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to submit governance review: {str(e)}",
+            detail=f"Failed to submit governance review: {e!s}",
         )
 
 
@@ -407,5 +402,5 @@ async def get_constitutional_hash():
         logger.error(f"Failed to get constitutional hash: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get constitutional hash: {str(e)}",
+            detail=f"Failed to get constitutional hash: {e!s}",
         )

@@ -9,7 +9,7 @@ import json
 import logging
 import time
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import httpx
 
@@ -48,7 +48,7 @@ class BlueGreenTester:
 
     async def run_comprehensive_tests(
         self, test_environment: str = "both"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Run comprehensive blue-green deployment tests"""
         logger.info("🧪 Starting comprehensive blue-green deployment tests")
         logger.info("=" * 80)
@@ -109,7 +109,7 @@ class BlueGreenTester:
             logger.error(f"❌ Blue-green deployment tests failed: {e}")
             return {"status": "failed", "error": str(e), "results": results}
 
-    async def test_environment_isolation(self) -> Dict[str, Any]:
+    async def test_environment_isolation(self) -> dict[str, Any]:
         """Test that blue and green environments are properly isolated"""
         logger.info("🔒 Testing environment isolation...")
 
@@ -154,7 +154,7 @@ class BlueGreenTester:
 
         return isolation_results
 
-    async def test_environment_health(self, environment: str) -> Dict[str, Any]:
+    async def test_environment_health(self, environment: str) -> dict[str, Any]:
         """Test health of specific environment"""
         logger.info(f"🏥 Testing {environment} environment health...")
 
@@ -219,7 +219,7 @@ class BlueGreenTester:
 
     async def test_constitutional_compliance(
         self, test_environment: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test constitutional compliance across environments"""
         logger.info("🏛️ Testing constitutional compliance...")
 
@@ -292,7 +292,7 @@ class BlueGreenTester:
 
         return compliance_results
 
-    async def test_traffic_routing(self) -> Dict[str, Any]:
+    async def test_traffic_routing(self) -> dict[str, Any]:
         """Test traffic routing between environments"""
         logger.info("🚦 Testing traffic routing...")
 
@@ -336,7 +336,7 @@ class BlueGreenTester:
 
         return routing_results
 
-    async def test_zero_downtime_deployment(self) -> Dict[str, Any]:
+    async def test_zero_downtime_deployment(self) -> dict[str, Any]:
         """Simulate zero-downtime deployment"""
         logger.info("⚡ Testing zero-downtime deployment simulation...")
 
@@ -397,7 +397,7 @@ class BlueGreenTester:
 
         return downtime_results
 
-    async def test_rollback_functionality(self) -> Dict[str, Any]:
+    async def test_rollback_functionality(self) -> dict[str, Any]:
         """Test rollback functionality"""
         logger.info("🔄 Testing rollback functionality...")
 
@@ -413,7 +413,7 @@ class BlueGreenTester:
 
     async def test_performance_consistency(
         self, test_environment: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test performance consistency across environments"""
         logger.info("📊 Testing performance consistency...")
 
@@ -470,7 +470,7 @@ class BlueGreenTester:
 
         return performance_results
 
-    async def test_data_consistency(self) -> Dict[str, Any]:
+    async def test_data_consistency(self) -> dict[str, Any]:
         """Test data consistency between environments"""
         logger.info("🔄 Testing data consistency...")
 
@@ -484,7 +484,7 @@ class BlueGreenTester:
 
         return consistency_results
 
-    async def test_namespace_isolation(self) -> Dict[str, Any]:
+    async def test_namespace_isolation(self) -> dict[str, Any]:
         """Test Kubernetes namespace isolation"""
         # This would require kubectl access in a real implementation
         return {
@@ -495,7 +495,7 @@ class BlueGreenTester:
 
     async def test_auth_service(
         self, client: httpx.AsyncClient, base_url: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test auth service specific functionality"""
         try:
             status_response = await client.get(f"{base_url}/api/v1/auth/status")
@@ -508,7 +508,7 @@ class BlueGreenTester:
 
     async def test_ac_service(
         self, client: httpx.AsyncClient, base_url: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test constitutional AI service functionality"""
         try:
             status_response = await client.get(f"{base_url}/api/v1/amendments/status")
@@ -521,7 +521,7 @@ class BlueGreenTester:
 
     async def test_pgc_service(
         self, client: httpx.AsyncClient, base_url: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test policy governance compliance service"""
         try:
             compliance_response = await client.get(
@@ -534,7 +534,7 @@ class BlueGreenTester:
         except:
             return {"pgc_functional": False}
 
-    def generate_test_summary(self, results: Dict[str, Any]) -> Dict[str, Any]:
+    def generate_test_summary(self, results: dict[str, Any]) -> dict[str, Any]:
         """Generate test summary"""
         summary = {
             "tests_passed": 0,
@@ -563,10 +563,7 @@ class BlueGreenTester:
                     summary["constitutional_compliance"] = "valid"
 
                 # Check zero downtime
-                if (
-                    "zero_downtime_achieved" in result
-                    and result["zero_downtime_achieved"]
-                ):
+                if result.get("zero_downtime_achieved"):
                     summary["zero_downtime_achieved"] = True
 
                 # Check performance

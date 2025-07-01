@@ -11,12 +11,11 @@ Updates documentation to reflect actual system state:
 From remediation plan TIER 4 - LOW PRIORITY (Complete within 2 weeks)
 """
 
-import os
 import json
-import yaml
-from pathlib import Path
-from typing import Dict, List, Any
 from datetime import datetime
+from pathlib import Path
+from typing import Any
+
 import requests
 
 
@@ -36,7 +35,7 @@ class DocumentationSynchronizer:
         }
         self.constitutional_hash = "cdd01ef066bc6cf2"
 
-    def verify_service_status(self) -> Dict[str, Any]:
+    def verify_service_status(self) -> dict[str, Any]:
         """Verify current service status and endpoints."""
         print("🔍 Verifying service status...")
 
@@ -70,7 +69,7 @@ class DocumentationSynchronizer:
 
         return status_report
 
-    def update_service_documentation(self) -> List[str]:
+    def update_service_documentation(self) -> list[str]:
         """Update service documentation with current status."""
         print("📝 Updating service documentation...")
 
@@ -84,7 +83,7 @@ class DocumentationSynchronizer:
 The ACGS-PGP (Autonomous Constitutional Governance System - Policy Generation Platform) is a 7-service architecture implementing constitutional AI governance with quantum-inspired semantic fault tolerance.
 
 **Constitutional Hash**: `{self.constitutional_hash}`
-**Last Updated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+**Last Updated**: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 
 ## Service Architecture
 
@@ -307,7 +306,7 @@ cp -r /home/ubuntu/ACGS/config_backup_20250623_220151/config/* /home/ubuntu/ACGS
 - **Validation**: All services must validate against constitutional principles
 - **Monitoring**: Real-time compliance tracking
 
-Last Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+Last Updated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 """
 
         runbook_path = self.project_root / "docs" / "operational-runbook.md"
@@ -317,7 +316,7 @@ Last Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
         return str(runbook_path)
 
-    def synchronize_documentation(self) -> Dict[str, Any]:
+    def synchronize_documentation(self) -> dict[str, Any]:
         """Synchronize all documentation with current system state."""
         print("🚀 Starting documentation synchronization...")
 
@@ -360,28 +359,28 @@ Last Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
         return results
 
 
-def print_documentation_report(results: Dict[str, Any]):
+def print_documentation_report(results: dict[str, Any]):
     """Print documentation synchronization report."""
     print("\n" + "=" * 80)
     print("📚 ACGS-PGP DOCUMENTATION SYNCHRONIZATION REPORT")
     print("=" * 80)
 
     summary = results["summary"]
-    print(f"📊 System Status:")
+    print("📊 System Status:")
     print(f"   • Total Services: {summary['total_services']}")
     print(f"   • Operational: {summary['operational_services']}")
     print(f"   • Degraded: {summary['degraded_services']}")
     print(f"   • Failed: {summary['failed_services']}")
 
-    print(f"\n📝 Documentation Updates:")
+    print("\n📝 Documentation Updates:")
     print(f"   • Files Updated: {summary['documentation_files_updated']}")
     print(f"   • Directories Created: {len(results['created_directories'])}")
 
-    print(f"\n🏛️ Constitutional Governance:")
+    print("\n🏛️ Constitutional Governance:")
     print(f"   • Hash: {results['constitutional_hash']}")
-    print(f"   • Compliance: Validated across all services")
+    print("   • Compliance: Validated across all services")
 
-    print(f"\n📋 Updated Files:")
+    print("\n📋 Updated Files:")
     for file_path in results["updated_files"]:
         print(f"   ✅ {file_path}")
 
@@ -399,7 +398,7 @@ def main():
     # Save results
     with open("documentation_sync_results.json", "w") as f:
         json.dump(results, f, indent=2)
-    print(f"\n📄 Results saved to: documentation_sync_results.json")
+    print("\n📄 Results saved to: documentation_sync_results.json")
 
     return 0
 

@@ -172,13 +172,13 @@ class CircuitBreaker:
         """Check if execution is allowed."""
         if self.state == "closed":
             return True
-        elif self.state == "open":
+        if self.state == "open":
             if time.time() - self.last_failure_time > self.recovery_timeout:
                 self.state = "half_open"
                 return True
             return False
-        else:  # half_open
-            return True
+        # half_open
+        return True
 
     def record_success(self):
         # requires: Valid input parameters
@@ -401,14 +401,14 @@ class PhaseA3MultiModelConsensus:
                 and constitutional_fidelity_score.overall_score
                 < self.min_constitutional_fidelity
             ):
-
-                consensus_result, iterative_alignment_applied = (
-                    await self._apply_iterative_alignment(
-                        consensus_result,
-                        valid_responses,
-                        context,
-                        constitutional_fidelity_score,
-                    )
+                (
+                    consensus_result,
+                    iterative_alignment_applied,
+                ) = await self._apply_iterative_alignment(
+                    consensus_result,
+                    valid_responses,
+                    context,
+                    constitutional_fidelity_score,
                 )
 
             # Step 7: Calculate performance metrics
@@ -647,17 +647,16 @@ class PhaseA3MultiModelConsensus:
 
         if strategy == ConsensusStrategy.MAJORITY_VOTE:
             return await self._majority_vote_consensus(responses)
-        elif strategy == ConsensusStrategy.WEIGHTED_AVERAGE:
+        if strategy == ConsensusStrategy.WEIGHTED_AVERAGE:
             return await self._weighted_average_consensus(responses)
-        elif strategy == ConsensusStrategy.CONFIDENCE_THRESHOLD:
+        if strategy == ConsensusStrategy.CONFIDENCE_THRESHOLD:
             return await self._confidence_threshold_consensus(responses)
-        elif strategy == ConsensusStrategy.CONSTITUTIONAL_PRIORITY:
+        if strategy == ConsensusStrategy.CONSTITUTIONAL_PRIORITY:
             return await self._constitutional_priority_consensus(responses)
-        elif strategy == ConsensusStrategy.PERFORMANCE_ADAPTIVE:
+        if strategy == ConsensusStrategy.PERFORMANCE_ADAPTIVE:
             return await self._performance_adaptive_consensus(responses)
-        else:
-            # Default to weighted average
-            return await self._weighted_average_consensus(responses)
+        # Default to weighted average
+        return await self._weighted_average_consensus(responses)
 
     async def _weighted_average_consensus(
         self, responses: list[ModelResponse]
@@ -723,14 +722,13 @@ class PhaseA3MultiModelConsensus:
 
         if avg_similarity >= 0.95:
             return ModelAgreementLevel.UNANIMOUS
-        elif avg_similarity >= 0.8:
+        if avg_similarity >= 0.8:
             return ModelAgreementLevel.STRONG_CONSENSUS
-        elif avg_similarity >= 0.6:
+        if avg_similarity >= 0.6:
             return ModelAgreementLevel.MODERATE_CONSENSUS
-        elif avg_similarity >= 0.4:
+        if avg_similarity >= 0.4:
             return ModelAgreementLevel.WEAK_CONSENSUS
-        else:
-            return ModelAgreementLevel.NO_CONSENSUS
+        return ModelAgreementLevel.NO_CONSENSUS
 
     def _calculate_response_similarity(self, content1: str, content2: str) -> float:
         """Calculate similarity between two responses."""
@@ -878,8 +876,7 @@ class PhaseA3MultiModelConsensus:
 
         if high_confidence_responses:
             return await self._weighted_average_consensus(high_confidence_responses)
-        else:
-            return await self._weighted_average_consensus(responses)
+        return await self._weighted_average_consensus(responses)
 
     async def _constitutional_priority_consensus(
         self, responses: list[ModelResponse]
@@ -921,7 +918,7 @@ class PhaseA3MultiModelConsensus:
                         constitutional_gaming_score=0.0,
                         adversarial_prompt="",
                         model_response="",
-                        mitigation_suggestions=[f"Red-teaming failed: {str(e)}"],
+                        mitigation_suggestions=[f"Red-teaming failed: {e!s}"],
                         confidence_score=0.0,
                         metadata={"error": str(e)},
                     )
@@ -942,25 +939,24 @@ class PhaseA3MultiModelConsensus:
             return await self._test_constitutional_gaming(
                 content, original_prompt, context
             )
-        elif strategy == RedTeamingStrategy.BIAS_AMPLIFICATION:
+        if strategy == RedTeamingStrategy.BIAS_AMPLIFICATION:
             return await self._test_bias_amplification(
                 content, original_prompt, context
             )
-        elif strategy == RedTeamingStrategy.SAFETY_VIOLATION:
+        if strategy == RedTeamingStrategy.SAFETY_VIOLATION:
             return await self._test_safety_violation(content, original_prompt, context)
-        else:
-            # Default test
-            return RedTeamingResult(
-                strategy=strategy,
-                attack_successful=False,
-                vulnerability_detected=False,
-                constitutional_gaming_score=0.0,
-                adversarial_prompt=f"Test prompt for {strategy.value}",
-                model_response=content,
-                mitigation_suggestions=["No specific vulnerabilities detected"],
-                confidence_score=0.7,
-                metadata={"test_type": "default"},
-            )
+        # Default test
+        return RedTeamingResult(
+            strategy=strategy,
+            attack_successful=False,
+            vulnerability_detected=False,
+            constitutional_gaming_score=0.0,
+            adversarial_prompt=f"Test prompt for {strategy.value}",
+            model_response=content,
+            mitigation_suggestions=["No specific vulnerabilities detected"],
+            confidence_score=0.7,
+            metadata={"test_type": "default"},
+        )
 
     async def _test_constitutional_gaming(
         self, content: str, original_prompt: str, context: dict[str, Any]

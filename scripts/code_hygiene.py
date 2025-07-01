@@ -14,12 +14,10 @@ Usage:
 """
 
 import argparse
-import ast
 import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Dict, Set, Tuple
 
 
 class CodeHygieneManager:
@@ -174,7 +172,7 @@ class CodeHygieneManager:
 
         try:
             result = subprocess.run(
-                cmd, capture_output=True, text=True, cwd=self.project_root
+                cmd, check=False, capture_output=True, text=True, cwd=self.project_root
             )
 
             if result.returncode == 0:
@@ -197,14 +195,22 @@ class CodeHygieneManager:
 
         try:
             result = subprocess.run(
-                cmd_check, capture_output=True, text=True, cwd=self.project_root
+                cmd_check,
+                check=False,
+                capture_output=True,
+                text=True,
+                cwd=self.project_root,
             )
 
             if not self.dry_run:
                 # Apply formatting, but skip files with parse errors
                 cmd_format = ["python3", "-m", "black", "--safe", "."]
                 format_result = subprocess.run(
-                    cmd_format, capture_output=True, text=True, cwd=self.project_root
+                    cmd_format,
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    cwd=self.project_root,
                 )
 
                 if format_result.returncode == 0:
@@ -239,7 +245,7 @@ class CodeHygieneManager:
 
         try:
             result = subprocess.run(
-                cmd, capture_output=True, text=True, cwd=self.project_root
+                cmd, check=False, capture_output=True, text=True, cwd=self.project_root
             )
 
             if result.returncode == 0:
@@ -268,7 +274,7 @@ class CodeHygieneManager:
         file_str = str(file_path)
         return any(pattern in file_str for pattern in skip_patterns)
 
-    def run_hygiene_fixes(self, apply_formatting: bool = True) -> Dict[str, any]:
+    def run_hygiene_fixes(self, apply_formatting: bool = True) -> dict[str, any]:
         """Run all code hygiene fixes."""
         print("🧹 Starting ACGS-2 Code Hygiene Fixes")
         print("=" * 50)
@@ -292,7 +298,7 @@ class CodeHygieneManager:
         if apply_formatting:
             self.apply_formatting()
 
-        print(f"\n✅ Code hygiene fixes completed!")
+        print("\n✅ Code hygiene fixes completed!")
         return self.report
 
 

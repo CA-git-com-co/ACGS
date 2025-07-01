@@ -8,7 +8,6 @@ This script analyzes the cleanup analysis results and generates actionable recom
 import json
 import os
 from pathlib import Path
-from datetime import datetime
 
 
 def analyze_cleanup_results(results_file: str):
@@ -16,7 +15,7 @@ def analyze_cleanup_results(results_file: str):
 
     print(f"📊 Analyzing cleanup results from {results_file}")
 
-    with open(results_file, "r") as f:
+    with open(results_file) as f:
         data = json.load(f)
 
     summary = data.get("summary", {})
@@ -45,7 +44,7 @@ def analyze_cleanup_results(results_file: str):
         critical_files = dup_group.get("critical_files", [])
         non_critical_files = dup_group.get("non_critical_files", [])
 
-        print(f"\n{i+1}. Duplicate group with {len(files)} files:")
+        print(f"\n{i + 1}. Duplicate group with {len(files)} files:")
         print(f"   Critical files: {len(critical_files)}")
         print(f"   Non-critical files: {len(non_critical_files)}")
 

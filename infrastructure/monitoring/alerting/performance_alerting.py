@@ -7,13 +7,9 @@ Real-time performance monitoring with automated alerting for regression detectio
 import asyncio
 import json
 import logging
-import smtplib
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from typing import Dict, List, Optional
 
 import aiohttp
 from prometheus_client import CollectorRegistry, Counter, Gauge, start_http_server
@@ -51,7 +47,7 @@ class PerformanceAlert:
     severity: str
     message: str
     triggered_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    resolved_at: Optional[datetime] = None
+    resolved_at: datetime | None = None
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
 
@@ -64,8 +60,8 @@ class PerformanceAlertingSystem:
 
         # Alert configuration
         self.alert_thresholds = self.setup_alert_thresholds()
-        self.active_alerts: Dict[str, PerformanceAlert] = {}
-        self.alert_history: List[PerformanceAlert] = []
+        self.active_alerts: dict[str, PerformanceAlert] = {}
+        self.alert_history: list[PerformanceAlert] = []
 
         # Monitoring configuration
         self.services = {
@@ -79,7 +75,7 @@ class PerformanceAlertingSystem:
         }
 
         # Baseline data for regression detection
-        self.baseline_metrics: Dict[str, Dict] = {}
+        self.baseline_metrics: dict[str, dict] = {}
 
         logger.info("Performance Alerting System initialized")
 
@@ -113,7 +109,7 @@ class PerformanceAlertingSystem:
             registry=self.registry,
         )
 
-    def setup_alert_thresholds(self) -> List[AlertThreshold]:
+    def setup_alert_thresholds(self) -> list[AlertThreshold]:
         """Setup alert thresholds."""
         return [
             # Response time thresholds
@@ -265,7 +261,7 @@ class PerformanceAlertingSystem:
             except Exception as e:
                 logger.warning(f"Failed to check metrics for {service_name}: {e}")
 
-    async def collect_service_metrics(self, service_name: str, port: int) -> Dict:
+    async def collect_service_metrics(self, service_name: str, port: int) -> dict:
         """Collect current metrics for a service."""
         metrics = {}
 
@@ -330,7 +326,7 @@ class PerformanceAlertingSystem:
 
         return metrics
 
-    async def evaluate_alert_thresholds(self, service_name: str, metrics: Dict):
+    async def evaluate_alert_thresholds(self, service_name: str, metrics: dict):
         """Evaluate metrics against alert thresholds."""
         for threshold in self.alert_thresholds:
             if not threshold.enabled:
@@ -344,18 +340,18 @@ class PerformanceAlertingSystem:
             should_alert = False
 
             if (
-                threshold.comparison == "gt"
-                and metric_value > threshold.threshold_value
-            ):
-                should_alert = True
-            elif (
-                threshold.comparison == "lt"
-                and metric_value < threshold.threshold_value
-            ):
-                should_alert = True
-            elif (
-                threshold.comparison == "eq"
-                and metric_value == threshold.threshold_value
+                (
+                    threshold.comparison == "gt"
+                    and metric_value > threshold.threshold_value
+                )
+                or (
+                    threshold.comparison == "lt"
+                    and metric_value < threshold.threshold_value
+                )
+                or (
+                    threshold.comparison == "eq"
+                    and metric_value == threshold.threshold_value
+                )
             ):
                 should_alert = True
 
@@ -376,10 +372,9 @@ class PerformanceAlertingSystem:
                     )
 
                     await self.trigger_alert(alert)
-            else:
-                # Resolve alert if it exists
-                if alert_key in self.active_alerts:
-                    await self.resolve_alert(alert_key)
+            # Resolve alert if it exists
+            elif alert_key in self.active_alerts:
+                await self.resolve_alert(alert_key)
 
     async def trigger_alert(self, alert: PerformanceAlert):
         """Trigger a performance alert."""
@@ -609,7 +604,7 @@ class PerformanceAlertingSystem:
                 logger.error(f"Error in alert resolution loop: {e}")
                 await asyncio.sleep(600)
 
-    def get_alert_summary(self) -> Dict:
+    def get_alert_summary(self) -> dict:
         """Get alert summary."""
         return {
             "active_alerts": len(self.active_alerts),

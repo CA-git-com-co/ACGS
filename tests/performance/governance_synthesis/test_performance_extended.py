@@ -2,12 +2,12 @@
 Performance tests for governance-synthesis
 """
 
-import pytest
-import time
 import asyncio
-import psutil
 import os
-from unittest.mock import AsyncMock
+import time
+
+import psutil
+import pytest
 
 
 class TestPerformanceCriticalPaths:

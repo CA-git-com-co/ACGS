@@ -13,7 +13,7 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root / "src" / "backend"))
 
 import uuid
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import (
     Boolean,
@@ -148,9 +148,8 @@ async def main():
     if success:
         print("🎉 Database initialization completed!")
         return 0
-    else:
-        print("💥 Database initialization failed!")
-        return 1
+    print("💥 Database initialization failed!")
+    return 1
 
 
 if __name__ == "__main__":

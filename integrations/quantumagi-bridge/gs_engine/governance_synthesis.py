@@ -348,12 +348,11 @@ class QuantumagiGSEngine:
 
         if principle.category.lower() == "safety" or validation.confidence_score > 0.95:
             return PolicyPriority.CRITICAL
-        elif validation.confidence_score > 0.9:
+        if validation.confidence_score > 0.9:
             return PolicyPriority.HIGH
-        elif validation.confidence_score > 0.8:
+        if validation.confidence_score > 0.8:
             return PolicyPriority.MEDIUM
-        else:
-            return PolicyPriority.LOW
+        return PolicyPriority.LOW
 
 
 # Example usage and integration

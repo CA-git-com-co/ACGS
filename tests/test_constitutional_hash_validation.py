@@ -8,9 +8,10 @@ Ensures 100% constitutional hash consistency across all ACGS services.
 """
 
 import asyncio
-import pytest
+from typing import Any
+
 import aiohttp
-from typing import Dict, List, Any
+import pytest
 
 # Expected constitutional hash
 EXPECTED_CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -45,8 +46,8 @@ class ConstitutionalHashValidator:
             await self.session.close()
 
     async def test_service_health_endpoint(
-        self, service_name: str, service_config: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, service_name: str, service_config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Test constitutional hash in service health endpoint."""
         url = f"{service_config['url']}/health"
 
@@ -79,15 +80,14 @@ class ConstitutionalHashValidator:
                             or header_hash == EXPECTED_CONSTITUTIONAL_HASH
                         ),
                     }
-                else:
-                    return {
-                        "service": service_name,
-                        "url": url,
-                        "status": "unhealthy",
-                        "response_status": response.status,
-                        "error": f"HTTP {response.status}",
-                        "fully_compliant": False,
-                    }
+                return {
+                    "service": service_name,
+                    "url": url,
+                    "status": "unhealthy",
+                    "response_status": response.status,
+                    "error": f"HTTP {response.status}",
+                    "fully_compliant": False,
+                }
 
         except Exception as e:
             return {
@@ -98,7 +98,7 @@ class ConstitutionalHashValidator:
                 "fully_compliant": False,
             }
 
-    async def test_all_services(self) -> Dict[str, Any]:
+    async def test_all_services(self) -> dict[str, Any]:
         """Test constitutional hash consistency across all services."""
         print("🏛️ Testing Constitutional Hash Consistency Across All Services")
         print("=" * 70)
@@ -138,10 +138,10 @@ class ConstitutionalHashValidator:
         }
 
         print("=" * 70)
-        print(f"📊 Constitutional Hash Compliance Results:")
+        print("📊 Constitutional Hash Compliance Results:")
         print(f"   Compliant Services: {compliant_services}/{total_services}")
         print(f"   Compliance Rate: {compliance_rate:.1%}")
-        print(f"   Target: 100% compliance")
+        print("   Target: 100% compliance")
         print(f"   Status: {'✅ PASSED' if summary['meets_target'] else '❌ FAILED'}")
 
         return {"service_results": results, "summary": summary}

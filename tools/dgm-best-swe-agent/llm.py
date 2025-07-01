@@ -53,7 +53,7 @@ def create_client(model: str):
     if model.startswith("claude-"):
         print(f"Using Anthropic API with model {model}.")
         return anthropic.Anthropic(), model
-    elif model.startswith("bedrock") and "claude" in model:
+    if model.startswith("bedrock") and "claude" in model:
         client_model = model.split("/")[-1]
         print(f"Using Amazon Bedrock with model {client_model}.")
         client = anthropic.AnthropicBedrock(
@@ -62,20 +62,20 @@ def create_client(model: str):
             aws_region=os.getenv("AWS_REGION_NAME"),
         )
         return client, client_model
-    elif model.startswith("vertex_ai") and "claude" in model:
+    if model.startswith("vertex_ai") and "claude" in model:
         client_model = model.split("/")[-1]
         print(f"Using Vertex AI with model {client_model}.")
         return anthropic.AnthropicVertex(), client_model
-    elif "gpt" in model or model.startswith("o1-") or model.startswith("o3-"):
+    if "gpt" in model or model.startswith("o1-") or model.startswith("o3-"):
         print(f"Using OpenAI API with model {model}.")
         return openai.OpenAI(), model
-    elif model.startswith("deepseek-"):
+    if model.startswith("deepseek-"):
         print(f"Using OpenAI API with {model}.")
         client = openai.OpenAI(
             api_key=os.environ["DEEPSEEK_API_KEY"], base_url="https://api.deepseek.com"
         )
         return client, model
-    elif model == "llama3.1-405b":
+    if model == "llama3.1-405b":
         print(f"Using OpenAI API with {model}.")
         client = (
             openai.OpenAI(
@@ -161,7 +161,7 @@ def get_batch_responses_from_llm(
         print()
         print("*" * 20 + " LLM START " + "*" * 20)
         for j, msg in enumerate(new_msg_history[0]):
-            print(f'{j}, {msg["role"]}: {msg["content"]}')
+            print(f"{j}, {msg['role']}: {msg['content']}")
         print(content)
         print("*" * 21 + " LLM END " + "*" * 21)
         print()
@@ -308,8 +308,8 @@ def get_response_from_llm(
     if print_debug:
         print()
         print("*" * 20 + " LLM START " + "*" * 20)
-        print(f'User: {new_msg_history[-2]["content"]}')
-        print(f'Assistant: {new_msg_history[-1]["content"]}')
+        print(f"User: {new_msg_history[-2]['content']}")
+        print(f"Assistant: {new_msg_history[-1]['content']}")
         print("*" * 21 + " LLM END " + "*" * 21)
         print()
     return content, new_msg_history

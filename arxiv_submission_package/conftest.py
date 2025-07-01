@@ -5,14 +5,16 @@ Pytest configuration and fixtures for Academic Submission System tests.
 This module provides shared fixtures and configuration for all test modules.
 """
 
-import pytest
-import tempfile
-import shutil
 import json
 import os
+import shutil
+import tempfile
+from collections.abc import Generator
 from pathlib import Path
-from typing import Dict, Any, Generator
+from typing import Any, Dict
 from unittest.mock import Mock, patch
+
+import pytest
 
 # Test data directory
 TEST_DATA_DIR = Path(__file__).parent / "tests" / "fixtures"
@@ -279,7 +281,7 @@ This references a non-existent section \\ref{sec:nonexistent}.
 
 
 @pytest.fixture
-def mock_config() -> Dict[str, Any]:
+def mock_config() -> dict[str, Any]:
     """Provide mock configuration for testing."""
     return {
         "size_limits": {
@@ -398,7 +400,7 @@ def performance_paper(temp_dir: Path) -> Path:
 \\begin{{document}}
 \\maketitle
 \\begin{{abstract}}
-{'Performance test abstract content. ' * 50}
+{"Performance test abstract content. " * 50}
 \\end{{abstract}}
 {large_content}
 \\end{{document}}

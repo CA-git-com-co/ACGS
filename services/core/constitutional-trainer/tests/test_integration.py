@@ -6,14 +6,9 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio
-import json
-import time
-from typing import Any, Dict
 from unittest.mock import AsyncMock, MagicMock, patch
 
-import aiohttp
 import pytest
-import torch
 from constitutional_trainer import ConstitutionalConfig, ConstitutionalTrainer
 from fastapi.testclient import TestClient
 from main import app

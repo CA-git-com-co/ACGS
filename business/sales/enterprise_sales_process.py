@@ -5,12 +5,11 @@ Comprehensive enterprise sales framework for constitutional AI governance platfo
 """
 
 import json
-import time
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone, timedelta
-from enum import Enum
 import logging
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -68,9 +67,9 @@ class SalesOpportunity:
     probability: float
     close_date: str
     sales_rep: str
-    decision_makers: List[str]
-    pain_points: List[str]
-    constitutional_requirements: List[str]
+    decision_makers: list[str]
+    pain_points: list[str]
+    constitutional_requirements: list[str]
     competitive_situation: str
     next_steps: str
     constitutional_compliance_validated: bool
@@ -83,12 +82,12 @@ class SalesProposal:
     proposal_id: str
     opportunity_id: str
     proposal_date: str
-    solution_components: List[str]
+    solution_components: list[str]
     pricing_tier: str
     annual_value: float
     implementation_timeline: str
     constitutional_governance_scope: str
-    roi_projection: Dict[str, float]
+    roi_projection: dict[str, float]
     terms_and_conditions: str
 
 
@@ -103,7 +102,7 @@ class EnterpriseSalesProcess:
         self.sales_team = {}
         self.sales_playbooks = {}
 
-    async def establish_enterprise_sales_process(self) -> Dict[str, Any]:
+    async def establish_enterprise_sales_process(self) -> dict[str, Any]:
         """Establish comprehensive enterprise sales process"""
         print("💼 ACGS Enterprise Sales Process Establishment")
         print("=" * 50)
@@ -129,14 +128,14 @@ class EnterpriseSalesProcess:
         # Generate sample sales pipeline
         sample_pipeline = await self.generate_sample_sales_pipeline()
 
-        print(f"\n📊 Enterprise Sales Process Summary:")
+        print("\n📊 Enterprise Sales Process Summary:")
         print(f"  Sales Team Roles: {len(sales_team_structure['roles'])}")
         print(f"  Sales Stages: {len(sales_process_framework['stages'])}")
         print(f"  Sales Playbooks: {len(sales_playbooks)}")
         print(
             f"  Sample Pipeline Value: ${sample_pipeline['total_pipeline_value']:,.0f}"
         )
-        print(f"  Constitutional Compliance: ✅ Integrated")
+        print("  Constitutional Compliance: ✅ Integrated")
 
         return {
             "establishment_timestamp": datetime.now(timezone.utc).isoformat(),
@@ -150,7 +149,7 @@ class EnterpriseSalesProcess:
             "sample_pipeline": sample_pipeline,
         }
 
-    async def define_sales_team_structure(self) -> Dict[str, Any]:
+    async def define_sales_team_structure(self) -> dict[str, Any]:
         """Define comprehensive sales team structure"""
         print("  👥 Defining sales team structure...")
 
@@ -321,7 +320,7 @@ class EnterpriseSalesProcess:
 
         return team_structure
 
-    def calculate_team_cost(self, sales_roles: Dict[str, Any]) -> float:
+    def calculate_team_cost(self, sales_roles: dict[str, Any]) -> float:
         """Calculate total annual team cost"""
         total_cost = 0
         for role_info in sales_roles.values():
@@ -331,7 +330,7 @@ class EnterpriseSalesProcess:
             total_cost += count * (base_salary + variable_target)
         return total_cost
 
-    async def create_sales_process_framework(self) -> Dict[str, Any]:
+    async def create_sales_process_framework(self) -> dict[str, Any]:
         """Create comprehensive sales process framework"""
         print("  📋 Creating sales process framework...")
 
@@ -454,7 +453,7 @@ class EnterpriseSalesProcess:
 
         return framework
 
-    async def develop_sales_playbooks(self) -> Dict[str, Any]:
+    async def develop_sales_playbooks(self) -> dict[str, Any]:
         """Develop comprehensive sales playbooks"""
         print("  📖 Developing sales playbooks...")
 
@@ -587,7 +586,7 @@ class EnterpriseSalesProcess:
 
         return playbooks
 
-    async def implement_crm_system(self) -> Dict[str, Any]:
+    async def implement_crm_system(self) -> dict[str, Any]:
         """Implement CRM system for sales process management"""
         print("  💻 Implementing CRM system...")
 
@@ -646,7 +645,7 @@ class EnterpriseSalesProcess:
 
         return crm_configuration
 
-    async def create_sales_training_program(self) -> Dict[str, Any]:
+    async def create_sales_training_program(self) -> dict[str, Any]:
         """Create comprehensive sales training program"""
         print("  🎓 Creating sales training program...")
 
@@ -766,7 +765,7 @@ class EnterpriseSalesProcess:
 
         return training_program
 
-    async def establish_sales_metrics(self) -> Dict[str, Any]:
+    async def establish_sales_metrics(self) -> dict[str, Any]:
         """Establish comprehensive sales metrics and KPIs"""
         print("  📊 Establishing sales metrics and KPIs...")
 
@@ -838,7 +837,7 @@ class EnterpriseSalesProcess:
             "constitutional_compliance_tracking": True,
         }
 
-    async def generate_sample_sales_pipeline(self) -> Dict[str, Any]:
+    async def generate_sample_sales_pipeline(self) -> dict[str, Any]:
         """Generate sample sales pipeline for demonstration"""
         print("  📈 Generating sample sales pipeline...")
 
@@ -1021,7 +1020,7 @@ async def test_enterprise_sales_process():
         json.dump(results, f, indent=2, default=str)
 
     print(f"\n📄 Detailed results saved: enterprise_sales_process_{timestamp}.json")
-    print(f"\n✅ Enterprise Sales Process: ESTABLISHED")
+    print("\n✅ Enterprise Sales Process: ESTABLISHED")
 
 
 if __name__ == "__main__":

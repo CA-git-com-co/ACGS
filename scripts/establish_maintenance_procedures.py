@@ -8,9 +8,9 @@ automated testing for new versions, and client communication processes.
 
 import json
 import logging
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -31,7 +31,7 @@ class MaintenanceProceduresManager:
     def __init__(self):
         self.procedure_results = []
 
-    def establish_maintenance_procedures(self) -> Dict[str, Any]:
+    def establish_maintenance_procedures(self) -> dict[str, Any]:
         """Establish comprehensive maintenance procedures."""
         logger.info("🔧 Establishing ongoing maintenance procedures...")
 
@@ -728,7 +728,7 @@ class MaintenanceProceduresManager:
 
     def _generate_procedures_report(
         self, start_time: datetime, end_time: datetime, duration: float
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate comprehensive procedures report."""
         successful_components = len(
             [r for r in self.procedure_results if r["status"] == "success"]
@@ -806,14 +806,14 @@ def main():
     )
     print(f"📈 Success Rate: {summary['success_rate']}%")
 
-    print(f"\n🎯 SUCCESS CRITERIA:")
+    print("\n🎯 SUCCESS CRITERIA:")
     criteria = report["success_criteria"]
     for criterion, passed in criteria.items():
         status = "PASS" if passed else "FAIL"
         print(f"   {criterion}: {status}")
 
     if summary["failed_components"] > 0:
-        print(f"\n❌ FAILED COMPONENTS:")
+        print("\n❌ FAILED COMPONENTS:")
         for result in report["component_results"]:
             if result["status"] == "failed":
                 print(

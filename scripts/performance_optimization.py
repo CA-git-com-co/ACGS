@@ -8,7 +8,7 @@ and Redis caching to achieve <0.01 SOL costs and <2s response times.
 import json
 import logging
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -84,7 +84,7 @@ class PerformanceOptimizer:
                     )
 
             except Exception as e:
-                logger.error(f"💥 {opt_name} crashed: {str(e)}")
+                logger.error(f"💥 {opt_name} crashed: {e!s}")
                 self.optimization_results["optimizations"][opt_name] = {
                     "status": "CRASHED",
                     "duration_seconds": time.time() - opt_start,
@@ -300,7 +300,7 @@ class VerificationCache:
                 results["cache_layers"].append("Redis connectivity verified")
             except Exception as e:
                 results["success"] = False
-                results["error"] = f"Redis connection failed: {str(e)}"
+                results["error"] = f"Redis connection failed: {e!s}"
                 return results
 
             # Create caching strategy configuration

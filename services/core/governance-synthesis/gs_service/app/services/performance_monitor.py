@@ -420,28 +420,25 @@ def performance_monitor_decorator(endpoint: str, operation_type: str = "default"
                     return await func(*args, **kwargs)
 
             return async_wrapper
-        else:
 
-            @wraps(func)
-            def sync_wrapper(*args, **kwargs):
-                # requires: Valid input parameters
-                # ensures: Correct function execution
-                # sha256: func_hash
-                monitor = get_performance_monitor()
-                start_time = time.time()
-                try:
-                    result = func(*args, **kwargs)
-                    latency_ms = (time.time() - start_time) * 1000
-                    monitor.profiler.record_latency(
-                        f"{endpoint}:{operation_type}", latency_ms
-                    )
-                    return result
-                except Exception as e:
-                    ERROR_RATE.labels(
-                        error_type=type(e).__name__, endpoint=endpoint
-                    ).inc()
-                    raise
+        @wraps(func)
+        def sync_wrapper(*args, **kwargs):
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
+            monitor = get_performance_monitor()
+            start_time = time.time()
+            try:
+                result = func(*args, **kwargs)
+                latency_ms = (time.time() - start_time) * 1000
+                monitor.profiler.record_latency(
+                    f"{endpoint}:{operation_type}", latency_ms
+                )
+                return result
+            except Exception as e:
+                ERROR_RATE.labels(error_type=type(e).__name__, endpoint=endpoint).inc()
+                raise
 
-            return sync_wrapper
+        return sync_wrapper
 
     return decorator

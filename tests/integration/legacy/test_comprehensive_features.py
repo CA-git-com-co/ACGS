@@ -100,20 +100,18 @@ class ComprehensiveFeatureTester:
                             if not missing_fields:
                                 print("✅ Enhanced principle fields validated")
                                 return True
-                            else:
-                                print(f"❌ Missing enhanced fields: {missing_fields}")
-                                return False
-                        else:
-                            print(
-                                f"❌ Failed to retrieve principle: HTTP {get_response.status}"
-                            )
+                            print(f"❌ Missing enhanced fields: {missing_fields}")
                             return False
+                        print(
+                            f"❌ Failed to retrieve principle: HTTP {get_response.status}"
+                        )
+                        return False
                 else:
                     print(f"❌ Failed to create principle: HTTP {response.status}")
                     return False
 
         except Exception as e:
-            print(f"❌ Phase 1 test failed: {str(e)}")
+            print(f"❌ Phase 1 test failed: {e!s}")
             return False
 
     async def test_phase1_constitutional_prompting(self) -> bool:
@@ -163,11 +161,10 @@ class ComprehensiveFeatureTester:
                                 await context_response.json()
                                 print("✅ Contextual analysis successful")
                                 return True
-                            else:
-                                print(
-                                    f"❌ Contextual analysis failed: HTTP {context_response.status}"
-                                )
-                                return False
+                            print(
+                                f"❌ Contextual analysis failed: HTTP {context_response.status}"
+                            )
+                            return False
                     else:
                         print(
                             f"❌ Missing synthesis fields: {[f for f in required_fields if f not in synthesis_result]}"
@@ -178,7 +175,7 @@ class ComprehensiveFeatureTester:
                     return False
 
         except Exception as e:
-            print(f"❌ Constitutional prompting test failed: {str(e)}")
+            print(f"❌ Constitutional prompting test failed: {e!s}")
             return False
 
     async def test_phase2_alphaevolve_integration(self) -> bool:
@@ -220,11 +217,10 @@ class ComprehensiveFeatureTester:
                             await eval_response.json()
                             print("✅ Governance evaluation successful")
                             return True
-                        else:
-                            print(
-                                f"❌ Governance evaluation failed: HTTP {eval_response.status}"
-                            )
-                            return False
+                        print(
+                            f"❌ Governance evaluation failed: HTTP {eval_response.status}"
+                        )
+                        return False
                 else:
                     print(
                         f"❌ EC constitutional prompting failed: HTTP {response.status}"
@@ -232,7 +228,7 @@ class ComprehensiveFeatureTester:
                     return False
 
         except Exception as e:
-            print(f"❌ AlphaEvolve integration test failed: {str(e)}")
+            print(f"❌ AlphaEvolve integration test failed: {e!s}")
             return False
 
     async def test_phase3_formal_verification(self) -> bool:
@@ -275,17 +271,16 @@ class ComprehensiveFeatureTester:
                             await tiered_response.json()
                             print("✅ Tiered validation successful")
                             return True
-                        else:
-                            print(
-                                f"❌ Tiered validation failed: HTTP {tiered_response.status}"
-                            )
-                            return False
+                        print(
+                            f"❌ Tiered validation failed: HTTP {tiered_response.status}"
+                        )
+                        return False
                 else:
                     print(f"❌ Formal verification failed: HTTP {response.status}")
                     return False
 
         except Exception as e:
-            print(f"❌ Formal verification test failed: {str(e)}")
+            print(f"❌ Formal verification test failed: {e!s}")
             return False
 
     async def test_phase3_cryptographic_integrity(self) -> bool:
@@ -323,14 +318,12 @@ class ComprehensiveFeatureTester:
                             if verify_result.get("is_valid"):
                                 print("✅ Signature verification successful")
                                 return True
-                            else:
-                                print("❌ Signature verification failed")
-                                return False
-                        else:
-                            print(
-                                f"❌ Signature verification request failed: HTTP {verify_response.status}"
-                            )
+                            print("❌ Signature verification failed")
                             return False
+                        print(
+                            f"❌ Signature verification request failed: HTTP {verify_response.status}"
+                        )
+                        return False
                 else:
                     print(
                         f"❌ Digital signature creation failed: HTTP {response.status}"
@@ -338,7 +331,7 @@ class ComprehensiveFeatureTester:
                     return False
 
         except Exception as e:
-            print(f"❌ Cryptographic integrity test failed: {str(e)}")
+            print(f"❌ Cryptographic integrity test failed: {e!s}")
             return False
 
     async def run_comprehensive_tests(self) -> dict[str, bool]:
@@ -371,7 +364,7 @@ class ComprehensiveFeatureTester:
                 result = await test_func()
                 results[test_name] = result
             except Exception as e:
-                print(f"❌ {test_name} failed with exception: {str(e)}")
+                print(f"❌ {test_name} failed with exception: {e!s}")
                 results[test_name] = False
 
         return results
@@ -399,9 +392,8 @@ async def main():
         if passed == total:
             print("🎉 All comprehensive feature tests passed!")
             return 0
-        else:
-            print("⚠️ Some feature tests failed - check service implementations")
-            return 1
+        print("⚠️ Some feature tests failed - check service implementations")
+        return 1
 
 
 if __name__ == "__main__":

@@ -2,8 +2,6 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.shared.metrics
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.governance_synthesis.gs_service.app.shared.metrics import ACGSMetrics
 
 

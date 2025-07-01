@@ -679,13 +679,12 @@ class TestOPAConflictDetector(unittest.TestCase):
                 ["PolicyA_ID", "PolicyB_ID"],
             )
             self.assertEqual(conflict["details"]["trigger_input"], triggering_input)
-        else:
-            # If OPA not available, should get an error entry or empty list
-            if results:  # If there's an error entry
-                self.assertTrue(
-                    "error" in results[0]
-                    and "OPA executable not found" in results[0]["error"]
-                )
+        # If OPA not available, should get an error entry or empty list
+        elif results:  # If there's an error entry
+            self.assertTrue(
+                "error" in results[0]
+                and "OPA executable not found" in results[0]["error"]
+            )
             # else: self.assertEqual(len(results),0) # Or it might be empty if error handling is different
 
     def test_no_conflict_scenario(self):
@@ -704,12 +703,11 @@ class TestOPAConflictDetector(unittest.TestCase):
                 0,
                 f"Expected 0 conflicts, got {len(results)}. Details: {results}",
             )
-        else:
-            if results:
-                self.assertTrue(
-                    "error" in results[0]
-                    and "OPA executable not found" in results[0]["error"]
-                )
+        elif results:
+            self.assertTrue(
+                "error" in results[0]
+                and "OPA executable not found" in results[0]["error"]
+            )
 
 
 if __name__ == "__main__":

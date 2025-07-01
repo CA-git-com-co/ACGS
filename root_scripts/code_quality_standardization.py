@@ -14,23 +14,20 @@ Key objectives:
 - Maintain >80% test coverage
 """
 
-import os
-import sys
 import json
-import subprocess
 import logging
-import ast
 import re
-from pathlib import Path
+import subprocess
+import sys
 from datetime import datetime
-from typing import Dict, List, Set, Tuple
+from pathlib import Path
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
         logging.FileHandler(
-            f'code_quality_standardization_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log'
+            f"code_quality_standardization_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
         ),
         logging.StreamHandler(),
     ],
@@ -89,6 +86,7 @@ class CodeQualityStandardizer:
                     "tests/",
                     "integrations/",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -107,6 +105,7 @@ class CodeQualityStandardizer:
                     "tests/",
                     "integrations/",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -123,6 +122,7 @@ class CodeQualityStandardizer:
                     "scripts/",
                     "tests/",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -166,6 +166,7 @@ remove_nested_parens = true
             # Apply rustfmt
             result = subprocess.run(
                 ["cargo", "fmt", "--all"],
+                check=False,
                 cwd=self.project_root / "blockchain",
                 capture_output=True,
                 text=True,
@@ -214,6 +215,7 @@ remove_nested_parens = true
                     "blockchain/**/*.{js,ts}",
                     "*.{js,ts,json}",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -258,7 +260,7 @@ remove_nested_parens = true
     def _fix_file_imports(self, file_path: Path) -> bool:
         """Fix imports in a specific Python file"""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             # Skip files with merge conflicts
@@ -379,6 +381,7 @@ pub type Result<T> = std::result::Result<T, ACGSError>;
             # Scan for dead code but don't auto-remove
             result = subprocess.run(
                 ["vulture", "services/", "--min-confidence", "80"],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,

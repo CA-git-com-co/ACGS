@@ -2,19 +2,6 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.services.federated_learning_orchestrator
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance_synthesis.gs_service.app.services.federated_learning_orchestrator import (
-    FederatedLearningStrategy,
-    PrivacyMechanism,
-    ParticipantRole,
-    FederatedParticipant,
-    ModelUpdate,
-    FederatedRound,
-    ConstitutionalConstraint,
-    FederatedLearningOrchestrator,
-)
-
 
 class TestFederatedLearningStrategy:
     """Test suite for FederatedLearningStrategy."""

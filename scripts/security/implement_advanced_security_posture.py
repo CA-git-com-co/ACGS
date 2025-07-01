@@ -11,16 +11,17 @@ Implements advanced security measures including:
 Target: Security posture score >90/100
 """
 
-import os
-import sys
-import logging
 import asyncio
 import json
+import logging
+import os
+import sys
 import time
-import yaml
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+import yaml
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -57,9 +58,9 @@ class AdvancedSecurityImplementor:
         }
 
         # Security metrics
-        self.security_metrics: List[SecurityMetric] = []
+        self.security_metrics: list[SecurityMetric] = []
 
-    async def implement_advanced_security_posture(self) -> Dict[str, Any]:
+    async def implement_advanced_security_posture(self) -> dict[str, Any]:
         """Implement comprehensive advanced security posture."""
         logger.info("🔒 Implementing advanced security posture...")
 
@@ -116,7 +117,7 @@ class AdvancedSecurityImplementor:
             security_results["errors"].append(str(e))
             return security_results
 
-    async def _implement_continuous_scanning(self) -> Dict[str, Any]:
+    async def _implement_continuous_scanning(self) -> dict[str, Any]:
         """Implement continuous security scanning in CI/CD."""
         logger.info("🔍 Implementing continuous security scanning...")
 
@@ -289,7 +290,7 @@ if __name__ == "__main__":
             logger.error(f"Continuous scanning implementation failed: {e}")
             raise
 
-    async def _implement_dependency_monitoring(self) -> Dict[str, Any]:
+    async def _implement_dependency_monitoring(self) -> dict[str, Any]:
         """Implement automated dependency vulnerability monitoring."""
         logger.info("📦 Implementing dependency vulnerability monitoring...")
 
@@ -433,7 +434,7 @@ if __name__ == "__main__":
             logger.error(f"Dependency monitoring implementation failed: {e}")
             raise
 
-    async def _implement_threat_detection(self) -> Dict[str, Any]:
+    async def _implement_threat_detection(self) -> dict[str, Any]:
         """Implement advanced threat detection and response."""
         logger.info("🛡️ Implementing advanced threat detection...")
 
@@ -624,7 +625,7 @@ if __name__ == "__main__":
             logger.error(f"Threat detection implementation failed: {e}")
             raise
 
-    async def _establish_security_review_process(self) -> Dict[str, Any]:
+    async def _establish_security_review_process(self) -> dict[str, Any]:
         """Establish quarterly security review process."""
         logger.info("📋 Establishing security review process...")
 
@@ -817,7 +818,7 @@ This document outlines the quarterly security review process for ACGS-2 to maint
             logger.error(f"Security review process establishment failed: {e}")
             raise
 
-    async def _implement_incident_response(self) -> Dict[str, Any]:
+    async def _implement_incident_response(self) -> dict[str, Any]:
         """Implement automated incident response capabilities."""
         logger.info("🚨 Implementing incident response automation...")
 
@@ -968,7 +969,7 @@ if __name__ == "__main__":
             logger.error(f"Incident response implementation failed: {e}")
             raise
 
-    async def _implement_compliance_monitoring(self) -> Dict[str, Any]:
+    async def _implement_compliance_monitoring(self) -> dict[str, Any]:
         """Implement compliance monitoring and reporting."""
         logger.info("📊 Implementing compliance monitoring...")
 
@@ -1023,7 +1024,7 @@ if __name__ == "__main__":
             logger.error(f"Compliance monitoring implementation failed: {e}")
             raise
 
-    async def _calculate_security_posture_score(self) -> Dict[str, Any]:
+    async def _calculate_security_posture_score(self) -> dict[str, Any]:
         """Calculate overall security posture score."""
         logger.info("📊 Calculating security posture score...")
 
@@ -1078,7 +1079,7 @@ if __name__ == "__main__":
             logger.error(f"Security posture score calculation failed: {e}")
             raise
 
-    async def _generate_security_posture_report(self, results: Dict[str, Any]):
+    async def _generate_security_posture_report(self, results: dict[str, Any]):
         """Generate comprehensive security posture report."""
         report_path = self.project_root / "advanced_security_posture_report.json"
 

@@ -218,7 +218,7 @@ class ACGSServiceClient:
             self._error_count += 1
 
             error = ServiceUnavailableError(
-                f"Network error connecting to {self.service_type.value}: {str(e)}",
+                f"Network error connecting to {self.service_type.value}: {e!s}",
                 service_name=self.service_type.value,
             )
 

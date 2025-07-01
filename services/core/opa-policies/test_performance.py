@@ -5,10 +5,8 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio
-import json
 import statistics
 import time
-from typing import Dict, List
 
 import httpx
 import pytest
@@ -22,7 +20,7 @@ class PolicyEnginePerformanceTest:
         self.base_url = base_url
         self.constitutional_hash = "cdd01ef066bc6cf2"
 
-    async def benchmark_latency(self, num_requests: int = 10000) -> Dict[str, float]:
+    async def benchmark_latency(self, num_requests: int = 10000) -> dict[str, float]:
         """Benchmark policy evaluation latency"""
         latencies = []
 
@@ -86,10 +84,9 @@ class PolicyEnginePerformanceTest:
             }
 
             return results
-        else:
-            return {"error": "No successful requests"}
+        return {"error": "No successful requests"}
 
-    async def benchmark_cache_performance(self) -> Dict[str, float]:
+    async def benchmark_cache_performance(self) -> dict[str, float]:
         """Benchmark cache hit rate and performance"""
         # Same request repeated to test caching
         test_request = {
@@ -130,7 +127,7 @@ class PolicyEnginePerformanceTest:
                 "cache_speedup": miss_time / avg_hit_time if avg_hit_time > 0 else 0,
             }
 
-    async def benchmark_partial_evaluation(self) -> Dict[str, float]:
+    async def benchmark_partial_evaluation(self) -> dict[str, float]:
         """Benchmark partial evaluation performance"""
         # Test safe action (should use partial evaluation)
         safe_request = {
@@ -201,7 +198,7 @@ class PolicyEnginePerformanceTest:
                 / statistics.mean(partial_times),
             }
 
-    async def run_comprehensive_benchmark(self) -> Dict[str, any]:
+    async def run_comprehensive_benchmark(self) -> dict[str, any]:
         """Run all performance benchmarks"""
         print("Starting comprehensive performance benchmark...")
 
@@ -420,14 +417,14 @@ if __name__ == "__main__":
 
         # Print cache results
         cache = results.get("cache", {})
-        print(f"\nCache Performance:")
+        print("\nCache Performance:")
         print(f"  Cache miss: {cache.get('cache_miss_latency_ms', 0):.3f} ms")
         print(f"  Cache hit:  {cache.get('cache_hit_avg_latency_ms', 0):.3f} ms")
         print(f"  Speedup:    {cache.get('cache_speedup', 0):.1f}x")
 
         # Print partial evaluation results
         partial = results.get("partial_eval", {})
-        print(f"\nPartial Evaluation:")
+        print("\nPartial Evaluation:")
         print(f"  Partial eval: {partial.get('partial_eval_avg_ms', 0):.3f} ms")
         print(f"  Full eval:    {partial.get('full_eval_avg_ms', 0):.3f} ms")
         print(f"  Speedup:      {partial.get('partial_eval_speedup', 0):.1f}x")
@@ -438,12 +435,12 @@ if __name__ == "__main__":
             percentiles = metrics.get("percentiles", {})
             targets = metrics.get("targets_met", {})
 
-            print(f"\nCurrent Service Metrics:")
+            print("\nCurrent Service Metrics:")
             print(f"  Total requests: {metrics.get('request_count', 0)}")
             print(f"  Cache hit rate: {metrics.get('cache_hit_rate', 0):.1%}")
             print(f"  Partial eval rate: {metrics.get('partial_eval_rate', 0):.1%}")
 
-            print(f"\nTarget Achievement:")
+            print("\nTarget Achievement:")
             print(
                 f"  P50 < 0.5ms: {'✅' if targets.get('p50_under_0_5ms') else '❌'} ({percentiles.get('p50', 0):.3f} ms)"
             )

@@ -12,7 +12,7 @@ import shutil
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -91,7 +91,7 @@ class ACGSBackupSystem:
 
     async def run_comprehensive_backup(
         self, backup_type: str = "incremental"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Run comprehensive backup of all ACGS-1 components"""
         logger.info(f"🔄 Starting comprehensive {backup_type} backup")
         logger.info("=" * 80)
@@ -186,7 +186,7 @@ class ACGSBackupSystem:
                 "results": results,
             }
 
-    async def pre_backup_validation(self) -> Dict[str, Any]:
+    async def pre_backup_validation(self) -> dict[str, Any]:
         """Validate system state before backup"""
         logger.info("🔍 Performing pre-backup validation...")
 
@@ -264,7 +264,7 @@ class ACGSBackupSystem:
 
         return validation
 
-    async def backup_database(self, backup_dir: Path) -> Dict[str, Any]:
+    async def backup_database(self, backup_dir: Path) -> dict[str, Any]:
         """Backup PostgreSQL database"""
         logger.info("🗄️ Backing up database...")
 
@@ -303,13 +303,12 @@ class ACGSBackupSystem:
                     "backup_size_mb": backup_size / (1024**2),
                     "output": result["stdout"][:200],
                 }
-            else:
-                return {"status": "failed", "error": result["stderr"]}
+            return {"status": "failed", "error": result["stderr"]}
 
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def backup_blockchain_data(self, backup_dir: Path) -> Dict[str, Any]:
+    async def backup_blockchain_data(self, backup_dir: Path) -> dict[str, Any]:
         """Backup blockchain data and Solana programs"""
         logger.info("⛓️ Backing up blockchain data...")
 
@@ -348,15 +347,13 @@ class ACGSBackupSystem:
                             "sending incremental file list"
                         ),
                     }
-                else:
-                    return {"status": "failed", "error": result["stderr"]}
-            else:
-                return {"status": "skipped", "reason": "Blockchain directory not found"}
+                return {"status": "failed", "error": result["stderr"]}
+            return {"status": "skipped", "reason": "Blockchain directory not found"}
 
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def backup_constitutional_documents(self, backup_dir: Path) -> Dict[str, Any]:
+    async def backup_constitutional_documents(self, backup_dir: Path) -> dict[str, Any]:
         """Backup constitutional documents and governance data"""
         logger.info("🏛️ Backing up constitutional documents...")
 
@@ -419,18 +416,16 @@ class ACGSBackupSystem:
                         ),
                         "constitutional_hash": self.constitutional_hash,
                     }
-                else:
-                    return {"status": "failed", "error": result["stderr"]}
-            else:
-                return {
-                    "status": "skipped",
-                    "reason": "Constitutional documents directory not found",
-                }
+                return {"status": "failed", "error": result["stderr"]}
+            return {
+                "status": "skipped",
+                "reason": "Constitutional documents directory not found",
+            }
 
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def backup_application_config(self, backup_dir: Path) -> Dict[str, Any]:
+    async def backup_application_config(self, backup_dir: Path) -> dict[str, Any]:
         """Backup application configuration files"""
         logger.info("⚙️ Backing up application configuration...")
 
@@ -459,15 +454,13 @@ class ACGSBackupSystem:
                         "backup_dir": str(config_backup_dir),
                         "backup_size_mb": backup_size / (1024**2),
                     }
-                else:
-                    return {"status": "failed", "error": result["stderr"]}
-            else:
-                return {"status": "skipped", "reason": "Config directory not found"}
+                return {"status": "failed", "error": result["stderr"]}
+            return {"status": "skipped", "reason": "Config directory not found"}
 
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def backup_kubernetes_manifests(self, backup_dir: Path) -> Dict[str, Any]:
+    async def backup_kubernetes_manifests(self, backup_dir: Path) -> dict[str, Any]:
         """Backup Kubernetes manifests and configurations"""
         logger.info("☸️ Backing up Kubernetes manifests...")
 
@@ -500,15 +493,13 @@ class ACGSBackupSystem:
                         "backup_size_mb": backup_size / (1024**2),
                         "cluster_state_backup": cluster_state,
                     }
-                else:
-                    return {"status": "failed", "error": result["stderr"]}
-            else:
-                return {"status": "skipped", "reason": "Kubernetes directory not found"}
+                return {"status": "failed", "error": result["stderr"]}
+            return {"status": "skipped", "reason": "Kubernetes directory not found"}
 
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def backup_logs(self, backup_dir: Path) -> Dict[str, Any]:
+    async def backup_logs(self, backup_dir: Path) -> dict[str, Any]:
         """Backup system and application logs"""
         logger.info("📝 Backing up logs...")
 
@@ -548,15 +539,14 @@ class ACGSBackupSystem:
                     "backup_size_mb": backup_size / (1024**2),
                     "retention_days": 7,
                 }
-            else:
-                return {"status": "skipped", "reason": "Logs directory not found"}
+            return {"status": "skipped", "reason": "Logs directory not found"}
 
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
     async def backup_solana_keypairs(
         self, blockchain_backup_dir: Path
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Backup Solana program keypairs securely"""
         try:
             keypairs_dir = blockchain_backup_dir / "keypairs"
@@ -579,7 +569,7 @@ class ACGSBackupSystem:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def backup_cluster_state(self, k8s_backup_dir: Path) -> Dict[str, Any]:
+    async def backup_cluster_state(self, k8s_backup_dir: Path) -> dict[str, Any]:
         """Backup current Kubernetes cluster state"""
         try:
             cluster_state_dir = k8s_backup_dir / "cluster_state"
@@ -623,8 +613,8 @@ class ACGSBackupSystem:
         return total_size
 
     async def run_command(
-        self, cmd: List[str], env: Dict[str, str] = None
-    ) -> Dict[str, Any]:
+        self, cmd: list[str], env: dict[str, str] = None
+    ) -> dict[str, Any]:
         """Run shell command"""
         try:
             process = await asyncio.create_subprocess_exec(
@@ -644,7 +634,7 @@ class ACGSBackupSystem:
         except Exception as e:
             return {"returncode": -1, "stdout": "", "stderr": str(e)}
 
-    def generate_backup_summary(self, results: Dict[str, Any]) -> Dict[str, Any]:
+    def generate_backup_summary(self, results: dict[str, Any]) -> dict[str, Any]:
         """Generate backup summary"""
         summary = {
             "components_backed_up": 0,

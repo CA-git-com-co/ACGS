@@ -12,11 +12,11 @@ Tests the complete error handling workflow including:
 Target: >95% test coverage for error handling system
 """
 
-import pytest
-import json
 import uuid
 from datetime import datetime
-from unittest.mock import Mock, patch, AsyncMock
+from unittest.mock import Mock
+
+import pytest
 
 
 # Mock FastAPI components for testing
@@ -50,17 +50,16 @@ class TestErrorHandlingIntegration:
     def test_error_catalog_to_response_workflow(self):
         """Test complete workflow from error catalog to response."""
         # Import components (using direct imports to avoid module issues)
-        import sys
         import os
+        import sys
 
         # Add paths
         sys.path.insert(0, os.path.join(os.getcwd(), "services", "shared", "errors"))
 
         from error_catalog import (
-            get_error_definition,
-            ErrorSeverity,
             ErrorCategory,
-            ServiceCode,
+            ErrorSeverity,
+            get_error_definition,
         )
 
         # Get error definition from catalog
@@ -180,16 +179,15 @@ class TestErrorHandlingIntegration:
             """Mock status code mapping logic."""
             if "VALIDATION" in category:
                 return MockHTTPStatusCode.BAD_REQUEST
-            elif "AUTHENTICATION" in category:
+            if "AUTHENTICATION" in category:
                 return MockHTTPStatusCode.UNAUTHORIZED
-            elif "AUTHORIZATION" in category:
+            if "AUTHORIZATION" in category:
                 return MockHTTPStatusCode.FORBIDDEN
-            elif "BUSINESS_LOGIC" in category:
+            if "BUSINESS_LOGIC" in category:
                 return MockHTTPStatusCode.UNPROCESSABLE_ENTITY
-            elif "EXTERNAL_SERVICE" in category:
+            if "EXTERNAL_SERVICE" in category:
                 return MockHTTPStatusCode.SERVICE_UNAVAILABLE
-            else:
-                return MockHTTPStatusCode.INTERNAL_SERVER_ERROR
+            return MockHTTPStatusCode.INTERNAL_SERVER_ERROR
 
         # Test status code mapping
         test_cases = [
@@ -333,11 +331,9 @@ class TestErrorHandlingIntegration:
 
         # Mock severity escalation
         def should_escalate(severity, error_count):
-            if severity == "critical":
+            if severity == "critical" or (severity == "error" and error_count > 5):
                 return True
-            elif severity == "error" and error_count > 5:
-                return True
-            elif severity == "warning" and error_count > 10:
+            if severity == "warning" and error_count > 10:
                 return True
             return False
 

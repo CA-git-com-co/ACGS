@@ -13,9 +13,9 @@ from .dgm_engine import DGMEngine
 from .performance_monitor import PerformanceMonitor
 
 __all__ = [
-    "DGMEngine",
-    "ConstitutionalValidator",
-    "PerformanceMonitor",
     "ArchiveManager",
     "BanditAlgorithm",
+    "ConstitutionalValidator",
+    "DGMEngine",
+    "PerformanceMonitor",
 ]

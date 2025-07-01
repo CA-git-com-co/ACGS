@@ -148,8 +148,7 @@ class PerformanceMonitor:
                     self.response_times[port].append(response_time)
 
                     return metrics
-                else:
-                    raise aiohttp.ClientError(f"HTTP {response.status}")
+                raise aiohttp.ClientError(f"HTTP {response.status}")
 
         except Exception as e:
             logger.warning(f"Health check failed for {service_name} (port {port}): {e}")

@@ -5,16 +5,13 @@ Comprehensive database performance optimization for DGM service workloads
 including indexing, partitioning, query optimization, and monitoring.
 """
 
-import asyncio
 import logging
 import time
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Any
 
 from sqlalchemy import text
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..config import settings
 from .connection import get_database_manager
@@ -72,12 +69,12 @@ class DGMPerformanceOptimizer:
     - Constitutional compliance validation
     """
 
-    def __init__(self, config: Optional[OptimizationConfig] = None):
+    def __init__(self, config: OptimizationConfig | None = None):
         """Initialize performance optimizer."""
         self.config = config or OptimizationConfig()
         self.db_manager = None
         self.metrics = PerformanceMetrics()
-        self.optimization_history: List[Dict[str, Any]] = []
+        self.optimization_history: list[dict[str, Any]] = []
 
     async def initialize(self):
         """Initialize database connection and performance monitoring."""
@@ -101,7 +98,7 @@ class DGMPerformanceOptimizer:
             logger.error(f"❌ Failed to initialize performance optimizer: {e}")
             raise
 
-    async def optimize_database(self) -> Dict[str, Any]:
+    async def optimize_database(self) -> dict[str, Any]:
         """
         Run comprehensive database optimization.
 
@@ -592,7 +589,7 @@ class DGMPerformanceOptimizer:
 
     def _calculate_improvement(
         self, before: PerformanceMetrics, after: PerformanceMetrics
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Calculate performance improvement between metrics."""
         improvements = {}
 
@@ -616,7 +613,7 @@ class DGMPerformanceOptimizer:
 
         return improvements
 
-    async def _generate_recommendations(self) -> List[str]:
+    async def _generate_recommendations(self) -> list[str]:
         """Generate performance optimization recommendations."""
         recommendations = []
 
@@ -698,7 +695,7 @@ class DGMPerformanceOptimizer:
 
         return recommendations
 
-    async def get_performance_report(self) -> Dict[str, Any]:
+    async def get_performance_report(self) -> dict[str, Any]:
         """Generate comprehensive performance report."""
         try:
             current_metrics = await self._collect_performance_metrics()
@@ -743,7 +740,7 @@ class DGMPerformanceOptimizer:
             logger.error(f"❌ Could not generate performance report: {e}")
             return {"error": str(e), "generated_at": datetime.utcnow().isoformat()}
 
-    async def _get_table_statistics(self) -> List[Dict[str, Any]]:
+    async def _get_table_statistics(self) -> list[dict[str, Any]]:
         """Get table statistics for DGM tables."""
         try:
             async with self.db_manager.get_session() as session:
@@ -761,7 +758,7 @@ class DGMPerformanceOptimizer:
             logger.warning(f"⚠️ Could not get table statistics: {e}")
             return []
 
-    async def _get_index_usage(self) -> List[Dict[str, Any]]:
+    async def _get_index_usage(self) -> list[dict[str, Any]]:
         """Get index usage statistics."""
         try:
             async with self.db_manager.get_session() as session:
@@ -779,7 +776,7 @@ class DGMPerformanceOptimizer:
             logger.warning(f"⚠️ Could not get index usage: {e}")
             return []
 
-    async def _get_slow_queries(self) -> List[Dict[str, Any]]:
+    async def _get_slow_queries(self) -> list[dict[str, Any]]:
         """Get slow query statistics."""
         try:
             async with self.db_manager.get_session() as session:
@@ -799,16 +796,16 @@ class DGMPerformanceOptimizer:
 
 
 # Global performance optimizer instance
-_performance_optimizer: Optional[DGMPerformanceOptimizer] = None
+_performance_optimizer: DGMPerformanceOptimizer | None = None
 
 
-def get_performance_optimizer() -> Optional[DGMPerformanceOptimizer]:
+def get_performance_optimizer() -> DGMPerformanceOptimizer | None:
     """Get global performance optimizer instance."""
     return _performance_optimizer
 
 
 async def initialize_performance_optimizer(
-    config: Optional[OptimizationConfig] = None,
+    config: OptimizationConfig | None = None,
 ) -> DGMPerformanceOptimizer:
     """Initialize global performance optimizer."""
     global _performance_optimizer

@@ -6,14 +6,15 @@ Optimized resource allocation and garbage collection for better scalability
 and performance under high concurrent load.
 """
 
-import gc
-import psutil
 import asyncio
+import gc
 import logging
 import time
-from typing import Dict, Any, Optional
-from dataclasses import dataclass
 from contextlib import asynccontextmanager
+from dataclasses import dataclass
+from typing import Any
+
+import psutil
 
 logger = logging.getLogger(__name__)
 
@@ -192,7 +193,7 @@ class ResourceMonitor:
             )
             logger.info("Disabled aggressive garbage collection")
 
-    def get_resource_stats(self) -> Dict[str, Any]:
+    def get_resource_stats(self) -> dict[str, Any]:
         """Get current resource statistics."""
         memory_info = self.process.memory_info()
 
@@ -273,7 +274,7 @@ class ResourceOptimizer:
             # Cleanup after context
             gc.collect()
 
-    def get_optimization_stats(self) -> Dict[str, Any]:
+    def get_optimization_stats(self) -> dict[str, Any]:
         """Get optimization statistics."""
         return {
             "initialized": self._initialized,
@@ -358,9 +359,9 @@ async def setup_resource_optimization(service_name: str) -> ResourceOptimizer:
 
 # Export key components
 __all__ = [
+    "SERVICE_RESOURCE_CONFIGS",
     "ResourceConfig",
     "ResourceMonitor",
     "ResourceOptimizer",
     "setup_resource_optimization",
-    "SERVICE_RESOURCE_CONFIGS",
 ]

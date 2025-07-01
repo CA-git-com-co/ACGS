@@ -229,9 +229,9 @@ def test_performance_targets():
 
         print("✅ Performance targets properly configured:")
         print(
-            f"   - Automatic resolution rate: {config.get('target_automatic_resolution_rate', 0)*100}%"
+            f"   - Automatic resolution rate: {config.get('target_automatic_resolution_rate', 0) * 100}%"
         )
-        print(f"   - Accuracy rate: {config.get('target_accuracy_rate', 0)*100}%")
+        print(f"   - Accuracy rate: {config.get('target_accuracy_rate', 0) * 100}%")
         print(f"   - Response time: {config.get('target_response_time_seconds', 0)}s")
         print(
             f"   - Escalation time: {config.get('target_escalation_time_seconds', 0)}s"
@@ -283,9 +283,8 @@ def main():
         print("   - Real-time WebSocket Integration ✅")
         print("   - Performance Monitoring and Metrics ✅")
         return True
-    else:
-        print(f"⚠️  {total - passed} validation tests failed")
-        return False
+    print(f"⚠️  {total - passed} validation tests failed")
+    return False
 
 
 if __name__ == "__main__":

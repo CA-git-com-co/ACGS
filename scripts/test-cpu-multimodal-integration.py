@@ -4,15 +4,13 @@ ACGS-1 CPU-Only Multimodal Integration Test
 Tests NVIDIA Llama-3.1-Nemotron-Nano-VL-8B-V1 model in CPU mode
 """
 
+import json
+import logging
 import os
 import sys
-import base64
-import json
 import time
-import logging
 from pathlib import Path
-from typing import Dict, Any, Optional
-import asyncio
+from typing import Any
 
 # Add the services directory to the Python path
 sys.path.append(
@@ -20,10 +18,10 @@ sys.path.append(
 )
 
 try:
-    from transformers import AutoImageProcessor, AutoModel, AutoTokenizer
-    from PIL import Image
-    import torch
     import numpy as np
+    import torch
+    from PIL import Image
+    from transformers import AutoImageProcessor, AutoModel, AutoTokenizer
 except ImportError as e:
     print(f"Missing dependencies: {e}")
     print(
@@ -86,7 +84,7 @@ class CPUMultimodalTester:
             return True
 
         except Exception as e:
-            logger.error(f"❌ Model setup failed: {str(e)}")
+            logger.error(f"❌ Model setup failed: {e!s}")
             return False
 
     def create_test_image(self) -> Image.Image:
@@ -138,11 +136,11 @@ class CPUMultimodalTester:
             return img
 
         except Exception as e:
-            logger.error(f"Failed to create test image: {str(e)}")
+            logger.error(f"Failed to create test image: {e!s}")
             # Return a simple colored image as fallback
             return Image.new("RGB", (400, 300), color="lightblue")
 
-    def test_constitutional_ocr(self) -> Dict[str, Any]:
+    def test_constitutional_ocr(self) -> dict[str, Any]:
         """
         Test constitutional document OCR functionality
         """
@@ -215,7 +213,7 @@ QUALITY REQUIREMENTS:
             return result
 
         except Exception as e:
-            logger.error(f"❌ Constitutional OCR test failed: {str(e)}")
+            logger.error(f"❌ Constitutional OCR test failed: {e!s}")
             return {
                 "test_name": "constitutional_ocr",
                 "status": "failed",
@@ -223,7 +221,7 @@ QUALITY REQUIREMENTS:
                 "processing_time": 0,
             }
 
-    def test_constitutional_qa(self) -> Dict[str, Any]:
+    def test_constitutional_qa(self) -> dict[str, Any]:
         """
         Test constitutional Q&A functionality
         """
@@ -280,7 +278,7 @@ QUALITY REQUIREMENTS:
             return result
 
         except Exception as e:
-            logger.error(f"❌ Constitutional Q&A test failed: {str(e)}")
+            logger.error(f"❌ Constitutional Q&A test failed: {e!s}")
             return {
                 "test_name": "constitutional_qa",
                 "status": "failed",
@@ -288,7 +286,7 @@ QUALITY REQUIREMENTS:
                 "processing_time": 0,
             }
 
-    def test_document_analysis(self) -> Dict[str, Any]:
+    def test_document_analysis(self) -> dict[str, Any]:
         """
         Test document analysis capabilities
         """
@@ -352,7 +350,7 @@ Provide a structured analysis with specific citations from the text."""
             return result
 
         except Exception as e:
-            logger.error(f"❌ Document analysis test failed: {str(e)}")
+            logger.error(f"❌ Document analysis test failed: {e!s}")
             return {
                 "test_name": "document_analysis",
                 "status": "failed",
@@ -360,7 +358,7 @@ Provide a structured analysis with specific citations from the text."""
                 "processing_time": 0,
             }
 
-    def run_comprehensive_tests(self) -> Dict[str, Any]:
+    def run_comprehensive_tests(self) -> dict[str, Any]:
         """
         Run all tests and compile results
         """
@@ -430,13 +428,13 @@ def main():
     results = tester.run_comprehensive_tests()
 
     # Print results
-    print(f"\n📊 Test Results Summary:")
+    print("\n📊 Test Results Summary:")
     print(f"Overall Status: {results['overall_status'].upper()}")
     print(f"Success Rate: {results['success_rate']:.1f}%")
     print(f"Total Time: {results['total_time']:.2f} seconds")
     print(f"Tests: {results['successful_tests']}/{results['total_tests']} passed")
 
-    print(f"\n📋 Individual Test Results:")
+    print("\n📋 Individual Test Results:")
     for test in results["test_results"]:
         status_icon = "✅" if test["status"] == "success" else "❌"
         print(f"{status_icon} {test['test_name']}: {test['status']}")

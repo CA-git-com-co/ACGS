@@ -17,7 +17,7 @@ import json
 import logging
 import subprocess
 import sys
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 import aiohttp
 
@@ -83,6 +83,7 @@ class ACGSSecurityValidator:
             logger.info("Running Safety scan for known vulnerabilities...")
             result = subprocess.run(
                 ["python", "-m", "safety", "check", "--json"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=60,
@@ -116,6 +117,7 @@ class ACGSSecurityValidator:
             logger.info("Running Bandit scan for code security issues...")
             result = subprocess.run(
                 ["python", "-m", "bandit", "-r", "src/", "-f", "json", "-ll"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=120,
@@ -245,9 +247,8 @@ class ACGSSecurityValidator:
                             response_text = await response.text()
                             if payload not in response_text:
                                 service_results["tests_passed"] += 1
-                            else:
-                                if "script" in payload.lower():
-                                    service_results["xss_protected"] = False
+                            elif "script" in payload.lower():
+                                service_results["xss_protected"] = False
 
                     except TimeoutError:
                         # Timeout might indicate the service is hanging due to injection
@@ -486,7 +487,7 @@ class ACGSSecurityValidator:
             return success
 
         except Exception as e:
-            logger.error(f"❌ Security validation failed with exception: {str(e)}")
+            logger.error(f"❌ Security validation failed with exception: {e!s}")
             self.results["overall_status"] = "ERROR"
             self.results["error_message"] = str(e)
             return False

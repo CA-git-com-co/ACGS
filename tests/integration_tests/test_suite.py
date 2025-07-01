@@ -5,9 +5,6 @@ Tests service interactions and data flow
 """
 
 import unittest
-import asyncio
-import aiohttp
-from unittest.mock import AsyncMock
 
 
 class TestServiceIntegration(unittest.TestCase):

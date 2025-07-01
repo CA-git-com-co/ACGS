@@ -16,10 +16,8 @@ Usage:
 import argparse
 import ast
 import re
-import shutil
 import sys
 from pathlib import Path
-from typing import List, Set, Dict, Tuple
 
 
 class TestCleanupManager:
@@ -37,7 +35,7 @@ class TestCleanupManager:
             "coverage_improvements": [],
         }
 
-    def analyze_test_file(self, file_path: Path) -> Dict[str, any]:
+    def analyze_test_file(self, file_path: Path) -> dict[str, any]:
         """Analyze a test file for placeholder content."""
         try:
             content = file_path.read_text(encoding="utf-8")
@@ -100,7 +98,7 @@ class TestCleanupManager:
             print(f"Error analyzing {file_path}: {e}")
             return {"file_path": file_path, "error": str(e)}
 
-    def find_placeholder_files(self) -> List[Path]:
+    def find_placeholder_files(self) -> list[Path]:
         """Find test files that are mostly placeholders."""
         placeholder_files = []
 
@@ -120,7 +118,7 @@ class TestCleanupManager:
 
         return placeholder_files
 
-    def find_duplicate_files(self) -> List[Tuple[Path, Path]]:
+    def find_duplicate_files(self) -> list[tuple[Path, Path]]:
         """Find duplicate test files."""
         duplicates = []
         seen_names = {}
@@ -143,7 +141,7 @@ class TestCleanupManager:
 
         return duplicates
 
-    def remove_placeholder_files(self, placeholder_files: List[Path]) -> None:
+    def remove_placeholder_files(self, placeholder_files: list[Path]) -> None:
         """Remove or mark placeholder test files."""
         for file_path in placeholder_files:
             if self.dry_run:
@@ -155,7 +153,7 @@ class TestCleanupManager:
                 except Exception as e:
                     print(f"Error removing {file_path}: {e}")
 
-    def consolidate_duplicates(self, duplicates: List[Tuple[Path, Path]]) -> None:
+    def consolidate_duplicates(self, duplicates: list[tuple[Path, Path]]) -> None:
         """Consolidate duplicate test files."""
         for original, duplicate in duplicates:
             if self.dry_run:
@@ -268,7 +266,7 @@ output = "coverage.json"
                 "Enhanced coverage configuration"
             )
 
-    def run_cleanup(self, remove_placeholders: bool = False) -> Dict[str, any]:
+    def run_cleanup(self, remove_placeholders: bool = False) -> dict[str, any]:
         """Run the complete test cleanup process."""
         print("🧹 Starting ACGS-2 Test Suite Cleanup")
         print("=" * 50)
@@ -277,7 +275,7 @@ output = "coverage.json"
         placeholder_files = self.find_placeholder_files()
         duplicates = self.find_duplicate_files()
 
-        print(f"\n📊 Analysis Results:")
+        print("\n📊 Analysis Results:")
         print(f"  - Placeholder files found: {len(placeholder_files)}")
         print(f"  - Duplicate files found: {len(duplicates)}")
 
@@ -296,7 +294,7 @@ output = "coverage.json"
         # Generate improvements
         self.generate_coverage_config()
 
-        print(f"\n✅ Test cleanup completed!")
+        print("\n✅ Test cleanup completed!")
         return self.report
 
 

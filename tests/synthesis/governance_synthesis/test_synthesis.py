@@ -2,8 +2,9 @@
 Synthesis tests for synthesis
 """
 
+from unittest.mock import AsyncMock
+
 import pytest
-from unittest.mock import Mock, AsyncMock, patch
 
 
 class TestSynthesis:

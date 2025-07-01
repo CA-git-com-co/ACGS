@@ -10,18 +10,18 @@ import json
 import logging
 import time
 from datetime import datetime, timezone
-from typing import Dict, Optional, Tuple, Any
+from typing import Any
 
 import redis.asyncio as redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from ..models.hitl_models import (
-    AgentOperationRequest,
-    HITLDecision,
     AgentConfidenceProfile,
-    EscalationLevel,
+    AgentOperationRequest,
     DecisionStatus,
+    EscalationLevel,
+    HITLDecision,
     OperationRiskLevel,
 )
 from ..schemas.hitl_schemas import (
@@ -44,7 +44,7 @@ class DecisionCache:
         self.pattern_ttl = 86400  # 24 hours
         self.decision_ttl = 604800  # 7 days
 
-    async def get_agent_confidence(self, agent_id: str) -> Optional[Dict[str, Any]]:
+    async def get_agent_confidence(self, agent_id: str) -> dict[str, Any] | None:
         """Get cached agent confidence profile."""
         try:
             key = f"agent_confidence:{agent_id}"
@@ -55,7 +55,7 @@ class DecisionCache:
             return None
 
     async def set_agent_confidence(
-        self, agent_id: str, confidence_data: Dict[str, Any]
+        self, agent_id: str, confidence_data: dict[str, Any]
     ) -> None:
         """Cache agent confidence profile."""
         try:
@@ -66,7 +66,7 @@ class DecisionCache:
         except Exception as e:
             logger.warning(f"Cache set failed for agent confidence {agent_id}: {e}")
 
-    async def get_decision_pattern(self, pattern_hash: str) -> Optional[Dict[str, Any]]:
+    async def get_decision_pattern(self, pattern_hash: str) -> dict[str, Any] | None:
         """Get cached decision pattern."""
         try:
             key = f"decision_pattern:{pattern_hash}"
@@ -77,7 +77,7 @@ class DecisionCache:
             return None
 
     async def set_decision_pattern(
-        self, pattern_hash: str, decision_data: Dict[str, Any]
+        self, pattern_hash: str, decision_data: dict[str, Any]
     ) -> None:
         """Cache decision pattern."""
         try:
@@ -139,7 +139,7 @@ class HITLDecisionEngine:
         self,
         db: AsyncSession,
         operation_request: AgentOperationRequestCreate,
-        force_escalation_level: Optional[EscalationLevel] = None,
+        force_escalation_level: EscalationLevel | None = None,
         bypass_cache: bool = False,
     ) -> HITLDecisionResponse:
         """
@@ -297,7 +297,7 @@ class HITLDecisionEngine:
 
     async def _get_agent_confidence(
         self, db: AsyncSession, agent_id: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get agent confidence profile with caching."""
         # Try cache first
         if self.cache_enabled:
@@ -344,9 +344,9 @@ class HITLDecisionEngine:
     async def _calculate_decision(
         self,
         operation_request: AgentOperationRequestCreate,
-        agent_confidence: Dict[str, Any],
-        force_escalation_level: Optional[EscalationLevel] = None,
-    ) -> Tuple[EscalationLevel, float, str, Dict[str, Any], float]:
+        agent_confidence: dict[str, Any],
+        force_escalation_level: EscalationLevel | None = None,
+    ) -> tuple[EscalationLevel, float, str, dict[str, Any], float]:
         """Calculate HITL decision based on confidence and risk factors."""
 
         if force_escalation_level:

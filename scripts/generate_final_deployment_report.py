@@ -10,10 +10,10 @@ import json
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any
 
 
-def generate_comprehensive_deployment_report() -> Dict[str, Any]:
+def generate_comprehensive_deployment_report() -> dict[str, Any]:
     """Generate comprehensive deployment report."""
 
     report_timestamp = datetime.now()

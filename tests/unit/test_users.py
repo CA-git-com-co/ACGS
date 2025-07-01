@@ -38,11 +38,11 @@ class MockTestClient:
         """Mock POST requests."""
         if "/users/" in url and json:
             return self._handle_user_creation(json)
-        elif "/login/access-token" in url and data:
+        if "/login/access-token" in url and data:
             return self._handle_login(data)
-        elif "/auth/register" in url and json:
+        if "/auth/register" in url and json:
             return self._handle_auth_register(json)
-        elif "/auth/token" in url and data:
+        if "/auth/token" in url and data:
             return self._handle_auth_token(data)
         return MockResponse(404, {"detail": "Not found"})
 

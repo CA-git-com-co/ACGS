@@ -5,14 +5,14 @@ Optimizes all 7 services for production load patterns and resource efficiency
 """
 
 import asyncio
-import aiohttp
 import json
-import time
 import subprocess
-import os
-from datetime import datetime
-from typing import Dict, List, Any
+import time
 from dataclasses import dataclass
+from datetime import datetime
+from typing import Any
+
+import aiohttp
 
 # Service Configuration
 SERVICES = {
@@ -46,7 +46,7 @@ class SystemPerformanceOptimizer:
         self.baseline_metrics = {}
         self.optimized_metrics = {}
 
-    async def collect_baseline_metrics(self) -> Dict[str, PerformanceMetrics]:
+    async def collect_baseline_metrics(self) -> dict[str, PerformanceMetrics]:
         """Collect baseline performance metrics from all services."""
         print("📊 Collecting baseline performance metrics...")
 
@@ -96,13 +96,13 @@ class SystemPerformanceOptimizer:
         try:
             # Use lsof to find PID, then get memory usage
             result = subprocess.run(
-                ["lsof", "-ti", f":{port}"], capture_output=True, text=True
+                ["lsof", "-ti", f":{port}"], check=False, capture_output=True, text=True
             )
             if result.returncode == 0 and result.stdout.strip():
                 pid = result.stdout.strip().split("\n")[0]
 
                 # Get memory usage from /proc/PID/status
-                with open(f"/proc/{pid}/status", "r") as f:
+                with open(f"/proc/{pid}/status") as f:
                     for line in f:
                         if line.startswith("VmRSS:"):
                             # Extract memory in KB and convert to MB
@@ -117,7 +117,7 @@ class SystemPerformanceOptimizer:
         try:
             # Simplified CPU usage estimation
             result = subprocess.run(
-                ["lsof", "-ti", f":{port}"], capture_output=True, text=True
+                ["lsof", "-ti", f":{port}"], check=False, capture_output=True, text=True
             )
             if result.returncode == 0 and result.stdout.strip():
                 return 5.0  # Low usage estimate for healthy services
@@ -281,7 +281,7 @@ class SystemPerformanceOptimizer:
         print(f"  ✅ Caching configuration saved to: {cache_config_file}")
         return cache_config
 
-    async def validate_optimizations(self) -> Dict[str, Any]:
+    async def validate_optimizations(self) -> dict[str, Any]:
         """Validate that optimizations are working correctly."""
         print("\n✅ Validating performance optimizations...")
 
@@ -289,6 +289,7 @@ class SystemPerformanceOptimizer:
         try:
             result = subprocess.run(
                 ["python3", "scripts/load_test_acgs_pgp.py", "--concurrent", "20"],
+                check=False,
                 capture_output=True,
                 text=True,
                 cwd="/home/ubuntu/ACGS",
@@ -336,8 +337,8 @@ class SystemPerformanceOptimizer:
         return validation_results
 
     def generate_optimization_report(
-        self, validation_results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, validation_results: dict[str, Any]
+    ) -> dict[str, Any]:
         """Generate comprehensive optimization report."""
         report = {
             "optimization_timestamp": datetime.now().isoformat(),
@@ -398,12 +399,12 @@ async def main():
     report = optimizer.generate_optimization_report(validation_results)
 
     # Display results
-    print(f"\n📊 OPTIMIZATION RESULTS")
+    print("\n📊 OPTIMIZATION RESULTS")
     print("=" * 40)
     print(f"Services Optimized: {len(SERVICES)}/7")
-    print(f"Resource Configurations: ✅ Applied")
-    print(f"Connection Pooling: ✅ Optimized")
-    print(f"Caching Strategies: ✅ Configured")
+    print("Resource Configurations: ✅ Applied")
+    print("Connection Pooling: ✅ Optimized")
+    print("Caching Strategies: ✅ Configured")
     print(
         f"Load Test Validation: {'✅ Passed' if validation_results.get('load_test_passed') else '⚠️ Partial'}"
     )
@@ -420,7 +421,7 @@ async def main():
         json.dump(report, f, indent=2, default=str)
 
     print(
-        f"\n📄 Optimization report saved to: /home/ubuntu/ACGS/system_performance_optimization_report.json"
+        "\n📄 Optimization report saved to: /home/ubuntu/ACGS/system_performance_optimization_report.json"
     )
     print("\n🎉 System-wide performance optimization completed!")
 

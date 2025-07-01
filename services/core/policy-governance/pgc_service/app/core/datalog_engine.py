@@ -130,19 +130,18 @@ class DatalogEngine:
                             facts.append(
                                 f"+{entity_type}_id('{value}')"
                             )  # e.g. +user_id('alice')
-                    else:
-                        if (
-                            entity_id and entity_type != "action"
-                        ):  # e.g. user_attribute('alice', 'role', 'editor')
-                            facts.append(
-                                f"+{entity_type}_attribute('{entity_id}', '{key}', '{str(value)}')"
-                            )
-                        else:  # For action or entities without explicit ID in this part of context
-                            facts.append(
-                                f"+{entity_type}_{key}('{str(value)}')"
-                            )  # e.g. +action_type('read')
+                    elif (
+                        entity_id and entity_type != "action"
+                    ):  # e.g. user_attribute('alice', 'role', 'editor')
+                        facts.append(
+                            f"+{entity_type}_attribute('{entity_id}', '{key}', '{value!s}')"
+                        )
+                    else:  # For action or entities without explicit ID in this part of context
+                        facts.append(
+                            f"+{entity_type}_{key}('{value!s}')"
+                        )  # e.g. +action_type('read')
             else:  # Direct context values
-                facts.append(f"+context_value('{entity_type}', '{str(attributes)}')")
+                facts.append(f"+context_value('{entity_type}', '{attributes!s}')")
         return facts
 
 

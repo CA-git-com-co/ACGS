@@ -4,15 +4,13 @@ Test script for Nano-vLLM HTTP service.
 Tests the FastAPI service endpoints without requiring Docker.
 """
 
-import asyncio
-import sys
 import os
-import time
 import subprocess
-import signal
+import sys
+import time
 from pathlib import Path
+
 import requests
-import json
 
 # Add the services directory to the path
 project_root = Path(__file__).parent.parent.parent
@@ -55,7 +53,7 @@ def start_service():
             pass
 
         time.sleep(1)
-        print(f"   Attempt {i+1}/30...")
+        print(f"   Attempt {i + 1}/30...")
 
     print("❌ Service failed to start")
     return False
@@ -90,9 +88,8 @@ def test_health_endpoint():
             print(f"   Healthy: {data.get('healthy')}")
             print(f"   Models: {len(data.get('models', {}))}")
             return True
-        else:
-            print(f"❌ Health endpoint failed: {response.status_code}")
-            return False
+        print(f"❌ Health endpoint failed: {response.status_code}")
+        return False
 
     except Exception as e:
         print(f"❌ Health endpoint error: {e}")
@@ -113,9 +110,8 @@ def test_root_endpoint():
             print(f"   Version: {data.get('version')}")
             print(f"   Endpoints: {len(data.get('endpoints', {}))}")
             return True
-        else:
-            print(f"❌ Root endpoint failed: {response.status_code}")
-            return False
+        print(f"❌ Root endpoint failed: {response.status_code}")
+        return False
 
     except Exception as e:
         print(f"❌ Root endpoint error: {e}")
@@ -145,10 +141,9 @@ def test_chat_completion():
             print(f"   Response: {data['choices'][0]['message']['content'][:80]}...")
             print(f"   Tokens: {data['usage']['total_tokens']}")
             return True
-        else:
-            print(f"❌ Chat completion failed: {response.status_code}")
-            print(f"   Response: {response.text}")
-            return False
+        print(f"❌ Chat completion failed: {response.status_code}")
+        print(f"   Response: {response.text}")
+        return False
 
     except Exception as e:
         print(f"❌ Chat completion error: {e}")
@@ -184,10 +179,9 @@ def test_constitutional_reasoning():
             print(f"   Reasoning steps: {len(data.get('reasoning_chain', []))}")
             print(f"   Processing time: {data.get('processing_time_ms')}ms")
             return True
-        else:
-            print(f"❌ Constitutional reasoning failed: {response.status_code}")
-            print(f"   Response: {response.text}")
-            return False
+        print(f"❌ Constitutional reasoning failed: {response.status_code}")
+        print(f"   Response: {response.text}")
+        return False
 
     except Exception as e:
         print(f"❌ Constitutional reasoning error: {e}")
@@ -210,7 +204,7 @@ def test_performance():
             request_time = (end_time - start_time) * 1000
             times.append(request_time)
 
-            print(f"   Request {i+1}: {request_time:.2f}ms")
+            print(f"   Request {i + 1}: {request_time:.2f}ms")
 
         avg_time = sum(times) / len(times)
         print(f"✅ Average response time: {avg_time:.2f}ms")
@@ -269,9 +263,8 @@ def main():
         if passed == total:
             print("🎉 All tests passed! Nano-vLLM HTTP service is working correctly.")
             return 0
-        else:
-            print("⚠️  Some tests failed. Please check the output above.")
-            return 1
+        print("⚠️  Some tests failed. Please check the output above.")
+        return 1
 
     except KeyboardInterrupt:
         print("\n🛑 Tests interrupted by user")

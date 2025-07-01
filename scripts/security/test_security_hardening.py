@@ -13,11 +13,9 @@ import json
 import logging
 import os
 import sys
-import time
-import requests
-from pathlib import Path
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional, Tuple
+from pathlib import Path
+from typing import Any
 
 # Add the project root to the Python path
 project_root = Path(__file__).parent.parent.parent
@@ -45,10 +43,10 @@ class SecurityHardeningTester:
             "recommendations": [],
         }
 
-    async def run_comprehensive_security_tests(self) -> Dict[str, Any]:
+    async def run_comprehensive_security_tests(self) -> dict[str, Any]:
         """Run comprehensive security testing suite."""
         logger.info("Starting ACGS Security Hardening Testing")
-        logger.info(f"Constitutional Hash: cdd01ef066bc6cf2")
+        logger.info("Constitutional Hash: cdd01ef066bc6cf2")
 
         try:
             # Test 1: Encryption Infrastructure
@@ -336,7 +334,7 @@ class SecurityHardeningTester:
                 raise FileNotFoundError("Security middleware file not found")
 
             # Read middleware file and check for security headers
-            with open(middleware_file, "r") as f:
+            with open(middleware_file) as f:
                 content = f.read()
 
             required_headers = [
@@ -422,7 +420,7 @@ class SecurityHardeningTester:
             for file_path in security_files:
                 full_path = self.project_root / file_path
                 if full_path.exists():
-                    with open(full_path, "r") as f:
+                    with open(full_path) as f:
                         content = f.read()
                         if expected_hash in content:
                             files_with_hash += 1
@@ -507,7 +505,7 @@ class SecurityHardeningTester:
             for config_file in config_files:
                 file_path = self.project_root / config_file
                 if file_path.exists():
-                    with open(file_path, "r") as f:
+                    with open(file_path) as f:
                         content = f.read().lower()
                         # Look for potential hardcoded secrets
                         if "password=" in content or "secret=" in content:
@@ -622,9 +620,8 @@ async def main():
         if test_results["tests_failed"] == 0:
             print("🎉 ALL SECURITY TESTS PASSED!")
             return 0
-        else:
-            print("⚠️  SOME SECURITY TESTS FAILED - REVIEW REQUIRED")
-            return 1
+        print("⚠️  SOME SECURITY TESTS FAILED - REVIEW REQUIRED")
+        return 1
 
     except Exception as e:
         print(f"\nTESTING FAILED: {e}")

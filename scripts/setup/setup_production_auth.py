@@ -89,7 +89,7 @@ class ProductionAuthSetup:
                     )
 
             except Exception as e:
-                print(f"  ❌ Error creating user {user_data['username']}: {str(e)}")
+                print(f"  ❌ Error creating user {user_data['username']}: {e!s}")
 
     async def generate_auth_tokens(self):
         """Generate authentication tokens for all users"""
@@ -138,7 +138,7 @@ class ProductionAuthSetup:
                     )
 
             except Exception as e:
-                print(f"  ❌ Error generating token for {username}: {str(e)}")
+                print(f"  ❌ Error generating token for {username}: {e!s}")
                 # Create secure placeholder token for testing
                 self.tokens[username] = self.generate_secure_token(username)
 
@@ -212,7 +212,7 @@ class ProductionAuthSetup:
                     print(f"  ⚠️  {username} token response: {response.status_code}")
 
             except Exception as e:
-                print(f"  ❌ Error testing {username} token: {str(e)}")
+                print(f"  ❌ Error testing {username} token: {e!s}")
 
     def create_rbac_test_script(self):
         """Create RBAC testing script"""

@@ -102,14 +102,14 @@ class ACGSPGPPaperUpdater:
         # Replace theoretical latency with measured
         content = re.sub(
             r"37\.0 ms in benchmarks",
-            f'{perf_data["average_latency_ms"]:.1f} ms in production deployment',
+            f"{perf_data['average_latency_ms']:.1f} ms in production deployment",
             content,
         )
 
         # Update compliance rate
         content = re.sub(
             r"95\.2% compliance",
-            f'{perf_data["compliance_rate"]*100:.1f}% compliance',
+            f"{perf_data['compliance_rate'] * 100:.1f}% compliance",
             content,
         )
 
@@ -162,11 +162,11 @@ class ACGSPGPPaperUpdater:
         # Create new evaluation table with real data
         new_table = f"""
 Domain	Principles	Compliance	Synthesis	Latency	Fairness
-Production ACGS-1	12	{perf_data["compliance_rate"]*100:.1f}%	89.4%	{perf_data["average_latency_ms"]:.1f} ms	9.2/10
-Quantumagi Solana	8	94.7%	91.6%	{perf_data["average_latency_ms"]*0.9:.1f} ms	–
-Constitutional Governance	10	{perf_data["compliance_rate"]*100:.1f}%	88.8%	{perf_data["average_latency_ms"]*1.1:.1f} ms	9.0/10
-Policy Enforcement	15	92.4%	85.3%	{perf_data["average_latency_ms"]*1.3:.1f} ms	8.7/10
-Overall	11.3	{perf_data["compliance_rate"]*100:.1f}%	88.8%	{perf_data["average_latency_ms"]:.1f} ms	8.95/10
+Production ACGS-1	12	{perf_data["compliance_rate"] * 100:.1f}%	89.4%	{perf_data["average_latency_ms"]:.1f} ms	9.2/10
+Quantumagi Solana	8	94.7%	91.6%	{perf_data["average_latency_ms"] * 0.9:.1f} ms	–
+Constitutional Governance	10	{perf_data["compliance_rate"] * 100:.1f}%	88.8%	{perf_data["average_latency_ms"] * 1.1:.1f} ms	9.0/10
+Policy Enforcement	15	92.4%	85.3%	{perf_data["average_latency_ms"] * 1.3:.1f} ms	8.7/10
+Overall	11.3	{perf_data["compliance_rate"] * 100:.1f}%	88.8%	{perf_data["average_latency_ms"]:.1f} ms	8.95/10
 
 Table 1: Cross-domain evaluation of ACGS-PGP with production ACGS-1 deployment data
 """
@@ -179,7 +179,7 @@ Table 1: Cross-domain evaluation of ACGS-PGP with production ACGS-1 deployment d
         detection_rate = adv_data.get("detection_rate", 0.938)
         content = re.sub(
             r"94\.3% of manipulation attempts",
-            f"{detection_rate*100:.1f}% of manipulation attempts (production validation)",
+            f"{detection_rate * 100:.1f}% of manipulation attempts (production validation)",
             content,
         )
 
@@ -242,8 +242,8 @@ Quantumagi implements the AC layer directly on-chain, storing constitutional pri
 The Quantumagi deployment validates key theoretical claims:
 - **Constitutional Stability**: Measured Lipschitz constant L≈{data["constitutional_stability"].get("lipschitz_constant", 0.74):.2f}
 - **Enforcement Performance**: Average latency {data["enforcement_performance"].get("average_latency_ms", 42.3):.1f}ms
-- **Compliance Rate**: {data["enforcement_performance"].get("compliance_rate", 0.947)*100:.1f}% in production
-- **Adversarial Robustness**: {data["adversarial_robustness"].get("detection_rate", 0.938)*100:.1f}% attack detection
+- **Compliance Rate**: {data["enforcement_performance"].get("compliance_rate", 0.947) * 100:.1f}% in production
+- **Adversarial Robustness**: {data["adversarial_robustness"].get("detection_rate", 0.938) * 100:.1f}% attack detection
 
 This represents the first successful deployment of autonomous constitutional governance on a public blockchain, demonstrating the practical viability of the ACGS-PGP framework.
 """

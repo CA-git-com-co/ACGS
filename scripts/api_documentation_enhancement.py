@@ -18,15 +18,14 @@ Features:
 """
 
 import json
-import subprocess
 import time
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-from dataclasses import dataclass, field
+from typing import Any
 
-import yaml
 import structlog
+import yaml
 
 logger = structlog.get_logger(__name__)
 
@@ -39,12 +38,12 @@ class APIEndpoint:
     method: str
     summary: str
     description: str
-    parameters: List[Dict[str, Any]] = field(default_factory=list)
-    request_body: Optional[Dict[str, Any]] = None
-    responses: Dict[str, Dict[str, Any]] = field(default_factory=dict)
-    security: List[str] = field(default_factory=list)
-    tags: List[str] = field(default_factory=list)
-    examples: List[Dict[str, Any]] = field(default_factory=list)
+    parameters: list[dict[str, Any]] = field(default_factory=list)
+    request_body: dict[str, Any] | None = None
+    responses: dict[str, dict[str, Any]] = field(default_factory=dict)
+    security: list[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
+    examples: list[dict[str, Any]] = field(default_factory=list)
 
 
 @dataclass
@@ -56,9 +55,9 @@ class ServiceAPI:
     description: str
     base_url: str
     port: int
-    endpoints: List[APIEndpoint] = field(default_factory=list)
-    schemas: Dict[str, Any] = field(default_factory=dict)
-    security_schemes: Dict[str, Any] = field(default_factory=dict)
+    endpoints: list[APIEndpoint] = field(default_factory=list)
+    schemas: dict[str, Any] = field(default_factory=dict)
+    security_schemes: dict[str, Any] = field(default_factory=dict)
 
 
 class APIDocumentationEnhancer:
@@ -67,7 +66,7 @@ class APIDocumentationEnhancer:
     def __init__(self, project_root: Path):
         """Initialize API documentation enhancer."""
         self.project_root = project_root
-        self.services: List[ServiceAPI] = []
+        self.services: list[ServiceAPI] = []
         self.output_dir = project_root / "docs" / "api" / "enhanced"
 
         # Configuration
@@ -255,7 +254,7 @@ class APIDocumentationEnhancer:
 
             self.services.append(service)
 
-    async def enhance_api_documentation(self) -> Dict[str, Any]:
+    async def enhance_api_documentation(self) -> dict[str, Any]:
         """Enhance API documentation comprehensively."""
         logger.info("🚀 Starting comprehensive API documentation enhancement...")
 
@@ -310,7 +309,7 @@ class APIDocumentationEnhancer:
 
         return results
 
-    async def _generate_openapi_specifications(self) -> Dict[str, Any]:
+    async def _generate_openapi_specifications(self) -> dict[str, Any]:
         """Generate comprehensive OpenAPI 3.0 specifications."""
         logger.info("📋 Generating OpenAPI specifications...")
 
@@ -340,7 +339,7 @@ class APIDocumentationEnhancer:
                         "description": "Development server",
                     },
                     {
-                        "url": f"https://api.acgs.gov",
+                        "url": "https://api.acgs.gov",
                         "description": "Production server",
                     },
                 ],
@@ -397,7 +396,7 @@ class APIDocumentationEnhancer:
             "output_directory": str(self.output_dir),
         }
 
-    async def _create_interactive_documentation(self) -> Dict[str, Any]:
+    async def _create_interactive_documentation(self) -> dict[str, Any]:
         """Create interactive API documentation."""
         logger.info("🌐 Creating interactive documentation...")
 
@@ -422,7 +421,7 @@ class APIDocumentationEnhancer:
             "interactive_docs_created": 2,
         }
 
-    async def _generate_sdks(self) -> Dict[str, Any]:
+    async def _generate_sdks(self) -> dict[str, Any]:
         """Generate SDKs for supported languages."""
         logger.info("🛠️ Generating SDKs...")
 
@@ -455,7 +454,7 @@ class APIDocumentationEnhancer:
             "sdk_files": sdks_generated,
         }
 
-    async def _create_integration_guides(self) -> Dict[str, Any]:
+    async def _create_integration_guides(self) -> dict[str, Any]:
         """Create comprehensive integration guides."""
         logger.info("📚 Creating integration guides...")
 
@@ -484,7 +483,7 @@ class APIDocumentationEnhancer:
 
         return {"guides_created": len(guides_created), "guide_files": guides_created}
 
-    async def _generate_api_testing_tools(self) -> Dict[str, Any]:
+    async def _generate_api_testing_tools(self) -> dict[str, Any]:
         """Generate API testing tools."""
         logger.info("🧪 Generating API testing tools...")
 
@@ -512,7 +511,7 @@ class APIDocumentationEnhancer:
             "test_files": test_files,
         }
 
-    async def _create_developer_onboarding(self) -> Dict[str, Any]:
+    async def _create_developer_onboarding(self) -> dict[str, Any]:
         """Create developer onboarding materials."""
         logger.info("👨‍💻 Creating developer onboarding materials...")
 
@@ -535,7 +534,7 @@ class APIDocumentationEnhancer:
             "onboarding_materials": 2,
         }
 
-    async def _generate_comprehensive_api_reference(self) -> Dict[str, Any]:
+    async def _generate_comprehensive_api_reference(self) -> dict[str, Any]:
         """Generate comprehensive API reference."""
         logger.info("📖 Generating comprehensive API reference...")
 
@@ -550,7 +549,7 @@ class APIDocumentationEnhancer:
             "services_documented": len(self.services),
         }
 
-    def _get_common_schemas(self) -> Dict[str, Any]:
+    def _get_common_schemas(self) -> dict[str, Any]:
         """Get common API schemas."""
         return {
             "Error": {
@@ -584,7 +583,7 @@ class APIDocumentationEnhancer:
             },
         }
 
-    def _get_service_tags(self, service: ServiceAPI) -> List[Dict[str, str]]:
+    def _get_service_tags(self, service: ServiceAPI) -> list[dict[str, str]]:
         """Get tags for a service."""
         all_tags = set()
         for endpoint in service.endpoints:

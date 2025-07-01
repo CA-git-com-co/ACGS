@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 """
 Database Performance Optimization Simulation for ACGS-1
-Simulates database performance improvements with connection pooling, 
+Simulates database performance improvements with connection pooling,
 query optimization, and indexing strategies
 """
 
 import asyncio
-import time
-import statistics
-import random
-from typing import List, Dict, Any
-from dataclasses import dataclass
 import logging
+import random
+import statistics
+from dataclasses import dataclass
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -22,7 +20,7 @@ class PerformanceMetrics:
     """Performance metrics for database operations."""
 
     operation: str
-    response_times: List[float]
+    response_times: list[float]
     avg_response_time: float
     p95_response_time: float
     success_rate: float
@@ -114,7 +112,7 @@ class DatabasePerformanceSimulator:
             "connection_pooling", optimized=True, num_operations=100
         )
 
-        print(f"   ✅ Connection pooling optimized")
+        print("   ✅ Connection pooling optimized")
         print(f"   Average Response Time: {metrics.avg_response_time:.2f}ms")
         print(f"   95th Percentile: {metrics.p95_response_time:.2f}ms")
         print(f"   Improvement: {metrics.optimization_improvement:.1f}% faster")
@@ -149,7 +147,7 @@ class DatabasePerformanceSimulator:
             "query_optimization", optimized=True, num_operations=50
         )
 
-        print(f"   ✅ Query optimization completed")
+        print("   ✅ Query optimization completed")
         print(f"   Average Response Time: {metrics.avg_response_time:.2f}ms")
         print(f"   95th Percentile: {metrics.p95_response_time:.2f}ms")
         print(f"   Improvement: {metrics.optimization_improvement:.1f}% faster")
@@ -184,7 +182,7 @@ class DatabasePerformanceSimulator:
             "concurrent_operations", optimized=True, num_operations=50
         )
 
-        print(f"   ✅ Concurrent operations optimized")
+        print("   ✅ Concurrent operations optimized")
         print(f"   Average Response Time: {metrics.avg_response_time:.2f}ms")
         print(f"   95th Percentile: {metrics.p95_response_time:.2f}ms")
         print(f"   Improvement: {metrics.optimization_improvement:.1f}% faster")
@@ -217,7 +215,7 @@ class DatabasePerformanceSimulator:
             "index_performance", optimized=True, num_operations=40
         )
 
-        print(f"   ✅ Index optimization completed")
+        print("   ✅ Index optimization completed")
         print(f"   Average Response Time: {metrics.avg_response_time:.2f}ms")
         print(f"   95th Percentile: {metrics.p95_response_time:.2f}ms")
         print(f"   Improvement: {metrics.optimization_improvement:.1f}% faster")
@@ -251,7 +249,7 @@ class DatabasePerformanceSimulator:
             "bulk_operations", optimized=True, num_operations=20
         )
 
-        print(f"   ✅ Bulk operations optimized")
+        print("   ✅ Bulk operations optimized")
         print(f"   Average Response Time: {metrics.avg_response_time:.2f}ms")
         print(f"   95th Percentile: {metrics.p95_response_time:.2f}ms")
         print(f"   Improvement: {metrics.optimization_improvement:.1f}% faster")
@@ -323,7 +321,7 @@ async def test_database_performance_optimization():
     meets_response_target = overall_p95 <= target_response_time
     meets_success_target = overall_success >= target_success_rate
 
-    print(f"\n🎯 Target Validation:")
+    print("\n🎯 Target Validation:")
     print(f"   Target Response Time (95th percentile): ≤{target_response_time}ms")
     print(f"   Achieved Response Time: {overall_p95:.2f}ms")
     print(

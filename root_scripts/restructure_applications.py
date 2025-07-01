@@ -126,12 +126,11 @@ class ApplicationsRestructurer:
         """Detect the type of application based on files present"""
         if (app_dir / "package.json").exists():
             return "react-frontend"
-        elif (app_dir / "Cargo.toml").exists():
+        if (app_dir / "Cargo.toml").exists():
             return "rust-service"
-        elif (app_dir / "requirements.txt").exists():
+        if (app_dir / "requirements.txt").exists():
             return "python-service"
-        else:
-            return "unknown"
+        return "unknown"
 
     def consolidate_shared_components(self):
         """Consolidate shared components into applications/shared/"""

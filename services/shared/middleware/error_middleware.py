@@ -19,25 +19,13 @@ import logging
 import time
 import traceback
 import uuid
+from collections.abc import Callable
 from datetime import datetime, timezone
-from typing import Any, Callable, Dict, List, Optional, Type
+from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request, Response
-from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
-
-from ..errors.error_catalog import (
-    ErrorCategory,
-    ErrorSeverity,
-    ServiceCode,
-    get_error_definition,
-)
-from ..errors.http_status_mapping import (
-    get_error_response_headers,
-    get_http_status_code,
-    validate_status_code_usage,
-)
 
 # Import error handling components
 from ..response.error_response import (
@@ -119,15 +107,15 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
         self.circuit_breaker = CircuitBreakerState() if enable_circuit_breaker else None
 
         # Error rate tracking
-        self.error_rates: Dict[str, List[float]] = {}
+        self.error_rates: dict[str, list[float]] = {}
         self.rate_limit_window = 300  # 5 minutes
         self.rate_limit_threshold = 100  # errors per window
 
         # Custom exception handlers
-        self.exception_handlers: Dict[Type[Exception], Callable] = {}
+        self.exception_handlers: dict[type[Exception], Callable] = {}
 
         # Request correlation tracking
-        self.active_requests: Dict[str, Dict[str, Any]] = {}
+        self.active_requests: dict[str, dict[str, Any]] = {}
 
         self._register_default_handlers()
 
@@ -178,7 +166,7 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
 
     def register_exception_handler(
         self,
-        exception_type: Type[Exception],
+        exception_type: type[Exception],
         handler: Callable[[Exception, Request], ErrorJSONResponse],
     ):
         """Register custom exception handler."""
@@ -531,10 +519,10 @@ def add_error_middleware_to_app(
 
 # Export main classes and functions
 __all__ = [
-    "ErrorHandlingMiddleware",
     "CircuitBreakerState",
-    "create_auth_error_middleware",
-    "create_ac_error_middleware",
-    "create_fv_error_middleware",
+    "ErrorHandlingMiddleware",
     "add_error_middleware_to_app",
+    "create_ac_error_middleware",
+    "create_auth_error_middleware",
+    "create_fv_error_middleware",
 ]

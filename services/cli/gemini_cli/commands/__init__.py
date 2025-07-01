@@ -2,6 +2,6 @@
 Gemini CLI command modules
 """
 
-from . import agent, execute, verify, audit, monitor
+from . import agent, audit, execute, monitor, verify
 
-__all__ = ["agent", "execute", "verify", "audit", "monitor"]
+__all__ = ["agent", "audit", "execute", "monitor", "verify"]

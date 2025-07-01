@@ -191,20 +191,18 @@ class Priority1ServiceRestoration:
                 if health_ok:
                     self.log_action(f"Service {service_name} is healthy", "SUCCESS")
                     return True
-                else:
-                    self.log_action(
-                        f"Service {service_name} started but health check failed",
-                        "WARNING",
-                    )
-                    # Keep it running, might need time to initialize
-                    return True
-            else:
-                # Process exited, get output
-                stdout, stderr = process.communicate()
                 self.log_action(
-                    f"Service {service_name} process exited", "ERROR", stdout[:300]
+                    f"Service {service_name} started but health check failed",
+                    "WARNING",
                 )
-                return False
+                # Keep it running, might need time to initialize
+                return True
+            # Process exited, get output
+            stdout, stderr = process.communicate()
+            self.log_action(
+                f"Service {service_name} process exited", "ERROR", stdout[:300]
+            )
+            return False
 
         except Exception as e:
             self.log_action(f"Failed to start {service_name}", "ERROR", str(e))
@@ -217,12 +215,11 @@ class Priority1ServiceRestoration:
                 response = await client.get(f"http://localhost:{port}/health")
                 if response.status_code == 200:
                     return True
-                else:
-                    self.log_action(
-                        f"Health check failed for {service_name}: HTTP {response.status_code}",
-                        "WARNING",
-                    )
-                    return False
+                self.log_action(
+                    f"Health check failed for {service_name}: HTTP {response.status_code}",
+                    "WARNING",
+                )
+                return False
         except Exception as e:
             self.log_action(
                 f"Health check exception for {service_name}: {e}", "WARNING"
@@ -278,6 +275,7 @@ class Priority1ServiceRestoration:
             self.log_action("Running comprehensive health check", "INFO")
             result = subprocess.run(
                 ["python", "comprehensive_system_health_check.py"],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -290,16 +288,14 @@ class Priority1ServiceRestoration:
                 if "6/7 Healthy" in output or "7/7 Healthy" in output:
                     self.log_action("Comprehensive health check PASSED", "SUCCESS")
                     return True
-                else:
-                    self.log_action(
-                        "Comprehensive health check shows partial success", "WARNING"
-                    )
-                    return True  # Partial success is acceptable
-            else:
                 self.log_action(
-                    "Comprehensive health check FAILED", "ERROR", result.stderr[:200]
+                    "Comprehensive health check shows partial success", "WARNING"
                 )
-                return False
+                return True  # Partial success is acceptable
+            self.log_action(
+                "Comprehensive health check FAILED", "ERROR", result.stderr[:200]
+            )
+            return False
         except Exception as e:
             self.log_action("Health check script failed", "ERROR", str(e))
             return False

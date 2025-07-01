@@ -481,17 +481,16 @@ def cache_result(
                 return result
 
             return async_wrapper
-        else:
 
-            def sync_wrapper(*args, **kwargs):
-                # requires: Valid input parameters
-                # ensures: Correct function execution
-                # sha256: func_hash
-                # For sync functions, we can't use async cache directly
-                # This would need to be handled differently in a real implementation
-                return func(*args, **kwargs)
+        def sync_wrapper(*args, **kwargs):
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
+            # For sync functions, we can't use async cache directly
+            # This would need to be handled differently in a real implementation
+            return func(*args, **kwargs)
 
-            return sync_wrapper
+        return sync_wrapper
 
     return decorator
 

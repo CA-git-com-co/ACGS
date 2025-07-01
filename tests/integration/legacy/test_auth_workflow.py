@@ -51,12 +51,11 @@ def test_user_registration():
     if response.status_code == 201:
         print("   ✅ User registration successful")
         return True
-    elif response.status_code == 400 and "already registered" in response.text:
+    if response.status_code == 400 and "already registered" in response.text:
         print("   ✅ User already exists (expected for repeated tests)")
         return True
-    else:
-        print(f"   ❌ Registration failed: {response.text}")
-        return False
+    print(f"   ❌ Registration failed: {response.text}")
+    return False
 
 
 def test_user_login():
@@ -105,9 +104,8 @@ def test_user_login():
         )
 
         return {"csrf_token": csrf_token, "cookies": cookies, "response": response}
-    else:
-        print(f"   ❌ Login failed: {response.text}")
-        return None
+    print(f"   ❌ Login failed: {response.text}")
+    return None
 
 
 def test_protected_endpoint(auth_data):
@@ -129,9 +127,8 @@ def test_protected_endpoint(auth_data):
         print("   ✅ Protected endpoint access successful")
         print(f"   User: {user_data.get('username')} (ID: {user_data.get('id')})")
         return True
-    else:
-        print(f"   ❌ Protected endpoint access failed: {response.text}")
-        return False
+    print(f"   ❌ Protected endpoint access failed: {response.text}")
+    return False
 
 
 def test_csrf_protection():
@@ -145,9 +142,8 @@ def test_csrf_protection():
     if response.status_code == 403 or "Missing Cookie" in response.text:
         print("   ✅ CSRF protection working - request blocked")
         return True
-    else:
-        print(f"   ❌ CSRF protection failed: {response.text}")
-        return False
+    print(f"   ❌ CSRF protection failed: {response.text}")
+    return False
 
 
 def test_cross_service_integration(auth_data):
@@ -180,7 +176,7 @@ def test_cross_service_integration(auth_data):
                 print(f"   ❌ {service_name}: HTTP {response.status_code}")
                 results[service_name] = False
         except Exception as e:
-            print(f"   ❌ {service_name}: Connection error - {str(e)}")
+            print(f"   ❌ {service_name}: Connection error - {e!s}")
             results[service_name] = False
 
     # Test nginx gateway routing
@@ -200,7 +196,7 @@ def test_cross_service_integration(auth_data):
                 print(f"   ❌ {test_name}: HTTP {response.status_code}")
                 results[test_name] = False
         except Exception as e:
-            print(f"   ❌ {test_name}: Connection error - {str(e)}")
+            print(f"   ❌ {test_name}: Connection error - {e!s}")
             results[test_name] = False
 
     success_count = sum(1 for result in results.values() if result)

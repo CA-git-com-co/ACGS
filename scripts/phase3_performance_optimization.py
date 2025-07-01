@@ -308,7 +308,7 @@ class PerformanceOptimizer:
                             "program": program_name,
                             "type": "compute_optimization",
                             "priority": "MEDIUM",
-                            "description": f'Instruction {instruction["name"]} has high compute cost',
+                            "description": f"Instruction {instruction['name']} has high compute cost",
                             "suggestions": [
                                 "Break down complex instructions into smaller operations",
                                 "Optimize mathematical calculations",

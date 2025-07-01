@@ -8,7 +8,7 @@ Optimizes performance through intelligent caching strategies.
 import json
 import logging
 import time
-from typing import Any, Dict, Optional
+from typing import Any
 
 # Try to import Redis
 try:
@@ -42,11 +42,11 @@ class CacheEnhancer:
         self.service_name = service_name
         self.redis_url = redis_url
         self.default_ttl = default_ttl
-        self.redis_client: Optional[redis.Redis] = None
+        self.redis_client: redis.Redis | None = None
         self.redis_available = REDIS_AVAILABLE
 
         # Fallback in-memory cache
-        self.memory_cache: Dict[str, Dict[str, Any]] = {}
+        self.memory_cache: dict[str, dict[str, Any]] = {}
         self.cache_stats = {
             "hits": 0,
             "misses": 0,
@@ -87,13 +87,13 @@ class CacheEnhancer:
             await self.redis_client.close()
             logger.info(f"Redis cache closed for {self.service_name}")
 
-    def _generate_cache_key(self, key: str, namespace: Optional[str] = None) -> str:
+    def _generate_cache_key(self, key: str, namespace: str | None = None) -> str:
         """Generate cache key with service namespace."""
         if namespace:
             return f"{self.service_name}:{namespace}:{key}"
         return f"{self.service_name}:{key}"
 
-    async def get(self, key: str, namespace: Optional[str] = None) -> Optional[Any]:
+    async def get(self, key: str, namespace: str | None = None) -> Any | None:
         """Get value from cache."""
         cache_key = self._generate_cache_key(key, namespace)
 
@@ -113,9 +113,8 @@ class CacheEnhancer:
                 if cache_entry["expires_at"] > time.time():
                     self.cache_stats["hits"] += 1
                     return cache_entry["value"]
-                else:
-                    # Remove expired entry
-                    del self.memory_cache[cache_key]
+                # Remove expired entry
+                del self.memory_cache[cache_key]
 
             self.cache_stats["misses"] += 1
             return None
@@ -129,8 +128,8 @@ class CacheEnhancer:
         self,
         key: str,
         value: Any,
-        ttl: Optional[int] = None,
-        namespace: Optional[str] = None,
+        ttl: int | None = None,
+        namespace: str | None = None,
     ) -> bool:
         """Set value in cache."""
         cache_key = self._generate_cache_key(key, namespace)
@@ -157,7 +156,7 @@ class CacheEnhancer:
             self.cache_stats["errors"] += 1
             return False
 
-    async def delete(self, key: str, namespace: Optional[str] = None) -> bool:
+    async def delete(self, key: str, namespace: str | None = None) -> bool:
         """Delete value from cache."""
         cache_key = self._generate_cache_key(key, namespace)
 
@@ -179,7 +178,7 @@ class CacheEnhancer:
             return False
 
     async def cache_constitutional_validation(
-        self, request_hash: str, validation_result: Dict[str, Any], ttl: int = 300
+        self, request_hash: str, validation_result: dict[str, Any], ttl: int = 300
     ) -> str:
         """Cache constitutional validation result."""
         cache_key = f"constitutional_validation:{request_hash}"
@@ -188,7 +187,7 @@ class CacheEnhancer:
 
     async def get_cached_constitutional_validation(
         self, request_hash: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Get cached constitutional validation result."""
         cache_key = f"constitutional_validation:{request_hash}"
         return await self.get(cache_key, "constitutional")
@@ -196,7 +195,7 @@ class CacheEnhancer:
     async def cache_policy_decision(
         self,
         policy_content: str,
-        input_data: Dict[str, Any],
+        input_data: dict[str, Any],
         result: Any,
         ttl: int = 300,
     ) -> str:
@@ -211,8 +210,8 @@ class CacheEnhancer:
         return cache_key
 
     async def get_cached_policy_decision(
-        self, policy_content: str, input_data: Dict[str, Any]
-    ) -> Optional[Any]:
+        self, policy_content: str, input_data: dict[str, Any]
+    ) -> Any | None:
         """Get cached policy decision result."""
         cache_data = {
             "policy_content": policy_content,
@@ -252,7 +251,7 @@ class CacheEnhancer:
             logger.error(f"Cache invalidation error for namespace {namespace}: {e}")
             return 0
 
-    def get_cache_stats(self) -> Dict[str, Any]:
+    def get_cache_stats(self) -> dict[str, Any]:
         """Get cache performance statistics."""
         total_requests = self.cache_stats["hits"] + self.cache_stats["misses"]
         hit_rate = (

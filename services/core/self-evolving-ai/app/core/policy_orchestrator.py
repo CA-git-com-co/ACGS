@@ -174,12 +174,11 @@ class PolicyOrchestrator:
                         "query": policy_query,
                         "evaluated_at": datetime.now(timezone.utc).isoformat(),
                     }
-                else:
-                    error_text = await response.text()
-                    return False, {
-                        "error": f"OPA evaluation failed: {response.status}",
-                        "details": error_text,
-                    }
+                error_text = await response.text()
+                return False, {
+                    "error": f"OPA evaluation failed: {response.status}",
+                    "details": error_text,
+                }
 
         except Exception as e:
             logger.error(f"Policy evaluation failed: {e}")
@@ -798,13 +797,12 @@ class PolicyOrchestrator:
                 if response.status in [200, 201]:
                     self.policy_metrics["bundle_updates"] += 1
                     return {"success": True, "bundle_updated": True}
-                else:
-                    error_text = await response.text()
-                    return {
-                        "success": False,
-                        "error": f"OPA bundle update failed: {response.status}",
-                        "details": error_text,
-                    }
+                error_text = await response.text()
+                return {
+                    "success": False,
+                    "error": f"OPA bundle update failed: {response.status}",
+                    "details": error_text,
+                }
 
         except Exception as e:
             logger.error(f"OPA bundle update failed: {e}")
@@ -827,12 +825,11 @@ class PolicyOrchestrator:
                         "status_code": response.status,
                         "response_time_ms": round(response_time_ms, 2),
                     }
-                else:
-                    return {
-                        "healthy": False,
-                        "status_code": response.status,
-                        "response_time_ms": round(response_time_ms, 2),
-                    }
+                return {
+                    "healthy": False,
+                    "status_code": response.status,
+                    "response_time_ms": round(response_time_ms, 2),
+                }
 
         except Exception as e:
             logger.error(f"OPA health check failed: {e}")

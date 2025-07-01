@@ -6,13 +6,13 @@ Enterprise-grade monitoring, alerting, and analytics for constitutional AI gover
 
 import asyncio
 import json
-import time
-import statistics
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone, timedelta
-from enum import Enum
 import logging
+import statistics
+import time
+from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ class Metric:
     name: str
     value: float
     timestamp: str
-    labels: Dict[str, str]
+    labels: dict[str, str]
     metric_type: MetricType
     constitutional_hash: str
 
@@ -56,7 +56,7 @@ class Alert:
     severity: AlertSeverity
     message: str
     timestamp: str
-    labels: Dict[str, str]
+    labels: dict[str, str]
     resolved: bool
     constitutional_compliance: bool
 
@@ -68,7 +68,7 @@ class Dashboard:
     dashboard_id: str
     name: str
     description: str
-    panels: List[Dict[str, Any]]
+    panels: list[dict[str, Any]]
     refresh_interval: int
     constitutional_hash: str
 
@@ -84,7 +84,7 @@ class AdvancedMonitoringAnalytics:
         self.alert_rules = self.initialize_alert_rules()
         self.predictive_models = {}
 
-    def initialize_alert_rules(self) -> Dict[str, Any]:
+    def initialize_alert_rules(self) -> dict[str, Any]:
         """Initialize alert rules for monitoring"""
         return {
             "constitutional_compliance": {
@@ -124,7 +124,7 @@ class AdvancedMonitoringAnalytics:
             },
         }
 
-    async def deploy_advanced_monitoring(self) -> Dict[str, Any]:
+    async def deploy_advanced_monitoring(self) -> dict[str, Any]:
         """Deploy comprehensive monitoring and analytics system"""
         print("📊 ACGS Advanced Monitoring and Analytics Deployment")
         print("=" * 55)
@@ -153,14 +153,14 @@ class AdvancedMonitoringAnalytics:
         # Start monitoring data collection
         monitoring_status = await self.start_monitoring_collection()
 
-        print(f"\n📈 Monitoring Deployment Summary:")
+        print("\n📈 Monitoring Deployment Summary:")
         print(f"  Dashboards Created: {len(self.dashboards)}")
         print(f"  Alert Rules: {len(self.alert_rules)}")
         print(f"  Predictive Models: {len(predictive_models)}")
         print(
             f"  Anomaly Detection: {'✅ Active' if anomaly_detection['active'] else '❌ Inactive'}"
         )
-        print(f"  Constitutional Compliance: ✅ Monitored")
+        print("  Constitutional Compliance: ✅ Monitored")
 
         return {
             "deployment_timestamp": datetime.now(timezone.utc).isoformat(),
@@ -414,7 +414,7 @@ class AdvancedMonitoringAnalytics:
         self.dashboards["business_intelligence"] = dashboard
         return dashboard
 
-    async def initialize_predictive_analytics(self) -> Dict[str, Any]:
+    async def initialize_predictive_analytics(self) -> dict[str, Any]:
         """Initialize predictive analytics models"""
         print("  🔮 Initializing predictive analytics...")
 
@@ -462,7 +462,7 @@ class AdvancedMonitoringAnalytics:
 
         return models
 
-    async def setup_anomaly_detection(self) -> Dict[str, Any]:
+    async def setup_anomaly_detection(self) -> dict[str, Any]:
         """Set up anomaly detection system"""
         print("  🚨 Setting up anomaly detection...")
 
@@ -498,11 +498,11 @@ class AdvancedMonitoringAnalytics:
         print(
             f"    ✅ {len(anomaly_config['algorithms'])} anomaly detection algorithms active"
         )
-        print(f"    ✅ Auto-remediation enabled")
+        print("    ✅ Auto-remediation enabled")
 
         return anomaly_config
 
-    async def configure_alerting_system(self) -> Dict[str, Any]:
+    async def configure_alerting_system(self) -> dict[str, Any]:
         """Configure comprehensive alerting system"""
         print("  🔔 Configuring alerting system...")
 
@@ -561,11 +561,11 @@ class AdvancedMonitoringAnalytics:
         print(
             f"    ✅ {len(alerting_config['channels'])} notification channels configured"
         )
-        print(f"    ✅ Constitutional compliance alerts enabled")
+        print("    ✅ Constitutional compliance alerts enabled")
 
         return alerting_config
 
-    async def start_monitoring_collection(self) -> Dict[str, Any]:
+    async def start_monitoring_collection(self) -> dict[str, Any]:
         """Start monitoring data collection"""
         print("  📡 Starting monitoring data collection...")
 
@@ -619,7 +619,7 @@ class AdvancedMonitoringAnalytics:
 
         return monitoring_status
 
-    async def check_alert_conditions(self) -> List[Alert]:
+    async def check_alert_conditions(self) -> list[Alert]:
         """Check alert conditions and generate alerts"""
         alerts = []
         current_time = datetime.now(timezone.utc).isoformat()
@@ -657,7 +657,7 @@ class AdvancedMonitoringAnalytics:
         self.alerts.extend(alerts)
         return alerts
 
-    def generate_monitoring_report(self) -> Dict[str, Any]:
+    def generate_monitoring_report(self) -> dict[str, Any]:
         """Generate comprehensive monitoring report"""
 
         # Calculate metrics summary
@@ -736,7 +736,7 @@ async def test_advanced_monitoring_analytics():
     print("\n📊 Generating monitoring report...")
     report = monitoring_system.generate_monitoring_report()
 
-    print(f"\n📈 Monitoring System Summary:")
+    print("\n📈 Monitoring System Summary:")
     print(f"  System Health Score: {report['system_health_score']:.1f}/100")
     print(
         f"  Constitutional Compliance: {report['constitutional_compliance_average']:.1%}"
@@ -756,7 +756,7 @@ async def test_advanced_monitoring_analytics():
 
     print(f"\n📄 Results saved: advanced_monitoring_deployment_{timestamp}.json")
     print(f"📄 Report saved: monitoring_report_{timestamp}.json")
-    print(f"\n✅ Advanced Monitoring and Analytics: OPERATIONAL")
+    print("\n✅ Advanced Monitoring and Analytics: OPERATIONAL")
 
 
 if __name__ == "__main__":

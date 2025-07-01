@@ -100,12 +100,11 @@ class Phase2TestSuite:
                     test_name, True, "GS service is healthy", latency_ms
                 )
                 return True
-            else:
-                self.log_test_result(test_name, False, f"HTTP {response.status_code}")
-                return False
+            self.log_test_result(test_name, False, f"HTTP {response.status_code}")
+            return False
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Connection error: {str(e)}")
+            self.log_test_result(test_name, False, f"Connection error: {e!s}")
             return False
 
     async def test_pgc_service_health(self):
@@ -121,12 +120,11 @@ class Phase2TestSuite:
                     test_name, True, "PGC service is healthy", latency_ms
                 )
                 return True
-            else:
-                self.log_test_result(test_name, False, f"HTTP {response.status_code}")
-                return False
+            self.log_test_result(test_name, False, f"HTTP {response.status_code}")
+            return False
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Connection error: {str(e)}")
+            self.log_test_result(test_name, False, f"Connection error: {e!s}")
             return False
 
     async def test_ec_constitutional_prompting(self):
@@ -180,17 +178,16 @@ class Phase2TestSuite:
                     latency_ms,
                 )
                 return True
-            else:
-                self.log_test_result(
-                    test_name,
-                    False,
-                    f"HTTP {response.status_code}: {response.text}",
-                    latency_ms,
-                )
-                return False
+            self.log_test_result(
+                test_name,
+                False,
+                f"HTTP {response.status_code}: {response.text}",
+                latency_ms,
+            )
+            return False
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Error: {str(e)}")
+            self.log_test_result(test_name, False, f"Error: {e!s}")
             return False
 
     async def test_ec_governance_evaluation(self):
@@ -253,17 +250,16 @@ class Phase2TestSuite:
                     latency_ms,
                 )
                 return True
-            else:
-                self.log_test_result(
-                    test_name,
-                    False,
-                    f"HTTP {response.status_code}: {response.text}",
-                    latency_ms,
-                )
-                return False
+            self.log_test_result(
+                test_name,
+                False,
+                f"HTTP {response.status_code}: {response.text}",
+                latency_ms,
+            )
+            return False
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Error: {str(e)}")
+            self.log_test_result(test_name, False, f"Error: {e!s}")
             return False
 
     async def test_pgc_batch_evaluation(self):
@@ -313,17 +309,16 @@ class Phase2TestSuite:
                     )
 
                 return performance_ok
-            else:
-                self.log_test_result(
-                    test_name,
-                    False,
-                    f"HTTP {response.status_code}: {response.text}",
-                    latency_ms,
-                )
-                return False
+            self.log_test_result(
+                test_name,
+                False,
+                f"HTTP {response.status_code}: {response.text}",
+                latency_ms,
+            )
+            return False
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Error: {str(e)}")
+            self.log_test_result(test_name, False, f"Error: {e!s}")
             return False
 
     async def test_pgc_single_evaluation(self):
@@ -372,17 +367,16 @@ class Phase2TestSuite:
                     )
 
                 return performance_ok
-            else:
-                self.log_test_result(
-                    test_name,
-                    False,
-                    f"HTTP {response.status_code}: {response.text}",
-                    latency_ms,
-                )
-                return False
+            self.log_test_result(
+                test_name,
+                False,
+                f"HTTP {response.status_code}: {response.text}",
+                latency_ms,
+            )
+            return False
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Error: {str(e)}")
+            self.log_test_result(test_name, False, f"Error: {e!s}")
             return False
 
     async def test_cache_functionality(self):
@@ -430,16 +424,15 @@ class Phase2TestSuite:
                     f"Cache populated: {initial_size} -> {final_size} entries",
                 )
                 return True
-            else:
-                self.log_test_result(
-                    test_name,
-                    False,
-                    f"Cache not populated: {initial_size} -> {final_size} entries",
-                )
-                return False
+            self.log_test_result(
+                test_name,
+                False,
+                f"Cache not populated: {initial_size} -> {final_size} entries",
+            )
+            return False
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Error: {str(e)}")
+            self.log_test_result(test_name, False, f"Error: {e!s}")
             return False
 
     async def run_all_tests(self):
@@ -482,7 +475,7 @@ class Phase2TestSuite:
         print(f"Total Tests: {total_tests}")
         print(f"Passed: {passed_tests}")
         print(f"Failed: {total_tests - passed_tests}")
-        print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
+        print(f"Success Rate: {(passed_tests / total_tests) * 100:.1f}%")
 
         # Performance summary
         latencies = [r["latency_ms"] for r in self.test_results if r["latency_ms"] > 0]
@@ -525,9 +518,8 @@ async def main():
         if success:
             print("\n🎉 All Phase 2 AlphaEvolve integration tests passed!")
             return 0
-        else:
-            print("\n⚠️  Some Phase 2 tests failed. Check the results above.")
-            return 1
+        print("\n⚠️  Some Phase 2 tests failed. Check the results above.")
+        return 1
 
     finally:
         await test_suite.cleanup()

@@ -7,22 +7,22 @@ Handles agent lifecycle, permissions, and integration with existing auth systems
 
 import secrets
 import uuid
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Optional, Tuple, Any
+from datetime import datetime, timezone
+from typing import Any
 
-from sqlalchemy import and_, or_, func
+from sqlalchemy import and_, func, or_
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
 
 from ..core.security import get_password_hash, verify_password
-from ..models.agent import Agent, AgentSession, AgentAuditLog, AgentStatus, AgentType
 from ..models import User
+from ..models.agent import Agent, AgentAuditLog, AgentStatus
 from ..schemas.agent import (
     AgentCreate,
-    AgentUpdate,
     AgentSearchRequest,
     AgentStatusUpdate,
+    AgentUpdate,
 )
 
 
@@ -37,8 +37,8 @@ class AgentService:
         db: AsyncSession,
         agent_data: AgentCreate,
         created_by_user_id: int,
-        client_ip: Optional[str] = None,
-    ) -> Tuple[Agent, str]:
+        client_ip: str | None = None,
+    ) -> tuple[Agent, str]:
         """
         Create a new agent with unique identity and credentials.
 
@@ -116,7 +116,7 @@ class AgentService:
         await db.commit()
         return agent, api_key
 
-    async def get_agent(self, db: AsyncSession, agent_id: str) -> Optional[Agent]:
+    async def get_agent(self, db: AsyncSession, agent_id: str) -> Agent | None:
         """Get agent by agent_id."""
         result = await db.execute(
             select(Agent)
@@ -127,7 +127,7 @@ class AgentService:
 
     async def get_agent_by_uuid(
         self, db: AsyncSession, uuid: uuid.UUID
-    ) -> Optional[Agent]:
+    ) -> Agent | None:
         """Get agent by UUID."""
         result = await db.execute(
             select(Agent).options(selectinload(Agent.owner)).where(Agent.id == uuid)
@@ -140,8 +140,8 @@ class AgentService:
         agent_id: str,
         agent_data: AgentUpdate,
         updated_by_user_id: int,
-        client_ip: Optional[str] = None,
-    ) -> Optional[Agent]:
+        client_ip: str | None = None,
+    ) -> Agent | None:
         """Update an existing agent."""
         agent = await self.get_agent(db, agent_id)
         if not agent:
@@ -191,8 +191,8 @@ class AgentService:
         agent_id: str,
         status_update: AgentStatusUpdate,
         updated_by_user_id: int,
-        client_ip: Optional[str] = None,
-    ) -> Optional[Agent]:
+        client_ip: str | None = None,
+    ) -> Agent | None:
         """Update agent status with proper lifecycle management."""
         agent = await self.get_agent(db, agent_id)
         if not agent:
@@ -237,9 +237,9 @@ class AgentService:
         self,
         db: AsyncSession,
         search_request: AgentSearchRequest,
-        user_id: Optional[int] = None,
+        user_id: int | None = None,
         is_admin: bool = False,
-    ) -> Tuple[List[Agent], int]:
+    ) -> tuple[list[Agent], int]:
         """Search agents with filtering and pagination."""
         query = select(Agent).options(selectinload(Agent.owner))
 
@@ -313,8 +313,8 @@ class AgentService:
         db: AsyncSession,
         agent_id: str,
         api_key: str,
-        client_ip: Optional[str] = None,
-    ) -> Optional[Agent]:
+        client_ip: str | None = None,
+    ) -> Agent | None:
         """Authenticate agent using API key."""
         agent = await self.get_agent(db, agent_id)
         if not agent or not agent.is_active():
@@ -368,12 +368,12 @@ class AgentService:
         agent_id: uuid.UUID,
         event_type: str,
         event_description: str,
-        performed_by_user_id: Optional[int] = None,
-        performed_by_system: Optional[str] = None,
-        old_values: Optional[Dict[str, Any]] = None,
-        new_values: Optional[Dict[str, Any]] = None,
-        client_ip: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        performed_by_user_id: int | None = None,
+        performed_by_system: str | None = None,
+        old_values: dict[str, Any] | None = None,
+        new_values: dict[str, Any] | None = None,
+        client_ip: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> AgentAuditLog:
         """Create an audit log entry for agent operations."""
         audit_log = AgentAuditLog(

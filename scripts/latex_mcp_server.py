@@ -2,6 +2,7 @@
 """
 MCP Server for LaTeX compilation in ACGS-1
 """
+
 import json
 import subprocess
 import sys
@@ -19,6 +20,7 @@ def handle_compile_request(request: dict[str, Any]) -> dict[str, Any]:
         # Run the compilation script
         result = subprocess.run(
             ["python", "/home/dislove/ACGS-1/scripts/compile_latex_paper.py"],
+            check=False,
             capture_output=True,
             text=True,
         )

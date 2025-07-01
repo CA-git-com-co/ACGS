@@ -9,7 +9,7 @@ import glob
 import json
 import os
 import sys
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -51,28 +51,25 @@ class SLADashboard:
         """Format percentage with color coding."""
         if value >= target:
             return f"🟢 {value:.2f}%"
-        elif value >= target * 0.98:  # Within 2% of target
+        if value >= target * 0.98:  # Within 2% of target
             return f"🟡 {value:.2f}%"
-        else:
-            return f"🔴 {value:.2f}%"
+        return f"🔴 {value:.2f}%"
 
     def format_response_time(self, value: float, target: float) -> str:
         """Format response time with color coding."""
         if value <= target:
             return f"🟢 {value:.1f}ms"
-        elif value <= target * 1.2:  # Within 20% of target
+        if value <= target * 1.2:  # Within 20% of target
             return f"🟡 {value:.1f}ms"
-        else:
-            return f"🔴 {value:.1f}ms"
+        return f"🔴 {value:.1f}ms"
 
     def format_sol_cost(self, value: float, target: float) -> str:
         """Format SOL cost with color coding."""
         if value <= target:
             return f"🟢 {value:.4f} SOL"
-        elif value <= target * 1.2:
+        if value <= target * 1.2:
             return f"🟡 {value:.4f} SOL"
-        else:
-            return f"🔴 {value:.4f} SOL"
+        return f"🔴 {value:.4f} SOL"
 
     def display_header(self):
         """Display dashboard header."""
@@ -213,7 +210,7 @@ class SLADashboard:
                     else "📉" if uptime_values[-1] < uptime_values[0] else "➡️"
                 )
                 print(
-                    f"Uptime Trend:       {uptime_trend} Avg: {sum(uptime_values)/len(uptime_values):.2f}% "
+                    f"Uptime Trend:       {uptime_trend} Avg: {sum(uptime_values) / len(uptime_values):.2f}% "
                     f"(Min: {min(uptime_values):.2f}%, Max: {max(uptime_values):.2f}%)"
                 )
 
@@ -224,7 +221,7 @@ class SLADashboard:
                     else "📈" if response_times[-1] > response_times[0] else "➡️"
                 )
                 print(
-                    f"Response Trend:     {response_trend} Avg: {sum(response_times)/len(response_times):.1f}ms "
+                    f"Response Trend:     {response_trend} Avg: {sum(response_times) / len(response_times):.1f}ms "
                     f"(Min: {min(response_times):.1f}ms, Max: {max(response_times):.1f}ms)"
                 )
 

@@ -108,6 +108,7 @@ class ProductionReadinessValidator:
                     "-text",
                     "-noout",
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
             )
@@ -134,7 +135,9 @@ class ProductionReadinessValidator:
 
         # Check container security
         try:
-            result = subprocess.run(["docker", "ps"], capture_output=True, text=True)
+            result = subprocess.run(
+                ["docker", "ps"], check=False, capture_output=True, text=True
+            )
             if result.returncode == 0:
                 container_count = len(
                     [line for line in result.stdout.split("\n") if "acgs" in line]

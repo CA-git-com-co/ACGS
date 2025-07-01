@@ -7,11 +7,11 @@ A simplified test runner that uses only standard library modules.
 
 import json
 import time
-import urllib.request
-import urllib.parse
 import urllib.error
+import urllib.parse
+import urllib.request
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from typing import Any
 
 
 class SimpleTestRunner:
@@ -28,7 +28,7 @@ class SimpleTestRunner:
         }
         self.test_results = []
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Run the complete test suite."""
         print("🧪 ACGS Simple Test Suite")
         print("=" * 50)
@@ -63,7 +63,7 @@ class SimpleTestRunner:
 
         return summary
 
-    def test_service_health(self) -> Dict[str, Any]:
+    def test_service_health(self) -> dict[str, Any]:
         """Test health of all ACGS services."""
         health_results = []
 
@@ -106,7 +106,7 @@ class SimpleTestRunner:
                         "error": str(e),
                     }
                 )
-                print(f"  ❌ {service_name}: Connection failed - {str(e)}")
+                print(f"  ❌ {service_name}: Connection failed - {e!s}")
 
         healthy_count = sum(1 for h in health_results if h["healthy"])
         return {
@@ -116,7 +116,7 @@ class SimpleTestRunner:
             "all_healthy": healthy_count == len(health_results),
         }
 
-    def test_basic_functionality(self) -> Dict[str, Any]:
+    def test_basic_functionality(self) -> dict[str, Any]:
         """Test basic functionality of services."""
         results = []
 
@@ -202,7 +202,7 @@ class SimpleTestRunner:
             "results": results,
         }
 
-    def test_service_integration(self) -> Dict[str, Any]:
+    def test_service_integration(self) -> dict[str, Any]:
         """Test basic service integration."""
         results = []
 
@@ -298,7 +298,7 @@ class SimpleTestRunner:
             "results": results,
         }
 
-    def test_error_handling(self) -> Dict[str, Any]:
+    def test_error_handling(self) -> dict[str, Any]:
         """Test error handling."""
         results = []
 
@@ -314,7 +314,7 @@ class SimpleTestRunner:
             )
             print("  ✅ Invalid endpoint handling")
 
-        except Exception as e:
+        except Exception:
             # Expected to fail, which is good
             results.append(
                 {"test_name": "invalid_endpoint_handling", "status": "passed"}
@@ -335,7 +335,7 @@ class SimpleTestRunner:
             results.append({"test_name": "invalid_data_handling", "status": "passed"})
             print("  ✅ Invalid data handling")
 
-        except Exception as e:
+        except Exception:
             # Expected to fail, which is good
             results.append({"test_name": "invalid_data_handling", "status": "passed"})
             print("  ✅ Invalid data handling (properly rejected)")
@@ -349,8 +349,8 @@ class SimpleTestRunner:
         }
 
     def _make_request(
-        self, url: str, method: str = "GET", data: Optional[Dict[str, Any]] = None
-    ) -> Optional[Dict[str, Any]]:
+        self, url: str, method: str = "GET", data: dict[str, Any] | None = None
+    ) -> dict[str, Any] | None:
         """Make HTTP request using urllib."""
         try:
             if method == "POST" and data:
@@ -378,7 +378,7 @@ class SimpleTestRunner:
         except Exception as e:
             return {"status": "error", "message": str(e)}
 
-    def _print_phase_results(self, phase_name: str, results: Dict[str, Any]):
+    def _print_phase_results(self, phase_name: str, results: dict[str, Any]):
         """Print results for a test phase."""
         if "error" in results:
             print(f"  ❌ {phase_name} failed: {results['error']}")
@@ -402,8 +402,8 @@ class SimpleTestRunner:
                 print(f"  ⚠️  {healthy}/{total} services healthy")
 
     def _generate_summary_report(
-        self, all_results: Dict[str, Any], total_time: float
-    ) -> Dict[str, Any]:
+        self, all_results: dict[str, Any], total_time: float
+    ) -> dict[str, Any]:
         """Generate test summary report."""
         print("📊 Test Summary Report")
         print("=" * 50)
@@ -440,7 +440,7 @@ class SimpleTestRunner:
             print(f"Service Health: {healthy}/{total_services} services healthy ⚠️")
 
         # Basic assessment
-        print(f"\nACGS System Assessment:")
+        print("\nACGS System Assessment:")
         if total_failed == 0 and health_results.get("all_healthy", False):
             print("✅ ACGS system is operational and ready for use")
         elif total_failed <= 2:
@@ -469,7 +469,7 @@ def main():
     try:
         with open("simple_test_results.json", "w") as f:
             json.dump(summary, f, indent=2)
-        print(f"\n📁 Test results saved to: simple_test_results.json")
+        print("\n📁 Test results saved to: simple_test_results.json")
     except Exception as e:
         print(f"⚠️  Could not save test results: {e}")
 

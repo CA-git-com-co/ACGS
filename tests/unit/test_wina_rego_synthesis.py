@@ -18,7 +18,8 @@ import asyncio
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
-from services.core.governance_synthesis.gs_service.app.core.wina_rego_synthesis import (  # noqa: E501
+
+from services.core.governance_synthesis.gs_service.app.core.wina_rego_synthesis import (
     WINARegoSynthesisMetrics,
     WINARegoSynthesisResult,
     WINARegoSynthesizer,
@@ -100,10 +101,10 @@ class TestWINARegoSynthesizer:
         with patch.object(
             wina_synthesizer.wina_llm_client, "get_constitutional_synthesis_optimized"
         ) as mock_synthesis:
-            from services.core.governance_synthesis.gs_service.app.core.wina_llm_integration import (  # noqa: E501
+            from services.core.governance_synthesis.gs_service.app.core.wina_llm_integration import (
                 WINAOptimizedSynthesisResult,
             )
-            from services.core.governance_synthesis.gs_service.app.schemas import (  # noqa: E501
+            from services.core.governance_synthesis.gs_service.app.schemas import (
                 ConstitutionalSynthesisOutput,
             )
 

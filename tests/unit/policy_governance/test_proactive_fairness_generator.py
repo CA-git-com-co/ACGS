@@ -2,16 +2,7 @@
 Unit tests for services.core.policy-governance.pgc_service.app.core.proactive_fairness_generator
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.policy_governance.pgc_service.app.core.proactive_fairness_generator import (
-    FairnessMetric,
-    ProtectedAttribute,
-    FairnessConstraint,
-    FairnessGenerationConfig,
-    FairnessAssessment,
-    BiasDetectionEngine,
-    FairnessOptimizer,
     ProactiveFairnessGenerator,
 )
 

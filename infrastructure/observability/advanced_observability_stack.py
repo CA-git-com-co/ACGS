@@ -5,24 +5,23 @@ Comprehensive observability with OpenTelemetry, distributed tracing, advanced me
 """
 
 import asyncio
-import json
 import logging
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Dict, List, Optional, Any
+from typing import Any
 
-from opentelemetry import trace, metrics
+from opentelemetry import metrics, trace
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.exporter.prometheus import PrometheusMetricReader
-from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from opentelemetry.instrumentation.asyncpg import AsyncPGInstrumentor
 from opentelemetry.instrumentation.aiohttp_client import AioHttpClientInstrumentor
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.instrumentation.asyncpg import AsyncPGInstrumentor
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from prometheus_client import (
     CollectorRegistry,
     Counter,
@@ -115,8 +114,8 @@ class AdvancedObservabilityStack:
         self.setup_custom_metrics()
 
         # Constitutional compliance tracking
-        self.constitutional_traces: List[ConstitutionalTrace] = []
-        self.compliance_violations: List[Dict] = []
+        self.constitutional_traces: list[ConstitutionalTrace] = []
+        self.compliance_violations: list[dict] = []
 
         # Service instrumentation
         self.instrumented_services = set()
@@ -365,7 +364,7 @@ class AdvancedObservabilityStack:
             compliance_score = 100.0
 
             # Check if result contains constitutional hash
-            if hasattr(result, "get") and callable(getattr(result, "get")):
+            if hasattr(result, "get") and callable(result.get):
                 result_hash = result.get("constitutional_hash")
                 if result_hash != CONSTITUTIONAL_HASH:
                     compliance_score -= 50.0
@@ -392,7 +391,7 @@ class AdvancedObservabilityStack:
             return 0.0
 
     async def create_distributed_trace(
-        self, service_chain: List[str], operation: str
+        self, service_chain: list[str], operation: str
     ) -> str:
         """Create a distributed trace across multiple services."""
         if not self.tracer:
@@ -571,7 +570,7 @@ class AdvancedObservabilityStack:
         except Exception as e:
             logger.error(f"Error analyzing constitutional patterns: {e}")
 
-    def get_observability_status(self) -> Dict[str, Any]:
+    def get_observability_status(self) -> dict[str, Any]:
         """Get observability stack status."""
         return {
             "service_name": self.config.service_name,

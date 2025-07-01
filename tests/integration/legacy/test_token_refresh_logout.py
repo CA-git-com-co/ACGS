@@ -107,9 +107,8 @@ def test_user_login():
         )
 
         return {"cookies": cookies, "csrf_token": csrf_token, "response": response}
-    else:
-        print(f"   ❌ Login failed: {response.status_code} - {response.text}")
-        return None
+    print(f"   ❌ Login failed: {response.status_code} - {response.text}")
+    return None
 
 
 def test_token_refresh(auth_data):
@@ -165,9 +164,8 @@ def test_token_refresh(auth_data):
         )
         print(f"   New CSRF Token: {'✅ Found' if new_csrf_token else '❌ Missing'}")
         return True
-    else:
-        print(f"   ❌ Token refresh failed: {response.text}")
-        return False
+    print(f"   ❌ Token refresh failed: {response.text}")
+    return False
 
 
 def test_logout(auth_data):
@@ -226,9 +224,8 @@ def test_logout(auth_data):
             print("   ⚠️  Authentication cookies may not be cleared")
 
         return True
-    else:
-        print(f"   ❌ Logout failed: {response.text}")
-        return False
+    print(f"   ❌ Logout failed: {response.text}")
+    return False
 
 
 def test_protected_endpoint_after_logout():
@@ -240,9 +237,8 @@ def test_protected_endpoint_after_logout():
     if response.status_code == 401 or response.status_code == 403:
         print("   ✅ Protected endpoint correctly blocked after logout")
         return True
-    else:
-        print(f"   ❌ Protected endpoint still accessible: {response.status_code}")
-        return False
+    print(f"   ❌ Protected endpoint still accessible: {response.status_code}")
+    return False
 
 
 def main():

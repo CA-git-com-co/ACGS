@@ -3,7 +3,6 @@
 Minimal ACGS-1 test suite for validation purposes
 """
 
-import os
 import unittest
 
 

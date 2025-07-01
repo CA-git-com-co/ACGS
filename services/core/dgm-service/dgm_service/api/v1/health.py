@@ -4,12 +4,11 @@ Health check endpoints for DGM Service.
 
 import time
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 
-from ...config import settings
 from ...database import database_manager
 from ...network.service_client import ACGSServiceClient
 from .models import HealthResponse, SystemStatus
@@ -117,7 +116,7 @@ async def readiness_probe():
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Service not ready: {str(e)}",
+            detail=f"Service not ready: {e!s}",
         )
 
 
@@ -166,11 +165,11 @@ async def system_status():
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get system status: {str(e)}",
+            detail=f"Failed to get system status: {e!s}",
         )
 
 
-async def _get_db_pool_stats() -> Dict[str, Any]:
+async def _get_db_pool_stats() -> dict[str, Any]:
     """Get database connection pool statistics."""
     try:
         if database_manager.engine and database_manager.engine.pool:
@@ -188,7 +187,7 @@ async def _get_db_pool_stats() -> Dict[str, Any]:
     return {"status": "unavailable"}
 
 
-async def _get_memory_stats() -> Dict[str, Any]:
+async def _get_memory_stats() -> dict[str, Any]:
     """Get memory usage statistics."""
     try:
         import psutil
@@ -207,7 +206,7 @@ async def _get_memory_stats() -> Dict[str, Any]:
         return {"status": "unavailable"}
 
 
-async def _get_cpu_stats() -> Dict[str, Any]:
+async def _get_cpu_stats() -> dict[str, Any]:
     """Get CPU usage statistics."""
     try:
         import psutil

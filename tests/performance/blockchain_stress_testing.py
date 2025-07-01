@@ -32,7 +32,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 import numpy as np
@@ -83,7 +83,7 @@ class BlockchainStressConfig:
     target_success_rate_percent: float = 99.9
     constitution_hash: str = "cdd01ef066bc6cf2"
     solana_rpc_url: str = "https://api.devnet.solana.com"
-    quantumagi_programs: List[str] = field(
+    quantumagi_programs: list[str] = field(
         default_factory=lambda: ["constitution", "policy", "appeals_logging"]
     )
 
@@ -99,9 +99,9 @@ class BlockchainTransactionResult:
     success: bool
     sol_cost: float
     confirmation_time_seconds: float
-    block_height: Optional[int]
+    block_height: int | None
     timestamp: datetime
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 class QuantumagiProgramTester:
@@ -284,7 +284,7 @@ class ConstitutionalGovernanceStressTester:
 
     async def execute_governance_workflow(
         self, workflow_type: str, user_id: str
-    ) -> List[BlockchainTransactionResult]:
+    ) -> list[BlockchainTransactionResult]:
         """Execute a complete governance workflow on blockchain."""
         results = []
 
@@ -336,12 +336,12 @@ class BlockchainStressTester:
 
     def __init__(self, config: BlockchainStressConfig):
         self.config = config
-        self.results: List[BlockchainTransactionResult] = []
+        self.results: list[BlockchainTransactionResult] = []
         self.active_transactions = 0
 
     async def simulate_concurrent_user(
         self, user_id: str, session_duration: float
-    ) -> List[BlockchainTransactionResult]:
+    ) -> list[BlockchainTransactionResult]:
         """Simulate concurrent user blockchain interactions."""
         user_results = []
         session_start = time.time()
@@ -388,7 +388,7 @@ class BlockchainStressTester:
 
         return user_results
 
-    async def run_blockchain_stress_test(self) -> Dict[str, Any]:
+    async def run_blockchain_stress_test(self) -> dict[str, Any]:
         """Run comprehensive blockchain stress test."""
         logger.info(
             f"Starting blockchain stress test with {self.config.max_concurrent_transactions} concurrent transactions"
@@ -422,7 +422,7 @@ class BlockchainStressTester:
         # Calculate performance metrics
         return self._calculate_blockchain_metrics(total_duration)
 
-    def _calculate_blockchain_metrics(self, duration: float) -> Dict[str, Any]:
+    def _calculate_blockchain_metrics(self, duration: float) -> dict[str, Any]:
         """Calculate comprehensive blockchain performance metrics."""
         if not self.results:
             return {"error": "No blockchain results collected"}
@@ -527,7 +527,7 @@ class BlockchainStressTester:
             "performance_assessment": performance_assessment,
         }
 
-        logger.info(f"Blockchain Stress Test Results:")
+        logger.info("Blockchain Stress Test Results:")
         logger.info(f"  Total Transactions: {total_transactions}")
         logger.info(f"  Success Rate: {success_rate:.2f}%")
         logger.info(f"  Avg Cost: {avg_cost:.6f} SOL")
@@ -536,7 +536,7 @@ class BlockchainStressTester:
 
         return results
 
-    def save_results(self, filepath: str, metrics: Dict[str, Any]):
+    def save_results(self, filepath: str, metrics: dict[str, Any]):
         """Save blockchain stress test results to file."""
         Path(filepath).parent.mkdir(parents=True, exist_ok=True)
         with open(filepath, "w") as f:

@@ -10,7 +10,6 @@ import asyncio
 import logging
 import sys
 import time
-import hashlib
 from pathlib import Path
 
 # Add project root to path
@@ -135,9 +134,8 @@ async def verify_cache_cleared():
             )
             logger.error(f"   Cached data: {cache_result['result']}")
             return False
-        else:
-            logger.info(f"✅ Cache cleared - no entry found for {test_cache_key}")
-            return True
+        logger.info(f"✅ Cache cleared - no entry found for {test_cache_key}")
+        return True
 
     except Exception as e:
         logger.error(f"❌ Cache verification failed: {e}")
@@ -150,10 +148,10 @@ async def test_constitutional_compliance():
 
     try:
         from services.shared.multimodal_ai_service import (
-            get_multimodal_service,
+            ContentType,
             MultimodalRequest,
             RequestType,
-            ContentType,
+            get_multimodal_service,
         )
 
         service = await get_multimodal_service()
@@ -232,10 +230,9 @@ async def main():
         logger.info("✅ Democratic content correctly identified as compliant")
         logger.info(f"⏱️ Total time: {total_time:.2f} seconds")
         return 0
-    else:
-        logger.error("❌ FAILED - Constitutional compliance still not working")
-        logger.error("   Further investigation required")
-        return 1
+    logger.error("❌ FAILED - Constitutional compliance still not working")
+    logger.error("   Further investigation required")
+    return 1
 
 
 if __name__ == "__main__":

@@ -5,7 +5,6 @@ Tests system performance characteristics
 """
 
 import unittest
-import time
 
 
 class TestPerformanceMetrics(unittest.TestCase):

@@ -144,11 +144,10 @@ class ServiceStackValidator:
                                 f"✅ {service_name} is healthy ({response_time:.1f}ms)"
                             )
                             break
-                        else:
-                            result["error"] = f"HTTP {response.status}"
-                            logger.warning(
-                                f"⚠️ {service_name} returned HTTP {response.status}"
-                            )
+                        result["error"] = f"HTTP {response.status}"
+                        logger.warning(
+                            f"⚠️ {service_name} returned HTTP {response.status}"
+                        )
 
             except TimeoutError:
                 result["error"] = "Timeout"
@@ -217,7 +216,6 @@ class ServiceStackValidator:
         try:
             timeout = aiohttp.ClientTimeout(total=self.health_timeout)
             async with aiohttp.ClientSession(timeout=timeout) as session:
-
                 # Test auth service endpoints
                 if "auth_service" in healthy_services:
                     try:
@@ -302,11 +300,10 @@ class ServiceStackValidator:
 
             if result["healthy"]:
                 healthy_services.append(service_name)
+            elif service_config["required"]:
+                unhealthy_required_services.append(service_name)
             else:
-                if service_config["required"]:
-                    unhealthy_required_services.append(service_name)
-                else:
-                    unhealthy_optional_services.append(service_name)
+                unhealthy_optional_services.append(service_name)
 
         # Step 4: Test service interactions
         interaction_results = await self.test_service_interactions(healthy_services)

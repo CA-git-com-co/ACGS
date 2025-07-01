@@ -10,7 +10,7 @@ from .models import StabilizerResult, StabilizerStatus, SyndromeVector
 
 __all__ = [
     "StabilizerExecutionEnvironment",
-    "StabilizerStatus",
     "StabilizerResult",
+    "StabilizerStatus",
     "SyndromeVector",
 ]

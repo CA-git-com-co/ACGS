@@ -11,7 +11,7 @@ import logging
 import statistics
 import time
 from dataclasses import asdict, dataclass
-from datetime import timezone, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -455,8 +455,7 @@ class ACGSSLAMonitor:
                         await response.json()
                         # Extract accuracy from response (this would be more sophisticated)
                         return 95.5  # Simulated accuracy
-                    else:
-                        return 90.0  # Degraded accuracy when service issues
+                    return 90.0  # Degraded accuracy when service issues
         except Exception:
             return 85.0  # Default when unable to measure
 

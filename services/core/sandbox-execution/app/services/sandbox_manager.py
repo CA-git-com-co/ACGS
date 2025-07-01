@@ -4,28 +4,25 @@ Sandbox Manager Service
 Core service for managing secure execution environments using Docker containers.
 """
 
-import asyncio
 import logging
 import tempfile
-import shutil
-import os
-import json
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any, Tuple
 from pathlib import Path
+from typing import Any
 
-import docker
-from docker.errors import DockerException, ContainerError, ImageNotFound
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+import docker
+from docker.errors import DockerException
+
 from ..core.config import settings
 from ..models.execution import (
-    SandboxExecution,
-    ExecutionPolicy,
     ExecutionAuditLog,
-    ExecutionStatus,
     ExecutionEnvironment,
+    ExecutionPolicy,
+    ExecutionStatus,
+    SandboxExecution,
 )
 
 logger = logging.getLogger(__name__)
@@ -45,8 +42,8 @@ class SandboxManager:
 
     def __init__(self):
         self.docker_client = docker.from_env()
-        self.active_containers: Dict[str, docker.models.containers.Container] = {}
-        self.execution_policies: Dict[str, Dict] = settings.EXECUTION_POLICIES
+        self.active_containers: dict[str, docker.models.containers.Container] = {}
+        self.execution_policies: dict[str, dict] = settings.EXECUTION_POLICIES
 
     async def create_execution(
         self,
@@ -56,10 +53,10 @@ class SandboxManager:
         environment: str,
         code: str,
         language: str,
-        execution_context: Optional[Dict[str, Any]] = None,
-        input_files: Optional[List[Dict[str, Any]]] = None,
-        environment_variables: Optional[Dict[str, str]] = None,
-        request_metadata: Optional[Dict[str, Any]] = None,
+        execution_context: dict[str, Any] | None = None,
+        input_files: list[dict[str, Any]] | None = None,
+        environment_variables: dict[str, str] | None = None,
+        request_metadata: dict[str, Any] | None = None,
     ) -> SandboxExecution:
         """
         Create a new sandbox execution session.
@@ -220,13 +217,13 @@ class SandboxManager:
                 db=db,
                 execution_id=execution.id,
                 event_type="execution_failed",
-                event_description=f"Execution failed: {str(e)}",
+                event_description=f"Execution failed: {e!s}",
                 event_data={"error": str(e)},
             )
 
         return execution
 
-    async def _execute_python(self, execution: SandboxExecution) -> Dict[str, Any]:
+    async def _execute_python(self, execution: SandboxExecution) -> dict[str, Any]:
         """Execute Python code in a secure container."""
         return await self._execute_in_container(
             image=settings.PYTHON_BASE_IMAGE,
@@ -234,7 +231,7 @@ class SandboxManager:
             command=["python", "-c", execution.code],
         )
 
-    async def _execute_bash(self, execution: SandboxExecution) -> Dict[str, Any]:
+    async def _execute_bash(self, execution: SandboxExecution) -> dict[str, Any]:
         """Execute Bash code in a secure container."""
         return await self._execute_in_container(
             image=settings.BASH_BASE_IMAGE,
@@ -242,7 +239,7 @@ class SandboxManager:
             command=["bash", "-c", execution.code],
         )
 
-    async def _execute_node(self, execution: SandboxExecution) -> Dict[str, Any]:
+    async def _execute_node(self, execution: SandboxExecution) -> dict[str, Any]:
         """Execute Node.js code in a secure container."""
         return await self._execute_in_container(
             image=settings.NODE_BASE_IMAGE,
@@ -254,8 +251,8 @@ class SandboxManager:
         self,
         image: str,
         execution: SandboxExecution,
-        command: List[str],
-    ) -> Dict[str, Any]:
+        command: list[str],
+    ) -> dict[str, Any]:
         """
         Execute code in a Docker container with security restrictions.
 
@@ -412,7 +409,7 @@ class SandboxManager:
                 "status": ExecutionStatus.ERROR.value,
                 "exit_code": -1,
                 "stdout": "",
-                "stderr": f"Docker execution failed: {str(e)}",
+                "stderr": f"Docker execution failed: {e!s}",
                 "execution_time_ms": 0,
             }
         finally:
@@ -426,7 +423,7 @@ class SandboxManager:
         agent_id: str,
         agent_type: str,
         environment: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get execution policy for agent and environment."""
         # First check for agent-specific policy
         result = await db.execute(
@@ -462,8 +459,8 @@ class SandboxManager:
         return self.execution_policies.get(environment, {})
 
     async def _validate_code_policy(
-        self, code: str, language: str, policy: Dict[str, Any]
-    ) -> List[str]:
+        self, code: str, language: str, policy: dict[str, Any]
+    ) -> list[str]:
         """Validate code against execution policy."""
         violations = []
 
@@ -503,7 +500,7 @@ class SandboxManager:
 
     async def _check_security_violations(
         self, stdout: str, stderr: str, environment: str
-    ) -> List[str]:
+    ) -> list[str]:
         """Check execution output for security violations."""
         violations = []
 
@@ -528,7 +525,7 @@ class SandboxManager:
         return violations
 
     async def _write_input_files(
-        self, work_dir: Path, input_files: List[Dict[str, Any]]
+        self, work_dir: Path, input_files: list[dict[str, Any]]
     ) -> None:
         """Write input files to the working directory."""
         for file_data in input_files:
@@ -543,7 +540,7 @@ class SandboxManager:
                 content = base64.b64decode(file_data["base64_content"])
                 file_path.write_bytes(content)
 
-    def _calculate_cpu_usage(self, cpu_stats: Dict[str, Any]) -> Optional[float]:
+    def _calculate_cpu_usage(self, cpu_stats: dict[str, Any]) -> float | None:
         """Calculate CPU usage percentage from container stats."""
         try:
             cpu_delta = cpu_stats["cpu_usage"]["total_usage"] - cpu_stats.get(
@@ -571,7 +568,7 @@ class SandboxManager:
         execution_id: str,
         event_type: str,
         event_description: str,
-        event_data: Optional[Dict[str, Any]] = None,
+        event_data: dict[str, Any] | None = None,
     ) -> None:
         """Create an audit log entry."""
         audit_log = ExecutionAuditLog(

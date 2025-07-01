@@ -118,7 +118,6 @@ class TestAuthenticationIntegration:
 
         # Test permission validation
         for role, permissions in role_permissions.items():
-
             # Verify role has appropriate permissions
             if role == "admin":
                 assert "constitutional_changes" in permissions

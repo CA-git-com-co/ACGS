@@ -45,7 +45,6 @@ try:
     from services.core.governance_synthesis.gs_service.app.models.reliability_models import (
         ConstitutionalPrinciple,
     )
-
     from services.shared.models import Policy
 except ImportError:
     # Mock ConstitutionalPrinciple for testing
@@ -320,10 +319,11 @@ class TestQECErrorCorrectionService:
 
         # Test complexity scoring
         for conflict in conflicts[:2]:  # Test first 2 conflicts
-            complexity_score, requires_escalation = (
-                await qec_service.complexity_scorer.score_complexity(
-                    conflict=conflict, context_data={"complexity_test": True}
-                )
+            (
+                complexity_score,
+                requires_escalation,
+            ) = await qec_service.complexity_scorer.score_complexity(
+                conflict=conflict, context_data={"complexity_test": True}
             )
 
             # Verify complexity scoring

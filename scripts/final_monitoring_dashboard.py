@@ -6,15 +6,14 @@ A simple monitoring interface using only standard library and available modules.
 """
 
 import asyncio
-import json
 import time
-import statistics
-from typing import Dict, List, Any
 from datetime import datetime
+from typing import Any
+
 import httpx
+import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
-import uvicorn
 
 # Configuration
 SERVICES = {
@@ -31,7 +30,7 @@ class FinalACGSMonitor:
         self.http_client = httpx.AsyncClient(timeout=10.0)
         self.alerts = []
 
-    async def get_service_health(self) -> Dict[str, Any]:
+    async def get_service_health(self) -> dict[str, Any]:
         """Get health status of all services."""
         health_data = {
             "timestamp": datetime.utcnow().isoformat(),
@@ -77,7 +76,7 @@ class FinalACGSMonitor:
 
         return health_data
 
-    async def test_hitl_performance(self) -> Dict[str, Any]:
+    async def test_hitl_performance(self) -> dict[str, Any]:
         """Test HITL service performance."""
         try:
             test_request = {
@@ -114,7 +113,7 @@ class FinalACGSMonitor:
         except Exception as e:
             return {"error": str(e), "success": False}
 
-    async def get_dashboard_data(self) -> Dict[str, Any]:
+    async def get_dashboard_data(self) -> dict[str, Any]:
         """Get comprehensive dashboard data."""
         service_health = await self.get_service_health()
         hitl_performance = await self.test_hitl_performance()

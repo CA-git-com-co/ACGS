@@ -326,9 +326,9 @@ class ManifestManager:
         # File extension based detection
         if file_extension == ".rego":
             return "Rego"
-        elif file_extension in [".json", ".jsonl"]:
+        if file_extension in [".json", ".jsonl"]:
             return "JSON"
-        elif file_extension in [".yaml", ".yml"]:
+        if file_extension in [".yaml", ".yml"]:
             return "YAML"
 
         # Content-based detection
@@ -336,11 +336,11 @@ class ManifestManager:
             "allow" in content_lower or "deny" in content_lower
         ):
             return "Rego"
-        elif content.strip().startswith("{") or '"Statement"' in content:
+        if content.strip().startswith("{") or '"Statement"' in content:
             return "JSON"
-        elif any(line.strip().endswith(":") for line in content.split("\n")[:5]):
+        if any(line.strip().endswith(":") for line in content.split("\n")[:5]):
             return "YAML"
-        elif "<=" in content or ":-" in content:
+        if "<=" in content or ":-" in content:
             return "Datalog"
 
         return "Unknown"
@@ -437,7 +437,7 @@ class ManifestManager:
         except Exception as e:
             return {
                 "is_valid": False,
-                "errors": [f"Validation failed: {str(e)}"],
+                "errors": [f"Validation failed: {e!s}"],
                 "warnings": [],
                 "file_checks": [],
             }

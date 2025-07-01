@@ -16,7 +16,7 @@ import json
 import logging
 import os
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -40,7 +40,7 @@ class ACGSFinalReportGenerator:
             "cost_per_action_sol": 0.01,
         }
 
-    def load_all_test_results(self) -> Dict[str, Any]:
+    def load_all_test_results(self) -> dict[str, Any]:
         """Load all test results from all phases"""
         logger.info("📊 Loading all test results...")
 
@@ -63,7 +63,7 @@ class ACGSFinalReportGenerator:
         for phase_name, filename in result_files.items():
             try:
                 if os.path.exists(filename):
-                    with open(filename, "r") as f:
+                    with open(filename) as f:
                         all_results[phase_name] = json.load(f)
                     logger.info(f"✅ Loaded {phase_name} results")
                 else:
@@ -75,7 +75,7 @@ class ACGSFinalReportGenerator:
 
         return all_results
 
-    def calculate_overall_system_score(self, all_results: Dict[str, Any]) -> float:
+    def calculate_overall_system_score(self, all_results: dict[str, Any]) -> float:
         """Calculate comprehensive system score"""
         logger.info("🏥 Calculating overall system score...")
 
@@ -119,9 +119,10 @@ class ACGSFinalReportGenerator:
                 score = phase_data.get("executive_summary", {}).get(
                     "overall_success_rate", 0
                 )
-            elif phase_name == "phase4_constitutional":
-                score = phase_data.get("summary", {}).get("success_rate", 0)
-            elif phase_name == "phase5_performance":
+            elif (
+                phase_name == "phase4_constitutional"
+                or phase_name == "phase5_performance"
+            ):
                 score = phase_data.get("summary", {}).get("success_rate", 0)
             else:
                 score = 50  # Default
@@ -141,8 +142,8 @@ class ACGSFinalReportGenerator:
         return final_score
 
     def generate_executive_summary(
-        self, all_results: Dict[str, Any], system_score: float
-    ) -> Dict[str, Any]:
+        self, all_results: dict[str, Any], system_score: float
+    ) -> dict[str, Any]:
         """Generate executive summary"""
         logger.info("📋 Generating executive summary...")
 
@@ -225,8 +226,8 @@ class ACGSFinalReportGenerator:
         }
 
     def generate_recommendations(
-        self, all_results: Dict[str, Any], system_score: float
-    ) -> List[str]:
+        self, all_results: dict[str, Any], system_score: float
+    ) -> list[str]:
         """Generate specific recommendations"""
         logger.info("💡 Generating recommendations...")
 
@@ -297,7 +298,7 @@ class ACGSFinalReportGenerator:
 
         return recommendations
 
-    def generate_final_report(self) -> Dict[str, Any]:
+    def generate_final_report(self) -> dict[str, Any]:
         """Generate comprehensive final report"""
         logger.info("🚀 Generating ACGS-PGP Final Comprehensive Report...")
 
@@ -446,9 +447,8 @@ def main():
         if deployment["status"] in ["READY_FOR_PRODUCTION", "READY_FOR_STAGING"]:
             print("🎉 ACGS-PGP system validation SUCCESSFUL - Ready for deployment!")
             return 0
-        else:
-            print("⚠️ ACGS-PGP system requires additional work before deployment")
-            return 1
+        print("⚠️ ACGS-PGP system requires additional work before deployment")
+        return 1
 
     except Exception as e:
         logger.error(f"Final report generation failed: {e}")

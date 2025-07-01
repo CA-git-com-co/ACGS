@@ -91,6 +91,7 @@ class CoverageAnalyzer:
 
             result = subprocess.run(
                 cmd,
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -100,13 +101,10 @@ class CoverageAnalyzer:
             if result.returncode == 0:
                 print("✅ Tests passed successfully")
                 return True
-            else:
-                print(
-                    f"⚠️  Tests completed with issues (exit code: {result.returncode})"
-                )
-                print("STDOUT:", result.stdout[-500:])  # Last 500 chars
-                print("STDERR:", result.stderr[-500:])
-                return True  # Continue with coverage analysis even if some tests fail
+            print(f"⚠️  Tests completed with issues (exit code: {result.returncode})")
+            print("STDOUT:", result.stdout[-500:])  # Last 500 chars
+            print("STDERR:", result.stderr[-500:])
+            return True  # Continue with coverage analysis even if some tests fail
 
         except subprocess.TimeoutExpired:
             print("❌ Test execution timed out")
@@ -391,9 +389,8 @@ def main():
     if report.get("success", True):
         print("\n✅ Coverage analysis completed successfully")
         return 0
-    else:
-        print("\n❌ Coverage analysis failed")
-        return 1
+    print("\n❌ Coverage analysis failed")
+    return 1
 
 
 if __name__ == "__main__":

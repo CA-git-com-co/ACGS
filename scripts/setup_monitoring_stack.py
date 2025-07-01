@@ -2,17 +2,17 @@
 """
 ACGS-PGP Monitoring Stack Setup Script
 
-Configures Prometheus metrics collection, Grafana dashboards for constitutional 
+Configures Prometheus metrics collection, Grafana dashboards for constitutional
 compliance monitoring, and alert rules for 0.75 threshold violations.
 """
 
-import os
-import sys
 import json
-import yaml
 import logging
+import sys
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
+
+import yaml
 
 # Configure logging
 logging.basicConfig(
@@ -38,7 +38,7 @@ class MonitoringStackSetup:
             "ec_service": 8006,
         }
 
-    def create_prometheus_config(self) -> Dict[str, Any]:
+    def create_prometheus_config(self) -> dict[str, Any]:
         """Create Prometheus configuration."""
         logger.info("📊 Creating Prometheus configuration...")
 
@@ -76,7 +76,7 @@ class MonitoringStackSetup:
 
         return config
 
-    def create_constitutional_compliance_rules(self) -> Dict[str, Any]:
+    def create_constitutional_compliance_rules(self) -> dict[str, Any]:
         """Create constitutional compliance alert rules."""
         logger.info("🏛️ Creating constitutional compliance alert rules...")
 
@@ -145,7 +145,7 @@ class MonitoringStackSetup:
 
         return rules
 
-    def create_performance_alert_rules(self) -> Dict[str, Any]:
+    def create_performance_alert_rules(self) -> dict[str, Any]:
         """Create performance alert rules."""
         logger.info("⚡ Creating performance alert rules...")
 
@@ -201,7 +201,7 @@ class MonitoringStackSetup:
 
         return rules
 
-    def create_grafana_dashboard(self) -> Dict[str, Any]:
+    def create_grafana_dashboard(self) -> dict[str, Any]:
         """Create Grafana dashboard for constitutional compliance."""
         logger.info("📈 Creating Grafana constitutional compliance dashboard...")
 
@@ -302,7 +302,7 @@ class MonitoringStackSetup:
 
         return dashboard
 
-    def create_docker_compose_monitoring(self) -> Dict[str, Any]:
+    def create_docker_compose_monitoring(self) -> dict[str, Any]:
         """Create Docker Compose for monitoring stack."""
         logger.info("🐳 Creating Docker Compose monitoring configuration...")
 
@@ -367,7 +367,7 @@ class MonitoringStackSetup:
 
         return compose
 
-    def setup_monitoring_stack(self) -> Dict[str, Any]:
+    def setup_monitoring_stack(self) -> dict[str, Any]:
         """Setup complete monitoring stack."""
         logger.info("🚀 Setting up ACGS-PGP monitoring stack...")
 

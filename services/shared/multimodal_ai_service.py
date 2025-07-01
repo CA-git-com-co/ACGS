@@ -16,30 +16,26 @@ Features:
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import asyncio
 import hashlib
 import json
 import logging
 import time
-from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
-from enum import Enum
-from typing import Any, Dict, List, Optional, Union, Tuple
+from typing import Any
 
 import aiohttp
 import numpy as np
-from pydantic import BaseModel, Field
 
-from services.shared.utils import get_config
-from services.shared.multi_level_cache import get_cache_manager
 from services.shared.ai_types import (
-    ModelType,
-    MultimodalRequest,
-    RequestType,
     ContentType,
     ModelMetrics,
+    ModelType,
+    MultimodalRequest,
     MultimodalResponse,
+    RequestType,
 )
+from services.shared.multi_level_cache import get_cache_manager
+from services.shared.utils import get_config
 
 logger = logging.getLogger(__name__)
 
@@ -165,20 +161,20 @@ class ModelRouter:
                     f"Flash Full overloaded, falling back to Flash Lite for {request.request_id}"
                 )
                 return ModelType.FLASH_LITE
-            else:
-                # If Flash Lite is overloaded, queue the request or use Flash Full
-                logger.warning(
-                    f"Flash Lite overloaded, upgrading to Flash Full for {request.request_id}"
-                )
-                return ModelType.FLASH_FULL
+            # If Flash Lite is overloaded, queue the request or use Flash Full
+            logger.warning(
+                f"Flash Lite overloaded, upgrading to Flash Full for {request.request_id}"
+            )
+            return ModelType.FLASH_FULL
 
         return preferred_model
 
     def update_load(self, model: ModelType, increment: int = 1):
         """Update current load for a model."""
         self.load_balancing[model]["current_load"] += increment
-        if self.load_balancing[model]["current_load"] < 0:
-            self.load_balancing[model]["current_load"] = 0
+        self.load_balancing[model]["current_load"] = max(
+            self.load_balancing[model]["current_load"], 0
+        )
 
 
 class OpenRouterClient:
@@ -187,7 +183,7 @@ class OpenRouterClient:
     def __init__(self, api_key: str):
         self.api_key = api_key
         self.base_url = "https://openrouter.ai/api/v1/chat/completions"
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.session: aiohttp.ClientSession | None = None
 
         # Model pricing (approximate, per 1M tokens)
         self.pricing = {
@@ -212,8 +208,8 @@ class OpenRouterClient:
             self.session = None
 
     async def make_request(
-        self, model: ModelType, messages: List[Dict], request_id: str
-    ) -> Dict[str, Any]:
+        self, model: ModelType, messages: list[dict], request_id: str
+    ) -> dict[str, Any]:
         """Make request to OpenRouter API."""
 
         if not self.session:
@@ -247,11 +243,8 @@ class OpenRouterClient:
                     result["_response_time_ms"] = response_time
                     result["_request_id"] = request_id
                     return result
-                else:
-                    error_text = await response.text()
-                    raise Exception(
-                        f"OpenRouter API error {response.status}: {error_text}"
-                    )
+                error_text = await response.text()
+                raise Exception(f"OpenRouter API error {response.status}: {error_text}")
 
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
@@ -277,7 +270,7 @@ class MultimodalAIService:
 
         # Initialize components
         self.router = ModelRouter()
-        self.openrouter_client: Optional[OpenRouterClient] = None
+        self.openrouter_client: OpenRouterClient | None = None
         self.cache_manager = None
         self.ml_optimizer = None
         self.production_ml_optimizer = None
@@ -285,7 +278,7 @@ class MultimodalAIService:
         # Performance tracking
         self.metrics = {
             "total_requests": 0,
-            "model_usage": {model: 0 for model in ModelType},
+            "model_usage": dict.fromkeys(ModelType, 0),
             "response_times": [],
             "constitutional_compliance_rate": 0.0,
             "cache_hit_rate": 0.0,
@@ -349,8 +342,8 @@ class MultimodalAIService:
         logger.info("Multimodal AI Service closed")
 
     async def _select_model_with_production_optimizer(
-        self, request: MultimodalRequest, available_models: List[ModelType]
-    ) -> Tuple[ModelType, Dict[str, float]]:
+        self, request: MultimodalRequest, available_models: list[ModelType]
+    ) -> tuple[ModelType, dict[str, float]]:
         """Select optimal model using production ML optimizer with enhanced capabilities."""
 
         # Convert request to feature vector for ML prediction
@@ -440,7 +433,7 @@ class MultimodalAIService:
 
     def _predict_model_performance(
         self, feature_vector: np.ndarray, model_type: ModelType
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Predict model performance using production ML optimizer."""
 
         # Use production ML optimizer if available
@@ -563,10 +556,9 @@ class MultimodalAIService:
                     f"💾 Cached compliance: {cached_response.constitutional_compliance}, confidence: {cached_response.confidence_score:.3f}"
                 )
                 return cached_response
-            else:
-                logger.info(
-                    f"🔍 Cache miss for request {request.request_id} - proceeding with API call"
-                )
+            logger.info(
+                f"🔍 Cache miss for request {request.request_id} - proceeding with API call"
+            )
 
             # Select optimal model using enhanced ML optimization
             available_models = [
@@ -577,10 +569,11 @@ class MultimodalAIService:
 
             # Use production ML optimizer if available (enhanced capabilities)
             if self.production_ml_optimizer:
-                selected_model, ml_predictions = (
-                    await self._select_model_with_production_optimizer(
-                        request, available_models
-                    )
+                (
+                    selected_model,
+                    ml_predictions,
+                ) = await self._select_model_with_production_optimizer(
+                    request, available_models
                 )
                 logger.info(
                     f"🤖 Production ML optimizer selected {selected_model.value}"
@@ -656,7 +649,7 @@ class MultimodalAIService:
 
         return f"multimodal:{request.request_type.value}:{cache_key}"
 
-    async def _check_cache(self, cache_key: str) -> Optional[MultimodalResponse]:
+    async def _check_cache(self, cache_key: str) -> MultimodalResponse | None:
         """Check multi-level cache for existing response."""
 
         if not self.cache_manager:
@@ -709,7 +702,7 @@ class MultimodalAIService:
 
         return None
 
-    def _prepare_messages(self, request: MultimodalRequest) -> List[Dict[str, Any]]:
+    def _prepare_messages(self, request: MultimodalRequest) -> list[dict[str, Any]]:
         """Prepare messages for OpenRouter API."""
 
         # Base system message for constitutional compliance
@@ -774,7 +767,7 @@ Please evaluate:
 
 Provide a clear compliance determination with specific reasoning."""
 
-        elif request.request_type == RequestType.CONTENT_MODERATION:
+        if request.request_type == RequestType.CONTENT_MODERATION:
             return f"""Moderate the following content for policy compliance:
 
 {base_text}
@@ -787,7 +780,7 @@ Check for:
 
 Provide moderation decision with reasoning."""
 
-        elif request.request_type == RequestType.POLICY_ANALYSIS:
+        if request.request_type == RequestType.POLICY_ANALYSIS:
             return f"""Analyze the following policy document:
 
 {base_text}
@@ -800,7 +793,7 @@ Evaluate:
 
 Provide comprehensive policy analysis."""
 
-        elif request.request_type == RequestType.DETAILED_ANALYSIS:
+        if request.request_type == RequestType.DETAILED_ANALYSIS:
             return f"""Provide detailed analysis of the following content:
 
 {base_text}
@@ -813,8 +806,8 @@ Include:
 
 Provide thorough analysis with supporting evidence."""
 
-        else:  # QUICK_ANALYSIS or AUDIT_VALIDATION
-            return f"""Analyze the following content:
+        # QUICK_ANALYSIS or AUDIT_VALIDATION
+        return f"""Analyze the following content:
 
 {base_text}
 
@@ -822,7 +815,7 @@ Provide analysis focusing on key points, compliance, and recommendations."""
 
     async def _process_api_response(
         self,
-        api_response: Dict[str, Any],
+        api_response: dict[str, Any],
         request: MultimodalRequest,
         model: ModelType,
         start_time: float,
@@ -833,7 +826,7 @@ Provide analysis focusing on key points, compliance, and recommendations."""
 
         # Extract response content
         content = ""
-        if "choices" in api_response and api_response["choices"]:
+        if api_response.get("choices"):
             content = api_response["choices"][0]["message"]["content"]
 
         # Extract usage information
@@ -906,7 +899,7 @@ Provide analysis focusing on key points, compliance, and recommendations."""
 
         return response
 
-    def _analyze_constitutional_compliance(self, content: str) -> Dict[str, Any]:
+    def _analyze_constitutional_compliance(self, content: str) -> dict[str, Any]:
         """Enhanced constitutional compliance analysis with improved accuracy."""
 
         if not content:
@@ -1157,7 +1150,7 @@ Provide analysis focusing on key points, compliance, and recommendations."""
             )
             self.metrics["cache_hit_rate"] = cache_hits / total_requests
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get comprehensive service metrics (synchronous version for dashboard compatibility)."""
 
         response_times = self.metrics["response_times"]
@@ -1209,7 +1202,7 @@ Provide analysis focusing on key points, compliance, and recommendations."""
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-    async def get_service_metrics(self) -> Dict[str, Any]:
+    async def get_service_metrics(self) -> dict[str, Any]:
         """Get comprehensive service metrics (async version)."""
         return self.get_metrics()
 
@@ -1249,7 +1242,7 @@ Provide analysis focusing on key points, compliance, and recommendations."""
 
         return request_count * avg_tokens_per_request * cost_per_token
 
-    def get_enhanced_ml_status(self) -> Dict[str, Any]:
+    def get_enhanced_ml_status(self) -> dict[str, Any]:
         """Get status of enhanced ML integration with production optimizer."""
 
         status = {
@@ -1295,7 +1288,7 @@ Provide analysis focusing on key points, compliance, and recommendations."""
 
         return status
 
-    async def test_enhanced_ml_integration(self) -> Dict[str, Any]:
+    async def test_enhanced_ml_integration(self) -> dict[str, Any]:
         """Test the enhanced ML integration with a sample request."""
 
         # Create a test request
@@ -1320,10 +1313,11 @@ Provide analysis focusing on key points, compliance, and recommendations."""
                     ModelType.FLASH_FULL,
                     ModelType.DEEPSEEK_R1,
                 ]
-                selected_model, predictions = (
-                    await self._select_model_with_production_optimizer(
-                        test_request, available_models
-                    )
+                (
+                    selected_model,
+                    predictions,
+                ) = await self._select_model_with_production_optimizer(
+                    test_request, available_models
                 )
 
                 test_results.update(
@@ -1357,7 +1351,7 @@ Provide analysis focusing on key points, compliance, and recommendations."""
 
 
 # Global service instance
-_multimodal_service: Optional[MultimodalAIService] = None
+_multimodal_service: MultimodalAIService | None = None
 
 
 async def get_multimodal_service() -> MultimodalAIService:

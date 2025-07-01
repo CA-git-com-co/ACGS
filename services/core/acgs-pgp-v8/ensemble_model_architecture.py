@@ -13,24 +13,25 @@ Features:
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import logging
-import numpy as np
-import pandas as pd
-from datetime import datetime
-from typing import Dict, List, Tuple, Any, Optional, Union
-from dataclasses import dataclass, asdict
 import json
+import logging
 import os
 import time
 import warnings
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-from sklearn.preprocessing import StandardScaler
-from sklearn.neural_network import MLPRegressor
-from sklearn.base import BaseEstimator, RegressorMixin
-import xgboost as xgb
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from typing import Any
+
 import lightgbm as lgb
+import numpy as np
+import pandas as pd
+import xgboost as xgb
+from sklearn.base import BaseEstimator, RegressorMixin
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split
+from sklearn.neural_network import MLPRegressor
+from sklearn.preprocessing import StandardScaler
 
 warnings.filterwarnings("ignore")
 
@@ -51,16 +52,16 @@ class EnsembleResults:
     ensemble_r2: float
 
     # Individual model performance
-    individual_performances: Dict[str, Dict[str, float]]
-    model_weights: Dict[str, float]
+    individual_performances: dict[str, dict[str, float]]
+    model_weights: dict[str, float]
 
     # Ensemble statistics
-    weight_distribution: Dict[str, float]
+    weight_distribution: dict[str, float]
     prediction_variance: float
     consensus_score: float
 
     # Fallback statistics
-    fallback_activations: Dict[str, int]
+    fallback_activations: dict[str, int]
     total_predictions: int
     success_rate: float
 
@@ -202,7 +203,7 @@ class EnsembleModelArchitecture(BaseEstimator, RegressorMixin):
         total_inverse_mae = sum(inverse_maes.values())
 
         # Normalize weights
-        for name in mae_values.keys():
+        for name in mae_values:
             self.weights[name] = inverse_maes[name] / total_inverse_mae
 
         logger.info("✅ Performance-based weights calculated")
@@ -317,7 +318,7 @@ class EnsembleModelArchitecture(BaseEstimator, RegressorMixin):
 
         return ensemble_pred
 
-    def predict_with_uncertainty(self, X: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def predict_with_uncertainty(self, X: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """Make predictions with uncertainty estimates."""
         if not self.is_fitted:
             raise RuntimeError("Ensemble must be fitted before making predictions")
@@ -362,7 +363,7 @@ class EnsembleModelArchitecture(BaseEstimator, RegressorMixin):
 
         return ensemble_pred, uncertainty
 
-    def get_model_status(self) -> Dict[str, Dict[str, Any]]:
+    def get_model_status(self) -> dict[str, dict[str, Any]]:
         """Get status of all models in the ensemble."""
         status = {}
 
@@ -458,7 +459,7 @@ class EnsembleModelArchitecture(BaseEstimator, RegressorMixin):
             timestamp=datetime.now().isoformat(),
         )
 
-        logger.info(f"✅ Ensemble evaluation complete:")
+        logger.info("✅ Ensemble evaluation complete:")
         logger.info(f"  - Ensemble MAE: {ensemble_mae:.3f}")
         logger.info(f"  - Ensemble R²: {ensemble_r2:.3f}")
         logger.info(f"  - Consensus Score: {consensus_score:.3f}")
@@ -468,7 +469,7 @@ class EnsembleModelArchitecture(BaseEstimator, RegressorMixin):
 
     def save_ensemble_results(
         self, results: EnsembleResults, output_dir: str = "ensemble_results"
-    ) -> Tuple[str, str]:
+    ) -> tuple[str, str]:
         """Save ensemble evaluation results."""
         logger.info("Saving ensemble results...")
 
@@ -557,7 +558,7 @@ class EnsembleModelArchitecture(BaseEstimator, RegressorMixin):
                     key=lambda k: valid_performances[k]["mae"],
                 )
 
-                f.write(f"\n### Performance Leaders\n")
+                f.write("\n### Performance Leaders\n")
                 f.write(
                     f"- **Best Model:** {best_model.replace('_', ' ').title()} (MAE: {valid_performances[best_model]['mae']:.3f})\n"
                 )
@@ -577,7 +578,7 @@ class EnsembleModelArchitecture(BaseEstimator, RegressorMixin):
                     (best_individual_mae - results.ensemble_mae) / best_individual_mae
                 ) * 100
 
-                f.write(f"### Performance vs Best Individual Model\n")
+                f.write("### Performance vs Best Individual Model\n")
                 f.write(f"- **Best Individual MAE:** {best_individual_mae:.3f}\n")
                 f.write(f"- **Ensemble MAE:** {results.ensemble_mae:.3f}\n")
                 f.write(f"- **Improvement:** {ensemble_improvement:+.1f}%\n\n")
@@ -590,7 +591,7 @@ class EnsembleModelArchitecture(BaseEstimator, RegressorMixin):
                     (avg_individual_mae - results.ensemble_mae) / avg_individual_mae
                 ) * 100
 
-                f.write(f"### Performance vs Average Individual Model\n")
+                f.write("### Performance vs Average Individual Model\n")
                 f.write(f"- **Average Individual MAE:** {avg_individual_mae:.3f}\n")
                 f.write(f"- **Ensemble MAE:** {results.ensemble_mae:.3f}\n")
                 f.write(f"- **Improvement:** {avg_improvement:+.1f}%\n\n")
@@ -661,7 +662,7 @@ class EnsembleModelArchitecture(BaseEstimator, RegressorMixin):
                 f.write("- ❌ Unable to validate ensemble performance improvement\n")
 
             f.write(
-                f"\n**Overall Success Rate:** {criteria_met}/{total_criteria} ({criteria_met/total_criteria*100:.0f}%)\n\n"
+                f"\n**Overall Success Rate:** {criteria_met}/{total_criteria} ({criteria_met / total_criteria * 100:.0f}%)\n\n"
             )
 
             # Technical Configuration
@@ -682,9 +683,9 @@ class EnsembleModelArchitecture(BaseEstimator, RegressorMixin):
                     f"- **{model_name.replace('_', ' ').title()}:** Configured with optimized hyperparameters\n"
                 )
 
-            f.write(f"\n### Constitutional Compliance\n")
+            f.write("\n### Constitutional Compliance\n")
             f.write(f"- **Hash:** {results.constitutional_hash}\n")
-            f.write(f"- **Integrity:** ✅ Verified\n\n")
+            f.write("- **Integrity:** ✅ Verified\n\n")
 
             # Recommendations
             f.write("## 💡 Recommendations\n\n")
@@ -714,7 +715,7 @@ class EnsembleModelArchitecture(BaseEstimator, RegressorMixin):
         return json_path, report_path
 
 
-def generate_test_dataset(n_samples: int = 1000) -> Tuple[pd.DataFrame, pd.Series]:
+def generate_test_dataset(n_samples: int = 1000) -> tuple[pd.DataFrame, pd.Series]:
     """Generate test dataset for ensemble evaluation."""
     logger.info(f"Generating test dataset with {n_samples} samples...")
 
@@ -782,7 +783,7 @@ def main():
         # Test uncertainty prediction
         logger.info("\n🔮 Step 5: Testing uncertainty prediction...")
         y_pred, uncertainty = ensemble.predict_with_uncertainty(X_test.values[:10])
-        logger.info(f"  Sample predictions with uncertainty:")
+        logger.info("  Sample predictions with uncertainty:")
         for i in range(min(5, len(y_pred))):
             logger.info(f"    Pred: {y_pred[i]:.3f} ± {uncertainty[i]:.3f}")
 
@@ -819,7 +820,7 @@ def main():
         logger.info(f"📈 Ensemble R²: {results.ensemble_r2:.3f}")
         logger.info(f"🤝 Model Consensus: {results.consensus_score:.3f}")
         logger.info(f"✅ Success Rate: {results.success_rate:.1%}")
-        logger.info(f"⚖️ Weight Distribution:")
+        logger.info("⚖️ Weight Distribution:")
         for name, weight in results.model_weights.items():
             logger.info(f"    {name}: {weight:.3f}")
         logger.info(f"🔒 Constitutional Hash: {results.constitutional_hash} ✅")

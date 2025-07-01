@@ -17,24 +17,17 @@ Features:
 """
 
 import base64
-import hashlib
-import hmac
-import os
 import secrets
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 import structlog
 from cryptography.fernet import Fernet
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import ed25519, padding, rsa
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
 
 logger = structlog.get_logger(__name__)
 
@@ -77,10 +70,10 @@ class EncryptionKey:
     algorithm: EncryptionAlgorithm
     key_material: bytes
     created_at: datetime
-    expires_at: Optional[datetime]
+    expires_at: datetime | None
     rotation_period_days: int
     usage_count: int = 0
-    max_usage_count: Optional[int] = None
+    max_usage_count: int | None = None
     is_active: bool = True
 
 
@@ -92,8 +85,8 @@ class EncryptedData:
     algorithm: EncryptionAlgorithm
     key_id: str
     iv: bytes
-    tag: Optional[bytes] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    tag: bytes | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -104,19 +97,19 @@ class DataProtectionPolicy:
     encryption_required: bool
     algorithm: EncryptionAlgorithm
     key_rotation_days: int
-    retention_days: Optional[int]
-    geographic_restrictions: List[str] = field(default_factory=list)
-    access_controls: List[str] = field(default_factory=list)
+    retention_days: int | None
+    geographic_restrictions: list[str] = field(default_factory=list)
+    access_controls: list[str] = field(default_factory=list)
 
 
 class EncryptionManager:
     """Comprehensive encryption and data protection manager."""
 
-    def __init__(self, master_key: Optional[str] = None):
+    def __init__(self, master_key: str | None = None):
         """Initialize encryption manager."""
         self.master_key = master_key or self._generate_master_key()
-        self.keys: Dict[str, EncryptionKey] = {}
-        self.policies: Dict[DataClassification, DataProtectionPolicy] = {}
+        self.keys: dict[str, EncryptionKey] = {}
+        self.policies: dict[DataClassification, DataProtectionPolicy] = {}
         self.backend = default_backend()
 
         # Initialize default policies
@@ -226,9 +219,9 @@ class EncryptionManager:
 
     def encrypt_data(
         self,
-        data: Union[str, bytes],
+        data: str | bytes,
         classification: DataClassification,
-        key_id: Optional[str] = None,
+        key_id: str | None = None,
     ) -> EncryptedData:
         """Encrypt data according to classification policy."""
         policy = self.policies[classification]
@@ -305,12 +298,11 @@ class EncryptionManager:
         # Decrypt based on algorithm
         if encrypted_data.algorithm == EncryptionAlgorithm.AES_256_GCM:
             return self._decrypt_aes_gcm(encrypted_data, encryption_key.key_material)
-        elif encrypted_data.algorithm == EncryptionAlgorithm.FERNET:
+        if encrypted_data.algorithm == EncryptionAlgorithm.FERNET:
             return self._decrypt_fernet(encrypted_data, encryption_key.key_material)
-        else:
-            raise ValueError(
-                f"Unsupported decryption algorithm: {encrypted_data.algorithm}"
-            )
+        raise ValueError(
+            f"Unsupported decryption algorithm: {encrypted_data.algorithm}"
+        )
 
     def _encrypt_aes_gcm(self, data: bytes, key: bytes) -> EncryptedData:
         """Encrypt data using AES-256-GCM."""
@@ -470,7 +462,7 @@ class EncryptionManager:
         logger.info(f"Rotated encryption key: {key_id} -> {new_key_id}")
         return new_key_id
 
-    def check_key_rotation_needed(self) -> List[str]:
+    def check_key_rotation_needed(self) -> list[str]:
         """Check which keys need rotation."""
         keys_needing_rotation = []
         now = datetime.now(timezone.utc)
@@ -492,7 +484,7 @@ class EncryptionManager:
 
         return keys_needing_rotation
 
-    def get_encryption_metadata(self, key_id: str) -> Dict[str, Any]:
+    def get_encryption_metadata(self, key_id: str) -> dict[str, Any]:
         """Get encryption metadata for a key."""
         key = self.keys.get(key_id)
         if not key:
@@ -513,7 +505,7 @@ class EncryptionManager:
 encryption_manager = None
 
 
-def initialize_encryption_manager(master_key: Optional[str] = None):
+def initialize_encryption_manager(master_key: str | None = None):
     """Initialize the global encryption manager."""
     global encryption_manager
     encryption_manager = EncryptionManager(master_key)
@@ -528,11 +520,11 @@ def get_encryption_manager() -> EncryptionManager:
 
 # Export main classes and functions
 __all__ = [
-    "EncryptionManager",
     "DataClassification",
-    "EncryptionAlgorithm",
-    "EncryptedData",
     "DataProtectionPolicy",
-    "initialize_encryption_manager",
+    "EncryptedData",
+    "EncryptionAlgorithm",
+    "EncryptionManager",
     "get_encryption_manager",
+    "initialize_encryption_manager",
 ]

@@ -140,6 +140,7 @@ class DatabaseInfrastructureOptimizer:
                     "-c",
                     "SELECT version();",
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -160,6 +161,7 @@ class DatabaseInfrastructureOptimizer:
                         "-c",
                         "SELECT count(*) FROM pg_stat_activity;",
                     ],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=10,
@@ -176,8 +178,7 @@ class DatabaseInfrastructureOptimizer:
                     "version": version,
                     "connections": connections,
                 }
-            else:
-                return {"status": "error", "error": result.stderr}
+            return {"status": "error", "error": result.stderr}
 
         except Exception as e:
             return {"status": "error", "error": str(e)}
@@ -188,6 +189,7 @@ class DatabaseInfrastructureOptimizer:
             # Use redis-cli to check status
             result = subprocess.run(
                 ["redis-cli", "info", "server"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -205,6 +207,7 @@ class DatabaseInfrastructureOptimizer:
                 # Get memory info
                 memory_result = subprocess.run(
                     ["redis-cli", "info", "memory"],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=10,
@@ -219,6 +222,7 @@ class DatabaseInfrastructureOptimizer:
                 # Get clients info
                 clients_result = subprocess.run(
                     ["redis-cli", "info", "clients"],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=10,
@@ -236,8 +240,7 @@ class DatabaseInfrastructureOptimizer:
                     "memory_used": memory_used,
                     "clients": clients,
                 }
-            else:
-                return {"status": "error", "error": result.stderr}
+            return {"status": "error", "error": result.stderr}
 
         except Exception as e:
             return {"status": "error", "error": str(e)}
@@ -287,6 +290,7 @@ class DatabaseInfrastructureOptimizer:
                     "-c",
                     "ANALYZE;",
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -321,6 +325,7 @@ class DatabaseInfrastructureOptimizer:
                     "-c",
                     check_query,
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -354,6 +359,7 @@ class DatabaseInfrastructureOptimizer:
                     "-c",
                     config_query,
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -407,6 +413,7 @@ class DatabaseInfrastructureOptimizer:
         try:
             result = subprocess.run(
                 ["redis-cli", "info", "stats"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -464,6 +471,7 @@ class DatabaseInfrastructureOptimizer:
             # Check current memory configuration
             result = subprocess.run(
                 ["redis-cli", "config", "get", "maxmemory"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=10,

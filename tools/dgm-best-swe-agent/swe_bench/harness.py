@@ -5,7 +5,6 @@ import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-import docker
 from datasets import load_dataset
 from prompts.testrepo_prompt import get_test_description
 from swe_bench.utils import (
@@ -23,6 +22,8 @@ from swebench.harness.docker_build import (
 )
 from swebench.harness.test_spec import make_test_spec
 from utils.common_utils import load_json_file
+
+import docker
 
 
 def process_entry(entry, out_dname, model_name_or_path, model_patch_paths):
@@ -202,7 +203,7 @@ def process_entry(entry, out_dname, model_name_or_path, model_patch_paths):
         return {"success": True, "instance_id": instance_id}
 
     except Exception as e:
-        print(f"Error processing entry {instance_id}: {str(e)}")
+        print(f"Error processing entry {instance_id}: {e!s}")
         return {"success": False, "instance_id": instance_id, "error": str(e)}
 
     finally:

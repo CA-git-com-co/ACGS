@@ -81,7 +81,7 @@ print(function_name_mapping)
 # Assign unique workload_id to each function_names_str
 function_name_to_workload_id = {}
 for idx, fnames in enumerate(function_name_mapping.keys()):
-    function_name_to_workload_id[fnames] = f"aiva_{idx+1}"
+    function_name_to_workload_id[fnames] = f"aiva_{idx + 1}"
 
 # Build the new list of records in the requested format
 final_records = []

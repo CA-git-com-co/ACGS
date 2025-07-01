@@ -8,11 +8,11 @@ import json
 import logging
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import nats
 from nats.aio.client import Client as NATS
-from nats.js.api import StreamConfig, ConsumerConfig
+from nats.js.api import ConsumerConfig, StreamConfig
 from prometheus_client import Counter, Histogram
 
 logger = logging.getLogger(__name__)
@@ -32,13 +32,13 @@ class ErrorEvent:
     severity: str  # critical, high, medium, low
 
     # Optional fields
-    request_id: Optional[str] = None
-    user_id: Optional[str] = None
-    endpoint: Optional[str] = None
-    response_time_ms: Optional[float] = None
-    constitutional_compliance_score: Optional[float] = None
-    stack_trace: Optional[str] = None
-    context: Optional[Dict[str, Any]] = None
+    request_id: str | None = None
+    user_id: str | None = None
+    endpoint: str | None = None
+    response_time_ms: float | None = None
+    constitutional_compliance_score: float | None = None
+    stack_trace: str | None = None
+    context: dict[str, Any] | None = None
 
     # Metadata
     constitutional_hash: str = "cdd01ef066bc6cf2"
@@ -51,12 +51,12 @@ class ErrorPattern:
 
     pattern_id: str
     pattern_type: str
-    services_affected: List[str]
+    services_affected: list[str]
     frequency: int
     first_seen: str
     last_seen: str
     root_cause_hypothesis: str
-    suggested_remediation: List[str]
+    suggested_remediation: list[str]
     constitutional_impact: float
 
 
@@ -65,7 +65,7 @@ class NATSErrorPublisher:
 
     def __init__(self, nats_url: str = "nats://localhost:4222"):
         self.nats_url = nats_url
-        self.nc: Optional[NATS] = None
+        self.nc: NATS | None = None
         self.js = None
 
         # Stream and subject configuration
@@ -233,7 +233,7 @@ class NATSErrorPublisher:
             logger.error(f"Failed to publish error pattern: {e}")
             raise
 
-    async def publish_remediation_action(self, action_data: Dict[str, Any]):
+    async def publish_remediation_action(self, action_data: dict[str, Any]):
         """Publish a remediation action to NATS."""
         if not self.nc or not self.js:
             await self.connect()
@@ -272,7 +272,7 @@ class NATSErrorPublisher:
             raise
 
     async def subscribe_to_error_events(
-        self, callback, service_filter: Optional[str] = None
+        self, callback, service_filter: str | None = None
     ):
         """Subscribe to error events with optional service filtering."""
         if not self.nc or not self.js:
@@ -328,7 +328,7 @@ class NATSErrorPublisher:
             logger.error(f"Failed to subscribe to error events: {e}")
             raise
 
-    async def get_error_statistics(self, time_window_hours: int = 24) -> Dict[str, Any]:
+    async def get_error_statistics(self, time_window_hours: int = 24) -> dict[str, Any]:
         """Get error statistics from NATS stream."""
         if not self.nc or not self.js:
             await self.connect()
@@ -400,10 +400,10 @@ async def publish_error(
 async def publish_pattern(
     pattern_id: str,
     pattern_type: str,
-    services_affected: List[str],
+    services_affected: list[str],
     frequency: int,
     root_cause: str,
-    remediation: List[str],
+    remediation: list[str],
 ):
     """Convenience function to publish an error pattern."""
     error_pattern = ErrorPattern(

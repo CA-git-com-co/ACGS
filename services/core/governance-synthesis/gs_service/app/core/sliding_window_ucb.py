@@ -17,11 +17,10 @@ Based on research in non-stationary multi-armed bandits and adaptive algorithms.
 """
 
 import logging
-import time
 from collections import deque
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import numpy as np
 from scipy import stats
@@ -81,7 +80,7 @@ class ArmWindow:
     total_pulls: int = 0
     window_mean: float = 0.0
     window_variance: float = 0.0
-    last_change_detection: Optional[datetime] = None
+    last_change_detection: datetime | None = None
     change_detected: bool = False
 
     # Performance tracking
@@ -116,12 +115,12 @@ class SlidingWindowUCB(MABAlgorithmBase):
         """Initialize Sliding Window UCB algorithm."""
         super().__init__(MABConfig())  # Initialize base class
         self.config = config
-        self.arm_windows: Dict[str, ArmWindow] = {}
+        self.arm_windows: dict[str, ArmWindow] = {}
         self.global_window_size = config.initial_window_size
         self.total_rounds = 0
 
         # Change detection tracking
-        self.change_history: List[ChangeDetectionResult] = []
+        self.change_history: list[ChangeDetectionResult] = []
         self.environment_stability = 1.0
         self.last_adaptation_time = datetime.now(timezone.utc)
 
@@ -137,8 +136,8 @@ class SlidingWindowUCB(MABAlgorithmBase):
         logger.info(f"Initialized Sliding Window UCB with config: {config}")
 
     def select_arm(
-        self, context: Dict[str, Any] = None, available_arms: List[str] = None
-    ) -> Optional[str]:
+        self, context: dict[str, Any] = None, available_arms: list[str] = None
+    ) -> str | None:
         """Select arm using Sliding Window UCB algorithm."""
         if not available_arms:
             logger.warning("No available arms for selection")
@@ -206,7 +205,7 @@ class SlidingWindowUCB(MABAlgorithmBase):
 
         return selected_arm
 
-    def update_reward(self, arm_id: str, reward: float, context: Dict[str, Any] = None):
+    def update_reward(self, arm_id: str, reward: float, context: dict[str, Any] = None):
         """Update arm statistics with new reward observation."""
         if arm_id not in self.arm_windows:
             self._initialize_arm(arm_id)
@@ -324,7 +323,7 @@ class SlidingWindowUCB(MABAlgorithmBase):
         avg_safety = np.mean(list(arm_window.safety_scores))
         return self.config.safety_weight * avg_safety
 
-    def _detect_changes(self, available_arms: List[str]):
+    def _detect_changes(self, available_arms: list[str]):
         """Detect changes in arm performance using statistical tests."""
         for arm_id in available_arms:
             arm_window = self.arm_windows.get(arm_id)
@@ -356,14 +355,13 @@ class SlidingWindowUCB(MABAlgorithmBase):
                 # Alert if configured
                 if self.config.alert_on_change:
                     self._send_change_alert(change_result)
-            else:
-                # Reset change flag if no recent changes
-                if arm_window.change_detected:
-                    time_since_change = (
-                        datetime.now(timezone.utc) - arm_window.last_change_detection
-                    ).total_seconds()
-                    if time_since_change > 300:  # 5 minutes
-                        arm_window.change_detected = False
+            # Reset change flag if no recent changes
+            elif arm_window.change_detected:
+                time_since_change = (
+                    datetime.now(timezone.utc) - arm_window.last_change_detection
+                ).total_seconds()
+                if time_since_change > 300:  # 5 minutes
+                    arm_window.change_detected = False
 
     def _perform_change_detection(self, arm_window: ArmWindow) -> ChangeDetectionResult:
         """Perform statistical change detection on an arm."""
@@ -492,7 +490,7 @@ class SlidingWindowUCB(MABAlgorithmBase):
             compliance_rate = total_constitutional / total_samples
             self.performance_metrics["constitutional_compliance_rate"] = compliance_rate
 
-    def get_arm_statistics(self, arm_id: str) -> Optional[Dict[str, Any]]:
+    def get_arm_statistics(self, arm_id: str) -> dict[str, Any] | None:
         """Get comprehensive statistics for an arm."""
         arm_window = self.arm_windows.get(arm_id)
         if not arm_window:
@@ -527,7 +525,7 @@ class SlidingWindowUCB(MABAlgorithmBase):
             },
         }
 
-    def get_system_statistics(self) -> Dict[str, Any]:
+    def get_system_statistics(self) -> dict[str, Any]:
         """Get comprehensive system statistics."""
         return {
             "total_rounds": self.total_rounds,
@@ -567,7 +565,7 @@ class SlidingWindowUCB(MABAlgorithmBase):
             self.change_history.clear()
             logger.info("Reset change detection for all arms")
 
-    def export_change_history(self) -> List[Dict[str, Any]]:
+    def export_change_history(self) -> list[dict[str, Any]]:
         """Export change detection history for analysis."""
         return [
             {

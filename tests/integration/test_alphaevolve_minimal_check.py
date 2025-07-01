@@ -108,9 +108,8 @@ def test_minimal_import_check():
     if available_components == total_components:
         print("🎉 All AlphaEvolve-ACGS components are available!")
         return True
-    else:
-        print("⚠️  Some components are missing. Integration tests may be skipped.")
-        return False
+    print("⚠️  Some components are missing. Integration tests may be skipped.")
+    return False
 
 
 def test_basic_initialization():
@@ -119,8 +118,8 @@ def test_basic_initialization():
 
     try:
         from gs_service.app.services.lipschitz_estimator import (
-            LipschitzEstimator,
             LipschitzEstimationConfig,
+            LipschitzEstimator,
         )
 
         # Test basic config creation

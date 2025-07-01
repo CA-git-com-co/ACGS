@@ -5,14 +5,15 @@ Comprehensive validation achieving >90% system health score, zero critical/high 
 """
 
 import asyncio
-import aiohttp
 import json
-import time
-import subprocess
 import os
+import subprocess
+import time
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Dict, List, Any
-from dataclasses import dataclass, asdict
+from typing import Any
+
+import aiohttp
 
 # Configuration
 SERVICES = {
@@ -73,7 +74,7 @@ class ProductionReadinessValidator:
                             data = await response.json()
                             if data.get("status") == "healthy":
                                 healthy_services += 1
-                except Exception as e:
+                except Exception:
                     pass
 
         health_percentage = (healthy_services / len(SERVICES)) * 100
@@ -139,6 +140,7 @@ class ProductionReadinessValidator:
             # Run security scans
             result = subprocess.run(
                 ["pnpm", "audit", "--json"],
+                check=False,
                 capture_output=True,
                 text=True,
                 cwd="/home/ubuntu/ACGS",
@@ -275,6 +277,7 @@ class ProductionReadinessValidator:
         try:
             result = subprocess.run(
                 ["grep", "-r", CONSTITUTIONAL_HASH, "/home/ubuntu/ACGS/services/core/"],
+                check=False,
                 capture_output=True,
                 text=True,
             )
@@ -297,7 +300,7 @@ class ProductionReadinessValidator:
             timestamp=datetime.now(),
         )
 
-    async def run_comprehensive_validation(self) -> Dict[str, Any]:
+    async def run_comprehensive_validation(self) -> dict[str, Any]:
         """Run all validation checks and generate comprehensive report."""
         print("🚀 Starting ACGS-PGP Production Readiness Validation")
         print("=" * 60)
@@ -343,9 +346,9 @@ class ProductionReadinessValidator:
 
         return report
 
-    def display_results(self, report: Dict[str, Any]):
+    def display_results(self, report: dict[str, Any]):
         """Display validation results in a formatted manner."""
-        print(f"\n📊 PRODUCTION READINESS VALIDATION RESULTS")
+        print("\n📊 PRODUCTION READINESS VALIDATION RESULTS")
         print("=" * 60)
         print(f"Overall Score: {report['overall_score']:.1f}%")
         print(
@@ -353,7 +356,7 @@ class ProductionReadinessValidator:
         )
         print(f"Constitutional Hash: {report['constitutional_hash']}")
 
-        print(f"\n🔍 DETAILED RESULTS")
+        print("\n🔍 DETAILED RESULTS")
         print("-" * 40)
         for result in self.results:
             status_icon = {"PASS": "✅", "FAIL": "❌", "WARNING": "⚠️"}.get(
@@ -363,7 +366,7 @@ class ProductionReadinessValidator:
                 f"{status_icon} {result.check_name:25} | {result.score:5.1f}% | {result.details}"
             )
 
-        print(f"\n📈 SUMMARY")
+        print("\n📈 SUMMARY")
         print("-" * 40)
         print(f"Total Checks: {report['summary']['total_checks']}")
         print(f"Passed: {report['summary']['passed_checks']}")
@@ -371,14 +374,14 @@ class ProductionReadinessValidator:
         print(f"Warnings: {report['summary']['warning_checks']}")
 
         if report["production_ready"]:
-            print(f"\n🎉 PRODUCTION DEPLOYMENT APPROVED")
+            print("\n🎉 PRODUCTION DEPLOYMENT APPROVED")
             print("✅ All critical requirements met")
             print("✅ System health score >90%")
             print("✅ Zero critical/high vulnerabilities")
             print("✅ Emergency procedures validated")
             print("✅ Constitutional compliance verified")
         else:
-            print(f"\n⚠️ PRODUCTION DEPLOYMENT REQUIRES ATTENTION")
+            print("\n⚠️ PRODUCTION DEPLOYMENT REQUIRES ATTENTION")
             failed_checks = [r for r in self.results if r.status == "FAIL"]
             for check in failed_checks:
                 print(f"❌ {check.check_name}: {check.details}")
@@ -396,7 +399,7 @@ async def main():
         json.dump(report, f, indent=2, default=str)
 
     print(
-        f"\n📄 Detailed report saved to: /home/ubuntu/ACGS/production_readiness_report.json"
+        "\n📄 Detailed report saved to: /home/ubuntu/ACGS/production_readiness_report.json"
     )
 
     # Exit with appropriate code

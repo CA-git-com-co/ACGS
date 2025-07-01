@@ -5,15 +5,16 @@ Rigorously validates component-level latency claims under realistic conditions
 """
 
 import asyncio
-import aiohttp
-import time
-import statistics
 import json
-import numpy as np
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone
 import logging
+import statistics
+import time
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from typing import Any
+
+import aiohttp
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +68,7 @@ class LatencyValidationSuite:
         }
         self.measurements = []
 
-    async def conduct_comprehensive_latency_validation(self) -> Dict[str, Any]:
+    async def conduct_comprehensive_latency_validation(self) -> dict[str, Any]:
         """Conduct comprehensive latency validation across all services"""
         print("⚡ ACGS P99 Latency Validation Suite")
         print("=" * 40)
@@ -119,7 +120,7 @@ class LatencyValidationSuite:
                 print(f"    P99 Latency: {analysis.p99_latency_ms:.2f}ms")
                 print(f"    Target Met: {'✅' if analysis.target_met else '❌'}")
                 print(
-                    f"    Success Rate: {(analysis.successful_requests/analysis.total_requests)*100:.1f}%"
+                    f"    Success Rate: {(analysis.successful_requests / analysis.total_requests) * 100:.1f}%"
                 )
 
             validation_results[service_name] = service_results
@@ -127,7 +128,7 @@ class LatencyValidationSuite:
         # Generate comprehensive report
         overall_analysis = self.generate_overall_analysis(validation_results)
 
-        print(f"\n📊 Overall Latency Validation Results:")
+        print("\n📊 Overall Latency Validation Results:")
         print(f"  Services Tested: {len(self.services)}")
         print(f"  Total Measurements: {overall_analysis['total_measurements']}")
         print(f"  Overall P99 Latency: {overall_analysis['overall_p99_latency']:.2f}ms")
@@ -152,7 +153,7 @@ class LatencyValidationSuite:
         base_url: str,
         concurrent_requests: int,
         total_requests: int,
-    ) -> List[LatencyMeasurement]:
+    ) -> list[LatencyMeasurement]:
         """Run latency test for a specific service"""
         measurements = []
 
@@ -161,7 +162,7 @@ class LatencyValidationSuite:
 
         async def make_request(
             session: aiohttp.ClientSession, request_id: int
-        ) -> Optional[LatencyMeasurement]:
+        ) -> LatencyMeasurement | None:
             async with semaphore:
                 try:
                     start_time = time.time()
@@ -192,7 +193,7 @@ class LatencyValidationSuite:
                             constitutional_hash_validated=constitutional_validated,
                         )
 
-                except Exception as e:
+                except Exception:
                     # Return failed measurement
                     return LatencyMeasurement(
                         timestamp=time.time(),
@@ -222,7 +223,7 @@ class LatencyValidationSuite:
         return measurements
 
     def analyze_latency_measurements(
-        self, measurements: List[LatencyMeasurement], service_name: str, endpoint: str
+        self, measurements: list[LatencyMeasurement], service_name: str, endpoint: str
     ) -> LatencyAnalysis:
         """Analyze latency measurements and generate statistics"""
         if not measurements:
@@ -305,8 +306,8 @@ class LatencyValidationSuite:
         )
 
     def generate_overall_analysis(
-        self, validation_results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, validation_results: dict[str, Any]
+    ) -> dict[str, Any]:
         """Generate overall analysis across all services and scenarios"""
         all_p99_latencies = []
         total_measurements = 0
@@ -351,8 +352,8 @@ class LatencyValidationSuite:
         }
 
     def generate_performance_regression_analysis(
-        self, validation_results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, validation_results: dict[str, Any]
+    ) -> dict[str, Any]:
         """Generate performance regression analysis"""
         regression_analysis = {
             "baseline_established": True,

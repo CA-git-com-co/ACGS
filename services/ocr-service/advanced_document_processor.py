@@ -4,12 +4,12 @@ Advanced Document Processing Pipeline for ACGS
 Leverages Nanonets-OCR-s capabilities for comprehensive document analysis
 """
 
-import re
 import json
 import logging
-from typing import Dict, List, Any, Optional, Tuple
-from dataclasses import dataclass, asdict
+import re
+from dataclasses import asdict, dataclass
 from datetime import datetime
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ class DocumentElement:
     content: str
     position: int
     confidence: float = 1.0
-    metadata: Dict[str, Any] = None
+    metadata: dict[str, Any] = None
 
     def __post_init__(self):
         if self.metadata is None:
@@ -33,8 +33,8 @@ class DocumentElement:
 class Signature(DocumentElement):
     """Signature element with authentication details"""
 
-    signatory: Optional[str] = None
-    date_signed: Optional[str] = None
+    signatory: str | None = None
+    date_signed: str | None = None
     signature_type: str = "handwritten"  # handwritten, digital, stamp
 
 
@@ -51,7 +51,7 @@ class LaTeXEquation(DocumentElement):
     """LaTeX equation with mathematical content"""
 
     equation_type: str = "inline"  # inline, display, numbered
-    variables: List[str] = None
+    variables: list[str] = None
 
     def __post_init__(self):
         super().__post_init__()
@@ -65,8 +65,8 @@ class Table(DocumentElement):
 
     rows: int = 0
     columns: int = 0
-    headers: List[str] = None
-    data: List[List[str]] = None
+    headers: list[str] = None
+    data: list[list[str]] = None
     format_type: str = "html"  # html, markdown
 
     def __post_init__(self):
@@ -82,8 +82,8 @@ class Checkbox(DocumentElement):
     """Checkbox element with state information"""
 
     state: str = "unchecked"  # unchecked, checked, crossed
-    label: Optional[str] = None
-    form_field: Optional[str] = None
+    label: str | None = None
+    form_field: str | None = None
 
 
 @dataclass
@@ -91,7 +91,7 @@ class Image(DocumentElement):
     """Image element with description"""
 
     description: str = ""
-    caption: Optional[str] = None
+    caption: str | None = None
     image_type: str = "embedded"  # embedded, referenced
 
 
@@ -100,7 +100,7 @@ class PageNumber(DocumentElement):
     """Page number element"""
 
     page_num: int = 1
-    total_pages: Optional[int] = None
+    total_pages: int | None = None
     format_style: str = "simple"  # simple, fraction
 
 
@@ -111,14 +111,14 @@ class ProcessedDocument:
     document_id: str
     raw_text: str
     processing_timestamp: datetime
-    signatures: List[Signature]
-    watermarks: List[Watermark]
-    equations: List[LaTeXEquation]
-    tables: List[Table]
-    checkboxes: List[Checkbox]
-    images: List[Image]
-    page_numbers: List[PageNumber]
-    metadata: Dict[str, Any]
+    signatures: list[Signature]
+    watermarks: list[Watermark]
+    equations: list[LaTeXEquation]
+    tables: list[Table]
+    checkboxes: list[Checkbox]
+    images: list[Image]
+    page_numbers: list[PageNumber]
+    metadata: dict[str, Any]
     confidence_score: float = 0.0
 
 
@@ -198,7 +198,7 @@ class AdvancedDocumentProcessor:
 
         return processed_doc
 
-    def _extract_signatures(self, text: str) -> List[Signature]:
+    def _extract_signatures(self, text: str) -> list[Signature]:
         """Extract signature elements from text"""
         signatures = []
 
@@ -226,7 +226,7 @@ class AdvancedDocumentProcessor:
 
         return signatures
 
-    def _extract_watermarks(self, text: str) -> List[Watermark]:
+    def _extract_watermarks(self, text: str) -> list[Watermark]:
         """Extract watermark elements from text"""
         watermarks = []
 
@@ -259,7 +259,7 @@ class AdvancedDocumentProcessor:
 
         return watermarks
 
-    def _extract_equations(self, text: str) -> List[LaTeXEquation]:
+    def _extract_equations(self, text: str) -> list[LaTeXEquation]:
         """Extract LaTeX equations from text"""
         equations = []
 
@@ -295,7 +295,7 @@ class AdvancedDocumentProcessor:
 
         return equations
 
-    def _extract_tables(self, text: str) -> List[Table]:
+    def _extract_tables(self, text: str) -> list[Table]:
         """Extract HTML tables from text"""
         tables = []
 
@@ -325,7 +325,7 @@ class AdvancedDocumentProcessor:
 
         return tables
 
-    def _extract_checkboxes(self, text: str) -> List[Checkbox]:
+    def _extract_checkboxes(self, text: str) -> list[Checkbox]:
         """Extract checkbox elements from text"""
         checkboxes = []
 
@@ -360,7 +360,7 @@ class AdvancedDocumentProcessor:
 
         return checkboxes
 
-    def _extract_images(self, text: str) -> List[Image]:
+    def _extract_images(self, text: str) -> list[Image]:
         """Extract image elements from text"""
         images = []
 
@@ -388,7 +388,7 @@ class AdvancedDocumentProcessor:
 
         return images
 
-    def _extract_page_numbers(self, text: str) -> List[PageNumber]:
+    def _extract_page_numbers(self, text: str) -> list[PageNumber]:
         """Extract page number elements from text"""
         page_numbers = []
 
@@ -418,7 +418,7 @@ class AdvancedDocumentProcessor:
 
     # Helper methods for parsing specific elements
 
-    def _extract_signatory_name(self, signature_content: str) -> Optional[str]:
+    def _extract_signatory_name(self, signature_content: str) -> str | None:
         """Extract signatory name from signature content"""
         # Look for common patterns like "Signed by: Name" or just extract text
         patterns = [
@@ -439,7 +439,7 @@ class AdvancedDocumentProcessor:
 
         return None
 
-    def _extract_signature_date(self, signature_content: str) -> Optional[str]:
+    def _extract_signature_date(self, signature_content: str) -> str | None:
         """Extract signature date from signature content"""
         # Common date patterns
         date_patterns = [
@@ -455,7 +455,7 @@ class AdvancedDocumentProcessor:
 
         return None
 
-    def _extract_equation_variables(self, equation_content: str) -> List[str]:
+    def _extract_equation_variables(self, equation_content: str) -> list[str]:
         """Extract variables from LaTeX equation"""
         # Simple variable extraction - single letters that aren't functions
         variable_pattern = r"\b([a-zA-Z])\b"
@@ -469,7 +469,7 @@ class AdvancedDocumentProcessor:
 
     def _parse_html_table(
         self, table_content: str
-    ) -> Tuple[int, int, List[str], List[List[str]]]:
+    ) -> tuple[int, int, list[str], list[list[str]]]:
         """Parse HTML table content to extract structure"""
         # Extract table rows
         row_pattern = r"<tr[^>]*>(.*?)</tr>"
@@ -500,9 +500,7 @@ class AdvancedDocumentProcessor:
 
         return num_rows, num_columns, headers, data
 
-    def _extract_checkbox_label(
-        self, text: str, checkbox_position: int
-    ) -> Optional[str]:
+    def _extract_checkbox_label(self, text: str, checkbox_position: int) -> str | None:
         """Extract label text associated with a checkbox"""
         # Look for text after the checkbox (next 100 characters)
         start = checkbox_position + 1
@@ -520,7 +518,7 @@ class AdvancedDocumentProcessor:
 
         return None
 
-    def _parse_page_number(self, page_content: str) -> Tuple[int, Optional[int], str]:
+    def _parse_page_number(self, page_content: str) -> tuple[int, int | None, str]:
         """Parse page number content to extract page info"""
         # Handle formats like "5", "5/10", "Page 5 of 10"
 
@@ -576,7 +574,7 @@ class AdvancedDocumentProcessor:
         final_confidence = min(1.0, base_confidence + confidence_adjustments)
         return round(final_confidence, 3)
 
-    def _extract_metadata(self, text: str) -> Dict[str, Any]:
+    def _extract_metadata(self, text: str) -> dict[str, Any]:
         """Extract document metadata from text"""
         metadata = {
             "text_length": len(text),
@@ -627,7 +625,7 @@ class AdvancedDocumentProcessor:
         estimated_pages = max(1, len(text) // 2500)
         return estimated_pages
 
-    def to_dict(self, processed_doc: ProcessedDocument) -> Dict[str, Any]:
+    def to_dict(self, processed_doc: ProcessedDocument) -> dict[str, Any]:
         """Convert ProcessedDocument to dictionary for serialization"""
         return asdict(processed_doc)
 

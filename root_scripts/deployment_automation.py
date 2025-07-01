@@ -26,6 +26,7 @@ class DeploymentAutomator:
         try:
             result = subprocess.run(
                 command,
+                check=False,
                 shell=True,
                 cwd=cwd,
                 capture_output=True,
@@ -110,11 +111,10 @@ class DeploymentAutomator:
             print(f"Migration output: {stdout}")
             self.deployment_status["migrations_completed"] = True
             return True
-        else:
-            print(f"❌ Database migrations failed: {stderr}")
-            self.deployment_status["migrations_completed"] = False
-            self.deployment_issues.append(f"Migration failed: {stderr}")
-            return False
+        print(f"❌ Database migrations failed: {stderr}")
+        self.deployment_status["migrations_completed"] = False
+        self.deployment_issues.append(f"Migration failed: {stderr}")
+        return False
 
     def build_docker_images(self) -> bool:
         """Build Docker images for all services"""
@@ -176,11 +176,10 @@ class DeploymentAutomator:
             print("  Waiting for services to start...")
             time.sleep(60)
             return True
-        else:
-            print(f"❌ Service deployment failed: {stderr}")
-            self.deployment_status["services_deployed"] = False
-            self.deployment_issues.append("Service deployment failed")
-            return False
+        print(f"❌ Service deployment failed: {stderr}")
+        self.deployment_status["services_deployed"] = False
+        self.deployment_issues.append("Service deployment failed")
+        return False
 
     def validate_deployment(self) -> bool:
         """Validate that all services are running correctly"""
@@ -329,9 +328,8 @@ echo "Backup completed: $BACKUP_DIR"
             print("✅ Backup script created")
             self.deployment_status["backup_script_created"] = True
             return True
-        else:
-            print(f"❌ Failed to create backup script: {stderr}")
-            return False
+        print(f"❌ Failed to create backup script: {stderr}")
+        return False
 
     def run_deployment(self) -> bool:
         """Run complete deployment process"""
@@ -351,7 +349,7 @@ echo "Backup completed: $BACKUP_DIR"
         ]
 
         for step_name, step_function in deployment_steps:
-            print(f"\n{'='*20} {step_name} {'='*20}")
+            print(f"\n{'=' * 20} {step_name} {'=' * 20}")
             success = step_function()
 
             if not success:

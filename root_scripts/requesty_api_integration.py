@@ -5,7 +5,6 @@ RequestyAPI Integration for Darwin Gödel Machine
 This module provides a simplified interface for the DGM to interact with the Requesty API.
 """
 
-
 from requesty_example import RequestyAPIClient
 
 
@@ -55,5 +54,4 @@ class RequestyAPI:
 
         if result["success"]:
             return result["content"]
-        else:
-            raise Exception(f"API call failed: {result.get('error', 'Unknown error')}")
+        raise Exception(f"API call failed: {result.get('error', 'Unknown error')}")

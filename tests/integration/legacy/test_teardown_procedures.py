@@ -45,10 +45,10 @@ class TeardownProceduresTester:
         print("🔍 Checking for existing test artifacts...")
 
         artifacts = {
-            "test_databases": list(Path(".").glob("test_*.db*")),
-            "result_files": list(Path(".").glob("*_test_results.json")),
-            "temp_files": list(Path(".").glob("test_*")),
-            "temp_dirs": [p for p in Path(".").glob("test_*") if p.is_dir()],
+            "test_databases": list(Path().glob("test_*.db*")),
+            "result_files": list(Path().glob("*_test_results.json")),
+            "temp_files": list(Path().glob("test_*")),
+            "temp_dirs": [p for p in Path().glob("test_*") if p.is_dir()],
         }
 
         total_artifacts = sum(len(files) for files in artifacts.values())
@@ -79,6 +79,7 @@ class TeardownProceduresTester:
                     "--tb=short",
                     "--no-header",
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=120,
@@ -106,7 +107,7 @@ class TeardownProceduresTester:
             return False
         except Exception as e:
             self.log_test_result(
-                "Teardown Validation Tests", False, f"Exception: {str(e)}"
+                "Teardown Validation Tests", False, f"Exception: {e!s}"
             )
             return False
 
@@ -115,10 +116,10 @@ class TeardownProceduresTester:
         print("\n🔍 Checking for test artifacts after tests...")
 
         artifacts_after = {
-            "test_databases": list(Path(".").glob("test_*.db*")),
-            "result_files": list(Path(".").glob("*_test_results.json")),
-            "temp_files": list(Path(".").glob("test_*")),
-            "temp_dirs": [p for p in Path(".").glob("test_*") if p.is_dir()],
+            "test_databases": list(Path().glob("test_*.db*")),
+            "result_files": list(Path().glob("*_test_results.json")),
+            "temp_files": list(Path().glob("test_*")),
+            "temp_dirs": [p for p in Path().glob("test_*") if p.is_dir()],
         }
 
         # Check for new artifacts
@@ -142,12 +143,11 @@ class TeardownProceduresTester:
                 f"Found {total_new_artifacts} uncleaned artifacts",
             )
             return False
-        else:
-            print("✅ No new test artifacts found - cleanup successful!")
-            self.log_test_result(
-                "Test Artifact Cleanup", True, "All test artifacts properly cleaned up"
-            )
-            return True
+        print("✅ No new test artifacts found - cleanup successful!")
+        self.log_test_result(
+            "Test Artifact Cleanup", True, "All test artifacts properly cleaned up"
+        )
+        return True
 
     def test_multiple_test_runs(self):
         """Test that multiple test runs don't interfere with each other."""
@@ -172,6 +172,7 @@ class TeardownProceduresTester:
                         "--no-header",
                         "-q",
                     ],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=60,
@@ -186,7 +187,7 @@ class TeardownProceduresTester:
                         print(f"    Error: {result.stderr}")
 
             except Exception as e:
-                print(f"    ❌ Run {run_num} exception: {str(e)}")
+                print(f"    ❌ Run {run_num} exception: {e!s}")
 
         success = success_count == total_runs
         self.log_test_result(
@@ -210,6 +211,7 @@ class TeardownProceduresTester:
                     "--collect-only",
                     "-q",
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -227,7 +229,7 @@ class TeardownProceduresTester:
 
         except Exception as e:
             self.log_test_result(
-                "Integration Test Teardown", False, f"Exception: {str(e)}"
+                "Integration Test Teardown", False, f"Exception: {e!s}"
             )
             return False
 
@@ -266,16 +268,15 @@ class TeardownProceduresTester:
 
         print("\n📊 Test Results Summary:")
         print(f"  Passed: {passed_tests}/{total_tests}")
-        print(f"  Success Rate: {(passed_tests/total_tests)*100:.1f}%")
+        print(f"  Success Rate: {(passed_tests / total_tests) * 100:.1f}%")
 
         if overall_success:
             print("\n🎉 All teardown procedure tests passed!")
             print("✅ Test teardown procedures are working correctly")
             return True
-        else:
-            print("\n⚠️  Some teardown procedure tests failed")
-            print("❌ Test teardown procedures need attention")
-            return False
+        print("\n⚠️  Some teardown procedure tests failed")
+        print("❌ Test teardown procedures need attention")
+        return False
 
 
 async def main():
@@ -310,12 +311,11 @@ async def main():
         if success:
             print("\n🎉 Test teardown procedures validation completed successfully!")
             return 0
-        else:
-            print("\n⚠️  Test teardown procedures validation failed.")
-            return 1
+        print("\n⚠️  Test teardown procedures validation failed.")
+        return 1
 
     except Exception as e:
-        print(f"\n❌ Test execution failed: {str(e)}")
+        print(f"\n❌ Test execution failed: {e!s}")
         return 1
 
 

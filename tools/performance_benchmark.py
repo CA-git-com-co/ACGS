@@ -89,7 +89,7 @@ class PerformanceBenchmark:
                         durations.append(time.time() - batch_start)
 
             except Exception as e:
-                errors.append(f"Batch {batch} failed: {str(e)}")
+                errors.append(f"Batch {batch} failed: {e!s}")
 
         total_duration = time.time() - start_time
 
@@ -171,9 +171,8 @@ class PerformanceBenchmark:
 
                     if result.success:
                         return True
-                    else:
-                        errors.append(result.error or "Unknown error")
-                        return False
+                    errors.append(result.error or "Unknown error")
+                    return False
 
                 except Exception as e:
                     errors.append(str(e))
@@ -367,7 +366,7 @@ class PerformanceBenchmark:
                     f"✅ {result.component}.{result.test_name}: "
                     f"{result.throughput:.1f} ops/sec, "
                     f"{result.success_rate:.1%} success, "
-                    f"P95: {result.p95_duration*1000:.1f}ms"
+                    f"P95: {result.p95_duration * 1000:.1f}ms"
                 )
 
             except Exception as e:
@@ -479,7 +478,7 @@ async def main():
             f"   Average Success Rate: {summary['overall_performance']['avg_success_rate']:.1%}"
         )
         print(
-            f"   Average P95 Latency: {summary['overall_performance']['avg_p95_latency']*1000:.1f}ms"
+            f"   Average P95 Latency: {summary['overall_performance']['avg_p95_latency'] * 1000:.1f}ms"
         )
 
         # Performance assessment

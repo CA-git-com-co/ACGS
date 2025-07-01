@@ -2,18 +2,6 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.models.mab_models
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance_synthesis.gs_service.app.models.mab_models import (
-    PromptTemplateModel,
-    PromptPerformanceModel,
-    OptimizationHistoryModel,
-    MABConfigurationModel,
-    MABSessionModel,
-    PromptTemplateVersionModel,
-    RewardFunctionModel,
-)
-
 
 class TestPromptTemplateModel:
     """Test suite for PromptTemplateModel."""

@@ -10,18 +10,14 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import logging
-import json
-import hashlib
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Any, Optional, Set, Tuple
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from enum import Enum
-from dataclasses import dataclass, asdict
-from pathlib import Path
+from typing import Any
+
 import aiohttp
-import cryptography
-from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -71,7 +67,7 @@ class FederatedNode:
     public_key: str
     trust_score: float
     last_seen: datetime
-    capabilities: List[str]
+    capabilities: list[str]
     constitutional_hash: str = "cdd01ef066bc6cf2"
 
 
@@ -87,9 +83,9 @@ class FederatedPolicy:
     author_node: str
     created_at: datetime
     version: str
-    dependencies: List[str]
-    conflicts: List[str]
-    endorsements: List[str]
+    dependencies: list[str]
+    conflicts: list[str]
+    endorsements: list[str]
     constitutional_compliance_score: float
     harmonization_level: float
     constitutional_hash: str = "cdd01ef066bc6cf2"
@@ -105,9 +101,9 @@ class PolicyConflict:
     conflict_type: ConflictType
     severity: float
     description: str
-    resolution_strategy: Optional[str]
+    resolution_strategy: str | None
     resolved: bool
-    resolution_timestamp: Optional[datetime]
+    resolution_timestamp: datetime | None
 
 
 @dataclass
@@ -115,12 +111,12 @@ class HarmonizationProposal:
     """Proposal for policy harmonization."""
 
     proposal_id: str
-    conflicting_policies: List[str]
+    conflicting_policies: list[str]
     harmonized_policy: FederatedPolicy
     rationale: str
-    impact_assessment: Dict[str, Any]
+    impact_assessment: dict[str, Any]
     voting_deadline: datetime
-    votes: Dict[str, bool]  # node_id -> vote
+    votes: dict[str, bool]  # node_id -> vote
     constitutional_compliance: bool
 
 
@@ -134,10 +130,10 @@ class FederatedGovernanceSystem:
         self.role = role
 
         # Network state
-        self.federated_nodes: Dict[str, FederatedNode] = {}
-        self.federated_policies: Dict[str, FederatedPolicy] = {}
-        self.policy_conflicts: Dict[str, PolicyConflict] = {}
-        self.harmonization_proposals: Dict[str, HarmonizationProposal] = {}
+        self.federated_nodes: dict[str, FederatedNode] = {}
+        self.federated_policies: dict[str, FederatedPolicy] = {}
+        self.policy_conflicts: dict[str, PolicyConflict] = {}
+        self.harmonization_proposals: dict[str, HarmonizationProposal] = {}
 
         # Cryptographic setup
         self.private_key = rsa.generate_private_key(
@@ -188,9 +184,8 @@ class FederatedGovernanceSystem:
                             f"Successfully joined federation: {result.get('federation_id')}"
                         )
                         return True
-                    else:
-                        logger.error(f"Failed to join federation: {response.status}")
-                        return False
+                    logger.error(f"Failed to join federation: {response.status}")
+                    return False
 
         except Exception as e:
             logger.error(f"Error joining federation: {e}")
@@ -251,7 +246,7 @@ class FederatedGovernanceSystem:
 
         return False
 
-    async def detect_conflicts(self) -> List[PolicyConflict]:
+    async def detect_conflicts(self) -> list[PolicyConflict]:
         """Detect conflicts between policies in the federation."""
         conflicts = []
 
@@ -267,7 +262,7 @@ class FederatedGovernanceSystem:
 
         return conflicts
 
-    async def propose_harmonization(self, conflicting_policy_ids: List[str]) -> str:
+    async def propose_harmonization(self, conflicting_policy_ids: list[str]) -> str:
         """Propose harmonization for conflicting policies."""
         proposal_id = f"harmony_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
@@ -361,7 +356,6 @@ class FederatedGovernanceSystem:
                 existing_policy.policy_id != new_policy.policy_id
                 and existing_policy.domain == new_policy.domain
             ):
-
                 conflict = await self._analyze_policy_conflict(
                     new_policy, existing_policy
                 )
@@ -374,7 +368,7 @@ class FederatedGovernanceSystem:
 
     async def _analyze_policy_conflict(
         self, policy_a: FederatedPolicy, policy_b: FederatedPolicy
-    ) -> Optional[PolicyConflict]:
+    ) -> PolicyConflict | None:
         """Analyze potential conflict between two policies."""
         # Simplified conflict detection
         content_a = policy_a.content.lower()
@@ -407,7 +401,7 @@ class FederatedGovernanceSystem:
         return None
 
     async def _generate_harmonized_policy(
-        self, policies: List[FederatedPolicy]
+        self, policies: list[FederatedPolicy]
     ) -> FederatedPolicy:
         """Generate a harmonized policy from conflicting policies."""
         # Simplified harmonization - in production, use advanced NLP
@@ -436,8 +430,8 @@ class FederatedGovernanceSystem:
         )
 
     async def _assess_harmonization_impact(
-        self, policies: List[FederatedPolicy]
-    ) -> Dict[str, Any]:
+        self, policies: list[FederatedPolicy]
+    ) -> dict[str, Any]:
         """Assess impact of harmonizing policies."""
         return {
             "affected_policies": len(policies),
@@ -480,7 +474,7 @@ class FederatedGovernanceSystem:
         # Broadcast implementation
         await self._broadcast_harmonization_implementation(proposal)
 
-    def _get_node_capabilities(self) -> List[str]:
+    def _get_node_capabilities(self) -> list[str]:
         """Get capabilities of this node."""
         capabilities = ["policy_proposal", "policy_endorsement", "conflict_detection"]
 
@@ -492,7 +486,7 @@ class FederatedGovernanceSystem:
 
         return capabilities
 
-    async def _update_federation_state(self, federation_info: Dict[str, Any]):
+    async def _update_federation_state(self, federation_info: dict[str, Any]):
         """Update local state with federation information."""
         # Update federated nodes
         for node_data in federation_info.get("nodes", []):

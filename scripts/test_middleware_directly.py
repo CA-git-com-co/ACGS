@@ -25,7 +25,7 @@ async def test_single_service(service_name: str, port: int):
                     text = await response.text()
                     print(f"  Response: {text[:200]}")
         except Exception as e:
-            print(f"GET /health: ERROR - {str(e)}")
+            print(f"GET /health: ERROR - {e!s}")
 
         # Test 2: POST /health with valid content type (should be 405 - Method Not Allowed)
         try:
@@ -41,7 +41,7 @@ async def test_single_service(service_name: str, port: int):
                     text = await response.text()
                     print(f"  Response: {text[:200]}")
         except Exception as e:
-            print(f"POST /health (valid content): ERROR - {str(e)}")
+            print(f"POST /health (valid content): ERROR - {e!s}")
 
         # Test 3: POST /health with invalid content type (should be 415 - Unsupported Media Type)
         try:
@@ -57,7 +57,7 @@ async def test_single_service(service_name: str, port: int):
                     text = await response.text()
                     print(f"  Response: {text[:200]}")
         except Exception as e:
-            print(f"POST /health (invalid content): ERROR - {str(e)}")
+            print(f"POST /health (invalid content): ERROR - {e!s}")
 
         # Test 4: Check if middleware is loaded by looking at headers
         try:
@@ -78,7 +78,7 @@ async def test_single_service(service_name: str, port: int):
                     missing = [h for h in middleware_headers if h not in headers]
                     print(f"  Missing headers: {missing}")
         except Exception as e:
-            print(f"Header check: ERROR - {str(e)}")
+            print(f"Header check: ERROR - {e!s}")
 
 
 async def main():

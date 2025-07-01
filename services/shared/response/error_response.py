@@ -31,29 +31,23 @@ Error Response Format:
 """
 
 import uuid
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from fastapi import HTTPException, Request
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 # Import error catalog components
 from ..errors.error_catalog import (
-    ErrorCategory,
-    ErrorDefinition,
     ErrorSeverity,
-    ServiceCode,
     get_error_definition,
 )
 
 # Import unified response components
 from .unified_response import (
-    ResponseBuilder,
     ResponseMetadata,
     UnifiedJSONResponse,
-    UnifiedResponse,
 )
 
 
@@ -63,7 +57,7 @@ class ErrorDetails:
 
     code: str
     message: str
-    details: Dict[str, Any]
+    details: dict[str, Any]
     timestamp: str
     request_id: str
     service: str
@@ -71,9 +65,9 @@ class ErrorDetails:
     severity: str
     retryable: bool
     resolution_guidance: str
-    context: Optional[Dict[str, Any]] = None
+    context: dict[str, Any] | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         result = {
             "code": self.code,
@@ -99,7 +93,7 @@ class ErrorResponse(BaseModel):
 
     success: bool = Field(False, description="Always false for error responses")
     error: ErrorDetails = Field(..., description="Detailed error information")
-    data: Optional[Any] = Field(None, description="Always null for error responses")
+    data: Any | None = Field(None, description="Always null for error responses")
     metadata: ResponseMetadata = Field(..., description="Response metadata")
 
     class Config:
@@ -116,8 +110,8 @@ class MultipleErrorResponse(BaseModel):
     """Response format for multiple errors (e.g., validation errors)."""
 
     success: bool = Field(False, description="Always false for error responses")
-    errors: List[ErrorDetails] = Field(..., description="List of error details")
-    data: Optional[Any] = Field(None, description="Always null for error responses")
+    errors: list[ErrorDetails] = Field(..., description="List of error details")
+    data: Any | None = Field(None, description="Always null for error responses")
     metadata: ResponseMetadata = Field(..., description="Response metadata")
 
     class Config:
@@ -137,8 +131,8 @@ class ErrorResponseBuilder:
         """Initialize error response builder."""
         self.service_name = service_name
         self.version = version
-        self.request_id: Optional[str] = None
-        self.request_context: Optional[Dict[str, Any]] = None
+        self.request_id: str | None = None
+        self.request_context: dict[str, Any] | None = None
 
     def set_request_context(self, request: Request) -> "ErrorResponseBuilder":
         """Set request context for error tracking."""
@@ -165,9 +159,9 @@ class ErrorResponseBuilder:
     def from_error_code(
         self,
         error_code: str,
-        details: Optional[Dict[str, Any]] = None,
-        context: Optional[Dict[str, Any]] = None,
-        override_message: Optional[str] = None,
+        details: dict[str, Any] | None = None,
+        context: dict[str, Any] | None = None,
+        override_message: str | None = None,
     ) -> ErrorResponse:
         """Create error response from error catalog code."""
         error_def = get_error_definition(error_code)
@@ -198,7 +192,7 @@ class ErrorResponseBuilder:
 
     def validation_error(
         self,
-        validation_errors: List[Dict[str, Any]],
+        validation_errors: list[dict[str, Any]],
         message: str = "Request validation failed",
     ) -> ErrorResponse:
         """Create validation error response."""
@@ -211,7 +205,7 @@ class ErrorResponseBuilder:
     def authentication_error(
         self,
         reason: str = "Authentication failed",
-        details: Optional[Dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ) -> ErrorResponse:
         """Create authentication error response."""
         return self.from_error_code(
@@ -221,7 +215,7 @@ class ErrorResponseBuilder:
         )
 
     def authorization_error(
-        self, required_permission: str, user_role: Optional[str] = None
+        self, required_permission: str, user_role: str | None = None
     ) -> ErrorResponse:
         """Create authorization error response."""
         return self.from_error_code(
@@ -235,8 +229,8 @@ class ErrorResponseBuilder:
     def business_logic_error(
         self,
         error_code: str,
-        details: Optional[Dict[str, Any]] = None,
-        context: Optional[Dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
+        context: dict[str, Any] | None = None,
     ) -> ErrorResponse:
         """Create business logic error response."""
         return self.from_error_code(error_code, details, context)
@@ -255,7 +249,7 @@ class ErrorResponseBuilder:
         )
 
     def system_error(
-        self, error_id: Optional[str] = None, details: Optional[Dict[str, Any]] = None
+        self, error_id: str | None = None, details: dict[str, Any] | None = None
     ) -> ErrorResponse:
         """Create system error response."""
         error_id = error_id or str(uuid.uuid4())
@@ -268,11 +262,11 @@ class ErrorResponseBuilder:
     def generic_error(
         self,
         message: str,
-        details: Dict[str, Any],
+        details: dict[str, Any],
         http_status: int = 500,
         severity: ErrorSeverity = ErrorSeverity.ERROR,
         retryable: bool = False,
-        context: Optional[Dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
     ) -> ErrorResponse:
         """Create generic error response for unknown errors."""
         error_details = ErrorDetails(
@@ -293,7 +287,7 @@ class ErrorResponseBuilder:
 
     def multiple_errors(
         self,
-        errors: List[Dict[str, Any]],
+        errors: list[dict[str, Any]],
         primary_message: str = "Multiple errors occurred",
     ) -> MultipleErrorResponse:
         """Create response for multiple errors."""
@@ -344,9 +338,9 @@ class ErrorJSONResponse(UnifiedJSONResponse):
 
     def __init__(
         self,
-        error_response: Union[ErrorResponse, MultipleErrorResponse],
+        error_response: ErrorResponse | MultipleErrorResponse,
         status_code: int = 500,
-        headers: Optional[Dict[str, str]] = None,
+        headers: dict[str, str] | None = None,
     ):
         """Initialize error JSON response."""
 
@@ -448,7 +442,7 @@ async def get_error_response_builder(request: Request) -> ErrorResponseBuilder:
 
 # Utility functions for common error scenarios
 def create_http_exception_error_response(
-    exc: HTTPException, service_name: str, request_id: Optional[str] = None
+    exc: HTTPException, service_name: str, request_id: str | None = None
 ) -> ErrorJSONResponse:
     """Create error response from HTTPException."""
     builder = ErrorResponseBuilder(service_name)
@@ -480,18 +474,18 @@ def create_http_exception_error_response(
 # Export main classes and functions
 __all__ = [
     "ErrorDetails",
-    "ErrorResponse",
-    "MultipleErrorResponse",
-    "ErrorResponseBuilder",
     "ErrorJSONResponse",
-    "get_error_response_builder",
-    "create_auth_error_builder",
+    "ErrorResponse",
+    "ErrorResponseBuilder",
+    "MultipleErrorResponse",
     "create_ac_error_builder",
-    "create_integrity_error_builder",
+    "create_auth_error_builder",
+    "create_dgm_error_builder",
+    "create_ec_error_builder",
     "create_fv_error_builder",
     "create_gs_error_builder",
-    "create_pgc_error_builder",
-    "create_ec_error_builder",
-    "create_dgm_error_builder",
     "create_http_exception_error_response",
+    "create_integrity_error_builder",
+    "create_pgc_error_builder",
+    "get_error_response_builder",
 ]

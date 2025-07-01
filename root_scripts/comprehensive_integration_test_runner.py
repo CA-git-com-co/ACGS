@@ -26,7 +26,7 @@ import json
 import os
 import subprocess
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -223,7 +223,7 @@ class ComprehensiveIntegrationTestRunner:
 
                 start_time = time.time()
                 result = subprocess.run(
-                    cmd, capture_output=True, text=True, timeout=300
+                    cmd, check=False, capture_output=True, text=True, timeout=300
                 )
                 execution_time = time.time() - start_time
 

@@ -377,10 +377,9 @@ class RuntimeGating:
         # Simple strategy selection based on configuration
         if self.config.sparsity_strategy == SparsityStrategy.ADAPTIVE_DYNAMIC:
             return GatingStrategy.ADAPTIVE
-        elif "attention" in layer_name.lower():
+        if "attention" in layer_name.lower():
             return GatingStrategy.TOP_K
-        else:
-            return GatingStrategy.THRESHOLD_BASED
+        return GatingStrategy.THRESHOLD_BASED
 
     def _top_k_gating(
         self, layer_name: str, wina_scores: np.ndarray
@@ -653,21 +652,20 @@ class RuntimeGating:
         # Strategy selection based on context
         if score_variance < 0.01:  # Low variance - use probabilistic
             return self._probabilistic_gating(layer_name, wina_scores)
-        elif len(compliance_history) > 0 and np.mean(compliance_history[-3:]) < 0.85:
+        if len(compliance_history) > 0 and np.mean(compliance_history[-3:]) < 0.85:
             # Low compliance - use constitutional aware
             return self._constitutional_aware_gating(layer_name, wina_scores)
-        elif (
+        if (
             len(performance_history) > 0
             and np.mean(performance_history[-3:]) < self.config.accuracy_threshold
         ):
             # Low performance - use performance adaptive
             return self._performance_adaptive_gating(layer_name, wina_scores)
-        elif "attention" in layer_name.lower():
+        if "attention" in layer_name.lower():
             # Attention layers - use top-k for stability
             return self._top_k_gating(layer_name, wina_scores)
-        else:
-            # Default to adaptive
-            return self._adaptive_gating(layer_name, wina_scores)
+        # Default to adaptive
+        return self._adaptive_gating(layer_name, wina_scores)
 
     def _update_neuron_gates(
         self,
@@ -943,28 +941,25 @@ class RuntimeGating:
             if len(performance_history) >= 2:
                 recent_trend = performance_history[-1] - performance_history[-2]
                 return self.adaptation_learning_rate * recent_trend
-            else:
-                return 0.0
-        else:
             return 0.0
+        return 0.0
 
     def _infer_layer_type(self, layer_name: str) -> str:
         """Infer layer type from layer name."""
         layer_name_lower = layer_name.lower()
         if "attention" in layer_name_lower or "attn" in layer_name_lower:
             return "attention"
-        elif (
+        if (
             "feed" in layer_name_lower
             or "mlp" in layer_name_lower
             or "ffn" in layer_name_lower
         ):
             return "feedforward"
-        elif "embed" in layer_name_lower:
+        if "embed" in layer_name_lower:
             return "embedding"
-        elif "norm" in layer_name_lower or "layer_norm" in layer_name_lower:
+        if "norm" in layer_name_lower or "layer_norm" in layer_name_lower:
             return "normalization"
-        else:
-            return "other"
+        return "other"
 
     def _assess_score_distribution_compliance(
         self, wina_scores: np.ndarray, active_neurons: np.ndarray
@@ -993,9 +988,8 @@ class RuntimeGating:
                     np.max(wina_scores) - np.min(wina_scores) + 1e-8
                 )
                 return min(1.0, separation_ratio * 2)  # Scale to [0, 1]
-            else:
-                # Poor separation - active neurons don't have higher scores
-                return 0.2
+            # Poor separation - active neurons don't have higher scores
+            return 0.2
 
         except Exception as e:
             logger.warning(f"Score distribution compliance assessment failed: {e}")

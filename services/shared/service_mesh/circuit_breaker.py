@@ -104,14 +104,14 @@ class CircuitBreaker:
         if self.state == CircuitBreakerState.CLOSED:
             return True
 
-        elif self.state == CircuitBreakerState.OPEN:
+        if self.state == CircuitBreakerState.OPEN:
             # Check if timeout has elapsed to move to half-open
             if current_time - self.last_failure_time >= self.timeout:
                 self._transition_to_half_open()
                 return True
             return False
 
-        elif self.state == CircuitBreakerState.HALF_OPEN:
+        if self.state == CircuitBreakerState.HALF_OPEN:
             # Check if recovery timeout has elapsed
             if current_time - self.half_open_start_time >= self.recovery_timeout:
                 # If no failures during recovery period, close circuit

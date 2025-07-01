@@ -15,10 +15,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from services.shared.multimodal_ai_service import (
-    get_multimodal_service,
+    ContentType,
     MultimodalRequest,
     RequestType,
-    ContentType,
+    get_multimodal_service,
 )
 
 
@@ -41,7 +41,7 @@ async def debug_detailed_constitutional_compliance():
     print("🧪 Step 1: Testing internal _analyze_constitutional_compliance...")
     compliance_analysis = service._analyze_constitutional_compliance(test_content)
 
-    print(f"Internal Analysis Result:")
+    print("Internal Analysis Result:")
     print(f"  Compliant: {compliance_analysis['compliant']}")
     print(f"  Confidence: {compliance_analysis['confidence']:.3f}")
     print(f"  Violations: {compliance_analysis.get('violations', [])}")
@@ -65,7 +65,7 @@ async def debug_detailed_constitutional_compliance():
     try:
         response = await service.process_request(request)
 
-        print(f"Full Request Result (no cache):")
+        print("Full Request Result (no cache):")
         print(f"  Constitutional Compliance: {response.constitutional_compliance}")
         print(f"  Confidence Score: {response.confidence_score:.3f}")
         print(f"  Model Used: {response.model_used.value}")
@@ -101,7 +101,7 @@ async def debug_detailed_constitutional_compliance():
     service.cache_manager = None  # Disable cache
     try:
         quick_response = await service.process_request(quick_request)
-        print(f"QUICK_ANALYSIS Result:")
+        print("QUICK_ANALYSIS Result:")
         print(
             f"  Constitutional Compliance: {quick_response.constitutional_compliance}"
         )

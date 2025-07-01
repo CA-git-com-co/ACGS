@@ -11,16 +11,17 @@ Implements comprehensive performance and scaling optimizations including:
 Target: Sub-5ms P99 latency at 10x baseline load
 """
 
-import os
-import sys
-import logging
 import asyncio
 import json
+import logging
+import os
+import sys
 import time
-import yaml
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+import yaml
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -80,9 +81,9 @@ class PerformanceScalingOptimizer:
         }
 
         # Performance metrics
-        self.performance_metrics: List[PerformanceMetric] = []
+        self.performance_metrics: list[PerformanceMetric] = []
 
-    async def implement_performance_scaling_optimization(self) -> Dict[str, Any]:
+    async def implement_performance_scaling_optimization(self) -> dict[str, Any]:
         """Implement comprehensive performance and scaling optimizations."""
         logger.info("⚡ Implementing performance and scaling optimization...")
 
@@ -135,7 +136,7 @@ class PerformanceScalingOptimizer:
             optimization_results["errors"].append(str(e))
             return optimization_results
 
-    async def _implement_horizontal_scaling(self) -> Dict[str, Any]:
+    async def _implement_horizontal_scaling(self) -> dict[str, Any]:
         """Implement horizontal scaling for high-throughput components."""
         logger.info("📈 Implementing horizontal scaling...")
 
@@ -296,7 +297,7 @@ class PerformanceScalingOptimizer:
             logger.error(f"Horizontal scaling implementation failed: {e}")
             raise
 
-    async def _optimize_database_performance(self) -> Dict[str, Any]:
+    async def _optimize_database_performance(self) -> dict[str, Any]:
         """Optimize database performance with read replicas and query optimization."""
         logger.info("🗄️ Optimizing database performance...")
 
@@ -677,7 +678,7 @@ if __name__ == "__main__":
             logger.error(f"Database optimization failed: {e}")
             raise
 
-    async def _implement_advanced_caching(self) -> Dict[str, Any]:
+    async def _implement_advanced_caching(self) -> dict[str, Any]:
         """Implement advanced caching optimizations."""
         logger.info("🚀 Implementing advanced caching optimizations...")
 
@@ -734,7 +735,7 @@ if __name__ == "__main__":
             logger.error(f"Advanced caching implementation failed: {e}")
             raise
 
-    async def _configure_auto_scaling(self) -> Dict[str, Any]:
+    async def _configure_auto_scaling(self) -> dict[str, Any]:
         """Configure auto-scaling for services."""
         logger.info("📊 Configuring auto-scaling...")
 
@@ -824,7 +825,7 @@ if __name__ == "__main__":
             logger.error(f"Auto-scaling configuration failed: {e}")
             raise
 
-    async def _conduct_load_testing(self) -> Dict[str, Any]:
+    async def _conduct_load_testing(self) -> dict[str, Any]:
         """Conduct comprehensive load testing."""
         logger.info("🔥 Conducting load testing...")
 
@@ -1026,7 +1027,7 @@ if __name__ == "__main__":
             logger.error(f"Load testing failed: {e}")
             raise
 
-    async def _calculate_performance_metrics(self) -> Dict[str, Any]:
+    async def _calculate_performance_metrics(self) -> dict[str, Any]:
         """Calculate performance optimization metrics."""
         logger.info("📊 Calculating performance metrics...")
 
@@ -1093,7 +1094,7 @@ if __name__ == "__main__":
             logger.error(f"Performance metrics calculation failed: {e}")
             raise
 
-    async def _generate_optimization_report(self, results: Dict[str, Any]):
+    async def _generate_optimization_report(self, results: dict[str, Any]):
         """Generate comprehensive performance optimization report."""
         report_path = self.project_root / "performance_scaling_optimization_report.json"
 

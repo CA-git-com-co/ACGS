@@ -51,7 +51,7 @@ async def test_enhanced_principle_management():
 
         # Create principle using enhanced schema
         principle_create = schemas.PrincipleCreate(**enhanced_principle_data)
-        print(f"✓ Enhanced principle schema validation passed")
+        print("✓ Enhanced principle schema validation passed")
         print(f"  - Priority weight: {principle_create.priority_weight}")
         print(f"  - Scope: {principle_create.scope}")
         print(f"  - Category: {principle_create.category}")
@@ -63,7 +63,7 @@ async def test_enhanced_principle_management():
             scope=["healthcare", "autonomous_systems"],
             category="Critical_Safety",
         )
-        print(f"✓ Enhanced principle update schema validation passed")
+        print("✓ Enhanced principle update schema validation passed")
 
         return True
 
@@ -97,7 +97,7 @@ async def test_constitutional_prompting():
             )
         )
 
-        print(f"✓ Constitutional context built successfully")
+        print("✓ Constitutional context built successfully")
         print(f"  - Context: {constitutional_context['context']}")
         print(f"  - Principle count: {constitutional_context['principle_count']}")
         print(
@@ -118,7 +118,7 @@ async def test_constitutional_prompting():
             )
         )
 
-        print(f"✓ Constitutional prompt built successfully")
+        print("✓ Constitutional prompt built successfully")
         print(f"  - Prompt length: {len(constitutional_prompt)} characters")
         print(
             f"  - Contains constitutional preamble: {'CONSTITUTIONAL FRAMEWORK' in constitutional_prompt}"
@@ -135,7 +135,7 @@ async def test_constitutional_prompting():
             target_format="datalog",
         )
 
-        print(f"✓ Constitutional synthesis input schema validation passed")
+        print("✓ Constitutional synthesis input schema validation passed")
         print(f"  - Context: {synthesis_input.context}")
         print(f"  - Target format: {synthesis_input.target_format}")
 
@@ -207,7 +207,7 @@ async def test_contextual_analysis():
             },
         )
 
-        print(f"✓ Contextual analysis completed successfully")
+        print("✓ Contextual analysis completed successfully")
         print(f"  - Context: {analysis_result['context']}")
         print(f"  - Relevant factors: {len(analysis_result['relevant_factors'])}")
         print(f"  - Similar contexts: {len(analysis_result['similar_contexts'])}")
@@ -220,7 +220,7 @@ async def test_contextual_analysis():
             "healthcare_ai_systems"
         )
 
-        print(f"✓ Adaptation triggers retrieved successfully")
+        print("✓ Adaptation triggers retrieved successfully")
         print(f"  - Immediate triggers: {len(triggers['immediate_triggers'])}")
         print(f"  - Scheduled triggers: {len(triggers['scheduled_triggers'])}")
         print(f"  - Conditional triggers: {len(triggers['conditional_triggers'])}")
@@ -270,7 +270,7 @@ async def test_integration():
         print("  - Performing constitutional synthesis...")
         synthesis_result = await query_llm_for_constitutional_synthesis(synthesis_input)
 
-        print(f"✓ Constitutional synthesis completed successfully")
+        print("✓ Constitutional synthesis completed successfully")
         print(f"  - Context: {synthesis_result.context}")
         print(f"  - Generated rules: {len(synthesis_result.generated_rules)}")
         print(
@@ -336,9 +336,8 @@ async def main():
     if passed == total:
         print("🎉 All Phase 1 components are working correctly!")
         return 0
-    else:
-        print("⚠️  Some Phase 1 components need attention.")
-        return 1
+    print("⚠️  Some Phase 1 components need attention.")
+    return 1
 
 
 if __name__ == "__main__":

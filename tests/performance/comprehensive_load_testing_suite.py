@@ -22,29 +22,25 @@ Features:
 - Comprehensive reporting
 """
 
-import asyncio
-import aiohttp
-import time
-import json
-import statistics
-import random
-import logging
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Tuple
-from dataclasses import dataclass, asdict, field
-from concurrent.futures import ThreadPoolExecutor
-from pathlib import Path
 import argparse
-import sys
+import asyncio
+import json
+import logging
 import os
+import random
+import statistics
+import sys
+import time
+from dataclasses import asdict, dataclass, field
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+import aiohttp
 
 # Add project root to path
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../.."))
 
-from tests.performance.load_testing_framework import (
-    LoadTestConfig,
-    ComprehensiveLoadTester,
-)
 
 # Configure logging
 logging.basicConfig(
@@ -61,8 +57,8 @@ class ChaosScenario:
     description: str
     duration_seconds: int
     failure_rate: float  # 0.0 to 1.0
-    target_services: List[str]
-    failure_types: List[str]  # ['latency', 'error', 'timeout', 'network']
+    target_services: list[str]
+    failure_types: list[str]  # ['latency', 'error', 'timeout', 'network']
 
 
 @dataclass
@@ -71,7 +67,7 @@ class LoadTestMetrics:
 
     scenario_name: str
     start_time: datetime
-    end_time: Optional[datetime] = None
+    end_time: datetime | None = None
     total_requests: int = 0
     successful_requests: int = 0
     failed_requests: int = 0
@@ -82,7 +78,7 @@ class LoadTestMetrics:
     throughput_rps: float = 0.0
     error_rate: float = 0.0
     chaos_events: int = 0
-    service_failures: Dict[str, int] = field(default_factory=dict)
+    service_failures: dict[str, int] = field(default_factory=dict)
     performance_degradation: float = 0.0
 
 
@@ -93,8 +89,8 @@ class ServiceEndpoint:
     name: str
     url: str
     method: str = "GET"
-    headers: Dict[str, str] = field(default_factory=dict)
-    payload: Optional[Dict[str, Any]] = None
+    headers: dict[str, str] = field(default_factory=dict)
+    payload: dict[str, Any] | None = None
     expected_status: int = 200
     timeout_seconds: float = 30.0
     weight: int = 1  # Request distribution weight
@@ -111,7 +107,7 @@ class ComprehensiveLoadTestSuite:
     - Real-time monitoring and alerting
     """
 
-    def __init__(self, config_file: Optional[str] = None):
+    def __init__(self, config_file: str | None = None):
         self.config = self._load_config(config_file)
         self.results_dir = Path("tests/performance/results")
         self.results_dir.mkdir(exist_ok=True)
@@ -132,9 +128,9 @@ class ComprehensiveLoadTestSuite:
         }
 
         # Test results
-        self.test_results: List[LoadTestMetrics] = []
+        self.test_results: list[LoadTestMetrics] = []
 
-    def _load_config(self, config_file: Optional[str]) -> Dict[str, Any]:
+    def _load_config(self, config_file: str | None) -> dict[str, Any]:
         """Load configuration from file or use defaults."""
         default_config = {
             "max_concurrent_users": 1000,
@@ -146,13 +142,13 @@ class ComprehensiveLoadTestSuite:
         }
 
         if config_file and Path(config_file).exists():
-            with open(config_file, "r") as f:
+            with open(config_file) as f:
                 file_config = json.load(f)
                 default_config.update(file_config)
 
         return default_config
 
-    def _initialize_service_endpoints(self) -> List[ServiceEndpoint]:
+    def _initialize_service_endpoints(self) -> list[ServiceEndpoint]:
         """Initialize ACGS-PGP service endpoints for testing."""
         base_url = os.getenv("ACGS_BASE_URL", "http://localhost")
 
@@ -191,7 +187,7 @@ class ComprehensiveLoadTestSuite:
             ),
         ]
 
-    def _initialize_chaos_scenarios(self) -> List[ChaosScenario]:
+    def _initialize_chaos_scenarios(self) -> list[ChaosScenario]:
         """Initialize chaos engineering scenarios."""
         return [
             ChaosScenario(
@@ -237,7 +233,7 @@ class ComprehensiveLoadTestSuite:
             ),
         ]
 
-    async def run_comprehensive_load_test(self) -> Dict[str, Any]:
+    async def run_comprehensive_load_test(self) -> dict[str, Any]:
         """Run the complete comprehensive load testing suite."""
         logger.info("🚀 Starting ACGS-PGP Comprehensive Load Testing Suite")
         logger.info(
@@ -285,7 +281,7 @@ class ComprehensiveLoadTestSuite:
 
         return final_report
 
-    async def _run_baseline_tests(self) -> Dict[str, Any]:
+    async def _run_baseline_tests(self) -> dict[str, Any]:
         """Run baseline performance tests without chaos injection."""
         baseline_results = {}
 
@@ -302,7 +298,7 @@ class ComprehensiveLoadTestSuite:
 
         return baseline_results
 
-    async def _run_chaos_tests(self) -> Dict[str, Any]:
+    async def _run_chaos_tests(self) -> dict[str, Any]:
         """Run chaos engineering tests."""
         chaos_results = {}
 
@@ -332,7 +328,7 @@ class ComprehensiveLoadTestSuite:
 
         return chaos_results
 
-    async def _run_stress_tests(self) -> Dict[str, Any]:
+    async def _run_stress_tests(self) -> dict[str, Any]:
         """Run stress tests with increasing load."""
         stress_results = {}
 
@@ -451,7 +447,7 @@ class ComprehensiveLoadTestSuite:
         self,
         duration: int,
         chaos_active: bool = False,
-        user_count: Optional[int] = None,
+        user_count: int | None = None,
     ) -> LoadTestMetrics:
         """Test all services concurrently with specified parameters."""
         if user_count is None:
@@ -506,7 +502,7 @@ class ComprehensiveLoadTestSuite:
                     metrics.total_requests += 1
 
                 except Exception as e:
-                    all_errors.append(f"{endpoint.name}: {str(e)}")
+                    all_errors.append(f"{endpoint.name}: {e!s}")
                     service_errors[endpoint.name] += 1
                     metrics.total_requests += 1
 
@@ -627,11 +623,11 @@ class ComprehensiveLoadTestSuite:
 
     def _generate_comprehensive_report(
         self,
-        baseline_results: Dict[str, Any],
-        chaos_results: Dict[str, Any],
-        stress_results: Dict[str, Any],
+        baseline_results: dict[str, Any],
+        chaos_results: dict[str, Any],
+        stress_results: dict[str, Any],
         suite_duration: float,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate comprehensive test report."""
         report = {
             "test_suite": "ACGS-PGP Comprehensive Load Testing Suite",
@@ -656,10 +652,10 @@ class ComprehensiveLoadTestSuite:
 
     def _calculate_summary_metrics(
         self,
-        baseline_results: Dict[str, Any],
-        chaos_results: Dict[str, Any],
-        stress_results: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        baseline_results: dict[str, Any],
+        chaos_results: dict[str, Any],
+        stress_results: dict[str, Any],
+    ) -> dict[str, Any]:
         """Calculate summary metrics across all tests."""
         summary = {
             "total_requests": 0,
@@ -733,10 +729,10 @@ class ComprehensiveLoadTestSuite:
 
     def _generate_recommendations(
         self,
-        baseline_results: Dict[str, Any],
-        chaos_results: Dict[str, Any],
-        stress_results: Dict[str, Any],
-    ) -> List[str]:
+        baseline_results: dict[str, Any],
+        chaos_results: dict[str, Any],
+        stress_results: dict[str, Any],
+    ) -> list[str]:
         """Generate performance improvement recommendations."""
         recommendations = []
 
@@ -796,7 +792,7 @@ class ComprehensiveLoadTestSuite:
 
         return recommendations
 
-    def _save_results(self, report: Dict[str, Any]):
+    def _save_results(self, report: dict[str, Any]):
         """Save test results to files."""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
@@ -875,7 +871,7 @@ async def main():
             status = "✅" if met else "❌"
             print(f"  {status} {target}")
 
-        print(f"\nRecommendations:")
+        print("\nRecommendations:")
         for i, rec in enumerate(results["recommendations"], 1):
             print(f"  {i}. {rec}")
 

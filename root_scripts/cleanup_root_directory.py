@@ -4,11 +4,10 @@ ACGS-1 Root Directory Cleanup Script
 Organizes 100+ scattered files in root directory into proper locations
 """
 
-import os
-import shutil
 import json
-from pathlib import Path
+import shutil
 from datetime import datetime
+from pathlib import Path
 
 
 class RootDirectoryCleanup:
@@ -157,12 +156,11 @@ class RootDirectoryCleanup:
         """Check if filename matches pattern (simple glob-like matching)"""
         if pattern.startswith("*") and pattern.endswith("*"):
             return pattern[1:-1] in filename
-        elif pattern.startswith("*"):
+        if pattern.startswith("*"):
             return filename.endswith(pattern[1:])
-        elif pattern.endswith("*"):
+        if pattern.endswith("*"):
             return filename.startswith(pattern[:-1])
-        else:
-            return filename == pattern
+        return filename == pattern
 
     def _move_file(self, file_path: Path, destination: str):
         """Move file to destination directory"""
@@ -185,7 +183,7 @@ class RootDirectoryCleanup:
             print(f"📁 Moved: {file_path.name} → {destination}/")
 
         except Exception as e:
-            error_msg = f"Failed to move {file_path}: {str(e)}"
+            error_msg = f"Failed to move {file_path}: {e!s}"
             self.cleanup_report["errors"].append(error_msg)
             print(f"❌ {error_msg}")
 
@@ -208,7 +206,7 @@ class RootDirectoryCleanup:
                     print(f"📦 Archived backup: {item.name} → archive/backups/")
 
                 except Exception as e:
-                    error_msg = f"Failed to move backup directory {item}: {str(e)}"
+                    error_msg = f"Failed to move backup directory {item}: {e!s}"
                     self.cleanup_report["errors"].append(error_msg)
                     print(f"❌ {error_msg}")
 

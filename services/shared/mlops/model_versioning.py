@@ -9,14 +9,14 @@ versioning capabilities, automated version management, and integration
 with Git for full traceability.
 """
 
-import logging
-import json
 import hashlib
+import json
+import logging
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
-from dataclasses import dataclass, field, asdict
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
 from pathlib import Path
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -46,8 +46,8 @@ class SemanticVersion:
     major: int
     minor: int
     patch: int
-    prerelease: Optional[str] = None
-    build: Optional[str] = None
+    prerelease: str | None = None
+    build: str | None = None
 
     def __post_init__(self):
         """Validate version components."""
@@ -106,32 +106,31 @@ class SemanticVersion:
         # Handle prerelease comparison
         if self.prerelease is None and other.prerelease is None:
             return False
-        elif self.prerelease is None:
+        if self.prerelease is None:
             return False  # Release version > prerelease
-        elif other.prerelease is None:
+        if other.prerelease is None:
             return True  # Prerelease < release version
-        else:
-            return self.prerelease < other.prerelease
+        return self.prerelease < other.prerelease
 
     def bump(
-        self, policy: VersionPolicy, prerelease: Optional[str] = None
+        self, policy: VersionPolicy, prerelease: str | None = None
     ) -> "SemanticVersion":
         """Create new version with specified bump policy."""
         if policy == VersionPolicy.MAJOR:
             return SemanticVersion(
                 major=self.major + 1, minor=0, patch=0, prerelease=prerelease
             )
-        elif policy == VersionPolicy.MINOR:
+        if policy == VersionPolicy.MINOR:
             return SemanticVersion(
                 major=self.major, minor=self.minor + 1, patch=0, prerelease=prerelease
             )
-        else:  # PATCH
-            return SemanticVersion(
-                major=self.major,
-                minor=self.minor,
-                patch=self.patch + 1,
-                prerelease=prerelease,
-            )
+        # PATCH
+        return SemanticVersion(
+            major=self.major,
+            minor=self.minor,
+            patch=self.patch + 1,
+            prerelease=prerelease,
+        )
 
 
 @dataclass
@@ -151,25 +150,25 @@ class MLOpsModelVersion:
     # Model artifacts and metadata
     model_artifact_path: str
     config_artifact_path: str
-    performance_metrics: Dict[str, float]
+    performance_metrics: dict[str, float]
 
     # Git integration
     git_commit_hash: str
     git_branch: str
-    git_tag: Optional[str] = None
+    git_tag: str | None = None
 
     # Timestamps and tracking
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    deployed_at: Optional[datetime] = None
+    deployed_at: datetime | None = None
 
     # Constitutional and compliance
     constitutional_hash: str = "cdd01ef066bc6cf2"
     constitutional_compliance_score: float = 0.0
 
     # Lineage and dependencies
-    parent_version: Optional[str] = None
-    training_data_hash: Optional[str] = None
-    dependencies: Dict[str, str] = field(default_factory=dict)
+    parent_version: str | None = None
+    training_data_hash: str | None = None
+    dependencies: dict[str, str] = field(default_factory=dict)
 
     # Status and metadata
     is_active: bool = False
@@ -177,7 +176,7 @@ class MLOpsModelVersion:
     deployment_environment: str = "development"
 
     # Additional metadata
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         """Validate model version after initialization."""
@@ -191,7 +190,7 @@ class MLOpsModelVersion:
                 "Constitutional compliance score must be between 0.0 and 1.0"
             )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert model version to dictionary representation."""
         data = asdict(self)
 
@@ -207,7 +206,7 @@ class MLOpsModelVersion:
         return data
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "MLOpsModelVersion":
+    def from_dict(cls, data: dict[str, Any]) -> "MLOpsModelVersion":
         """Create model version from dictionary representation."""
         # Parse version string
         if isinstance(data["version"], str):
@@ -239,7 +238,7 @@ class MLOpsModelVersion:
         # Same major version indicates compatibility
         return self.version.major == other.version.major
 
-    def get_lineage_chain(self) -> List[str]:
+    def get_lineage_chain(self) -> list[str]:
         """Get the lineage chain of parent versions."""
         chain = [str(self.version)]
 
@@ -264,7 +263,7 @@ class ModelVersionManager:
     ):
         self.storage_path = Path(storage_path)
         self.constitutional_hash = constitutional_hash
-        self.versions: Dict[str, MLOpsModelVersion] = {}
+        self.versions: dict[str, MLOpsModelVersion] = {}
 
         # Create storage directory
         self.storage_path.mkdir(parents=True, exist_ok=True)
@@ -280,7 +279,7 @@ class ModelVersionManager:
 
         if versions_file.exists():
             try:
-                with open(versions_file, "r") as f:
+                with open(versions_file) as f:
                     versions_data = json.load(f)
 
                 for version_str, version_data in versions_data.items():
@@ -317,12 +316,12 @@ class ModelVersionManager:
         model_name: str,
         model_artifact_path: str,
         config_artifact_path: str,
-        performance_metrics: Dict[str, float],
+        performance_metrics: dict[str, float],
         git_commit_hash: str,
         git_branch: str,
         version_policy: VersionPolicy = VersionPolicy.PATCH,
-        parent_version: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        parent_version: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> MLOpsModelVersion:
         """
         Create a new model version with semantic versioning.
@@ -396,16 +395,14 @@ class ModelVersionManager:
 
         return model_version
 
-    def get_version(
-        self, version: Union[str, SemanticVersion]
-    ) -> Optional[MLOpsModelVersion]:
+    def get_version(self, version: str | SemanticVersion) -> MLOpsModelVersion | None:
         """Get specific model version."""
         version_str = str(version)
         return self.versions.get(version_str)
 
     def get_version_by_model_and_version(
-        self, model_name: str, version: Union[str, SemanticVersion]
-    ) -> Optional[MLOpsModelVersion]:
+        self, model_name: str, version: str | SemanticVersion
+    ) -> MLOpsModelVersion | None:
         """Get specific model version by model name and version."""
         version_str = str(version)
 
@@ -433,8 +430,8 @@ class ModelVersionManager:
         return None
 
     def get_latest_version(
-        self, model_name: Optional[str] = None
-    ) -> Optional[MLOpsModelVersion]:
+        self, model_name: str | None = None
+    ) -> MLOpsModelVersion | None:
         """Get latest version, optionally filtered by model name."""
         filtered_versions = self.versions.values()
 
@@ -449,8 +446,8 @@ class ModelVersionManager:
         return max(filtered_versions, key=lambda v: v.version)
 
     def get_production_version(
-        self, model_name: Optional[str] = None
-    ) -> Optional[MLOpsModelVersion]:
+        self, model_name: str | None = None
+    ) -> MLOpsModelVersion | None:
         """Get current production version."""
         filtered_versions = [v for v in self.versions.values() if v.is_production]
 
@@ -466,7 +463,7 @@ class ModelVersionManager:
 
     def promote_to_production(
         self,
-        version: Union[str, SemanticVersion],
+        version: str | SemanticVersion,
         deployment_environment: str = "production",
     ) -> bool:
         """
@@ -492,9 +489,7 @@ class ModelVersionManager:
         current_production = self.get_production_version(model_version.model_name)
         if current_production:
             current_production.is_production = False
-            logger.info(
-                f"Demoted version {current_production.version} " f"from production"
-            )
+            logger.info(f"Demoted version {current_production.version} from production")
 
         # Promote new version
         model_version.is_production = True
@@ -506,7 +501,7 @@ class ModelVersionManager:
         logger.info(f"Successfully promoted version {version_str} to production")
         return True
 
-    def rollback_production(self, model_name: str) -> Optional[MLOpsModelVersion]:
+    def rollback_production(self, model_name: str) -> MLOpsModelVersion | None:
         """
         Rollback production to previous version.
 

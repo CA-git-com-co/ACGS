@@ -75,7 +75,7 @@ async def generate_crypto_key(
         )
         return key_info
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to generate key: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate key: {e!s}")
 
 
 @router.get("/keys", response_model=CryptoKeyList)
@@ -127,7 +127,7 @@ async def rotate_crypto_key(
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to rotate key: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to rotate key: {e!s}")
 
 
 @router.delete("/keys/{key_id}")
@@ -194,7 +194,7 @@ async def sign_data(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to sign data: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to sign data: {e!s}")
 
 
 @router.post("/verify", response_model=SignatureVerificationResult)
@@ -232,7 +232,7 @@ async def verify_signature(
         raise
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Failed to verify signature: {str(e)}"
+            status_code=500, detail=f"Failed to verify signature: {e!s}"
         )
 
 
@@ -257,7 +257,7 @@ async def build_merkle_tree(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Failed to build Merkle tree: {str(e)}"
+            status_code=500, detail=f"Failed to build Merkle tree: {e!s}"
         )
 
 
@@ -280,7 +280,7 @@ async def generate_merkle_proof(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Failed to generate Merkle proof: {str(e)}"
+            status_code=500, detail=f"Failed to generate Merkle proof: {e!s}"
         )
 
 
@@ -305,7 +305,7 @@ async def verify_merkle_proof(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Failed to verify Merkle proof: {str(e)}"
+            status_code=500, detail=f"Failed to verify Merkle proof: {e!s}"
         )
 
 
@@ -336,7 +336,7 @@ async def create_timestamp(
         raise
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Failed to create timestamp: {str(e)}"
+            status_code=500, detail=f"Failed to create timestamp: {e!s}"
         )
 
 
@@ -367,7 +367,7 @@ async def verify_timestamp(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Failed to verify timestamp: {str(e)}"
+            status_code=500, detail=f"Failed to verify timestamp: {e!s}"
         )
 
 
@@ -394,6 +394,4 @@ async def generate_hash(
         }
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to generate hash: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to generate hash: {e!s}")

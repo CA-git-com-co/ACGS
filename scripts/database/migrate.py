@@ -6,24 +6,20 @@ Comprehensive database migration system for ACGS-1 Constitutional Governance Sys
 Supports automated migrations, rollbacks, and schema versioning across all environments.
 """
 
-import os
-import sys
-import json
-import logging
 import argparse
 import asyncio
 import hashlib
+import json
+import logging
+import os
+import sys
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Any, Optional
-from dataclasses import dataclass
+from typing import Any
 
 import asyncpg
-import yaml
-from alembic import command
 from alembic.config import Config
-from alembic.script import ScriptDirectory
-from alembic.runtime.migration import MigrationContext
 
 # Configure logging
 logging.basicConfig(
@@ -40,8 +36,8 @@ class MigrationInfo:
     description: str
     file_path: str
     checksum: str
-    applied_at: Optional[datetime] = None
-    rollback_script: Optional[str] = None
+    applied_at: datetime | None = None
+    rollback_script: str | None = None
 
 
 class DatabaseMigrator:
@@ -103,7 +99,7 @@ class DatabaseMigrator:
                 sha256_hash.update(chunk)
         return sha256_hash.hexdigest()
 
-    async def get_applied_migrations(self) -> List[MigrationInfo]:
+    async def get_applied_migrations(self) -> list[MigrationInfo]:
         """Get list of applied migrations from database."""
         conn = await self.get_database_connection()
         try:
@@ -129,7 +125,7 @@ class DatabaseMigrator:
         finally:
             await conn.close()
 
-    def get_pending_migrations(self) -> List[MigrationInfo]:
+    def get_pending_migrations(self) -> list[MigrationInfo]:
         """Get list of pending migrations from filesystem."""
         migration_files = sorted(self.migrations_dir.glob("*.sql"))
         pending_migrations = []
@@ -148,7 +144,7 @@ class DatabaseMigrator:
             rollback_file = self.rollback_dir / f"rollback_{file_path.name}"
             rollback_script = None
             if rollback_file.exists():
-                with open(rollback_file, "r") as f:
+                with open(rollback_file) as f:
                     rollback_script = f.read()
 
             pending_migrations.append(
@@ -165,11 +161,11 @@ class DatabaseMigrator:
 
     def _extract_description(self, file_path: Path) -> str:
         """Extract description from migration file header."""
-        with open(file_path, "r") as f:
+        with open(file_path) as f:
             first_line = f.readline().strip()
             if first_line.startswith("-- Description:"):
                 return first_line.replace("-- Description:", "").strip()
-            elif first_line.startswith("--"):
+            if first_line.startswith("--"):
                 return first_line.replace("--", "").strip()
         return f"Migration {file_path.stem}"
 
@@ -186,7 +182,7 @@ class DatabaseMigrator:
             # Start transaction
             async with conn.transaction():
                 # Read and execute migration SQL
-                with open(migration.file_path, "r") as f:
+                with open(migration.file_path) as f:
                     sql_content = f.read()
 
                 # Remove comments and empty lines for execution
@@ -298,7 +294,7 @@ class DatabaseMigrator:
         logger.info("Migration validation completed successfully")
         return True
 
-    async def get_migration_status(self) -> Dict[str, Any]:
+    async def get_migration_status(self) -> dict[str, Any]:
         """Get comprehensive migration status."""
         applied_migrations = await self.get_applied_migrations()
         pending_migrations = self.get_pending_migrations()
@@ -330,7 +326,7 @@ class DatabaseMigrator:
             ],
         }
 
-    async def migrate_up(self, target_version: Optional[str] = None) -> bool:
+    async def migrate_up(self, target_version: str | None = None) -> bool:
         """Apply all pending migrations up to target version."""
         logger.info("Starting database migration...")
 

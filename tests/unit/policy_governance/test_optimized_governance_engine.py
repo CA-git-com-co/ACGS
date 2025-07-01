@@ -2,13 +2,9 @@
 Unit tests for services.core.policy-governance.pgc_service.optimized_governance_engine
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.policy_governance.pgc_service.optimized_governance_engine import (
-    ValidationResult,
-    PolicyValidationRequest,
-    PolicyValidationResponse,
     OptimizedGovernanceEngine,
+    PolicyValidationRequest,
 )
 
 

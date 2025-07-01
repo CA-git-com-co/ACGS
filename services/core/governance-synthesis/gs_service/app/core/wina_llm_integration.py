@@ -535,17 +535,14 @@ class WINAOptimizedLLMClient:
             return (
                 llm_client.model_name
             )  # Specific model like 'llama-3.3-70b-versatile'
-        elif isinstance(llm_client, RealLLMClient):
+        if isinstance(llm_client, RealLLMClient):
             return llm_client.model_name  # Specific model like 'gpt-4'
-        elif (
-            hasattr(llm_client, "__class__") and "Mock" in llm_client.__class__.__name__
-        ):
+        if hasattr(llm_client, "__class__") and "Mock" in llm_client.__class__.__name__:
             return "mock-model-large"
-        else:
-            logger.warning(
-                f"Could not determine specific model identifier for client type: {type(llm_client)}. Defaulting."
-            )
-            return "unknown-model"
+        logger.warning(
+            f"Could not determine specific model identifier for client type: {type(llm_client)}. Defaulting."
+        )
+        return "unknown-model"
 
     def _detect_model_type(self, identifier: str) -> str:
         id_lower = identifier.lower()

@@ -12,13 +12,13 @@ Constitutional Hash: cdd01ef066bc6cf2
 import asyncio
 import json
 import logging
-import math
 import time
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
 import numpy as np
 import psutil
-from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional, Tuple
-from pathlib import Path
 
 # Configure logging
 logging.basicConfig(
@@ -49,11 +49,13 @@ class WINAPerformanceOptimizer:
         self.target_gflops_reduction = 0.4  # 40% GFLOPs reduction target
         self.quality_threshold = 0.95  # Minimum synthesis quality
 
-    async def optimize_wina_performance(self) -> Dict[str, Any]:
+    async def optimize_wina_performance(self) -> dict[str, Any]:
         """Perform comprehensive WINA performance optimization."""
         logger.info("🚀 Starting WINA Performance Optimization")
         logger.info(f"📜 Constitutional Hash: {self.constitutional_hash}")
-        logger.info(f"🎯 Target GFLOPs Reduction: {self.target_gflops_reduction*100}%")
+        logger.info(
+            f"🎯 Target GFLOPs Reduction: {self.target_gflops_reduction * 100}%"
+        )
 
         try:
             # 1. SVD Optimization Validation
@@ -95,7 +97,7 @@ class WINAPerformanceOptimizer:
             self.optimization_results["error"] = str(e)
             raise
 
-    async def _validate_svd_optimization(self) -> Dict[str, Any]:
+    async def _validate_svd_optimization(self) -> dict[str, Any]:
         """Validate SVD optimization for weight matrix compression."""
         logger.info("🔍 Validating SVD Optimization")
 
@@ -264,7 +266,7 @@ class WINAPerformanceOptimizer:
 
     def _apply_svd_compression(
         self, weights: np.ndarray, compression_ratio: float
-    ) -> Tuple[np.ndarray, Dict[str, Any]]:
+    ) -> tuple[np.ndarray, dict[str, Any]]:
         """Apply SVD compression to weight matrix."""
         # Perform SVD
         U, s, Vt = np.linalg.svd(weights, full_matrices=False)
@@ -349,7 +351,7 @@ class WINAPerformanceOptimizer:
 
         return np.dot(v1, v2) / (norm1 * norm2)
 
-    async def _verify_gflops_reduction(self) -> Dict[str, Any]:
+    async def _verify_gflops_reduction(self) -> dict[str, Any]:
         """Verify GFLOPs reduction through WINA optimization."""
         logger.info("📉 Verifying GFLOPs Reduction")
 
@@ -491,7 +493,7 @@ class WINAPerformanceOptimizer:
         }
 
         logger.info(
-            f"📉 GFLOPs reduction: {ops_reduction*100:.1f}%, {avg_speedup:.2f}x speedup"
+            f"📉 GFLOPs reduction: {ops_reduction * 100:.1f}%, {avg_speedup:.2f}x speedup"
         )
         return gflops_results
 
@@ -512,7 +514,7 @@ class WINAPerformanceOptimizer:
 
         return output
 
-    async def _maintain_synthesis_quality(self) -> Dict[str, Any]:
+    async def _maintain_synthesis_quality(self) -> dict[str, Any]:
         """Ensure synthesis quality is maintained with WINA optimization."""
         logger.info("🎨 Maintaining Synthesis Quality")
 
@@ -665,7 +667,7 @@ class WINAPerformanceOptimizer:
         response = np.dot(weights, concept_vector)
         return response
 
-    async def _validate_performance_scaling(self) -> Dict[str, Any]:
+    async def _validate_performance_scaling(self) -> dict[str, Any]:
         """Validate performance scaling under different loads."""
         logger.info("📈 Validating Performance Scaling")
 
@@ -720,7 +722,7 @@ class WINAPerformanceOptimizer:
         logger.info("📈 Performance scaling validated")
         return scaling_results
 
-    async def _optimize_memory_usage(self) -> Dict[str, Any]:
+    async def _optimize_memory_usage(self) -> dict[str, Any]:
         """Optimize memory usage for WINA operations."""
         logger.info("🧠 Optimizing Memory Usage")
 
@@ -761,10 +763,10 @@ class WINAPerformanceOptimizer:
             "reduction_achieved": memory_reduction > 0.2,
         }
 
-        logger.info(f"🧠 Memory optimized: {memory_reduction*100:.1f}% reduction")
+        logger.info(f"🧠 Memory optimized: {memory_reduction * 100:.1f}% reduction")
         return memory_results
 
-    async def _validate_enterprise_loads(self) -> Dict[str, Any]:
+    async def _validate_enterprise_loads(self) -> dict[str, Any]:
         """Validate WINA performance under enterprise loads."""
         logger.info("🏢 Validating Enterprise Loads")
 
@@ -860,7 +862,9 @@ async def main():
         # GFLOPs Reduction Results
         gflops_results = results["gflops_reduction"]
         gflops_reduction = gflops_results["reduction_analysis"]
-        print(f"GFLOPs Reduction: {gflops_reduction['operations_reduction']*100:.1f}%")
+        print(
+            f"GFLOPs Reduction: {gflops_reduction['operations_reduction'] * 100:.1f}%"
+        )
         print(
             f"Target Achieved: {'✅' if gflops_reduction['target_achieved'] else '❌'}"
         )

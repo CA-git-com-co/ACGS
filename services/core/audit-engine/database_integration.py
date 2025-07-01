@@ -5,14 +5,14 @@ Implements persistent PostgreSQL backend for audit trail storage and compliance 
 """
 
 import asyncio
-import asyncpg
-import json
 import hashlib
+import json
 import time
+from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, asdict
-from contextlib import asynccontextmanager
+from typing import Any
+
+import asyncpg
 
 
 @dataclass
@@ -24,13 +24,13 @@ class AuditEvent:
     service_name: str
     event_type: str
     constitutional_hash: str
-    user_id: Optional[str]
-    session_id: Optional[str]
-    request_data: Dict[str, Any]
-    response_data: Dict[str, Any]
+    user_id: str | None
+    session_id: str | None
+    request_data: dict[str, Any]
+    response_data: dict[str, Any]
     compliance_score: float
     latency_ms: float
-    previous_hash: Optional[str]
+    previous_hash: str | None
     event_hash: str
 
 
@@ -129,7 +129,7 @@ class AuditEngineDatabase:
         )
 
     def generate_event_hash(
-        self, event_data: Dict[str, Any], previous_hash: Optional[str] = None
+        self, event_data: dict[str, Any], previous_hash: str | None = None
     ) -> str:
         """Generate cryptographic hash for audit event chaining"""
         hash_input = {
@@ -144,7 +144,7 @@ class AuditEngineDatabase:
         hash_string = json.dumps(hash_input, sort_keys=True)
         return hashlib.sha256(hash_string.encode()).hexdigest()
 
-    async def get_last_event_hash(self) -> Optional[str]:
+    async def get_last_event_hash(self) -> str | None:
         """Get the hash of the last audit event for chaining"""
         if hasattr(self, "sqlite_db"):
             import aiosqlite
@@ -162,7 +162,7 @@ class AuditEngineDatabase:
                 )
                 return row["event_hash"] if row else None
 
-    async def store_audit_event(self, event_data: Dict[str, Any]) -> str:
+    async def store_audit_event(self, event_data: dict[str, Any]) -> str:
         """Store audit event with cryptographic hash chaining"""
         # Get previous hash for chaining
         previous_hash = await self.get_last_event_hash()
@@ -254,12 +254,12 @@ class AuditEngineDatabase:
 
     async def query_audit_events(
         self,
-        service_name: Optional[str] = None,
-        event_type: Optional[str] = None,
-        start_time: Optional[datetime] = None,
-        end_time: Optional[datetime] = None,
+        service_name: str | None = None,
+        event_type: str | None = None,
+        start_time: datetime | None = None,
+        end_time: datetime | None = None,
         limit: int = 100,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Query audit events with filtering"""
         conditions = []
         params = []
@@ -310,7 +310,7 @@ class AuditEngineDatabase:
             SELECT * FROM audit_events
             {where_clause}
             ORDER BY timestamp DESC
-            LIMIT ${limit_param if not hasattr(self, 'sqlite_db') else '?'}
+            LIMIT ${limit_param if not hasattr(self, "sqlite_db") else "?"}
         """
         params.append(limit)
 
@@ -321,13 +321,13 @@ class AuditEngineDatabase:
                 cursor = await db.execute(query, params)
                 rows = await cursor.fetchall()
                 columns = [description[0] for description in cursor.description]
-                return [dict(zip(columns, row)) for row in rows]
+                return [dict(zip(columns, row, strict=False)) for row in rows]
         else:
             async with self.pool.acquire() as conn:
                 rows = await conn.fetch(query, *params)
                 return [dict(row) for row in rows]
 
-    async def generate_compliance_report(self) -> Dict[str, Any]:
+    async def generate_compliance_report(self) -> dict[str, Any]:
         """Generate compliance report from audit data"""
         if hasattr(self, "sqlite_db"):
             import aiosqlite
@@ -391,7 +391,7 @@ class AuditEngineDatabase:
             ),
         }
 
-    async def verify_chain_integrity(self) -> Dict[str, Any]:
+    async def verify_chain_integrity(self) -> dict[str, Any]:
         """Verify cryptographic hash chain integrity"""
         events = await self.query_audit_events(limit=1000)
 

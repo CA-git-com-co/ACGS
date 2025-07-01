@@ -28,7 +28,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -80,7 +80,7 @@ class FinalProductionValidator:
             },
         }
 
-    def validate_performance_achievements(self) -> Dict[str, Any]:
+    def validate_performance_achievements(self) -> dict[str, Any]:
         """Validate that all performance targets have been achieved."""
         logger.info("🎯 Validating Performance Target Achievements...")
 
@@ -129,7 +129,7 @@ class FinalProductionValidator:
             "status": "PASS" if overall_performance_score >= 100 else "PARTIAL",
         }
 
-    def validate_security_compliance(self) -> Dict[str, Any]:
+    def validate_security_compliance(self) -> dict[str, Any]:
         """Validate security and compliance requirements."""
         logger.info("🔒 Validating Security and Compliance...")
 
@@ -189,7 +189,7 @@ class FinalProductionValidator:
             "status": "PASS" if security_score >= 100 else "PARTIAL",
         }
 
-    def validate_infrastructure_readiness(self) -> Dict[str, Any]:
+    def validate_infrastructure_readiness(self) -> dict[str, Any]:
         """Validate production infrastructure readiness."""
         logger.info("🏗️ Validating Infrastructure Readiness...")
 
@@ -230,7 +230,7 @@ class FinalProductionValidator:
             "status": "PASS" if infrastructure_score >= 100 else "PARTIAL",
         }
 
-    def validate_constitutional_governance(self) -> Dict[str, Any]:
+    def validate_constitutional_governance(self) -> dict[str, Any]:
         """Validate constitutional governance system readiness."""
         logger.info("⚖️ Validating Constitutional Governance System...")
 
@@ -287,8 +287,8 @@ class FinalProductionValidator:
         }
 
     def generate_production_readiness_certificate(
-        self, validation_results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, validation_results: dict[str, Any]
+    ) -> dict[str, Any]:
         """Generate official production readiness certificate."""
         logger.info("📜 Generating Production Readiness Certificate...")
 
@@ -390,7 +390,7 @@ class FinalProductionValidator:
 
         return certificate
 
-    def run_final_validation(self) -> Dict[str, Any]:
+    def run_final_validation(self) -> dict[str, Any]:
         """Run comprehensive final production readiness validation."""
         logger.info("🚀 Starting Final Production Readiness Validation")
         logger.info("=" * 80)

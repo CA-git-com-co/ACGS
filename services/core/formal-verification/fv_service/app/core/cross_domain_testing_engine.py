@@ -501,10 +501,12 @@ class CrossDomainTestingEngine:
 
             validator = validator_class(config)
 
-            is_consistent, consistency_score, validation_details = (
-                await validator.validate_principle_consistency(
-                    principle, {"domain": domain, "scenario": scenario}
-                )
+            (
+                is_consistent,
+                consistency_score,
+                validation_details,
+            ) = await validator.validate_principle_consistency(
+                principle, {"domain": domain, "scenario": scenario}
             )
 
             adaptation_suggestions = await validator.suggest_adaptations(

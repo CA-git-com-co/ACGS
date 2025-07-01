@@ -370,9 +370,8 @@ class ACGSReorganizer:
                 logger.info("✅ ACGS-1 codebase reorganization completed successfully!")
                 logger.info(f"Backup created at: {self.backup_dir}")
                 return True
-            else:
-                logger.error("❌ Reorganization validation failed")
-                return False
+            logger.error("❌ Reorganization validation failed")
+            return False
 
         except Exception as e:
             logger.error(f"Reorganization failed: {e}")

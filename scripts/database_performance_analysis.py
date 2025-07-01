@@ -9,7 +9,7 @@ import json
 import logging
 import subprocess
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ class DatabasePerformanceAnalyzer:
         self.db_name = "acgs_pgp_db"
         self.analysis_results = {}
 
-    def execute_db_query(self, query: str) -> Optional[str]:
+    def execute_db_query(self, query: str) -> str | None:
         """Execute a database query and return results."""
         try:
             cmd = [
@@ -40,17 +40,18 @@ class DatabasePerformanceAnalyzer:
                 "-c",
                 query,
             ]
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+            result = subprocess.run(
+                cmd, check=False, capture_output=True, text=True, timeout=30
+            )
             if result.returncode == 0:
                 return result.stdout.strip()
-            else:
-                logger.warning(f"Query failed: {result.stderr}")
-                return None
+            logger.warning(f"Query failed: {result.stderr}")
+            return None
         except Exception as e:
             logger.error(f"Database query error: {e}")
             return None
 
-    def analyze_database_size_and_structure(self) -> Dict[str, Any]:
+    def analyze_database_size_and_structure(self) -> dict[str, Any]:
         """Analyze database size and table structure."""
         logger.info("📊 Analyzing database size and structure...")
 
@@ -96,7 +97,7 @@ class DatabasePerformanceAnalyzer:
             "analysis_timestamp": datetime.now().isoformat(),
         }
 
-    def analyze_query_performance(self) -> Dict[str, Any]:
+    def analyze_query_performance(self) -> dict[str, Any]:
         """Analyze query performance using pg_stat_statements."""
         logger.info("⚡ Analyzing query performance...")
 
@@ -158,7 +159,7 @@ class DatabasePerformanceAnalyzer:
             "analysis_timestamp": datetime.now().isoformat(),
         }
 
-    def analyze_connection_and_activity(self) -> Dict[str, Any]:
+    def analyze_connection_and_activity(self) -> dict[str, Any]:
         """Analyze database connections and activity."""
         logger.info("🔗 Analyzing connections and activity...")
 
@@ -211,7 +212,7 @@ class DatabasePerformanceAnalyzer:
             "analysis_timestamp": datetime.now().isoformat(),
         }
 
-    def analyze_cache_performance(self) -> Dict[str, Any]:
+    def analyze_cache_performance(self) -> dict[str, Any]:
         """Analyze database cache performance."""
         logger.info("💾 Analyzing cache performance...")
 
@@ -271,7 +272,7 @@ class DatabasePerformanceAnalyzer:
             "analysis_timestamp": datetime.now().isoformat(),
         }
 
-    def analyze_locks_and_blocking(self) -> Dict[str, Any]:
+    def analyze_locks_and_blocking(self) -> dict[str, Any]:
         """Analyze database locks and blocking queries."""
         logger.info("🔒 Analyzing locks and blocking...")
 
@@ -319,7 +320,7 @@ class DatabasePerformanceAnalyzer:
             "analysis_timestamp": datetime.now().isoformat(),
         }
 
-    def generate_optimization_recommendations(self) -> List[Dict[str, Any]]:
+    def generate_optimization_recommendations(self) -> list[dict[str, Any]]:
         """Generate optimization recommendations based on analysis."""
         logger.info("💡 Generating optimization recommendations...")
 
@@ -442,7 +443,7 @@ class DatabasePerformanceAnalyzer:
         print("=" * 80)
 
         summary = self.analysis_results.get("analysis_summary", {})
-        print(f"\n📋 Analysis Summary:")
+        print("\n📋 Analysis Summary:")
         print(f"Database: {summary.get('database', 'unknown')}")
         print(f"Analyses Completed: {summary.get('analyses_completed', 0)}")
         print(f"Recommendations: {summary.get('recommendations_count', 0)}")
@@ -461,7 +462,7 @@ class DatabasePerformanceAnalyzer:
         # Recommendations
         recommendations = self.analysis_results.get("recommendations", [])
         if recommendations:
-            print(f"\n💡 Top Recommendations:")
+            print("\n💡 Top Recommendations:")
             print("-" * 50)
             for i, rec in enumerate(recommendations[:5], 1):
                 priority_icon = (

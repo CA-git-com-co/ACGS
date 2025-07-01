@@ -6,7 +6,7 @@ import asyncio
 import logging
 import random
 from enum import Enum
-from typing import Any, Dict, List, Optional, Type
+from typing import Any
 
 from ..config import settings
 from .claude_client import ClaudeClient
@@ -32,7 +32,7 @@ class ModelRouter:
     """
 
     def __init__(self):
-        self.clients: Dict[str, ModelClient] = {}
+        self.clients: dict[str, ModelClient] = {}
         self.provider_configs = {
             ModelProvider.CLAUDE: {
                 "client_class": ClaudeClient,
@@ -63,7 +63,7 @@ class ModelRouter:
         }
 
         # Model performance tracking
-        self.model_stats: Dict[str, Dict[str, Any]] = {}
+        self.model_stats: dict[str, dict[str, Any]] = {}
 
         # Initialize clients
         asyncio.create_task(self._initialize_clients())
@@ -115,8 +115,8 @@ class ModelRouter:
         self,
         request: ModelRequest,
         strategy: str = "performance_optimized",
-        preferred_provider: Optional[ModelProvider] = None,
-        task_type: Optional[str] = None,
+        preferred_provider: ModelProvider | None = None,
+        task_type: str | None = None,
     ) -> ModelResponse:
         """
         Generate response using optimal model selection.
@@ -178,8 +178,8 @@ class ModelRouter:
         self,
         request: ModelRequest,
         strategy: str = "performance_optimized",
-        preferred_provider: Optional[ModelProvider] = None,
-        task_type: Optional[str] = None,
+        preferred_provider: ModelProvider | None = None,
+        task_type: str | None = None,
     ):
         """Generate streaming response using optimal model selection."""
         try:
@@ -217,9 +217,9 @@ class ModelRouter:
         self,
         request: ModelRequest,
         strategy: str,
-        preferred_provider: Optional[ModelProvider],
-        task_type: Optional[str],
-    ) -> Optional[str]:
+        preferred_provider: ModelProvider | None,
+        task_type: str | None,
+    ) -> str | None:
         """Select optimal model based on strategy and requirements."""
         if not self.clients:
             return None
@@ -250,11 +250,10 @@ class ModelRouter:
         # Apply routing strategy
         if strategy in self.routing_strategies:
             return await self.routing_strategies[strategy](list(available_clients))
-        else:
-            # Default to random selection
-            return random.choice(list(available_clients))
+        # Default to random selection
+        return random.choice(list(available_clients))
 
-    async def _route_cost_optimized(self, available_clients: List[str]) -> str:
+    async def _route_cost_optimized(self, available_clients: list[str]) -> str:
         """Route to most cost-effective model."""
         if not available_clients:
             return None
@@ -273,7 +272,7 @@ class ModelRouter:
         # Return cheapest option
         return min(costs.keys(), key=lambda x: costs[x])
 
-    async def _route_performance_optimized(self, available_clients: List[str]) -> str:
+    async def _route_performance_optimized(self, available_clients: list[str]) -> str:
         """Route to best performing model."""
         if not available_clients:
             return None
@@ -297,7 +296,7 @@ class ModelRouter:
         # Return best performing option
         return max(scores.keys(), key=lambda x: scores[x])
 
-    async def _route_load_balanced(self, available_clients: List[str]) -> str:
+    async def _route_load_balanced(self, available_clients: list[str]) -> str:
         """Route using load balancing."""
         if not available_clients:
             return None
@@ -311,7 +310,7 @@ class ModelRouter:
         # Return client with least requests
         return min(request_counts.keys(), key=lambda x: request_counts[x])
 
-    async def _route_failover(self, available_clients: List[str]) -> str:
+    async def _route_failover(self, available_clients: list[str]) -> str:
         """Route with failover priority."""
         if not available_clients:
             return None
@@ -325,7 +324,7 @@ class ModelRouter:
         # Fallback to any available client
         return available_clients[0]
 
-    async def _get_fallback_model(self, failed_client_id: str) -> Optional[str]:
+    async def _get_fallback_model(self, failed_client_id: str) -> str | None:
         """Get fallback model for failed client."""
         # Get different provider
         failed_provider = failed_client_id.split(":")[0]
@@ -356,7 +355,7 @@ class ModelRouter:
         """Update failure statistics."""
         self.model_stats[client_id]["failures"] += 1
 
-    def get_router_stats(self) -> Dict[str, Any]:
+    def get_router_stats(self) -> dict[str, Any]:
         """Get router statistics."""
         return {
             "available_clients": list(self.clients.keys()),

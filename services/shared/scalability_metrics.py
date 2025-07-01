@@ -915,13 +915,12 @@ class ScalabilityMetricsCollector:
             or memory_percent >= self.thresholds.memory_critical_percent
         ):
             return "critical"
-        elif (
+        if (
             cpu_percent >= self.thresholds.cpu_warning_percent
             or memory_percent >= self.thresholds.memory_warning_percent
         ):
             return "degraded"
-        else:
-            return "healthy"
+        return "healthy"
 
     def _count_alerts_by_severity(self) -> dict[str, int]:
         """Count active alerts by severity."""
@@ -942,10 +941,7 @@ class ScalabilityMetricsCollector:
             resource_score = 1.0
 
             # Calculate latency score
-            if (
-                component_name in self.latency_metrics
-                and self.latency_metrics[component_name]
-            ):
+            if self.latency_metrics.get(component_name):
                 latest_latency = self.latency_metrics[component_name][-1]
                 if latest_latency.p95_latency_ms <= self.thresholds.latency_warning_ms:
                     latency_score = 1.0
@@ -957,10 +953,7 @@ class ScalabilityMetricsCollector:
                     latency_score = 0.3
 
             # Calculate throughput score
-            if (
-                component_name in self.throughput_metrics
-                and self.throughput_metrics[component_name]
-            ):
+            if self.throughput_metrics.get(component_name):
                 latest_throughput = self.throughput_metrics[component_name][-1]
                 if (
                     latest_throughput.operations_per_second
@@ -976,10 +969,7 @@ class ScalabilityMetricsCollector:
                     throughput_score = 0.3
 
             # Calculate resource score
-            if (
-                component_name in self.resource_metrics
-                and self.resource_metrics[component_name]
-            ):
+            if self.resource_metrics.get(component_name):
                 latest_resource = self.resource_metrics[component_name][-1]
                 cpu_score = 1.0 - (latest_resource.cpu_percent / 100.0)
                 memory_score = 1.0 - (latest_resource.memory_percent / 100.0)

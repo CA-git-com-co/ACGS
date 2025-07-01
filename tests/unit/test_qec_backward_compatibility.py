@@ -81,7 +81,6 @@ class TestQECBackwardCompatibility:
 
         # Mock the QEC components as unavailable
         with patch("app.services.qec_conflict_resolver.QEC_AVAILABLE", False):
-
             # Create mock conflict and principles
             mock_conflict = Mock()
             mock_conflict.id = legacy_conflict_data["id"]

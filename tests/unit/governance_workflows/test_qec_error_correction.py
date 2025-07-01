@@ -2,15 +2,6 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.api.v1.qec_error_correction
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance_synthesis.gs_service.app.api.v1.qec_error_correction import (
-    ErrorCorrectionRequest,
-    ConflictDetectionRequest,
-    SemanticValidationRequest,
-    PolicyRefinementRequest,
-)
-
 
 class TestErrorCorrectionRequest:
     """Test suite for ErrorCorrectionRequest."""

@@ -3,8 +3,8 @@ Constitutional Prompting Module
 Mock implementation for test compatibility.
 """
 
-from typing import Dict, List, Optional, Any
 from enum import Enum
+from typing import Any
 
 
 class PromptType(Enum):
@@ -27,12 +27,12 @@ class ConstitutionalPromptBuilder:
             PromptType.GOVERNANCE_REVIEW: "Review governance decision: {decision}",
         }
 
-    def build_prompt(self, prompt_type: PromptType, context: Dict[str, Any]) -> str:
+    def build_prompt(self, prompt_type: PromptType, context: dict[str, Any]) -> str:
         """Build a constitutional prompt."""
         template = self.prompt_templates.get(prompt_type, "Default prompt")
         return template.format(**context)
 
-    def build_synthesis_prompt(self, principles: List[str], context: str = "") -> str:
+    def build_synthesis_prompt(self, principles: list[str], context: str = "") -> str:
         """Build a policy synthesis prompt."""
         return self.build_prompt(
             PromptType.POLICY_SYNTHESIS,
@@ -53,7 +53,7 @@ class ConstitutionalPromptBuilder:
             {"principle": principle, "scenario": scenario},
         )
 
-    def build_governance_prompt(self, decision: str, context: Dict[str, Any]) -> str:
+    def build_governance_prompt(self, decision: str, context: dict[str, Any]) -> str:
         """Build a governance review prompt."""
         return self.build_prompt(
             PromptType.GOVERNANCE_REVIEW, {"decision": decision, **context}
@@ -72,7 +72,7 @@ class ConstitutionalContext:
         """Add a constitutional principle."""
         self.principles.append(principle)
 
-    def get_context(self) -> Dict[str, Any]:
+    def get_context(self) -> dict[str, Any]:
         """Get constitutional context."""
         return {
             "principles": self.principles,
@@ -88,15 +88,15 @@ class PromptValidator:
         """Validate a constitutional prompt."""
         return len(prompt) > 10 and "constitutional" in prompt.lower()
 
-    def validate_context(self, context: Dict[str, Any]) -> bool:
+    def validate_context(self, context: dict[str, Any]) -> bool:
         """Validate prompt context."""
         return isinstance(context, dict) and len(context) > 0
 
 
 # Export all classes
 __all__ = [
-    "ConstitutionalPromptBuilder",
     "ConstitutionalContext",
-    "PromptValidator",
+    "ConstitutionalPromptBuilder",
     "PromptType",
+    "PromptValidator",
 ]

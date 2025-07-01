@@ -11,13 +11,12 @@ import os
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Optional, Any
+from typing import Any
 
 import hvac
 from prometheus_client import (
     CollectorRegistry,
     Counter,
-    Gauge,
     Histogram,
     start_http_server,
 )
@@ -37,14 +36,14 @@ class SecretMetadata:
     secret_path: str
     secret_type: str  # static, dynamic, constitutional
     created_at: datetime
-    expires_at: Optional[datetime] = None
+    expires_at: datetime | None = None
     access_count: int = 0
-    last_accessed: Optional[datetime] = None
+    last_accessed: datetime | None = None
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
     # Access control
-    allowed_services: List[str] = field(default_factory=list)
-    required_policies: List[str] = field(default_factory=list)
+    allowed_services: list[str] = field(default_factory=list)
+    required_policies: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -52,9 +51,9 @@ class VaultConfiguration:
     """Vault configuration settings."""
 
     vault_url: str = "http://localhost:8200"
-    vault_token: Optional[str] = None
-    vault_role_id: Optional[str] = None
-    vault_secret_id: Optional[str] = None
+    vault_token: str | None = None
+    vault_role_id: str | None = None
+    vault_secret_id: str | None = None
 
     # Mount points
     kv_mount_point: str = "acgs-secrets"
@@ -71,14 +70,14 @@ class VaultSecretsManager:
 
     def __init__(self, config: VaultConfiguration):
         self.config = config
-        self.client: Optional[hvac.Client] = None
+        self.client: hvac.Client | None = None
 
         # Metrics
         self.registry = CollectorRegistry()
         self.setup_metrics()
 
         # Secret cache and metadata
-        self.secret_metadata: Dict[str, SecretMetadata] = {}
+        self.secret_metadata: dict[str, SecretMetadata] = {}
 
         # Service configurations
         self.service_vault_policies = self.setup_service_policies()
@@ -122,7 +121,7 @@ class VaultSecretsManager:
             registry=self.registry,
         )
 
-    def setup_service_policies(self) -> Dict[str, Dict]:
+    def setup_service_policies(self) -> dict[str, dict]:
         """Setup Vault policies for each ACGS service."""
         return {
             "auth-service": {
@@ -305,10 +304,10 @@ path "{path}" {{
 
             # Add constitutional compliance validation
             policy_rules.append(
-                f"""
-path "acgs-secrets/constitutional/hash" {{
+                """
+path "acgs-secrets/constitutional/hash" {
     capabilities = ["read"]
-}}"""
+}"""
             )
 
             policy_document = "\n".join(policy_rules)
@@ -353,9 +352,9 @@ path "acgs-secrets/constitutional/hash" {{
                 role_name = f"{service_name.replace('-', '_')}_role"
 
                 creation_statements = [
-                    f"CREATE ROLE \"{{{{name}}}}\" WITH LOGIN PASSWORD '{{{{password}}}}' VALID UNTIL '{{{{expiration}}}}';",
-                    f'GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO "{{{{name}}}}";',
-                    f'GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO "{{{{name}}}}";',
+                    "CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';",
+                    'GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO "{{name}}";',
+                    'GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO "{{name}}";',
                 ]
 
                 self.client.secrets.database.create_role(
@@ -442,10 +441,10 @@ path "acgs-secrets/constitutional/hash" {{
     async def store_secret(
         self,
         secret_path: str,
-        secret_data: Dict[str, Any],
+        secret_data: dict[str, Any],
         secret_type: str = "static",
-        ttl: Optional[int] = None,
-        allowed_services: Optional[List[str]] = None,
+        ttl: int | None = None,
+        allowed_services: list[str] | None = None,
     ) -> SecretMetadata:
         """Store a secret in Vault."""
         start_time = time.time()
@@ -507,7 +506,7 @@ path "acgs-secrets/constitutional/hash" {{
 
     async def retrieve_secret(
         self, secret_path: str, requesting_service: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Retrieve a secret from Vault."""
         start_time = time.time()
 
@@ -571,7 +570,7 @@ path "acgs-secrets/constitutional/hash" {{
 
     async def generate_dynamic_secret(
         self, secret_engine: str, role_name: str, requesting_service: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Generate a dynamic secret."""
         start_time = time.time()
 
@@ -677,7 +676,7 @@ path "acgs-secrets/constitutional/hash" {{
             logger.error(f"Failed to rotate secret {secret_path}: {e}")
             return False
 
-    def get_vault_status(self) -> Dict:
+    def get_vault_status(self) -> dict:
         """Get Vault status and health information."""
         try:
             health = self.client.sys.read_health_status()

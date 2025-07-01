@@ -3,11 +3,10 @@ Audit trail commands for Gemini CLI
 """
 
 import argparse
-from typing import Dict, Any
-import asyncio
+import json
 from datetime import datetime, timedelta
 from pathlib import Path
-import json
+from typing import Any
 
 
 def add_arguments(parser: argparse.ArgumentParser):
@@ -60,7 +59,7 @@ def add_arguments(parser: argparse.ArgumentParser):
     )
 
 
-async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
+async def handle_command(args: argparse.Namespace, client) -> dict[str, Any]:
     """Handle audit commands"""
 
     if args.audit_command == "list":
@@ -100,7 +99,7 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
             },
         }
 
-    elif args.audit_command == "get":
+    if args.audit_command == "get":
         # Get audit entry (would need to implement in ACGSClient)
         # For now, return a mock entry
         entry = {
@@ -122,7 +121,7 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
 
         return entry
 
-    elif args.audit_command == "verify":
+    if args.audit_command == "verify":
         if args.full:
             # Full trail verification
             return {
@@ -138,12 +137,11 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
                     "block": 12345678,
                 },
             }
-        else:
-            # Verify specific operation
-            verification = client.verify_audit_entry(args.operation_id)
-            return {"operation_id": args.operation_id, "verification": verification}
+        # Verify specific operation
+        verification = client.verify_audit_entry(args.operation_id)
+        return {"operation_id": args.operation_id, "verification": verification}
 
-    elif args.audit_command == "export":
+    if args.audit_command == "export":
         # Get audit entries for export
         start_date = None
         end_date = None
@@ -210,7 +208,7 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
             ),
         }
 
-    elif args.audit_command == "search":
+    if args.audit_command == "search":
         # Search audit trail (simplified implementation)
         # In reality, this would use Elasticsearch or similar
         results = []
@@ -243,5 +241,4 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
             "total_results": len(results),
         }
 
-    else:
-        return {"error": "Unknown audit command"}
+    return {"error": "Unknown audit command"}

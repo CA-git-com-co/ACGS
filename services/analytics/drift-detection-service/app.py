@@ -15,30 +15,29 @@ Port: 8011
 
 import asyncio
 import logging
-import json
+import sys
+from datetime import datetime
+from typing import Any
+
+import numpy as np
+import pandas as pd
 import uvicorn
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import BackgroundTasks, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from typing import Dict, List, Any, Optional
-import pandas as pd
-import numpy as np
-from datetime import datetime
-import sys
-import os
 
 # Add core modules to path
 sys.path.append("../../core/acgs-pgp-v8")
-from event_driven_drift_detection import EventDrivenDriftDetector, DriftEvent
-from nats_event_broker import NATSEventBroker, ACGSEvent
+from event_driven_drift_detection import EventDrivenDriftDetector
+from nats_event_broker import ACGSEvent, NATSEventBroker
 
 logger = logging.getLogger(__name__)
 
 
 # Pydantic models for API
 class DriftDetectionRequest(BaseModel):
-    reference_data: List[Dict[str, Any]] = Field(..., description="Reference dataset")
-    current_data: List[Dict[str, Any]] = Field(
+    reference_data: list[dict[str, Any]] = Field(..., description="Reference dataset")
+    current_data: list[dict[str, Any]] = Field(
         ..., description="Current dataset to compare"
     )
     model_id: str = Field(..., description="Model identifier")
@@ -53,17 +52,17 @@ class DriftDetectionResponse(BaseModel):
     model_id: str
     drift_detected: bool
     retraining_required: bool
-    features_with_ks_drift: List[str]
-    features_with_psi_drift: List[str]
+    features_with_ks_drift: list[str]
+    features_with_psi_drift: list[str]
     drift_severity: str
-    recommendations: List[str]
+    recommendations: list[str]
     constitutional_hash: str
     timestamp: str
 
 
 class ModelRegistrationRequest(BaseModel):
     model_id: str = Field(..., description="Model identifier")
-    reference_data: List[Dict[str, Any]] = Field(..., description="Reference dataset")
+    reference_data: list[dict[str, Any]] = Field(..., description="Reference dataset")
     constitutional_hash: str = Field(
         ..., description="Constitutional hash for validation"
     )
@@ -187,7 +186,7 @@ class DriftDetectionMicroservice:
             except Exception as e:
                 logger.error(f"❌ Model registration failed: {e}")
                 raise HTTPException(
-                    status_code=500, detail=f"Model registration failed: {str(e)}"
+                    status_code=500, detail=f"Model registration failed: {e!s}"
                 )
 
         @self.app.post("/detect", response_model=DriftDetectionResponse)
@@ -288,7 +287,7 @@ class DriftDetectionMicroservice:
             except Exception as e:
                 logger.error(f"❌ Drift detection failed: {e}")
                 raise HTTPException(
-                    status_code=500, detail=f"Drift detection failed: {str(e)}"
+                    status_code=500, detail=f"Drift detection failed: {e!s}"
                 )
 
         @self.app.post("/monitor/start")
@@ -342,14 +341,13 @@ class DriftDetectionMicroservice:
 
         if drift_result.retraining_required:
             return "CRITICAL"
-        elif total_drift_features >= 3:
+        if total_drift_features >= 3:
             return "HIGH"
-        elif total_drift_features >= 1:
+        if total_drift_features >= 1:
             return "MEDIUM"
-        else:
-            return "LOW"
+        return "LOW"
 
-    def _generate_drift_recommendations(self, drift_result) -> List[str]:
+    def _generate_drift_recommendations(self, drift_result) -> list[str]:
         """Generate drift handling recommendations."""
 
         recommendations = []
@@ -474,7 +472,7 @@ class DriftDetectionMicroservice:
                 logger.error(f"❌ Error in continuous drift monitoring: {e}")
                 await asyncio.sleep(5)
 
-    def _generate_sample_data_with_drift(self) -> List[Dict[str, Any]]:
+    def _generate_sample_data_with_drift(self) -> list[dict[str, Any]]:
         """Generate sample data with potential drift for monitoring demo."""
 
         data = []

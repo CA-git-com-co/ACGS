@@ -7,14 +7,10 @@ Implements automated deployment with blue-green strategy, validation, and rollba
 import asyncio
 import json
 import logging
-import os
-import subprocess
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 
-import aiohttp
 import yaml
 
 # Configure logging
@@ -43,10 +39,10 @@ class EnterpriseDeploymentPipeline:
             "ec-service",
         ]
 
-    def _load_config(self, config_path: str) -> Dict:
+    def _load_config(self, config_path: str) -> dict:
         """Load deployment configuration"""
         if config_path and Path(config_path).exists():
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 return yaml.safe_load(f)
 
         # Default configuration
@@ -71,7 +67,7 @@ class EnterpriseDeploymentPipeline:
             },
         }
 
-    async def deploy(self, version: str, environment: str = "production") -> Dict:
+    async def deploy(self, version: str, environment: str = "production") -> dict:
         """
         Execute enterprise deployment pipeline
         """
@@ -147,7 +143,7 @@ class EnterpriseDeploymentPipeline:
 
         return deployment_result
 
-    async def _pre_deployment_validation(self) -> Dict:
+    async def _pre_deployment_validation(self) -> dict:
         """Execute pre-deployment validation checks"""
         validation_result = {"success": True, "checks": {}, "errors": []}
 
@@ -174,14 +170,14 @@ class EnterpriseDeploymentPipeline:
 
             except Exception as e:
                 validation_result["success"] = False
-                validation_result["errors"].append(f"{check}: {str(e)}")
+                validation_result["errors"].append(f"{check}: {e!s}")
                 validation_result["checks"][check] = {"success": False, "error": str(e)}
 
         return validation_result
 
     async def _execute_blue_green_deployment(
         self, version: str, environment: str
-    ) -> Dict:
+    ) -> dict:
         """Execute blue-green deployment strategy"""
         deployment_result = {
             "success": True,
@@ -217,7 +213,7 @@ class EnterpriseDeploymentPipeline:
 
                 except Exception as e:
                     deployment_result["success"] = False
-                    deployment_result["errors"].append(f"{service}: {str(e)}")
+                    deployment_result["errors"].append(f"{service}: {e!s}")
                     logger.error(f"Failed to deploy {service}: {e}")
 
             # Wait for services to stabilize
@@ -233,7 +229,7 @@ class EnterpriseDeploymentPipeline:
 
         return deployment_result
 
-    async def _post_deployment_validation(self) -> Dict:
+    async def _post_deployment_validation(self) -> dict:
         """Execute post-deployment validation checks"""
         validation_result = {"success": True, "checks": {}, "errors": []}
 
@@ -260,12 +256,12 @@ class EnterpriseDeploymentPipeline:
 
             except Exception as e:
                 validation_result["success"] = False
-                validation_result["errors"].append(f"{check}: {str(e)}")
+                validation_result["errors"].append(f"{check}: {e!s}")
                 validation_result["checks"][check] = {"success": False, "error": str(e)}
 
         return validation_result
 
-    async def _switch_traffic(self) -> Dict:
+    async def _switch_traffic(self) -> dict:
         """Switch traffic from blue to green environment"""
         switch_result = {"success": True, "switched_services": [], "errors": []}
 
@@ -288,7 +284,7 @@ class EnterpriseDeploymentPipeline:
 
                 except Exception as e:
                     switch_result["success"] = False
-                    switch_result["errors"].append(f"{service}: {str(e)}")
+                    switch_result["errors"].append(f"{service}: {e!s}")
 
             # Wait for traffic switch delay
             await asyncio.sleep(self.config["deployment"]["traffic_switch_delay"])
@@ -299,7 +295,7 @@ class EnterpriseDeploymentPipeline:
 
         return switch_result
 
-    async def _execute_rollback(self) -> Dict:
+    async def _execute_rollback(self) -> dict:
         """Execute automated rollback to previous version"""
         rollback_result = {"success": True, "rolled_back_services": [], "errors": []}
 
@@ -319,7 +315,7 @@ class EnterpriseDeploymentPipeline:
 
                 except Exception as e:
                     rollback_result["success"] = False
-                    rollback_result["errors"].append(f"{service}: {str(e)}")
+                    rollback_result["errors"].append(f"{service}: {e!s}")
 
         except Exception as e:
             rollback_result["success"] = False
@@ -327,7 +323,7 @@ class EnterpriseDeploymentPipeline:
 
         return rollback_result
 
-    async def _check_database_connectivity(self) -> Dict:
+    async def _check_database_connectivity(self) -> dict:
         """Check database connectivity"""
         try:
             # Simulate database connectivity check
@@ -336,7 +332,7 @@ class EnterpriseDeploymentPipeline:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _check_redis_connectivity(self) -> Dict:
+    async def _check_redis_connectivity(self) -> dict:
         """Check Redis connectivity"""
         try:
             # Simulate Redis connectivity check
@@ -345,7 +341,7 @@ class EnterpriseDeploymentPipeline:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _check_constitutional_compliance(self) -> Dict:
+    async def _check_constitutional_compliance(self) -> dict:
         """Check constitutional compliance"""
         try:
             # Check constitutional hash
@@ -356,7 +352,7 @@ class EnterpriseDeploymentPipeline:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _check_service_health(self) -> Dict:
+    async def _check_service_health(self) -> dict:
         """Check health of all services"""
         health_result = {"success": True, "services": {}, "errors": []}
 
@@ -370,11 +366,11 @@ class EnterpriseDeploymentPipeline:
                 }
             except Exception as e:
                 health_result["success"] = False
-                health_result["errors"].append(f"{service}: {str(e)}")
+                health_result["errors"].append(f"{service}: {e!s}")
 
         return health_result
 
-    async def _check_api_endpoints(self) -> Dict:
+    async def _check_api_endpoints(self) -> dict:
         """Check API endpoints functionality"""
         try:
             # Simulate API endpoint checks
@@ -383,7 +379,7 @@ class EnterpriseDeploymentPipeline:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _check_performance_benchmarks(self) -> Dict:
+    async def _check_performance_benchmarks(self) -> dict:
         """Check performance benchmarks"""
         try:
             # Simulate performance benchmark
@@ -397,7 +393,7 @@ class EnterpriseDeploymentPipeline:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _build_service(self, service: str, version: str) -> Dict:
+    async def _build_service(self, service: str, version: str) -> dict:
         """Build service container"""
         try:
             # Simulate service build
@@ -408,7 +404,7 @@ class EnterpriseDeploymentPipeline:
 
     async def _deploy_service(
         self, service: str, version: str, environment: str
-    ) -> Dict:
+    ) -> dict:
         """Deploy service to specified environment"""
         try:
             # Simulate service deployment
@@ -417,7 +413,7 @@ class EnterpriseDeploymentPipeline:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _update_load_balancer(self, service: str, environment: str) -> Dict:
+    async def _update_load_balancer(self, service: str, environment: str) -> dict:
         """Update load balancer configuration"""
         try:
             # Simulate load balancer update
@@ -426,7 +422,7 @@ class EnterpriseDeploymentPipeline:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _save_deployment_results(self, results: Dict):
+    async def _save_deployment_results(self, results: dict):
         """Save deployment results to file"""
         results_dir = Path("/tmp/deployment_results")
         results_dir.mkdir(exist_ok=True)

@@ -21,11 +21,10 @@ Formal Verification Comments:
 import asyncio
 import json
 import logging
-import subprocess
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -40,8 +39,8 @@ class BlockchainTestResult:
     success: bool
     execution_time_ms: float
     cost_sol: float
-    transaction_signature: Optional[str]
-    error_message: Optional[str]
+    transaction_signature: str | None
+    error_message: str | None
 
 
 @dataclass
@@ -70,8 +69,8 @@ class ACGSBlockchainIntegration:
     def __init__(self, cluster: str = "devnet"):
         self.cluster = cluster
         self.blockchain_dir = Path("blockchain")
-        self.test_results: List[BlockchainTestResult] = []
-        self.deployments: List[ProgramDeployment] = []
+        self.test_results: list[BlockchainTestResult] = []
+        self.deployments: list[ProgramDeployment] = []
 
         # Program configurations
         self.programs = {
@@ -154,12 +153,11 @@ class ACGSBlockchainIntegration:
             if validation_success:
                 logger.info("🎉 All programs deployed and validated successfully!")
                 return True
-            else:
-                logger.error("❌ Program deployment validation failed")
-                return False
+            logger.error("❌ Program deployment validation failed")
+            return False
 
         except Exception as e:
-            logger.error(f"❌ Program deployment failed: {str(e)}")
+            logger.error(f"❌ Program deployment failed: {e!s}")
             return False
 
     async def _run_anchor_command(self, command: str) -> bool:
@@ -182,14 +180,13 @@ class ACGSBlockchainIntegration:
                 if stdout:
                     logger.debug(f"Output: {stdout.decode()}")
                 return True
-            else:
-                logger.error(f"❌ Command failed: {command}")
-                if stderr:
-                    logger.error(f"Error: {stderr.decode()}")
-                return False
+            logger.error(f"❌ Command failed: {command}")
+            if stderr:
+                logger.error(f"Error: {stderr.decode()}")
+            return False
 
         except Exception as e:
-            logger.error(f"❌ Command execution failed: {str(e)}")
+            logger.error(f"❌ Command execution failed: {e!s}")
             return False
 
     async def _validate_program_deployments(self) -> bool:
@@ -204,7 +201,7 @@ class ACGSBlockchainIntegration:
                 logger.error("❌ Program IDs file not found")
                 return False
 
-            with open(program_ids_file, "r") as f:
+            with open(program_ids_file) as f:
                 program_ids = json.load(f)
 
             # Validate each program
@@ -238,7 +235,7 @@ class ACGSBlockchainIntegration:
             return all_valid
 
         except Exception as e:
-            logger.error(f"❌ Deployment validation failed: {str(e)}")
+            logger.error(f"❌ Deployment validation failed: {e!s}")
             return False
 
     async def _validate_program_account(
@@ -258,14 +255,13 @@ class ACGSBlockchainIntegration:
             if process.returncode == 0:
                 logger.info(f"✅ Program account validated: {program_name}")
                 return True
-            else:
-                logger.error(f"❌ Program account validation failed: {program_name}")
-                if stderr:
-                    logger.error(f"Error: {stderr.decode()}")
-                return False
+            logger.error(f"❌ Program account validation failed: {program_name}")
+            if stderr:
+                logger.error(f"Error: {stderr.decode()}")
+            return False
 
         except Exception as e:
-            logger.error(f"❌ Program account validation error: {str(e)}")
+            logger.error(f"❌ Program account validation error: {e!s}")
             return False
 
     async def test_governance_workflow(self) -> bool:
@@ -326,7 +322,7 @@ class ACGSBlockchainIntegration:
                 / 4
             )
 
-            logger.info(f"✅ Governance workflow completed:")
+            logger.info("✅ Governance workflow completed:")
             logger.info(f"  Total Cost: {total_cost:.6f} SOL")
             logger.info(f"  Average Time: {avg_time:.2f}ms")
 
@@ -336,7 +332,7 @@ class ACGSBlockchainIntegration:
             )
 
         except Exception as e:
-            logger.error(f"❌ Governance workflow test failed: {str(e)}")
+            logger.error(f"❌ Governance workflow test failed: {e!s}")
             return False
 
     async def _test_initialize_governance(self) -> BlockchainTestResult:
@@ -498,7 +494,7 @@ class ACGSBlockchainIntegration:
             self.test_results.append(result)
             return result
 
-    def get_test_summary(self) -> Dict[str, Any]:
+    def get_test_summary(self) -> dict[str, Any]:
         """Get comprehensive test summary."""
         successful_tests = [r for r in self.test_results if r.success]
         failed_tests = [r for r in self.test_results if not r.success]

@@ -132,36 +132,35 @@ class ExplainabilityEngine:
                     f"Z3 SMT solver verified logical consistency."
                 )
 
-        else:  # detailed
-            if audience == "general":
-                explanation = (
-                    f"Decision {decision_id} underwent comprehensive evaluation: "
-                    f"1) Rule matching identified applicable policies from our governance framework. "
-                    f"2) Conflict resolution ensured consistent application of overlapping rules. "
-                    f"3) Bias detection algorithms (statistical, counterfactual, semantic) verified "
-                    f"fair treatment across protected attributes. "
-                    f"4) Formal verification confirmed logical consistency. "
-                    f"5) Human oversight validated the automated decision process."
-                )
-            elif audience == "affected_individual":
-                explanation = (
-                    f"Your request (ID: {decision_id}) received thorough evaluation: "
-                    f"• Policy Matching: Relevant rules were identified from our governance database. "
-                    f"• Fairness Check: Multiple algorithms verified equitable treatment. "
-                    f"• Bias Detection: Statistical and semantic analysis ensured no discriminatory patterns. "
-                    f"• Verification: Formal methods confirmed decision consistency. "
-                    f"• Appeal Rights: You may challenge this decision through our dispute resolution process."
-                )
-            else:  # technical
-                explanation = (
-                    f"Decision {decision_id} - Technical Details: "
-                    f"Rule Evaluation: {self._get_mock_rule_count()} rules processed, "
-                    f"Conflict Resolution: Meta-rule hierarchy applied, "
-                    f"Bias Detection: 4 algorithms (demographic parity, counterfactual, embedding, LLM), "
-                    f"Fairness Validation: Individual fairness, equalized odds verified, "
-                    f"Z3 Verification: SAT solving confirmed logical consistency, "
-                    f"Confidence: {await self._calculate_confidence_score(decision_id, db):.3f}"
-                )
+        elif audience == "general":
+            explanation = (
+                f"Decision {decision_id} underwent comprehensive evaluation: "
+                f"1) Rule matching identified applicable policies from our governance framework. "
+                f"2) Conflict resolution ensured consistent application of overlapping rules. "
+                f"3) Bias detection algorithms (statistical, counterfactual, semantic) verified "
+                f"fair treatment across protected attributes. "
+                f"4) Formal verification confirmed logical consistency. "
+                f"5) Human oversight validated the automated decision process."
+            )
+        elif audience == "affected_individual":
+            explanation = (
+                f"Your request (ID: {decision_id}) received thorough evaluation: "
+                f"• Policy Matching: Relevant rules were identified from our governance database. "
+                f"• Fairness Check: Multiple algorithms verified equitable treatment. "
+                f"• Bias Detection: Statistical and semantic analysis ensured no discriminatory patterns. "
+                f"• Verification: Formal methods confirmed decision consistency. "
+                f"• Appeal Rights: You may challenge this decision through our dispute resolution process."
+            )
+        else:  # technical
+            explanation = (
+                f"Decision {decision_id} - Technical Details: "
+                f"Rule Evaluation: {self._get_mock_rule_count()} rules processed, "
+                f"Conflict Resolution: Meta-rule hierarchy applied, "
+                f"Bias Detection: 4 algorithms (demographic parity, counterfactual, embedding, LLM), "
+                f"Fairness Validation: Individual fairness, equalized odds verified, "
+                f"Z3 Verification: SAT solving confirmed logical consistency, "
+                f"Confidence: {await self._calculate_confidence_score(decision_id, db):.3f}"
+            )
 
         return explanation
 

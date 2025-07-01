@@ -5,14 +5,13 @@ Implements clustering, replication, and failover mechanisms for production deplo
 """
 
 import asyncio
-import json
-import time
-import subprocess
-import psutil
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone
 import logging
+import time
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from typing import Any
+
+import psutil
 
 logger = logging.getLogger(__name__)
 
@@ -37,10 +36,10 @@ class ClusterConfig:
 
     cluster_name: str
     service_type: str
-    nodes: List[ServiceNode]
-    load_balancer_config: Dict[str, Any]
-    failover_config: Dict[str, Any]
-    health_check_config: Dict[str, Any]
+    nodes: list[ServiceNode]
+    load_balancer_config: dict[str, Any]
+    failover_config: dict[str, Any]
+    health_check_config: dict[str, Any]
 
 
 class HighAvailabilityManager:
@@ -55,7 +54,7 @@ class HighAvailabilityManager:
             "round_robin"  # "round_robin", "least_connections", "weighted"
         )
 
-    def initialize_ha_architecture(self) -> Dict[str, Any]:
+    def initialize_ha_architecture(self) -> dict[str, Any]:
         """Initialize high availability architecture"""
         print("🏗️ Initializing ACGS High Availability Architecture")
         print("=" * 55)
@@ -123,14 +122,14 @@ class HighAvailabilityManager:
         }
 
     def create_service_cluster(
-        self, cluster_name: str, config: Dict[str, Any]
+        self, cluster_name: str, config: dict[str, Any]
     ) -> ClusterConfig:
         """Create a service cluster configuration"""
         nodes = []
 
         for i, port in enumerate(config["ports"]):
             node = ServiceNode(
-                node_id=f"{cluster_name}_node_{i+1}",
+                node_id=f"{cluster_name}_node_{i + 1}",
                 service_name=config["service_type"],
                 host="localhost",
                 port=port,
@@ -171,7 +170,7 @@ class HighAvailabilityManager:
             health_check_config=health_check_config,
         )
 
-    def initialize_database_clustering(self) -> Dict[str, Any]:
+    def initialize_database_clustering(self) -> dict[str, Any]:
         """Initialize PostgreSQL clustering configuration"""
         # In production, this would configure actual PostgreSQL clustering
         # For now, we'll simulate the configuration
@@ -196,7 +195,7 @@ class HighAvailabilityManager:
             "backup_status": "enabled",
         }
 
-    def initialize_redis_clustering(self) -> Dict[str, Any]:
+    def initialize_redis_clustering(self) -> dict[str, Any]:
         """Initialize Redis Sentinel clustering configuration"""
         # In production, this would configure actual Redis Sentinel
         # For now, we'll simulate the configuration
@@ -225,7 +224,7 @@ class HighAvailabilityManager:
             "replication_status": "healthy",
         }
 
-    def initialize_load_balancer(self) -> Dict[str, Any]:
+    def initialize_load_balancer(self) -> dict[str, Any]:
         """Initialize load balancer configuration"""
         # In production, this would configure HAProxy, NGINX, or cloud load balancer
         # For now, we'll simulate the configuration
@@ -263,7 +262,7 @@ class HighAvailabilityManager:
             "total_requests": 0,
         }
 
-    async def perform_health_checks(self) -> Dict[str, Any]:
+    async def perform_health_checks(self) -> dict[str, Any]:
         """Perform health checks on all cluster nodes"""
         health_results = {}
 
@@ -301,7 +300,7 @@ class HighAvailabilityManager:
 
         return health_results
 
-    async def check_node_health(self, node: ServiceNode) -> Dict[str, Any]:
+    async def check_node_health(self, node: ServiceNode) -> dict[str, Any]:
         """Check health of individual node"""
         start_time = time.time()
 
@@ -325,7 +324,7 @@ class HighAvailabilityManager:
                 status = "unhealthy"
                 load_score = 1.0  # High load score for unhealthy nodes
 
-        except Exception as e:
+        except Exception:
             status = "unhealthy"
             load_score = 1.0
             response_time_ms = 5000  # Timeout
@@ -351,7 +350,7 @@ class HighAvailabilityManager:
         except Exception:
             return 0.5  # Default moderate load
 
-    def select_healthy_node(self, cluster_name: str) -> Optional[ServiceNode]:
+    def select_healthy_node(self, cluster_name: str) -> ServiceNode | None:
         """Select a healthy node from cluster using load balancing algorithm"""
         if cluster_name not in self.clusters:
             return None
@@ -366,11 +365,11 @@ class HighAvailabilityManager:
             # Simple round-robin (in production, this would maintain state)
             return healthy_nodes[int(time.time()) % len(healthy_nodes)]
 
-        elif self.load_balancer_algorithm == "least_connections":
+        if self.load_balancer_algorithm == "least_connections":
             # Select node with lowest load score
             return min(healthy_nodes, key=lambda n: n.load_score)
 
-        elif self.load_balancer_algorithm == "weighted":
+        if self.load_balancer_algorithm == "weighted":
             # Weighted selection based on inverse load score
             weights = [1.0 - node.load_score for node in healthy_nodes]
             total_weight = sum(weights)
@@ -391,7 +390,7 @@ class HighAvailabilityManager:
 
     def trigger_failover(
         self, cluster_name: str, failed_node: ServiceNode
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Trigger failover for a failed node"""
         if cluster_name not in self.clusters:
             return {"status": "error", "message": "Cluster not found"}
@@ -432,7 +431,7 @@ class HighAvailabilityManager:
 
         return failover_info
 
-    def get_cluster_status(self) -> Dict[str, Any]:
+    def get_cluster_status(self) -> dict[str, Any]:
         """Get overall cluster status"""
         total_nodes = 0
         healthy_nodes = 0
@@ -492,13 +491,13 @@ async def test_high_availability_architecture():
 
     # Initialize HA architecture
     init_result = ha_manager.initialize_ha_architecture()
-    print(f"\n📊 Initialization Results:")
+    print("\n📊 Initialization Results:")
     print(f"  Status: {init_result['status']}")
     print(f"  Clusters: {init_result['clusters']}")
     print(f"  Total Nodes: {init_result['total_nodes']}")
 
     # Perform health checks
-    print(f"\n🔍 Performing health checks...")
+    print("\n🔍 Performing health checks...")
     health_results = await ha_manager.perform_health_checks()
 
     for cluster_name, health in health_results.items():
@@ -508,7 +507,7 @@ async def test_high_availability_architecture():
         print(f"    Unknown: {health['unknown_nodes']}")
 
     # Test node selection
-    print(f"\n⚖️ Testing load balancing...")
+    print("\n⚖️ Testing load balancing...")
     for cluster_name in ha_manager.clusters.keys():
         selected_node = ha_manager.select_healthy_node(cluster_name)
         if selected_node:
@@ -519,13 +518,13 @@ async def test_high_availability_architecture():
             print(f"  {cluster_name}: No healthy nodes available")
 
     # Get cluster status
-    print(f"\n📈 Cluster Status:")
+    print("\n📈 Cluster Status:")
     status = ha_manager.get_cluster_status()
     print(f"  Overall Status: {status['overall_status']}")
     print(f"  Overall Availability: {status['overall_availability_percentage']:.1f}%")
     print(f"  Healthy Nodes: {status['healthy_nodes']}/{status['total_nodes']}")
 
-    print(f"\n✅ High Availability Architecture: OPERATIONAL")
+    print("\n✅ High Availability Architecture: OPERATIONAL")
 
 
 if __name__ == "__main__":

@@ -155,20 +155,19 @@ class FailoverCircuitBreaker:
                 return await self._immediate_failover(
                     operation, instance_id, *args, **kwargs
                 )
-            elif self.config.strategy == FailoverStrategy.GRACEFUL:
+            if self.config.strategy == FailoverStrategy.GRACEFUL:
                 return await self._graceful_failover(
                     operation, instance_id, *args, **kwargs
                 )
-            elif self.config.strategy == FailoverStrategy.CIRCUIT_BREAK:
+            if self.config.strategy == FailoverStrategy.CIRCUIT_BREAK:
                 return await self._circuit_break_failover(
                     operation, instance_id, *args, **kwargs
                 )
-            elif self.config.strategy == FailoverStrategy.LOAD_SHED:
+            if self.config.strategy == FailoverStrategy.LOAD_SHED:
                 return await self._load_shed_failover(
                     operation, instance_id, *args, **kwargs
                 )
-            else:
-                raise e
+            raise e
 
     async def _immediate_failover(
         self, operation: Callable, failed_instance: str, *args, **kwargs
@@ -244,11 +243,10 @@ class FailoverCircuitBreaker:
             return await self._immediate_failover(
                 operation, failed_instance, *args, **kwargs
             )
-        else:
-            # Circuit is closed or half-open, allow normal retry logic
-            return await self._graceful_failover(
-                operation, failed_instance, *args, **kwargs
-            )
+        # Circuit is closed or half-open, allow normal retry logic
+        return await self._graceful_failover(
+            operation, failed_instance, *args, **kwargs
+        )
 
     async def _load_shed_failover(
         self, operation: Callable, failed_instance: str, *args, **kwargs

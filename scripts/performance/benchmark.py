@@ -6,26 +6,20 @@ Comprehensive performance testing and benchmarking for ACGS-1 Constitutional Gov
 Tests all 9 microservices under various load conditions and generates detailed reports.
 """
 
-import os
-import sys
-import json
-import time
-import asyncio
-import logging
 import argparse
+import asyncio
+import json
+import logging
 import statistics
+import sys
+import time
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, asdict
-from concurrent.futures import ThreadPoolExecutor
+from typing import Any
 
 import aiohttp
 import psutil
 import yaml
-from locust import HttpUser, task, between
-from locust.env import Environment
-from locust.stats import stats_printer, stats_history
-from locust.log import setup_logging
 
 # Configure logging
 logging.basicConfig(
@@ -62,7 +56,7 @@ class BenchmarkResult:
     p95_response_time_ms: float
     p99_response_time_ms: float
     requests_per_second: float
-    errors: List[str]
+    errors: list[str]
     timestamp: str
 
 
@@ -87,19 +81,19 @@ class ACGSPerformanceBenchmark:
         self.config_path = config_path
         self.config = self._load_config()
         self.services = self._load_services()
-        self.results: List[BenchmarkResult] = []
-        self.system_metrics: List[SystemMetrics] = []
+        self.results: list[BenchmarkResult] = []
+        self.system_metrics: list[SystemMetrics] = []
 
-    def _load_config(self) -> Dict[str, Any]:
+    def _load_config(self) -> dict[str, Any]:
         """Load benchmark configuration."""
         try:
-            with open(self.config_path, "r") as f:
+            with open(self.config_path) as f:
                 return yaml.safe_load(f)
         except FileNotFoundError:
             logger.warning(f"Config file not found: {self.config_path}, using defaults")
             return self._default_config()
 
-    def _default_config(self) -> Dict[str, Any]:
+    def _default_config(self) -> dict[str, Any]:
         """Default benchmark configuration."""
         return {
             "base_url": "http://localhost",
@@ -119,7 +113,7 @@ class ACGSPerformanceBenchmark:
             },
         }
 
-    def _load_services(self) -> List[ServiceEndpoint]:
+    def _load_services(self) -> list[ServiceEndpoint]:
         """Load service endpoint configurations."""
         services = [
             ServiceEndpoint("auth_service", self.config["base_url"], 8000),
@@ -250,7 +244,7 @@ class ACGSPerformanceBenchmark:
             timestamp=datetime.utcnow().isoformat(),
         )
 
-    def _percentile(self, data: List[float], percentile: int) -> float:
+    def _percentile(self, data: list[float], percentile: int) -> float:
         """Calculate percentile of a list of numbers."""
         if not data:
             return 0
@@ -332,7 +326,7 @@ class ACGSPerformanceBenchmark:
             timestamp=datetime.utcnow().isoformat(),
         )
 
-    async def run_comprehensive_benchmark(self) -> Dict[str, Any]:
+    async def run_comprehensive_benchmark(self) -> dict[str, Any]:
         """Run comprehensive benchmark suite."""
         logger.info("Starting comprehensive performance benchmark...")
 
@@ -377,7 +371,7 @@ class ACGSPerformanceBenchmark:
 
         return self.generate_report()
 
-    def generate_report(self) -> Dict[str, Any]:
+    def generate_report(self) -> dict[str, Any]:
         """Generate comprehensive benchmark report."""
         logger.info("Generating benchmark report...")
 
@@ -440,7 +434,7 @@ class ACGSPerformanceBenchmark:
 
         return report
 
-    def _generate_recommendations(self, targets_met: Dict[str, bool]) -> List[str]:
+    def _generate_recommendations(self, targets_met: dict[str, bool]) -> list[str]:
         """Generate performance improvement recommendations."""
         recommendations = []
 

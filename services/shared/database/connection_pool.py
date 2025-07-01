@@ -16,7 +16,7 @@ import time
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from sqlalchemy.pool import QueuePool
@@ -45,11 +45,11 @@ class PoolConfig:
     primary_password: str = "acgs_password"
 
     # Read replica (optional)
-    replica_host: Optional[str] = None
+    replica_host: str | None = None
     replica_port: int = 5432
-    replica_database: Optional[str] = None
-    replica_user: Optional[str] = None
-    replica_password: Optional[str] = None
+    replica_database: str | None = None
+    replica_user: str | None = None
+    replica_password: str | None = None
 
     # Pool settings
     min_connections: int = 5
@@ -66,7 +66,7 @@ class PoolConfig:
 
     # Performance settings
     command_timeout: int = 60
-    server_settings: Dict[str, str] = None
+    server_settings: dict[str, str] = None
 
     def __post_init__(self):
         if self.server_settings is None:
@@ -129,15 +129,15 @@ class ConnectionPool:
 
     def __init__(self, config: PoolConfig):
         self.config = config
-        self.primary_engine: Optional[AsyncEngine] = None
-        self.replica_engine: Optional[AsyncEngine] = None
+        self.primary_engine: AsyncEngine | None = None
+        self.replica_engine: AsyncEngine | None = None
         self.primary_circuit_breaker = CircuitBreaker(
             config.failure_threshold, config.recovery_timeout
         )
         self.replica_circuit_breaker = CircuitBreaker(
             config.failure_threshold, config.recovery_timeout
         )
-        self.health_check_task: Optional[asyncio.Task] = None
+        self.health_check_task: asyncio.Task | None = None
         self.metrics = {
             "total_connections": 0,
             "active_connections": 0,
@@ -297,7 +297,7 @@ class ConnectionPool:
                 self.replica_circuit_breaker.record_failure()
                 logger.warning(f"Replica database health check failed: {e}")
 
-    async def get_pool_status(self) -> Dict[str, Any]:
+    async def get_pool_status(self) -> dict[str, Any]:
         """Get connection pool status and metrics."""
         primary_pool = self.primary_engine.pool if self.primary_engine else None
         replica_pool = self.replica_engine.pool if self.replica_engine else None
@@ -349,7 +349,7 @@ class ConnectionPool:
 
 
 # Global connection pool instance
-_connection_pool: Optional[ConnectionPool] = None
+_connection_pool: ConnectionPool | None = None
 
 
 async def initialize_connection_pool(config: PoolConfig) -> ConnectionPool:

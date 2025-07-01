@@ -7,9 +7,10 @@ import asyncio
 import logging
 import random
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Type, Union
+from typing import Any
 
 from prometheus_client import Counter, Histogram
 
@@ -45,11 +46,11 @@ class RetryConfig:
     retry_on_compliance_failure: bool = True
 
     # Circuit breaker integration
-    circuit_breaker_name: Optional[str] = None
+    circuit_breaker_name: str | None = None
 
     # Timeout configuration
-    timeout_per_attempt: Optional[float] = None
-    total_timeout: Optional[float] = None
+    timeout_per_attempt: float | None = None
+    total_timeout: float | None = None
 
 
 @dataclass
@@ -58,8 +59,8 @@ class RetryAttempt:
 
     attempt_number: int
     delay: float
-    exception: Optional[Exception] = None
-    constitutional_compliance_score: Optional[float] = None
+    exception: Exception | None = None
+    constitutional_compliance_score: float | None = None
     timestamp: float = field(default_factory=time.time)
     duration: float = 0.0
 
@@ -98,7 +99,7 @@ class EnhancedRetryMechanism:
     async def execute_with_retry(self, func: Callable, *args, **kwargs) -> Any:
         """Execute function with retry logic."""
         start_time = time.time()
-        attempts: List[RetryAttempt] = []
+        attempts: list[RetryAttempt] = []
         last_exception = None
 
         for attempt_number in range(1, self.config.max_attempts + 1):
@@ -135,7 +136,6 @@ class EnhancedRetryMechanism:
                     and self.config.retry_on_compliance_failure
                     and attempt_number < self.config.max_attempts
                 ):
-
                     # Record compliance retry
                     self.constitutional_compliance_retries.labels(name=self.name).inc()
 
@@ -207,8 +207,7 @@ class EnhancedRetryMechanism:
                 attempt.delay = delay
 
                 logger.warning(
-                    f"Attempt {attempt_number} failed: {e}. "
-                    f"Retrying in {delay:.2f}s..."
+                    f"Attempt {attempt_number} failed: {e}. Retrying in {delay:.2f}s..."
                 )
 
                 await asyncio.sleep(delay)
@@ -228,21 +227,19 @@ class EnhancedRetryMechanism:
         # Raise the last exception
         if last_exception:
             raise last_exception
-        else:
-            raise RuntimeError("All retry attempts failed")
+        raise RuntimeError("All retry attempts failed")
 
     async def _execute_function(self, func: Callable, *args, **kwargs) -> Any:
         """Execute the function, handling both sync and async functions."""
         if asyncio.iscoroutinefunction(func):
             return await func(*args, **kwargs)
-        else:
-            return func(*args, **kwargs)
+        return func(*args, **kwargs)
 
-    def _extract_compliance_score(self, result: Any) -> Optional[float]:
+    def _extract_compliance_score(self, result: Any) -> float | None:
         """Extract constitutional compliance score from result."""
         if hasattr(result, "constitutional_compliance_score"):
             return result.constitutional_compliance_score
-        elif isinstance(result, dict) and "constitutional_compliance_score" in result:
+        if isinstance(result, dict) and "constitutional_compliance_score" in result:
             return result["constitutional_compliance_score"]
         return None
 
@@ -287,7 +284,7 @@ class EnhancedRetryMechanism:
 
         return self.fibonacci_sequence[n - 1]
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get retry mechanism statistics."""
         return {
             "name": self.name,
@@ -306,10 +303,10 @@ class RetryManager:
     """Manages multiple retry mechanisms."""
 
     def __init__(self):
-        self.retry_mechanisms: Dict[str, EnhancedRetryMechanism] = {}
+        self.retry_mechanisms: dict[str, EnhancedRetryMechanism] = {}
 
     def get_retry_mechanism(
-        self, name: str, config: Optional[RetryConfig] = None
+        self, name: str, config: RetryConfig | None = None
     ) -> EnhancedRetryMechanism:
         """Get or create retry mechanism."""
         if name not in self.retry_mechanisms:
@@ -319,13 +316,13 @@ class RetryManager:
 
         return self.retry_mechanisms[name]
 
-    def get_all_stats(self) -> Dict[str, Dict[str, Any]]:
+    def get_all_stats(self) -> dict[str, dict[str, Any]]:
         """Get statistics for all retry mechanisms."""
         return {name: rm.get_stats() for name, rm in self.retry_mechanisms.items()}
 
 
 # Decorator for easy retry functionality
-def retry_with_config(config: RetryConfig, name: Optional[str] = None):
+def retry_with_config(config: RetryConfig, name: str | None = None):
     """Decorator to add retry functionality to a function."""
 
     def decorator(func: Callable):
@@ -342,8 +339,7 @@ def retry_with_config(config: RetryConfig, name: Optional[str] = None):
 
         if asyncio.iscoroutinefunction(func):
             return async_wrapper
-        else:
-            return sync_wrapper
+        return sync_wrapper
 
     return decorator
 

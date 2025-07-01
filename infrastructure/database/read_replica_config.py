@@ -6,13 +6,12 @@ Implements read replica routing, load balancing, and failover mechanisms
 for improved read performance and scalability.
 """
 
-import asyncio
 import logging
 import random
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, List, Optional, Tuple
+
 import asyncpg
 
 logger = logging.getLogger(__name__)
@@ -51,7 +50,7 @@ class DatabaseNode:
 
     # Health status
     is_healthy: bool = True
-    last_health_check: Optional[float] = None
+    last_health_check: float | None = None
     current_connections: int = 0
     avg_response_time: float = 0.0
 
@@ -73,7 +72,7 @@ class ReadReplicaConfig:
     """Configuration for read replica setup."""
 
     primary_node: DatabaseNode
-    read_replicas: List[DatabaseNode] = field(default_factory=list)
+    read_replicas: list[DatabaseNode] = field(default_factory=list)
 
     # Load balancing configuration
     load_balancing_strategy: LoadBalancingStrategy = LoadBalancingStrategy.ROUND_ROBIN
@@ -104,9 +103,9 @@ class ReadReplicaRouter:
     def __init__(self, config: ReadReplicaConfig):
         self.config = config
         self.current_replica_index = 0
-        self.connection_counts: Dict[str, int] = {}
-        self.health_status: Dict[str, bool] = {}
-        self.last_health_checks: Dict[str, float] = {}
+        self.connection_counts: dict[str, int] = {}
+        self.health_status: dict[str, bool] = {}
+        self.last_health_checks: dict[str, float] = {}
 
         # Initialize health status
         self._initialize_health_status()
@@ -140,8 +139,7 @@ class ReadReplicaRouter:
             if self.config.read_preference == "replica_preferred":
                 logger.warning("No healthy replicas available, falling back to primary")
                 return self.config.primary_node
-            else:
-                raise Exception("No healthy read replicas available")
+            raise Exception("No healthy read replicas available")
 
         # Select replica based on load balancing strategy
         return await self._select_replica(healthy_replicas)
@@ -158,13 +156,12 @@ class ReadReplicaRouter:
 
             if self.health_status.get(primary_key, False):
                 return self.config.primary_node
-            else:
-                raise Exception("Primary database node is not healthy")
+            raise Exception("Primary database node is not healthy")
 
         # For other write preferences, implement additional logic here
         return self.config.primary_node
 
-    async def _get_healthy_replicas(self) -> List[DatabaseNode]:
+    async def _get_healthy_replicas(self) -> list[DatabaseNode]:
         """Get list of healthy read replicas."""
         healthy_replicas = []
 
@@ -183,7 +180,7 @@ class ReadReplicaRouter:
         return healthy_replicas
 
     async def _select_replica(
-        self, healthy_replicas: List[DatabaseNode]
+        self, healthy_replicas: list[DatabaseNode]
     ) -> DatabaseNode:
         """Select replica based on load balancing strategy."""
         if not healthy_replicas:
@@ -196,10 +193,10 @@ class ReadReplicaRouter:
             self.current_replica_index += 1
             return replica
 
-        elif self.config.load_balancing_strategy == LoadBalancingStrategy.RANDOM:
+        if self.config.load_balancing_strategy == LoadBalancingStrategy.RANDOM:
             return random.choice(healthy_replicas)
 
-        elif (
+        if (
             self.config.load_balancing_strategy
             == LoadBalancingStrategy.LEAST_CONNECTIONS
         ):
@@ -217,7 +214,7 @@ class ReadReplicaRouter:
 
             return selected_replica
 
-        elif self.config.load_balancing_strategy == LoadBalancingStrategy.WEIGHTED:
+        if self.config.load_balancing_strategy == LoadBalancingStrategy.WEIGHTED:
             # Weighted random selection
             total_weight = sum(replica.weight for replica in healthy_replicas)
             random_weight = random.uniform(0, total_weight)
@@ -230,9 +227,8 @@ class ReadReplicaRouter:
 
             return healthy_replicas[-1]  # Fallback
 
-        else:
-            # Default to round robin
-            return healthy_replicas[self.current_replica_index % len(healthy_replicas)]
+        # Default to round robin
+        return healthy_replicas[self.current_replica_index % len(healthy_replicas)]
 
     async def _check_node_health(self, node: DatabaseNode) -> bool:
         """Check health of a database node."""
@@ -298,7 +294,7 @@ class ReadReplicaRouter:
         )
         node.current_connections = max(0, node.current_connections - 1)
 
-    async def get_cluster_status(self) -> Dict[str, any]:
+    async def get_cluster_status(self) -> dict[str, any]:
         """Get comprehensive cluster status."""
         # Check health of all nodes
         await self._check_node_health(self.config.primary_node)

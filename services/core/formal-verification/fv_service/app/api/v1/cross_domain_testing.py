@@ -27,14 +27,10 @@ from .core.cross_domain_testing_engine import cross_domain_testing_engine
 from .schemas import (
     CrossDomainTestRequest,
     CrossDomainTestResponse,
-)
-from .schemas import CrossDomainTestResult as CrossDomainTestResultSchema
-from .schemas import CrossDomainTestScenario as CrossDomainTestScenarioSchema
-from .schemas import (
+    CrossDomainTestResult as CrossDomainTestResultSchema,
+    CrossDomainTestScenario as CrossDomainTestScenarioSchema,
     CrossDomainTestScenarioCreate,
-)
-from .schemas import DomainContext as DomainContextSchema
-from .schemas import (
+    DomainContext as DomainContextSchema,
     DomainContextCreate,
     DomainContextUpdate,
 )
@@ -95,9 +91,9 @@ async def create_domain_context(
 
     except Exception as e:
         await db.rollback()
-        logger.error(f"Failed to create domain context: {str(e)}")
+        logger.error(f"Failed to create domain context: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to create domain context: {str(e)}"
+            status_code=500, detail=f"Failed to create domain context: {e!s}"
         )
 
 
@@ -126,9 +122,9 @@ async def list_domain_contexts(
         return domains
 
     except Exception as e:
-        logger.error(f"Failed to list domain contexts: {str(e)}")
+        logger.error(f"Failed to list domain contexts: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to list domain contexts: {str(e)}"
+            status_code=500, detail=f"Failed to list domain contexts: {e!s}"
         )
 
 
@@ -152,9 +148,9 @@ async def get_domain_context(domain_id: int, db: AsyncSession = Depends(get_asyn
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to get domain context {domain_id}: {str(e)}")
+        logger.error(f"Failed to get domain context {domain_id}: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to get domain context: {str(e)}"
+            status_code=500, detail=f"Failed to get domain context: {e!s}"
         )
 
 
@@ -196,9 +192,9 @@ async def update_domain_context(
         raise
     except Exception as e:
         await db.rollback()
-        logger.error(f"Failed to update domain context {domain_id}: {str(e)}")
+        logger.error(f"Failed to update domain context {domain_id}: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to update domain context: {str(e)}"
+            status_code=500, detail=f"Failed to update domain context: {e!s}"
         )
 
 
@@ -265,9 +261,9 @@ async def create_test_scenario(
         raise
     except Exception as e:
         await db.rollback()
-        logger.error(f"Failed to create test scenario: {str(e)}")
+        logger.error(f"Failed to create test scenario: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to create test scenario: {str(e)}"
+            status_code=500, detail=f"Failed to create test scenario: {e!s}"
         )
 
 
@@ -302,9 +298,9 @@ async def list_test_scenarios(
         return scenarios
 
     except Exception as e:
-        logger.error(f"Failed to list test scenarios: {str(e)}")
+        logger.error(f"Failed to list test scenarios: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to list test scenarios: {str(e)}"
+            status_code=500, detail=f"Failed to list test scenarios: {e!s}"
         )
 
 
@@ -330,9 +326,9 @@ async def get_test_scenario(scenario_id: int, db: AsyncSession = Depends(get_asy
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to get test scenario {scenario_id}: {str(e)}")
+        logger.error(f"Failed to get test scenario {scenario_id}: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to get test scenario: {str(e)}"
+            status_code=500, detail=f"Failed to get test scenario: {e!s}"
         )
 
 
@@ -390,7 +386,7 @@ async def execute_cross_domain_test(
                 principle = await ac_service_client.get_principle(principle_id)
                 principles.append(principle)
             except Exception as e:
-                logger.warning(f"Failed to fetch principle {principle_id}: {str(e)}")
+                logger.warning(f"Failed to fetch principle {principle_id}: {e!s}")
 
         # Execute cross-domain testing
         response = await cross_domain_testing_engine.execute_cross_domain_test(
@@ -435,9 +431,9 @@ async def execute_cross_domain_test(
         raise
     except Exception as e:
         await db.rollback()
-        logger.error(f"Failed to execute cross-domain test: {str(e)}")
+        logger.error(f"Failed to execute cross-domain test: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to execute cross-domain test: {str(e)}"
+            status_code=500, detail=f"Failed to execute cross-domain test: {e!s}"
         )
 
 
@@ -463,9 +459,9 @@ async def get_test_results(test_run_id: str, db: AsyncSession = Depends(get_asyn
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to get test results for {test_run_id}: {str(e)}")
+        logger.error(f"Failed to get test results for {test_run_id}: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to get test results: {str(e)}"
+            status_code=500, detail=f"Failed to get test results: {e!s}"
         )
 
 
@@ -491,9 +487,9 @@ async def get_scenario_results(
         return results
 
     except Exception as e:
-        logger.error(f"Failed to get scenario results for {scenario_id}: {str(e)}")
+        logger.error(f"Failed to get scenario results for {scenario_id}: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to get scenario results: {str(e)}"
+            status_code=500, detail=f"Failed to get scenario results: {e!s}"
         )
 
 

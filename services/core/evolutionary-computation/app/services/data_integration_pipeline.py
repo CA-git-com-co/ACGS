@@ -10,8 +10,8 @@ import logging
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
 from enum import Enum
+from typing import Any
 
 import httpx
 
@@ -35,7 +35,7 @@ class DataPoint:
     timestamp: datetime
     data_type: str
     value: Any
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -57,7 +57,7 @@ class DataIntegrationPipeline:
     to provide WINA optimization with real-time system insights.
     """
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         """
         Initialize data integration pipeline.
 
@@ -73,8 +73,8 @@ class DataIntegrationPipeline:
         self.batch_size = config.get("data_pipeline", {}).get("batch_size", 100)
 
         # Data storage
-        self.data_buffer: List[DataPoint] = []
-        self.integration_metrics: Dict[DataSourceType, IntegrationMetrics] = {
+        self.data_buffer: list[DataPoint] = []
+        self.integration_metrics: dict[DataSourceType, IntegrationMetrics] = {
             source: IntegrationMetrics() for source in DataSourceType
         }
 
@@ -323,7 +323,7 @@ class DataIntegrationPipeline:
             logger.error(f"Data batch processing failed: {e}")
 
     async def _process_source_data(
-        self, source: DataSourceType, data_points: List[DataPoint]
+        self, source: DataSourceType, data_points: list[DataPoint]
     ):
         """Process data points from a specific source."""
         try:
@@ -392,7 +392,7 @@ class DataIntegrationPipeline:
         except Exception as e:
             logger.error(f"Data cleanup failed: {e}")
 
-    def get_integration_summary(self) -> Dict[str, Any]:
+    def get_integration_summary(self) -> dict[str, Any]:
         """Get summary of data integration performance."""
         try:
             summary = {

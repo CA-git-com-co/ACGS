@@ -129,11 +129,10 @@ async def test_ac_to_gs_integration():
                         f"   - Constitutional compliance: {synthesis_result.get('constitutional_compliance', 0):.3f}"
                     )
                     return True
-                else:
-                    print(
-                        f"   ⚠️  Synthesis failed: {gs_response.status_code} (service may not be fully implemented)"
-                    )
-                    return True  # Don't fail the test for unimplemented endpoints
+                print(
+                    f"   ⚠️  Synthesis failed: {gs_response.status_code} (service may not be fully implemented)"
+                )
+                return True  # Don't fail the test for unimplemented endpoints
 
             except Exception as e:
                 print(

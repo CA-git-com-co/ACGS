@@ -13,7 +13,7 @@ import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -55,7 +55,7 @@ class SimpleSecurityScanner:
         os.makedirs("logs", exist_ok=True)
         os.makedirs("reports/security", exist_ok=True)
 
-    def run_comprehensive_scan(self) -> Dict[str, Any]:
+    def run_comprehensive_scan(self) -> dict[str, Any]:
         """Run comprehensive security scan."""
         logger.info(f"🔍 Starting simple security scan: {self.scan_id}")
 
@@ -93,7 +93,7 @@ class SimpleSecurityScanner:
             ]
 
             result = subprocess.run(
-                cmd, cwd=self.project_root, capture_output=True, text=True
+                cmd, check=False, cwd=self.project_root, capture_output=True, text=True
             )
 
             findings = []
@@ -101,7 +101,7 @@ class SimpleSecurityScanner:
 
             if os.path.exists(result_file):
                 try:
-                    with open(result_file, "r") as f:
+                    with open(result_file) as f:
                         bandit_results = json.load(f)
 
                     for result_item in bandit_results.get("results", []):
@@ -156,7 +156,7 @@ class SimpleSecurityScanner:
 
             cmd = ["/home/dislove/.local/bin/safety", "check", "--json"]
             result = subprocess.run(
-                cmd, cwd=self.project_root, capture_output=True, text=True
+                cmd, check=False, cwd=self.project_root, capture_output=True, text=True
             )
 
             findings = []
@@ -205,7 +205,7 @@ class SimpleSecurityScanner:
 
             cmd = ["/home/dislove/.local/bin/pip-audit", "--format=json"]
             result = subprocess.run(
-                cmd, cwd=self.project_root, capture_output=True, text=True
+                cmd, check=False, cwd=self.project_root, capture_output=True, text=True
             )
 
             findings = []
@@ -263,7 +263,7 @@ class SimpleSecurityScanner:
                 cmd = ["npm", "audit", "--json"]
 
                 result = subprocess.run(
-                    cmd, cwd=package_dir, capture_output=True, text=True
+                    cmd, check=False, cwd=package_dir, capture_output=True, text=True
                 )
 
                 if result.stdout:

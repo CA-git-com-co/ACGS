@@ -20,26 +20,23 @@ import asyncio
 import json
 import logging
 import statistics
+import sys
 import time
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Tuple
-from dataclasses import dataclass, asdict
-
-import sys
-import os
+from typing import Any
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 from services.shared.multimodal_ai_service import (
+    ContentType,
+    ModelType,
     MultimodalAIService,
     MultimodalRequest,
-    MultimodalResponse,
-    ModelType,
     RequestType,
-    ContentType,
 )
 
 # Configure logging
@@ -67,11 +64,11 @@ class ModelBenchmarkResult:
     """Benchmark results for a single model."""
 
     model_type: ModelType
-    test_results: List[Dict[str, Any]]
-    performance_metrics: Dict[str, float]
-    quality_metrics: Dict[str, float]
-    cost_metrics: Dict[str, float]
-    compliance_metrics: Dict[str, float]
+    test_results: list[dict[str, Any]]
+    performance_metrics: dict[str, float]
+    quality_metrics: dict[str, float]
+    cost_metrics: dict[str, float]
+    compliance_metrics: dict[str, float]
 
 
 class MultimodalBenchmarkSuite:
@@ -84,7 +81,7 @@ class MultimodalBenchmarkSuite:
 
         logger.info("Multimodal Benchmark Suite initialized")
 
-    def _create_test_cases(self) -> List[BenchmarkTest]:
+    def _create_test_cases(self) -> list[BenchmarkTest]:
         """Create comprehensive test cases for benchmarking."""
 
         # Sample image URL for testing
@@ -244,7 +241,7 @@ class MultimodalBenchmarkSuite:
         self.service = await get_multimodal_service()
         logger.info("Benchmark suite initialized with multimodal service")
 
-    async def run_comprehensive_benchmark(self) -> Dict[str, Any]:
+    async def run_comprehensive_benchmark(self) -> dict[str, Any]:
         """Run comprehensive benchmark comparing both models."""
 
         logger.info("🚀 Starting Comprehensive Multimodal AI Benchmark")
@@ -432,7 +429,7 @@ class MultimodalBenchmarkSuite:
         self,
         flash_results: ModelBenchmarkResult,
         flash_lite_results: ModelBenchmarkResult,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate comparative analysis between models."""
 
         comparison = {
@@ -586,7 +583,7 @@ class MultimodalBenchmarkSuite:
 
         return comparison
 
-    def _generate_recommendations(self, comparison: Dict[str, Any]) -> Dict[str, Any]:
+    def _generate_recommendations(self, comparison: dict[str, Any]) -> dict[str, Any]:
         """Generate recommendations based on comparison results."""
 
         recommendations = {
@@ -627,7 +624,7 @@ class MultimodalBenchmarkSuite:
 
         return recommendations
 
-    def _determine_overall_recommendation(self, comparison: Dict[str, Any]) -> str:
+    def _determine_overall_recommendation(self, comparison: dict[str, Any]) -> str:
         """Determine overall recommendation based on comparison."""
 
         perf_winner = comparison["performance_comparison"]["response_time"]["winner"]
@@ -638,15 +635,14 @@ class MultimodalBenchmarkSuite:
 
         if quality_winner == "Flash Full" and compliance_winner == "Flash Full":
             return "Flash Full recommended for critical constitutional AI applications requiring highest accuracy"
-        elif (
+        if (
             perf_winner == "Flash Lite"
             and comparison["cost_comparison"]["total_cost"]["savings_percentage"] > 30
         ):
             return "Flash Lite recommended for cost-effective, high-performance applications with acceptable quality"
-        else:
-            return "Hybrid approach recommended: intelligent routing based on request characteristics"
+        return "Hybrid approach recommended: intelligent routing based on request characteristics"
 
-    def print_benchmark_report(self, report: Dict[str, Any]):
+    def print_benchmark_report(self, report: dict[str, Any]):
         """Print formatted benchmark report."""
 
         print("\n" + "=" * 80)
@@ -662,7 +658,7 @@ class MultimodalBenchmarkSuite:
         print("\n📊 PERFORMANCE COMPARISON")
         print("-" * 40)
         perf = report["comparative_analysis"]["performance_comparison"]
-        print(f"Response Time:")
+        print("Response Time:")
         print(f"  Flash Full: {perf['response_time']['flash_full_ms']:.1f}ms")
         print(f"  Flash Lite: {perf['response_time']['flash_lite_ms']:.1f}ms")
         print(
@@ -672,12 +668,12 @@ class MultimodalBenchmarkSuite:
         print("\n🎯 QUALITY COMPARISON")
         print("-" * 40)
         quality = report["comparative_analysis"]["quality_comparison"]
-        print(f"Overall Quality:")
+        print("Overall Quality:")
         print(f"  Flash Full: {quality['overall_quality']['flash_full']:.3f}")
         print(f"  Flash Lite: {quality['overall_quality']['flash_lite']:.3f}")
         print(f"  Winner: {quality['overall_quality']['winner']}")
 
-        print(f"Constitutional Accuracy:")
+        print("Constitutional Accuracy:")
         print(f"  Flash Full: {quality['constitutional_accuracy']['flash_full']:.1%}")
         print(f"  Flash Lite: {quality['constitutional_accuracy']['flash_lite']:.1%}")
         print(f"  Winner: {quality['constitutional_accuracy']['winner']}")
@@ -685,7 +681,7 @@ class MultimodalBenchmarkSuite:
         print("\n💰 COST COMPARISON")
         print("-" * 40)
         cost = report["comparative_analysis"]["cost_comparison"]
-        print(f"Total Cost:")
+        print("Total Cost:")
         print(f"  Flash Full: ${cost['total_cost']['flash_full']:.4f}")
         print(f"  Flash Lite: ${cost['total_cost']['flash_lite']:.4f}")
         print(
@@ -695,7 +691,7 @@ class MultimodalBenchmarkSuite:
         print("\n🏛️ CONSTITUTIONAL COMPLIANCE")
         print("-" * 40)
         compliance = report["comparative_analysis"]["constitutional_compliance"]
-        print(f"Compliance Rate:")
+        print("Compliance Rate:")
         print(f"  Flash Full: {compliance['compliance_rate']['flash_full']:.1%}")
         print(f"  Flash Lite: {compliance['compliance_rate']['flash_lite']:.1%}")
         print(f"  Winner: {compliance['compliance_rate']['winner']}")
@@ -741,12 +737,11 @@ async def main():
     def convert_enums(obj):
         if hasattr(obj, "value"):
             return obj.value
-        elif isinstance(obj, dict):
+        if isinstance(obj, dict):
             return {k: convert_enums(v) for k, v in obj.items()}
-        elif isinstance(obj, list):
+        if isinstance(obj, list):
             return [convert_enums(item) for item in obj]
-        else:
-            return obj
+        return obj
 
     serializable_report = convert_enums(report)
 

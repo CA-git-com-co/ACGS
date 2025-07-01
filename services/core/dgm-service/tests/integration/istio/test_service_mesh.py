@@ -6,7 +6,6 @@ security policies, and observability features.
 """
 
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
 import yaml
@@ -32,7 +31,7 @@ class TestServiceMesh:
         deployment_file = istio_configs_path / "deployment.yaml"
         assert deployment_file.exists(), "Deployment configuration file should exist"
 
-        with open(deployment_file, "r") as f:
+        with open(deployment_file) as f:
             configs = list(yaml.safe_load_all(f))
 
         # Find deployment configuration
@@ -67,7 +66,7 @@ class TestServiceMesh:
         """Test Kubernetes service configuration."""
         deployment_file = istio_configs_path / "deployment.yaml"
 
-        with open(deployment_file, "r") as f:
+        with open(deployment_file) as f:
             configs = list(yaml.safe_load_all(f))
 
         # Find service configuration
@@ -91,7 +90,7 @@ class TestServiceMesh:
         vs_file = istio_configs_path / "virtual-service.yaml"
         assert vs_file.exists(), "VirtualService configuration file should exist"
 
-        with open(vs_file, "r") as f:
+        with open(vs_file) as f:
             configs = list(yaml.safe_load_all(f))
 
         # Find VirtualService configuration
@@ -127,7 +126,7 @@ class TestServiceMesh:
         """Test Istio DestinationRule configuration."""
         vs_file = istio_configs_path / "virtual-service.yaml"
 
-        with open(vs_file, "r") as f:
+        with open(vs_file) as f:
             configs = list(yaml.safe_load_all(f))
 
         # Find DestinationRule configuration
@@ -161,7 +160,7 @@ class TestServiceMesh:
         security_file = istio_configs_path / "security-policies.yaml"
         assert security_file.exists(), "Security policies file should exist"
 
-        with open(security_file, "r") as f:
+        with open(security_file) as f:
             configs = list(yaml.safe_load_all(f))
 
         # Find AuthorizationPolicy configurations
@@ -232,7 +231,7 @@ class TestServiceMesh:
         """Test Istio PeerAuthentication configuration."""
         vs_file = istio_configs_path / "virtual-service.yaml"
 
-        with open(vs_file, "r") as f:
+        with open(vs_file) as f:
             configs = list(yaml.safe_load_all(f))
 
         # Find PeerAuthentication configuration
@@ -252,7 +251,7 @@ class TestServiceMesh:
         """Test Istio RequestAuthentication configuration."""
         security_file = istio_configs_path / "security-policies.yaml"
 
-        with open(security_file, "r") as f:
+        with open(security_file) as f:
             configs = list(yaml.safe_load_all(f))
 
         # Find RequestAuthentication configuration
@@ -274,7 +273,7 @@ class TestServiceMesh:
         """Test Istio Telemetry configuration."""
         vs_file = istio_configs_path / "virtual-service.yaml"
 
-        with open(vs_file, "r") as f:
+        with open(vs_file) as f:
             configs = list(yaml.safe_load_all(f))
 
         # Find Telemetry configurations
@@ -315,7 +314,7 @@ class TestServiceMesh:
         traffic_file = istio_configs_path / "traffic-management.yaml"
         assert traffic_file.exists(), "Traffic management file should exist"
 
-        with open(traffic_file, "r") as f:
+        with open(traffic_file) as f:
             configs = list(yaml.safe_load_all(f))
 
         # Find canary VirtualService
@@ -364,12 +363,12 @@ class TestServiceMesh:
         """Test EnvoyFilter configurations."""
         # Test security policies EnvoyFilters
         security_file = istio_configs_path / "security-policies.yaml"
-        with open(security_file, "r") as f:
+        with open(security_file) as f:
             security_configs = list(yaml.safe_load_all(f))
 
         # Test traffic management EnvoyFilters
         traffic_file = istio_configs_path / "traffic-management.yaml"
-        with open(traffic_file, "r") as f:
+        with open(traffic_file) as f:
             traffic_configs = list(yaml.safe_load_all(f))
 
         all_configs = security_configs + traffic_configs
@@ -405,12 +404,12 @@ class TestServiceMesh:
         """Test ServiceEntry configurations for external dependencies."""
         # Test security policies ServiceEntries
         security_file = istio_configs_path / "security-policies.yaml"
-        with open(security_file, "r") as f:
+        with open(security_file) as f:
             security_configs = list(yaml.safe_load_all(f))
 
         # Test traffic management ServiceEntries
         traffic_file = istio_configs_path / "traffic-management.yaml"
-        with open(traffic_file, "r") as f:
+        with open(traffic_file) as f:
             traffic_configs = list(yaml.safe_load_all(f))
 
         all_configs = security_configs + traffic_configs
@@ -448,7 +447,7 @@ class TestServiceMesh:
         """Test Sidecar configuration."""
         security_file = istio_configs_path / "security-policies.yaml"
 
-        with open(security_file, "r") as f:
+        with open(security_file) as f:
             configs = list(yaml.safe_load_all(f))
 
         # Find Sidecar configuration

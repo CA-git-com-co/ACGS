@@ -246,13 +246,12 @@ def main():
         print("✅ Codebase structure accurately documented")
         print("✅ Development workflow compatibility maintained")
         return 0
-    else:
-        print("❌ VALIDATION FAILURES DETECTED")
-        print(f"📊 Total errors: {len(all_errors)}")
-        print("\n🔧 Please address the following issues:")
-        for error in all_errors:
-            print(f"   {error}")
-        return 1
+    print("❌ VALIDATION FAILURES DETECTED")
+    print(f"📊 Total errors: {len(all_errors)}")
+    print("\n🔧 Please address the following issues:")
+    for error in all_errors:
+        print(f"   {error}")
+    return 1
 
 
 if __name__ == "__main__":

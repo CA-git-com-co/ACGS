@@ -5,7 +5,6 @@ import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-import docker
 from prompts.testrepo_prompt import get_test_description
 from swe_bench.utils import (
     copy_from_container,
@@ -17,6 +16,7 @@ from swe_bench.utils import (
 )
 from utils.git_utils import remove_patch_by_files
 
+import docker
 from polyglot.constants import MAP_REPO_VERSION_TO_SPECS, TEST_COMMANDS
 from polyglot.docker_build import build_container, build_env_images, cleanup_container
 from polyglot.test_spec import make_test_spec
@@ -228,7 +228,6 @@ def process_entry(entry, out_dname, model_name_or_path, model_patch_paths):
         return {"success": True, "instance_id": instance_id, "eval_result": eval_result}
 
     except Exception as e:
-
         # Check if eval_result exists in local scope
         if "eval_result" not in locals():
             eval_result = "incomplete"
@@ -250,7 +249,7 @@ def process_entry(entry, out_dname, model_name_or_path, model_patch_paths):
         }
         out_fname.write_text(json.dumps(result, indent=4))
 
-        print(f"Error processing entry {instance_id}: {str(e)}")
+        print(f"Error processing entry {instance_id}: {e!s}")
         return {
             "success": False,
             "instance_id": instance_id,

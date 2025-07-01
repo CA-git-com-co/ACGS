@@ -5,11 +5,11 @@ Provides real-time monitoring with <5 minute MTTD.
 """
 
 import asyncio
-import time
 import json
 import logging
+import time
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ class RealTimeMonitor:
                 logger.error(f"Monitoring cycle failed: {e}")
                 await asyncio.sleep(self.monitoring_interval)
 
-    async def collect_metrics(self) -> Dict[str, Any]:
+    async def collect_metrics(self) -> dict[str, Any]:
         """Collect current system metrics."""
         # Simulate metric collection (in production, query Prometheus/metrics endpoints)
         metrics = {
@@ -68,7 +68,7 @@ class RealTimeMonitor:
 
         return metrics
 
-    async def analyze_metrics(self, metrics: Dict[str, Any]) -> List[Dict[str, Any]]:
+    async def analyze_metrics(self, metrics: dict[str, Any]) -> list[dict[str, Any]]:
         """Analyze metrics for potential issues."""
         issues = []
 
@@ -126,7 +126,7 @@ class RealTimeMonitor:
 
         return issues
 
-    async def handle_issue(self, issue: Dict[str, Any]):
+    async def handle_issue(self, issue: dict[str, Any]):
         """Handle detected issue with appropriate response."""
         issue_key = f"{issue['type']}_{issue['metric']}"
         current_time = time.time()
@@ -154,7 +154,7 @@ class RealTimeMonitor:
             await self.send_alert(issue, time_since_detection)
             self.active_issues[issue_key]["alerted"] = True
 
-    async def send_alert(self, issue: Dict[str, Any], detection_time: float):
+    async def send_alert(self, issue: dict[str, Any], detection_time: float):
         """Send alert for detected issue."""
         mttd_minutes = detection_time / 60
 
@@ -176,7 +176,7 @@ class RealTimeMonitor:
         # In production, send to alerting channels (Slack, PagerDuty, etc.)
         print(f"📧 Alert sent: {json.dumps(alert_message, indent=2)}")
 
-    def update_metrics_history(self, metrics: Dict[str, Any]):
+    def update_metrics_history(self, metrics: dict[str, Any]):
         """Update metrics history for trend analysis."""
         timestamp = metrics["timestamp"]
 

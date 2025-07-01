@@ -250,7 +250,7 @@ Your task is to run the regression tests in the {self.git_tempdir} directory to 
                 ):
                     previous_solutions.append(
                         f"""
-Previous Solution {i+1}:
+Previous Solution {i + 1}:
 <code_changes>
 {patch}
 </code_changes>

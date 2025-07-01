@@ -2,14 +2,9 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.api.v1.fidelity_monitoring_websocket
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.governance_synthesis.gs_service.app.api.v1.fidelity_monitoring_websocket import (
-    FidelityAlert,
-    ViolationAlert,
-    ErrorCorrectionAlert,
-    FidelityMonitoringSession,
     FidelityMonitoringManager,
+    FidelityMonitoringSession,
 )
 
 

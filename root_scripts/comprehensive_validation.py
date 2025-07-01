@@ -72,6 +72,7 @@ class ComprehensiveValidator:
         try:
             result = subprocess.run(
                 ["anchor", "test"],
+                check=False,
                 cwd=self.project_root / "blockchain",
                 capture_output=True,
                 text=True,
@@ -98,6 +99,7 @@ class ComprehensiveValidator:
         try:
             result = subprocess.run(
                 ["python", "-m", "pytest", "tests/unit/", "-v", "--tb=short"],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -127,6 +129,7 @@ class ComprehensiveValidator:
         try:
             result = subprocess.run(
                 ["python", "-m", "pytest", "tests/integration/", "-v", "--tb=short"],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -246,6 +249,7 @@ class ComprehensiveValidator:
         try:
             result = subprocess.run(
                 ["solana", "cluster-version", "--url", "devnet"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -279,6 +283,7 @@ class ComprehensiveValidator:
             try:
                 result = subprocess.run(
                     ["solana", "account", program_id, "--url", "devnet"],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=30,
@@ -303,6 +308,7 @@ class ComprehensiveValidator:
         try:
             result = subprocess.run(
                 ["./verify_deployment_status.sh"],
+                check=False,
                 cwd=self.project_root / "blockchain/quantumagi-deployment",
                 capture_output=True,
                 text=True,

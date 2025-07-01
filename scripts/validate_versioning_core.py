@@ -71,7 +71,6 @@ def test_compatibility_manager():
 
     try:
         from shared.versioning.compatibility_manager import (
-            CompatibilityManager,
             create_compatibility_manager,
         )
         from shared.versioning.version_manager import APIVersion
@@ -117,12 +116,12 @@ def test_response_transformers():
     print("🔍 Testing Response Transformers...")
 
     try:
+        from shared.api_models import APIStatus
         from shared.versioning.response_transformers import (
-            VersionedResponseBuilder,
             CompatibilityTransformer,
+            VersionedResponseBuilder,
         )
         from shared.versioning.version_manager import APIVersion
-        from shared.api_models import APIStatus
 
         # Test compatibility transformer
         transformer = CompatibilityTransformer(
@@ -184,7 +183,6 @@ def test_versioned_router():
 
     try:
         from shared.versioning.versioned_router import (
-            VersionedRouter,
             create_versioned_router,
         )
 
@@ -260,7 +258,7 @@ def test_api_models():
     print("🔍 Testing API Models...")
 
     try:
-        from shared.api_models import APIResponse, APIStatus, APIMetadata, ErrorCode
+        from shared.api_models import APIMetadata, APIResponse, APIStatus, ErrorCode
 
         # Test basic API response
         response = APIResponse(
@@ -306,13 +304,13 @@ def test_end_to_end_workflow():
     print("🔍 Testing End-to-End Workflow...")
 
     try:
-        from shared.versioning.version_manager import APIVersion, VersionManager
+        from shared.api_models import APIStatus
         from shared.versioning.compatibility_manager import create_compatibility_manager
         from shared.versioning.response_transformers import (
-            VersionedResponseBuilder,
             CompatibilityTransformer,
+            VersionedResponseBuilder,
         )
-        from shared.api_models import APIStatus
+        from shared.versioning.version_manager import APIVersion, VersionManager
 
         # 1. Setup version management
         version_manager = VersionManager("e2e-test-service", "v2.1.0")
@@ -452,7 +450,7 @@ def main():
     # Save report
     with open("api_versioning_core_validation_report.json", "w") as f:
         json.dump(report, f, indent=2)
-    print(f"\n📄 Detailed report saved to: api_versioning_core_validation_report.json")
+    print("\n📄 Detailed report saved to: api_versioning_core_validation_report.json")
 
     print("\n💡 NEXT STEPS")
     print("-" * 60)

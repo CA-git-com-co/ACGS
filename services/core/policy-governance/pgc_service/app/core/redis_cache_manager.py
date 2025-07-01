@@ -242,10 +242,9 @@ class RedisCacheManager:
                         self.metrics["cache_hits"] += 1
                         self.metrics["l1_hits"] += 1
                         return entry.value
-                    else:
-                        # Integrity failure - remove from cache
-                        self._remove_from_memory_cache(key)
-                        self.metrics["integrity_failures"] += 1
+                    # Integrity failure - remove from cache
+                    self._remove_from_memory_cache(key)
+                    self.metrics["integrity_failures"] += 1
 
             # Try L2 Redis cache
             if self.redis_client and not self._is_circuit_breaker_open():
@@ -263,10 +262,9 @@ class RedisCacheManager:
                                 self.metrics["cache_hits"] += 1
                                 self.metrics["l2_hits"] += 1
                                 return entry.value
-                            else:
-                                # Remove corrupted entry
-                                await self.redis_client.delete(f"pgc:{key}")
-                                self.metrics["integrity_failures"] += 1
+                            # Remove corrupted entry
+                            await self.redis_client.delete(f"pgc:{key}")
+                            self.metrics["integrity_failures"] += 1
 
                 except Exception as e:
                     logger.error(f"Redis cache lookup failed: {e}")
@@ -559,7 +557,9 @@ class RedisCacheManager:
 
             # Store/update current constitutional hash
             await self.redis_client.set(
-                "constitutional_hash", self.constitutional_hash, ex=86400  # 24 hours
+                "constitutional_hash",
+                self.constitutional_hash,
+                ex=86400,  # 24 hours
             )
 
             # Store constitutional hash metadata

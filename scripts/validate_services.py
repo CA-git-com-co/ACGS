@@ -8,7 +8,7 @@ readiness criteria.
 
 Services tested:
 - Auth Service (8000)
-- AC Service (8001) 
+- AC Service (8001)
 - Integrity Service (8002)
 - FV Service (8003)
 - GS Service (8004)
@@ -20,7 +20,8 @@ import asyncio
 import json
 import logging
 import time
-from typing import Dict, List, Any
+from typing import Any
+
 import httpx
 
 # Configure logging
@@ -50,7 +51,7 @@ class ServiceValidator:
 
     async def validate_service_health(
         self, service_name: str, port: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate a single service health endpoint."""
         url = f"http://localhost:{port}/health"
 
@@ -68,13 +69,12 @@ class ServiceValidator:
                         "data": data,
                         "meets_sla": response_time < 500,  # <500ms requirement
                     }
-                else:
-                    return {
-                        "status": "unhealthy",
-                        "response_time_ms": response_time,
-                        "status_code": response.status_code,
-                        "meets_sla": False,
-                    }
+                return {
+                    "status": "unhealthy",
+                    "response_time_ms": response_time,
+                    "status_code": response.status_code,
+                    "meets_sla": False,
+                }
 
         except Exception as e:
             logger.error(f"Health check failed for {service_name}: {e}")
@@ -82,7 +82,7 @@ class ServiceValidator:
 
     async def validate_service_api(
         self, service_name: str, port: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate service API endpoints."""
         base_url = f"http://localhost:{port}"
         endpoints_to_test = ["/", "/api/v1/status"]
@@ -114,7 +114,7 @@ class ServiceValidator:
 
         return results
 
-    async def test_inter_service_communication(self) -> Dict[str, Any]:
+    async def test_inter_service_communication(self) -> dict[str, Any]:
         """Test communication between services."""
         # Test if services can reach each other's health endpoints
         communication_results = {}
@@ -137,7 +137,7 @@ class ServiceValidator:
 
         return communication_results
 
-    async def validate_all_services(self) -> Dict[str, Any]:
+    async def validate_all_services(self) -> dict[str, Any]:
         """Validate all ACGS-1 core services."""
         logger.info("🚀 Starting ACGS-1 Phase 3 Service Validation")
 
@@ -200,7 +200,7 @@ class ServiceValidator:
 
         return validation_results
 
-    def print_validation_report(self, results: Dict[str, Any]):
+    def print_validation_report(self, results: dict[str, Any]):
         """Print a comprehensive validation report."""
         print("\n" + "=" * 80)
         print("🧪 ACGS-1 PHASE 3 SERVICE VALIDATION REPORT")
@@ -261,10 +261,9 @@ async def main():
     # Return exit code based on results
     if results["overall_status"] == "all_operational":
         return 0
-    elif results["overall_status"] == "mostly_operational":
+    if results["overall_status"] == "mostly_operational":
         return 1
-    else:
-        return 2
+    return 2
 
 
 if __name__ == "__main__":

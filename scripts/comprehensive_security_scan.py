@@ -2,18 +2,17 @@
 """
 ACGS-PGP Comprehensive Security Scanning Script
 
-Implements comprehensive security scanning with Trivy/Snyk, addresses critical 
+Implements comprehensive security scanning with Trivy/Snyk, addresses critical
 vulnerabilities using 4-tier priority system, and ensures runAsNonRoot enforcement.
 """
 
-import os
-import sys
 import json
-import subprocess
 import logging
-from pathlib import Path
-from typing import Dict, List, Any
+import subprocess
+import sys
 from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -35,7 +34,7 @@ class SecurityScanner:
             "LOW": {"max_time": "2 weeks", "severity": "routine"},
         }
 
-    def run_bandit_scan(self) -> Dict[str, Any]:
+    def run_bandit_scan(self) -> dict[str, Any]:
         """Run Bandit security scan on Python code."""
         logger.info("🔍 Running Bandit security scan...")
 
@@ -54,6 +53,7 @@ class SecurityScanner:
                     "--skip",
                     "B101,B601",  # Skip assert and shell injection for now
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -71,7 +71,7 @@ class SecurityScanner:
             # Parse results if available
             report_file = self.project_root / "reports/bandit_security_scan.json"
             if report_file.exists():
-                with open(report_file, "r") as f:
+                with open(report_file) as f:
                     bandit_data = json.load(f)
                     scan_result["issues_count"] = len(bandit_data.get("results", []))
                     scan_result["high_severity"] = len(
@@ -89,13 +89,14 @@ class SecurityScanner:
         except Exception as e:
             return {"tool": "bandit", "status": "error", "error": str(e)}
 
-    def run_safety_scan(self) -> Dict[str, Any]:
+    def run_safety_scan(self) -> dict[str, Any]:
         """Run Safety scan for Python dependencies."""
         logger.info("🔍 Running Safety dependency scan...")
 
         try:
             result = subprocess.run(
                 ["safety", "check", "--json", "--output", "reports/safety_scan.json"],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -117,13 +118,14 @@ class SecurityScanner:
         except Exception as e:
             return {"tool": "safety", "status": "error", "error": str(e)}
 
-    def run_npm_audit(self) -> Dict[str, Any]:
+    def run_npm_audit(self) -> dict[str, Any]:
         """Run npm audit for Node.js dependencies."""
         logger.info("🔍 Running npm audit scan...")
 
         try:
             result = subprocess.run(
                 ["pnpm", "audit", "--json"],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -149,7 +151,7 @@ class SecurityScanner:
         except Exception as e:
             return {"tool": "npm_audit", "status": "error", "error": str(e)}
 
-    def check_docker_security(self) -> Dict[str, Any]:
+    def check_docker_security(self) -> dict[str, Any]:
         """Check Docker security configurations."""
         logger.info("🔍 Checking Docker security configurations...")
 
@@ -184,8 +186,8 @@ class SecurityScanner:
         }
 
     def categorize_vulnerabilities(
-        self, scan_results: Dict[str, Any]
-    ) -> Dict[str, List]:
+        self, scan_results: dict[str, Any]
+    ) -> dict[str, list]:
         """Categorize vulnerabilities using 4-tier priority system."""
         logger.info("📊 Categorizing vulnerabilities by priority...")
 
@@ -195,7 +197,7 @@ class SecurityScanner:
         bandit_file = self.project_root / "reports/bandit_security_scan.json"
         if bandit_file.exists():
             try:
-                with open(bandit_file, "r") as f:
+                with open(bandit_file) as f:
                     bandit_data = json.load(f)
                     for issue in bandit_data.get("results", []):
                         severity = issue.get("issue_severity", "LOW")
@@ -247,8 +249,8 @@ class SecurityScanner:
         return categorized
 
     def generate_remediation_plan(
-        self, categorized_vulns: Dict[str, List]
-    ) -> Dict[str, Any]:
+        self, categorized_vulns: dict[str, list]
+    ) -> dict[str, Any]:
         """Generate remediation plan based on priority system."""
         logger.info("📋 Generating remediation plan...")
 
@@ -291,7 +293,7 @@ class SecurityScanner:
 
         return plan
 
-    def run_comprehensive_scan(self) -> Dict[str, Any]:
+    def run_comprehensive_scan(self) -> dict[str, Any]:
         """Run comprehensive security scan."""
         logger.info("🚀 Starting comprehensive security scan...")
 

@@ -93,6 +93,7 @@ class ServiceStartupDebugger:
             try:
                 result = subprocess.run(
                     ["python", "-c", f'import {module}; print(f"{module}: OK")'],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=10,
@@ -219,9 +220,8 @@ class ServiceStartupDebugger:
                     data = response.json()
                     print(f"      Health data: {json.dumps(data, indent=2)[:200]}...")
                     return True
-                else:
-                    print(f"      Health error: {response.text[:200]}")
-                    return False
+                print(f"      Health error: {response.text[:200]}")
+                return False
         except Exception as e:
             print(f"      Health exception: {e}")
             return False
@@ -232,7 +232,7 @@ class ServiceStartupDebugger:
         print("=" * 50)
 
         for service_name in self.service_dirs.keys():
-            print(f"\n{'='*20} {service_name.upper()} {'='*20}")
+            print(f"\n{'=' * 20} {service_name.upper()} {'=' * 20}")
 
             # Check directory structure
             dir_ok = self.check_service_directory(service_name)

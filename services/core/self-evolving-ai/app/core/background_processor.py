@@ -596,12 +596,11 @@ class BackgroundProcessor:
                 stats = inspect.stats()
                 if stats:
                     return {"healthy": True, "workers": len(stats)}
-                else:
-                    return {"healthy": False, "error": "No Celery workers available"}
+                return {"healthy": False, "error": "No Celery workers available"}
             except Exception as e:
                 return {
                     "healthy": False,
-                    "error": f"Celery inspection failed: {str(e)}",
+                    "error": f"Celery inspection failed: {e!s}",
                 }
 
         except Exception as e:

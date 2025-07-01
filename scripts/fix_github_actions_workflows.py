@@ -6,7 +6,6 @@ Systematically fixes all failing GitHub Actions workflows with enterprise-grade 
 
 import os
 import re
-import glob
 from pathlib import Path
 
 
@@ -122,7 +121,7 @@ def add_error_handling(content):
 
     for step in non_critical_steps:
         pattern = f"(- name: {step}\\s*\\n)(\\s*run:)"
-        replacement = f"\\1        continue-on-error: true\\n\\2"
+        replacement = "\\1        continue-on-error: true\\n\\2"
         content = re.sub(pattern, replacement, content, flags=re.MULTILINE)
 
     return content
@@ -132,7 +131,7 @@ def process_workflow_file(filepath):
     """Process a single workflow file with all fixes"""
     print(f"Processing {filepath}...")
 
-    with open(filepath, "r", encoding="utf-8") as f:
+    with open(filepath, encoding="utf-8") as f:
         content = f.read()
 
     original_content = content
@@ -151,9 +150,8 @@ def process_workflow_file(filepath):
             f.write(content)
         print(f"✅ Fixed {filepath}")
         return True
-    else:
-        print(f"ℹ️  No changes needed for {filepath}")
-        return False
+    print(f"ℹ️  No changes needed for {filepath}")
+    return False
 
 
 def main():
@@ -181,7 +179,7 @@ def main():
         if process_workflow_file(workflow_file):
             fixed_count += 1
 
-    print(f"\n✅ Workflow fixes completed!")
+    print("\n✅ Workflow fixes completed!")
     print(f"📊 Fixed {fixed_count} out of {len(workflow_files)} workflow files")
 
     # Create summary report
@@ -195,7 +193,7 @@ def create_fix_summary_report(workflow_files, fixed_count):
 ## Overview
 - **Total Workflows**: {len(workflow_files)}
 - **Fixed Workflows**: {fixed_count}
-- **Timestamp**: {os.popen('date -u').read().strip()}
+- **Timestamp**: {os.popen("date -u").read().strip()}
 
 ## Fixes Applied
 
@@ -235,7 +233,7 @@ def create_fix_summary_report(workflow_files, fixed_count):
     with open("GITHUB_ACTIONS_FIXES_SUMMARY.md", "w") as f:
         f.write(report_content)
 
-    print(f"📄 Summary report created: GITHUB_ACTIONS_FIXES_SUMMARY.md")
+    print("📄 Summary report created: GITHUB_ACTIONS_FIXES_SUMMARY.md")
 
 
 if __name__ == "__main__":

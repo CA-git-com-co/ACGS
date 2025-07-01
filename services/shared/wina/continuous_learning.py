@@ -216,14 +216,13 @@ class ReinforcementLearningAlgorithm(LearningAlgorithm):
         """Calculate reward signal from feedback."""
         if signal.feedback_type == FeedbackType.EFFICIENCY_GAIN:
             return signal.value  # Direct efficiency gain as reward
-        elif signal.feedback_type == FeedbackType.ACCURACY_RETENTION:
+        if signal.feedback_type == FeedbackType.ACCURACY_RETENTION:
             return signal.value - 0.95  # Reward above 95% accuracy target
-        elif signal.feedback_type == FeedbackType.CONSTITUTIONAL_COMPLIANCE:
+        if signal.feedback_type == FeedbackType.CONSTITUTIONAL_COMPLIANCE:
             return signal.value  # Direct compliance score as reward
-        elif signal.feedback_type == FeedbackType.SYSTEM_ERROR:
+        if signal.feedback_type == FeedbackType.SYSTEM_ERROR:
             return -signal.value  # Negative reward for errors
-        else:
-            return signal.value * signal.confidence
+        return signal.value * signal.confidence
 
     def _get_state_key(self, context: dict[str, Any]) -> str:
         """Generate state key from context."""
@@ -410,7 +409,7 @@ class PatternRecognitionAlgorithm(LearningAlgorithm):
                     rationale="Reinforcing successful performance pattern",
                     timestamp=datetime.now(),
                 )
-            elif pattern["type"] == "decreasing_performance":
+            if pattern["type"] == "decreasing_performance":
                 # Adjust parameters to reverse trend
                 return LearningAction(
                     action_type="reverse_trend",
@@ -504,7 +503,6 @@ class WINAContinuousLearningSystem:
                 WINAComponentType.DYNAMIC_GATING,
                 WINAComponentType.CONSTITUTIONAL_INTEGRATION,
             ]:
-
                 # Component-specific parameter bounds
                 if component_type == WINAComponentType.NEURON_ACTIVATION:
                     bounds = {
@@ -997,7 +995,6 @@ class WINAContinuousLearningSystem:
                 WINAComponentType.SVD_TRANSFORMATION,
                 WINAComponentType.DYNAMIC_GATING,
             ]:
-
                 # Simulate performance metrics
                 efficiency = np.random.normal(0.55, 0.1)  # Target 40-70% range
                 accuracy = np.random.normal(0.96, 0.02)  # Target >95%

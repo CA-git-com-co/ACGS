@@ -124,7 +124,6 @@ class PGCLoadTestUser(HttpUser):
             catch_response=True,
             headers={"Content-Type": "application/json"},
         ) as response:
-
             latency_ms = (time.time() - start_time) * 1000
 
             if response.status_code == 200:

@@ -5,15 +5,13 @@ Implements automated security assessment and vulnerability scanning
 """
 
 import json
-import subprocess
-import time
+import logging
 import socket
 import ssl
-import hashlib
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
+import time
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
-import logging
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -29,8 +27,8 @@ class SecurityFinding:
     description: str
     affected_component: str
     remediation: str
-    cvss_score: Optional[float]
-    cwe_id: Optional[str]
+    cvss_score: float | None
+    cwe_id: str | None
     timestamp: str
 
 
@@ -41,11 +39,11 @@ class SecurityAuditReport:
     audit_id: str
     audit_timestamp: str
     constitutional_hash: str
-    scope: List[str]
-    findings: List[SecurityFinding]
-    summary: Dict[str, Any]
-    recommendations: List[str]
-    compliance_status: Dict[str, Any]
+    scope: list[str]
+    findings: list[SecurityFinding]
+    summary: dict[str, Any]
+    recommendations: list[str]
+    compliance_status: dict[str, Any]
 
 
 class ComprehensiveSecurityAuditor:
@@ -137,7 +135,7 @@ class ComprehensiveSecurityAuditor:
             compliance_status=compliance_status,
         )
 
-        print(f"\n📊 Audit Summary:")
+        print("\n📊 Audit Summary:")
         print(f"  Total Findings: {summary['total_findings']}")
         print(f"  Critical: {summary['critical_findings']}")
         print(f"  High: {summary['high_findings']}")
@@ -147,7 +145,7 @@ class ComprehensiveSecurityAuditor:
 
         return report
 
-    def assess_network_security(self) -> List[SecurityFinding]:
+    def assess_network_security(self) -> list[SecurityFinding]:
         """Assess network security configuration"""
         findings = []
 
@@ -176,7 +174,7 @@ class ComprehensiveSecurityAuditor:
 
         return findings
 
-    def assess_application_security(self) -> List[SecurityFinding]:
+    def assess_application_security(self) -> list[SecurityFinding]:
         """Assess application security implementation"""
         findings = []
 
@@ -218,7 +216,7 @@ class ComprehensiveSecurityAuditor:
 
         return findings
 
-    def assess_infrastructure_security(self) -> List[SecurityFinding]:
+    def assess_infrastructure_security(self) -> list[SecurityFinding]:
         """Assess infrastructure security configuration"""
         findings = []
 
@@ -246,7 +244,7 @@ class ComprehensiveSecurityAuditor:
 
         return findings
 
-    def assess_data_security(self) -> List[SecurityFinding]:
+    def assess_data_security(self) -> list[SecurityFinding]:
         """Assess data security and privacy controls"""
         findings = []
 
@@ -270,7 +268,7 @@ class ComprehensiveSecurityAuditor:
 
         return findings
 
-    def assess_access_control(self) -> List[SecurityFinding]:
+    def assess_access_control(self) -> list[SecurityFinding]:
         """Assess access control mechanisms"""
         findings = []
 
@@ -312,7 +310,7 @@ class ComprehensiveSecurityAuditor:
 
         return findings
 
-    def assess_constitutional_compliance(self) -> List[SecurityFinding]:
+    def assess_constitutional_compliance(self) -> list[SecurityFinding]:
         """Assess constitutional compliance implementation"""
         findings = []
 
@@ -353,7 +351,7 @@ class ComprehensiveSecurityAuditor:
 
         return findings
 
-    def assess_cryptographic_implementation(self) -> List[SecurityFinding]:
+    def assess_cryptographic_implementation(self) -> list[SecurityFinding]:
         """Assess cryptographic implementation"""
         findings = []
 
@@ -377,7 +375,7 @@ class ComprehensiveSecurityAuditor:
 
         return findings
 
-    def assess_api_security(self) -> List[SecurityFinding]:
+    def assess_api_security(self) -> list[SecurityFinding]:
         """Assess API security implementation"""
         findings = []
 
@@ -419,7 +417,7 @@ class ComprehensiveSecurityAuditor:
 
         return findings
 
-    def scan_open_ports(self) -> List[int]:
+    def scan_open_ports(self) -> list[int]:
         """Scan for open ports on localhost"""
         open_ports = []
         common_ports = [
@@ -452,7 +450,7 @@ class ComprehensiveSecurityAuditor:
 
         return open_ports
 
-    def check_ssl_configuration(self) -> List[SecurityFinding]:
+    def check_ssl_configuration(self) -> list[SecurityFinding]:
         """Check SSL/TLS configuration"""
         findings = []
 
@@ -482,7 +480,7 @@ class ComprehensiveSecurityAuditor:
 
         return findings
 
-    def check_security_headers(self) -> Dict[str, Any]:
+    def check_security_headers(self) -> dict[str, Any]:
         """Check for security headers (mock implementation)"""
         # In production, this would make actual HTTP requests to check headers
         return {
@@ -494,31 +492,31 @@ class ComprehensiveSecurityAuditor:
             ],
         }
 
-    def check_input_validation(self) -> Dict[str, Any]:
+    def check_input_validation(self) -> dict[str, Any]:
         """Check input validation implementation"""
         # Based on our earlier security validation tests
         return {"comprehensive": True}  # We implemented comprehensive validation
 
-    def check_database_security(self) -> Dict[str, Any]:
+    def check_database_security(self) -> dict[str, Any]:
         """Check database security configuration"""
         return {"secure": False}  # Needs improvement for production
 
-    def check_container_security(self) -> List[SecurityFinding]:
+    def check_container_security(self) -> list[SecurityFinding]:
         """Check container security (if applicable)"""
         return []  # No containers detected in current setup
 
-    def check_data_encryption(self) -> Dict[str, Any]:
+    def check_data_encryption(self) -> dict[str, Any]:
         """Check data encryption status"""
         return {
             "at_rest": False,
             "in_transit": True,
         }  # HTTPS enabled, but no at-rest encryption
 
-    def check_authentication(self) -> Dict[str, Any]:
+    def check_authentication(self) -> dict[str, Any]:
         """Check authentication mechanisms"""
         return {"strong": False}  # Basic auth implemented, needs MFA
 
-    def check_authorization(self) -> Dict[str, Any]:
+    def check_authorization(self) -> dict[str, Any]:
         """Check authorization controls"""
         return {"comprehensive": False}  # Basic RBAC, needs enhancement
 
@@ -526,23 +524,23 @@ class ComprehensiveSecurityAuditor:
         """Verify constitutional hash validation"""
         return True  # Our constitutional compliance is working
 
-    def check_policy_enforcement(self) -> Dict[str, Any]:
+    def check_policy_enforcement(self) -> dict[str, Any]:
         """Check policy enforcement effectiveness"""
         return {"effective": True}  # Our policy enforcement is working
 
-    def check_cryptographic_algorithms(self) -> Dict[str, Any]:
+    def check_cryptographic_algorithms(self) -> dict[str, Any]:
         """Check cryptographic algorithm strength"""
         return {"strong": True}  # Using modern algorithms
 
-    def check_api_authentication(self) -> Dict[str, Any]:
+    def check_api_authentication(self) -> dict[str, Any]:
         """Check API authentication security"""
         return {"secure": False}  # Needs improvement
 
-    def check_rate_limiting(self) -> Dict[str, Any]:
+    def check_rate_limiting(self) -> dict[str, Any]:
         """Check rate limiting implementation"""
         return {"implemented": True}  # We implemented rate limiting
 
-    def generate_audit_summary(self) -> Dict[str, Any]:
+    def generate_audit_summary(self) -> dict[str, Any]:
         """Generate audit summary statistics"""
         severity_counts = {
             "critical_findings": len(
@@ -573,7 +571,7 @@ class ComprehensiveSecurityAuditor:
             **severity_counts,
         }
 
-    def generate_recommendations(self) -> List[str]:
+    def generate_recommendations(self) -> list[str]:
         """Generate security recommendations"""
         recommendations = [
             "Implement comprehensive data encryption at rest",
@@ -590,7 +588,7 @@ class ComprehensiveSecurityAuditor:
 
         return recommendations
 
-    def assess_compliance_frameworks(self) -> Dict[str, Any]:
+    def assess_compliance_frameworks(self) -> dict[str, Any]:
         """Assess compliance with security frameworks"""
         return {
             "SOC2_Type_II": {"status": "in_progress", "completion": 65},
@@ -614,7 +612,7 @@ def test_comprehensive_security_audit():
         json.dump(report_dict, f, indent=2)
 
     print(f"\n📄 Security audit report saved: security_audit_report_{timestamp}.json")
-    print(f"\n✅ Comprehensive Security Audit: COMPLETE")
+    print("\n✅ Comprehensive Security Audit: COMPLETE")
 
 
 if __name__ == "__main__":

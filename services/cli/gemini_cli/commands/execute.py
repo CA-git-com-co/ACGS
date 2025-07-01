@@ -3,10 +3,10 @@ Code execution commands for Gemini CLI
 """
 
 import argparse
-from typing import Dict, Any
 import asyncio
-from pathlib import Path
 import time
+from pathlib import Path
+from typing import Any
 
 
 def add_arguments(parser: argparse.ArgumentParser):
@@ -61,7 +61,7 @@ def add_arguments(parser: argparse.ArgumentParser):
     )
 
 
-async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
+async def handle_command(args: argparse.Namespace, client) -> dict[str, Any]:
     """Handle execute commands"""
 
     if args.execute_command == "code":
@@ -86,7 +86,7 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
 
         return result
 
-    elif args.execute_command == "file":
+    if args.execute_command == "file":
         # Read code from file
         if not args.file_path.exists():
             return {"error": f"File not found: {args.file_path}"}
@@ -129,7 +129,7 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
 
         return result
 
-    elif args.execute_command == "assist":
+    if args.execute_command == "assist":
         # Execute with Gemini assistance
         context = ""
         if args.context_file and args.context_file.exists():
@@ -145,7 +145,7 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
             "note": "Full Gemini integration pending",
         }
 
-    elif args.execute_command == "status":
+    if args.execute_command == "status":
         # Check execution status
         status = client.get_operation_status(args.operation_id)
 
@@ -154,13 +154,12 @@ async def handle_command(args: argparse.Namespace, client) -> Dict[str, Any]:
 
         return status
 
-    else:
-        return {"error": "Unknown execute command"}
+    return {"error": "Unknown execute command"}
 
 
 async def wait_for_operation(
     client, operation_id: str, timeout: int = 300
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Wait for operation to complete"""
     start_time = time.time()
 

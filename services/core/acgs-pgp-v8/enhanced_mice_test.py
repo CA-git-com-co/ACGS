@@ -2,23 +2,22 @@
 """
 Enhanced MICE Test with Complex Missing Data Patterns
 
-Creates a more realistic scenario where MICE can demonstrate its 15-20% 
+Creates a more realistic scenario where MICE can demonstrate its 15-20%
 improvement advantage over simple imputation methods.
 
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import logging
+import warnings
+
 import numpy as np
 import pandas as pd
-from datetime import datetime
-from sklearn.experimental import enable_iterative_imputer
-from sklearn.impute import IterativeImputer, SimpleImputer
-from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.impute import IterativeImputer
+from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_absolute_error, r2_score, accuracy_score
 from sklearn.preprocessing import StandardScaler
-import warnings
 
 warnings.filterwarnings("ignore")
 
@@ -99,7 +98,7 @@ def generate_complex_dataset_with_dependencies(n_samples: int = 1000) -> pd.Data
 
     df = pd.DataFrame(data)
 
-    logger.info(f"✅ Generated complex dataset with strong feature dependencies")
+    logger.info("✅ Generated complex dataset with strong feature dependencies")
     return df
 
 
@@ -284,7 +283,7 @@ def main():
         logger.info(
             f"📊 MICE Imputation Accuracy: {results['mice_imputation']['accuracy']:.3f}"
         )
-        logger.info(f"🔒 Constitutional Hash: cdd01ef066bc6cf2 ✅")
+        logger.info("🔒 Constitutional Hash: cdd01ef066bc6cf2 ✅")
         logger.info("=" * 60)
 
         if results["target_achieved"]:

@@ -49,14 +49,14 @@ class LearningDataInput(BaseModel):
     data_type: str = Field(
         ...,
         description=(
-            "Type of learning data (e.g., 'constitutional_amendment', " "'policy_log')"
+            "Type of learning data (e.g., 'constitutional_amendment', 'policy_log')"
         ),
     )
     content: dict[str, Any] = Field(..., description="The actual data content")
     source: str | None = Field(
         None,
         description=(
-            "Source of the data (e.g., 'constitutional_council', " "'user_feedback')"
+            "Source of the data (e.g., 'constitutional_council', 'user_feedback')"
         ),
     )
     metadata: dict[str, Any] = Field(

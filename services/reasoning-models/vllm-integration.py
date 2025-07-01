@@ -27,13 +27,10 @@ import json
 import logging
 import time
 from dataclasses import dataclass
-from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 import aiohttp
-import requests
-from pydantic import BaseModel, Field
 
 # Configure logging
 logging.basicConfig(
@@ -66,7 +63,7 @@ class ReasoningRequest:
 
     content: str
     domain: ConstitutionalDomain
-    context: Dict[str, Any]
+    context: dict[str, Any]
     reasoning_depth: str = "standard"  # standard, deep, constitutional
     require_citations: bool = True
     max_tokens: int = 2048
@@ -76,11 +73,11 @@ class ReasoningRequest:
 class ReasoningResponse:
     """Response structure from reasoning models."""
 
-    reasoning_chain: List[str]
+    reasoning_chain: list[str]
     conclusion: str
     confidence_score: float
-    constitutional_compliance: Dict[str, float]
-    citations: List[str]
+    constitutional_compliance: dict[str, float]
+    citations: list[str]
     model_used: ReasoningModelType
     processing_time_ms: float
 
@@ -118,7 +115,7 @@ class VLLMReasoningService:
         self.constitutional_principles = self._load_constitutional_principles()
         self.reasoning_templates = self._load_reasoning_templates()
 
-    def _load_constitutional_principles(self) -> Dict[str, Any]:
+    def _load_constitutional_principles(self) -> dict[str, Any]:
         """Load constitutional principles for reasoning context."""
         return {
             "core_principles": [
@@ -163,7 +160,7 @@ class VLLMReasoningService:
             "version": "2.0",
         }
 
-    def _load_reasoning_templates(self) -> Dict[str, str]:
+    def _load_reasoning_templates(self) -> dict[str, str]:
         """Load reasoning templates for different domains."""
         return {
             "constitutional_analysis": """
@@ -290,7 +287,7 @@ Begin governance decision analysis:
                 ) as response:
                     return response.status == 200
         except Exception as e:
-            logger.warning(f"Model {model_type.value} not available: {str(e)}")
+            logger.warning(f"Model {model_type.value} not available: {e!s}")
             return False
 
     async def constitutional_reasoning(
@@ -357,7 +354,7 @@ Begin governance decision analysis:
 
     async def _call_reasoning_model(
         self, model_type: ReasoningModelType, prompt: str, request: ReasoningRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Call the selected reasoning model via vLLM API."""
         config = self.models[model_type]
 
@@ -388,18 +385,17 @@ Begin governance decision analysis:
                     if response.status == 200:
                         result = await response.json()
                         return result
-                    else:
-                        error_text = await response.text()
-                        raise RuntimeError(
-                            f"Model API error: {response.status} - {error_text}"
-                        )
+                    error_text = await response.text()
+                    raise RuntimeError(
+                        f"Model API error: {response.status} - {error_text}"
+                    )
 
         except Exception as e:
-            logger.error(f"Error calling {model_type.value}: {str(e)}")
+            logger.error(f"Error calling {model_type.value}: {e!s}")
             raise
 
     def _parse_reasoning_response(
-        self, api_response: Dict[str, Any], model_type: ReasoningModelType
+        self, api_response: dict[str, Any], model_type: ReasoningModelType
     ) -> ReasoningResponse:
         """Parse the model response into structured reasoning response."""
 
@@ -424,7 +420,7 @@ Begin governance decision analysis:
             )
 
         except Exception as e:
-            logger.error(f"Error parsing reasoning response: {str(e)}")
+            logger.error(f"Error parsing reasoning response: {e!s}")
             # Return fallback response
             return ReasoningResponse(
                 reasoning_chain=["Error parsing response"],
@@ -436,7 +432,7 @@ Begin governance decision analysis:
                 processing_time_ms=0.0,
             )
 
-    def _extract_reasoning_chain(self, content: str) -> List[str]:
+    def _extract_reasoning_chain(self, content: str) -> list[str]:
         """Extract step-by-step reasoning from model response."""
         # Look for numbered steps or bullet points
         lines = content.split("\n")
@@ -472,7 +468,7 @@ Begin governance decision analysis:
         paragraphs = [p.strip() for p in content.split("\n\n") if p.strip()]
         return paragraphs[-1] if paragraphs else "No conclusion extracted"
 
-    def _extract_compliance_scores(self, content: str) -> Dict[str, float]:
+    def _extract_compliance_scores(self, content: str) -> dict[str, float]:
         """Extract constitutional compliance scores from response."""
         scores = {}
 
@@ -504,7 +500,7 @@ Begin governance decision analysis:
 
         return scores
 
-    def _extract_citations(self, content: str) -> List[str]:
+    def _extract_citations(self, content: str) -> list[str]:
         """Extract citations or references from response."""
         citations = []
 
@@ -546,10 +542,9 @@ Begin governance decision analysis:
         # Default confidence based on response quality
         if len(content) > 500 and "reasoning" in content.lower():
             return 0.8
-        elif len(content) > 200:
+        if len(content) > 200:
             return 0.6
-        else:
-            return 0.4
+        return 0.4
 
     async def ensemble_reasoning(self, request: ReasoningRequest) -> ReasoningResponse:
         """
@@ -588,9 +583,7 @@ Begin governance decision analysis:
                     responses.append(response)
 
                 except Exception as e:
-                    logger.warning(
-                        f"Ensemble model {model_type.value} failed: {str(e)}"
-                    )
+                    logger.warning(f"Ensemble model {model_type.value} failed: {e!s}")
 
         if not responses:
             raise RuntimeError("No models available for ensemble reasoning")
@@ -605,14 +598,14 @@ Begin governance decision analysis:
         return combined_response
 
     def _combine_ensemble_responses(
-        self, responses: List[ReasoningResponse]
+        self, responses: list[ReasoningResponse]
     ) -> ReasoningResponse:
         """Combine multiple reasoning responses into ensemble result."""
 
         # Combine reasoning chains
         combined_reasoning = []
         for i, response in enumerate(responses):
-            combined_reasoning.append(f"Model {i+1} ({response.model_used.value}):")
+            combined_reasoning.append(f"Model {i + 1} ({response.model_used.value}):")
             combined_reasoning.extend(response.reasoning_chain)
             combined_reasoning.append("")  # Separator
 
@@ -680,15 +673,15 @@ async def main():
         logger.info("Testing single model constitutional reasoning...")
         response = await service.constitutional_reasoning(request)
 
-        print(f"\n🧠 Constitutional Reasoning Results:")
+        print("\n🧠 Constitutional Reasoning Results:")
         print(f"Model Used: {response.model_used.value}")
         print(f"Processing Time: {response.processing_time_ms:.2f}ms")
         print(f"Confidence Score: {response.confidence_score:.2f}")
-        print(f"\nReasoning Chain:")
+        print("\nReasoning Chain:")
         for step in response.reasoning_chain:
             print(f"  • {step}")
         print(f"\nConclusion: {response.conclusion}")
-        print(f"\nConstitutional Compliance:")
+        print("\nConstitutional Compliance:")
         for principle, score in response.constitutional_compliance.items():
             print(f"  {principle}: {score:.2f}")
 
@@ -696,13 +689,13 @@ async def main():
         logger.info("\nTesting ensemble reasoning...")
         ensemble_response = await service.ensemble_reasoning(request)
 
-        print(f"\n🎯 Ensemble Reasoning Results:")
+        print("\n🎯 Ensemble Reasoning Results:")
         print(f"Processing Time: {ensemble_response.processing_time_ms:.2f}ms")
         print(f"Confidence Score: {ensemble_response.confidence_score:.2f}")
         print(f"Conclusion: {ensemble_response.conclusion}")
 
     except Exception as e:
-        logger.error(f"Error in reasoning service: {str(e)}")
+        logger.error(f"Error in reasoning service: {e!s}")
 
 
 if __name__ == "__main__":

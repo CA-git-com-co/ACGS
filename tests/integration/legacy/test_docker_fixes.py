@@ -49,6 +49,7 @@ class DockerFixTester:
             print(f"Running: docker-compose {command}")
             result = subprocess.run(
                 f"docker-compose -f config/docker/docker-compose.yml {command}",
+                check=False,
                 shell=True,
                 capture_output=True,
                 text=True,
@@ -58,16 +59,15 @@ class DockerFixTester:
             if result.returncode == 0:
                 print(f"✅ Command succeeded: docker-compose {command}")
                 return True
-            else:
-                print(f"❌ Command failed: docker-compose {command}")
-                print(f"STDOUT: {result.stdout}")
-                print(f"STDERR: {result.stderr}")
-                return False
+            print(f"❌ Command failed: docker-compose {command}")
+            print(f"STDOUT: {result.stdout}")
+            print(f"STDERR: {result.stderr}")
+            return False
         except subprocess.TimeoutExpired:
             print(f"❌ Command timed out: docker-compose {command}")
             return False
         except Exception as e:
-            print(f"❌ Command error: docker-compose {command} - {str(e)}")
+            print(f"❌ Command error: docker-compose {command} - {e!s}")
             return False
 
     def check_docker_compose_syntax(self) -> bool:
@@ -96,6 +96,7 @@ class DockerFixTester:
             print(f"📋 Checking logs for {service_name}...")
             result = subprocess.run(
                 f"docker-compose -f config/docker/docker-compose.yml logs {service_name}",
+                check=False,
                 shell=True,
                 capture_output=True,
                 text=True,
@@ -122,7 +123,7 @@ class DockerFixTester:
             return True
 
         except Exception as e:
-            print(f"❌ {service_name}: Error checking logs - {str(e)}")
+            print(f"❌ {service_name}: Error checking logs - {e!s}")
             return False
 
     async def test_service_health(self, service_name: str, config: dict) -> bool:
@@ -136,11 +137,10 @@ class DockerFixTester:
                         f"✅ {service_name.upper()} Service: {data.get('status', 'ok')}"
                     )
                     return True
-                else:
-                    print(f"❌ {service_name.upper()} Service: HTTP {response.status}")
-                    return False
+                print(f"❌ {service_name.upper()} Service: HTTP {response.status}")
+                return False
         except Exception as e:
-            print(f"❌ {service_name.upper()} Service: Connection failed - {str(e)}")
+            print(f"❌ {service_name.upper()} Service: Connection failed - {e!s}")
             return False
 
     async def run_comprehensive_test(self) -> dict[str, bool]:
@@ -232,9 +232,8 @@ async def main():
             print("🎉 All Docker fix verification tests passed!")
             print("✅ Services can start successfully with shared module imports")
             return 0
-        else:
-            print("⚠️ Some tests failed - check Docker configurations and logs")
-            return 1
+        print("⚠️ Some tests failed - check Docker configurations and logs")
+        return 1
 
 
 if __name__ == "__main__":

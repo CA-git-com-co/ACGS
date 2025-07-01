@@ -14,25 +14,19 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio
-import hashlib
-import hmac
-import json
+import base64
 import logging
 import os
 import re
 import secrets
-import time
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional, Set, Union
+from enum import Enum
+from typing import Any
+
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import rsa, padding
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-import base64
-import ipaddress
-from dataclasses import dataclass
-from enum import Enum
+from cryptography.hazmat.primitives.asymmetric import padding, rsa
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -66,11 +60,11 @@ class SecurityEvent:
     event_type: str
     severity: SecurityLevel
     source_ip: str
-    user_id: Optional[str]
+    user_id: str | None
     resource: str
     action: str
     result: str
-    details: Dict[str, Any]
+    details: dict[str, Any]
     constitutional_hash: str = "cdd01ef066bc6cf2"
 
 
@@ -148,7 +142,7 @@ class AdvancedEncryptionManager:
 
             return private_key
 
-    def encrypt_sensitive_data(self, data: Union[str, bytes]) -> str:
+    def encrypt_sensitive_data(self, data: str | bytes) -> str:
         """Encrypt sensitive data using Fernet (AES 128)."""
         if isinstance(data, str):
             data = data.encode("utf-8")
@@ -162,7 +156,7 @@ class AdvancedEncryptionManager:
         decrypted = self.fernet.decrypt(encrypted_bytes)
         return decrypted.decode("utf-8")
 
-    def encrypt_with_rsa(self, data: Union[str, bytes]) -> str:
+    def encrypt_with_rsa(self, data: str | bytes) -> str:
         """Encrypt data using RSA public key."""
         if isinstance(data, str):
             data = data.encode("utf-8")
@@ -227,7 +221,7 @@ class AdvancedSecretsManager:
             logger.error(f"Failed to store secret {key}: {e}")
             return False
 
-    async def get_secret(self, key: str) -> Optional[str]:
+    async def get_secret(self, key: str) -> str | None:
         """Retrieve and decrypt secret."""
         try:
             if key not in self.secrets_store:
@@ -277,7 +271,7 @@ class AdvancedSecretsManager:
             logger.error(f"Failed to rotate secret {key}: {e}")
             return False
 
-    async def check_rotation_needed(self) -> List[str]:
+    async def check_rotation_needed(self) -> list[str]:
         """Check which secrets need rotation."""
         now = datetime.now(timezone.utc)
         return [
@@ -319,7 +313,7 @@ class AdvancedInputValidator:
             r"policy.*validation",
         ]
 
-    def validate_input(self, data: Any, input_type: str = "general") -> Dict[str, Any]:
+    def validate_input(self, data: Any, input_type: str = "general") -> dict[str, Any]:
         """Comprehensive input validation."""
         result = {
             "valid": True,
@@ -387,9 +381,9 @@ class AdvancedSecurityHardening:
         self.encryption_manager = AdvancedEncryptionManager()
         self.secrets_manager = AdvancedSecretsManager(self.encryption_manager)
         self.input_validator = AdvancedInputValidator()
-        self.security_events: List[SecurityEvent] = []
-        self.blocked_ips: Set[str] = set()
-        self.rate_limits: Dict[str, Dict] = {}
+        self.security_events: list[SecurityEvent] = []
+        self.blocked_ips: set[str] = set()
+        self.rate_limits: dict[str, dict] = {}
 
     async def initialize(self) -> bool:
         """Initialize security hardening components."""
@@ -468,11 +462,11 @@ class AdvancedSecurityHardening:
         event_type: str,
         severity: SecurityLevel,
         source_ip: str,
-        user_id: Optional[str],
+        user_id: str | None,
         resource: str,
         action: str,
         result: str,
-        details: Dict[str, Any] = None,
+        details: dict[str, Any] = None,
     ):
         """Log security event for audit and monitoring."""
         event = SecurityEvent(

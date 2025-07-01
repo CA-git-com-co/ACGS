@@ -14,12 +14,11 @@
 
 import json
 import os
-import subprocess
 from pathlib import Path
 
 import pytest
-
 from nemo_skills.pipeline.cli import generate, run_cmd, wrap_arguments
+
 from tests.conftest import docker_rm
 
 

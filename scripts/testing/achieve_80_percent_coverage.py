@@ -10,16 +10,14 @@ consistently across all critical components including:
 - Comprehensive unit test coverage
 """
 
-import os
-import sys
-import logging
 import asyncio
 import json
+import logging
+import sys
 import time
-import subprocess
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -36,8 +34,8 @@ class CoverageReport:
     total_lines: int
     covered_lines: int
     coverage_percentage: float
-    missing_lines: List[int]
-    test_files: List[str]
+    missing_lines: list[int]
+    test_files: list[str]
 
 
 class TestCoverageAchiever:
@@ -90,9 +88,9 @@ class TestCoverageAchiever:
         }
 
         # Coverage reports
-        self.coverage_reports: Dict[str, CoverageReport] = {}
+        self.coverage_reports: dict[str, CoverageReport] = {}
 
-    async def achieve_80_percent_coverage(self) -> Dict[str, Any]:
+    async def achieve_80_percent_coverage(self) -> dict[str, Any]:
         """Achieve 80% test coverage across all critical components."""
         logger.info("🎯 Starting 80% test coverage achievement...")
 
@@ -154,7 +152,7 @@ class TestCoverageAchiever:
             coverage_results["errors"].append(str(e))
             return coverage_results
 
-    async def _analyze_current_coverage(self) -> Dict[str, Any]:
+    async def _analyze_current_coverage(self) -> dict[str, Any]:
         """Analyze current test coverage across components."""
         logger.info("📊 Analyzing current test coverage...")
 
@@ -177,8 +175,8 @@ class TestCoverageAchiever:
             raise
 
     async def _expand_component_coverage(
-        self, component_name: str, config: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, component_name: str, config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Expand test coverage for a specific component."""
         component_results = {
             "test_files_enhanced": 0,
@@ -228,8 +226,8 @@ class TestCoverageAchiever:
         return component_results
 
     async def _add_edge_case_tests(
-        self, component_name: str, config: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, component_name: str, config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Add edge case tests to improve coverage."""
         logger.info(f"🔍 Adding edge case tests for {component_name}...")
 
@@ -325,8 +323,8 @@ class TestEdgeCases:
             raise
 
     async def _add_integration_tests(
-        self, component_name: str, config: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, component_name: str, config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Add integration tests for storage abstraction and AI service interfaces."""
         logger.info(f"🔗 Adding integration tests for {component_name}...")
 
@@ -447,8 +445,8 @@ class TestCrossServiceIntegration:
             raise
 
     async def _add_performance_tests(
-        self, component_name: str, config: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, component_name: str, config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Add performance tests for critical paths."""
         logger.info(f"⚡ Adding performance tests for {component_name}...")
 
@@ -598,8 +596,8 @@ class TestPerformanceCriticalPaths:
             raise
 
     async def _add_error_scenario_tests(
-        self, component_name: str, config: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, component_name: str, config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Add error scenario tests to improve coverage."""
         logger.info(f"❌ Adding error scenario tests for {component_name}...")
 
@@ -689,7 +687,7 @@ class TestErrorScenarios:
             )
             raise
 
-    async def _measure_final_coverage(self) -> Dict[str, Any]:
+    async def _measure_final_coverage(self) -> dict[str, Any]:
         """Measure final test coverage after enhancements."""
         logger.info("📊 Measuring final test coverage...")
 
@@ -729,7 +727,7 @@ class TestErrorScenarios:
             logger.error(f"Final coverage measurement failed: {e}")
             raise
 
-    async def _generate_coverage_report(self, results: Dict[str, Any]):
+    async def _generate_coverage_report(self, results: dict[str, Any]):
         """Generate comprehensive coverage achievement report."""
         report_path = self.project_root / "test_coverage_80_percent_report.json"
 

@@ -9,10 +9,11 @@ import json
 import logging
 import time
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 import redis.asyncio as redis
@@ -48,18 +49,18 @@ class AsyncJob:
 
     job_id: str
     job_type: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     priority: JobPriority = JobPriority.NORMAL
     status: JobStatus = JobStatus.PENDING
     created_at: datetime = field(default_factory=datetime.now)
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
-    error_message: Optional[str] = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
+    error_message: str | None = None
     retry_count: int = 0
     max_retries: int = 3
     timeout_seconds: int = 300
-    callback_url: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    callback_url: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class AsyncProcessingManager:
@@ -68,8 +69,8 @@ class AsyncProcessingManager:
     def __init__(self, redis_url: str = "redis://localhost:6380"):
         self.redis_url = redis_url
         self.redis_client = None
-        self.job_handlers: Dict[str, Callable] = {}
-        self.worker_tasks: List[asyncio.Task] = []
+        self.job_handlers: dict[str, Callable] = {}
+        self.worker_tasks: list[asyncio.Task] = []
         self.is_running = False
         self.worker_count = 4
         self.metrics = {
@@ -129,11 +130,11 @@ class AsyncProcessingManager:
     async def submit_job(
         self,
         job_type: str,
-        payload: Dict[str, Any],
+        payload: dict[str, Any],
         priority: JobPriority = JobPriority.NORMAL,
         max_retries: int = 3,
         timeout_seconds: int = 300,
-        callback_url: Optional[str] = None,
+        callback_url: str | None = None,
     ) -> str:
         """Submit a job for asynchronous processing."""
 
@@ -160,7 +161,7 @@ class AsyncProcessingManager:
         )
         return job_id
 
-    async def get_job_status(self, job_id: str) -> Optional[AsyncJob]:
+    async def get_job_status(self, job_id: str) -> AsyncJob | None:
         """Get the status of a job."""
         job_data = await self.redis_client.get(f"job:{job_id}")
         if job_data:
@@ -387,7 +388,7 @@ class AsyncProcessingManager:
                 alpha * processing_time + (1 - alpha) * current_avg
             )
 
-    async def get_metrics(self) -> Dict[str, Any]:
+    async def get_metrics(self) -> dict[str, Any]:
         """Get processing metrics."""
         # Get queue lengths
         queue_lengths = {}
@@ -405,8 +406,8 @@ class AsyncProcessingManager:
 
     # Default job handlers
     async def _handle_constitutional_compliance(
-        self, payload: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, payload: dict[str, Any]
+    ) -> dict[str, Any]:
         """Handle constitutional compliance checking jobs."""
         # Simulate constitutional compliance check
         await asyncio.sleep(0.1)  # Simulate processing time
@@ -416,7 +417,7 @@ class AsyncProcessingManager:
             "checked_principles": payload.get("principles", []),
         }
 
-    async def _handle_policy_synthesis(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_policy_synthesis(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Handle policy synthesis jobs."""
         # Simulate policy synthesis
         await asyncio.sleep(0.5)  # Simulate LLM processing time
@@ -427,8 +428,8 @@ class AsyncProcessingManager:
         }
 
     async def _handle_governance_workflow(
-        self, payload: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, payload: dict[str, Any]
+    ) -> dict[str, Any]:
         """Handle governance workflow processing jobs."""
         # Simulate workflow processing
         await asyncio.sleep(0.2)
@@ -439,8 +440,8 @@ class AsyncProcessingManager:
         }
 
     async def _handle_performance_monitoring(
-        self, payload: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, payload: dict[str, Any]
+    ) -> dict[str, Any]:
         """Handle performance monitoring jobs."""
         # Simulate performance monitoring
         await asyncio.sleep(0.1)
@@ -450,7 +451,7 @@ class AsyncProcessingManager:
             "timestamp": datetime.now().isoformat(),
         }
 
-    async def _handle_data_export(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_data_export(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Handle data export jobs."""
         # Simulate data export
         await asyncio.sleep(1.0)  # Simulate file generation
@@ -460,7 +461,7 @@ class AsyncProcessingManager:
             "export_format": payload.get("format", "json"),
         }
 
-    async def _handle_data_import(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_data_import(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Handle data import jobs."""
         # Simulate data import
         await asyncio.sleep(0.8)
@@ -470,7 +471,7 @@ class AsyncProcessingManager:
             "import_file": payload.get("file_path", "unknown"),
         }
 
-    async def _handle_notification(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_notification(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Handle notification jobs."""
         # Simulate notification sending
         await asyncio.sleep(0.1)
@@ -482,7 +483,7 @@ class AsyncProcessingManager:
 
 
 # Global async processing manager instance
-_async_manager: Optional[AsyncProcessingManager] = None
+_async_manager: AsyncProcessingManager | None = None
 
 
 async def get_async_manager() -> AsyncProcessingManager:
@@ -496,7 +497,7 @@ async def get_async_manager() -> AsyncProcessingManager:
 
 async def submit_async_job(
     job_type: str,
-    payload: Dict[str, Any],
+    payload: dict[str, Any],
     priority: JobPriority = JobPriority.NORMAL,
     **kwargs,
 ) -> str:

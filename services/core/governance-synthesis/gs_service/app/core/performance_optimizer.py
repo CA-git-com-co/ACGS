@@ -270,7 +270,7 @@ class WINAPerformanceOptimizer:
                 optimization_strategy=self.optimization_strategy,
                 performance_metrics={"error": str(e)},
                 recommendations=["Fix optimization errors and retry"],
-                warnings=[f"Optimization failed: {str(e)}"],
+                warnings=[f"Optimization failed: {e!s}"],
             )
 
     async def _select_optimization_strategy(
@@ -290,20 +290,19 @@ class WINAPerformanceOptimizer:
             return OptimizationStrategy.AGGRESSIVE
 
         # Low compliance - prioritize constitutional compliance
-        elif current_compliance < 0.8:
+        if current_compliance < 0.8:
             return OptimizationStrategy.CONSTITUTIONAL
 
         # Low accuracy - be conservative
-        elif current_accuracy < 0.93:
+        if current_accuracy < 0.93:
             return OptimizationStrategy.CONSERVATIVE
 
         # Complex synthesis - use balanced approach
-        elif synthesis_complexity > 0.7:
+        if synthesis_complexity > 0.7:
             return OptimizationStrategy.BALANCED
 
         # Default to balanced
-        else:
-            return OptimizationStrategy.BALANCED
+        return OptimizationStrategy.BALANCED
 
     async def _apply_optimization_strategy(
         self,

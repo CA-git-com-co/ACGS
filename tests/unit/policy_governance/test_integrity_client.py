@@ -2,12 +2,6 @@
 Unit tests for services.core.policy-governance.pgc_service.app.services.integrity_client
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.policy_governance.pgc_service.app.services.integrity_client import (
-    IntegrityServiceClient,
-)
-
 
 class TestIntegrityServiceClient:
     """Test suite for IntegrityServiceClient."""

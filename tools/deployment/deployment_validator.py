@@ -10,14 +10,13 @@ import asyncio
 import json
 import logging
 import time
-from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
-from pathlib import Path
+from datetime import datetime, timezone
 from enum import Enum
+from pathlib import Path
+from typing import Any
 
 import httpx
-import subprocess
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -50,8 +49,8 @@ class DeploymentValidationResult:
     health_checks_passed: int
     health_checks_failed: int
     rollback_triggered: bool
-    error_message: Optional[str] = None
-    performance_metrics: Dict[str, float] = None
+    error_message: str | None = None
+    performance_metrics: dict[str, float] = None
 
 
 class DeploymentValidator:
@@ -64,7 +63,7 @@ class DeploymentValidator:
 
     def __init__(self, base_url: str = "http://localhost:8000"):
         self.base_url = base_url
-        self.validation_results: List[DeploymentValidationResult] = []
+        self.validation_results: list[DeploymentValidationResult] = []
 
         # Health check endpoints
         self.health_endpoints = [
@@ -82,7 +81,7 @@ class DeploymentValidator:
             "/api/v2/authentication/users",
         ]
 
-    async def validate_all_deployment_strategies(self) -> Dict[str, Any]:
+    async def validate_all_deployment_strategies(self) -> dict[str, Any]:
         """Validate all deployment strategies."""
         logger.info("🚀 Starting deployment strategy validation...")
 
@@ -161,12 +160,11 @@ class DeploymentValidator:
         try:
             if strategy == DeploymentStrategy.ROLLING:
                 return await self._test_rolling_deployment()
-            elif strategy == DeploymentStrategy.BLUE_GREEN:
+            if strategy == DeploymentStrategy.BLUE_GREEN:
                 return await self._test_blue_green_deployment()
-            elif strategy == DeploymentStrategy.CANARY:
+            if strategy == DeploymentStrategy.CANARY:
                 return await self._test_canary_deployment()
-            else:
-                raise ValueError(f"Unsupported strategy: {strategy}")
+            raise ValueError(f"Unsupported strategy: {strategy}")
 
         except Exception as e:
             end_time = time.time()
@@ -331,7 +329,7 @@ class DeploymentValidator:
             performance_metrics=performance_metrics,
         )
 
-    async def _run_health_checks(self) -> Dict[str, Any]:
+    async def _run_health_checks(self) -> dict[str, Any]:
         """Run health checks on all endpoints."""
         health_results = []
 
@@ -369,7 +367,7 @@ class DeploymentValidator:
             "details": health_results,
         }
 
-    async def _measure_performance(self) -> Dict[str, float]:
+    async def _measure_performance(self) -> dict[str, float]:
         """Measure performance metrics."""
         response_times = []
         error_count = 0
@@ -407,7 +405,7 @@ class DeploymentValidator:
             "total_requests": len(self.performance_endpoints),
         }
 
-    async def _validate_rollback_scenarios(self) -> Dict[str, Any]:
+    async def _validate_rollback_scenarios(self) -> dict[str, Any]:
         """Validate rollback scenarios."""
         logger.info("🔄 Testing rollback scenarios...")
 
@@ -473,7 +471,7 @@ class DeploymentValidator:
             "scenario_details": scenario_results,
         }
 
-    def save_report(self, report: Dict[str, Any], output_path: Path):
+    def save_report(self, report: dict[str, Any], output_path: Path):
         """Save deployment validation report."""
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -506,7 +504,7 @@ async def main():
     print(f"⏱️  Duration: {summary['duration_seconds']}s")
 
     criteria = report["success_criteria"]
-    print(f"\n🎯 SUCCESS CRITERIA:")
+    print("\n🎯 SUCCESS CRITERIA:")
     print(
         f"   ✅ All Strategies: {'PASS' if criteria['all_strategies_successful'] else 'FAIL'}"
     )
@@ -519,7 +517,7 @@ async def main():
     )
 
     rollback = report["rollback_validation"]
-    print(f"\n🔄 ROLLBACK VALIDATION:")
+    print("\n🔄 ROLLBACK VALIDATION:")
     print(f"   Scenarios Tested: {rollback['scenarios_tested']}")
     print(f"   Successful: {rollback['successful_rollbacks']}")
     print(f"   Avg Time: {rollback['average_rollback_time_seconds']}s")

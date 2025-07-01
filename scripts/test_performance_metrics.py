@@ -6,14 +6,15 @@ Measure and report actual performance metrics against sub-5ms decision latency t
 """
 
 import asyncio
-import time
-import statistics
 import json
+import statistics
+import time
+from datetime import datetime, timezone
+from typing import Any
+
+import httpx
 import psutil
 import redis
-from typing import List, Dict, Any
-import httpx
-from datetime import datetime, timezone
 
 # Performance targets
 PERFORMANCE_TARGETS = {
@@ -48,7 +49,7 @@ class PerformanceMetricsTester:
         }
         self.client = httpx.AsyncClient(timeout=30.0)
 
-    async def measure_decision_latency(self, num_requests: int = 200) -> Dict[str, Any]:
+    async def measure_decision_latency(self, num_requests: int = 200) -> dict[str, Any]:
         """Measure decision latency with high precision."""
         print(f"⚡ Measuring decision latency with {num_requests} requests...")
 
@@ -89,7 +90,7 @@ class PerformanceMetricsTester:
                 else:
                     failed_requests += 1
 
-            except Exception as e:
+            except Exception:
                 failed_requests += 1
                 # Still record a high latency for failed requests
                 latencies.append(1000.0)  # 1 second timeout equivalent
@@ -123,10 +124,9 @@ class PerformanceMetricsTester:
                     "count": len(latencies),
                 },
             }
-        else:
-            return {"error": "No latency measurements collected"}
+        return {"error": "No latency measurements collected"}
 
-    async def measure_throughput(self, duration_seconds: int = 30) -> Dict[str, Any]:
+    async def measure_throughput(self, duration_seconds: int = 30) -> dict[str, Any]:
         """Measure system throughput (requests per second)."""
         print(f"🚀 Measuring throughput for {duration_seconds} seconds...")
 
@@ -168,7 +168,7 @@ class PerformanceMetricsTester:
             ),
         }
 
-    async def _make_throughput_request(self, request_id: int) -> Dict[str, Any]:
+    async def _make_throughput_request(self, request_id: int) -> dict[str, Any]:
         """Make a single throughput test request."""
         try:
             # Use the fastest endpoint for throughput testing
@@ -180,7 +180,7 @@ class PerformanceMetricsTester:
         except Exception:
             return {"success": False}
 
-    def measure_system_metrics(self) -> Dict[str, Any]:
+    def measure_system_metrics(self) -> dict[str, Any]:
         """Measure system resource usage."""
         print("💻 Measuring system resource usage...")
 
@@ -224,7 +224,7 @@ class PerformanceMetricsTester:
             },
         }
 
-    def measure_cache_performance(self) -> Dict[str, Any]:
+    def measure_cache_performance(self) -> dict[str, Any]:
         """Measure Redis cache performance."""
         print("🔴 Measuring cache performance...")
 
@@ -287,7 +287,7 @@ class PerformanceMetricsTester:
         except Exception as e:
             return {"error": str(e), "cache_hit_rate": 0}
 
-    async def measure_service_health(self) -> Dict[str, Any]:
+    async def measure_service_health(self) -> dict[str, Any]:
         """Measure health and responsiveness of all services."""
         print("🏥 Measuring service health and responsiveness...")
 
@@ -317,7 +317,7 @@ class PerformanceMetricsTester:
 
         return service_health
 
-    def evaluate_performance_targets(self) -> Dict[str, Any]:
+    def evaluate_performance_targets(self) -> dict[str, Any]:
         """Evaluate performance against targets."""
         targets_met = {}
 
@@ -382,7 +382,7 @@ class PerformanceMetricsTester:
 
         return targets_met
 
-    async def run_comprehensive_performance_test(self) -> Dict[str, Any]:
+    async def run_comprehensive_performance_test(self) -> dict[str, Any]:
         """Run comprehensive performance metrics measurement."""
         print("🧪 Starting comprehensive performance metrics measurement...")
         self.results["test_start"] = datetime.now(timezone.utc).isoformat()
@@ -454,18 +454,18 @@ async def main():
         print("🎯 PERFORMANCE METRICS TEST RESULTS")
         print("=" * 80)
 
-        print(f"\n📊 Overall Summary:")
+        print("\n📊 Overall Summary:")
         summary = results["summary"]
         print(f"  • Performance Grade: {summary['performance_grade']}")
         print(
             f"  • Targets Passed: {summary['targets_passed']}/{summary['total_targets']}"
         )
-        print(f"  • Pass Rate: {summary['targets_pass_rate']*100:.1f}%")
+        print(f"  • Pass Rate: {summary['targets_pass_rate'] * 100:.1f}%")
         print(
             f"  • Critical P99 Latency Met: {'✅ YES' if summary['critical_p99_latency_met'] else '❌ NO'}"
         )
 
-        print(f"\n⚡ Decision Latency Performance:")
+        print("\n⚡ Decision Latency Performance:")
         latency = results["performance_metrics"]["decision_latency"]["latency_stats"]
         print(
             f"  • Mean Latency: {latency['mean_ms']:.2f}ms (target: ≤{PERFORMANCE_TARGETS['decision_latency_mean_ms']}ms)"
@@ -478,22 +478,22 @@ async def main():
         )
         print(f"  • P99.9 Latency: {latency['p999_ms']:.2f}ms")
         print(
-            f"  • Success Rate: {results['performance_metrics']['decision_latency']['success_rate']*100:.1f}%"
+            f"  • Success Rate: {results['performance_metrics']['decision_latency']['success_rate'] * 100:.1f}%"
         )
 
-        print(f"\n🚀 Throughput Performance:")
+        print("\n🚀 Throughput Performance:")
         throughput = results["performance_metrics"]["throughput"]
         print(
             f"  • Successful RPS: {throughput['successful_rps']:.1f} (target: ≥{PERFORMANCE_TARGETS['throughput_rps']})"
         )
         print(f"  • Total RPS: {throughput['requests_per_second']:.1f}")
-        print(f"  • Success Rate: {throughput['success_rate']*100:.1f}%")
+        print(f"  • Success Rate: {throughput['success_rate'] * 100:.1f}%")
 
-        print(f"\n🔴 Cache Performance:")
+        print("\n🔴 Cache Performance:")
         cache = results["performance_metrics"]["cache_performance"]
         if "error" not in cache:
             print(
-                f"  • Hit Rate: {cache['cache_hit_rate']*100:.1f}% (target: ≥{PERFORMANCE_TARGETS['cache_hit_rate']*100:.0f}%)"
+                f"  • Hit Rate: {cache['cache_hit_rate'] * 100:.1f}% (target: ≥{PERFORMANCE_TARGETS['cache_hit_rate'] * 100:.0f}%)"
             )
             print(f"  • Read Latency (mean): {cache['read_latency_ms']['mean']:.2f}ms")
             print(
@@ -502,17 +502,17 @@ async def main():
         else:
             print(f"  • Error: {cache['error']}")
 
-        print(f"\n💻 System Resources:")
+        print("\n💻 System Resources:")
         system = results["system_metrics"]
         print(
-            f"  • CPU Usage: {system['cpu']['usage_percent']:.1f}% (target: ≤{PERFORMANCE_TARGETS['cpu_usage_max']*100:.0f}%)"
+            f"  • CPU Usage: {system['cpu']['usage_percent']:.1f}% (target: ≤{PERFORMANCE_TARGETS['cpu_usage_max'] * 100:.0f}%)"
         )
         print(
-            f"  • Memory Usage: {system['memory']['usage_percent']:.1f}% (target: ≤{PERFORMANCE_TARGETS['memory_usage_max']*100:.0f}%)"
+            f"  • Memory Usage: {system['memory']['usage_percent']:.1f}% (target: ≤{PERFORMANCE_TARGETS['memory_usage_max'] * 100:.0f}%)"
         )
         print(f"  • Available Memory: {system['memory']['available_gb']:.1f}GB")
 
-        print(f"\n🎯 Performance Targets:")
+        print("\n🎯 Performance Targets:")
         for target, met in results["targets_met"].items():
             status = "✅" if met else "❌"
             print(f"  • {target}: {status}")
@@ -520,7 +520,7 @@ async def main():
         # Save detailed results
         with open("performance_metrics_results.json", "w") as f:
             json.dump(results, f, indent=2)
-        print(f"\n💾 Detailed results saved to: performance_metrics_results.json")
+        print("\n💾 Detailed results saved to: performance_metrics_results.json")
 
     except Exception as e:
         print(f"❌ Performance test execution failed: {e}")

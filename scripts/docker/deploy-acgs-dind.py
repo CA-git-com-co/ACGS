@@ -5,18 +5,14 @@ Comprehensive deployment and management of ACGS services using Docker-in-Docker.
 """
 
 import asyncio
-import json
 import logging
 import os
 import subprocess
 import sys
 import time
-from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional
 
 import docker
-import yaml
 
 # Configure logging
 logging.basicConfig(
@@ -134,7 +130,10 @@ class ACGSDinDDeployer:
 
         # Check disk space
         disk_usage = subprocess.run(
-            ["df", "-h", str(self.project_root)], capture_output=True, text=True
+            ["df", "-h", str(self.project_root)],
+            check=False,
+            capture_output=True,
+            text=True,
         )
         if disk_usage.returncode == 0:
             logger.info("✓ Disk space check completed")
@@ -172,7 +171,7 @@ class ACGSDinDDeployer:
 
         # Create .env file
         env_content = f"""# ACGS Docker-in-Docker Environment
-COMPOSE_PROJECT_NAME={self.deployment_config['project_name']}
+COMPOSE_PROJECT_NAME={self.deployment_config["project_name"]}
 CONSTITUTIONAL_HASH={CONSTITUTIONAL_HASH}
 
 # Database Configuration
@@ -411,7 +410,7 @@ CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "${{S
                         if health["Status"] == "healthy":
                             logger.info(f"✓ Service {service_name} is healthy")
                             return
-                        elif health["Status"] == "unhealthy":
+                        if health["Status"] == "unhealthy":
                             raise RuntimeError(f"Service {service_name} is unhealthy")
                     else:
                         # No health check defined, assume healthy if running
@@ -481,6 +480,7 @@ CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "${{S
             if test_script.exists():
                 result = subprocess.run(
                     ["python", str(test_script)],
+                    check=False,
                     capture_output=True,
                     text=True,
                     cwd=str(self.project_root),
@@ -504,6 +504,7 @@ CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "${{S
             os.chdir(str(self.dind_dir))
             subprocess.run(
                 ["docker-compose", "down", "-v"],
+                check=False,
                 capture_output=True,
                 cwd=str(self.dind_dir),
             )

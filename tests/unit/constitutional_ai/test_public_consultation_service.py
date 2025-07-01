@@ -2,18 +2,6 @@
 Unit tests for services.core.constitutional-ai.ac_service.app.services.public_consultation_service
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.constitutional_ai.ac_service.app.services.public_consultation_service import (
-    ConsultationStatus,
-    FeedbackType,
-    StakeholderGroup,
-    PublicProposal,
-    PublicFeedback,
-    ConsultationMetrics,
-    PublicConsultationService,
-)
-
 
 class TestConsultationStatus:
     """Test suite for ConsultationStatus."""

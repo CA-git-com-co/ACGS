@@ -382,8 +382,7 @@ class EvolutionEngine:
                     "rollback_reason": rollback_reason,
                     "rolled_back_at": datetime.now(timezone.utc).isoformat(),
                 }
-            else:
-                return False, {"error": "Rollback execution failed"}
+            return False, {"error": "Rollback execution failed"}
 
         except Exception as e:
             logger.error(f"Failed to rollback evolution {evolution_id}: {e}")
@@ -615,17 +614,16 @@ class EvolutionEngine:
                         "violations": result.get("violations", []),
                         "confidence": result.get("confidence", 0),
                     }
-                else:
-                    return {
-                        "compliant": False,
-                        "violations": ["Constitutional validation service unavailable"],
-                    }
+                return {
+                    "compliant": False,
+                    "violations": ["Constitutional validation service unavailable"],
+                }
 
         except Exception as e:
             logger.error(f"Constitutional compliance check failed: {e}")
             return {
                 "compliant": False,
-                "violations": [f"Constitutional validation error: {str(e)}"],
+                "violations": [f"Constitutional validation error: {e!s}"],
             }
 
     async def _validate_approver_permissions(
@@ -646,9 +644,8 @@ class EvolutionEngine:
                 if response.status == 200:
                     result = await response.json()
                     return result.get("authorized", False)
-                else:
-                    logger.error(f"Permission validation failed: {response.status}")
-                    return False
+                logger.error(f"Permission validation failed: {response.status}")
+                return False
 
         except Exception as e:
             logger.error(f"Approver permission validation failed: {e}")
@@ -729,11 +726,10 @@ class EvolutionEngine:
                         "risk_level": result.get("risk_level", "unknown"),
                         "impact_assessment": result.get("impact", {}),
                     }
-                else:
-                    return {
-                        "safe_to_proceed": False,
-                        "error": "Analysis service unavailable",
-                    }
+                return {
+                    "safe_to_proceed": False,
+                    "error": "Analysis service unavailable",
+                }
 
         except Exception as e:
             logger.error(f"Evolution impact analysis failed: {e}")
@@ -761,11 +757,10 @@ class EvolutionEngine:
                         "changes_applied": result.get("changes_applied", {}),
                         "affected_policies": result.get("affected_policies", []),
                     }
-                else:
-                    return {
-                        "success": False,
-                        "error": "Evolution execution service unavailable",
-                    }
+                return {
+                    "success": False,
+                    "error": "Evolution execution service unavailable",
+                }
 
         except Exception as e:
             logger.error(f"Evolution changes execution failed: {e}")
@@ -936,9 +931,8 @@ class EvolutionEngine:
                 if response.status == 200:
                     result = await response.json()
                     return result.get("success", False)
-                else:
-                    logger.error(f"Rollback service unavailable: {response.status}")
-                    return False
+                logger.error(f"Rollback service unavailable: {response.status}")
+                return False
 
         except Exception as e:
             logger.error(f"Rollback execution failed: {e}")
@@ -1016,8 +1010,7 @@ class EvolutionEngine:
                     remaining_minutes * 60
                 )
                 return datetime.fromtimestamp(completion_time, timezone.utc).isoformat()
-            else:
-                return "overdue"
+            return "overdue"
 
         except Exception as e:
             logger.error(f"Failed to estimate completion time: {e}")
@@ -1027,14 +1020,13 @@ class EvolutionEngine:
         """Get the next required action for evolution."""
         if evolution.status == EvolutionStatus.PENDING_APPROVAL:
             return "waiting_for_human_approval"
-        elif evolution.status == EvolutionStatus.ANALYZING:
+        if evolution.status == EvolutionStatus.ANALYZING:
             return "analyzing_impact"
-        elif evolution.status == EvolutionStatus.EXECUTING:
+        if evolution.status == EvolutionStatus.EXECUTING:
             return "applying_changes"
-        elif evolution.status == EvolutionStatus.VALIDATING:
+        if evolution.status == EvolutionStatus.VALIDATING:
             return "validating_results"
-        else:
-            return "processing"
+        return "processing"
 
     async def _monitor_evolution_performance(self):
         """Background task to monitor evolution performance."""

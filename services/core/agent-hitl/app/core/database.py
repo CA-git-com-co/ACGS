@@ -5,13 +5,13 @@ Database setup and connection management for the Agent HITL service.
 """
 
 import logging
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 
-from .config import get_settings
 from ..models.hitl_models import Base
+from .config import get_settings
 
 logger = logging.getLogger(__name__)
 

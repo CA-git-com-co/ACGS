@@ -5,14 +5,15 @@ Comprehensive CI/CD pipeline with automated testing for enterprise-grade quality
 """
 
 import json
+import logging
+import os
 import subprocess
 import time
-import os
-import yaml
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
-import logging
+from typing import Any
+
+import yaml
 
 logger = logging.getLogger(__name__)
 
@@ -25,8 +26,8 @@ class TestResult:
     test_name: str
     status: str  # "PASS", "FAIL", "SKIP", "ERROR"
     duration_seconds: float
-    error_message: Optional[str]
-    coverage_percentage: Optional[float]
+    error_message: str | None
+    coverage_percentage: float | None
     timestamp: str
 
 
@@ -42,7 +43,7 @@ class PipelineExecution:
     end_time: str
     duration_seconds: float
     status: str  # "SUCCESS", "FAILURE", "CANCELLED"
-    test_results: List[TestResult]
+    test_results: list[TestResult]
     overall_coverage: float
     constitutional_hash: str
 
@@ -81,7 +82,7 @@ class AutomatedTestingInfrastructure:
         }
         self.pipeline_history = []
 
-    def create_ci_cd_pipeline(self) -> Dict[str, Any]:
+    def create_ci_cd_pipeline(self) -> dict[str, Any]:
         """Create comprehensive CI/CD pipeline configuration"""
         print("🔧 Creating ACGS CI/CD Pipeline Configuration")
         print("=" * 50)
@@ -111,7 +112,7 @@ class AutomatedTestingInfrastructure:
             "constitutional_hash": self.constitutional_hash,
         }
 
-    def generate_github_actions_workflow(self) -> Dict[str, Any]:
+    def generate_github_actions_workflow(self) -> dict[str, Any]:
         """Generate GitHub Actions workflow for CI/CD"""
         workflow = {
             "name": "ACGS CI/CD Pipeline",
@@ -227,7 +228,7 @@ class AutomatedTestingInfrastructure:
 
         return workflow
 
-    def generate_gitlab_ci_config(self) -> Dict[str, Any]:
+    def generate_gitlab_ci_config(self) -> dict[str, Any]:
         """Generate GitLab CI configuration"""
         gitlab_ci = {
             "stages": ["test", "security", "performance", "deploy"],
@@ -385,7 +386,7 @@ pipeline {
 """
         return pipeline
 
-    def generate_docker_test_config(self) -> Dict[str, Any]:
+    def generate_docker_test_config(self) -> dict[str, Any]:
         """Generate Docker configuration for testing"""
         docker_compose = {
             "version": "3.8",
@@ -448,7 +449,7 @@ CMD ["python", "-m", "pytest", "tests/", "-v", "--cov=services", "--cov-report=t
         self, trigger: str = "manual", branch: str = "main"
     ) -> PipelineExecution:
         """Execute the complete test pipeline"""
-        print(f"🚀 Executing ACGS Test Pipeline")
+        print("🚀 Executing ACGS Test Pipeline")
         print(f"   Trigger: {trigger}")
         print(f"   Branch: {branch}")
 
@@ -467,7 +468,7 @@ CMD ["python", "-m", "pytest", "tests/", "-v", "--cov=services", "--cov-report=t
             if result.status == "FAIL" and suite_config["required"]:
                 print(f"   ❌ Required test suite failed: {suite_name}")
                 break
-            elif result.status == "PASS":
+            if result.status == "PASS":
                 print(f"   ✅ {suite_name} passed")
             else:
                 print(f"   ⚠️ {suite_name}: {result.status}")
@@ -508,7 +509,7 @@ CMD ["python", "-m", "pytest", "tests/", "-v", "--cov=services", "--cov-report=t
 
         self.pipeline_history.append(execution)
 
-        print(f"\n📊 Pipeline Execution Summary:")
+        print("\n📊 Pipeline Execution Summary:")
         print(f"   Status: {pipeline_status}")
         print(f"   Duration: {duration:.1f} seconds")
         print(f"   Overall Coverage: {overall_coverage:.1f}%")
@@ -519,7 +520,7 @@ CMD ["python", "-m", "pytest", "tests/", "-v", "--cov=services", "--cov-report=t
         return execution
 
     def execute_test_suite(
-        self, suite_name: str, suite_config: Dict[str, Any]
+        self, suite_name: str, suite_config: dict[str, Any]
     ) -> TestResult:
         """Execute a single test suite"""
         start_time = time.time()
@@ -528,6 +529,7 @@ CMD ["python", "-m", "pytest", "tests/", "-v", "--cov=services", "--cov-report=t
             # Execute test command
             result = subprocess.run(
                 suite_config["command"].split(),
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=suite_config["timeout"],
@@ -540,7 +542,7 @@ CMD ["python", "-m", "pytest", "tests/", "-v", "--cov=services", "--cov-report=t
             coverage_percentage = None
             if "coverage.json" in suite_config["command"]:
                 try:
-                    with open("coverage.json", "r") as f:
+                    with open("coverage.json") as f:
                         coverage_data = json.load(f)
                         coverage_percentage = coverage_data.get("totals", {}).get(
                             "percent_covered", 0
@@ -580,7 +582,7 @@ CMD ["python", "-m", "pytest", "tests/", "-v", "--cov=services", "--cov-report=t
             timestamp=datetime.now(timezone.utc).isoformat(),
         )
 
-    def generate_test_report(self) -> Dict[str, Any]:
+    def generate_test_report(self) -> dict[str, Any]:
         """Generate comprehensive test infrastructure report"""
         if not self.pipeline_history:
             return {"error": "No pipeline executions found"}
@@ -617,9 +619,7 @@ CMD ["python", "-m", "pytest", "tests/", "-v", "--cov=services", "--cov-report=t
                 "average_duration_seconds": avg_duration,
                 "average_coverage_percentage": avg_coverage,
             },
-            "test_suite_status": {
-                suite: "CONFIGURED" for suite in self.test_suites.keys()
-            },
+            "test_suite_status": dict.fromkeys(self.test_suites.keys(), "CONFIGURED"),
             "ci_cd_platforms": ["GitHub Actions", "GitLab CI", "Jenkins", "Docker"],
             "recommendations": [
                 "Implement automated deployment on successful tests",
@@ -680,7 +680,7 @@ def test_automated_testing_infrastructure():
     print(
         f"\n📄 Test infrastructure report saved: test_infrastructure_report_{timestamp}.json"
     )
-    print(f"\n✅ Automated Testing Infrastructure: OPERATIONAL")
+    print("\n✅ Automated Testing Infrastructure: OPERATIONAL")
 
 
 if __name__ == "__main__":

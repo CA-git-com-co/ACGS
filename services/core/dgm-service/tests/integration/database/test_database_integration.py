@@ -331,7 +331,6 @@ class TestDatabaseIntegration:
 
     async def test_database_constraints(self, test_db_session: AsyncSession):
         """Test database constraint enforcement."""
-        from sqlalchemy.exc import IntegrityError
 
         # Test unique constraint (if any)
         # Test foreign key constraints
@@ -385,7 +384,7 @@ class TestDatabaseIntegration:
         await test_db_session.commit()
 
         # Complex query: Find improvements with best performance gains
-        from sqlalchemy import Float, cast, func, select
+        from sqlalchemy import Float, cast, select
 
         stmt = (
             select(

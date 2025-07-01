@@ -79,7 +79,7 @@ async def execute_in_mock_tee(input_context: TEEContextInput) -> TEEContextOutpu
             )
             result = {"aggregated_sum": total_sum}
         except Exception as e:
-            result = {"error": f"Failed aggregation: {str(e)}"}
+            result = {"error": f"Failed aggregation: {e!s}"}
             status = "error"
             mock_attestation = None  # No attestation on error
 

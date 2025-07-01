@@ -140,9 +140,8 @@ def main():
     if all(results):
         print("🎉 All components imported successfully!")
         return True
-    else:
-        print("⚠️  Some components failed to import. Check the errors above.")
-        return False
+    print("⚠️  Some components failed to import. Check the errors above.")
+    return False
 
 
 if __name__ == "__main__":

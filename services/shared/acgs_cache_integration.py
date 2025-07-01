@@ -7,7 +7,7 @@ while maintaining constitutional hash integrity and DGM safety patterns.
 
 Integration Points:
 - Constitutional AI Service (ac_service:8001)
-- Policy Governance Service (pgc_service:8005)  
+- Policy Governance Service (pgc_service:8005)
 - Integrity Service (integrity_service:8002)
 - Formal Verification Service (fv_service:8003)
 
@@ -19,19 +19,18 @@ Key Features:
 - Performance monitoring and metrics
 """
 
-import asyncio
 import logging
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import httpx
 
-from services.shared.multi_level_cache import get_cache_manager, MultiLevelCacheManager
+from services.shared.multi_level_cache import MultiLevelCacheManager, get_cache_manager
 from services.shared.parallel_validation_pipeline import (
-    get_validation_pipeline,
     ParallelValidationPipeline,
+    get_validation_pipeline,
 )
 from services.shared.utils import get_config
 
@@ -110,8 +109,8 @@ class ACGSCacheIntegration:
         }
 
         # Initialize components
-        self.cache_manager: Optional[MultiLevelCacheManager] = None
-        self.validation_pipeline: Optional[ParallelValidationPipeline] = None
+        self.cache_manager: MultiLevelCacheManager | None = None
+        self.validation_pipeline: ParallelValidationPipeline | None = None
         self.http_client = httpx.AsyncClient(timeout=30.0)
 
         # Performance metrics
@@ -195,8 +194,8 @@ class ACGSCacheIntegration:
         logger.info("Cache warming completed")
 
     async def validate_constitutional_compliance(
-        self, content: str, context: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+        self, content: str, context: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Validate constitutional compliance with multi-level caching.
 
@@ -263,8 +262,8 @@ class ACGSCacheIntegration:
             }
 
     async def enforce_policy_compliance(
-        self, policy_context: Dict[str, Any], content: str
-    ) -> Dict[str, Any]:
+        self, policy_context: dict[str, Any], content: str
+    ) -> dict[str, Any]:
         """
         Enforce policy compliance with caching integration.
 
@@ -351,7 +350,7 @@ class ACGSCacheIntegration:
             "enforced_at": datetime.now(timezone.utc).isoformat(),
         }
 
-    async def verify_data_integrity(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def verify_data_integrity(self, data: dict[str, Any]) -> dict[str, Any]:
         """
         Verify data integrity with constitutional hash validation.
 
@@ -448,7 +447,7 @@ class ACGSCacheIntegration:
             error_total = self.metrics.error_rate * (self.metrics.total_requests - 1)
             self.metrics.error_rate = error_total / self.metrics.total_requests
 
-    async def get_integration_metrics(self) -> Dict[str, Any]:
+    async def get_integration_metrics(self) -> dict[str, Any]:
         """Get comprehensive integration performance metrics."""
         cache_stats = (
             await self.cache_manager.get_cache_statistics()
@@ -490,7 +489,7 @@ class ACGSCacheIntegration:
             "constitutional": {"hash": self.constitutional_hash, "hash_verified": True},
         }
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Comprehensive health check for cache integration."""
         health_status = {
             "status": "healthy",
@@ -558,7 +557,7 @@ class ACGSCacheIntegration:
 
 
 # Global integration instance
-_integration: Optional[ACGSCacheIntegration] = None
+_integration: ACGSCacheIntegration | None = None
 
 
 async def get_cache_integration() -> ACGSCacheIntegration:

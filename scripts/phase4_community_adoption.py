@@ -165,9 +165,9 @@ class CommunityAdoptionManager:
         """Generate technical roadmap markdown document."""
         content = f"""# ACGS-1 Technical Roadmap
 
-**Last Updated**: {datetime.now().strftime('%B %d, %Y')}
+**Last Updated**: {datetime.now().strftime("%B %d, %Y")}
 **Status**: Community Review Phase
-**Next Review**: {(datetime.now() + timedelta(days=90)).strftime('%B %d, %Y')}
+**Next Review**: {(datetime.now() + timedelta(days=90)).strftime("%B %d, %Y")}
 
 ## 🎯 Vision Statement
 
@@ -178,12 +178,12 @@ ACGS-1 aims to become the premier constitutional governance framework for blockc
 """
 
         for _i, phase in enumerate(phases, 1):
-            content += f"""### {phase['phase']}
+            content += f"""### {phase["phase"]}
 
-**Timeline**: {phase['timeline']}
+**Timeline**: {phase["timeline"]}
 **Status**: Planning
 
-{phase['description']}
+{phase["description"]}
 
 #### 🚀 Key Features
 """
@@ -430,21 +430,21 @@ How would this feature benefit the ACGS-1 community?
     def _create_github_issue_template(self, issue: dict):
         """Create GitHub issue template for good first issue."""
         template_content = f"""---
-name: {issue['title']}
-about: {issue['description']}
-title: '{issue['title']}'
-labels: {', '.join(issue['labels'])}
+name: {issue["title"]}
+about: {issue["description"]}
+title: '{issue["title"]}'
+labels: {", ".join(issue["labels"])}
 assignees: ''
 ---
 
 ## Description
-{issue['description']}
+{issue["description"]}
 
 ## Difficulty Level
-**{issue['difficulty'].title()}** - Estimated {issue['estimated_hours']} hours
+**{issue["difficulty"].title()}** - Estimated {issue["estimated_hours"]} hours
 
 ## Skills Required
-{', '.join(issue['skills_required'])}
+{", ".join(issue["skills_required"])}
 
 ## Getting Started
 1. Comment on this issue to get assigned
@@ -453,7 +453,7 @@ assignees: ''
 4. Follow the [Contributing Guidelines](../CONTRIBUTING.md)
 
 ## Mentorship Available
-{'✅ Yes - A mentor will be assigned to help you' if issue['mentorship_available'] else '❌ No mentorship available'}
+{"✅ Yes - A mentor will be assigned to help you" if issue["mentorship_available"] else "❌ No mentorship available"}
 
 ## Acceptance Criteria
 - [ ] Implementation follows project coding standards

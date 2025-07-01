@@ -2,13 +2,6 @@
 Unit tests for services.core.governance-synthesis.gs_service.app.core.ollama_client
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance_synthesis.gs_service.app.core.ollama_client import (
-    OllamaConfig,
-    OllamaLLMClient,
-)
-
 
 class TestOllamaConfig:
     """Test suite for OllamaConfig."""

@@ -16,15 +16,15 @@ from typing import Any
 import httpx
 
 try:
-    from .utils import get_config
     from .deepseek_r1_pilot import DeepSeekR1PilotManager, PilotConfiguration
-    from .prompt_framework import get_constitutional_prompt, PromptRole
+    from .prompt_framework import PromptRole, get_constitutional_prompt
+    from .utils import get_config
 except ImportError:
+    from deepseek_r1_pilot import DeepSeekR1PilotManager
     from utils import get_config
-    from deepseek_r1_pilot import DeepSeekR1PilotManager, PilotConfiguration
 
     try:
-        from prompt_framework import get_constitutional_prompt, PromptRole
+        from prompt_framework import PromptRole, get_constitutional_prompt
     except ImportError:
         # Fallback if prompt framework not available
         get_constitutional_prompt = lambda role: None
@@ -342,21 +342,20 @@ class AIModelService:
         try:
             if model_config.provider == ModelProvider.GOOGLE:
                 return await self._generate_google(final_prompt, model_config, **kwargs)
-            elif model_config.provider == ModelProvider.HUGGINGFACE:
+            if model_config.provider == ModelProvider.HUGGINGFACE:
                 return await self._generate_huggingface(
                     final_prompt, model_config, **kwargs
                 )
-            elif model_config.provider == ModelProvider.OPENROUTER:
+            if model_config.provider == ModelProvider.OPENROUTER:
                 return await self._generate_openrouter(
                     final_prompt, model_config, **kwargs
                 )
-            elif model_config.provider == ModelProvider.CEREBRAS:
+            if model_config.provider == ModelProvider.CEREBRAS:
                 return await self._generate_cerebras(
                     final_prompt, model_config, **kwargs
                 )
-            else:
-                # For other providers, use mock response for now
-                return await self._generate_mock(final_prompt, model_config, **kwargs)
+            # For other providers, use mock response for now
+            return await self._generate_mock(final_prompt, model_config, **kwargs)
 
         except Exception as e:
             logger.error(f"Error generating text with {model_config.model_id}: {e}")
@@ -478,11 +477,10 @@ class AIModelService:
                             "response_time_ms": kwargs.get("response_time", 0),
                         },
                     )
-                else:
-                    error_text = await response.text()
-                    raise Exception(
-                        f"OpenRouter API error: {response.status_code} - {error_text}"
-                    )
+                error_text = await response.text()
+                raise Exception(
+                    f"OpenRouter API error: {response.status_code} - {error_text}"
+                )
 
         except Exception as e:
             logger.warning(f"OpenRouter API call failed for {config.model_id}: {e}")
@@ -548,10 +546,9 @@ class AIModelService:
                             "response_time_ms": kwargs.get("response_time", 0),
                         },
                     )
-                else:
-                    raise Exception(
-                        f"Cerebras API error: {response.status_code} - {response.text}"
-                    )
+                raise Exception(
+                    f"Cerebras API error: {response.status_code} - {response.text}"
+                )
 
         except Exception as e:
             logger.warning(
@@ -631,7 +628,7 @@ class AIModelService:
                 )
 
                 # Convert pilot response to ModelResponse format
-                if "choices" in pilot_response and pilot_response["choices"]:
+                if pilot_response.get("choices"):
                     content = pilot_response["choices"][0]["message"]["content"]
                     usage = pilot_response.get("usage", {})
 

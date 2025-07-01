@@ -164,7 +164,7 @@ class EnhancedConstitutionalAnalyzerTestSuite:
             self._record_test_result(
                 test_name,
                 False,
-                f"Exception in embedding client test: {str(e)}",
+                f"Exception in embedding client test: {e!s}",
                 time.time() - start_time,
             )
 
@@ -238,7 +238,7 @@ class EnhancedConstitutionalAnalyzerTestSuite:
             self._record_test_result(
                 test_name,
                 False,
-                f"Exception in multi-model integration test: {str(e)}",
+                f"Exception in multi-model integration test: {e!s}",
                 time.time() - start_time,
             )
 
@@ -303,7 +303,7 @@ class EnhancedConstitutionalAnalyzerTestSuite:
                 self._record_test_result(
                     test_name,
                     False,
-                    f"Exception in {workflow} workflow test: {str(e)}",
+                    f"Exception in {workflow} workflow test: {e!s}",
                     time.time() - start_time,
                 )
 
@@ -387,7 +387,7 @@ class EnhancedConstitutionalAnalyzerTestSuite:
                     < TEST_CONFIG["performance_targets"]["response_time_ms"]
                 )
 
-            elif workflow == "constitutional_compliance":
+            if workflow == "constitutional_compliance":
                 # Test constitutional compliance workflow
                 result = await analyzer.constitutional_compliance_workflow_analysis(
                     policy_id="TEST-001",
@@ -470,7 +470,7 @@ class EnhancedConstitutionalAnalyzerTestSuite:
             self._record_test_result(
                 test_name,
                 False,
-                f"Exception in PGC integration test: {str(e)}",
+                f"Exception in PGC integration test: {e!s}",
                 time.time() - start_time,
             )
 
@@ -541,7 +541,7 @@ class EnhancedConstitutionalAnalyzerTestSuite:
             self._record_test_result(
                 test_name,
                 False,
-                f"Exception in performance validation: {str(e)}",
+                f"Exception in performance validation: {e!s}",
                 time.time() - start_time,
             )
 
@@ -587,7 +587,7 @@ class EnhancedConstitutionalAnalyzerTestSuite:
             self._record_test_result(
                 test_name,
                 False,
-                f"Exception in constitution hash validation: {str(e)}",
+                f"Exception in constitution hash validation: {e!s}",
                 time.time() - start_time,
             )
 
@@ -648,7 +648,7 @@ class EnhancedConstitutionalAnalyzerTestSuite:
             self._record_test_result(
                 test_name,
                 False,
-                f"Exception in error handling test: {str(e)}",
+                f"Exception in error handling test: {e!s}",
                 time.time() - start_time,
             )
 

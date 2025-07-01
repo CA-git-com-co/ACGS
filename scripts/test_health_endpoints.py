@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Test health endpoints across all services."""
-import urllib.request
-import urllib.error
+
 import sys
+import urllib.error
+import urllib.request
 
 
 def test_health_endpoint(service_name: str, port: int) -> bool:
@@ -14,9 +15,8 @@ def test_health_endpoint(service_name: str, port: int) -> bool:
             if response.status == 200:
                 print(f"✅ {service_name} health endpoint OK")
                 return True
-            else:
-                print(f"❌ {service_name} health endpoint failed: {response.status}")
-                return False
+            print(f"❌ {service_name} health endpoint failed: {response.status}")
+            return False
     except Exception as e:
         print(f"❌ {service_name} health endpoint error: {e}")
         return False

@@ -12,11 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
 import os
 import subprocess
-import sys
-import time
 from pathlib import Path
 
 import pytest
@@ -66,7 +63,7 @@ def test_run_cmd_llm_infer():
 
         jsonl_file = Path(output_dir) / "output.txt"
 
-        with open(jsonl_file, "r") as f:
+        with open(jsonl_file) as f:
             outputs = f.read()
 
         assert len(outputs) > 0  # just check that output text is not zero.

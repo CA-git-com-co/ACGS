@@ -123,23 +123,22 @@ class ProductionValidator:
                                 "attempts": attempt + 1,
                             }
                             break
+                        if attempt == max_retries - 1:
+                            self.error(
+                                f"❌ {service_name} health check failed: {response.status_code}"
+                            )
+                            all_healthy = False
+                            health_results[service_name] = {
+                                "status": "unhealthy",
+                                "status_code": response.status_code,
+                                "attempts": max_retries,
+                            }
                         else:
-                            if attempt == max_retries - 1:
-                                self.error(
-                                    f"❌ {service_name} health check failed: {response.status_code}"
-                                )
-                                all_healthy = False
-                                health_results[service_name] = {
-                                    "status": "unhealthy",
-                                    "status_code": response.status_code,
-                                    "attempts": max_retries,
-                                }
-                            else:
-                                await asyncio.sleep(5)  # Wait before retry
+                            await asyncio.sleep(5)  # Wait before retry
 
                     except requests.RequestException as e:
                         if attempt == max_retries - 1:
-                            self.error(f"❌ {service_name} connection failed: {str(e)}")
+                            self.error(f"❌ {service_name} connection failed: {e!s}")
                             all_healthy = False
                             health_results[service_name] = {
                                 "status": "error",
@@ -150,7 +149,7 @@ class ProductionValidator:
                             await asyncio.sleep(5)  # Wait before retry
 
             except Exception as e:
-                self.error(f"❌ {service_name} validation error: {str(e)}")
+                self.error(f"❌ {service_name} validation error: {e!s}")
                 all_healthy = False
                 health_results[service_name] = {"status": "error", "error": str(e)}
 
@@ -256,7 +255,7 @@ class ProductionValidator:
                 self.success(f"✅ Memory usage: {memory_percent}%")
 
         except Exception as e:
-            self.error(f"❌ Performance benchmark failed: {str(e)}")
+            self.error(f"❌ Performance benchmark failed: {e!s}")
             benchmarks_passed = False
             benchmark_results["error"] = str(e)
 
@@ -268,6 +267,7 @@ class ProductionValidator:
         try:
             result = subprocess.run(
                 ["docker", "exec", "acgs-redis-prod", "redis-cli", "info", "stats"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -293,12 +293,11 @@ class ProductionValidator:
                     "total_requests": total,
                     "hit_rate_percent": hit_rate,
                 }
-            else:
-                self.warning("Could not retrieve cache metrics")
-                return {"error": "Redis stats unavailable"}
+            self.warning("Could not retrieve cache metrics")
+            return {"error": "Redis stats unavailable"}
 
         except Exception as e:
-            self.warning(f"Cache metrics error: {str(e)}")
+            self.warning(f"Cache metrics error: {e!s}")
             return {"error": str(e)}
 
     async def validate_security_compliance(self) -> bool:
@@ -313,6 +312,7 @@ class ProductionValidator:
                     "scripts/phase3_security_penetration_testing.py",
                     "--production-mode",
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=600,
@@ -334,11 +334,10 @@ class ProductionValidator:
                     ):
                         self.success(f"✅ Security compliance: {compliance_score}%")
                         return True
-                    else:
-                        self.error(
-                            f"❌ Security compliance: {compliance_score}% below target of {self.success_criteria['security_compliance_percent']}%"
-                        )
-                        return False
+                    self.error(
+                        f"❌ Security compliance: {compliance_score}% below target of {self.success_criteria['security_compliance_percent']}%"
+                    )
+                    return False
 
                 except (json.JSONDecodeError, IndexError):
                     self.warning("Could not parse security testing results")
@@ -358,7 +357,7 @@ class ProductionValidator:
             self.error("Security testing timed out")
             return False
         except Exception as e:
-            self.error(f"Security validation error: {str(e)}")
+            self.error(f"Security validation error: {e!s}")
             return False
 
     async def validate_monitoring_infrastructure(self) -> bool:
@@ -419,7 +418,7 @@ class ProductionValidator:
                 self.warning("⚠️ AlertManager not accessible")
 
         except Exception as e:
-            self.error(f"❌ Monitoring validation error: {str(e)}")
+            self.error(f"❌ Monitoring validation error: {e!s}")
             monitoring_healthy = False
             monitoring_results["error"] = str(e)
 
@@ -552,7 +551,7 @@ async def main():
         validator.error("Validation interrupted by user")
         sys.exit(1)
     except Exception as e:
-        validator.error(f"Validation failed with exception: {str(e)}")
+        validator.error(f"Validation failed with exception: {e!s}")
         sys.exit(1)
 
 

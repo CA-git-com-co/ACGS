@@ -4,7 +4,7 @@ End-to-End Governance Workflows Testing Script
 
 This script conducts comprehensive testing of all 5 governance workflows:
 1. Policy Creation Workflow
-2. Constitutional Compliance Workflow  
+2. Constitutional Compliance Workflow
 3. Policy Enforcement Workflow
 4. WINA Oversight Workflow
 5. Audit/Transparency Workflow
@@ -17,11 +17,12 @@ Performance targets:
 
 import asyncio
 import json
-import time
-import statistics
-from typing import Dict, List, Any
-import httpx
 import logging
+import statistics
+import time
+from typing import Any
+
+import httpx
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -44,7 +45,7 @@ class GovernanceWorkflowTester:
             "load_test_results": {},
         }
 
-    async def test_policy_creation_workflow(self) -> Dict[str, Any]:
+    async def test_policy_creation_workflow(self) -> dict[str, Any]:
         """Test Policy Creation workflow with Draft → Review → Voting → Implementation."""
         logger.info("🏛️ Testing Policy Creation Workflow...")
 
@@ -121,7 +122,7 @@ class GovernanceWorkflowTester:
 
         return results
 
-    async def test_constitutional_compliance_workflow(self) -> Dict[str, Any]:
+    async def test_constitutional_compliance_workflow(self) -> dict[str, Any]:
         """Test Constitutional Compliance workflow with Validation → Assessment → Enforcement."""
         logger.info("⚖️ Testing Constitutional Compliance Workflow...")
 
@@ -180,7 +181,7 @@ class GovernanceWorkflowTester:
 
         return results
 
-    async def test_policy_enforcement_workflow(self) -> Dict[str, Any]:
+    async def test_policy_enforcement_workflow(self) -> dict[str, Any]:
         """Test Policy Enforcement workflow with Monitoring → Violation Detection → Remediation."""
         logger.info("🛡️ Testing Policy Enforcement Workflow...")
 
@@ -284,7 +285,7 @@ class GovernanceWorkflowTester:
 
         return results
 
-    async def test_wina_oversight_workflow(self) -> Dict[str, Any]:
+    async def test_wina_oversight_workflow(self) -> dict[str, Any]:
         """Test WINA Oversight workflow with Performance Monitoring → Optimization → Reporting."""
         logger.info("🧠 Testing WINA Oversight Workflow...")
 
@@ -397,7 +398,7 @@ class GovernanceWorkflowTester:
 
         return results
 
-    async def test_audit_transparency_workflow(self) -> Dict[str, Any]:
+    async def test_audit_transparency_workflow(self) -> dict[str, Any]:
         """Test Audit/Transparency workflow with Data Collection → Analysis → Public Reporting."""
         logger.info("📊 Testing Audit/Transparency Workflow...")
 
@@ -457,7 +458,7 @@ class GovernanceWorkflowTester:
 
         return results
 
-    async def run_comprehensive_tests(self) -> Dict[str, Any]:
+    async def run_comprehensive_tests(self) -> dict[str, Any]:
         """Run all governance workflow tests and generate comprehensive report."""
         logger.info("🚀 Starting Comprehensive Governance Workflow Testing...")
 
@@ -580,7 +581,7 @@ class GovernanceWorkflowTester:
 
                 report.append(f"{workflow_title}:")
                 report.append(
-                    f"  • Tests: {total}, Successful: {successful}, Success Rate: {(successful/total*100):.1f}%"
+                    f"  • Tests: {total}, Successful: {successful}, Success Rate: {(successful / total * 100):.1f}%"
                 )
 
                 for result in results:
@@ -625,9 +626,8 @@ async def main():
         if performance_target_met and accuracy_target_met:
             print("\n🎉 ALL TARGETS MET - GOVERNANCE WORKFLOWS READY FOR PRODUCTION!")
             return 0
-        else:
-            print("\n⚠️ SOME TARGETS NOT MET - REVIEW REQUIRED")
-            return 1
+        print("\n⚠️ SOME TARGETS NOT MET - REVIEW REQUIRED")
+        return 1
 
     except Exception as e:
         logger.error(f"Test execution failed: {e}")

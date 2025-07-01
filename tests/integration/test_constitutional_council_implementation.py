@@ -36,9 +36,8 @@ class ConstitutionalCouncilTestClient:
             if response.status_code == 200:
                 print("   ✅ AC service is accessible and healthy")
                 return True
-            else:
-                print(f"   ⚠️  AC service responded with status: {response.status_code}")
-                return True  # Service is running, just different response
+            print(f"   ⚠️  AC service responded with status: {response.status_code}")
+            return True  # Service is running, just different response
         except requests.exceptions.RequestException as e:
             print(f"   ❌ Failed to connect to AC service: {e}")
             return False
@@ -96,9 +95,8 @@ class ConstitutionalCouncilTestClient:
                     print("   ✅ Amendment filtering by status working")
 
                 return True
-            else:
-                print(f"   ❌ Amendment listing failed: {response.status_code}")
-                return False
+            print(f"   ❌ Amendment listing failed: {response.status_code}")
+            return False
 
         except requests.exceptions.RequestException as e:
             print(f"   ❌ Amendment workflow test failed: {e}")
@@ -120,9 +118,8 @@ class ConstitutionalCouncilTestClient:
             if response.status_code in [200, 404]:
                 print("   ✅ Amendment voting endpoints are properly structured")
                 return True
-            else:
-                print(f"   ⚠️  Voting endpoint responded with: {response.status_code}")
-                return False
+            print(f"   ⚠️  Voting endpoint responded with: {response.status_code}")
+            return False
 
         except requests.exceptions.RequestException as e:
             print(f"   ❌ Voting mechanism test failed: {e}")
@@ -143,9 +140,8 @@ class ConstitutionalCouncilTestClient:
             if response.status_code in [200, 404]:
                 print("   ✅ Amendment comment endpoints are properly structured")
                 return True
-            else:
-                print(f"   ⚠️  Comment endpoint responded with: {response.status_code}")
-                return False
+            print(f"   ⚠️  Comment endpoint responded with: {response.status_code}")
+            return False
 
         except requests.exceptions.RequestException as e:
             print(f"   ❌ Comment system test failed: {e}")
@@ -166,9 +162,8 @@ class ConstitutionalCouncilTestClient:
                     f"   ✅ Meta-rules endpoint working (found {len(meta_rules)} meta-rules)"
                 )
                 return True
-            else:
-                print(f"   ⚠️  Meta-rules endpoint status: {response.status_code}")
-                return False
+            print(f"   ⚠️  Meta-rules endpoint status: {response.status_code}")
+            return False
 
         except requests.exceptions.RequestException as e:
             print(f"   ❌ Meta-rules test failed: {e}")

@@ -161,10 +161,9 @@ class ACGSEnhancementExecutor:
                 if phase_config["priority"] == "CRITICAL":
                     logger.error("Critical phase failed. Stopping execution.")
                     break
-                else:
-                    logger.warning(
-                        "Non-critical phase failed. Continuing with remaining phases."
-                    )
+                logger.warning(
+                    "Non-critical phase failed. Continuing with remaining phases."
+                )
 
         # Generate final report
         self._generate_execution_report()
@@ -278,6 +277,7 @@ class ACGSEnhancementExecutor:
 
         result = subprocess.run(
             cmd,
+            check=False,
             cwd=self.project_root,
             capture_output=True,
             text=True,

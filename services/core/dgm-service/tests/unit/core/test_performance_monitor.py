@@ -11,7 +11,6 @@ from uuid import uuid4
 
 import pytest
 from dgm_service.core.performance_monitor import PerformanceMonitor
-from dgm_service.models.metrics import MetricAggregation, PerformanceMetric
 
 
 @pytest.mark.unit

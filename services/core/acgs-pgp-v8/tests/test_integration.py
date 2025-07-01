@@ -9,6 +9,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 import pytest_asyncio
+
 from services.core.caching.cache_manager import CacheManager
 from services.core.generation_engine.engine import (
     GenerationConfig,
@@ -156,7 +157,6 @@ class TestSystemIntegration:
                     with patch.object(
                         cache_manager, "health_check", new_callable=AsyncMock
                     ) as mock_cache_health:
-
                         # Configure mock responses
                         mock_gen_health.return_value = {"status": "healthy"}
                         mock_stab_health.return_value = {"status": "healthy"}
@@ -221,7 +221,6 @@ class TestSystemIntegration:
                 with patch.object(
                     cache_manager, "get_metrics", new_callable=AsyncMock
                 ) as mock_metrics:
-
                     # Configure mock responses
                     mock_get.return_value = None  # Cache miss
                     mock_set.return_value = True  # Successful cache set

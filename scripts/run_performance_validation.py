@@ -9,11 +9,11 @@ Constitutional Hash: cdd01ef066bc6cf2
 Performance Targets: 20%+ accuracy, 80% better response time predictions, 67% better cost predictions
 """
 
-import sys
-import json
 import argparse
-from pathlib import Path
+import json
+import sys
 from datetime import datetime
+from pathlib import Path
 
 # Add project paths
 project_root = Path(__file__).parent.parent
@@ -123,12 +123,11 @@ Simplified script to run performance validation tests and update task status.
 """
 
 import asyncio
-import json
 import logging
 import subprocess
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import timezone
 from pathlib import Path
 
 # Configure logging
@@ -151,6 +150,7 @@ async def run_gsm8k_benchmark():
                 "-v",
                 "--tb=short",
             ],
+            check=False,
             capture_output=True,
             text=True,
             cwd="/home/ubuntu/ACGS",
@@ -159,9 +159,8 @@ async def run_gsm8k_benchmark():
         if result.returncode == 0:
             logger.info("✅ GSM8K benchmark test passed")
             return {"status": "PASS", "accuracy": 90.0}
-        else:
-            logger.warning(f"⚠️ GSM8K benchmark issues: {result.stderr}")
-            return {"status": "PARTIAL", "accuracy": 85.0}
+        logger.warning(f"⚠️ GSM8K benchmark issues: {result.stderr}")
+        return {"status": "PARTIAL", "accuracy": 85.0}
 
     except Exception as e:
         logger.error(f"❌ GSM8K benchmark failed: {e}")
@@ -183,6 +182,7 @@ async def run_load_testing():
                 "-v",
                 "--tb=short",
             ],
+            check=False,
             capture_output=True,
             text=True,
             cwd="/home/ubuntu/ACGS",
@@ -191,13 +191,12 @@ async def run_load_testing():
         if result.returncode == 0:
             logger.info("✅ Load testing passed")
             return {"status": "PASS", "concurrent_users": 1000, "response_time": 450.0}
-        else:
-            logger.warning(f"⚠️ Load testing issues: {result.stderr}")
-            return {
-                "status": "PARTIAL",
-                "concurrent_users": 500,
-                "response_time": 600.0,
-            }
+        logger.warning(f"⚠️ Load testing issues: {result.stderr}")
+        return {
+            "status": "PARTIAL",
+            "concurrent_users": 500,
+            "response_time": 600.0,
+        }
 
     except Exception as e:
         logger.error(f"❌ Load testing failed: {e}")
@@ -219,6 +218,7 @@ async def run_security_testing():
                 "-v",
                 "--tb=short",
             ],
+            check=False,
             capture_output=True,
             text=True,
             cwd="/home/ubuntu/ACGS",
@@ -227,9 +227,8 @@ async def run_security_testing():
         if result.returncode == 0:
             logger.info("✅ Security testing passed")
             return {"status": "PASS", "security_score": 95.0, "critical_vulns": 0}
-        else:
-            logger.warning(f"⚠️ Security testing issues: {result.stderr}")
-            return {"status": "PARTIAL", "security_score": 80.0, "critical_vulns": 0}
+        logger.warning(f"⚠️ Security testing issues: {result.stderr}")
+        return {"status": "PARTIAL", "security_score": 80.0, "critical_vulns": 0}
 
     except Exception as e:
         logger.error(f"❌ Security testing failed: {e}")
@@ -251,6 +250,7 @@ async def run_blockchain_testing():
                 "-v",
                 "--tb=short",
             ],
+            check=False,
             capture_output=True,
             text=True,
             cwd="/home/ubuntu/ACGS",
@@ -259,9 +259,8 @@ async def run_blockchain_testing():
         if result.returncode == 0:
             logger.info("✅ Blockchain testing passed")
             return {"status": "PASS", "sol_cost": 0.008, "success_rate": 99.5}
-        else:
-            logger.warning(f"⚠️ Blockchain testing issues: {result.stderr}")
-            return {"status": "PARTIAL", "sol_cost": 0.012, "success_rate": 98.0}
+        logger.warning(f"⚠️ Blockchain testing issues: {result.stderr}")
+        return {"status": "PARTIAL", "sol_cost": 0.012, "success_rate": 98.0}
 
     except Exception as e:
         logger.error(f"❌ Blockchain testing failed: {e}")
@@ -448,9 +447,8 @@ async def main():
                 "\n🎉 Performance validation successful! System ready for production."
             )
             return 0
-        else:
-            print("\n⚠️ Performance validation needs improvement. See detailed report.")
-            return 1
+        print("\n⚠️ Performance validation needs improvement. See detailed report.")
+        return 1
 
     except Exception as e:
         logger.error(f"❌ Validation failed: {e}")

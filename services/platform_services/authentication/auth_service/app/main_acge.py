@@ -3,24 +3,21 @@ ACGE Phase 2 Enhanced Authentication Service
 Constitutional compliance integration with ACGE single model architecture
 """
 
-import asyncio
 import logging
 import os
-import time
-from contextlib import asynccontextmanager
-from datetime import datetime, timezone
-from typing import Dict, Any
-
-from fastapi import FastAPI, HTTPException, Request, Response, Depends, status
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.responses import JSONResponse
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
-from starlette.responses import PlainTextResponse
 
 # Import ACGE integration
 import sys
+import time
+from contextlib import asynccontextmanager
+from datetime import datetime, timezone
+
+from fastapi import Depends, FastAPI, HTTPException, Request, Response, status
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
+from starlette.responses import PlainTextResponse
 
 sys.path.append("..")
 from acge_integration import (

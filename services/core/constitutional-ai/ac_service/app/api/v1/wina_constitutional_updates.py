@@ -150,7 +150,7 @@ async def analyze_principles_for_wina_optimization(
 
     except Exception as e:
         logger.error(f"Error in WINA principle analysis: {e}")
-        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {e!s}")
 
 
 @router.post("/propose-updates", response_model=dict[str, Any])
@@ -239,7 +239,7 @@ async def propose_constitutional_updates(
 
     except Exception as e:
         logger.error(f"Error proposing constitutional updates: {e}")
-        raise HTTPException(status_code=500, detail=f"Update proposal failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Update proposal failed: {e!s}")
 
 
 @router.post("/submit-for-approval/{principle_id}", response_model=dict[str, Any])
@@ -303,7 +303,7 @@ async def submit_update_for_approval(
     except Exception as e:
         logger.error(f"Error submitting update for approval: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Approval submission failed: {str(e)}"
+            status_code=500, detail=f"Approval submission failed: {e!s}"
         )
 
 
@@ -364,7 +364,7 @@ async def get_pending_updates(
     except Exception as e:
         logger.error(f"Error getting pending updates: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to retrieve pending updates: {str(e)}"
+            status_code=500, detail=f"Failed to retrieve pending updates: {e!s}"
         )
 
 
@@ -406,5 +406,5 @@ async def get_update_history(
     except Exception as e:
         logger.error(f"Error getting update history: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to retrieve update history: {str(e)}"
+            status_code=500, detail=f"Failed to retrieve update history: {e!s}"
         )

@@ -12,11 +12,11 @@ from .permissions import DGMPermissions, PermissionChecker
 
 __all__ = [
     "AuthClient",
-    "PermissionChecker",
     "DGMPermissions",
-    "get_current_user",
-    "require_permission",
+    "Permission",
+    "PermissionChecker",
     "User",
     "UserRole",
-    "Permission",
+    "get_current_user",
+    "require_permission",
 ]

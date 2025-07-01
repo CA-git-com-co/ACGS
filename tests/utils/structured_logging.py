@@ -11,7 +11,7 @@ import logging
 import sys
 import time
 import traceback
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -333,7 +333,6 @@ def log_test_execution(test_name: str):
         # Return appropriate wrapper based on function type
         if asyncio.iscoroutinefunction(func):
             return async_wrapper
-        else:
-            return sync_wrapper
+        return sync_wrapper
 
     return decorator

@@ -4,10 +4,8 @@ End-to-End Integration Tests for ACGS
 Tests complete workflows through the entire ACGS system.
 """
 
-import pytest
-import asyncio
 import httpx
-from typing import Dict, Any
+import pytest
 
 
 class TestE2EWorkflows:

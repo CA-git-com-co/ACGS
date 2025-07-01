@@ -11,22 +11,24 @@ Documents performance gains and quantifies business impact while maintaining
 constitutional compliance (hash: cdd01ef066bc6cf2).
 """
 
-import numpy as np
-import pandas as pd
-import time
 import statistics
+import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, Any
-import sys
+from typing import Any
+
+import numpy as np
+import pandas as pd
 
 # Add project paths
 project_root = Path(__file__).parent.parent.parent
 sys.path.append(str(project_root / "services" / "shared"))
 
 from production_ml_optimizer import ProductionMLOptimizer
-from mlops.production_integration import create_production_mlops_integration
+
 from mlops.mlops_manager import MLOpsManager
+from mlops.production_integration import create_production_mlops_integration
 
 
 class PerformanceBenchmarkValidator:
@@ -177,7 +179,7 @@ class PerformanceBenchmarkValidator:
 
     def validate_prediction_accuracy_improvement(
         self, test_data: pd.DataFrame
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate prediction accuracy improvements."""
         print("\n=== Validating Prediction Accuracy Improvements ===")
 
@@ -262,17 +264,16 @@ class PerformanceBenchmarkValidator:
             print(f"✅ Baseline accuracy: {baseline_accuracy:.3f}")
             print(f"✅ Enhanced accuracy: {enhanced_accuracy:.3f}")
             print(
-                f"✅ Improvement: {accuracy_improvement*100:.1f}% (target: {self.targets['prediction_accuracy_improvement']*100:.1f}%)"
+                f"✅ Improvement: {accuracy_improvement * 100:.1f}% (target: {self.targets['prediction_accuracy_improvement'] * 100:.1f}%)"
             )
             print(f"✅ Target met: {results['target_met']}")
 
             return results
-        else:
-            return {"error": "No successful predictions generated"}
+        return {"error": "No successful predictions generated"}
 
     def validate_response_time_prediction_improvement(
         self, test_data: pd.DataFrame
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate response time prediction improvements."""
         print("\n=== Validating Response Time Prediction Improvements ===")
 
@@ -308,14 +309,16 @@ class PerformanceBenchmarkValidator:
                 )  # ±100ms variance
                 predictions.append(predicted_time)
                 prediction_times.append((time.time() - start_time) * 1000)
-            except Exception as e:
+            except Exception:
                 continue
 
         if predictions:
             # Calculate prediction errors
             errors = [
                 abs(pred - actual)
-                for pred, actual in zip(predictions, y_actual[: len(predictions)])
+                for pred, actual in zip(
+                    predictions, y_actual[: len(predictions)], strict=False
+                )
             ]
             enhanced_variance_ms = statistics.stdev(errors) if len(errors) > 1 else 0
 
@@ -343,17 +346,16 @@ class PerformanceBenchmarkValidator:
             print(f"✅ Baseline variance: ±{baseline_variance_ms}ms")
             print(f"✅ Enhanced variance: ±{enhanced_variance_ms:.1f}ms")
             print(
-                f"✅ Improvement: {variance_improvement*100:.1f}% (target: {self.targets['response_time_prediction_improvement']*100:.1f}%)"
+                f"✅ Improvement: {variance_improvement * 100:.1f}% (target: {self.targets['response_time_prediction_improvement'] * 100:.1f}%)"
             )
             print(f"✅ Target met: {results['target_met']}")
 
             return results
-        else:
-            return {"error": "No successful predictions generated"}
+        return {"error": "No successful predictions generated"}
 
     def validate_cost_prediction_improvement(
         self, test_data: pd.DataFrame
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate cost prediction improvements."""
         print("\n=== Validating Cost Prediction Improvements ===")
 
@@ -388,14 +390,16 @@ class PerformanceBenchmarkValidator:
                 )  # ±10% variance
                 predictions.append(predicted_cost)
                 prediction_times.append((time.time() - start_time) * 1000)
-            except Exception as e:
+            except Exception:
                 continue
 
         if predictions:
             # Calculate prediction errors as percentage
             percentage_errors = [
                 abs(pred - actual) / actual * 100
-                for pred, actual in zip(predictions, y_actual[: len(predictions)])
+                for pred, actual in zip(
+                    predictions, y_actual[: len(predictions)], strict=False
+                )
                 if actual > 0
             ]
             enhanced_variance_pct = (
@@ -423,17 +427,16 @@ class PerformanceBenchmarkValidator:
             print(f"✅ Baseline variance: ±{baseline_variance_pct}%")
             print(f"✅ Enhanced variance: ±{enhanced_variance_pct:.1f}%")
             print(
-                f"✅ Improvement: {variance_improvement*100:.1f}% (target: {self.targets['cost_prediction_improvement']*100:.1f}%)"
+                f"✅ Improvement: {variance_improvement * 100:.1f}% (target: {self.targets['cost_prediction_improvement'] * 100:.1f}%)"
             )
             print(f"✅ Target met: {results['target_met']}")
 
             return results
-        else:
-            return {"error": "No successful predictions generated"}
+        return {"error": "No successful predictions generated"}
 
     def validate_constitutional_compliance_improvement(
         self, test_data: pd.DataFrame
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate constitutional compliance improvements."""
         print("\n=== Validating Constitutional Compliance Improvements ===")
 
@@ -483,7 +486,7 @@ class PerformanceBenchmarkValidator:
 
         return results
 
-    def calculate_business_impact(self) -> Dict[str, Any]:
+    def calculate_business_impact(self) -> dict[str, Any]:
         """Calculate quantified business impact of improvements."""
         print("\n=== Calculating Business Impact ===")
 
@@ -561,7 +564,7 @@ class PerformanceBenchmarkValidator:
             },
             "operational_improvements": {
                 "reduced_manual_intervention": "60-70%",
-                "improved_prediction_reliability": f"{rt_improvement*100:.1f}%",
+                "improved_prediction_reliability": f"{rt_improvement * 100:.1f}%",
                 "enhanced_constitutional_compliance": f"{compliance_improvement:.3f}",
                 "system_stability_improvement": "15-20%",
             },
@@ -575,7 +578,7 @@ class PerformanceBenchmarkValidator:
 
         return business_impact
 
-    def generate_comprehensive_report(self) -> Dict[str, Any]:
+    def generate_comprehensive_report(self) -> dict[str, Any]:
         """Generate comprehensive performance validation report."""
         print("\n=== Generating Comprehensive Performance Report ===")
 
@@ -629,7 +632,7 @@ class PerformanceBenchmarkValidator:
 
         return report
 
-    def run_complete_validation(self) -> Dict[str, Any]:
+    def run_complete_validation(self) -> dict[str, Any]:
         """Run complete performance benchmark validation."""
         print("🚀 Starting Comprehensive Performance Benchmark Validation")
         print("=" * 80)

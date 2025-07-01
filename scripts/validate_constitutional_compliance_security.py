@@ -136,7 +136,7 @@ class ConstitutionalComplianceSecurityValidator:
                     )
 
             except Exception as e:
-                error_msg = f"{service_name} validation failed: {str(e)}"
+                error_msg = f"{service_name} validation failed: {e!s}"
                 hash_validation["issues"].append(error_msg)
                 logger.error(error_msg)
 
@@ -167,38 +167,36 @@ class ConstitutionalComplianceSecurityValidator:
                             "hash": service_hash,
                             "endpoint": "/api/v1/constitutional/validate",
                         }
-                    else:
-                        return {
-                            "valid": False,
-                            "error": f"Hash mismatch: expected {self.expected_constitution_hash}, got {service_hash}",
-                            "hash": service_hash,
-                        }
-                else:
-                    # Try alternative endpoints
-                    alt_endpoints = ["/health", "/api/v1/status"]
-                    for endpoint in alt_endpoints:
-                        try:
-                            alt_response = await client.get(
-                                f"http://localhost:{port}{endpoint}"
-                            )
-                            if alt_response.status_code == 200:
-                                return {
-                                    "valid": False,
-                                    "error": "Constitutional validation endpoint not available",
-                                    "alternative_endpoint": endpoint,
-                                }
-                        except:
-                            continue
-
                     return {
                         "valid": False,
-                        "error": f"No constitutional validation endpoint found (HTTP {response.status_code})",
+                        "error": f"Hash mismatch: expected {self.expected_constitution_hash}, got {service_hash}",
+                        "hash": service_hash,
                     }
+                # Try alternative endpoints
+                alt_endpoints = ["/health", "/api/v1/status"]
+                for endpoint in alt_endpoints:
+                    try:
+                        alt_response = await client.get(
+                            f"http://localhost:{port}{endpoint}"
+                        )
+                        if alt_response.status_code == 200:
+                            return {
+                                "valid": False,
+                                "error": "Constitutional validation endpoint not available",
+                                "alternative_endpoint": endpoint,
+                            }
+                    except:
+                        continue
+
+                return {
+                    "valid": False,
+                    "error": f"No constitutional validation endpoint found (HTTP {response.status_code})",
+                }
 
         except Exception as e:
             return {
                 "valid": False,
-                "error": f"Service connection failed: {str(e)}",
+                "error": f"Service connection failed: {e!s}",
             }
 
     async def _validate_config_hash_consistency(self) -> dict:
@@ -315,16 +313,15 @@ class ConstitutionalComplianceSecurityValidator:
                         "required_members": 7,  # As per ACGS specification
                         "meets_requirements": len(members.get("members", [])) >= 7,
                     }
-                else:
-                    return {
-                        "configured": False,
-                        "error": f"Constitutional council endpoint returned {response.status_code}",
-                    }
+                return {
+                    "configured": False,
+                    "error": f"Constitutional council endpoint returned {response.status_code}",
+                }
 
         except Exception as e:
             return {
                 "configured": False,
-                "error": f"Failed to check constitutional council: {str(e)}",
+                "error": f"Failed to check constitutional council: {e!s}",
             }
 
     async def _validate_blockchain_multisig(self) -> dict:
@@ -383,16 +380,15 @@ class ConstitutionalComplianceSecurityValidator:
                         "supports_supermajority": "supermajority"
                         in str(mechanisms).lower(),
                     }
-                else:
-                    return {
-                        "voting_configured": False,
-                        "error": f"Voting mechanisms endpoint returned {response.status_code}",
-                    }
+                return {
+                    "voting_configured": False,
+                    "error": f"Voting mechanisms endpoint returned {response.status_code}",
+                }
 
         except Exception as e:
             return {
                 "voting_configured": False,
-                "error": f"Failed to check voting mechanisms: {str(e)}",
+                "error": f"Failed to check voting mechanisms: {e!s}",
             }
 
     async def _validate_policy_workflow_security(self):
@@ -439,19 +435,18 @@ class ConstitutionalComplianceSecurityValidator:
                         "unauthorized_access_blocked": True,
                         "security_level": "SECURE",
                     }
-                elif response.status_code == 200:
+                if response.status_code == 200:
                     return {
                         "authentication_required": False,
                         "unauthorized_access_blocked": False,
                         "security_level": "INSECURE",
                         "issue": "Policy creation allows unauthorized access",
                     }
-                else:
-                    return {
-                        "authentication_required": "UNKNOWN",
-                        "test_result": f"HTTP {response.status_code}",
-                        "security_level": "UNKNOWN",
-                    }
+                return {
+                    "authentication_required": "UNKNOWN",
+                    "test_result": f"HTTP {response.status_code}",
+                    "security_level": "UNKNOWN",
+                }
 
         except Exception as e:
             return {
@@ -643,9 +638,8 @@ async def main():
         if report["critical_issues_count"] > 0:
             print(f"\n❌ Critical Issues Found: {report['critical_issues_count']}")
             return 1
-        else:
-            print("\n✅ Constitutional compliance security validation passed")
-            return 0
+        print("\n✅ Constitutional compliance security validation passed")
+        return 0
 
     except Exception as e:
         logger.error(f"❌ Constitutional security validation failed: {e}")

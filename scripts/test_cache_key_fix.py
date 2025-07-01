@@ -27,10 +27,10 @@ async def test_cache_key_fix():
 
     try:
         from services.shared.multimodal_ai_service import (
-            get_multimodal_service,
+            ContentType,
             MultimodalRequest,
             RequestType,
-            ContentType,
+            get_multimodal_service,
         )
 
         service = await get_multimodal_service()
@@ -81,6 +81,7 @@ async def run_integration_test():
         # Run the integration test
         result = subprocess.run(
             ["python", "scripts/test_deepseek_r1_integration.py"],
+            check=False,
             cwd="/home/ubuntu/ACGS",
             capture_output=True,
             text=True,
@@ -107,12 +108,10 @@ async def run_integration_test():
             if success_rate and "100.0%" in success_rate:
                 logger.info("🎉 ACHIEVED 100% SUCCESS RATE!")
                 return True
-            else:
-                logger.warning(f"⚠️ Success rate not 100%: {success_rate}")
-                return False
-        else:
-            logger.error(f"❌ Integration test failed: {result.stderr}")
+            logger.warning(f"⚠️ Success rate not 100%: {success_rate}")
             return False
+        logger.error(f"❌ Integration test failed: {result.stderr}")
+        return False
 
     except Exception as e:
         logger.error(f"❌ Integration test execution failed: {e}")
@@ -157,10 +156,9 @@ async def main():
 
         logger.info("\n🚀 ACGS-PGP System Status: PRODUCTION READY")
         return 0
-    else:
-        logger.error("❌ FAILED - Integration test still not passing")
-        logger.error("   Further investigation required")
-        return 1
+    logger.error("❌ FAILED - Integration test still not passing")
+    logger.error("   Further investigation required")
+    return 1
 
 
 if __name__ == "__main__":

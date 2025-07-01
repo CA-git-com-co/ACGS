@@ -124,7 +124,7 @@ def test_security_compliance_direct():
         for i in range(3):
             result = rate_limiter.is_allowed(client_id, 3, 1)
             if result.blocked:
-                print(f"❌ Request {i+1} should not be blocked")
+                print(f"❌ Request {i + 1} should not be blocked")
                 return False
 
         # Block excessive requests
@@ -188,8 +188,8 @@ def test_advanced_cache_performance():
         get_time = (time.time() - start_time) * 1000
 
         print("📊 Cache Performance:")
-        print(f"   - Put 100 items: {put_time:.2f}ms ({put_time/100:.2f}ms per item)")
-        print(f"   - Get 100 items: {get_time:.2f}ms ({get_time/100:.2f}ms per item)")
+        print(f"   - Put 100 items: {put_time:.2f}ms ({put_time / 100:.2f}ms per item)")
+        print(f"   - Get 100 items: {get_time:.2f}ms ({get_time / 100:.2f}ms per item)")
 
         # Check performance targets
         avg_put_latency = put_time / 100
@@ -306,7 +306,7 @@ async def main():
     print(f"Total Tests: {total}")
     print(f"Passed: {passed}")
     print(f"Failed: {total - passed}")
-    print(f"Success Rate: {(passed/total)*100:.1f}%")
+    print(f"Success Rate: {(passed / total) * 100:.1f}%")
 
     if passed == total:
         print("\n🎉 Phase 3 endpoint and component validation successful!")
@@ -324,9 +324,8 @@ async def main():
 
         print("\n🚀 Phase 3 Ready for Production!")
         return True
-    else:
-        print(f"\n❌ {total - passed} tests failed. Review implementation.")
-        return False
+    print(f"\n❌ {total - passed} tests failed. Review implementation.")
+    return False
 
 
 if __name__ == "__main__":

@@ -22,11 +22,9 @@ Formal Verification Comments:
 # sha256: basic_e2e_example_v1.0
 """
 
-import asyncio
 import json
 import logging
 import time
-from typing import Dict, Any, List
 
 import requests
 
@@ -113,7 +111,7 @@ class BasicE2ETest:
             return overall_success
 
         except Exception as e:
-            logger.error(f"❌ Test execution failed: {str(e)}")
+            logger.error(f"❌ Test execution failed: {e!s}")
             return False
 
     def test_service_health(self) -> bool:
@@ -156,7 +154,7 @@ class BasicE2ETest:
                         )
 
                 except Exception as e:
-                    logger.error(f"  ❌ {service_name}: {str(e)}")
+                    logger.error(f"  ❌ {service_name}: {e!s}")
                     self.test_results.append(
                         {
                             "test": f"{service_name}_health",
@@ -174,7 +172,7 @@ class BasicE2ETest:
             return success_rate >= 0.8  # Require 80% of services to be healthy
 
         except Exception as e:
-            logger.error(f"Service health test error: {str(e)}")
+            logger.error(f"Service health test error: {e!s}")
             return False
 
     def test_authentication(self) -> bool:
@@ -239,20 +237,19 @@ class BasicE2ETest:
                 )
 
                 return True
-            else:
-                logger.error(f"  ❌ Login failed: HTTP {login_response.status_code}")
-                self.test_results.append(
-                    {
-                        "test": "authentication_workflow",
-                        "success": False,
-                        "response_time_ms": register_time + login_time,
-                        "error": f"Login failed: HTTP {login_response.status_code}",
-                    }
-                )
-                return False
+            logger.error(f"  ❌ Login failed: HTTP {login_response.status_code}")
+            self.test_results.append(
+                {
+                    "test": "authentication_workflow",
+                    "success": False,
+                    "response_time_ms": register_time + login_time,
+                    "error": f"Login failed: HTTP {login_response.status_code}",
+                }
+            )
+            return False
 
         except Exception as e:
-            logger.error(f"Authentication test error: {str(e)}")
+            logger.error(f"Authentication test error: {e!s}")
             self.test_results.append(
                 {
                     "test": "authentication_workflow",
@@ -321,24 +318,23 @@ class BasicE2ETest:
                 )
 
                 return True
-            else:
-                logger.error(f"  ❌ Policy creation failed")
-                logger.error(f"    Principles: HTTP {principles_response.status_code}")
-                logger.error(f"    Synthesis: HTTP {synthesis_response.status_code}")
+            logger.error("  ❌ Policy creation failed")
+            logger.error(f"    Principles: HTTP {principles_response.status_code}")
+            logger.error(f"    Synthesis: HTTP {synthesis_response.status_code}")
 
-                self.test_results.append(
-                    {
-                        "test": "policy_creation_workflow",
-                        "success": False,
-                        "response_time_ms": total_time,
-                        "error": f"Principles: {principles_response.status_code}, Synthesis: {synthesis_response.status_code}",
-                    }
-                )
+            self.test_results.append(
+                {
+                    "test": "policy_creation_workflow",
+                    "success": False,
+                    "response_time_ms": total_time,
+                    "error": f"Principles: {principles_response.status_code}, Synthesis: {synthesis_response.status_code}",
+                }
+            )
 
-                return False
+            return False
 
         except Exception as e:
-            logger.error(f"Policy creation test error: {str(e)}")
+            logger.error(f"Policy creation test error: {e!s}")
             self.test_results.append(
                 {
                     "test": "policy_creation_workflow",
@@ -400,22 +396,21 @@ class BasicE2ETest:
                 )
 
                 return True
-            else:
-                logger.error("  ❌ Performance targets not met")
+            logger.error("  ❌ Performance targets not met")
 
-                self.test_results.append(
-                    {
-                        "test": "performance_validation",
-                        "success": False,
-                        "response_time_ms": avg_response_time,
-                        "error": f"Avg: {avg_response_time:.2f}ms > {avg_target}ms or Max: {max_response_time:.2f}ms > {max_target}ms",
-                    }
-                )
+            self.test_results.append(
+                {
+                    "test": "performance_validation",
+                    "success": False,
+                    "response_time_ms": avg_response_time,
+                    "error": f"Avg: {avg_response_time:.2f}ms > {avg_target}ms or Max: {max_response_time:.2f}ms > {max_target}ms",
+                }
+            )
 
-                return False
+            return False
 
         except Exception as e:
-            logger.error(f"Performance test error: {str(e)}")
+            logger.error(f"Performance test error: {e!s}")
             self.test_results.append(
                 {
                     "test": "performance_validation",
@@ -445,12 +440,12 @@ class BasicE2ETest:
         passed_tests = len([r for r in self.test_results if r.get("success")])
         failed_tests = total_tests - passed_tests
 
-        logger.info(f"📈 Test Results:")
+        logger.info("📈 Test Results:")
         logger.info(f"  Total Tests: {total_tests}")
         logger.info(f"  Passed: {passed_tests}")
         logger.info(f"  Failed: {failed_tests}")
         logger.info(
-            f"  Success Rate: {(passed_tests/total_tests*100):.1f}%"
+            f"  Success Rate: {(passed_tests / total_tests * 100):.1f}%"
             if total_tests > 0
             else "  Success Rate: N/A"
         )
@@ -494,7 +489,7 @@ class BasicE2ETest:
             logger.info(f"\n📋 Results saved to: {results_file}")
 
         except Exception as e:
-            logger.warning(f"⚠️ Could not save results: {str(e)}")
+            logger.warning(f"⚠️ Could not save results: {e!s}")
 
 
 def main():

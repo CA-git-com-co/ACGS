@@ -277,7 +277,7 @@ class Phase2Demo:
         print("\n   📊 Database Performance Results:")
         print(f"      Operations Executed: {len(operations)}")
         print(f"      Total Latency: {db_latency:.2f}ms")
-        print(f"      Average per Operation: {db_latency/len(operations):.2f}ms")
+        print(f"      Average per Operation: {db_latency / len(operations):.2f}ms")
         print(f"      ✅ Optimized performance: {db_latency < 50}")
 
         # Simulate pool metrics
@@ -428,7 +428,7 @@ class Phase2Demo:
         print(f"   - Events Published: {self.metrics['events_published']}")
         print(f"   - Events Processed: {self.metrics['events_processed']}")
         print(f"   - DB Operations: {self.metrics['db_operations']}")
-        print(f"   - Average Latency: {self.metrics['total_latency']/4:.2f}ms")
+        print(f"   - Average Latency: {self.metrics['total_latency'] / 4:.2f}ms")
 
         print("\n🎯 Phase 2 Achievements:")
         print("   ✅ Dependency Injection Framework implemented")

@@ -8,7 +8,7 @@ import asyncio
 import json
 import logging
 import subprocess
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -61,7 +61,7 @@ class InfrastructureValidator:
                     )
 
             except Exception as e:
-                logger.error(f"💥 {test_name}: CRASHED - {str(e)}")
+                logger.error(f"💥 {test_name}: CRASHED - {e!s}")
                 self.validation_results["tests"][test_name] = {
                     "status": "CRASH",
                     "message": str(e),
@@ -114,6 +114,7 @@ class InfrastructureValidator:
                     "-c",
                     "SELECT 1 as test;",
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -126,16 +127,15 @@ class InfrastructureValidator:
                     "details": "PostgreSQL responding correctly",
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
-            else:
-                return {
-                    "status": "FAIL",
-                    "message": f"Database connection failed: {result.stderr}",
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                }
+            return {
+                "status": "FAIL",
+                "message": f"Database connection failed: {result.stderr}",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
         except Exception as e:
             return {
                 "status": "FAIL",
-                "message": f"Database test error: {str(e)}",
+                "message": f"Database test error: {e!s}",
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
@@ -162,7 +162,7 @@ class InfrastructureValidator:
                 else:
                     unhealthy_services.append(f"{service}: HTTP {response.status_code}")
             except Exception as e:
-                unhealthy_services.append(f"{service}: {str(e)}")
+                unhealthy_services.append(f"{service}: {e!s}")
 
         if not unhealthy_services:
             return {
@@ -171,14 +171,13 @@ class InfrastructureValidator:
                 "healthy_services": healthy_services,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
-        else:
-            return {
-                "status": "FAIL",
-                "message": f"{len(unhealthy_services)} services unhealthy",
-                "healthy_services": healthy_services,
-                "unhealthy_services": unhealthy_services,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
+        return {
+            "status": "FAIL",
+            "message": f"{len(unhealthy_services)} services unhealthy",
+            "healthy_services": healthy_services,
+            "unhealthy_services": unhealthy_services,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
 
     async def test_security_middleware(self) -> dict[str, Any]:
         """Test security middleware health endpoint bypass."""
@@ -203,7 +202,7 @@ class InfrastructureValidator:
                             f"{endpoint}: HTTP {test_response.status_code}"
                         )
                 except Exception as e:
-                    bypass_failed.append(f"{endpoint}: {str(e)}")
+                    bypass_failed.append(f"{endpoint}: {e!s}")
 
             if not bypass_failed:
                 return {
@@ -212,18 +211,17 @@ class InfrastructureValidator:
                     "working_endpoints": bypass_working,
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
-            else:
-                return {
-                    "status": "FAIL",
-                    "message": "Security middleware bypass issues detected",
-                    "working_endpoints": bypass_working,
-                    "failed_endpoints": bypass_failed,
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                }
+            return {
+                "status": "FAIL",
+                "message": "Security middleware bypass issues detected",
+                "working_endpoints": bypass_working,
+                "failed_endpoints": bypass_failed,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
         except Exception as e:
             return {
                 "status": "FAIL",
-                "message": f"Security middleware test error: {str(e)}",
+                "message": f"Security middleware test error: {e!s}",
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
@@ -238,6 +236,7 @@ class InfrastructureValidator:
                     "infrastructure/docker/docker-compose.yml",
                     "ps",
                 ],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -265,24 +264,22 @@ class InfrastructureValidator:
                         "running_containers": running_containers,
                         "timestamp": datetime.now(timezone.utc).isoformat(),
                     }
-                else:
-                    return {
-                        "status": "FAIL",
-                        "message": f"{len(stopped_containers)} containers stopped",
-                        "running_containers": running_containers,
-                        "stopped_containers": stopped_containers,
-                        "timestamp": datetime.now(timezone.utc).isoformat(),
-                    }
-            else:
                 return {
                     "status": "FAIL",
-                    "message": f"Docker compose status check failed: {result.stderr}",
+                    "message": f"{len(stopped_containers)} containers stopped",
+                    "running_containers": running_containers,
+                    "stopped_containers": stopped_containers,
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
+            return {
+                "status": "FAIL",
+                "message": f"Docker compose status check failed: {result.stderr}",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
         except Exception as e:
             return {
                 "status": "FAIL",
-                "message": f"Container status test error: {str(e)}",
+                "message": f"Container status test error: {e!s}",
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
@@ -321,17 +318,16 @@ class InfrastructureValidator:
                     "required_vars_found": required_vars,
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
-            else:
-                return {
-                    "status": "FAIL",
-                    "message": f"Missing environment variables: {missing_vars}",
-                    "missing_vars": missing_vars,
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                }
+            return {
+                "status": "FAIL",
+                "message": f"Missing environment variables: {missing_vars}",
+                "missing_vars": missing_vars,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
         except Exception as e:
             return {
                 "status": "FAIL",
-                "message": f"Environment config test error: {str(e)}",
+                "message": f"Environment config test error: {e!s}",
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
@@ -358,9 +354,8 @@ async def main():
     if results["overall_status"] == "ALL_PASS":
         print("\n🎉 All infrastructure fixes validated successfully!")
         return 0
-    else:
-        print("\n⚠️  Some infrastructure issues detected. Check the detailed report.")
-        return 1
+    print("\n⚠️  Some infrastructure issues detected. Check the detailed report.")
+    return 1
 
 
 if __name__ == "__main__":

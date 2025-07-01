@@ -68,13 +68,13 @@ class DocumentationComplianceUpdater:
         # Architecture documentation template
         architecture_content = f"""# ACGS-1 System Architecture Documentation
 
-**Last Updated:** {datetime.now().strftime('%Y-%m-%d')}
+**Last Updated:** {datetime.now().strftime("%Y-%m-%d")}
 **Version:** 2.1
 **Status:** Production Ready
 
 // requires: Complete system architecture with all 7 core services operational
 // ensures: Comprehensive architectural guidance for enterprise deployment
-// sha256: {self._generate_content_hash('architecture_v2.1')}
+// sha256: {self._generate_content_hash("architecture_v2.1")}
 
 ## 🎯 Executive Summary
 
@@ -91,11 +91,11 @@ The ACGS-1 (AI Compliance Governance System) implements a blockchain-first const
             if config["type"] == "core":
                 service_display = service_name.replace("_", " ").title()
                 architecture_content += f"""
-#### {service_display} (Port {config['port']})
-- **Status:** ✅ {config['status'].title()}
-- **Type:** {config['type'].title()} Service
-- **Health Endpoint:** `http://localhost:{config['port']}/health`
-- **API Documentation:** `http://localhost:{config['port']}/docs`
+#### {service_display} (Port {config["port"]})
+- **Status:** ✅ {config["status"].title()}
+- **Type:** {config["type"].title()} Service
+- **Health Endpoint:** `http://localhost:{config["port"]}/health`
+- **API Documentation:** `http://localhost:{config["port"]}/docs`
 """
 
         architecture_content += f"""
@@ -122,7 +122,7 @@ The ACGS-1 (AI Compliance Governance System) implements a blockchain-first const
 
 ## 📊 Performance Metrics
 
-### Current Performance (As of {datetime.now().strftime('%Y-%m-%d')})
+### Current Performance (As of {datetime.now().strftime("%Y-%m-%d")})
 - **System Availability:** >99.5%
 - **Average Response Time:** <500ms
 - **Concurrent Users:** >1000 supported
@@ -154,7 +154,7 @@ The ACGS-1 (AI Compliance Governance System) implements a blockchain-first const
 ---
 
 **Documentation Status:** ✅ Current and Validated
-**Next Review:** {(datetime.now().replace(month=datetime.now().month + 1)).strftime('%Y-%m-%d')}
+**Next Review:** {(datetime.now().replace(month=datetime.now().month + 1)).strftime("%Y-%m-%d")}
 **Contact:** ACGS Development Team
 """
 
@@ -197,14 +197,14 @@ The ACGS-1 (AI Compliance Governance System) implements a blockchain-first const
                 api_content = f"""# {service_display} API Documentation
 
 **Service:** {service_display}
-**Port:** {config['port']}
-**Base URL:** `http://localhost:{config['port']}`
+**Port:** {config["port"]}
+**Base URL:** `http://localhost:{config["port"]}`
 **Status:** ✅ Operational
-**Last Updated:** {datetime.now().strftime('%Y-%m-%d')}
+**Last Updated:** {datetime.now().strftime("%Y-%m-%d")}
 
 // requires: Complete API documentation with examples and error handling
 // ensures: Comprehensive API guidance for developers
-// sha256: {self._generate_content_hash(f'api_{service_name}')}
+// sha256: {self._generate_content_hash(f"api_{service_name}")}
 
 ## 🎯 Service Overview
 
@@ -273,7 +273,7 @@ GET /health
 
 ## 📊 Performance Metrics
 
-- **Average Response Time:** <{config.get('avg_response_ms', 500)}ms
+- **Average Response Time:** <{config.get("avg_response_ms", 500)}ms
 - **Rate Limit:** 1000 requests/hour
 - **Timeout:** 30 seconds
 - **Availability:** >99.5%
@@ -294,7 +294,7 @@ X-API-Key: <api_key>
 
 **API Version:** 2.1
 **Documentation Status:** ✅ Current
-**Interactive Docs:** `http://localhost:{config['port']}/docs`
+**Interactive Docs:** `http://localhost:{config["port"]}/docs`
 """
 
                 # Save API documentation
@@ -341,13 +341,13 @@ X-API-Key: <api_key>
         deployment_content = f"""# ACGS-1 Production Deployment Guide
 
 **Version:** 2.1
-**Last Updated:** {datetime.now().strftime('%Y-%m-%d')}
+**Last Updated:** {datetime.now().strftime("%Y-%m-%d")}
 **Target Environment:** Production
 **Status:** ✅ Validated
 
 // requires: Complete production deployment procedures
 // ensures: Successful enterprise deployment with >99.5% availability
-// sha256: {self._generate_content_hash('deployment_v2.1')}
+// sha256: {self._generate_content_hash("deployment_v2.1")}
 
 ## 🎯 Deployment Overview
 

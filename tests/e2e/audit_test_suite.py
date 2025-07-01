@@ -26,12 +26,11 @@ Formal Verification Comments:
 import ast
 import json
 import logging
-import os
 import re
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Tuple
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -72,7 +71,7 @@ class TestSuiteAuditor:
             "summary": {},
         }
 
-    def run_comprehensive_audit(self) -> Dict[str, Any]:
+    def run_comprehensive_audit(self) -> dict[str, Any]:
         """
         Execute comprehensive audit of the test suite.
 
@@ -122,7 +121,7 @@ class TestSuiteAuditor:
             return self.audit_results
 
         except Exception as e:
-            logger.error(f"❌ Audit failed: {str(e)}")
+            logger.error(f"❌ Audit failed: {e!s}")
             return {"error": str(e)}
 
     def _analyze_code_quality(self):
@@ -146,7 +145,7 @@ class TestSuiteAuditor:
                     continue
 
                 try:
-                    with open(file_path, "r", encoding="utf-8") as f:
+                    with open(file_path, encoding="utf-8") as f:
                         content = f.read()
 
                     # Parse AST
@@ -165,7 +164,7 @@ class TestSuiteAuditor:
                     )
 
                 except Exception as e:
-                    logger.warning(f"⚠️ Could not analyze {file_path.name}: {str(e)}")
+                    logger.warning(f"⚠️ Could not analyze {file_path.name}: {e!s}")
 
             # Calculate averages
             if code_metrics["total_files"] > 0:
@@ -184,9 +183,9 @@ class TestSuiteAuditor:
             logger.info(f"  🏗️ Total classes: {code_metrics['total_classes']}")
 
         except Exception as e:
-            logger.error(f"❌ Code quality analysis failed: {str(e)}")
+            logger.error(f"❌ Code quality analysis failed: {e!s}")
 
-    def _analyze_file_ast(self, tree: ast.AST, filename: str) -> Dict[str, Any]:
+    def _analyze_file_ast(self, tree: ast.AST, filename: str) -> dict[str, Any]:
         """Analyze AST of a single file."""
         analysis = {
             "functions": 0,
@@ -224,7 +223,7 @@ class TestSuiteAuditor:
 
         # Check for formal verification comments
         try:
-            with open(self.test_suite_path / filename, "r") as f:
+            with open(self.test_suite_path / filename) as f:
                 content = f.read()
                 analysis["formal_verification_comments"] = len(
                     re.findall(r"#\s*(requires|ensures|sha256):", content)
@@ -265,7 +264,7 @@ class TestSuiteAuditor:
 
             for test_file in test_files:
                 try:
-                    with open(test_file, "r") as f:
+                    with open(test_file) as f:
                         content = f.read()
 
                     # Check for test scenarios
@@ -293,7 +292,7 @@ class TestSuiteAuditor:
 
                 except Exception as e:
                     logger.warning(
-                        f"⚠️ Could not analyze test file {test_file.name}: {str(e)}"
+                        f"⚠️ Could not analyze test file {test_file.name}: {e!s}"
                     )
 
             # Calculate coverage percentages
@@ -312,7 +311,7 @@ class TestSuiteAuditor:
             logger.info(f"  🎭 Mock usage: {coverage_analysis['mock_usage']} files")
 
         except Exception as e:
-            logger.error(f"❌ Test coverage analysis failed: {str(e)}")
+            logger.error(f"❌ Test coverage analysis failed: {e!s}")
 
     def _analyze_architecture(self):
         """Analyze test suite architecture and design patterns."""
@@ -353,7 +352,7 @@ class TestSuiteAuditor:
 
             for file_path in self.test_suite_path.glob("**/*.py"):
                 try:
-                    with open(file_path, "r") as f:
+                    with open(file_path) as f:
                         content = f.read().lower()
 
                     for pattern, indicators in pattern_indicators.items():
@@ -365,7 +364,7 @@ class TestSuiteAuditor:
                     if "async def" in content:
                         architecture_analysis["async_usage"] += 1
 
-                except Exception as e:
+                except Exception:
                     continue
 
             # Calculate modularity score based on file organization
@@ -394,7 +393,7 @@ class TestSuiteAuditor:
             )
 
         except Exception as e:
-            logger.error(f"❌ Architecture analysis failed: {str(e)}")
+            logger.error(f"❌ Architecture analysis failed: {e!s}")
 
     def _analyze_performance(self):
         """Analyze performance considerations in tests."""
@@ -424,7 +423,7 @@ class TestSuiteAuditor:
 
             for file_path in self.test_suite_path.glob("**/*.py"):
                 try:
-                    with open(file_path, "r") as f:
+                    with open(file_path) as f:
                         content = f.read()
 
                     # Check for performance-related code
@@ -452,7 +451,7 @@ class TestSuiteAuditor:
                         perf_assertions
                     )
 
-                except Exception as e:
+                except Exception:
                     continue
 
             self.audit_results["performance"] = performance_analysis
@@ -468,7 +467,7 @@ class TestSuiteAuditor:
             )
 
         except Exception as e:
-            logger.error(f"❌ Performance analysis failed: {str(e)}")
+            logger.error(f"❌ Performance analysis failed: {e!s}")
 
     def _analyze_security(self):
         """Analyze security considerations in tests."""
@@ -498,7 +497,7 @@ class TestSuiteAuditor:
 
             for file_path in self.test_suite_path.glob("**/*.py"):
                 try:
-                    with open(file_path, "r") as f:
+                    with open(file_path) as f:
                         content = f.read().lower()
 
                     # Count security-related tests
@@ -517,7 +516,7 @@ class TestSuiteAuditor:
                     )
                     security_analysis["security_assertions"] += len(security_assertions)
 
-                except Exception as e:
+                except Exception:
                     continue
 
             self.audit_results["security"] = security_analysis
@@ -533,7 +532,7 @@ class TestSuiteAuditor:
             )
 
         except Exception as e:
-            logger.error(f"❌ Security analysis failed: {str(e)}")
+            logger.error(f"❌ Security analysis failed: {e!s}")
 
     def _analyze_documentation(self):
         """Analyze documentation quality."""
@@ -564,7 +563,7 @@ class TestSuiteAuditor:
 
             for file_path in self.test_suite_path.glob("**/*.py"):
                 try:
-                    with open(file_path, "r") as f:
+                    with open(file_path) as f:
                         content = f.read()
                         lines = content.splitlines()
 
@@ -593,7 +592,7 @@ class TestSuiteAuditor:
                     )
                     doc_analysis["usage_examples"] += examples
 
-                except Exception as e:
+                except Exception:
                     continue
 
             # Calculate percentages
@@ -616,7 +615,7 @@ class TestSuiteAuditor:
             )
 
         except Exception as e:
-            logger.error(f"❌ Documentation analysis failed: {str(e)}")
+            logger.error(f"❌ Documentation analysis failed: {e!s}")
 
     def _generate_recommendations(self):
         """Generate recommendations based on audit findings."""
@@ -763,7 +762,7 @@ class TestSuiteAuditor:
 
         self.audit_results["summary"] = summary
 
-        logger.info(f"\n📊 AUDIT SUMMARY:")
+        logger.info("\n📊 AUDIT SUMMARY:")
         logger.info(f"  Overall Score: {overall_score:.1%} (Grade: {summary['grade']})")
         logger.info(f"  Duration: {audit_duration:.2f}s")
         logger.info(
@@ -774,14 +773,13 @@ class TestSuiteAuditor:
         """Calculate letter grade from score."""
         if score >= 0.9:
             return "A"
-        elif score >= 0.8:
+        if score >= 0.8:
             return "B"
-        elif score >= 0.7:
+        if score >= 0.7:
             return "C"
-        elif score >= 0.6:
+        if score >= 0.6:
             return "D"
-        else:
-            return "F"
+        return "F"
 
     def _save_audit_report(self):
         """Save comprehensive audit report."""
@@ -800,7 +798,7 @@ class TestSuiteAuditor:
             logger.info(f"📋 Audit report saved: {report_file}")
 
         except Exception as e:
-            logger.error(f"❌ Could not save audit report: {str(e)}")
+            logger.error(f"❌ Could not save audit report: {e!s}")
 
 
 def main():
@@ -816,7 +814,7 @@ def main():
         grade = summary.get("grade", "F")
         score = summary.get("overall_score", 0)
 
-        print(f"\n🎯 Test Suite Audit Complete!")
+        print("\n🎯 Test Suite Audit Complete!")
         print(f"📊 Overall Score: {score:.1%} (Grade: {grade})")
 
         if grade in ["A", "B"]:

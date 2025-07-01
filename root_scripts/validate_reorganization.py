@@ -235,6 +235,7 @@ class ReorganizationValidator:
             # Change to blockchain directory and run anchor build
             result = subprocess.run(
                 ["anchor", "build"],
+                check=False,
                 cwd=blockchain_dir,
                 capture_output=True,
                 text=True,
@@ -244,9 +245,8 @@ class ReorganizationValidator:
             if result.returncode == 0:
                 logger.info("✅ Anchor build successful")
                 return True
-            else:
-                logger.warning(f"⚠️ Anchor build failed: {result.stderr}")
-                return False
+            logger.warning(f"⚠️ Anchor build failed: {result.stderr}")
+            return False
 
         except subprocess.TimeoutExpired:
             logger.warning("⚠️ Anchor build timed out")

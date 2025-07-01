@@ -192,7 +192,7 @@ class ConstitutionalHashValidator:
                 compliance_score=0.0,
                 validation_timestamp=time.time(),
                 validation_level=context.validation_level,
-                violations=[f"Validation error: {str(e)}"],
+                violations=[f"Validation error: {e!s}"],
                 recommendations=[
                     "Retry validation",
                     "Check constitutional service health",
@@ -554,8 +554,7 @@ class ConstitutionalHashValidator:
                 # Check if cache entry is still valid (5 minutes TTL)
                 if time.time() - cached_result.validation_timestamp < 300:
                     return cached_result
-                else:
-                    del self._validation_cache[cache_key]
+                del self._validation_cache[cache_key]
 
             # Check Redis cache if available
             if self.redis_client:

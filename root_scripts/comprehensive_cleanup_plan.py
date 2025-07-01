@@ -141,6 +141,7 @@ class ACGSCleanupOrchestrator:
             # Run pip-audit for vulnerability scanning
             audit_result = subprocess.run(
                 [sys.executable, "-m", "pip_audit", "--format=json"],
+                check=False,
                 capture_output=True,
                 text=True,
             )
@@ -178,6 +179,7 @@ class ACGSCleanupOrchestrator:
                 try:
                     result = subprocess.run(
                         [sys.executable, "-m", "black", "--check", str(py_file)],
+                        check=False,
                         capture_output=True,
                     )
 
@@ -277,6 +279,7 @@ class ACGSCleanupOrchestrator:
                             "--in-place",
                             str(py_file),
                         ],
+                        check=False,
                         capture_output=True,
                     )
 

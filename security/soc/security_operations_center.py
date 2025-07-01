@@ -4,14 +4,14 @@ ACGS Security Operations Center (SOC)
 24/7 security monitoring and response capabilities for enterprise deployment
 """
 
-import json
-import time
 import asyncio
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone, timedelta
-from enum import Enum
+import json
 import logging
+import time
+from dataclasses import asdict, dataclass
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -46,9 +46,9 @@ class SecurityAlert:
     source_system: str
     alert_type: str
     description: str
-    affected_assets: List[str]
-    indicators: List[str]
-    raw_data: Dict[str, Any]
+    affected_assets: list[str]
+    indicators: list[str]
+    raw_data: dict[str, Any]
     constitutional_hash: str
 
 
@@ -64,10 +64,10 @@ class SecurityIncident:
     created_at: str
     updated_at: str
     assigned_analyst: str
-    related_alerts: List[str]
-    timeline: List[Dict[str, Any]]
-    containment_actions: List[str]
-    resolution_summary: Optional[str]
+    related_alerts: list[str]
+    timeline: list[dict[str, Any]]
+    containment_actions: list[str]
+    resolution_summary: str | None
     constitutional_compliance: bool
 
 
@@ -78,7 +78,7 @@ class SOCMetrics:
     period_start: str
     period_end: str
     total_alerts: int
-    alerts_by_severity: Dict[str, int]
+    alerts_by_severity: dict[str, int]
     mean_time_to_detection: float  # minutes
     mean_time_to_response: float  # minutes
     mean_time_to_resolution: float  # hours
@@ -98,7 +98,7 @@ class SecurityOperationsCenter:
         self.playbooks = self.initialize_security_playbooks()
         self.metrics = []
 
-    def initialize_soc_team(self) -> Dict[str, Any]:
+    def initialize_soc_team(self) -> dict[str, Any]:
         """Initialize SOC team structure"""
         return {
             "tier1_analysts": [
@@ -136,7 +136,7 @@ class SecurityOperationsCenter:
             },
         }
 
-    def initialize_security_playbooks(self) -> Dict[str, Any]:
+    def initialize_security_playbooks(self) -> dict[str, Any]:
         """Initialize security response playbooks"""
         return {
             "brute_force_attack": {
@@ -205,7 +205,7 @@ class SecurityOperationsCenter:
             },
         }
 
-    async def process_security_alert(self, alert_data: Dict[str, Any]) -> SecurityAlert:
+    async def process_security_alert(self, alert_data: dict[str, Any]) -> SecurityAlert:
         """Process incoming security alert"""
         alert = SecurityAlert(
             alert_id=f"alert_{int(time.time())}",
@@ -261,10 +261,9 @@ class SecurityOperationsCenter:
         """Assign appropriate analyst based on severity"""
         if severity == AlertSeverity.CRITICAL:
             return self.analysts["tier3_experts"][0]["name"]
-        elif severity == AlertSeverity.HIGH:
+        if severity == AlertSeverity.HIGH:
             return self.analysts["tier2_analysts"][0]["name"]
-        else:
-            return self.analysts["tier1_analysts"][1]["name"]  # Day shift analyst
+        return self.analysts["tier1_analysts"][1]["name"]  # Day shift analyst
 
     async def execute_incident_response(self, incident: SecurityIncident):
         """Execute incident response based on playbooks"""
@@ -333,21 +332,20 @@ class SecurityOperationsCenter:
 
         if "brute force" in description_lower or "failed login" in description_lower:
             return "brute_force_attack"
-        elif "exfiltration" in description_lower or "data theft" in description_lower:
+        if "exfiltration" in description_lower or "data theft" in description_lower:
             return "data_exfiltration"
-        elif "constitutional" in description_lower or "compliance" in description_lower:
+        if "constitutional" in description_lower or "compliance" in description_lower:
             return "constitutional_violation"
-        elif (
+        if (
             "insider" in description_lower
             or "privilege escalation" in description_lower
         ):
             return "insider_threat"
-        elif "malware" in description_lower or "virus" in description_lower:
+        if "malware" in description_lower or "virus" in description_lower:
             return "malware_detection"
-        else:
-            return "generic_incident"
+        return "generic_incident"
 
-    async def conduct_threat_hunting(self) -> List[Dict[str, Any]]:
+    async def conduct_threat_hunting(self) -> list[dict[str, Any]]:
         """Conduct proactive threat hunting activities"""
         print("🔍 Conducting threat hunting activities...")
 
@@ -442,7 +440,7 @@ class SecurityOperationsCenter:
         self.metrics.append(metrics)
         return metrics
 
-    async def run_soc_operations(self) -> Dict[str, Any]:
+    async def run_soc_operations(self) -> dict[str, Any]:
         """Run comprehensive SOC operations simulation"""
         print("🛡️ ACGS Security Operations Center - 24/7 Operations")
         print("=" * 55)
@@ -484,14 +482,14 @@ class SecurityOperationsCenter:
             processed_alerts.append(alert)
 
         # Conduct threat hunting
-        print(f"\n🔍 Conducting threat hunting activities...")
+        print("\n🔍 Conducting threat hunting activities...")
         hunting_results = await self.conduct_threat_hunting()
 
         # Generate metrics
-        print(f"\n📊 Generating SOC performance metrics...")
+        print("\n📊 Generating SOC performance metrics...")
         metrics = self.generate_soc_metrics()
 
-        print(f"\n📈 SOC Operations Summary:")
+        print("\n📈 SOC Operations Summary:")
         print(f"  Alerts Processed: {metrics.total_alerts}")
         print(f"  Incidents Created: {metrics.incident_count}")
         print(f"  Mean Time to Detection: {metrics.mean_time_to_detection:.1f} minutes")
@@ -531,7 +529,7 @@ async def test_security_operations_center():
         json.dump(results, f, indent=2, default=str)
 
     print(f"\n📄 SOC operations report saved: soc_operations_report_{timestamp}.json")
-    print(f"\n✅ Security Operations Center: OPERATIONAL")
+    print("\n✅ Security Operations Center: OPERATIONAL")
 
 
 if __name__ == "__main__":

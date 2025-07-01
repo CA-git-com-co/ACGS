@@ -109,7 +109,9 @@ class RequirementsHashFixer:
                     temp_file_path,
                 ]
 
-                result = subprocess.run(cmd, capture_output=True, text=True)
+                result = subprocess.run(
+                    cmd, check=False, capture_output=True, text=True
+                )
 
                 if result.returncode == 0:
                     # Replace original file with hashed version
@@ -120,17 +122,15 @@ class RequirementsHashFixer:
                             f"✅ Successfully updated hashes for {file_path.relative_to(self.project_root)}"
                         )
                         return True
-                    else:
-                        logger.error(
-                            f"❌ Output file not created for {file_path.relative_to(self.project_root)}"
-                        )
-                        return False
-                else:
                     logger.error(
-                        f"❌ pip-compile failed for {file_path.relative_to(self.project_root)}"
+                        f"❌ Output file not created for {file_path.relative_to(self.project_root)}"
                     )
-                    logger.error(f"Error: {result.stderr}")
                     return False
+                logger.error(
+                    f"❌ pip-compile failed for {file_path.relative_to(self.project_root)}"
+                )
+                logger.error(f"Error: {result.stderr}")
+                return False
 
             finally:
                 # Clean up temp file

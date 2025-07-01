@@ -5,16 +5,15 @@ RESTful API for secure code execution in isolated environments.
 """
 
 import logging
-from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
+from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Request, BackgroundTasks, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from ..core.config import settings
-from ..models.execution import SandboxExecution, ExecutionStatus, ExecutionEnvironment
+from ..models.execution import ExecutionEnvironment, ExecutionStatus, SandboxExecution
 from ..services.sandbox_manager import SandboxManager
 
 logger = logging.getLogger(__name__)
@@ -38,30 +37,26 @@ class ExecutionRequest(BaseModel):
     language: str = Field(..., description="Programming language")
 
     # Optional execution parameters
-    execution_context: Optional[Dict[str, Any]] = Field(
+    execution_context: dict[str, Any] | None = Field(
         default=None, description="Execution context"
     )
-    input_files: Optional[List[Dict[str, Any]]] = Field(
+    input_files: list[dict[str, Any]] | None = Field(
         default=None, description="Input files"
     )
-    environment_variables: Optional[Dict[str, str]] = Field(
+    environment_variables: dict[str, str] | None = Field(
         default=None, description="Environment variables"
     )
 
     # Resource limits (optional overrides)
-    memory_limit_mb: Optional[int] = Field(
-        default=None, description="Memory limit in MB"
-    )
-    timeout_seconds: Optional[int] = Field(
-        default=None, description="Execution timeout"
-    )
-    network_enabled: Optional[bool] = Field(
+    memory_limit_mb: int | None = Field(default=None, description="Memory limit in MB")
+    timeout_seconds: int | None = Field(default=None, description="Execution timeout")
+    network_enabled: bool | None = Field(
         default=False, description="Enable network access"
     )
 
     # Request metadata
-    request_id: Optional[str] = Field(default=None, description="Request ID")
-    session_id: Optional[str] = Field(default=None, description="Session ID")
+    request_id: str | None = Field(default=None, description="Request ID")
+    session_id: str | None = Field(default=None, description="Session ID")
 
 
 class ExecutionResponse(BaseModel):
@@ -72,18 +67,18 @@ class ExecutionResponse(BaseModel):
     environment: str
     language: str
     status: str
-    exit_code: Optional[int]
-    stdout: Optional[str]
-    stderr: Optional[str]
-    execution_time_ms: Optional[int]
-    memory_usage_mb: Optional[float]
-    cpu_usage_percent: Optional[float]
-    policy_violations: List[str]
-    security_violations: List[str]
+    exit_code: int | None
+    stdout: str | None
+    stderr: str | None
+    execution_time_ms: int | None
+    memory_usage_mb: float | None
+    cpu_usage_percent: float | None
+    policy_violations: list[str]
+    security_violations: list[str]
     created_at: str
-    started_at: Optional[str]
-    completed_at: Optional[str]
-    error_message: Optional[str]
+    started_at: str | None
+    completed_at: str | None
+    error_message: str | None
 
     class Config:
         from_attributes = True
@@ -92,7 +87,7 @@ class ExecutionResponse(BaseModel):
 class ExecutionListResponse(BaseModel):
     """Response model for execution list."""
 
-    executions: List[ExecutionResponse]
+    executions: list[ExecutionResponse]
     total: int
     page: int
     page_size: int
@@ -106,8 +101,8 @@ class ExecutionStatsResponse(BaseModel):
     successful_executions: int
     failed_executions: int
     avg_execution_time_ms: float
-    environments: Dict[str, int]
-    agents: Dict[str, int]
+    environments: dict[str, int]
+    agents: dict[str, int]
 
 
 # Mock database dependency (replace with actual database session)
@@ -117,7 +112,7 @@ async def get_db() -> AsyncSession:
     pass
 
 
-def get_client_ip(request: Request) -> Optional[str]:
+def get_client_ip(request: Request) -> str | None:
     """Extract client IP from request."""
     return request.client.host if request.client else None
 
@@ -219,9 +214,9 @@ async def create_execution(
 
 @router.get("/", response_model=ExecutionListResponse)
 async def list_executions(
-    agent_id: Optional[str] = None,
-    environment: Optional[str] = None,
-    status_filter: Optional[str] = None,
+    agent_id: str | None = None,
+    environment: str | None = None,
+    status_filter: str | None = None,
     page: int = 1,
     page_size: int = 50,
     db: AsyncSession = Depends(get_db),
@@ -403,10 +398,9 @@ async def kill_execution(
             logger.info(f"Execution {execution_id} killed")
 
             return {"message": f"Execution {execution_id} killed successfully"}
-        else:
-            return {
-                "message": f"Execution {execution_id} could not be killed (may already be finished)"
-            }
+        return {
+            "message": f"Execution {execution_id} could not be killed (may already be finished)"
+        }
 
     except HTTPException:
         raise
@@ -420,7 +414,7 @@ async def kill_execution(
 
 @router.get("/stats/summary", response_model=ExecutionStatsResponse)
 async def get_execution_statistics(
-    agent_id: Optional[str] = None,
+    agent_id: str | None = None,
     days: int = 7,
     db: AsyncSession = Depends(get_db),
 ):

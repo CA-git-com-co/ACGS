@@ -766,7 +766,7 @@ def get_llm_client():
             )
             return _mock_llm_client_instance
         return _real_llm_client_instance
-    elif llm_provider == "groq":
+    if llm_provider == "groq":
         if _groq_llm_client_instance is None:
             _groq_llm_client_instance = GroqLLMClient()
         if not _groq_llm_client_instance.api_key:  # Check if API key was actually set
@@ -775,13 +775,12 @@ def get_llm_client():
             )
             return _mock_llm_client_instance
         return _groq_llm_client_instance
-    elif llm_provider == "mock":
+    if llm_provider == "mock":
         return _mock_llm_client_instance
-    else:
-        logger.warning(
-            f"Unknown LLM_PROVIDER '{llm_provider}'. Defaulting to MockLLMClient."
-        )
-        return _mock_llm_client_instance
+    logger.warning(
+        f"Unknown LLM_PROVIDER '{llm_provider}'. Defaulting to MockLLMClient."
+    )
+    return _mock_llm_client_instance
 
 
 async def query_llm_for_structured_output(

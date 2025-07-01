@@ -6,7 +6,7 @@ Constitutional AI Service, and Governance Synthesis Service.
 """
 
 from datetime import datetime
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 from uuid import uuid4
 
 import httpx
@@ -299,7 +299,7 @@ class TestServiceIntegration:
                 assert result["status"] == "recovered"
                 break
 
-            except (httpx.ConnectError, Exception) as e:
+            except (httpx.ConnectError, Exception):
                 if failure_count >= max_failures:
                     circuit_open = True
 
@@ -339,7 +339,7 @@ class TestServiceIntegration:
         ]
 
         request_count = 10
-        instance_usage = {instance: 0 for instance in service_instances}
+        instance_usage = dict.fromkeys(service_instances, 0)
 
         # Simulate round-robin load balancing
         for i in range(request_count):

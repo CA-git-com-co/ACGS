@@ -4,10 +4,11 @@ Comprehensive validation of all 5 governance workflows.
 """
 
 import asyncio
-import aiohttp
-import time
 import json
-from typing import Dict, List, Any
+import time
+from typing import Any
+
+import aiohttp
 
 
 class GovernanceWorkflowValidator:
@@ -24,8 +25,8 @@ class GovernanceWorkflowValidator:
         workflow_name: str,
         endpoint: str,
         method: str = "GET",
-        data: Dict = None,
-    ) -> Dict[str, Any]:
+        data: dict = None,
+    ) -> dict[str, Any]:
         """Validate a single governance workflow."""
         start_time = time.time()
 
@@ -136,7 +137,7 @@ class GovernanceWorkflowValidator:
 
             return results
 
-    def generate_report(self, results: List[Dict[str, Any]]):
+    def generate_report(self, results: list[dict[str, Any]]):
         """Generate a comprehensive validation report."""
 
         print("📊 GOVERNANCE WORKFLOWS VALIDATION REPORT")
@@ -150,7 +151,7 @@ class GovernanceWorkflowValidator:
         )
 
         print(
-            f"📈 Overall Success Rate: {successful_workflows}/{total_workflows} ({(successful_workflows/total_workflows)*100:.1f}%)"
+            f"📈 Overall Success Rate: {successful_workflows}/{total_workflows} ({(successful_workflows / total_workflows) * 100:.1f}%)"
         )
         print(f"⚡ Average Response Time: {avg_response_time:.2f}ms")
         print(
@@ -213,7 +214,7 @@ async def main():
             indent=2,
         )
 
-    print(f"📄 Detailed results saved to: governance_workflows_validation.json")
+    print("📄 Detailed results saved to: governance_workflows_validation.json")
 
     return summary["all_functional"]
 

@@ -5,15 +5,14 @@ Tests complete user workflows from input to output, including authentication,
 authorization, data processing, and response generation.
 """
 
-import os
-import sys
 import json
+import sys
 import time
 import uuid
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+from typing import Any
 
 # Add project paths
 project_root = Path(__file__).parent
@@ -34,15 +33,15 @@ class WorkflowTestResult:
     test_name: str
     status: WorkflowTestStatus
     execution_time: float
-    workflow_steps: List[str]
+    workflow_steps: list[str]
     steps_completed: int
     steps_successful: int
     authentication_passed: bool
     authorization_passed: bool
     data_processing_passed: bool
     response_generated: bool
-    details: Dict[str, Any]
-    error_message: Optional[str] = None
+    details: dict[str, Any]
+    error_message: str | None = None
 
 
 class E2EWorkflowTester:
@@ -86,7 +85,7 @@ class E2EWorkflowTester:
         if result.error_message:
             print(f"  Error: {result.error_message}")
 
-    def simulate_authentication(self, credentials: Dict[str, str]) -> Dict[str, Any]:
+    def simulate_authentication(self, credentials: dict[str, str]) -> dict[str, Any]:
         """Simulate user authentication."""
         try:
             username = credentials.get("username")
@@ -119,15 +118,14 @@ class E2EWorkflowTester:
                     "user_id": user_id,
                     "expires_at": self.session_store[session_id]["expires_at"],
                 }
-            else:
-                return {"success": False, "error": "Invalid credentials"}
+            return {"success": False, "error": "Invalid credentials"}
 
         except Exception as e:
             return {"success": False, "error": str(e)}
 
     def simulate_authorization(
         self, session_id: str, required_permission: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Simulate authorization check."""
         try:
             if session_id not in self.session_store:
@@ -142,18 +140,17 @@ class E2EWorkflowTester:
             # Check permissions
             if required_permission in session["permissions"]:
                 return {"success": True, "permission": required_permission}
-            else:
-                return {
-                    "success": False,
-                    "error": f"Permission '{required_permission}' denied",
-                }
+            return {
+                "success": False,
+                "error": f"Permission '{required_permission}' denied",
+            }
 
         except Exception as e:
             return {"success": False, "error": str(e)}
 
     def simulate_data_processing(
-        self, data: Dict[str, Any], processing_type: str
-    ) -> Dict[str, Any]:
+        self, data: dict[str, Any], processing_type: str
+    ) -> dict[str, Any]:
         """Simulate data processing operations."""
         try:
             processed_data = data.copy()
@@ -215,8 +212,8 @@ class E2EWorkflowTester:
             return {"success": False, "error": str(e)}
 
     def simulate_response_generation(
-        self, processed_data: Dict[str, Any], response_format: str
-    ) -> Dict[str, Any]:
+        self, processed_data: dict[str, Any], response_format: str
+    ) -> dict[str, Any]:
         """Simulate response generation."""
         try:
             if response_format == "json":
@@ -582,15 +579,15 @@ class E2EWorkflowTester:
         test_name: str,
         status: WorkflowTestStatus,
         start_time: float,
-        workflow_steps: List[str],
+        workflow_steps: list[str],
         steps_completed: int,
         steps_successful: int,
         auth_passed: bool,
         authz_passed: bool,
         processing_passed: bool,
         response_generated: bool,
-        details: Dict[str, Any],
-        error_message: Optional[str] = None,
+        details: dict[str, Any],
+        error_message: str | None = None,
     ) -> WorkflowTestResult:
         """Helper method to create workflow test results."""
         return WorkflowTestResult(
@@ -608,7 +605,7 @@ class E2EWorkflowTester:
             error_message,
         )
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Run all end-to-end workflow tests."""
         print("Starting End-to-End Workflow Testing...")
         print("=" * 60)
@@ -637,7 +634,7 @@ class E2EWorkflowTester:
                     False,
                     False,
                     {},
-                    f"Test execution failed: {str(e)}",
+                    f"Test execution failed: {e!s}",
                 )
                 self.log_result(error_result)
 

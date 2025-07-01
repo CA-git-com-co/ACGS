@@ -63,7 +63,7 @@ except ImportError:
         # ensures: Correct function execution
         # sha256: func_hash
         """Fallback function when performance monitoring is not available."""
-        return None
+        return
 
 
 from ..config.opa_config import OPAMode, get_opa_config
@@ -172,16 +172,14 @@ class PolicyDecisionCache:
 
         if self.use_advanced_cache:
             return await self.cache.get(key)
-        else:
-            # Fallback to simple cache logic
-            if key in self.cache:
-                entry = self.cache[key]
-                if datetime.now() < entry["expires_at"]:
-                    logger.debug(f"Cache hit for policy decision: {key}")
-                    return entry["response"]
-                else:
-                    del self.cache[key]
-            return None
+        # Fallback to simple cache logic
+        if key in self.cache:
+            entry = self.cache[key]
+            if datetime.now() < entry["expires_at"]:
+                logger.debug(f"Cache hit for policy decision: {key}")
+                return entry["response"]
+            del self.cache[key]
+        return None
 
     async def put(
         self, request: PolicyDecisionRequest, response: PolicyDecisionResponse
@@ -226,13 +224,12 @@ class PolicyDecisionCache:
         """Get cache statistics."""
         if self.use_advanced_cache:
             return self.cache.get_stats()
-        else:
-            return {
-                "simple_cache": {
-                    "entry_count": len(self.cache),
-                    "max_size": self.max_size,
-                }
+        return {
+            "simple_cache": {
+                "entry_count": len(self.cache),
+                "max_size": self.max_size,
             }
+        }
 
 
 class OPAClient:
@@ -351,9 +348,8 @@ class OPAClient:
                 if response.status == 200:
                     self.metrics["last_health_check"] = datetime.now()
                     return True
-                else:
-                    logger.warning(f"OPA server health check failed: {response.status}")
-                    return False
+                logger.warning(f"OPA server health check failed: {response.status}")
+                return False
         except Exception as e:
             logger.warning(f"OPA server health check error: {e}")
             return False
@@ -432,9 +428,7 @@ class OPAClient:
 
         except Exception as e:
             self.metrics["error_count"] += 1
-            logger.error(
-                f"Policy evaluation failed for {request.policy_path}: {str(e)}"
-            )
+            logger.error(f"Policy evaluation failed for {request.policy_path}: {e!s}")
             raise OPAIntegrationError(f"Policy evaluation failed: {e}")
 
     async def _evaluate_policy_internal(
@@ -512,11 +506,10 @@ class OPAClient:
                     metrics=data.get("metrics"),
                     provenance=data.get("provenance"),
                 )
-            else:
-                error_text = await response.text()
-                raise OPAIntegrationError(
-                    f"Server evaluation failed: {response.status} - {error_text}"
-                )
+            error_text = await response.text()
+            raise OPAIntegrationError(
+                f"Server evaluation failed: {response.status} - {error_text}"
+            )
 
     async def _evaluate_via_embedded(
         self, request: PolicyDecisionRequest, decision_id: str, start_time: float
@@ -551,8 +544,7 @@ class OPAClient:
         ) / total
 
         # Update max latency
-        if latency_ms > self.metrics["max_latency_ms"]:
-            self.metrics["max_latency_ms"] = latency_ms
+        self.metrics["max_latency_ms"] = max(self.metrics["max_latency_ms"], latency_ms)
 
     async def validate_policy(
         self, policy_content: str, policy_path: str
@@ -640,13 +632,12 @@ class OPAClient:
 
             tasks = [evaluate_with_semaphore(request) for request in batch.decisions]
             return await asyncio.gather(*tasks, return_exceptions=True)
-        else:
-            # Sequential execution
-            results = []
-            for request in batch.decisions:
-                result = await self.evaluate_policy(request)
-                results.append(result)
-            return results
+        # Sequential execution
+        results = []
+        for request in batch.decisions:
+            result = await self.evaluate_policy(request)
+            results.append(result)
+        return results
 
     def get_metrics(self) -> dict[str, Any]:
         """Get performance metrics."""

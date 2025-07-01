@@ -15,22 +15,19 @@ Port: 8013
 
 import asyncio
 import logging
-import json
+import sys
+from datetime import datetime
+from typing import Any
+
 import aiohttp
 import uvicorn
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import BackgroundTasks, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from typing import Dict, List, Any, Optional
-import pandas as pd
-import numpy as np
-from datetime import datetime, timedelta
-import sys
-import os
 
 # Add core modules to path
 sys.path.append("../../core/acgs-pgp-v8")
-from nats_event_broker import NATSEventBroker, ACGSEvent
+from nats_event_broker import ACGSEvent, NATSEventBroker
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +39,7 @@ class ServiceRegistration(BaseModel):
     host: str = Field(..., description="Service host")
     port: int = Field(..., description="Service port")
     health_endpoint: str = Field(default="/health", description="Health check endpoint")
-    capabilities: List[str] = Field(..., description="Service capabilities")
+    capabilities: list[str] = Field(..., description="Service capabilities")
     constitutional_hash: str = Field(
         ..., description="Constitutional hash for validation"
     )
@@ -52,8 +49,8 @@ class DistributedAnalysisRequest(BaseModel):
     analysis_type: str = Field(
         ..., description="Type of analysis: quality, drift, performance"
     )
-    data: List[Dict[str, Any]] = Field(..., description="Data to analyze")
-    parameters: Dict[str, Any] = Field(default={}, description="Analysis parameters")
+    data: list[dict[str, Any]] = Field(..., description="Data to analyze")
+    parameters: dict[str, Any] = Field(default={}, description="Analysis parameters")
     service_id: str = Field(default="unknown", description="Requesting service ID")
     constitutional_hash: str = Field(
         ..., description="Constitutional hash for validation"
@@ -63,9 +60,9 @@ class DistributedAnalysisRequest(BaseModel):
 class DistributedAnalysisResponse(BaseModel):
     analysis_id: str
     analysis_type: str
-    results: Dict[str, Any]
+    results: dict[str, Any]
     processing_time_ms: float
-    services_used: List[str]
+    services_used: list[str]
     constitutional_hash: str
     timestamp: str
 
@@ -110,8 +107,8 @@ class AnalyticsOrchestrator:
         self.event_broker = NATSEventBroker()
 
         # Service registry
-        self.service_registry: Dict[str, ServiceRegistration] = {}
-        self.service_health: Dict[str, Dict[str, Any]] = {}
+        self.service_registry: dict[str, ServiceRegistration] = {}
+        self.service_health: dict[str, dict[str, Any]] = {}
 
         # Default analytics services configuration
         self.default_services = {
@@ -136,8 +133,8 @@ class AnalyticsOrchestrator:
         }
 
         # Load balancing and routing
-        self.service_load: Dict[str, int] = {}
-        self.request_routing: Dict[str, str] = {
+        self.service_load: dict[str, int] = {}
+        self.request_routing: dict[str, str] = {
             "quality": "data-quality-service",
             "drift": "drift-detection-service",
             "performance": "performance-monitoring-service",
@@ -292,7 +289,7 @@ class AnalyticsOrchestrator:
                 logger.error(f"❌ Distributed analysis failed: {e}")
                 self.metrics["service_failures"] += 1
                 raise HTTPException(
-                    status_code=500, detail=f"Distributed analysis failed: {str(e)}"
+                    status_code=500, detail=f"Distributed analysis failed: {e!s}"
                 )
 
         @self.app.get("/services")
@@ -360,14 +357,14 @@ class AnalyticsOrchestrator:
                     logger.warning(f"⚠️ Failed to discover service {service_id}: {e}")
 
             return {
-                "message": f"Service discovery completed",
+                "message": "Service discovery completed",
                 "discovered_services": discovered_count,
                 "total_services": len(self.service_registry),
                 "constitutional_hash": self.constitutional_hash,
                 "timestamp": datetime.now().isoformat(),
             }
 
-    def _route_request(self, analysis_type: str) -> Optional[str]:
+    def _route_request(self, analysis_type: str) -> str | None:
         """Route analysis request to appropriate service."""
 
         # Get target service for analysis type
@@ -386,7 +383,7 @@ class AnalyticsOrchestrator:
 
     async def _execute_distributed_analysis(
         self, service_id: str, request: DistributedAnalysisRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute analysis on target microservice."""
 
         service = self.service_registry[service_id]
@@ -428,15 +425,11 @@ class AnalyticsOrchestrator:
                 async with session.post(
                     endpoint, json=payload, timeout=aiohttp.ClientTimeout(total=30)
                 ) as response:
-
                     if response.status == 200:
                         result = await response.json()
                         return result
-                    else:
-                        error_text = await response.text()
-                        raise Exception(
-                            f"Service returned {response.status}: {error_text}"
-                        )
+                    error_text = await response.text()
+                    raise Exception(f"Service returned {response.status}: {error_text}")
 
         finally:
             # Decrement service load
@@ -447,7 +440,7 @@ class AnalyticsOrchestrator:
         analysis_id: str,
         analysis_type: str,
         service_id: str,
-        results: Dict[str, Any],
+        results: dict[str, Any],
     ):
         """Publish distributed analysis event."""
 
@@ -505,7 +498,6 @@ class AnalyticsOrchestrator:
                 async with session.get(
                     health_url, timeout=aiohttp.ClientTimeout(total=5)
                 ) as response:
-
                     if response.status == 200:
                         health_data = await response.json()
 

@@ -95,7 +95,7 @@ class TestInfrastructureManager:
         """Check if Anchor CLI is installed."""
         try:
             result = subprocess.run(
-                ["anchor", "--version"], capture_output=True, text=True
+                ["anchor", "--version"], check=False, capture_output=True, text=True
             )
             return result.returncode == 0
         except FileNotFoundError:

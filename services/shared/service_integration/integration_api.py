@@ -150,7 +150,7 @@ async def call_service_endpoint(
             f"after {call_time_ms:.2f}ms: {e}"
         )
 
-        raise HTTPException(status_code=500, detail=f"Service call failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Service call failed: {e!s}")
 
 
 @router.post("/publish-event", status_code=200)
@@ -238,9 +238,7 @@ async def publish_event_endpoint(
     except Exception as e:
         logger.error(f"Event publishing failed: {e}")
 
-        raise HTTPException(
-            status_code=500, detail=f"Event publishing failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Event publishing failed: {e!s}")
 
 
 @router.post("/start-workflow", status_code=200)
@@ -311,7 +309,7 @@ async def start_workflow_endpoint(
     except Exception as e:
         logger.error(f"Workflow start failed: {e}")
 
-        raise HTTPException(status_code=500, detail=f"Workflow start failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Workflow start failed: {e!s}")
 
 
 @router.get("/status", response_model=ServiceIntegrationStatus)
@@ -363,9 +361,7 @@ async def get_integration_status(
     except Exception as e:
         logger.error(f"Status retrieval failed: {e}")
 
-        raise HTTPException(
-            status_code=500, detail=f"Status retrieval failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Status retrieval failed: {e!s}")
 
 
 @router.get("/metrics", status_code=200)
@@ -430,9 +426,7 @@ async def get_integration_metrics(
     except Exception as e:
         logger.error(f"Metrics retrieval failed: {e}")
 
-        raise HTTPException(
-            status_code=500, detail=f"Metrics retrieval failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Metrics retrieval failed: {e!s}")
 
 
 @router.post("/health-check", status_code=200)
@@ -505,7 +499,7 @@ async def trigger_health_check(
         logger.error(f"Health check trigger failed: {e}")
 
         raise HTTPException(
-            status_code=500, detail=f"Health check trigger failed: {str(e)}"
+            status_code=500, detail=f"Health check trigger failed: {e!s}"
         )
 
 
@@ -536,15 +530,14 @@ def _calculate_integration_grade(metrics: dict[str, Any]) -> str:
     # Assign grade
     if overall_score >= 0.95:
         return "A+"
-    elif overall_score >= 0.90:
+    if overall_score >= 0.90:
         return "A"
-    elif overall_score >= 0.85:
+    if overall_score >= 0.85:
         return "B+"
-    elif overall_score >= 0.80:
+    if overall_score >= 0.80:
         return "B"
-    elif overall_score >= 0.75:
+    if overall_score >= 0.75:
         return "C+"
-    elif overall_score >= 0.70:
+    if overall_score >= 0.70:
         return "C"
-    else:
-        return "D"
+    return "D"

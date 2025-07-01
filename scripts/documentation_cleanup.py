@@ -165,7 +165,7 @@ class DocumentationCleanupManager:
             return True
 
         except Exception as e:
-            error_msg = f"Backup failed: {str(e)}"
+            error_msg = f"Backup failed: {e!s}"
             print(f"❌ {error_msg}")
             self.report_data["errors"].append(error_msg)
             return False
@@ -209,7 +209,7 @@ class DocumentationCleanupManager:
             return True
 
         except Exception as e:
-            error_msg = f"File removal failed: {str(e)}"
+            error_msg = f"File removal failed: {e!s}"
             print(f"❌ {error_msg}")
             self.report_data["errors"].append(error_msg)
             return False
@@ -267,7 +267,7 @@ class DocumentationCleanupManager:
             return True
 
         except Exception as e:
-            error_msg = f"Documentation update failed: {str(e)}"
+            error_msg = f"Documentation update failed: {e!s}"
             print(f"❌ {error_msg}")
             self.report_data["errors"].append(error_msg)
             return False
@@ -292,6 +292,7 @@ class DocumentationCleanupManager:
                     # Check if service is responding
                     result = subprocess.run(
                         ["curl", "-f", "-s", f"http://localhost:{port}/health"],
+                        check=False,
                         capture_output=True,
                         timeout=5,
                     )
@@ -325,7 +326,10 @@ class DocumentationCleanupManager:
             try:
                 # Check Solana CLI availability
                 solana_result = subprocess.run(
-                    ["solana", "--version"], capture_output=True, timeout=10
+                    ["solana", "--version"],
+                    check=False,
+                    capture_output=True,
+                    timeout=10,
                 )
                 blockchain_validation["solana_cli"] = {
                     "available": solana_result.returncode == 0,
@@ -338,7 +342,10 @@ class DocumentationCleanupManager:
 
                 # Check Anchor CLI availability
                 anchor_result = subprocess.run(
-                    ["anchor", "--version"], capture_output=True, timeout=10
+                    ["anchor", "--version"],
+                    check=False,
+                    capture_output=True,
+                    timeout=10,
                 )
                 blockchain_validation["anchor_cli"] = {
                     "available": anchor_result.returncode == 0,
@@ -437,7 +444,7 @@ class DocumentationCleanupManager:
             return uptime_percentage >= 99.5 and governance_score >= 70
 
         except Exception as e:
-            error_msg = f"Validation failed: {str(e)}"
+            error_msg = f"Validation failed: {e!s}"
             print(f"❌ {error_msg}")
             self.report_data["errors"].append(error_msg)
             return False
@@ -473,7 +480,7 @@ class DocumentationCleanupManager:
             return True
 
         except Exception as e:
-            error_msg = f"Report generation failed: {str(e)}"
+            error_msg = f"Report generation failed: {e!s}"
             print(f"❌ {error_msg}")
             self.report_data["errors"].append(error_msg)
             return False
@@ -530,10 +537,9 @@ def main() -> int:
             print(f"⏱️  Uptime: {metrics.get('uptime_percentage', 0):.1f}%")
 
         return 0
-    else:
-        print("❌ Documentation cleanup failed!")
-        print(f"🔍 Check errors in: {cleanup_manager.report_file}")
-        return 1
+    print("❌ Documentation cleanup failed!")
+    print(f"🔍 Check errors in: {cleanup_manager.report_file}")
+    return 1
 
 
 if __name__ == "__main__":

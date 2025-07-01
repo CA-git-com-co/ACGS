@@ -4,12 +4,10 @@ Main FastAPI application for the Darwin Gödel Machine (DGM) Service.
 
 import asyncio
 import logging
-import os
 from contextlib import asynccontextmanager
-from typing import Any, Dict
 
 import uvicorn
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse

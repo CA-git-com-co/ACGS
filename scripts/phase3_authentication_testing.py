@@ -16,8 +16,8 @@ import asyncio
 import json
 import logging
 import time
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Any, Optional
+from datetime import datetime, timezone
+from typing import Any
 
 import httpx
 import jwt
@@ -36,9 +36,9 @@ class AuthTestResult(BaseModel):
     test_name: str
     status: str
     response_time_ms: float
-    details: Dict[str, Any]
+    details: dict[str, Any]
     timestamp: datetime
-    error: Optional[str] = None
+    error: str | None = None
 
 
 class ACGSAuthenticationTester:
@@ -57,10 +57,10 @@ class ACGSAuthenticationTester:
         self.base_url = "http://localhost"
         self.constitutional_hash = "cdd01ef066bc6cf2"
         self.test_credentials = {"username": "test_user", "password": "test_password"}
-        self.access_token: Optional[str] = None
-        self.test_results: List[AuthTestResult] = []
+        self.access_token: str | None = None
+        self.test_results: list[AuthTestResult] = []
 
-    async def authenticate_with_auth_service(self) -> Dict[str, Any]:
+    async def authenticate_with_auth_service(self) -> dict[str, Any]:
         """Authenticate with the auth service and obtain JWT token"""
         logger.info("🔐 Authenticating with auth service...")
 
@@ -120,7 +120,7 @@ class ACGSAuthenticationTester:
                 "response_time_ms": response_time,
             }
 
-    async def test_service_authentication(self, service_key: str) -> Dict[str, Any]:
+    async def test_service_authentication(self, service_key: str) -> dict[str, Any]:
         """Test authentication with a specific service"""
         service = self.services[service_key]
         logger.info(f"🔒 Testing authentication with {service['name']}...")
@@ -170,7 +170,7 @@ class ACGSAuthenticationTester:
                                     else None
                                 ),
                             }
-                        elif response.status_code == 401:
+                        if response.status_code == 401:
                             return {
                                 "status": "auth_failed",
                                 "service": service["name"],
@@ -179,7 +179,7 @@ class ACGSAuthenticationTester:
                                 "response_time_ms": response_time,
                                 "error": "Authentication failed - token rejected",
                             }
-                        elif response.status_code == 403:
+                        if response.status_code == 403:
                             return {
                                 "status": "auth_success_access_denied",
                                 "service": service["name"],
@@ -215,7 +215,7 @@ class ACGSAuthenticationTester:
                 "error": str(e),
             }
 
-    async def test_token_validation(self) -> Dict[str, Any]:
+    async def test_token_validation(self) -> dict[str, Any]:
         """Test JWT token validation and structure"""
         logger.info("🔍 Testing JWT token validation...")
 
@@ -266,9 +266,9 @@ class ACGSAuthenticationTester:
             }
 
         except Exception as e:
-            return {"status": "failed", "error": f"Token validation failed: {str(e)}"}
+            return {"status": "failed", "error": f"Token validation failed: {e!s}"}
 
-    async def test_unauthorized_access(self) -> Dict[str, Any]:
+    async def test_unauthorized_access(self) -> dict[str, Any]:
         """Test that services properly reject unauthorized requests"""
         logger.info("🚫 Testing unauthorized access rejection...")
 
@@ -332,7 +332,7 @@ class ACGSAuthenticationTester:
         """Verify constitutional hash in response headers"""
         return response.headers.get("x-constitutional-hash") == self.constitutional_hash
 
-    async def run_authentication_tests(self) -> Dict[str, Any]:
+    async def run_authentication_tests(self) -> dict[str, Any]:
         """Run comprehensive authentication tests"""
         logger.info("🚀 Starting ACGS-PGP Authentication Tests...")
 
@@ -425,9 +425,8 @@ async def main():
         if results["overall_status"] == "passed":
             print("✅ Authentication tests passed successfully!")
             return 0
-        else:
-            print("❌ Some authentication tests failed. Check results for details.")
-            return 1
+        print("❌ Some authentication tests failed. Check results for details.")
+        return 1
 
     except Exception as e:
         logger.error(f"Authentication testing failed: {e}")

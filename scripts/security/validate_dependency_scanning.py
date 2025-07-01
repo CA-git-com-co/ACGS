@@ -13,12 +13,10 @@ Usage:
 
 import argparse
 import json
-import os
 import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 
 class DependencyScanningValidator:
@@ -41,12 +39,13 @@ class DependencyScanningValidator:
             print(f"[{timestamp}] {level}: {message}")
 
     def run_command(
-        self, command: List[str], cwd: Path = None
-    ) -> Tuple[bool, str, str]:
+        self, command: list[str], cwd: Path = None
+    ) -> tuple[bool, str, str]:
         """Run a command and return success status, stdout, stderr."""
         try:
             result = subprocess.run(
                 command,
+                check=False,
                 cwd=cwd or self.project_root,
                 capture_output=True,
                 text=True,
@@ -58,7 +57,7 @@ class DependencyScanningValidator:
         except Exception as e:
             return False, "", str(e)
 
-    def check_workflow_files(self) -> Dict[str, bool]:
+    def check_workflow_files(self) -> dict[str, bool]:
         """Check if required workflow files exist and are properly configured."""
         self.log("Checking GitHub workflow files...")
 
@@ -84,15 +83,15 @@ class DependencyScanningValidator:
                     for keyword in ["pip-audit", "npm audit", "cargo audit", "safety"]
                 )
                 if has_scanning:
-                    self.log(f"   ✅ Contains dependency scanning commands")
+                    self.log("   ✅ Contains dependency scanning commands")
                 else:
-                    self.log(f"   ⚠️ May not contain dependency scanning", "WARNING")
+                    self.log("   ⚠️ May not contain dependency scanning", "WARNING")
             else:
                 self.log(f"❌ Missing {description}: {workflow_file}", "ERROR")
 
         return results
 
-    def check_python_scanning_tools(self) -> Dict[str, bool]:
+    def check_python_scanning_tools(self) -> dict[str, bool]:
         """Check Python dependency scanning tools availability."""
         self.log("Checking Python dependency scanning tools...")
 
@@ -114,7 +113,7 @@ class DependencyScanningValidator:
 
         return results
 
-    def check_nodejs_scanning_tools(self) -> Dict[str, bool]:
+    def check_nodejs_scanning_tools(self) -> dict[str, bool]:
         """Check Node.js dependency scanning tools availability."""
         self.log("Checking Node.js dependency scanning tools...")
 
@@ -143,7 +142,7 @@ class DependencyScanningValidator:
 
         return results
 
-    def check_rust_scanning_tools(self) -> Dict[str, bool]:
+    def check_rust_scanning_tools(self) -> dict[str, bool]:
         """Check Rust dependency scanning tools availability."""
         self.log("Checking Rust dependency scanning tools...")
 

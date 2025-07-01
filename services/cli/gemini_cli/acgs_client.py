@@ -2,16 +2,13 @@
 ACGS Client wrapper for Gemini CLI integration
 """
 
-import json
 import logging
-from typing import Dict, List, Optional, Any
 from datetime import datetime
+
 import requests
+from gemini_config import get_config
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-
-from gemini_config import get_config
-
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +37,7 @@ class ACGSClient:
         session.mount("https://", adapter)
         return session
 
-    def _get_headers(self) -> Dict[str, str]:
+    def _get_headers(self) -> dict[str, str]:
         """Get common headers for requests"""
         headers = {
             "Content-Type": "application/json",
@@ -52,7 +49,7 @@ class ACGSClient:
 
     # Agent Management
 
-    def create_agent(self, name: str, agent_type: str, capabilities: List[str]) -> Dict:
+    def create_agent(self, name: str, agent_type: str, capabilities: list[str]) -> dict:
         """Create a new agent in the system"""
         url = f"{self.config.auth_service_url}/api/v1/agents"
         data = {
@@ -81,7 +78,7 @@ class ACGSClient:
         logger.info(f"Created agent: {self.agent_id}")
         return result
 
-    def list_agents(self) -> List[Dict]:
+    def list_agents(self) -> list[dict]:
         """List all agents"""
         url = f"{self.config.auth_service_url}/api/v1/agents"
         response = self.session.get(
@@ -90,7 +87,7 @@ class ACGSClient:
         response.raise_for_status()
         return response.json()
 
-    def get_agent(self, agent_id: str) -> Dict:
+    def get_agent(self, agent_id: str) -> dict:
         """Get agent details"""
         url = f"{self.config.auth_service_url}/api/v1/agents/{agent_id}"
         response = self.session.get(
@@ -102,8 +99,8 @@ class ACGSClient:
     # Operation Management
 
     def submit_operation(
-        self, operation_type: str, parameters: Dict, agent_id: Optional[str] = None
-    ) -> Dict:
+        self, operation_type: str, parameters: dict, agent_id: str | None = None
+    ) -> dict:
         """Submit an operation to the ACGS coordinator"""
         url = f"{self.config.acgs_coordinator_url}/api/v1/operations"
 
@@ -128,7 +125,7 @@ class ACGSClient:
         response.raise_for_status()
         return response.json()
 
-    def get_operation_status(self, operation_id: str) -> Dict:
+    def get_operation_status(self, operation_id: str) -> dict:
         """Get status of an operation"""
         url = f"{self.config.acgs_coordinator_url}/api/v1/operations/{operation_id}"
         response = self.session.get(
@@ -137,7 +134,7 @@ class ACGSClient:
         response.raise_for_status()
         return response.json()
 
-    def list_agent_operations(self, agent_id: Optional[str] = None) -> List[Dict]:
+    def list_agent_operations(self, agent_id: str | None = None) -> list[dict]:
         """List operations for an agent"""
         agent_id = agent_id or self.agent_id
         url = f"{self.config.acgs_coordinator_url}/api/v1/agents/{agent_id}/operations"
@@ -150,8 +147,8 @@ class ACGSClient:
     # Code Execution
 
     def execute_code(
-        self, code: str, language: str = "python", environment: Optional[Dict] = None
-    ) -> Dict:
+        self, code: str, language: str = "python", environment: dict | None = None
+    ) -> dict:
         """Execute code in sandbox environment"""
         return self.submit_operation(
             operation_type="code_execution",
@@ -169,7 +166,7 @@ class ACGSClient:
 
     # Policy Verification
 
-    def verify_policy(self, policy: str, context: Dict) -> Dict:
+    def verify_policy(self, policy: str, context: dict) -> dict:
         """Verify policy compliance"""
         url = f"{self.config.formal_verification_url}/api/v1/verify"
         data = {
@@ -187,7 +184,7 @@ class ACGSClient:
         response.raise_for_status()
         return response.json()
 
-    def check_constitutional_compliance(self, action: str, parameters: Dict) -> Dict:
+    def check_constitutional_compliance(self, action: str, parameters: dict) -> dict:
         """Check if an action complies with constitutional principles"""
         url = f"{self.config.formal_verification_url}/api/v1/constitutional/check"
         data = {"action": action, "parameters": parameters, "agent_id": self.agent_id}
@@ -205,11 +202,11 @@ class ACGSClient:
 
     def get_audit_trail(
         self,
-        operation_id: Optional[str] = None,
-        agent_id: Optional[str] = None,
-        start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None,
-    ) -> List[Dict]:
+        operation_id: str | None = None,
+        agent_id: str | None = None,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
+    ) -> list[dict]:
         """Get audit trail for operations"""
         url = f"{self.config.audit_service_url}/api/v1/audit/trail"
         params = {}
@@ -232,7 +229,7 @@ class ACGSClient:
         response.raise_for_status()
         return response.json()
 
-    def verify_audit_entry(self, audit_id: str) -> Dict:
+    def verify_audit_entry(self, audit_id: str) -> dict:
         """Verify integrity of audit entry"""
         url = f"{self.config.audit_service_url}/api/v1/audit/{audit_id}/verify"
         response = self.session.get(
@@ -243,7 +240,7 @@ class ACGSClient:
 
     # HITL Integration
 
-    def get_hitl_decision(self, operation_id: str) -> Dict:
+    def get_hitl_decision(self, operation_id: str) -> dict:
         """Get human-in-the-loop decision for an operation"""
         url = f"{self.config.hitl_service_url}/api/v1/decisions/{operation_id}"
         response = self.session.get(
@@ -253,8 +250,8 @@ class ACGSClient:
         return response.json()
 
     def submit_hitl_feedback(
-        self, operation_id: str, decision: str, feedback: Optional[str] = None
-    ) -> Dict:
+        self, operation_id: str, decision: str, feedback: str | None = None
+    ) -> dict:
         """Submit HITL feedback for an operation"""
         url = f"{self.config.hitl_service_url}/api/v1/decisions/{operation_id}/feedback"
         data = {
@@ -274,7 +271,7 @@ class ACGSClient:
 
     # Health Checks
 
-    def check_service_health(self) -> Dict[str, bool]:
+    def check_service_health(self) -> dict[str, bool]:
         """Check health of all ACGS services"""
         services = {
             "coordinator": self.config.acgs_coordinator_url,

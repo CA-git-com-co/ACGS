@@ -8,10 +8,10 @@ from .engine import GenerationConfig, GenerationEngine
 from .models import LSU, Representation, RepresentationSet, RepresentationType
 
 __all__ = [
-    "GenerationEngine",
-    "GenerationConfig",
-    "RepresentationType",
     "LSU",
+    "GenerationConfig",
+    "GenerationEngine",
     "Representation",
     "RepresentationSet",
+    "RepresentationType",
 ]

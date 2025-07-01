@@ -76,6 +76,7 @@ class CodeQualityCleanup:
                     # Format with Black
                     result = subprocess.run(
                         ["black", "--line-length", "88", str(py_file)],
+                        check=False,
                         capture_output=True,
                         text=True,
                     )
@@ -91,6 +92,7 @@ class CodeQualityCleanup:
                                 "black",
                                 str(py_file),
                             ],
+                            check=False,
                             capture_output=True,
                         )
 
@@ -125,6 +127,7 @@ class CodeQualityCleanup:
                             "--in-place",
                             str(py_file),
                         ],
+                        check=False,
                         capture_output=True,
                         text=True,
                     )
@@ -167,6 +170,7 @@ class CodeQualityCleanup:
                 try:
                     result = subprocess.run(
                         ["npx", "prettier", "--write", str(js_file)],
+                        check=False,
                         capture_output=True,
                         text=True,
                     )
@@ -200,7 +204,10 @@ class CodeQualityCleanup:
             if self._should_format_file(rust_file):
                 try:
                     result = subprocess.run(
-                        ["rustfmt", str(rust_file)], capture_output=True, text=True
+                        ["rustfmt", str(rust_file)],
+                        check=False,
+                        capture_output=True,
+                        text=True,
                     )
 
                     if result.returncode == 0:
@@ -277,6 +284,7 @@ class CodeQualityCleanup:
                     str(self.project_root / "applications"),
                     str(self.project_root / "integrations"),
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
             )

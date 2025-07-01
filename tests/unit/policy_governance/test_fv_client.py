@@ -2,13 +2,6 @@
 Unit tests for services.core.policy-governance.pgc_service.app.services.fv_client
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.policy_governance.pgc_service.app.services.fv_client import (
-    CircuitBreaker,
-    FVServiceClient,
-)
-
 
 class TestCircuitBreaker:
     """Test suite for CircuitBreaker."""

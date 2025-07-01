@@ -4,15 +4,13 @@ GitHub Actions Workflow Validation Script
 Validates that all workflow fixes have been applied correctly and tests critical functionality.
 """
 
-import os
 import re
-import yaml
-import json
 from pathlib import Path
-from typing import Dict, List, Tuple
+
+import yaml
 
 
-def validate_deprecated_actions(content: str, filepath: str) -> List[str]:
+def validate_deprecated_actions(content: str, filepath: str) -> list[str]:
     """Validate that deprecated actions have been updated"""
     issues = []
 
@@ -32,7 +30,7 @@ def validate_deprecated_actions(content: str, filepath: str) -> List[str]:
     return issues
 
 
-def validate_connectivity_checks(content: str, filepath: str) -> List[str]:
+def validate_connectivity_checks(content: str, filepath: str) -> list[str]:
     """Validate that ping-based connectivity has been replaced with HTTP"""
     issues = []
 
@@ -48,7 +46,7 @@ def validate_connectivity_checks(content: str, filepath: str) -> List[str]:
     return issues
 
 
-def validate_cargo_configuration(content: str, filepath: str) -> List[str]:
+def validate_cargo_configuration(content: str, filepath: str) -> list[str]:
     """Validate CARGO_INCREMENTAL configuration"""
     issues = []
 
@@ -59,7 +57,7 @@ def validate_cargo_configuration(content: str, filepath: str) -> List[str]:
     return issues
 
 
-def validate_timeout_protections(content: str, filepath: str) -> List[str]:
+def validate_timeout_protections(content: str, filepath: str) -> list[str]:
     """Validate that timeout protections are in place"""
     issues = []
 
@@ -74,7 +72,7 @@ def validate_timeout_protections(content: str, filepath: str) -> List[str]:
     return issues
 
 
-def validate_error_handling(content: str, filepath: str) -> List[str]:
+def validate_error_handling(content: str, filepath: str) -> list[str]:
     """Validate error handling and retry mechanisms"""
     issues = []
 
@@ -89,12 +87,12 @@ def validate_error_handling(content: str, filepath: str) -> List[str]:
     return issues
 
 
-def validate_workflow_syntax(filepath: str) -> List[str]:
+def validate_workflow_syntax(filepath: str) -> list[str]:
     """Validate YAML syntax and basic workflow structure"""
     issues = []
 
     try:
-        with open(filepath, "r", encoding="utf-8") as f:
+        with open(filepath, encoding="utf-8") as f:
             workflow = yaml.safe_load(f)
 
         # Basic structure validation
@@ -119,7 +117,7 @@ def validate_workflow_syntax(filepath: str) -> List[str]:
     return issues
 
 
-def check_dependency_files() -> List[str]:
+def check_dependency_files() -> list[str]:
     """Check for missing dependency files"""
     issues = []
 
@@ -141,9 +139,9 @@ def check_dependency_files() -> List[str]:
     return issues
 
 
-def validate_workflow_file(filepath: Path) -> Dict[str, List[str]]:
+def validate_workflow_file(filepath: Path) -> dict[str, list[str]]:
     """Validate a single workflow file"""
-    with open(filepath, "r", encoding="utf-8") as f:
+    with open(filepath, encoding="utf-8") as f:
         content = f.read()
 
     validation_results = {
@@ -159,7 +157,7 @@ def validate_workflow_file(filepath: Path) -> Dict[str, List[str]]:
 
 
 def generate_validation_report(
-    results: Dict[str, Dict[str, List[str]]], dependency_issues: List[str]
+    results: dict[str, dict[str, list[str]]], dependency_issues: list[str]
 ) -> str:
     """Generate a comprehensive validation report"""
     report = """# GitHub Actions Workflow Validation Report
@@ -257,8 +255,8 @@ def main():
     with open("GITHUB_ACTIONS_VALIDATION_REPORT.md", "w") as f:
         f.write(report)
 
-    print(f"\n✅ Validation completed!")
-    print(f"📄 Report saved: GITHUB_ACTIONS_VALIDATION_REPORT.md")
+    print("\n✅ Validation completed!")
+    print("📄 Report saved: GITHUB_ACTIONS_VALIDATION_REPORT.md")
 
     # Print summary
     total_issues = sum(

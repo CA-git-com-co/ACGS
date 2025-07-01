@@ -71,13 +71,11 @@ class ACServiceClient:
             )
             return None
         except httpx.RequestError as e:
-            print(
-                f"AC Client: Request error fetching principle {principle_id}: {str(e)}"
-            )
+            print(f"AC Client: Request error fetching principle {principle_id}: {e!s}")
             return None
         except Exception as e:
             print(
-                f"AC Client: Unexpected error fetching principle {principle_id}: {str(e)}"
+                f"AC Client: Unexpected error fetching principle {principle_id}: {e!s}"
             )
             return None
 

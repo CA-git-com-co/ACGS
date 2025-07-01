@@ -15,7 +15,7 @@ import os
 
 # Import the module under test
 import sys
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 import numpy as np
 import pytest

@@ -5,11 +5,10 @@ Creates professional-quality figures for the academic paper.
 """
 
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 import numpy as np
 import seaborn as sns
+from matplotlib import patches
 from matplotlib.patches import FancyBboxPatch, Rectangle
-import os
 
 # Set style for academic papers
 plt.style.use("seaborn-v0_8-whitegrid")
@@ -380,7 +379,7 @@ def create_rule_synthesis_chart():
     )
 
     # Add value labels on bars
-    for bar, rate in zip(bars, success_rates):
+    for bar, rate in zip(bars, success_rates, strict=False):
         height = bar.get_height()
         ax.text(
             bar.get_x() + bar.get_width() / 2.0,

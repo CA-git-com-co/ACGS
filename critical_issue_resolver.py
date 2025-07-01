@@ -5,13 +5,12 @@ Addresses critical bugs affecting core algorithmic correctness,
 security vulnerabilities, and performance bottlenecks.
 """
 
-import os
-import sys
 import json
+import sys
 import time
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
 # Add project paths
 project_root = Path(__file__).parent
@@ -23,10 +22,10 @@ class ResolutionResult:
     issue_id: str
     status: str  # RESOLVED, PARTIAL, FAILED, SKIPPED
     resolution_time: float
-    actions_taken: List[str]
+    actions_taken: list[str]
     verification_passed: bool
-    remaining_work: List[str]
-    details: Dict[str, Any]
+    remaining_work: list[str]
+    details: dict[str, Any]
 
 
 class CriticalIssueResolver:
@@ -34,7 +33,7 @@ class CriticalIssueResolver:
         self.project_root = project_root
         self.resolution_results = []
 
-    def load_critical_issues(self) -> List[Dict[str, Any]]:
+    def load_critical_issues(self) -> list[dict[str, Any]]:
         """Load critical issues from the analysis results."""
         issue_file = self.project_root / "issue_analysis_results.json"
 
@@ -42,7 +41,7 @@ class CriticalIssueResolver:
             print("❌ Issue analysis results not found. Run issue_analyzer.py first.")
             return []
 
-        with open(issue_file, "r") as f:
+        with open(issue_file) as f:
             data = json.load(f)
 
         # Filter for critical issues
@@ -56,7 +55,7 @@ class CriticalIssueResolver:
         return critical_issues
 
     def resolve_input_validation_security(
-        self, issue: Dict[str, Any]
+        self, issue: dict[str, Any]
     ) -> ResolutionResult:
         """Resolve critical input validation security vulnerabilities."""
         start_time = time.time()
@@ -452,7 +451,7 @@ def test_input_sanitization():
         except Exception:
             return False
 
-    def resolve_test_coverage_gaps(self, issue: Dict[str, Any]) -> ResolutionResult:
+    def resolve_test_coverage_gaps(self, issue: dict[str, Any]) -> ResolutionResult:
         """Resolve critical test coverage gaps."""
         start_time = time.time()
         actions_taken = []
@@ -604,7 +603,7 @@ class Test{component_name.replace("-", "").replace("_", "").title()}Performance:
                 {"error": str(e)},
             )
 
-    def resolve_critical_issues(self) -> Dict[str, Any]:
+    def resolve_critical_issues(self) -> dict[str, Any]:
         """Resolve all critical issues."""
         print("Starting Critical Issue Resolution...")
         print("=" * 60)
@@ -718,7 +717,7 @@ def main():
     if summary["failed"] > 0:
         print(f"\n⚠️  {summary['failed']} critical issues failed to resolve!")
         return 1
-    elif summary["resolved"] < summary["total_issues"]:
+    if summary["resolved"] < summary["total_issues"]:
         print(
             f"\n⚠️  {summary['total_issues'] - summary['resolved']} critical issues need manual attention!"
         )

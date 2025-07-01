@@ -9,7 +9,6 @@ import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
-
 # Import production security middleware
 try:
     import sys
@@ -26,11 +25,10 @@ except ImportError as e:
     print(f"⚠️ Production security middleware not available: {e}")
     SECURITY_MIDDLEWARE_AVAILABLE = False
 
-from fastapi import FastAPI, HTTPException, Request, status
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.responses import JSONResponse
-from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 from starlette.responses import PlainTextResponse
 
 # Service configuration
@@ -79,9 +77,9 @@ if SECURITY_MIDDLEWARE_AVAILABLE:
         enable_threat_detection=True,
     )
     apply_production_security_middleware(app, "auth_service", security_config)
-    print(f"✅ Production security middleware applied to auth service")
+    print("✅ Production security middleware applied to auth service")
 else:
-    print(f"⚠️ Security middleware not available for auth service")
+    print("⚠️ Security middleware not available for auth service")
 
 
 # Add secure CORS middleware with environment-based configuration

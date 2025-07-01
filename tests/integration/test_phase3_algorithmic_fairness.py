@@ -85,7 +85,7 @@ class Phase3FairnessTestRunner:
                 )
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Exception: {str(e)}")
+            self.log_test_result(test_name, False, f"Exception: {e!s}")
 
     async def test_fairness_properties_endpoint(self):
         """Test available fairness properties endpoint."""
@@ -129,7 +129,7 @@ class Phase3FairnessTestRunner:
                 )
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Exception: {str(e)}")
+            self.log_test_result(test_name, False, f"Exception: {e!s}")
 
     async def test_bias_detection_analysis(self):
         """Test bias detection analysis functionality."""
@@ -201,7 +201,7 @@ class Phase3FairnessTestRunner:
                 )
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Exception: {str(e)}")
+            self.log_test_result(test_name, False, f"Exception: {e!s}")
 
     async def test_fairness_validation_analysis(self):
         """Test fairness validation analysis functionality."""
@@ -266,7 +266,7 @@ class Phase3FairnessTestRunner:
                 )
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Exception: {str(e)}")
+            self.log_test_result(test_name, False, f"Exception: {e!s}")
 
     async def test_comprehensive_fairness_workflow(self):
         """Test comprehensive fairness analysis workflow."""
@@ -342,7 +342,7 @@ class Phase3FairnessTestRunner:
                 )
 
         except Exception as e:
-            self.log_test_result(test_name, False, f"Exception: {str(e)}")
+            self.log_test_result(test_name, False, f"Exception: {e!s}")
 
     async def run_all_tests(self):
         """Run all Phase 3 algorithmic fairness tests."""

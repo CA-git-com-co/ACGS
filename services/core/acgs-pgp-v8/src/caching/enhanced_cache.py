@@ -9,13 +9,14 @@ import asyncio
 import json
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple, Callable
+from datetime import datetime
 from enum import Enum
+from typing import Any
 
-import redis.asyncio as redis
 import numpy as np
+import redis.asyncio as redis
 
 logger = logging.getLogger(__name__)
 
@@ -89,7 +90,7 @@ class CacheItem:
     created_at: datetime = field(default_factory=datetime.utcnow)
     size_bytes: int = 0
     priority: int = 1  # 1=low, 5=high
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
 
 class IntelligentTTLOptimizer:
@@ -98,9 +99,9 @@ class IntelligentTTLOptimizer:
     def __init__(self, learning_rate: float = 0.1):
         """Initialize TTL optimizer."""
         self.learning_rate = learning_rate
-        self.access_patterns: Dict[str, List[datetime]] = {}
-        self.ttl_predictions: Dict[str, int] = {}
-        self.accuracy_scores: Dict[str, float] = {}
+        self.access_patterns: dict[str, list[datetime]] = {}
+        self.ttl_predictions: dict[str, int] = {}
+        self.accuracy_scores: dict[str, float] = {}
 
     def record_access(self, key: str, access_time: datetime = None):
         """Record cache access for pattern learning."""
@@ -168,9 +169,9 @@ class CacheWarmingEngine:
     def __init__(self, cache_client: redis.Redis):
         """Initialize cache warming engine."""
         self.cache_client = cache_client
-        self.warming_sources: Dict[str, Callable] = {}
-        self.warming_schedule: Dict[str, datetime] = {}
-        self.warming_priorities: Dict[str, int] = {}
+        self.warming_sources: dict[str, Callable] = {}
+        self.warming_schedule: dict[str, datetime] = {}
+        self.warming_priorities: dict[str, int] = {}
 
     def register_warming_source(
         self, name: str, source_func: Callable, priority: int = 1
@@ -179,7 +180,7 @@ class CacheWarmingEngine:
         self.warming_sources[name] = source_func
         self.warming_priorities[name] = priority
 
-    async def warm_cache_proactive(self, keys: List[str]) -> int:
+    async def warm_cache_proactive(self, keys: list[str]) -> int:
         """Proactively warm cache for specified keys."""
         successful_warmings = 0
 
@@ -228,7 +229,7 @@ class CacheWarmingEngine:
                     f"Warming source {source_name} failed for key {key}: {e}"
                 )
 
-    async def _predict_future_accesses(self, window_seconds: int) -> List[str]:
+    async def _predict_future_accesses(self, window_seconds: int) -> list[str]:
         """Predict keys likely to be accessed in the future."""
         # This is a simplified prediction - in production, you'd use ML models
         # For now, return keys that were accessed recently
@@ -265,12 +266,11 @@ class CacheWarmingEngine:
         # Default warming TTL based on key patterns
         if "policy:" in key:
             return 3600  # 1 hour for policies
-        elif "constitutional:" in key:
+        if "constitutional:" in key:
             return 1800  # 30 minutes for constitutional data
-        elif "diagnostic:" in key:
+        if "diagnostic:" in key:
             return 900  # 15 minutes for diagnostics
-        else:
-            return 1800  # 30 minutes default
+        return 1800  # 30 minutes default
 
 
 class EnhancedCacheManager:
@@ -290,20 +290,20 @@ class EnhancedCacheManager:
         self.enable_cache_warming = enable_cache_warming
 
         # Core components
-        self.redis_client: Optional[redis.Redis] = None
+        self.redis_client: redis.Redis | None = None
         self.metrics = CacheMetrics()
 
         # Enhanced features
         self.ttl_optimizer = (
             IntelligentTTLOptimizer() if enable_ttl_optimization else None
         )
-        self.warming_engine: Optional[CacheWarmingEngine] = None
+        self.warming_engine: CacheWarmingEngine | None = None
 
         # Cache item tracking
-        self.cache_items: Dict[str, CacheItem] = {}
+        self.cache_items: dict[str, CacheItem] = {}
 
         # Performance tracking
-        self.operation_times: List[float] = []
+        self.operation_times: list[float] = []
 
         logger.info("Enhanced cache manager initialized")
 
@@ -338,7 +338,7 @@ class EnhancedCacheManager:
 
     async def get(
         self, key: str, strategy: CacheStrategy = CacheStrategy.READ_THROUGH
-    ) -> Optional[Any]:
+    ) -> Any | None:
         """Get value from cache with intelligent features."""
         start_time = time.time()
 
@@ -391,10 +391,10 @@ class EnhancedCacheManager:
         self,
         key: str,
         value: Any,
-        ttl: Optional[int] = None,
+        ttl: int | None = None,
         strategy: CacheStrategy = CacheStrategy.WRITE_THROUGH,
         priority: int = 1,
-        tags: Optional[List[str]] = None,
+        tags: list[str] | None = None,
     ) -> bool:
         """Set value in cache with intelligent TTL and metadata."""
         start_time = time.time()
@@ -438,7 +438,7 @@ class EnhancedCacheManager:
             logger.error(f"Cache set error for key {key}: {e}")
             return False
 
-    async def warm_cache(self, keys: Optional[List[str]] = None) -> int:
+    async def warm_cache(self, keys: list[str] | None = None) -> int:
         """Warm cache proactively or predictively."""
         if not self.warming_engine:
             return 0
@@ -547,7 +547,7 @@ class EnhancedCacheManager:
         self.metrics.timestamp = datetime.utcnow()
         return self.metrics
 
-    def get_performance_summary(self) -> Dict[str, Any]:
+    def get_performance_summary(self) -> dict[str, Any]:
         """Get comprehensive performance summary."""
         return {
             "hit_rate": self.metrics.hit_rate,
@@ -589,7 +589,7 @@ class EnhancedCacheManager:
         except Exception as e:
             logger.error(f"TTL optimization error: {e}")
 
-    async def _get_keys_for_ttl_optimization(self) -> List[str]:
+    async def _get_keys_for_ttl_optimization(self) -> list[str]:
         """Get keys that should be considered for TTL optimization."""
         try:
             # Get a sample of keys for optimization

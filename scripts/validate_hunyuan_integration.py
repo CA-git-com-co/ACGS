@@ -8,15 +8,13 @@ Validates all components, configurations, and performance targets.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import os
+import subprocess
 import sys
 import time
-import json
-import subprocess
+from pathlib import Path
+
 import requests
 import yaml
-from pathlib import Path
-from typing import Dict, Any, List, Tuple
 
 
 class HunyuanIntegrationValidator:
@@ -81,7 +79,7 @@ class HunyuanIntegrationValidator:
                     )
                     all_passed = False
             except Exception as e:
-                print(f"❌ {step_name}: ERROR - {str(e)}")
+                print(f"❌ {step_name}: ERROR - {e!s}")
                 self.validation_results.append((step_name, "ERROR", str(e)))
                 all_passed = False
             print()
@@ -113,7 +111,7 @@ class HunyuanIntegrationValidator:
         config_path = self.project_root / "config/models/hunyuan-a13b.yaml"
 
         try:
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 config = yaml.safe_load(f)
 
             # Check required configuration sections
@@ -169,6 +167,7 @@ class HunyuanIntegrationValidator:
             # Check if Docker Compose file is valid
             result = subprocess.run(
                 ["docker-compose", "-f", str(compose_path), "config"],
+                check=False,
                 capture_output=True,
                 text=True,
             )
@@ -184,9 +183,8 @@ class HunyuanIntegrationValidator:
                     return False
 
                 return True
-            else:
-                print(f"  ❌ Docker Compose validation failed: {result.stderr}")
-                return False
+            print(f"  ❌ Docker Compose validation failed: {result.stderr}")
+            return False
 
         except subprocess.CalledProcessError as e:
             print(f"  ❌ Docker validation error: {e}")
@@ -207,15 +205,14 @@ class HunyuanIntegrationValidator:
                 # Check constitutional hash in health response
                 if "constitutional_hash" in health_data:
                     if health_data["constitutional_hash"] == self.constitutional_hash:
-                        print(f"  ✅ Constitutional hash verified in health check")
+                        print("  ✅ Constitutional hash verified in health check")
                     else:
-                        print(f"  ❌ Constitutional hash mismatch in health check")
+                        print("  ❌ Constitutional hash mismatch in health check")
                         return False
 
                 return True
-            else:
-                print(f"  ⚠️ Service not healthy (status: {response.status_code})")
-                return False
+            print(f"  ⚠️ Service not healthy (status: {response.status_code})")
+            return False
 
         except requests.RequestException:
             print("  ⚠️ Service not running or not accessible")
@@ -351,9 +348,8 @@ class HunyuanIntegrationValidator:
                     compliance_score
                     >= self.performance_targets["constitutional_compliance"]
                 )
-            else:
-                print(f"  ❌ Compliance test failed: {response.status_code}")
-                return False
+            print(f"  ❌ Compliance test failed: {response.status_code}")
+            return False
 
         except Exception as e:
             print(f"  ❌ Compliance validation error: {e}")
@@ -388,14 +384,12 @@ class HunyuanIntegrationValidator:
                         f"  ✅ Response time: {response_time:.1f}ms (target: <{target_time}ms)"
                     )
                     return True
-                else:
-                    print(
-                        f"  ❌ Response time: {response_time:.1f}ms exceeds target {target_time}ms"
-                    )
-                    return False
-            else:
-                print(f"  ❌ Performance test failed: {response.status_code}")
+                print(
+                    f"  ❌ Response time: {response_time:.1f}ms exceeds target {target_time}ms"
+                )
                 return False
+            print(f"  ❌ Performance test failed: {response.status_code}")
+            return False
 
         except Exception as e:
             print(f"  ❌ Performance validation error: {e}")
@@ -418,6 +412,7 @@ class HunyuanIntegrationValidator:
         try:
             result = subprocess.run(
                 ["python3", "-m", "pytest", str(test_file), "-v"],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -427,11 +422,10 @@ class HunyuanIntegrationValidator:
             if result.returncode == 0:
                 print("  ✅ All integration tests passed")
                 return True
-            else:
-                print(f"  ❌ Integration tests failed:")
-                print(f"  {result.stdout}")
-                print(f"  {result.stderr}")
-                return False
+            print("  ❌ Integration tests failed:")
+            print(f"  {result.stdout}")
+            print(f"  {result.stderr}")
+            return False
 
         except subprocess.TimeoutExpired:
             print("  ❌ Integration tests timed out")
@@ -474,7 +468,7 @@ class HunyuanIntegrationValidator:
 
         if failed == 0 and errors == 0:
             print("🎉 ALL VALIDATIONS PASSED!")
-            print(f"Hunyuan A13B integration with ACGS-PGP is complete and functional.")
+            print("Hunyuan A13B integration with ACGS-PGP is complete and functional.")
             print(f"Constitutional Hash: {self.constitutional_hash} ✓")
         else:
             print("❌ VALIDATION ISSUES FOUND")

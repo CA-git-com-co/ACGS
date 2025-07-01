@@ -10,7 +10,7 @@ import os
 import subprocess
 import time
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -43,7 +43,7 @@ class RunbookDeployer:
         # Ensure directories exist
         self.runbooks_dir.mkdir(parents=True, exist_ok=True)
 
-    async def deploy_runbooks(self) -> Dict[str, Any]:
+    async def deploy_runbooks(self) -> dict[str, Any]:
         """Deploy and validate all operational runbooks"""
         logger.info("🚀 Starting ACGS-1 Runbook Deployment and Validation")
         logger.info("=" * 80)
@@ -100,7 +100,7 @@ class RunbookDeployer:
             logger.error(f"❌ Runbook deployment failed: {e}")
             return {"status": "failed", "error": str(e), "results": results}
 
-    async def validate_directory_structure(self) -> Dict[str, Any]:
+    async def validate_directory_structure(self) -> dict[str, Any]:
         """Validate runbook directory structure"""
         logger.info("📁 Validating runbook directory structure...")
 
@@ -129,7 +129,7 @@ class RunbookDeployer:
 
         return validation
 
-    async def validate_core_runbooks(self) -> Dict[str, Any]:
+    async def validate_core_runbooks(self) -> dict[str, Any]:
         """Validate that all core runbooks exist"""
         logger.info("📚 Validating core runbooks...")
 
@@ -156,7 +156,7 @@ class RunbookDeployer:
 
         return validation
 
-    async def validate_runbook_content(self) -> Dict[str, Any]:
+    async def validate_runbook_content(self) -> dict[str, Any]:
         """Validate runbook content and format"""
         logger.info("🔍 Validating runbook content...")
 
@@ -172,7 +172,7 @@ class RunbookDeployer:
                 continue
 
             try:
-                with open(runbook_path, "r") as f:
+                with open(runbook_path) as f:
                     content = f.read()
 
                 # Check for required sections
@@ -212,7 +212,7 @@ class RunbookDeployer:
 
         return validation
 
-    async def create_runbook_index(self) -> Dict[str, Any]:
+    async def create_runbook_index(self) -> dict[str, Any]:
         """Create comprehensive runbook index"""
         logger.info("📖 Creating runbook index...")
 
@@ -311,7 +311,7 @@ for port in {8000..8006}; do echo -n "Port $port: "; curl -f http://localhost:$p
         except Exception as e:
             return {"status": "failed", "error": str(e)}
 
-    async def validate_emergency_procedures(self) -> Dict[str, Any]:
+    async def validate_emergency_procedures(self) -> dict[str, Any]:
         """Validate emergency procedures are accessible"""
         logger.info("🚨 Validating emergency procedures...")
 
@@ -343,6 +343,7 @@ for port in {8000..8006}; do echo -n "Port $port: "; curl -f http://localhost:$p
                     str(self.scripts_dir / "emergency_rollback_procedures.py"),
                     "health",
                 ],
+                check=False,
                 capture_output=True,
                 timeout=30,
                 text=True,
@@ -360,7 +361,7 @@ for port in {8000..8006}; do echo -n "Port $port: "; curl -f http://localhost:$p
 
         return validation
 
-    async def create_access_tools(self) -> Dict[str, Any]:
+    async def create_access_tools(self) -> dict[str, Any]:
         """Create tools for easy runbook access"""
         logger.info("🔧 Creating runbook access tools...")
 
@@ -473,7 +474,7 @@ if __name__ == "__main__":
         except Exception as e:
             return {"status": "failed", "error": str(e)}
 
-    async def validate_escalation_procedures(self) -> Dict[str, Any]:
+    async def validate_escalation_procedures(self) -> dict[str, Any]:
         """Validate escalation procedures are defined"""
         logger.info("📞 Validating escalation procedures...")
 
@@ -490,7 +491,7 @@ if __name__ == "__main__":
                 continue
 
             try:
-                with open(runbook_path, "r") as f:
+                with open(runbook_path) as f:
                     content = f.read()
 
                 has_escalation = "Escalation" in content
@@ -513,7 +514,7 @@ if __name__ == "__main__":
 
         return validation
 
-    async def create_training_materials(self) -> Dict[str, Any]:
+    async def create_training_materials(self) -> dict[str, Any]:
         """Create runbook training materials"""
         logger.info("🎓 Creating training materials...")
 
@@ -619,7 +620,7 @@ if __name__ == "__main__":
         except Exception as e:
             return {"status": "failed", "error": str(e)}
 
-    async def setup_maintenance_procedures(self) -> Dict[str, Any]:
+    async def setup_maintenance_procedures(self) -> dict[str, Any]:
         """Setup runbook maintenance procedures"""
         logger.info("🔧 Setting up maintenance procedures...")
 
@@ -707,7 +708,7 @@ if __name__ == "__main__":
         except Exception as e:
             return {"status": "failed", "error": str(e)}
 
-    async def final_validation(self) -> Dict[str, Any]:
+    async def final_validation(self) -> dict[str, Any]:
         """Perform final validation of runbook deployment"""
         logger.info("✅ Performing final validation...")
 
@@ -746,7 +747,7 @@ if __name__ == "__main__":
 
         return validation
 
-    def generate_deployment_summary(self, results: Dict[str, Any]) -> Dict[str, Any]:
+    def generate_deployment_summary(self, results: dict[str, Any]) -> dict[str, Any]:
         """Generate deployment summary"""
         summary = {
             "runbooks_deployed": 0,

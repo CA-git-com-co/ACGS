@@ -4,15 +4,14 @@ ACGS-1 Intelligent Alerting Webhook Server
 Receives alerts from Prometheus Alertmanager and triggers intelligent responses
 """
 
-import asyncio
-import json
 import logging
 from datetime import datetime
-from typing import Dict, Any, List
-from fastapi import FastAPI, Request, HTTPException, Depends, BackgroundTasks
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from typing import Any
+
 import uvicorn
-from intelligent_alerting import IntelligentAlertManager, AlertSeverity
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Request
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from intelligent_alerting import AlertSeverity, IntelligentAlertManager
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -215,8 +214,7 @@ async def acknowledge_alert(alert_id: str, acknowledged_by: str = "webhook"):
 
     if success:
         return {"status": "acknowledged", "alert_id": alert_id}
-    else:
-        raise HTTPException(status_code=404, detail="Alert not found")
+    raise HTTPException(status_code=404, detail="Alert not found")
 
 
 @app.post("/alerts/{alert_id}/resolve")
@@ -229,7 +227,7 @@ async def resolve_alert(alert_id: str, resolution_reason: str = "Manual resoluti
 
 
 async def process_prometheus_alerts(
-    payload: Dict[str, Any], manager: IntelligentAlertManager, priority: str = "normal"
+    payload: dict[str, Any], manager: IntelligentAlertManager, priority: str = "normal"
 ):
     """Process alerts from Prometheus Alertmanager"""
     alerts = payload.get("alerts", [])
@@ -274,7 +272,7 @@ async def process_prometheus_alerts(
 
 
 async def process_governance_alerts(
-    payload: Dict[str, Any], manager: IntelligentAlertManager
+    payload: dict[str, Any], manager: IntelligentAlertManager
 ):
     """Process constitutional governance specific alerts"""
     alerts = payload.get("alerts", [])
@@ -309,7 +307,7 @@ async def process_governance_alerts(
 
 
 async def process_security_alerts(
-    payload: Dict[str, Any], manager: IntelligentAlertManager
+    payload: dict[str, Any], manager: IntelligentAlertManager
 ):
     """Process security alerts with immediate escalation"""
     alerts = payload.get("alerts", [])

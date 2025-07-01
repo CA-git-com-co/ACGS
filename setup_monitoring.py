@@ -15,12 +15,12 @@ Key Features:
 """
 
 import json
-import time
 import logging
+import time
+from pathlib import Path
+
 import requests
 import yaml
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 
 # Configure logging
 logging.basicConfig(
@@ -167,7 +167,7 @@ class ACGSMonitoringSetup:
                 "type": "graph",
                 "targets": [
                     {
-                        "expr": f"histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{{job=\"{service['name']}\"}}[5m]))",
+                        "expr": f'histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{{job="{service["name"]}"}}[5m]))',
                         "legendFormat": "95th percentile",
                         "refId": "A",
                     }
@@ -452,7 +452,7 @@ This document describes the monitoring setup for the ACGS-1 system after reorgan
 - Regularly update alerting rules based on operational experience
 - Review and optimize dashboard queries for performance
 
-Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}
+Generated: {time.strftime("%Y-%m-%d %H:%M:%S")}
 """
 
         docs_file = self.monitoring_dir / "README.md"
@@ -560,15 +560,14 @@ def main():
             for i, rec in enumerate(report["recommendations"], 1):
                 logger.info(f"{i}. {rec}")
 
-        logger.info(f"\n📄 Detailed report saved to: monitoring_setup_report.json")
+        logger.info("\n📄 Detailed report saved to: monitoring_setup_report.json")
 
         # Exit with appropriate code
         if report["summary"]["success_rate"] >= 80:
             logger.info("✅ Monitoring setup completed successfully!")
             return 0
-        else:
-            logger.error("❌ Monitoring setup completed with issues")
-            return 1
+        logger.error("❌ Monitoring setup completed with issues")
+        return 1
 
     except Exception as e:
         logger.error(f"Monitoring setup failed: {e}")

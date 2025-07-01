@@ -111,6 +111,7 @@ class FocusedTestImprover:
                 try:
                     result = subprocess.run(
                         ["python", "-m", "pytest", str(pattern), "-v", "--tb=short"],
+                        check=False,
                         cwd=self.project_root,
                         capture_output=True,
                         text=True,
@@ -161,6 +162,7 @@ class FocusedTestImprover:
                 # Test service health endpoint
                 result = subprocess.run(
                     ["curl", "-s", "-f", f"http://localhost:{port}/health"],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=10,
@@ -213,6 +215,7 @@ class FocusedTestImprover:
                         "%{http_code}",
                         f"http://localhost:8005{endpoint}",
                     ],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=10,
@@ -253,7 +256,11 @@ class FocusedTestImprover:
         # Check if Solana CLI is available
         try:
             result = subprocess.run(
-                ["solana", "--version"], capture_output=True, text=True, timeout=10
+                ["solana", "--version"],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
 
             validation_results["solana_cli"] = {
@@ -266,7 +273,11 @@ class FocusedTestImprover:
         # Check if Anchor is available
         try:
             result = subprocess.run(
-                ["anchor", "--version"], capture_output=True, text=True, timeout=10
+                ["anchor", "--version"],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
 
             validation_results["anchor_cli"] = {
@@ -326,6 +337,7 @@ class FocusedTestImprover:
                         "%{time_total}",
                         f"http://localhost:{port}/health",
                     ],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=10,

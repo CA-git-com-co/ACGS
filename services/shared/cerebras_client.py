@@ -198,25 +198,22 @@ class CerebrasClient:
                         "api_response_status": response.status_code,
                     },
                 )
-            else:
-                error_msg = (
-                    f"Cerebras API error: {response.status_code} - {response.text}"
-                )
-                logger.error(error_msg)
-                self.error_count += 1
+            error_msg = f"Cerebras API error: {response.status_code} - {response.text}"
+            logger.error(error_msg)
+            self.error_count += 1
 
-                return CerebrasResponse(
-                    content="",
-                    model=model.value,
-                    tokens_used=0,
-                    response_time_ms=response_time,
-                    finish_reason="error",
-                    error=error_msg,
-                )
+            return CerebrasResponse(
+                content="",
+                model=model.value,
+                tokens_used=0,
+                response_time_ms=response_time,
+                finish_reason="error",
+                error=error_msg,
+            )
 
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
-            error_msg = f"Cerebras client error: {str(e)}"
+            error_msg = f"Cerebras client error: {e!s}"
             logger.error(error_msg)
             self.error_count += 1
 

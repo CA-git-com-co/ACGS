@@ -18,7 +18,7 @@ import asyncio
 import json
 import logging
 from dataclasses import dataclass
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import httpx
@@ -109,11 +109,8 @@ class ACGSPGPPaperEnhancer:
                 )
                 if response.status_code == 200:
                     return response.json()
-                else:
-                    logger.warning(
-                        f"PGC validation report failed: {response.status_code}"
-                    )
-                    return self._generate_mock_validation_data()
+                logger.warning(f"PGC validation report failed: {response.status_code}")
+                return self._generate_mock_validation_data()
         except Exception as e:
             logger.error(f"Failed to get PGC validation report: {e}")
             return self._generate_mock_validation_data()

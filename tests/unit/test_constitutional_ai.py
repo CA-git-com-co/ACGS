@@ -3,7 +3,6 @@ Test suite for constitutional_ai component.
 Generated to address critical test coverage gap.
 """
 
-import pytest
 import sys
 from pathlib import Path
 

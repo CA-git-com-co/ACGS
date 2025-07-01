@@ -9,14 +9,15 @@ import json
 import logging
 import time
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Optional, Any, Callable
+from typing import Any
 
 import nats
 from nats.aio.client import Client as NATS
 from nats.js import JetStreamContext
-from nats.js.api import StreamConfig, ConsumerConfig, RetentionPolicy, StorageType
+from nats.js.api import ConsumerConfig, RetentionPolicy, StorageType, StreamConfig
 from prometheus_client import (
     CollectorRegistry,
     Counter,
@@ -52,7 +53,7 @@ class EventMetadata:
     # Processing metadata
     processing_status: str = "pending"  # pending, processing, completed, failed
     retry_count: int = 0
-    last_error: Optional[str] = None
+    last_error: str | None = None
 
 
 @dataclass
@@ -61,18 +62,18 @@ class ReplayConfiguration:
 
     replay_id: str
     stream_name: str
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
-    start_sequence: Optional[int] = None
-    end_sequence: Optional[int] = None
+    start_time: datetime | None = None
+    end_time: datetime | None = None
+    start_sequence: int | None = None
+    end_sequence: int | None = None
 
     # Replay options
     replay_speed: float = 1.0  # 1.0 = real-time, 2.0 = 2x speed, etc.
-    filter_subjects: List[str] = field(default_factory=list)
-    filter_event_types: List[str] = field(default_factory=list)
+    filter_subjects: list[str] = field(default_factory=list)
+    filter_event_types: list[str] = field(default_factory=list)
 
     # Target configuration
-    target_subjects: List[str] = field(default_factory=list)
+    target_subjects: list[str] = field(default_factory=list)
     replay_to_original_subjects: bool = True
 
     # Constitutional compliance
@@ -84,8 +85,8 @@ class NATSPersistenceManager:
 
     def __init__(self, nats_url: str = "nats://localhost:4222"):
         self.nats_url = nats_url
-        self.nc: Optional[NATS] = None
-        self.js: Optional[JetStreamContext] = None
+        self.nc: NATS | None = None
+        self.js: JetStreamContext | None = None
 
         # Metrics
         self.registry = CollectorRegistry()
@@ -95,10 +96,10 @@ class NATSPersistenceManager:
         self.stream_configs = self.setup_stream_configurations()
 
         # Event handlers
-        self.event_handlers: Dict[str, Callable] = {}
+        self.event_handlers: dict[str, Callable] = {}
 
         # Replay management
-        self.active_replays: Dict[str, ReplayConfiguration] = {}
+        self.active_replays: dict[str, ReplayConfiguration] = {}
 
         logger.info("NATS Persistence Manager initialized")
 
@@ -146,7 +147,7 @@ class NATSPersistenceManager:
             registry=self.registry,
         )
 
-    def setup_stream_configurations(self) -> Dict[str, StreamConfig]:
+    def setup_stream_configurations(self) -> dict[str, StreamConfig]:
         """Setup NATS stream configurations."""
         return {
             "acgs-events": StreamConfig(
@@ -243,10 +244,10 @@ class NATSPersistenceManager:
     async def publish_event(
         self,
         subject: str,
-        event_data: Dict[str, Any],
+        event_data: dict[str, Any],
         event_type: str,
         source_service: str,
-        metadata: Optional[Dict] = None,
+        metadata: dict | None = None,
     ) -> EventMetadata:
         """Publish an event to NATS with persistence."""
 
@@ -310,7 +311,7 @@ class NATSPersistenceManager:
         self,
         subject: str,
         handler: Callable,
-        consumer_name: Optional[str] = None,
+        consumer_name: str | None = None,
         durable: bool = True,
     ):
         """Subscribe to events with persistence support."""
@@ -506,7 +507,7 @@ class NATSPersistenceManager:
         else:
             logger.warning(f"Replay {replay_id} not found")
 
-    async def get_stream_info(self, stream_name: str) -> Dict:
+    async def get_stream_info(self, stream_name: str) -> dict:
         """Get information about a stream."""
         try:
             stream_info = await self.js.stream_info(stream_name)
@@ -585,7 +586,7 @@ class NATSPersistenceManager:
         logger.info(f"Starting restore of stream {stream_name} from {backup_path}")
 
         try:
-            with open(backup_path, "r") as f:
+            with open(backup_path) as f:
                 message_count = 0
 
                 for line in f:
@@ -612,12 +613,11 @@ class NATSPersistenceManager:
         """Get the appropriate stream name for a subject."""
         if subject.startswith("acgs.evolution."):
             return "acgs-evolution"
-        elif subject.startswith("acgs.constitutional."):
+        if subject.startswith("acgs.constitutional."):
             return "acgs-constitutional"
-        elif subject.startswith("acgs.audit."):
+        if subject.startswith("acgs.audit."):
             return "acgs-audit"
-        else:
-            return "acgs-events"
+        return "acgs-events"
 
     async def stream_monitoring_loop(self):
         """Monitor stream metrics."""
@@ -646,7 +646,7 @@ class NATSPersistenceManager:
                 logger.error(f"Error in stream monitoring loop: {e}")
                 await asyncio.sleep(60)
 
-    def get_persistence_summary(self) -> Dict:
+    def get_persistence_summary(self) -> dict:
         """Get persistence system summary."""
         return {
             "active_replays": len(self.active_replays),
@@ -664,10 +664,10 @@ persistence_manager = NATSPersistenceManager()
 
 async def create_replay_from_config(
     stream_name: str,
-    start_time: Optional[str] = None,
-    end_time: Optional[str] = None,
+    start_time: str | None = None,
+    end_time: str | None = None,
     replay_speed: float = 1.0,
-    filter_subjects: Optional[List[str]] = None,
+    filter_subjects: list[str] | None = None,
 ) -> str:
     """Create and start a replay from configuration parameters."""
 

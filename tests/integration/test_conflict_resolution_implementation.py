@@ -33,9 +33,8 @@ class ConflictResolutionTestClient:
             if response.status_code == 200:
                 print("✅ Health endpoint working")
                 return True
-            else:
-                print(f"❌ Health endpoint failed: {response.status_code}")
-                return False
+            print(f"❌ Health endpoint failed: {response.status_code}")
+            return False
         except Exception as e:
             print(f"❌ Health endpoint error: {e}")
             return False
@@ -57,19 +56,18 @@ class ConflictResolutionTestClient:
                 if conflicts:
                     for i, conflict in enumerate(conflicts[:3]):  # Show first 3
                         print(
-                            f"   - Conflict {i+1}: {conflict.get('conflict_type', 'Unknown')} "
+                            f"   - Conflict {i + 1}: {conflict.get('conflict_type', 'Unknown')} "
                             f"(Severity: {conflict.get('severity', 'Unknown')})"
                         )
 
                 return True
-            elif response.status_code == 401:
+            if response.status_code == 401:
                 print("⚠️  Conflict resolutions list requires authentication")
                 print("   This is expected behavior for security")
                 return True
-            else:
-                print(f"❌ Conflict resolutions list failed: {response.status_code}")
-                print(f"   Response: {response.text}")
-                return False
+            print(f"❌ Conflict resolutions list failed: {response.status_code}")
+            print(f"   Response: {response.text}")
+            return False
         except Exception as e:
             print(f"❌ Conflict resolutions list error: {e}")
             return False
@@ -88,9 +86,8 @@ class ConflictResolutionTestClient:
                     f"✅ Found {len(principles)} existing principles for conflict testing"
                 )
                 return principles
-            else:
-                print(f"⚠️  Could not retrieve principles: {response.status_code}")
-                return []
+            print(f"⚠️  Could not retrieve principles: {response.status_code}")
+            return []
         except Exception as e:
             print(f"❌ Error retrieving principles: {e}")
             return []
@@ -165,9 +162,8 @@ class ConflictResolutionTestClient:
                 )
                 print("   ✅ API endpoints properly connected to database")
                 return True
-            else:
-                print(f"   ❌ Database schema issue detected: {response.status_code}")
-                return False
+            print(f"   ❌ Database schema issue detected: {response.status_code}")
+            return False
 
         except Exception as e:
             print(f"   ❌ Database connection error: {e}")

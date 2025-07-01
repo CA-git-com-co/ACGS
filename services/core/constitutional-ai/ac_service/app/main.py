@@ -47,10 +47,10 @@ except ImportError as e:
 # Import multimodal AI capabilities
 try:
     from services.shared.multimodal_ai_service import (
-        get_multimodal_service,
+        ContentType,
         MultimodalRequest,
         RequestType,
-        ContentType,
+        get_multimodal_service,
     )
 
     MULTIMODAL_AI_AVAILABLE = True
@@ -62,10 +62,10 @@ except ImportError as e:
 # Import constitutional prompt framework
 try:
     from services.shared.prompt_framework import (
-        get_constitutional_prompt,
-        get_prompt_manager,
         PromptRole,
         SafetyLevel,
+        get_constitutional_prompt,
+        get_prompt_manager,
     )
 
     PROMPT_FRAMEWORK_AVAILABLE = True
@@ -77,10 +77,10 @@ except ImportError as e:
 # Import constitutional safety framework
 try:
     from services.shared.constitutional_safety_framework import (
-        get_safety_validator,
-        get_ethics_framework,
-        validate_constitutional_safety,
         evaluate_constitutional_ethics,
+        get_ethics_framework,
+        get_safety_validator,
+        validate_constitutional_safety,
     )
 
     SAFETY_FRAMEWORK_AVAILABLE = True
@@ -120,17 +120,17 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 
 from .schemas import (
+    ConstitutionalComplianceRequest,
     ContentValidationRequest,
     ContentValidationResponse,
-    ConstitutionalComplianceRequest,
 )
 
 # Import standardized error handling
 try:
     from services.shared.middleware.error_handling import (
-        setup_error_handlers,
         ConstitutionalComplianceError,
         SecurityValidationError,
+        setup_error_handlers,
     )
 
     ERROR_HANDLING_AVAILABLE = True
@@ -303,7 +303,7 @@ except ImportError:
 # Apply comprehensive audit logging
 if AUDIT_LOGGING_AVAILABLE:
     apply_audit_logging_to_service(app, "ac_service")
-    print(f"✅ Comprehensive audit logging applied to ac service")
+    print("✅ Comprehensive audit logging applied to ac service")
     print("🔒 Audit features enabled:")
     print("   - Tamper-proof logs with cryptographic integrity")
     print("   - Compliance tracking (SOC 2, ISO 27001, NIST)")
@@ -312,7 +312,7 @@ if AUDIT_LOGGING_AVAILABLE:
     print("   - Automated log retention and archival")
     print("   - Performance metrics and alerting")
 else:
-    print(f"⚠️ Audit logging not available for ac service")
+    print("⚠️ Audit logging not available for ac service")
 
 # Apply production-grade security middleware
 if SECURITY_MIDDLEWARE_AVAILABLE:
@@ -323,9 +323,9 @@ if SECURITY_MIDDLEWARE_AVAILABLE:
         enable_threat_detection=True,
     )
     apply_production_security_middleware(app, "ac_service", security_config)
-    print(f"✅ Production security middleware applied to ac service")
+    print("✅ Production security middleware applied to ac service")
 else:
-    print(f"⚠️ Security middleware not available for ac service")
+    print("⚠️ Security middleware not available for ac service")
 
 
 # Add enhanced security middleware
@@ -1075,12 +1075,11 @@ def _calculate_average_severity(validation_results) -> str:
 
     if average_weight <= 1.5:
         return "low"
-    elif average_weight <= 2.5:
+    if average_weight <= 2.5:
         return "medium"
-    elif average_weight <= 3.5:
+    if average_weight <= 3.5:
         return "high"
-    else:
-        return "critical"
+    return "critical"
 
 
 @app.post("/api/v1/validate", response_model=ContentValidationResponse)
@@ -1183,7 +1182,7 @@ async def validate_content_simple(request: ContentValidationRequest):
             validation_results=[
                 {
                     "type": "system_error",
-                    "message": f"Validation failed: {str(e)}",
+                    "message": f"Validation failed: {e!s}",
                     "severity": "critical",
                 }
             ],
@@ -1218,15 +1217,14 @@ async def validate_constitutional_compliance(request: ConstitutionalComplianceRe
 
         if ERROR_HANDLING_AVAILABLE:
             raise ConstitutionalComplianceError(
-                f"Validation failed: {str(e)}", violations=["system_error"]
+                f"Validation failed: {e!s}", violations=["system_error"]
             )
-        else:
-            return {
-                "validation_id": f"ERROR-{int(time.time())}",
-                "overall_compliant": False,
-                "error": str(e),
-                "timestamp": time.time(),
-            }
+        return {
+            "validation_id": f"ERROR-{int(time.time())}",
+            "overall_compliant": False,
+            "error": str(e),
+            "timestamp": time.time(),
+        }
 
 
 @app.post("/api/v1/constitutional/validate-advanced")
@@ -1560,7 +1558,7 @@ async def analyze_constitutional_impact(request: dict[str, Any]):
     # Simulate constitutional impact analysis
     for i, change in enumerate(policy_changes):
         impact = {
-            "change_id": f"CHANGE-{i+1}",
+            "change_id": f"CHANGE-{i + 1}",
             "description": change.get("description", "Policy modification"),
             "constitutional_domains_affected": ["democratic_process", "transparency"],
             "impact_severity": "medium",

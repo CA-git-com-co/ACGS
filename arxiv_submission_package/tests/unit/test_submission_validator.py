@@ -5,14 +5,13 @@ Unit tests for SubmissionValidator class.
 Tests individual validation methods and overall validation workflow.
 """
 
-import pytest
 from pathlib import Path
-from unittest.mock import patch, mock_open
 
+import pytest
 from quality_assurance.submission_validator import (
+    SubmissionReport,
     SubmissionValidator,
     ValidationResult,
-    SubmissionReport,
     generate_validation_report,
 )
 

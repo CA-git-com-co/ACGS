@@ -134,7 +134,7 @@ async def ec_constitutional_prompting(
         logger.error(f"Error during EC constitutional prompting: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"EC constitutional prompting failed: {str(e)}",
+            detail=f"EC constitutional prompting failed: {e!s}",
         )
 
 
@@ -243,7 +243,7 @@ async def ec_governance_evaluation(
         logger.error(f"Error during EC governance evaluation: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"EC governance evaluation failed: {str(e)}",
+            detail=f"EC governance evaluation failed: {e!s}",
         )
 
 
@@ -318,9 +318,9 @@ Your task is to provide constitutional guidance for an EC system operating in th
 
 CONSTITUTIONAL CONTEXT:
 - Optimization Objective: {prompting_request.optimization_objective}
-- Constitutional Constraints: {', '.join(prompting_request.constitutional_constraints)}
-- Applicable Principles: {len(constitutional_context['applicable_principles'])} principles
-- Current Population Size: {population_analysis['population_size']}
+- Constitutional Constraints: {", ".join(prompting_request.constitutional_constraints)}
+- Applicable Principles: {len(constitutional_context["applicable_principles"])} principles
+- Current Population Size: {population_analysis["population_size"]}
 
 CONSTITUTIONAL PRINCIPLES:
 """
@@ -331,8 +331,8 @@ CONSTITUTIONAL PRINCIPLES:
     prompt += f"""
 
 POPULATION ANALYSIS:
-- Generation Distribution: {population_analysis['generation_distribution']}
-- Potential Issues: {', '.join(population_analysis['potential_issues']) if population_analysis['potential_issues'] else 'None identified'}
+- Generation Distribution: {population_analysis["generation_distribution"]}
+- Potential Issues: {", ".join(population_analysis["potential_issues"]) if population_analysis["potential_issues"] else "None identified"}
 
 Please provide:
 1. Constitutional guidance for the EC system

@@ -7,12 +7,14 @@ under high concurrent load (currently degrades above 200 concurrent requests).
 """
 
 import asyncio
-import time
 import logging
-from typing import Dict, Any, Optional, Callable
-from collections import defaultdict, deque
+import time
+from collections import deque
+from collections.abc import Callable
 from dataclasses import dataclass
-from fastapi import Request, Response, HTTPException
+from typing import Any
+
+from fastapi import Request, Response
 from fastapi.middleware.base import BaseHTTPMiddleware
 
 logger = logging.getLogger(__name__)
@@ -110,7 +112,7 @@ class RequestQueue:
             self.total_dropped += 1
             return False
 
-    async def dequeue(self) -> Optional[tuple]:
+    async def dequeue(self) -> tuple | None:
         """Dequeue the next request."""
         try:
             item = await asyncio.wait_for(self.queue.get(), timeout=1.0)
@@ -125,7 +127,7 @@ class RequestQueue:
         self.total_processed += 1
         self.queue.task_done()
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get queue statistics."""
         return {
             "queue_size": self.queue.qsize(),
@@ -156,7 +158,7 @@ class AdaptiveRateLimiter:
         self.last_adjustment = time.time()
         self.adjustment_interval = 10.0  # seconds
 
-    async def allow_request(self, request_id: str) -> tuple[bool, Optional[float]]:
+    async def allow_request(self, request_id: str) -> tuple[bool, float | None]:
         """
         Check if a request should be allowed.
 
@@ -217,7 +219,7 @@ class AdaptiveRateLimiter:
 
         self.last_adjustment = now
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get rate limiter statistics."""
         avg_response_time = (
             sum(self.response_times) / len(self.response_times)
@@ -291,7 +293,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
             return response
 
-        except Exception as e:
+        except Exception:
             # Record error
             response_time = time.time() - start_time
             await self.rate_limiter.record_response(response_time, False)
@@ -319,9 +321,9 @@ SERVICE_RATE_CONFIGS = {
 
 # Export key components
 __all__ = [
-    "RateLimitConfig",
+    "SERVICE_RATE_CONFIGS",
     "AdaptiveRateLimiter",
+    "RateLimitConfig",
     "RateLimitMiddleware",
     "add_rate_limiting",
-    "SERVICE_RATE_CONFIGS",
 ]

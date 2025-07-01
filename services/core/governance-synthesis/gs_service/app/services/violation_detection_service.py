@@ -238,7 +238,7 @@ class ViolationDetectionService:
                 severity=None,
                 fidelity_score=fidelity_score,
                 distance_score=None,
-                description=f"Detection error: {str(e)}",
+                description=f"Detection error: {e!s}",
                 context_data=context_data,
                 recommended_actions=[
                     "Review detection service logs",
@@ -547,7 +547,6 @@ class ViolationDetectionService:
                 or (datetime.now(timezone.utc) - self.cache_updated_at).total_seconds()
                 > 300
             ):
-
                 async for db in get_async_db():
                     result = await db.execute(
                         select(ViolationThreshold).where(ViolationThreshold.enabled)

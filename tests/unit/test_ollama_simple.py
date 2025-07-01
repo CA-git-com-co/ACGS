@@ -131,9 +131,8 @@ async def test_taskmaster_config():
                 f"✅ TaskMaster configuration: {'PASSED' if success else 'NEEDS ATTENTION'}"
             )
             return success
-        else:
-            print("❌ TaskMaster config file not found")
-            return False
+        print("❌ TaskMaster config file not found")
+        return False
 
     except Exception as e:
         print(f"❌ TaskMaster config test failed: {e}")
@@ -161,7 +160,7 @@ async def main():
     total = len(results)
 
     print(f"Tests passed: {passed}/{total}")
-    print(f"Success rate: {(passed/total)*100:.1f}%")
+    print(f"Success rate: {(passed / total) * 100:.1f}%")
 
     if passed == total:
         print("🎉 All tests passed! Ollama integration is working correctly.")

@@ -8,6 +8,7 @@ Validates that performance optimizations meet targets:
 - >99.5% service availability
 - Constitutional compliance maintained
 """
+
 import pytest
 
 # Skip this test file if dependencies are not available
@@ -130,7 +131,7 @@ class PerformanceValidator:
                         "status_code": response.status,
                     }
                     logger.info(
-                        f"✅ {service_name}: {'Healthy' if is_healthy else 'Unhealthy'} ({response_time*1000:.1f}ms)"
+                        f"✅ {service_name}: {'Healthy' if is_healthy else 'Unhealthy'} ({response_time * 1000:.1f}ms)"
                     )
             except Exception as e:
                 health_results[service_name] = {

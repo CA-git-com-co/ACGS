@@ -2,19 +2,11 @@
 Unit tests for services.core.policy-engine.main
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 import sys
 from pathlib import Path
 
 sys.path.insert(
     0, str(Path(__file__).parent.parent.parent / "services" / "core" / "policy-engine")
-)
-from main import (
-    PolicyEvaluationRequest,
-    PolicyEvaluationResponse,
-    HealthResponse,
-    PolicyEngineService,
 )
 
 

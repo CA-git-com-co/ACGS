@@ -190,7 +190,7 @@ class APIKeyManager:
                 return True
 
         except Exception as e:
-            self.logger.error(f"Failed to store API key {key_name}: {str(e)}")
+            self.logger.error(f"Failed to store API key {key_name}: {e!s}")
             return False
 
     async def get_api_key(self, key_name: str) -> str | None:
@@ -255,7 +255,7 @@ class APIKeyManager:
                 return decrypted_key
 
         except Exception as e:
-            self.logger.error(f"Failed to retrieve API key {key_name}: {str(e)}")
+            self.logger.error(f"Failed to retrieve API key {key_name}: {e!s}")
             return None
 
     async def get_api_key_with_fallback(
@@ -329,12 +329,11 @@ class APIKeyManager:
                 if success:
                     self.logger.info(f"Successfully rotated API key: {key_name}")
                     return True
-                else:
-                    self.logger.error(f"Failed to rotate API key: {key_name}")
-                    return False
+                self.logger.error(f"Failed to rotate API key: {key_name}")
+                return False
 
         except Exception as e:
-            self.logger.error(f"Error rotating API key {key_name}: {str(e)}")
+            self.logger.error(f"Error rotating API key {key_name}: {e!s}")
             return False
 
     async def list_api_keys(self) -> list[dict[str, Any]]:
@@ -381,7 +380,7 @@ class APIKeyManager:
                 return keys_info
 
         except Exception as e:
-            self.logger.error(f"Failed to list API keys: {str(e)}")
+            self.logger.error(f"Failed to list API keys: {e!s}")
             return []
 
     async def delete_api_key(self, key_name: str) -> bool:
@@ -408,7 +407,7 @@ class APIKeyManager:
                 return True
 
         except Exception as e:
-            self.logger.error(f"Failed to delete API key {key_name}: {str(e)}")
+            self.logger.error(f"Failed to delete API key {key_name}: {e!s}")
             return False
 
     def _create_key_hash(self, api_key: str) -> str:
@@ -445,7 +444,7 @@ class APIKeyManager:
             cache_key = f"{self.cache_prefix}{key_name}"
             await redis.delete(cache_key)
         except Exception as e:
-            self.logger.warning(f"Failed to clear cache for {key_name}: {str(e)}")
+            self.logger.warning(f"Failed to clear cache for {key_name}: {e!s}")
 
     async def close(self):
         # requires: Valid input parameters

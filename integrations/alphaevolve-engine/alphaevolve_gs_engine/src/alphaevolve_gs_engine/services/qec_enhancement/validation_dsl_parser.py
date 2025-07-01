@@ -76,7 +76,7 @@ class ValidationDSLParser:
                 if scenario:
                     scenarios.append(scenario)
             except Exception as e:
-                error_msg = f"Error parsing criterion {i}: {str(e)}"
+                error_msg = f"Error parsing criterion {i}: {e!s}"
                 errors.append(error_msg)
                 logger.warning(error_msg)
 
@@ -191,7 +191,7 @@ class ValidationDSLParser:
             rego_test = f"""
 # Test: {scenario.id}
 # {scenario.given}
-test_{scenario.id.replace('-', '_')} {{
+test_{scenario.id.replace("-", "_")} {{
     # Given: {scenario.given}
     # When: {scenario.when}
     # Then: {scenario.then}

@@ -57,7 +57,7 @@ class CriticalIssuesRemediator:
         except TimeoutError:
             return False, f"Command timed out after {timeout} seconds"
         except Exception as e:
-            return False, f"Command execution failed: {str(e)}"
+            return False, f"Command execution failed: {e!s}"
 
     async def fix_rust_dependencies(self) -> bool:
         """Fix Rust dependency vulnerabilities."""
@@ -93,9 +93,8 @@ curve25519-dalek = { version = "4.1.3" }
             if success:
                 logger.info("✅ Updated Rust dependencies")
                 return True
-            else:
-                logger.error(f"❌ Failed to update dependencies: {output}")
-                return False
+            logger.error(f"❌ Failed to update dependencies: {output}")
+            return False
 
         except Exception as e:
             logger.error(f"❌ Error fixing Rust dependencies: {e}")
@@ -194,9 +193,8 @@ curve25519-dalek = { version = "4.1.3" }
                         )
 
                 return len(high_severity) == 0  # Pass if no high severity issues
-            else:
-                logger.info("✅ No bandit report generated - likely no issues found")
-                return True
+            logger.info("✅ No bandit report generated - likely no issues found")
+            return True
 
         except Exception as e:
             logger.error(f"❌ Error fixing Python security issues: {e}")
@@ -228,9 +226,8 @@ curve25519-dalek = { version = "4.1.3" }
                 # For specific vulnerabilities, we'd need targeted upgrades
                 # This is a placeholder for manual review
                 return False  # Indicate manual intervention needed
-            else:
-                logger.info("✅ No Python dependency vulnerabilities found")
-                return True
+            logger.info("✅ No Python dependency vulnerabilities found")
+            return True
 
         except Exception as e:
             logger.error(f"❌ Error fixing Python dependencies: {e}")
@@ -394,7 +391,7 @@ async def main():
             sys.exit(1)
 
     except Exception as e:
-        logger.error(f"💥 Critical remediation failed: {str(e)}")
+        logger.error(f"💥 Critical remediation failed: {e!s}")
         sys.exit(1)
 
 

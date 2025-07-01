@@ -147,7 +147,7 @@ class DependencyVulnerabilityFixer:
                         "--upgrade",
                     ]
                     result = subprocess.run(
-                        cmd, capture_output=True, text=True, timeout=120
+                        cmd, check=False, capture_output=True, text=True, timeout=120
                     )
 
                     if result.returncode == 0:
@@ -252,6 +252,7 @@ class DependencyVulnerabilityFixer:
                     # Run npm install first
                     result = subprocess.run(
                         ["npm", "install"],
+                        check=False,
                         cwd=pkg_dir,
                         capture_output=True,
                         text=True,
@@ -266,6 +267,7 @@ class DependencyVulnerabilityFixer:
                     # Run npm audit fix
                     result = subprocess.run(
                         ["npm", "audit", "fix"],
+                        check=False,
                         cwd=pkg_dir,
                         capture_output=True,
                         text=True,

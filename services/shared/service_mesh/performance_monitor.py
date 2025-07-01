@@ -338,17 +338,16 @@ class PerformanceMonitor:
             elif value <= threshold.warning_threshold:
                 severity = AlertSeverity.WARNING
                 threshold_value = threshold.warning_threshold
-        else:
-            # For other metrics, higher values are worse
-            if value >= threshold.emergency_threshold:
-                severity = AlertSeverity.EMERGENCY
-                threshold_value = threshold.emergency_threshold
-            elif value >= threshold.critical_threshold:
-                severity = AlertSeverity.CRITICAL
-                threshold_value = threshold.critical_threshold
-            elif value >= threshold.warning_threshold:
-                severity = AlertSeverity.WARNING
-                threshold_value = threshold.warning_threshold
+        # For other metrics, higher values are worse
+        elif value >= threshold.emergency_threshold:
+            severity = AlertSeverity.EMERGENCY
+            threshold_value = threshold.emergency_threshold
+        elif value >= threshold.critical_threshold:
+            severity = AlertSeverity.CRITICAL
+            threshold_value = threshold.critical_threshold
+        elif value >= threshold.warning_threshold:
+            severity = AlertSeverity.WARNING
+            threshold_value = threshold.warning_threshold
 
         if severity:
             self._trigger_alert(

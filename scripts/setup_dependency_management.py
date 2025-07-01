@@ -16,15 +16,12 @@ Features:
 5. Creates lock files for reproducible builds
 """
 
-import os
-import sys
-import json
-import subprocess
 import logging
-from pathlib import Path
-from datetime import datetime
-from typing import Dict, List, Set, Optional
 import shutil
+import subprocess
+import sys
+from pathlib import Path
+
 import toml
 
 # Configure logging
@@ -66,7 +63,9 @@ class DependencyManager:
     def check_uv_installation(self) -> bool:
         """Check if UV is installed and install if needed"""
         try:
-            result = subprocess.run(["uv", "--version"], capture_output=True, text=True)
+            result = subprocess.run(
+                ["uv", "--version"], check=False, capture_output=True, text=True
+            )
             if result.returncode == 0:
                 logger.info(f"UV is already installed: {result.stdout.strip()}")
                 self.uv_installed = True
@@ -84,14 +83,15 @@ class DependencyManager:
             )
 
             # Verify installation
-            result = subprocess.run(["uv", "--version"], capture_output=True, text=True)
+            result = subprocess.run(
+                ["uv", "--version"], check=False, capture_output=True, text=True
+            )
             if result.returncode == 0:
                 logger.info(f"UV installed successfully: {result.stdout.strip()}")
                 self.uv_installed = True
                 return True
-            else:
-                logger.error("UV installation verification failed")
-                return False
+            logger.error("UV installation verification failed")
+            return False
 
         except subprocess.CalledProcessError as e:
             logger.error(f"Failed to install UV: {e}")
@@ -128,7 +128,7 @@ class DependencyManager:
                     shutil.copy2(file_path, backup_path)
                     logger.debug(f"Backed up: {relative_path}")
 
-    def collect_python_dependencies(self) -> Dict[str, Set[str]]:
+    def collect_python_dependencies(self) -> dict[str, set[str]]:
         """Collect all Python dependencies from requirements files"""
         logger.info("Collecting Python dependencies from requirements files...")
 
@@ -142,7 +142,7 @@ class DependencyManager:
             logger.debug(f"Processing: {req_file}")
 
             try:
-                with open(req_file, "r") as f:
+                with open(req_file) as f:
                     lines = f.readlines()
 
                 # Determine category based on filename
@@ -175,7 +175,7 @@ class DependencyManager:
         return all_deps
 
     def create_service_pyproject_toml(
-        self, service_dir: Path, service_name: str, deps: Dict[str, Set[str]]
+        self, service_dir: Path, service_name: str, deps: dict[str, set[str]]
     ) -> None:
         """Create pyproject.toml for a service directory"""
         logger.info(f"Creating pyproject.toml for {service_name}")

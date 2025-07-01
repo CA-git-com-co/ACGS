@@ -32,7 +32,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import pytest
 
@@ -50,7 +50,7 @@ class TestScenario:
     component: str
     test_type: str
     description: str
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]
     expected_outcome: str
     priority: str  # HIGH, MEDIUM, LOW
     complexity: int  # 1-5 scale
@@ -64,8 +64,8 @@ class TestCoverageResult:
     total_lines: int
     covered_lines: int
     coverage_percentage: float
-    missing_lines: List[int]
-    test_files: List[str]
+    missing_lines: list[int]
+    test_files: list[str]
     execution_time_seconds: float
 
 
@@ -76,7 +76,7 @@ class AnchorProgramTestGenerator:
         self.programs = ["constitution", "policy", "appeals_logging"]
         self.constitution_hash = "cdd01ef066bc6cf2"
 
-    def generate_anchor_test_scenarios(self) -> List[TestScenario]:
+    def generate_anchor_test_scenarios(self) -> list[TestScenario]:
         """Generate comprehensive Anchor program test scenarios."""
         scenarios = []
 
@@ -258,7 +258,7 @@ class CoreServiceTestGenerator:
         ]
         self.constitution_hash = "cdd01ef066bc6cf2"
 
-    def generate_core_service_scenarios(self) -> List[TestScenario]:
+    def generate_core_service_scenarios(self) -> list[TestScenario]:
         """Generate comprehensive core service test scenarios."""
         scenarios = []
 
@@ -467,7 +467,7 @@ class GovernanceWorkflowTestGenerator:
             "audit_transparency",
         ]
 
-    def generate_workflow_scenarios(self) -> List[TestScenario]:
+    def generate_workflow_scenarios(self) -> list[TestScenario]:
         """Generate comprehensive governance workflow test scenarios."""
         scenarios = []
 
@@ -615,6 +615,7 @@ class TestCoverageAnalyzer:
                     test_path,
                     "-v",
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 cwd="/home/dislove/ACGS-1",
@@ -669,7 +670,7 @@ class TestCoverageAnalyzer:
                 execution_time_seconds=execution_time,
             )
 
-    async def analyze_comprehensive_coverage(self) -> Dict[str, Any]:
+    async def analyze_comprehensive_coverage(self) -> dict[str, Any]:
         """Analyze comprehensive test coverage across all components."""
         logger.info("🔍 Analyzing comprehensive test coverage...")
 
@@ -728,8 +729,8 @@ class TestCoverageAnalyzer:
         return analysis_report
 
     def _generate_coverage_recommendations(
-        self, results: Dict[str, TestCoverageResult]
-    ) -> List[str]:
+        self, results: dict[str, TestCoverageResult]
+    ) -> list[str]:
         """Generate recommendations for improving test coverage."""
         recommendations = []
 

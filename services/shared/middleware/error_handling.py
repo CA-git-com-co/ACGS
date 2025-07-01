@@ -9,14 +9,12 @@ import logging
 import time
 import traceback
 import uuid
-from typing import Any, Dict
+from typing import Any
 
-from fastapi import HTTPException, Request, Response, status
-from fastapi.exception_handlers import http_exception_handler
+from fastapi import HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 from starlette.middleware.base import BaseHTTPMiddleware
-
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +38,7 @@ class StandardErrorResponse:
         self.request_id = request_id
         self.service = service
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON response."""
         response = {
             "error": {
@@ -95,7 +93,7 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
 
             logger.error(
                 f"Request failed: {request.method} {request.url.path} "
-                f"[{request_id}] - {str(exc)}",
+                f"[{request_id}] - {exc!s}",
                 extra={
                     "request_id": request_id,
                     "method": request.method,
@@ -122,7 +120,7 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
                     headers={"X-Request-ID": request_id},
                 )
 
-            elif isinstance(exc, HTTPException):
+            if isinstance(exc, HTTPException):
                 error_response = StandardErrorResponse(
                     error_code=f"HTTP_{exc.status_code}",
                     message=exc.detail,
@@ -135,11 +133,11 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
                     headers={"X-Request-ID": request_id},
                 )
 
-            elif isinstance(exc, KeyError):
+            if isinstance(exc, KeyError):
                 error_response = StandardErrorResponse(
                     error_code="MISSING_FIELD",
                     message="Required field missing from request",
-                    details=f"Missing field: {str(exc)}",
+                    details=f"Missing field: {exc!s}",
                     request_id=request_id,
                     service=self.service_name,
                 )
@@ -149,7 +147,7 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
                     headers={"X-Request-ID": request_id},
                 )
 
-            elif isinstance(exc, ValueError):
+            if isinstance(exc, ValueError):
                 error_response = StandardErrorResponse(
                     error_code="INVALID_VALUE",
                     message="Invalid value provided in request",
@@ -163,7 +161,7 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
                     headers={"X-Request-ID": request_id},
                 )
 
-            elif isinstance(exc, ConnectionError):
+            if isinstance(exc, ConnectionError):
                 error_response = StandardErrorResponse(
                     error_code="SERVICE_UNAVAILABLE",
                     message="External service unavailable",
@@ -177,7 +175,7 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
                     headers={"X-Request-ID": request_id},
                 )
 
-            elif isinstance(exc, TimeoutError):
+            if isinstance(exc, TimeoutError):
                 error_response = StandardErrorResponse(
                     error_code="REQUEST_TIMEOUT",
                     message="Request processing timeout",
@@ -191,20 +189,19 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
                     headers={"X-Request-ID": request_id},
                 )
 
-            else:
-                # Generic internal server error
-                error_response = StandardErrorResponse(
-                    error_code="INTERNAL_ERROR",
-                    message="An internal server error occurred",
-                    details="Please contact system administrator if the problem persists",
-                    request_id=request_id,
-                    service=self.service_name,
-                )
-                return JSONResponse(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    content=error_response.to_dict(),
-                    headers={"X-Request-ID": request_id},
-                )
+            # Generic internal server error
+            error_response = StandardErrorResponse(
+                error_code="INTERNAL_ERROR",
+                message="An internal server error occurred",
+                details="Please contact system administrator if the problem persists",
+                request_id=request_id,
+                service=self.service_name,
+            )
+            return JSONResponse(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                content=error_response.to_dict(),
+                headers={"X-Request-ID": request_id},
+            )
 
 
 def setup_error_handlers(app, service_name: str = "acgs-service"):
@@ -234,7 +231,7 @@ def setup_error_handlers(app, service_name: str = "acgs-service"):
         )
 
         logger.warning(
-            f"Validation error: {str(exc)}",
+            f"Validation error: {exc!s}",
             extra={
                 "request_id": request_id,
                 "error_type": "validation",
@@ -272,7 +269,7 @@ def setup_error_handlers(app, service_name: str = "acgs-service"):
         request_id = getattr(request.state, "request_id", "unknown")
 
         logger.error(
-            f"Unhandled exception: {str(exc)}",
+            f"Unhandled exception: {exc!s}",
             extra={
                 "request_id": request_id,
                 "error_type": "unhandled",

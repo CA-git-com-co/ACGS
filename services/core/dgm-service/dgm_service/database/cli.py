@@ -9,7 +9,7 @@ import json
 import logging
 import os
 import sys
-from typing import Any, Dict
+from typing import Any
 
 from .migrations import run_dgm_migrations
 
@@ -28,7 +28,7 @@ def get_database_url() -> str:
     )
 
 
-async def run_migration_command(operation: str, database_url: str) -> Dict[str, Any]:
+async def run_migration_command(operation: str, database_url: str) -> dict[str, Any]:
     """Run a migration command and return results."""
     try:
         result = await run_dgm_migrations(database_url, operation)
@@ -38,7 +38,7 @@ async def run_migration_command(operation: str, database_url: str) -> Dict[str, 
         return {"success": False, "error": str(e)}
 
 
-def print_result(result: Dict[str, Any], operation: str):
+def print_result(result: dict[str, Any], operation: str):
     """Pretty print migration results."""
     if result["success"]:
         print(f"✅ {operation.upper()} completed successfully")
@@ -49,7 +49,7 @@ def print_result(result: Dict[str, Any], operation: str):
             # Print summary based on operation
             if operation == "create":
                 if data.get("schema_created"):
-                    print(f"   📁 Schema created")
+                    print("   📁 Schema created")
                 if data.get("tables_created"):
                     print(f"   📋 Tables created: {len(data['tables_created'])}")
                 if data.get("indexes_created"):
@@ -61,9 +61,9 @@ def print_result(result: Dict[str, Any], operation: str):
 
             elif operation == "verify":
                 if data.get("schema_exists"):
-                    print(f"   📁 Schema exists: ✅")
+                    print("   📁 Schema exists: ✅")
                 else:
-                    print(f"   📁 Schema exists: ❌")
+                    print("   📁 Schema exists: ❌")
 
                 tables = data.get("tables", {})
                 healthy_tables = sum(
@@ -72,13 +72,13 @@ def print_result(result: Dict[str, Any], operation: str):
                 print(f"   📋 Tables healthy: {healthy_tables}/{len(tables)}")
 
                 if data.get("constitutional_compliance"):
-                    print(f"   🏛️  Constitutional compliance: ✅")
+                    print("   🏛️  Constitutional compliance: ✅")
                 else:
-                    print(f"   🏛️  Constitutional compliance: ❌")
+                    print("   🏛️  Constitutional compliance: ❌")
 
             elif operation == "rollback":
                 if data.get("schema_dropped"):
-                    print(f"   🗑️  Schema dropped: ✅")
+                    print("   🗑️  Schema dropped: ✅")
                 dropped_tables = len(data.get("tables_dropped", []))
                 print(f"   📋 Tables dropped: {dropped_tables}")
 

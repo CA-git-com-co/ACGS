@@ -16,22 +16,16 @@ Features:
 """
 
 import hashlib
-import hmac
-import secrets
-import time
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any
 
-import bcrypt
 import jwt
 import pyotp
 import structlog
-from fastapi import Depends, HTTPException, Request
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from pydantic import BaseModel, Field
+from fastapi import HTTPException
 
 logger = structlog.get_logger(__name__)
 
@@ -77,10 +71,10 @@ class UserRole:
     """User role definition."""
 
     name: str
-    permissions: Set[str]
+    permissions: set[str]
     description: str
     is_system_role: bool = False
-    parent_roles: Set[str] = field(default_factory=set)
+    parent_roles: set[str] = field(default_factory=set)
 
 
 @dataclass
@@ -89,13 +83,13 @@ class SecurityContext:
 
     user_id: str
     username: str
-    roles: List[str]
-    permissions: Set[str]
+    roles: list[str]
+    permissions: set[str]
     session_id: str
     ip_address: str
     user_agent: str
     device_fingerprint: str
-    authentication_methods: List[AuthenticationMethod]
+    authentication_methods: list[AuthenticationMethod]
     mfa_verified: bool
     session_created_at: datetime
     last_activity: datetime
@@ -107,13 +101,13 @@ class SecurityEvent:
 
     event_id: str
     event_type: SecurityEventType
-    user_id: Optional[str]
+    user_id: str | None
     ip_address: str
     user_agent: str
     timestamp: datetime
-    details: Dict[str, Any]
+    details: dict[str, Any]
     risk_score: float
-    action_taken: Optional[str] = None
+    action_taken: str | None = None
 
 
 class EnhancedJWTManager:
@@ -137,16 +131,16 @@ class EnhancedJWTManager:
         self.enable_device_fingerprinting = enable_device_fingerprinting
 
         # Token blacklist for revoked tokens
-        self.revoked_tokens: Set[str] = set()
+        self.revoked_tokens: set[str] = set()
 
     def create_access_token(
         self,
         user_id: str,
         username: str,
-        roles: List[str],
-        ip_address: Optional[str] = None,
-        device_fingerprint: Optional[str] = None,
-        session_id: Optional[str] = None,
+        roles: list[str],
+        ip_address: str | None = None,
+        device_fingerprint: str | None = None,
+        session_id: str | None = None,
     ) -> str:
         """Create enhanced access token."""
         now = datetime.now(timezone.utc)
@@ -194,9 +188,9 @@ class EnhancedJWTManager:
     def verify_token(
         self,
         token: str,
-        ip_address: Optional[str] = None,
-        device_fingerprint: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        ip_address: str | None = None,
+        device_fingerprint: str | None = None,
+    ) -> dict[str, Any]:
         """Verify and decode token with security checks."""
         try:
             # Decode token
@@ -264,7 +258,7 @@ class MultiFactorAuthManager:
     def __init__(self, issuer_name: str = "ACGS-1"):
         """Initialize MFA manager."""
         self.issuer_name = issuer_name
-        self.pending_challenges: Dict[str, Dict[str, Any]] = {}
+        self.pending_challenges: dict[str, dict[str, Any]] = {}
 
     def generate_totp_secret(self) -> str:
         """Generate TOTP secret for user."""
@@ -283,7 +277,7 @@ class MultiFactorAuthManager:
     def create_mfa_challenge(
         self,
         user_id: str,
-        methods: List[AuthenticationMethod],
+        methods: list[AuthenticationMethod],
         expires_in_minutes: int = 5,
     ) -> str:
         """Create MFA challenge."""
@@ -306,7 +300,7 @@ class MultiFactorAuthManager:
         challenge_id: str,
         method: AuthenticationMethod,
         token: str,
-        user_secret: Optional[str] = None,
+        user_secret: str | None = None,
     ) -> bool:
         """Verify MFA challenge response."""
         challenge = self.pending_challenges.get(challenge_id)
@@ -362,8 +356,8 @@ class RoleBasedAccessControl:
 
     def __init__(self):
         """Initialize RBAC manager."""
-        self.roles: Dict[str, UserRole] = {}
-        self.user_roles: Dict[str, Set[str]] = {}
+        self.roles: dict[str, UserRole] = {}
+        self.user_roles: dict[str, set[str]] = {}
         self._initialize_default_roles()
 
     def _initialize_default_roles(self):
@@ -449,7 +443,7 @@ class RoleBasedAccessControl:
         if user_id in self.user_roles:
             self.user_roles[user_id].discard(role_name)
 
-    def get_user_permissions(self, user_id: str) -> Set[str]:
+    def get_user_permissions(self, user_id: str) -> set[str]:
         """Get all permissions for a user."""
         permissions = set()
         user_roles = self.user_roles.get(user_id, set())
@@ -491,8 +485,8 @@ class SessionManager:
     def __init__(self, max_concurrent_sessions: int = 3):
         """Initialize session manager."""
         self.max_concurrent_sessions = max_concurrent_sessions
-        self.active_sessions: Dict[str, Dict[str, Any]] = {}
-        self.user_sessions: Dict[str, Set[str]] = {}
+        self.active_sessions: dict[str, dict[str, Any]] = {}
+        self.user_sessions: dict[str, set[str]] = {}
 
     def create_session(
         self, user_id: str, ip_address: str, user_agent: str, device_fingerprint: str
@@ -549,7 +543,7 @@ class SessionManager:
 
             del self.active_sessions[session_id]
 
-    def get_session(self, session_id: str) -> Optional[Dict[str, Any]]:
+    def get_session(self, session_id: str) -> dict[str, Any] | None:
         """Get session data."""
         return self.active_sessions.get(session_id)
 
@@ -590,14 +584,14 @@ def initialize_auth_system(secret_key: str, **kwargs):
 
 # Export main classes and functions
 __all__ = [
+    "AuthenticationMethod",
     "EnhancedJWTManager",
     "MultiFactorAuthManager",
     "RoleBasedAccessControl",
-    "SessionManager",
     "SecurityContext",
     "SecurityEvent",
-    "AuthenticationMethod",
-    "SessionStatus",
     "SecurityEventType",
+    "SessionManager",
+    "SessionStatus",
     "initialize_auth_system",
 ]

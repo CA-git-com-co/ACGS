@@ -6,10 +6,9 @@ with the evolutionary computation service.
 """
 
 import asyncio
-import pytest
 import logging
-from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 # Test configuration
 TEST_CONFIG = {
@@ -56,19 +55,19 @@ class TestWINAIntegration:
     async def test_wina_modules_import(self):
         """Test that all WINA modules can be imported successfully."""
         try:
-            import sys
             import os
+            import sys
 
             sys.path.append(os.path.join(os.path.dirname(__file__), "..", "app"))
 
             try:
                 from wina.config import load_wina_config_from_env
-                from wina.core import WINACore
-                from wina.metrics import WINAMetrics
                 from wina.constitutional_integration import ConstitutionalWINASupport
-                from wina.gating import RuntimeGating
-                from wina.performance_monitoring import WINAPerformanceCollector
                 from wina.continuous_learning import get_wina_learning_system
+                from wina.core import WINACore
+                from wina.gating import RuntimeGating
+                from wina.metrics import WINAMetrics
+                from wina.performance_monitoring import WINAPerformanceCollector
             except ImportError:
                 # Fallback for direct execution
                 sys.path.append(
@@ -77,23 +76,23 @@ class TestWINAIntegration:
                 from services.core.evolutionary_computation.app.wina.config import (
                     load_wina_config_from_env,
                 )
-                from services.core.evolutionary_computation.app.wina.core import (
-                    WINACore,
-                )
-                from services.core.evolutionary_computation.app.wina.metrics import (
-                    WINAMetrics,
-                )
                 from services.core.evolutionary_computation.app.wina.constitutional_integration import (
                     ConstitutionalWINASupport,
+                )
+                from services.core.evolutionary_computation.app.wina.continuous_learning import (
+                    get_wina_learning_system,
+                )
+                from services.core.evolutionary_computation.app.wina.core import (
+                    WINACore,
                 )
                 from services.core.evolutionary_computation.app.wina.gating import (
                     RuntimeGating,
                 )
+                from services.core.evolutionary_computation.app.wina.metrics import (
+                    WINAMetrics,
+                )
                 from services.core.evolutionary_computation.app.wina.performance_monitoring import (
                     WINAPerformanceCollector,
-                )
-                from services.core.evolutionary_computation.app.wina.continuous_learning import (
-                    get_wina_learning_system,
                 )
 
             assert True, "All WINA modules imported successfully"
@@ -160,9 +159,9 @@ class TestWINAIntegration:
     async def test_performance_monitoring(self, wina_config):
         """Test WINA performance monitoring capabilities."""
         from ..app.wina.performance_monitoring import (
-            WINAPerformanceCollector,
-            WINAMonitoringLevel,
             WINAComponentType,
+            WINAMonitoringLevel,
+            WINAPerformanceCollector,
         )
 
         try:
@@ -202,8 +201,8 @@ class TestWINAIntegration:
 
             # Test basic oversight operation
             from ..app.core.wina_oversight_coordinator import (
-                ECOversightRequest,
                 ECOversightContext,
+                ECOversightRequest,
             )
 
             test_request = ECOversightRequest(
@@ -247,8 +246,8 @@ class TestWINAIntegration:
 
     async def test_performance_targets(self):
         """Test that WINA integration meets performance targets."""
-        from ..app.wina.core import WINACore
         from ..app.wina.config import load_wina_config_from_env
+        from ..app.wina.core import WINACore
 
         try:
             wina_config, _ = load_wina_config_from_env()
@@ -315,27 +314,27 @@ async def run_integration_tests():
             logger.info(f"✅ {test_name} PASSED")
         except Exception as e:
             results["failed"] += 1
-            results["errors"].append(f"{test_name}: {str(e)}")
+            results["errors"].append(f"{test_name}: {e!s}")
             logger.error(f"❌ {test_name} FAILED: {e}")
 
     # Print summary
     total_tests = results["passed"] + results["failed"]
     success_rate = results["passed"] / total_tests if total_tests > 0 else 0
 
-    print(f"\n{'='*60}")
-    print(f"WINA INTEGRATION TEST RESULTS")
-    print(f"{'='*60}")
+    print(f"\n{'=' * 60}")
+    print("WINA INTEGRATION TEST RESULTS")
+    print(f"{'=' * 60}")
     print(f"Total Tests: {total_tests}")
     print(f"Passed: {results['passed']}")
     print(f"Failed: {results['failed']}")
     print(f"Success Rate: {success_rate:.1%}")
 
     if results["errors"]:
-        print(f"\nErrors:")
+        print("\nErrors:")
         for error in results["errors"]:
             print(f"  - {error}")
 
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     return success_rate >= 0.8  # 80% success rate required
 

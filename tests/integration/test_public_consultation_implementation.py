@@ -40,9 +40,8 @@ class PublicConsultationTestClient:
             if response.status_code == 200:
                 print("   ✅ AC Service health check passed")
                 return True
-            else:
-                print(f"   ❌ AC Service health check failed: {response.status_code}")
-                return False
+            print(f"   ❌ AC Service health check failed: {response.status_code}")
+            return False
         except requests.exceptions.RequestException as e:
             print(f"   ❌ Service connectivity failed: {e}")
             return False
@@ -78,9 +77,8 @@ class PublicConsultationTestClient:
                     print("   ✅ Proposal pagination working")
 
                 return True
-            else:
-                print(f"   ❌ Public proposals endpoint failed: {response.status_code}")
-                return False
+            print(f"   ❌ Public proposals endpoint failed: {response.status_code}")
+            return False
 
         except requests.exceptions.RequestException as e:
             print(f"   ❌ Public proposals test failed: {e}")
@@ -111,13 +109,10 @@ class PublicConsultationTestClient:
                 proposal_id = proposal.get("id")
                 print(f"   ✅ Public proposal submission working (ID: {proposal_id})")
                 return proposal_id
-            else:
-                print(
-                    f"   ❌ Public proposal submission failed: {response.status_code}"
-                )
-                if response.text:
-                    print(f"       Error: {response.text}")
-                return None
+            print(f"   ❌ Public proposal submission failed: {response.status_code}")
+            if response.text:
+                print(f"       Error: {response.text}")
+            return None
 
         except requests.exceptions.RequestException as e:
             print(f"   ❌ Proposal submission test failed: {e}")
@@ -147,13 +142,10 @@ class PublicConsultationTestClient:
                     f"   ✅ Public feedback submission working (ID: {feedback.get('id')})"
                 )
                 return True
-            else:
-                print(
-                    f"   ❌ Public feedback submission failed: {response.status_code}"
-                )
-                if response.text:
-                    print(f"       Error: {response.text}")
-                return False
+            print(f"   ❌ Public feedback submission failed: {response.status_code}")
+            if response.text:
+                print(f"       Error: {response.text}")
+            return False
 
         except requests.exceptions.RequestException as e:
             print(f"   ❌ Feedback submission test failed: {e}")
@@ -182,11 +174,8 @@ class PublicConsultationTestClient:
                     f"   ✅ Anonymous feedback submission working (ID: {feedback.get('id')})"
                 )
                 return True
-            else:
-                print(
-                    f"   ❌ Anonymous feedback submission failed: {response.status_code}"
-                )
-                return False
+            print(f"   ❌ Anonymous feedback submission failed: {response.status_code}")
+            return False
 
         except requests.exceptions.RequestException as e:
             print(f"   ❌ Anonymous feedback test failed: {e}")
@@ -206,9 +195,8 @@ class PublicConsultationTestClient:
                     f"   ✅ Feedback retrieval working (found {len(feedback_list)} feedback items)"
                 )
                 return True
-            else:
-                print(f"   ❌ Feedback retrieval failed: {response.status_code}")
-                return False
+            print(f"   ❌ Feedback retrieval failed: {response.status_code}")
+            return False
 
         except requests.exceptions.RequestException as e:
             print(f"   ❌ Feedback retrieval test failed: {e}")
@@ -240,14 +228,10 @@ class PublicConsultationTestClient:
                         "   ✅ Consultation metrics endpoint working with all required fields"
                     )
                     return True
-                else:
-                    print(
-                        f"   ❌ Consultation metrics missing fields: {missing_fields}"
-                    )
-                    return False
-            else:
-                print(f"   ❌ Consultation metrics failed: {response.status_code}")
+                print(f"   ❌ Consultation metrics missing fields: {missing_fields}")
                 return False
+            print(f"   ❌ Consultation metrics failed: {response.status_code}")
+            return False
 
         except requests.exceptions.RequestException as e:
             print(f"   ❌ Consultation metrics test failed: {e}")
@@ -265,9 +249,8 @@ class PublicConsultationTestClient:
                 response.json()
                 print("   ✅ Transparency dashboard endpoint working")
                 return True
-            else:
-                print(f"   ❌ Transparency dashboard failed: {response.status_code}")
-                return False
+            print(f"   ❌ Transparency dashboard failed: {response.status_code}")
+            return False
 
         except requests.exceptions.RequestException as e:
             print(f"   ❌ Transparency dashboard test failed: {e}")
@@ -359,7 +342,7 @@ def main():
         zip(test_names, test_results, strict=False)
     ):
         status = "✅ PASS" if result else "❌ FAIL"
-        print(f"{i+1}. {test_name}: {status}")
+        print(f"{i + 1}. {test_name}: {status}")
 
     print(f"\nOverall: {passed_tests}/{total_tests} tests passed")
 

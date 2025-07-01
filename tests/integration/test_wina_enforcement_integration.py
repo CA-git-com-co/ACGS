@@ -239,7 +239,6 @@ class TestWINAEnforcementIntegration:
                 "src.backend.pgc_service.app.core.auth.require_policy_evaluation_triggerer"
             ) as mock_auth,
         ):
-
             # Setup mocks
             mock_optimizer = AsyncMock()
             mock_optimizer.opa_client = None
@@ -290,7 +289,6 @@ class TestWINAEnforcementIntegration:
                 "src.backend.pgc_service.app.core.auth.require_policy_evaluation_triggerer"
             ) as mock_auth,
         ):
-
             # Setup mocks to trigger fallback
             mock_optimizer = AsyncMock()
             mock_optimizer.opa_client = None
@@ -368,7 +366,6 @@ class TestWINAEnforcementIntegration:
                 "src.backend.pgc_service.app.core.auth.require_policy_evaluation_triggerer"
             ) as mock_auth,
         ):
-
             # Setup mocks
             mock_optimizer = AsyncMock()
             mock_optimizer.opa_client = None
@@ -425,7 +422,6 @@ class TestWINAEnforcementIntegration:
                 "src.backend.pgc_service.app.core.auth.require_policy_evaluation_triggerer"
             ) as mock_auth,
         ):
-
             # Setup mocks
             mock_optimizer = AsyncMock()
             mock_optimizer.get_performance_summary.return_value = (

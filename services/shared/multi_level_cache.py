@@ -7,7 +7,7 @@ sub-2s response time guarantee while maintaining constitutional compliance >95%.
 
 Architecture:
 - L1 Cache: In-memory rule cache (64KB per core) for <1ns access
-- L2 Cache: Process-level compiled rule engines (512KB) for ~5ns access  
+- L2 Cache: Process-level compiled rule engines (512KB) for ~5ns access
 - L3 Cache: Distributed Redis cache for complex rule combinations
 - Bloom Filters: Quick constitutional violation screening (0.1% false positive)
 
@@ -18,16 +18,14 @@ Expected Performance:
 - Enhanced constitutional validation performance
 """
 
-import asyncio
 import hashlib
 import logging
 import pickle
 import time
-import uuid
-from dataclasses import dataclass, field
-from datetime import datetime, timezone, timedelta
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any
 
 try:
     import redis.asyncio as redis
@@ -133,13 +131,13 @@ class CacheMetrics:
         if level == CacheLevel.L1_MEMORY:
             total = self.l1_hits + self.l1_misses
             return self.l1_hits / total if total > 0 else 0.0
-        elif level == CacheLevel.L2_PROCESS:
+        if level == CacheLevel.L2_PROCESS:
             total = self.l2_hits + self.l2_misses
             return self.l2_hits / total if total > 0 else 0.0
-        elif level == CacheLevel.L3_REDIS:
+        if level == CacheLevel.L3_REDIS:
             total = self.l3_hits + self.l3_misses
             return self.l3_hits / total if total > 0 else 0.0
-        elif level == CacheLevel.BLOOM_FILTER:
+        if level == CacheLevel.BLOOM_FILTER:
             total = self.bloom_hits + self.bloom_misses
             return self.bloom_hits / total if total > 0 else 0.0
         return 0.0
@@ -227,8 +225,8 @@ class L1MemoryCache:
 
     def __init__(self, max_size_kb: int = 64):
         self.max_size_bytes = max_size_kb * 1024
-        self.cache: Dict[str, CacheEntry] = {}
-        self.access_order: List[str] = []  # LRU tracking
+        self.cache: dict[str, CacheEntry] = {}
+        self.access_order: list[str] = []  # LRU tracking
         self.current_size_bytes = 0
 
         # Optimized invalidation tracking
@@ -251,7 +249,7 @@ class L1MemoryCache:
                 self.current_size_bytes -= self._estimate_size(entry)
                 logger.debug(f"L1 evicted LRU entry: {lru_key}")
 
-    def get(self, key: str) -> Optional[CacheEntry]:
+    def get(self, key: str) -> CacheEntry | None:
         """Get entry from L1 cache."""
         if key in self.cache:
             entry = self.cache[key]
@@ -262,12 +260,11 @@ class L1MemoryCache:
                     self.access_order.remove(key)
                 self.access_order.append(key)
                 return entry
-            else:
-                # Remove expired entry
-                self.cache.pop(key)
-                if key in self.access_order:
-                    self.access_order.remove(key)
-                self.current_size_bytes -= self._estimate_size(entry)
+            # Remove expired entry
+            self.cache.pop(key)
+            if key in self.access_order:
+                self.access_order.remove(key)
+            self.current_size_bytes -= self._estimate_size(entry)
         return None
 
     def put(
@@ -318,7 +315,7 @@ class L1MemoryCache:
         self.current_size_bytes = 0
         logger.info("L1 cache cleared")
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         return {
             "entries": len(self.cache),
@@ -338,8 +335,8 @@ class L2ProcessCache:
 
     def __init__(self, max_size_kb: int = 512):
         self.max_size_bytes = max_size_kb * 1024
-        self.cache: Dict[str, CacheEntry] = {}
-        self.compiled_rules: Dict[str, Any] = {}  # Compiled rule engines
+        self.cache: dict[str, CacheEntry] = {}
+        self.compiled_rules: dict[str, Any] = {}  # Compiled rule engines
         self.current_size_bytes = 0
 
         logger.info(f"L2 Process Cache initialized: {max_size_kb}KB capacity")
@@ -356,18 +353,17 @@ class L2ProcessCache:
         }
         return compiled
 
-    def get(self, key: str) -> Optional[CacheEntry]:
+    def get(self, key: str) -> CacheEntry | None:
         """Get entry from L2 cache."""
         if key in self.cache:
             entry = self.cache[key]
             if not entry.is_expired():
                 entry.touch()
                 return entry
-            else:
-                # Remove expired entry
-                self.cache.pop(key)
-                if key in self.compiled_rules:
-                    self.compiled_rules.pop(key)
+            # Remove expired entry
+            self.cache.pop(key)
+            if key in self.compiled_rules:
+                self.compiled_rules.pop(key)
         return None
 
     def put(
@@ -399,8 +395,8 @@ class L2ProcessCache:
         return True
 
     def execute_compiled_rule(
-        self, key: str, context: Dict[str, Any]
-    ) -> Optional[Dict[str, Any]]:
+        self, key: str, context: dict[str, Any]
+    ) -> dict[str, Any] | None:
         """Execute compiled rule with given context."""
         if key in self.compiled_rules:
             compiled_rule = self.compiled_rules[key]
@@ -418,7 +414,7 @@ class L2ProcessCache:
             return result
         return None
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         return {
             "entries": len(self.cache),
@@ -439,7 +435,7 @@ class L3RedisCache:
 
     def __init__(self, redis_url: str = "redis://localhost:6379/1"):
         self.redis_url = redis_url
-        self.redis_client: Optional[redis.Redis] = None
+        self.redis_client: redis.Redis | None = None
         self.connected = False
 
         logger.info(f"L3 Redis Cache initialized: {redis_url}")
@@ -455,7 +451,7 @@ class L3RedisCache:
             logger.error(f"L3 Redis connection failed: {e}")
             self.connected = False
 
-    async def get(self, key: str) -> Optional[CacheEntry]:
+    async def get(self, key: str) -> CacheEntry | None:
         """Get entry from L3 Redis cache."""
         if not self.connected or not self.redis_client:
             return None
@@ -468,9 +464,8 @@ class L3RedisCache:
                 if not entry.is_expired():
                     entry.touch()
                     return entry
-                else:
-                    # Remove expired entry
-                    await self.redis_client.delete(f"acgs:l3:{key}")
+                # Remove expired entry
+                await self.redis_client.delete(f"acgs:l3:{key}")
         except Exception as e:
             logger.error(f"L3 get error: {e}")
 
@@ -518,7 +513,7 @@ class L3RedisCache:
         except Exception as e:
             logger.error(f"L3 clear error: {e}")
 
-    async def get_stats(self) -> Dict[str, Any]:
+    async def get_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         if not self.connected or not self.redis_client:
             return {"connected": False}
@@ -546,7 +541,7 @@ class MultiLevelCacheManager:
     sub-2s response time guarantee with constitutional compliance >95%.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or get_config()
 
         # Initialize cache levels
@@ -613,7 +608,7 @@ class MultiLevelCacheManager:
         )
 
     def _generate_cache_key(
-        self, request_type: str, content: str, context: Optional[Dict[str, Any]] = None
+        self, request_type: str, content: str, context: dict[str, Any] | None = None
     ) -> str:
         """Generate consistent cache key for request."""
         key_components = [
@@ -651,10 +646,10 @@ class MultiLevelCacheManager:
         self,
         request_type: str,
         content: str,
-        image_url: Optional[str] = None,
-        image_data: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        image_url: str | None = None,
+        image_data: str | None = None,
+        context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """
         Get constitutional ruling for multimodal content with multi-level caching.
 
@@ -768,7 +763,7 @@ class MultiLevelCacheManager:
                     "compliant": False,
                     "confidence_score": 0.0,
                     "constitutional_hash": self.constitutional_hash,
-                    "violations": [f"Cache error: {str(e)}"],
+                    "violations": [f"Cache error: {e!s}"],
                     "reasoning": "Error during multimodal validation",
                     "validated_at": datetime.now(timezone.utc).isoformat(),
                     "multimodal": True,
@@ -782,9 +777,9 @@ class MultiLevelCacheManager:
         self,
         request_type: str,
         content: str,
-        image_url: Optional[str] = None,
-        image_data: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None,
+        image_url: str | None = None,
+        image_data: str | None = None,
+        context: dict[str, Any] | None = None,
     ) -> str:
         """Generate cache key for multimodal content."""
 
@@ -808,10 +803,10 @@ class MultiLevelCacheManager:
         self,
         request_type: str,
         content: str,
-        image_url: Optional[str] = None,
-        image_data: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        image_url: str | None = None,
+        image_data: str | None = None,
+        context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """
         Perform full multimodal constitutional validation.
 
@@ -821,10 +816,10 @@ class MultiLevelCacheManager:
         try:
             # Try to use the multimodal AI service if available
             from services.shared.multimodal_ai_service import (
-                get_multimodal_service,
+                ContentType,
                 MultimodalRequest,
                 RequestType,
-                ContentType,
+                get_multimodal_service,
             )
 
             multimodal_service = await get_multimodal_service()
@@ -911,10 +906,10 @@ class MultiLevelCacheManager:
         self,
         request_type: str,
         content: str,
-        image_url: Optional[str] = None,
-        image_data: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        image_url: str | None = None,
+        image_data: str | None = None,
+        context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Fallback validation when multimodal service is unavailable."""
 
         # Simple text-based validation for fallback
@@ -967,7 +962,7 @@ class MultiLevelCacheManager:
         }
 
     async def _cache_multimodal_result(
-        self, cache_key: str, result: Dict[str, Any], content: str
+        self, cache_key: str, result: dict[str, Any], content: str
     ):
         """Cache multimodal validation result across all cache levels."""
 
@@ -1034,7 +1029,7 @@ class MultiLevelCacheManager:
         except Exception as e:
             logger.warning(f"Failed to cache multimodal result for {cache_key}: {e}")
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get comprehensive cache performance metrics."""
 
         try:
@@ -1112,8 +1107,8 @@ class MultiLevelCacheManager:
             }
 
     async def get_constitutional_ruling(
-        self, request_type: str, content: str, context: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+        self, request_type: str, content: str, context: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Get constitutional ruling with multi-level caching.
 
@@ -1206,8 +1201,8 @@ class MultiLevelCacheManager:
         entry: CacheEntry,
         level: CacheLevel,
         response_time_ms: float,
-        compiled_result: Optional[Dict] = None,
-    ) -> Dict[str, Any]:
+        compiled_result: dict | None = None,
+    ) -> dict[str, Any]:
         """Format cached response with metadata."""
         return {
             "result": entry.value,
@@ -1222,8 +1217,8 @@ class MultiLevelCacheManager:
         }
 
     async def _perform_full_validation(
-        self, request_type: str, content: str, context: Optional[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, request_type: str, content: str, context: dict[str, Any] | None
+    ) -> dict[str, Any]:
         """
         Perform full constitutional validation when cache miss occurs.
 
@@ -1264,7 +1259,7 @@ class MultiLevelCacheManager:
         return validation_result
 
     async def _cache_validation_result(
-        self, cache_key: str, result: Dict[str, Any], content: str
+        self, cache_key: str, result: dict[str, Any], content: str
     ):
         """Cache validation result in all appropriate levels."""
         # Determine TTL based on result confidence
@@ -1323,7 +1318,7 @@ class MultiLevelCacheManager:
             total_time + response_time_ms
         ) / self.metrics.total_requests
 
-    async def get_cache_statistics(self) -> Dict[str, Any]:
+    async def get_cache_statistics(self) -> dict[str, Any]:
         """Get comprehensive cache statistics."""
         l1_stats = self.l1_cache.get_stats()
         l2_stats = self.l2_cache.get_stats()
@@ -1370,7 +1365,7 @@ class MultiLevelCacheManager:
             },
         }
 
-    async def warm_cache(self, common_requests: List[Dict[str, Any]]):
+    async def warm_cache(self, common_requests: list[dict[str, Any]]):
         """Warm cache with common constitutional validation requests."""
         logger.info(f"Warming cache with {len(common_requests)} common requests...")
 
@@ -1397,7 +1392,7 @@ class MultiLevelCacheManager:
 
 
 # Global cache manager instance
-_cache_manager: Optional[MultiLevelCacheManager] = None
+_cache_manager: MultiLevelCacheManager | None = None
 
 
 async def get_cache_manager() -> MultiLevelCacheManager:

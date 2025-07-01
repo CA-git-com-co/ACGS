@@ -4,19 +4,15 @@ ACGS NATS Event Replay Dashboard
 Web interface for managing NATS event persistence, replay, and recovery operations.
 """
 
-import asyncio
-import json
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional
 
-from fastapi import FastAPI, HTTPException, Request, Form
-from fastapi.responses import HTMLResponse, JSONResponse
-from fastapi.templating import Jinja2Templates
 import uvicorn
-
-from nats_persistence_manager import persistence_manager, ReplayConfiguration
+from fastapi import FastAPI, Form, HTTPException, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from nats_persistence_manager import ReplayConfiguration, persistence_manager
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -82,7 +78,7 @@ async def dashboard_home(request: Request):
         )
     except Exception as e:
         logger.error(f"Dashboard error: {e}")
-        return HTMLResponse(f"<h1>Dashboard Error</h1><p>{str(e)}</p>", status_code=500)
+        return HTMLResponse(f"<h1>Dashboard Error</h1><p>{e!s}</p>", status_code=500)
 
 
 @app.get("/api/streams")
@@ -141,12 +137,12 @@ async def get_stream_info(stream_name: str):
 @app.post("/api/replay/start")
 async def start_replay(
     stream_name: str = Form(...),
-    start_time: Optional[str] = Form(None),
-    end_time: Optional[str] = Form(None),
-    start_sequence: Optional[int] = Form(None),
-    end_sequence: Optional[int] = Form(None),
+    start_time: str | None = Form(None),
+    end_time: str | None = Form(None),
+    start_sequence: int | None = Form(None),
+    end_sequence: int | None = Form(None),
     replay_speed: float = Form(1.0),
-    filter_subjects: Optional[str] = Form(None),
+    filter_subjects: str | None = Form(None),
     replay_to_original: bool = Form(True),
 ):
     """Start a new event replay."""
@@ -181,7 +177,7 @@ async def start_replay(
 
         return {
             "replay_id": replay_id,
-            "message": f"Replay started successfully",
+            "message": "Replay started successfully",
             "replay_config": {
                 "stream_name": stream_name,
                 "start_time": start_time,
@@ -242,7 +238,7 @@ async def get_active_replays():
 
 
 @app.post("/api/streams/{stream_name}/backup")
-async def backup_stream(stream_name: str, backup_path: Optional[str] = None):
+async def backup_stream(stream_name: str, backup_path: str | None = None):
     """Backup a stream to file."""
     try:
         if stream_name not in persistence_manager.stream_configs:

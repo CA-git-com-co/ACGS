@@ -7,16 +7,13 @@ metrics collection, and automated optimization recommendations.
 
 import asyncio
 import logging
-import time
 from dataclasses import dataclass
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from datetime import datetime
+from typing import Any
 
 from prometheus_client import Counter, Gauge, Histogram
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..config import settings
 from .connection import get_database_manager
 
 logger = logging.getLogger(__name__)
@@ -72,12 +69,12 @@ class DGMDatabaseMonitor:
     - Constitutional compliance tracking
     """
 
-    def __init__(self, config: Optional[MonitoringConfig] = None):
+    def __init__(self, config: MonitoringConfig | None = None):
         """Initialize database monitor."""
         self.config = config or MonitoringConfig()
         self.db_manager = None
-        self.active_alerts: List[DatabaseAlert] = []
-        self.alert_history: List[DatabaseAlert] = []
+        self.active_alerts: list[DatabaseAlert] = []
+        self.alert_history: list[DatabaseAlert] = []
         self.monitoring_active = False
 
         # Prometheus metrics
@@ -322,7 +319,7 @@ class DGMDatabaseMonitor:
                 # Slow queries
                 result = await session.execute(
                     text(
-                        f"""
+                        rf"""
                     SELECT 
                         COALESCE(
                             CASE 
@@ -578,7 +575,7 @@ class DGMDatabaseMonitor:
         except Exception as e:
             logger.error(f"❌ Health check error: {e}")
 
-    async def get_monitoring_report(self) -> Dict[str, Any]:
+    async def get_monitoring_report(self) -> dict[str, Any]:
         """Generate comprehensive monitoring report."""
         try:
             report = {
@@ -630,16 +627,16 @@ class DGMDatabaseMonitor:
 
 
 # Global database monitor instance
-_database_monitor: Optional[DGMDatabaseMonitor] = None
+_database_monitor: DGMDatabaseMonitor | None = None
 
 
-def get_database_monitor() -> Optional[DGMDatabaseMonitor]:
+def get_database_monitor() -> DGMDatabaseMonitor | None:
     """Get global database monitor instance."""
     return _database_monitor
 
 
 async def initialize_database_monitor(
-    config: Optional[MonitoringConfig] = None,
+    config: MonitoringConfig | None = None,
 ) -> DGMDatabaseMonitor:
     """Initialize global database monitor."""
     global _database_monitor

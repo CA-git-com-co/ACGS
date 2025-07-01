@@ -4,15 +4,16 @@ ACGS-PGP Production Monitoring Dashboard
 Native Python implementation for constitutional compliance and performance monitoring
 """
 
-import asyncio
-import aiohttp
-import json
-import time
-import statistics
-from datetime import datetime, timedelta
-from typing import Dict, List, Any
 import argparse
-from dataclasses import dataclass, asdict
+import asyncio
+import json
+import statistics
+import time
+from dataclasses import asdict, dataclass
+from datetime import datetime, timedelta
+from typing import Any
+
+import aiohttp
 
 # ACGS-PGP Configuration
 SERVICES = {
@@ -89,16 +90,15 @@ class ACGSMonitor:
                         last_check=datetime.now(),
                         success_count=1,
                     )
-                else:
-                    return ServiceMetrics(
-                        name=service_name,
-                        port=port,
-                        status=f"unhealthy_http_{response.status}",
-                        response_time=response_time,
-                        constitutional_compliance=0.0,
-                        last_check=datetime.now(),
-                        error_count=1,
-                    )
+                return ServiceMetrics(
+                    name=service_name,
+                    port=port,
+                    status=f"unhealthy_http_{response.status}",
+                    response_time=response_time,
+                    constitutional_compliance=0.0,
+                    last_check=datetime.now(),
+                    error_count=1,
+                )
 
         except Exception as e:
             response_time = time.time() - start_time
@@ -112,7 +112,7 @@ class ACGSMonitor:
                 error_count=1,
             )
 
-    async def collect_metrics(self) -> List[ServiceMetrics]:
+    async def collect_metrics(self) -> list[ServiceMetrics]:
         """Collect metrics from all services."""
         metrics = []
 
@@ -129,7 +129,7 @@ class ACGSMonitor:
 
         return valid_metrics
 
-    def analyze_system_health(self, metrics: List[ServiceMetrics]) -> Dict[str, Any]:
+    def analyze_system_health(self, metrics: list[ServiceMetrics]) -> dict[str, Any]:
         """Analyze overall system health."""
         healthy_services = sum(1 for m in metrics if m.status == "healthy")
         total_services = len(metrics)
@@ -169,7 +169,7 @@ class ACGSMonitor:
         }
 
     def check_alerts(
-        self, metrics: List[ServiceMetrics], system_health: Dict[str, Any]
+        self, metrics: list[ServiceMetrics], system_health: dict[str, Any]
     ):
         """Check for alert conditions."""
         current_time = datetime.now()
@@ -219,7 +219,7 @@ class ACGSMonitor:
                 )
 
     def display_dashboard(
-        self, metrics: List[ServiceMetrics], system_health: Dict[str, Any]
+        self, metrics: list[ServiceMetrics], system_health: dict[str, Any]
     ):
         """Display monitoring dashboard."""
         print("\n" + "=" * 80)
@@ -230,7 +230,7 @@ class ACGSMonitor:
         print(f"⏱️  Uptime: {datetime.now() - self.start_time}")
 
         # System Overview
-        print(f"\n📊 SYSTEM OVERVIEW")
+        print("\n📊 SYSTEM OVERVIEW")
         print("-" * 40)
         health_status = (
             "🟢 HEALTHY" if system_health["production_ready"] else "🔴 DEGRADED"
@@ -248,7 +248,7 @@ class ACGSMonitor:
         )
 
         # Service Status
-        print(f"\n🔧 SERVICE STATUS")
+        print("\n🔧 SERVICE STATUS")
         print("-" * 40)
         for metric in metrics:
             status_icon = "🟢" if metric.status == "healthy" else "🔴"
@@ -274,7 +274,7 @@ class ACGSMonitor:
                 > datetime.now() - timedelta(minutes=5)
             ]
             if recent_alerts:
-                print(f"\n🚨 RECENT ALERTS (Last 5 minutes)")
+                print("\n🚨 RECENT ALERTS (Last 5 minutes)")
                 print("-" * 40)
                 for alert in recent_alerts[-5:]:  # Show last 5 alerts
                     severity_icon = {
@@ -285,7 +285,7 @@ class ACGSMonitor:
                     print(f"{severity_icon} [{alert['severity']}] {alert['message']}")
 
         # Performance Targets
-        print(f"\n🎯 PERFORMANCE TARGETS")
+        print("\n🎯 PERFORMANCE TARGETS")
         print("-" * 40)
         print(
             f"Response Time: {'✅ PASS' if system_health['response_time_target_met'] else '❌ FAIL'} (≤{RESPONSE_TIME_TARGET}s)"
@@ -301,7 +301,7 @@ class ACGSMonitor:
         )
 
     def save_metrics(
-        self, metrics: List[ServiceMetrics], system_health: Dict[str, Any]
+        self, metrics: list[ServiceMetrics], system_health: dict[str, Any]
     ):
         """Save metrics to file."""
         report = {

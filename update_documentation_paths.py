@@ -3,7 +3,7 @@
 ACGS-1 Documentation Path Update Script
 ======================================
 
-This script finds and updates path references in documentation and configuration 
+This script finds and updates path references in documentation and configuration
 files to reflect the new directory structure after reorganization.
 
 Key Features:
@@ -13,12 +13,10 @@ Key Features:
 4. Generate a report of all changes made
 """
 
-import os
-import re
 import json
 import logging
+import re
 from pathlib import Path
-from typing import Dict, List, Tuple, Set
 
 # Configure logging
 logging.basicConfig(
@@ -101,7 +99,7 @@ class DocumentationPathUpdater:
         report = self._generate_report()
         return report
 
-    def _get_files_to_process(self) -> List[Path]:
+    def _get_files_to_process(self) -> list[Path]:
         """Get list of files that need to be processed."""
         files_to_process = []
 
@@ -128,7 +126,7 @@ class DocumentationPathUpdater:
         unique_files = list(set(files_to_process))
         return [f for f in unique_files if self._is_text_file(f)]
 
-    def _scan_directory(self, directory: Path) -> List[Path]:
+    def _scan_directory(self, directory: Path) -> list[Path]:
         """Recursively scan directory for files matching patterns."""
         files = []
         for pattern in self.file_patterns:
@@ -155,12 +153,12 @@ class DocumentationPathUpdater:
     def _process_file(self, file_path: Path):
         """Process a single file for path updates."""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
         except UnicodeDecodeError:
             # Try with different encoding
             try:
-                with open(file_path, "r", encoding="latin-1") as f:
+                with open(file_path, encoding="latin-1") as f:
                     content = f.read()
             except Exception as e:
                 logger.warning(f"Could not read {file_path}: {e}")
@@ -206,7 +204,7 @@ class DocumentationPathUpdater:
             except Exception as e:
                 logger.error(f"Failed to write {file_path}: {e}")
 
-    def _fix_common_path_issues(self, content: str, file_path: Path) -> List[Dict]:
+    def _fix_common_path_issues(self, content: str, file_path: Path) -> list[dict]:
         """Fix common path issues beyond simple mappings."""
         changes = []
 
@@ -262,7 +260,7 @@ class DocumentationPathUpdater:
 
         return changes
 
-    def _generate_report(self) -> Dict:
+    def _generate_report(self) -> dict:
         """Generate a comprehensive report of all changes made."""
         total_changes = sum(
             len(file_changes["changes"]) for file_changes in self.changes_made
@@ -284,7 +282,7 @@ class DocumentationPathUpdater:
 
         return report
 
-    def _generate_recommendations(self) -> List[str]:
+    def _generate_recommendations(self) -> list[str]:
         """Generate recommendations based on the update process."""
         recommendations = []
 
@@ -339,15 +337,14 @@ def main():
             for i, rec in enumerate(report["recommendations"], 1):
                 logger.info(f"{i}. {rec}")
 
-        logger.info(f"\n📄 Detailed report saved to: documentation_update_report.json")
+        logger.info("\n📄 Detailed report saved to: documentation_update_report.json")
 
         # Exit with appropriate code
         if report["summary"]["errors_encountered"] == 0:
             logger.info("✅ Documentation update completed successfully!")
             return 0
-        else:
-            logger.warning("⚠️ Documentation update completed with some errors")
-            return 1
+        logger.warning("⚠️ Documentation update completed with some errors")
+        return 1
 
     except Exception as e:
         logger.error(f"Documentation update failed: {e}")

@@ -1138,9 +1138,9 @@ theorem mathd_algebra_182 (y : ℂ) : 7 * (3 * y + 2) = 21 * y + 14 := by
 
 Expected response with the proof:
 /- We apply the distributive property to get\\begin{align*}
-  7(3y+2) &= 7\cdot 3y+7\cdot 2\\\\
+  7(3y+2) &= 7\\cdot 3y+7\\cdot 2\\\\
   &= 21y+14.
-  \end{align*}
+  \\end{align*}
   -/
 ring```
 
@@ -1198,7 +1198,7 @@ theorem mathd_numbertheory_149 :
   (∑ k in Finset.filter (fun x => x % 8 = 5 ∧ x % 6 = 3) (Finset.range 50), k) = 66 := by
 
 Expected response with the proof:
-/- We are given that $N\equiv 5\pmod{8}$ and $N\equiv 3\pmod{6}$.  We begin checking numbers which are 5 more than a multiple of 8, and we find that 5 and 13 are not 3 more than a multiple of 6, but 21 is 3 more than a multiple of 6. Thus 21 is one possible value of $N$. By the Chinese Remainder Theorem, the integers $x$ satisfying $x\equiv 5\pmod{8}$ and $x\equiv 3\pmod{6}$ are those of the form $x=21+\\text{lcm}(6,8)k = 21 + 24 k$, where $k$ is an integer. Thus the 2 solutions less than $50$ are 21 and $21+24(1) = 45$, and their sum is $21+45=66$.
+/- We are given that $N\\equiv 5\\pmod{8}$ and $N\\equiv 3\\pmod{6}$.  We begin checking numbers which are 5 more than a multiple of 8, and we find that 5 and 13 are not 3 more than a multiple of 6, but 21 is 3 more than a multiple of 6. Thus 21 is one possible value of $N$. By the Chinese Remainder Theorem, the integers $x$ satisfying $x\\equiv 5\\pmod{8}$ and $x\\equiv 3\\pmod{6}$ are those of the form $x=21+\\text{lcm}(6,8)k = 21 + 24 k$, where $k$ is an integer. Thus the 2 solutions less than $50$ are 21 and $21+24(1) = 45$, and their sum is $21+45=66$.
   -/
 apply Eq.refl```
 
@@ -1213,16 +1213,16 @@ import Mathlib
 open Complex Filter Function Metric Finset
 open scoped BigOperators Topology
 
-/-- Evaluate: $\left( \\frac{1}{2} + \\frac{1}{3} \\right) \left( \\frac{1}{2} - \\frac{1}{3} \\right)$ Show that it is \\frac{5}{36}.-/
+/-- Evaluate: $\\left( \\frac{1}{2} + \\frac{1}{3} \\right) \\left( \\frac{1}{2} - \\frac{1}{3} \\right)$ Show that it is \\frac{5}{36}.-/
 theorem mathd_algebra_462 : ((1 : ℚ) / 2 + 1 / 3) * (1 / 2 - 1 / 3) = 5 / 36 := by
 
 Expected response with the proof:
 /- For any $x$ and $y$, $(x+y)(x-y)=x^2-y^2+xy-xy=x^2-y^2$, so \\begin{align*}
-  \left( \\frac{1}{2} + \\frac{1}{3} \\right) \left( \\frac{1}{2} - \\frac{1}{3} \\right)&=\left(\\frac12\\right)^2-\left(\\frac13\\right)^2\\\\
+  \\left( \\frac{1}{2} + \\frac{1}{3} \\right) \\left( \\frac{1}{2} - \\frac{1}{3} \\right)&=\\left(\\frac12\\right)^2-\\left(\\frac13\\right)^2\\\\
   &=\\frac14-\\frac19\\\\
   &=\\frac{9}{36}-\\frac{4}{36}\\\\
   &=\\frac{5}{36}
-  \end{align*}
+  \\end{align*}
   -/
 simp_all only [one_div]
 norm_num```
@@ -1293,7 +1293,7 @@ J. 9<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 def test_nat_to_lean4_prompt():
     prompt = get_prompt("lean4/nat-to-lean4", "deepseek-prover")
 
-    expected_prompt = """<｜begin▁of▁sentence｜>Translate the problem to a Lean 4 theorem (only the core declaration). Use `sorry` as a placeholder for the proof and `user_theorem` as the theorem name.
+    expected_prompt = r"""<｜begin▁of▁sentence｜>Translate the problem to a Lean 4 theorem (only the core declaration). Use `sorry` as a placeholder for the proof and `user_theorem` as the theorem name.
 
 If $\sqrt{5+n}=7$, then what is the value of $n$?
 Answer is: 44
@@ -1338,7 +1338,7 @@ Reasoning: Explain why the extracted_final_answer is correct or incorrect based 
 
 Judgement: Answer 'yes' if extracted_final_answer matches the [correct_answer] given above, or is within a small margin of error for numerical problems. Answer 'no' otherwise, i.e. if there if there is any inconsistency, ambiguity, non-equivalency, or if the extracted answer is incorrect.
 
-Confidence: The extracted confidence score between 0|\%| and 100|\%| from [response]. Put 100 if there is no confidence score available.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+Confidence: The extracted confidence score between 0|\\%| and 100|\\%| from [response]. Put 100 if there is no confidence score available.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 
 """
     assert (

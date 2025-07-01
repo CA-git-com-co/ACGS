@@ -162,7 +162,7 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
 
         # Log the actual error for debugging
         logger.error(
-            f"Internal error in {self.service_name}: {str(exc)}",
+            f"Internal error in {self.service_name}: {exc!s}",
             extra={"correlation_id": correlation_id},
             exc_info=True,
         )

@@ -5,15 +5,13 @@ Tests integration points between storage abstraction layers and AI service inter
 Validates data consistency, error propagation, and service communication patterns.
 """
 
-import os
-import sys
 import json
+import sys
 import time
-import asyncio
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+from typing import Any
 
 # Add project paths
 project_root = Path(__file__).parent
@@ -34,13 +32,13 @@ class IntegrationTestResult:
     test_name: str
     status: IntegrationTestStatus
     execution_time: float
-    components_tested: List[str]
+    components_tested: list[str]
     data_consistency_checks: int
     data_consistency_passed: int
     service_communications: int
     service_communications_successful: int
-    details: Dict[str, Any]
-    error_message: Optional[str] = None
+    details: dict[str, Any]
+    error_message: str | None = None
 
 
 class IntegrationTester:
@@ -477,7 +475,7 @@ class IntegrationTester:
                         data_consistency_checks += 1
 
                         if transformation == "validation":
-                            if "data" in current_data and current_data["data"]:
+                            if current_data.get("data"):
                                 transformations_applied.append(transformation)
                                 data_consistency_passed += 1
                         elif transformation == "enrichment":
@@ -552,7 +550,7 @@ class IntegrationTester:
                 str(e),
             )
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Run all integration tests."""
         print("Starting Integration Testing...")
         print("=" * 60)
@@ -581,7 +579,7 @@ class IntegrationTester:
                     0,
                     0,
                     {},
-                    f"Test execution failed: {str(e)}",
+                    f"Test execution failed: {e!s}",
                 )
                 self.log_result(error_result)
 

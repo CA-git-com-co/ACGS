@@ -19,7 +19,7 @@ import statistics
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -162,7 +162,7 @@ class MonitoringPerformanceValidator:
             return success
 
         except Exception as e:
-            logger.error(f"❌ Performance validation failed with error: {str(e)}")
+            logger.error(f"❌ Performance validation failed with error: {e!s}")
             return False
 
     async def validate_monitoring_services_health(self) -> bool:
@@ -196,7 +196,7 @@ class MonitoringPerformanceValidator:
                             all_healthy = False
 
                 except Exception as e:
-                    logger.error(f"❌ {service_name} health check failed: {str(e)}")
+                    logger.error(f"❌ {service_name} health check failed: {e!s}")
                     all_healthy = False
 
         return all_healthy
@@ -245,7 +245,7 @@ class MonitoringPerformanceValidator:
                                 response_times.append(response_time)
 
                     except Exception as e:
-                        logger.warning(f"Query failed: {query} - {str(e)}")
+                        logger.warning(f"Query failed: {query} - {e!s}")
 
                 if response_times:
                     avg_time = statistics.mean(response_times)
@@ -456,7 +456,7 @@ class MonitoringPerformanceValidator:
                         )
 
         except Exception as e:
-            logger.error(f"❌ Alert rule evaluation test failed: {str(e)}")
+            logger.error(f"❌ Alert rule evaluation test failed: {e!s}")
 
     async def test_alert_notification_latency(self):
         """Test alert notification latency by triggering test alerts."""
@@ -485,7 +485,7 @@ class MonitoringPerformanceValidator:
                         )
 
         except Exception as e:
-            logger.error(f"❌ Alert notification latency test failed: {str(e)}")
+            logger.error(f"❌ Alert notification latency test failed: {e!s}")
 
     async def test_alert_correlation(self):
         """Test alert correlation and inhibition rules."""
@@ -523,7 +523,7 @@ class MonitoringPerformanceValidator:
                         )
 
         except Exception as e:
-            logger.error(f"❌ Alert correlation test failed: {str(e)}")
+            logger.error(f"❌ Alert correlation test failed: {e!s}")
 
     async def validate_dashboard_performance(self):
         """Validate Grafana dashboard performance under load."""
@@ -572,7 +572,7 @@ class MonitoringPerformanceValidator:
 
                     except Exception as e:
                         logger.warning(
-                            f"Dashboard test failed: {dashboard['name']} - {str(e)}"
+                            f"Dashboard test failed: {dashboard['name']} - {e!s}"
                         )
 
                 if response_times:
@@ -627,9 +627,7 @@ class MonitoringPerformanceValidator:
                                 response_times.append(response_time)
 
                     except Exception as e:
-                        logger.warning(
-                            f"Dashboard query test failed: {query} - {str(e)}"
-                        )
+                        logger.warning(f"Dashboard query test failed: {query} - {e!s}")
 
                 if response_times:
                     avg_time = statistics.mean(response_times)
@@ -683,7 +681,7 @@ class MonitoringPerformanceValidator:
                             )
 
         except Exception as e:
-            logger.error(f"❌ Real-time performance test failed: {str(e)}")
+            logger.error(f"❌ Real-time performance test failed: {e!s}")
 
     async def measure_monitoring_overhead(self):
         """Measure monitoring infrastructure overhead on system resources."""
@@ -807,7 +805,7 @@ class MonitoringPerformanceValidator:
                         "error": str(e),
                     }
                     logger.warning(
-                        f"⚠️ {service_name}: metrics collection failed - {str(e)}"
+                        f"⚠️ {service_name}: metrics collection failed - {e!s}"
                     )
 
         self.system_metrics["metrics_collection_accuracy"] = service_metrics_status
@@ -996,7 +994,7 @@ class MonitoringPerformanceValidator:
 
             logger.info(f"✅ Performance validation report saved to: {report_file}")
         except Exception as e:
-            logger.error(f"❌ Failed to save report: {str(e)}")
+            logger.error(f"❌ Failed to save report: {e!s}")
 
         # Print summary
         self.print_performance_summary(report)
@@ -1092,7 +1090,7 @@ async def main():
         logger.info("⚠️ Performance validation interrupted by user")
         sys.exit(130)
     except Exception as e:
-        logger.error(f"❌ Performance validation failed with error: {str(e)}")
+        logger.error(f"❌ Performance validation failed with error: {e!s}")
         sys.exit(1)
 
 

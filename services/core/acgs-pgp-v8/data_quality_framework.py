@@ -13,18 +13,17 @@ Implements comprehensive data quality assessment including:
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
+import json
 import logging
+import os
+import warnings
+from dataclasses import asdict, dataclass
+from datetime import datetime, timedelta
+from typing import Any
+
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Tuple, Optional
-from dataclasses import dataclass, asdict
-import json
-import os
-from scipy import stats
 from scipy.stats import zscore
-from sklearn.preprocessing import LabelEncoder
-import warnings
 
 warnings.filterwarnings("ignore")
 
@@ -37,19 +36,19 @@ class DataQualityMetrics:
 
     # Missing Value Analysis
     missing_value_rate: float  # 0-1, lower is better
-    missing_patterns: Dict[str, float]  # Missing patterns by feature
+    missing_patterns: dict[str, float]  # Missing patterns by feature
 
     # Outlier Detection
     outlier_rate: float  # 0-1, lower is better
-    outlier_features: List[str]  # Features with high outlier rates
+    outlier_features: list[str]  # Features with high outlier rates
 
     # Class Imbalance
     imbalance_ratio: float  # 0-1, closer to 0.5 is better for binary
-    class_distribution: Dict[str, float]  # Distribution of target classes
+    class_distribution: dict[str, float]  # Distribution of target classes
 
     # Feature Correlation
     max_correlation: float  # 0-1, lower is better (avoid multicollinearity)
-    high_correlation_pairs: List[Tuple[str, str, float]]  # Highly correlated features
+    high_correlation_pairs: list[tuple[str, str, float]]  # Highly correlated features
 
     # Data Freshness
     data_freshness_hours: float  # Hours since last update
@@ -61,7 +60,7 @@ class DataQualityMetrics:
 
     # Data Completeness
     completeness_score: float  # 0-1, higher is better
-    feature_completeness: Dict[str, float]  # Completeness by feature
+    feature_completeness: dict[str, float]  # Completeness by feature
 
     # Overall Quality Score
     quality_score: float  # 0-1, higher is better (target: >0.8)
@@ -86,7 +85,7 @@ class DataQualityAssessment:
             "completeness_score": 0.95,  # Min 95% complete
         }
 
-    def assess_missing_values(self, df: pd.DataFrame) -> Dict[str, Any]:
+    def assess_missing_values(self, df: pd.DataFrame) -> dict[str, Any]:
         """Assess missing value patterns and rates."""
         logger.info("Assessing missing values...")
 
@@ -114,7 +113,7 @@ class DataQualityAssessment:
             "total_missing_cells": missing_cells,
         }
 
-    def detect_outliers(self, df: pd.DataFrame) -> Dict[str, Any]:
+    def detect_outliers(self, df: pd.DataFrame) -> dict[str, Any]:
         """Detect outliers using statistical methods."""
         logger.info("Detecting outliers...")
 
@@ -165,7 +164,7 @@ class DataQualityAssessment:
 
     def analyze_class_imbalance(
         self, df: pd.DataFrame, target_column: str = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Analyze class imbalance in target variables."""
         logger.info("Analyzing class imbalance...")
 
@@ -173,9 +172,9 @@ class DataQualityAssessment:
             # Try to infer target column (look for boolean or categorical with few unique values)
             potential_targets = []
             for col in df.columns:
-                if df[col].dtype == "bool":
-                    potential_targets.append(col)
-                elif df[col].dtype == "object" and df[col].nunique() <= 10:
+                if df[col].dtype == "bool" or (
+                    df[col].dtype == "object" and df[col].nunique() <= 10
+                ):
                     potential_targets.append(col)
 
             if potential_targets:
@@ -209,7 +208,7 @@ class DataQualityAssessment:
             "is_balanced": imbalance_ratio > 0.8,  # Consider balanced if > 80%
         }
 
-    def analyze_feature_correlation(self, df: pd.DataFrame) -> Dict[str, Any]:
+    def analyze_feature_correlation(self, df: pd.DataFrame) -> dict[str, Any]:
         """Analyze feature correlation to detect multicollinearity."""
         logger.info("Analyzing feature correlations...")
 
@@ -249,7 +248,7 @@ class DataQualityAssessment:
 
     def assess_data_freshness(
         self, df: pd.DataFrame, timestamp_column: str = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Assess data freshness and staleness."""
         logger.info("Assessing data freshness...")
 
@@ -293,7 +292,7 @@ class DataQualityAssessment:
             <= self.quality_thresholds["data_freshness_hours"],
         }
 
-    def assess_data_consistency(self, df: pd.DataFrame) -> Dict[str, Any]:
+    def assess_data_consistency(self, df: pd.DataFrame) -> dict[str, Any]:
         """Assess data consistency including duplicates."""
         logger.info("Assessing data consistency...")
 
@@ -335,7 +334,7 @@ class DataQualityAssessment:
             <= self.quality_thresholds["duplicate_rate"],
         }
 
-    def calculate_completeness_score(self, df: pd.DataFrame) -> Dict[str, Any]:
+    def calculate_completeness_score(self, df: pd.DataFrame) -> dict[str, Any]:
         """Calculate data completeness scores."""
         logger.info("Calculating completeness scores...")
 
@@ -358,7 +357,7 @@ class DataQualityAssessment:
             >= self.quality_thresholds["completeness_score"],
         }
 
-    def calculate_overall_quality_score(self, assessments: Dict[str, Any]) -> float:
+    def calculate_overall_quality_score(self, assessments: dict[str, Any]) -> float:
         """Calculate overall data quality score (0-1, target: >0.8)."""
         logger.info("Calculating overall quality score...")
 
@@ -464,7 +463,7 @@ class DataQualityAssessment:
 
     def save_assessment_report(
         self, metrics: DataQualityMetrics, output_dir: str = "data_quality_results"
-    ) -> Tuple[str, str]:
+    ) -> tuple[str, str]:
         """Save data quality assessment report."""
         logger.info("Saving data quality assessment report...")
 
@@ -677,7 +676,7 @@ def main():
         logger.info(f"⏰ Data Freshness: {metrics.data_freshness_hours:.1f} hours")
         logger.info(f"🔄 Duplicate Rate: {metrics.duplicate_rate:.1%}")
         logger.info(f"✅ Completeness Score: {metrics.completeness_score:.1%}")
-        logger.info(f"🔒 Constitutional Hash: cdd01ef066bc6cf2 ✅")
+        logger.info("🔒 Constitutional Hash: cdd01ef066bc6cf2 ✅")
         logger.info("=" * 60)
         logger.info(f"📄 Metrics saved to: {json_path}")
         logger.info(f"📋 Report saved to: {report_path}")

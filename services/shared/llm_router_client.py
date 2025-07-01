@@ -214,12 +214,11 @@ class LLMRouterClient:
             async with self._session.request(
                 method=method, url=url, json=data, headers=request_headers
             ) as response:
-
                 if response.status == 401:
                     raise LLMRouterAuthError("Authentication failed")
-                elif response.status == 408:
+                if response.status == 408:
                     raise LLMRouterTimeoutError("Request timeout")
-                elif response.status >= 400:
+                if response.status >= 400:
                     error_text = await response.text()
                     raise LLMRouterError(f"HTTP {response.status}: {error_text}")
 
@@ -230,7 +229,7 @@ class LLMRouterClient:
             raise LLMRouterTimeoutError("Request timeout")
         except aiohttp.ClientError as e:
             self._error_count += 1
-            raise LLMRouterError(f"Client error: {str(e)}")
+            raise LLMRouterError(f"Client error: {e!s}")
 
     async def chat_completion(
         self,
@@ -303,14 +302,13 @@ class LLMRouterClient:
         try:
             if stream:
                 return await self._stream_completion(request_data)
-            else:
-                response_data = await self._make_request(
-                    method="POST", endpoint="/v1/chat/completions", data=request_data
-                )
-                return self._parse_response(response_data)
+            response_data = await self._make_request(
+                method="POST", endpoint="/v1/chat/completions", data=request_data
+            )
+            return self._parse_response(response_data)
 
         except Exception as e:
-            self.logger.error(f"Chat completion failed: {str(e)}")
+            self.logger.error(f"Chat completion failed: {e!s}")
             raise
 
     async def constitutional_request(

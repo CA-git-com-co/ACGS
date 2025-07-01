@@ -14,22 +14,21 @@ Key objectives:
 - Standardize service discovery and health check endpoints
 """
 
-import os
-import sys
 import json
-import yaml
-import shutil
 import logging
-from pathlib import Path
+import shutil
+import sys
 from datetime import datetime
-from typing import Dict, List, Any
+from pathlib import Path
+
+import yaml
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
         logging.FileHandler(
-            f'configuration_consolidation_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log'
+            f"configuration_consolidation_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
         ),
         logging.StreamHandler(),
     ],
@@ -149,7 +148,7 @@ class ConfigurationConsolidator:
             logger.error(f"Environment variable consolidation failed: {e}")
             return False
 
-    def _write_env_file(self, env_name: str, env_vars: Dict[str, str]):
+    def _write_env_file(self, env_name: str, env_vars: dict[str, str]):
         """Write environment file"""
         env_file = self.config_dir / "environments" / env_name / ".env"
 

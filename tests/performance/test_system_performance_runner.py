@@ -1,5 +1,7 @@
-import pytest
 import json
+
+import pytest
+
 from tests.performance.test_system_performance import PerformanceTestSuite
 
 

@@ -11,11 +11,11 @@ from .log_config import LogConfig, setup_logging
 from .structured_logger import DGMLogLevel, StructuredLogger
 
 __all__ = [
-    "StructuredLogger",
+    "AuditEvent",
+    "AuditLogger",
     "DGMLogLevel",
     "LogAggregator",
     "LogConfig",
+    "StructuredLogger",
     "setup_logging",
-    "AuditLogger",
-    "AuditEvent",
 ]

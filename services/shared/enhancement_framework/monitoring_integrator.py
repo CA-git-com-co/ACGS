@@ -7,7 +7,7 @@ Integrates with existing ACGS monitoring infrastructure.
 
 import logging
 import time
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastapi import FastAPI, Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -132,17 +132,16 @@ class MonitoringIntegrator:
                 return Response(
                     content=generate_latest(), media_type=CONTENT_TYPE_LATEST
                 )
-            else:
-                # Return Prometheus format even for fallback metrics
-                from prometheus_client import (
-                    CONTENT_TYPE_LATEST,
-                    REGISTRY,
-                    generate_latest,
-                )
+            # Return Prometheus format even for fallback metrics
+            from prometheus_client import (
+                CONTENT_TYPE_LATEST,
+                REGISTRY,
+                generate_latest,
+            )
 
-                return Response(
-                    content=generate_latest(REGISTRY), media_type=CONTENT_TYPE_LATEST
-                )
+            return Response(
+                content=generate_latest(REGISTRY), media_type=CONTENT_TYPE_LATEST
+            )
 
         # Add enhanced health endpoint
         @app.get("/health")
@@ -180,9 +179,7 @@ class MonitoringIntegrator:
         self.fallback_metrics["requests_total"] += 1
         self.fallback_metrics["requests_duration_sum"] += duration
 
-    def record_constitutional_compliance(
-        self, result: str, score: Optional[float] = None
-    ):
+    def record_constitutional_compliance(self, result: str, score: float | None = None):
         """Record constitutional compliance metrics."""
         if self.metrics_enabled:
             self.constitutional_compliance_checks.labels(
@@ -208,7 +205,7 @@ class MonitoringIntegrator:
 
         self.fallback_metrics["service_health"] = health_value
 
-    def update_performance_metrics(self, metrics: Dict[str, Any]):
+    def update_performance_metrics(self, metrics: dict[str, Any]):
         """Update performance metrics."""
         if not self.metrics_enabled:
             return
@@ -223,7 +220,7 @@ class MonitoringIntegrator:
                 metrics["availability"]
             )
 
-    def get_health_metrics(self) -> Dict[str, Any]:
+    def get_health_metrics(self) -> dict[str, Any]:
         """Get current health and performance metrics."""
         if self.metrics_enabled:
             # In a real implementation, we would collect current metric values
@@ -233,8 +230,7 @@ class MonitoringIntegrator:
                 "metrics_endpoint": "/metrics",
                 "service_health": "healthy",
             }
-        else:
-            return self.fallback_metrics
+        return self.fallback_metrics
 
 
 class MonitoringMiddleware(BaseHTTPMiddleware):

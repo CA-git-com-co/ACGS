@@ -246,7 +246,7 @@ class FairnessMetricValidator(BiasValidator):
         message = (
             f"Demographic Parity: Min rate = {min_rate:.3f}, Max rate = {max_rate:.3f}. "
             f"Ratio = {metric_value:.3f}. Threshold = {metric.configuration['threshold']:.3f}. "
-            f"Rates by group: { {g: f'{r:.3f}' for g,r in group_favor_rates.items()} }"
+            f"Rates by group: { {g: f'{r:.3f}' for g, r in group_favor_rates.items()} }"
         )
 
         return passed, message, metric_value

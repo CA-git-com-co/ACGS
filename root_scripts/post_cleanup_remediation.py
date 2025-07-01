@@ -9,11 +9,8 @@ This script addresses the issues found in the post-cleanup analysis:
 4. Validate service integration
 """
 
-import os
-import re
-import shutil
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 
 class PostCleanupRemediation:
@@ -146,7 +143,7 @@ class PostCleanupRemediation:
 
         for doc_file in doc_files:
             try:
-                with open(doc_file, "r", encoding="utf-8", errors="ignore") as f:
+                with open(doc_file, encoding="utf-8", errors="ignore") as f:
                     content = f.read()
 
                 original_content = content
@@ -260,16 +257,15 @@ class PostCleanupRemediation:
         # Check for constitutional hash
         constitution_file = quantumagi_path / "constitution_data.json"
         try:
-            with open(constitution_file, "r") as f:
+            with open(constitution_file) as f:
                 content = f.read()
                 if "cdd01ef066bc6cf2" in content:
                     self.log_action("✅ Constitutional hash cdd01ef066bc6cf2 preserved")
                     return True
-                else:
-                    self.log_action(
-                        "WARNING: Constitutional hash not found in constitution data"
-                    )
-                    return False
+                self.log_action(
+                    "WARNING: Constitutional hash not found in constitution data"
+                )
+                return False
         except Exception as e:
             self.log_action(f"ERROR: Could not verify constitutional hash: {e}")
             return False
@@ -339,7 +335,7 @@ class PostCleanupRemediation:
             return valid_services == total_services and quantumagi_ok
 
         except Exception as e:
-            self.log_action(f"ERROR during remediation: {str(e)}")
+            self.log_action(f"ERROR during remediation: {e!s}")
             print(f"❌ Remediation failed: {e}")
             return False
 

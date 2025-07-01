@@ -16,7 +16,7 @@ import logging
 import os
 import sys
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 # Add the backend directory to the Python path
@@ -76,7 +76,7 @@ class OllamaIntegrationTester:
                     {
                         "test_name": test_name,
                         "success": False,
-                        "details": f"Exception: {str(e)}",
+                        "details": f"Exception: {e!s}",
                         "metrics": {},
                         "timestamp": datetime.now(timezone.utc).isoformat(),
                     }
@@ -110,7 +110,7 @@ class OllamaIntegrationTester:
             }
 
         except Exception as e:
-            return {"success": False, "details": f"Health check failed: {str(e)}"}
+            return {"success": False, "details": f"Health check failed: {e!s}"}
 
     async def test_ollama_client(self) -> dict[str, Any]:
         """Test basic Ollama client functionality."""
@@ -149,7 +149,7 @@ class OllamaIntegrationTester:
             }
 
         except Exception as e:
-            return {"success": False, "details": f"Client test failed: {str(e)}"}
+            return {"success": False, "details": f"Client test failed: {e!s}"}
 
     async def test_constitutional_prompting(self) -> dict[str, Any]:
         """Test constitutional prompting capabilities."""
@@ -196,7 +196,7 @@ class OllamaIntegrationTester:
         except Exception as e:
             return {
                 "success": False,
-                "details": f"Constitutional prompting test failed: {str(e)}",
+                "details": f"Constitutional prompting test failed: {e!s}",
             }
 
     async def test_multi_model_manager(self) -> dict[str, Any]:
@@ -229,7 +229,7 @@ class OllamaIntegrationTester:
         except Exception as e:
             return {
                 "success": False,
-                "details": f"MultiModelManager test failed: {str(e)}",
+                "details": f"MultiModelManager test failed: {e!s}",
             }
 
     async def test_performance(self) -> dict[str, Any]:
@@ -244,7 +244,7 @@ class OllamaIntegrationTester:
             for i in range(3):
                 start_time = time.time()
                 response = await client.generate_text(
-                    prompt=f"Explain constitutional principle {i+1} in AI governance",
+                    prompt=f"Explain constitutional principle {i + 1} in AI governance",
                     temperature=0.2,
                     max_tokens=150,
                 )
@@ -287,7 +287,7 @@ class OllamaIntegrationTester:
             }
 
         except Exception as e:
-            return {"success": False, "details": f"Performance test failed: {str(e)}"}
+            return {"success": False, "details": f"Performance test failed: {e!s}"}
 
     async def test_fallback_mechanism(self) -> dict[str, Any]:
         """Test fallback mechanism when Ollama is unavailable."""
@@ -321,7 +321,7 @@ class OllamaIntegrationTester:
             }
 
         except Exception as e:
-            return {"success": False, "details": f"Fallback test failed: {str(e)}"}
+            return {"success": False, "details": f"Fallback test failed: {e!s}"}
 
     async def test_taskmaster_integration(self) -> dict[str, Any]:
         """Test TaskMaster AI integration with Ollama."""
@@ -358,13 +358,12 @@ class OllamaIntegrationTester:
                         "fallback_model": fallback_model,
                     },
                 }
-            else:
-                return {"success": False, "details": "TaskMaster config file not found"}
+            return {"success": False, "details": "TaskMaster config file not found"}
 
         except Exception as e:
             return {
                 "success": False,
-                "details": f"TaskMaster integration test failed: {str(e)}",
+                "details": f"TaskMaster integration test failed: {e!s}",
             }
 
     def generate_report(self) -> dict[str, Any]:

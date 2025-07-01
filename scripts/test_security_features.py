@@ -18,10 +18,10 @@ Tests include:
 
 import json
 import logging
-import requests
 import time
 from datetime import datetime
-from typing import Dict, List
+
+import requests
 
 # Configure logging
 logging.basicConfig(
@@ -56,7 +56,7 @@ class SecurityTester:
             },
         }
 
-    def run_all_tests(self) -> Dict:
+    def run_all_tests(self) -> dict:
         """Run comprehensive security tests."""
         logger.info("🔒 Starting ACGS-1 Security Features Testing")
         logger.info(f"🎯 Testing {len(SERVICES)} services for security compliance")
@@ -74,7 +74,7 @@ class SecurityTester:
 
         return self.results
 
-    def test_service_security(self, service_name: str, base_url: str) -> Dict:
+    def test_service_security(self, service_name: str, base_url: str) -> dict:
         """Test security features for a specific service."""
         service_results = {
             "service_url": base_url,
@@ -131,7 +131,7 @@ class SecurityTester:
 
         return service_results
 
-    def test_security_headers(self, base_url: str) -> Dict:
+    def test_security_headers(self, base_url: str) -> dict:
         """Test OWASP recommended security headers."""
         required_headers = [
             "X-Content-Type-Options",
@@ -172,7 +172,7 @@ class SecurityTester:
                 "details": "Failed to test security headers",
             }
 
-    def test_sql_injection_protection(self, base_url: str) -> Dict:
+    def test_sql_injection_protection(self, base_url: str) -> dict:
         """Test SQL injection protection."""
         malicious_payloads = [
             "'; DROP TABLE users; --",
@@ -210,7 +210,7 @@ class SecurityTester:
             "details": f"Blocked {blocked_count}/{len(malicious_payloads)} SQL injection attempts",
         }
 
-    def test_xss_protection(self, base_url: str) -> Dict:
+    def test_xss_protection(self, base_url: str) -> dict:
         """Test XSS protection via CSP headers."""
         try:
             response = requests.get(f"{base_url}/health", timeout=5)
@@ -249,7 +249,7 @@ class SecurityTester:
                 "details": "Failed to test XSS protection",
             }
 
-    def test_rate_limiting(self, base_url: str) -> Dict:
+    def test_rate_limiting(self, base_url: str) -> dict:
         """Test rate limiting functionality."""
         try:
             # Make rapid requests to trigger rate limiting
@@ -300,7 +300,7 @@ class SecurityTester:
                 "details": "Failed to test rate limiting",
             }
 
-    def test_input_validation(self, base_url: str) -> Dict:
+    def test_input_validation(self, base_url: str) -> dict:
         """Test input validation."""
         # Test with oversized request
         try:
@@ -331,7 +331,7 @@ class SecurityTester:
                 "details": "Large payload rejected (connection error)",
             }
 
-    def test_path_traversal_protection(self, base_url: str) -> Dict:
+    def test_path_traversal_protection(self, base_url: str) -> dict:
         """Test path traversal protection."""
         traversal_payloads = [
             "../../../etc/passwd",
@@ -423,9 +423,8 @@ def main():
     if overall_score >= 70 and target_compliance >= 70:
         logger.info("🎉 Security features testing PASSED! Compliance target achieved.")
         return 0
-    else:
-        logger.warning("⚠️ Security features testing needs improvement.")
-        return 1
+    logger.warning("⚠️ Security features testing needs improvement.")
+    return 1
 
 
 if __name__ == "__main__":

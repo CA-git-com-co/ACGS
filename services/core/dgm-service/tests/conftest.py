@@ -37,7 +37,7 @@ class TestDataFactory:
     """Factory for creating test data objects."""
 
     @staticmethod
-    def create_dgm_archive(**kwargs) -> Dict[str, Any]:
+    def create_dgm_archive(**kwargs) -> dict[str, Any]:
         """Create DGM archive test data."""
         defaults = {
             "id": str(uuid4()),
@@ -55,7 +55,7 @@ class TestDataFactory:
         return defaults
 
     @staticmethod
-    def create_performance_metric(**kwargs) -> Dict[str, Any]:
+    def create_performance_metric(**kwargs) -> dict[str, Any]:
         """Create performance metric test data."""
         defaults = {
             "id": str(uuid4()),

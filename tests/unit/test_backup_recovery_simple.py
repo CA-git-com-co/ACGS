@@ -122,7 +122,7 @@ class SimpleBackupTest:
             "total_tests": total_tests,
             "passed_tests": passed_tests,
             "failed_tests": total_tests - passed_tests,
-            "success_rate": f"{(passed_tests/total_tests)*100:.1f}%",
+            "success_rate": f"{(passed_tests / total_tests) * 100:.1f}%",
         }
 
         test_results["status"] = "passed" if passed_tests == total_tests else "partial"
@@ -281,7 +281,7 @@ class SimpleBackupTest:
             backup_dir.name,
         ]
 
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        result = subprocess.run(cmd, check=False, capture_output=True, text=True)
 
         if result.returncode == 0 and compressed_file.exists():
             original_size = sum(
@@ -301,13 +301,14 @@ class SimpleBackupTest:
                 "original_size": original_size,
                 "compressed_size": compressed_size,
             }
-        else:
-            return {"status": "failed", "error": result.stderr}
+        return {"status": "failed", "error": result.stderr}
 
     def _is_service_running(self, port: int) -> bool:
         """Check if service is running on given port"""
         try:
-            result = subprocess.run(["netstat", "-ln"], capture_output=True, text=True)
+            result = subprocess.run(
+                ["netstat", "-ln"], check=False, capture_output=True, text=True
+            )
             return f":{port} " in result.stdout
         except:
             return False

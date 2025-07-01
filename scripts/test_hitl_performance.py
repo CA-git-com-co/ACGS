@@ -11,12 +11,12 @@ Tests the Human-in-the-Loop decision engine performance including:
 
 import asyncio
 import json
-import time
 import statistics
-from typing import List, Dict, Any
-import httpx
-import uuid
+import time
 from datetime import datetime
+from typing import Any
+
+import httpx
 
 # Service endpoints
 HITL_SERVICE_URL = "http://localhost:8008"
@@ -36,7 +36,7 @@ class HITLPerformanceTester:
             "test_end": None,
         }
 
-    async def test_decision_latency(self, num_requests: int = 100) -> Dict[str, Any]:
+    async def test_decision_latency(self, num_requests: int = 100) -> dict[str, Any]:
         """Test decision latency with multiple requests."""
         print(f"🚀 Testing HITL decision latency with {num_requests} requests...")
 
@@ -92,7 +92,7 @@ class HITLPerformanceTester:
                     )
 
             except Exception as e:
-                self.results["errors"].append(f"Request {i}: {str(e)}")
+                self.results["errors"].append(f"Request {i}: {e!s}")
 
             # Small delay to avoid overwhelming the service
             if i % 10 == 0:
@@ -103,7 +103,7 @@ class HITLPerformanceTester:
 
     async def test_concurrent_load(
         self, concurrent_requests: int = 20, duration_seconds: int = 10
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test concurrent load on HITL service."""
         print(
             f"🔥 Testing concurrent load: {concurrent_requests} concurrent requests for {duration_seconds}s..."
@@ -176,7 +176,7 @@ class HITLPerformanceTester:
             "errors": [r.get("error") for r in failed_requests if r.get("error")],
         }
 
-    async def test_constitutional_compliance(self) -> Dict[str, Any]:
+    async def test_constitutional_compliance(self) -> dict[str, Any]:
         """Test constitutional compliance validation."""
         print("⚖️ Testing constitutional compliance validation...")
 
@@ -241,7 +241,7 @@ class HITLPerformanceTester:
 
         return results
 
-    def _calculate_latency_metrics(self, latencies: List[float]) -> Dict[str, float]:
+    def _calculate_latency_metrics(self, latencies: list[float]) -> dict[str, float]:
         """Calculate latency statistics."""
         if not latencies:
             return {}
@@ -258,7 +258,7 @@ class HITLPerformanceTester:
             "count": len(latencies),
         }
 
-    async def run_comprehensive_test(self) -> Dict[str, Any]:
+    async def run_comprehensive_test(self) -> dict[str, Any]:
         """Run comprehensive HITL performance test suite."""
         print("🧪 Starting comprehensive HITL performance test suite...")
         self.results["test_start"] = datetime.utcnow().isoformat()
@@ -333,7 +333,7 @@ async def main():
         print("🎯 HITL PERFORMANCE TEST RESULTS")
         print("=" * 80)
 
-        print(f"\n📊 Test Summary:")
+        print("\n📊 Test Summary:")
         summary = results["test_summary"]
         print(f"  • Test Duration: {summary['test_start']} to {summary['test_end']}")
         print(f"  • Total Errors: {summary['total_errors']}")
@@ -341,7 +341,7 @@ async def main():
         print(f"  • Human Escalations: {summary['human_escalations']}")
         print(f"  • Constitutional Violations: {summary['constitutional_violations']}")
 
-        print(f"\n⚡ Latency Performance:")
+        print("\n⚡ Latency Performance:")
         latency = results["latency_test"]
         if latency:
             print(f"  • Mean Latency: {latency.get('mean_ms', 0):.2f}ms")
@@ -349,16 +349,16 @@ async def main():
             print(f"  • P99 Latency: {latency.get('p99_ms', 0):.2f}ms")
             print(f"  • Max Latency: {latency.get('max_ms', 0):.2f}ms")
 
-        print(f"\n🔥 Load Test Results:")
+        print("\n🔥 Load Test Results:")
         load = results["load_test"]
         print(f"  • Total Requests: {load.get('total_requests', 0)}")
-        print(f"  • Success Rate: {load.get('success_rate', 0)*100:.1f}%")
+        print(f"  • Success Rate: {load.get('success_rate', 0) * 100:.1f}%")
         if load.get("latency_metrics"):
             print(
                 f"  • P99 Under Load: {load['latency_metrics'].get('p99_ms', 0):.2f}ms"
             )
 
-        print(f"\n⚖️ Constitutional Compliance:")
+        print("\n⚖️ Constitutional Compliance:")
         compliance = results["compliance_test"]
         if compliance.get("valid_hash_test"):
             print(
@@ -369,7 +369,7 @@ async def main():
                 f"  • Invalid Hash Escalation: {'✅ ESCALATED' if compliance['invalid_hash_test'].get('escalated') else '❌ NOT ESCALATED'}"
             )
 
-        print(f"\n🎯 Performance Targets:")
+        print("\n🎯 Performance Targets:")
         targets = results["performance_targets"]
         print(f"  • P99 Latency Target: {targets['p99_latency_target_ms']}ms")
         print(f"  • P99 Latency Achieved: {targets['p99_latency_achieved_ms']:.2f}ms")
@@ -377,11 +377,11 @@ async def main():
             f"  • P99 Target Met: {'✅ YES' if targets['p99_target_met'] else '❌ NO'}"
         )
         print(
-            f"  • Constitutional Compliance Rate: {targets['constitutional_compliance_rate']*100:.1f}%"
+            f"  • Constitutional Compliance Rate: {targets['constitutional_compliance_rate'] * 100:.1f}%"
         )
 
         if results["errors"]:
-            print(f"\n❌ Errors Encountered:")
+            print("\n❌ Errors Encountered:")
             for error in results["errors"][:5]:  # Show first 5 errors
                 print(f"  • {error}")
             if len(results["errors"]) > 5:
@@ -390,7 +390,7 @@ async def main():
         # Save detailed results
         with open("hitl_performance_test_results.json", "w") as f:
             json.dump(results, f, indent=2)
-        print(f"\n💾 Detailed results saved to: hitl_performance_test_results.json")
+        print("\n💾 Detailed results saved to: hitl_performance_test_results.json")
 
     except Exception as e:
         print(f"❌ Test execution failed: {e}")

@@ -166,7 +166,6 @@ class ACMetaRuleBase(BaseModel):
 
 
 class ACMetaRuleCreate(ACMetaRuleBase):
-
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
@@ -432,7 +431,6 @@ class ACConflictResolutionBase(BaseModel):
 
 
 class ACConflictResolutionCreate(ACConflictResolutionBase):
-
     class Config:
         json_schema_extra = {
             "example": {

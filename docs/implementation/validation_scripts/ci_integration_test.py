@@ -6,15 +6,16 @@ Validates that the new versioning test suites integrate properly with existing
 CI/CD pipeline without conflicts or disruptions.
 """
 
-import subprocess
 import json
 import logging
+import subprocess
 import time
-import yaml
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass
+from typing import Any
+
+import yaml
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -30,7 +31,7 @@ class TestSuiteResult:
     tests_run: int
     tests_passed: int
     tests_failed: int
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 class CIIntegrationValidator:
@@ -41,9 +42,9 @@ class CIIntegrationValidator:
     test frameworks and CI/CD pipelines without conflicts.
     """
 
-    def __init__(self, project_root: Path = Path(".")):
+    def __init__(self, project_root: Path = Path()):
         self.project_root = project_root
-        self.test_results: List[TestSuiteResult] = []
+        self.test_results: list[TestSuiteResult] = []
 
         # Define test suites to validate
         self.test_suites = [
@@ -99,7 +100,7 @@ class CIIntegrationValidator:
             },
         ]
 
-    def validate_ci_integration(self) -> Dict[str, Any]:
+    def validate_ci_integration(self) -> dict[str, Any]:
         """Run comprehensive CI/CD integration validation."""
         logger.info("🔧 Starting CI/CD integration validation...")
 
@@ -168,7 +169,7 @@ class CIIntegrationValidator:
         )
         return report
 
-    def _validate_test_environment(self) -> Dict[str, Any]:
+    def _validate_test_environment(self) -> dict[str, Any]:
         """Validate test environment setup and dependencies."""
         logger.info("🔍 Validating test environment...")
 
@@ -188,7 +189,7 @@ class CIIntegrationValidator:
         """Check if Python version is compatible."""
         try:
             result = subprocess.run(
-                ["python3", "--version"], capture_output=True, text=True
+                ["python3", "--version"], check=False, capture_output=True, text=True
             )
             version = result.stdout.strip()
             logger.info(f"Python version: {version}")
@@ -212,6 +213,7 @@ class CIIntegrationValidator:
             for package in required_packages:
                 result = subprocess.run(
                     ["python3", "-c", f"import {package}"],
+                    check=False,
                     capture_output=True,
                     text=True,
                 )
@@ -260,7 +262,7 @@ class CIIntegrationValidator:
 
         return True
 
-    def _run_test_suites(self) -> List[TestSuiteResult]:
+    def _run_test_suites(self) -> list[TestSuiteResult]:
         """Run all test suites and collect results."""
         logger.info("🧪 Running test suites...")
 
@@ -285,7 +287,7 @@ class CIIntegrationValidator:
 
         return results
 
-    def _run_single_test_suite(self, suite: Dict[str, Any]) -> TestSuiteResult:
+    def _run_single_test_suite(self, suite: dict[str, Any]) -> TestSuiteResult:
         """Run a single test suite and return results."""
         start_time = time.time()
 
@@ -293,6 +295,7 @@ class CIIntegrationValidator:
             # Run the test command
             result = subprocess.run(
                 suite["command"],
+                check=False,
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
@@ -371,7 +374,7 @@ class CIIntegrationValidator:
 
         return tests_run, tests_passed, tests_failed
 
-    def _validate_github_workflows(self) -> Dict[str, Any]:
+    def _validate_github_workflows(self) -> dict[str, Any]:
         """Validate GitHub Actions workflow files."""
         logger.info("🔧 Validating GitHub Actions workflows...")
 
@@ -389,7 +392,7 @@ class CIIntegrationValidator:
 
         for workflow_file in workflow_files:
             try:
-                with open(workflow_file, "r") as f:
+                with open(workflow_file) as f:
                     workflow_content = yaml.safe_load(f)
 
                 # Basic validation
@@ -426,7 +429,7 @@ class CIIntegrationValidator:
             "validation_details": validation_results,
         }
 
-    def _check_versioning_jobs(self, workflow_content: Dict[str, Any]) -> bool:
+    def _check_versioning_jobs(self, workflow_content: dict[str, Any]) -> bool:
         """Check if workflow contains versioning-related jobs."""
         jobs = workflow_content.get("jobs", {})
         versioning_keywords = [
@@ -451,7 +454,7 @@ class CIIntegrationValidator:
 
         return False
 
-    def _analyze_test_conflicts(self) -> Dict[str, Any]:
+    def _analyze_test_conflicts(self) -> dict[str, Any]:
         """Analyze potential conflicts between test suites."""
         logger.info("🔍 Analyzing test conflicts...")
 
@@ -478,27 +481,27 @@ class CIIntegrationValidator:
             "resolution_suggestions": self._generate_conflict_resolutions(conflicts),
         }
 
-    def _check_import_conflicts(self) -> List[Dict[str, Any]]:
+    def _check_import_conflicts(self) -> list[dict[str, Any]]:
         """Check for Python import conflicts."""
         # This would analyze import statements in test files
         # For now, return empty list (no conflicts detected)
         return []
 
-    def _check_port_conflicts(self) -> List[Dict[str, Any]]:
+    def _check_port_conflicts(self) -> list[dict[str, Any]]:
         """Check for port conflicts in test configurations."""
         # This would check for hardcoded ports in test files
         # For now, return empty list (no conflicts detected)
         return []
 
-    def _check_database_conflicts(self) -> List[Dict[str, Any]]:
+    def _check_database_conflicts(self) -> list[dict[str, Any]]:
         """Check for database conflicts in tests."""
         # This would check for database usage conflicts
         # For now, return empty list (no conflicts detected)
         return []
 
     def _generate_conflict_resolutions(
-        self, conflicts: List[Dict[str, Any]]
-    ) -> List[str]:
+        self, conflicts: list[dict[str, Any]]
+    ) -> list[str]:
         """Generate suggestions for resolving conflicts."""
         if not conflicts:
             return ["No conflicts detected - test suites are compatible"]
@@ -519,7 +522,7 @@ class CIIntegrationValidator:
 
         return resolutions
 
-    def _analyze_ci_performance(self) -> Dict[str, Any]:
+    def _analyze_ci_performance(self) -> dict[str, Any]:
         """Analyze CI/CD pipeline performance impact."""
         logger.info("📊 Analyzing CI/CD performance impact...")
 
@@ -554,7 +557,7 @@ class CIIntegrationValidator:
 
     def _generate_performance_recommendations(
         self, overhead_percentage: float
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate performance optimization recommendations."""
         recommendations = []
 
@@ -571,7 +574,7 @@ class CIIntegrationValidator:
 
         return recommendations
 
-    def save_report(self, report: Dict[str, Any], output_path: Path):
+    def save_report(self, report: dict[str, Any], output_path: Path):
         """Save CI integration validation report."""
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -604,7 +607,7 @@ def main():
     print(f"⏱️  Total Duration: {summary['duration_seconds']}s")
 
     criteria = report["success_criteria"]
-    print(f"\n🎯 SUCCESS CRITERIA:")
+    print("\n🎯 SUCCESS CRITERIA:")
     print(
         f"   ✅ Existing Tests Pass: {'PASS' if criteria['all_existing_tests_pass'] else 'FAIL'}"
     )
@@ -618,7 +621,7 @@ def main():
     )
 
     performance = report["performance_analysis"]
-    print(f"\n📈 PERFORMANCE ANALYSIS:")
+    print("\n📈 PERFORMANCE ANALYSIS:")
     print(f"   Total Duration: {performance['total_duration_seconds']}s")
     print(f"   Baseline Duration: {performance['baseline_duration_seconds']}s")
     print(

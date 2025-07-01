@@ -4,8 +4,6 @@ Audit Integrity Service Configuration
 Manages configuration for audit logging integrity and blockchain anchoring.
 """
 
-import os
-from typing import List, Dict, Optional
 from pydantic import BaseSettings, Field
 
 
@@ -120,7 +118,7 @@ class Settings(BaseSettings):
     # Alerting configuration
     ENABLE_INTEGRITY_ALERTS: bool = Field(default=True, env="ENABLE_INTEGRITY_ALERTS")
     ALERT_WEBHOOK_URL: str = Field(default="", env="ALERT_WEBHOOK_URL")
-    ALERT_EMAIL_RECIPIENTS: List[str] = Field(default=[], env="ALERT_EMAIL_RECIPIENTS")
+    ALERT_EMAIL_RECIPIENTS: list[str] = Field(default=[], env="ALERT_EMAIL_RECIPIENTS")
 
     # Performance configuration
     MAX_CONCURRENT_OPERATIONS: int = Field(default=10, env="MAX_CONCURRENT_OPERATIONS")
@@ -128,7 +126,7 @@ class Settings(BaseSettings):
     SIGNATURE_ALGORITHM: str = Field(default="RSA-PSS", env="SIGNATURE_ALGORITHM")
 
     # Audit event types
-    CRITICAL_EVENT_TYPES: List[str] = Field(
+    CRITICAL_EVENT_TYPES: list[str] = Field(
         default=[
             "authentication_failure",
             "authorization_failure",
@@ -142,7 +140,7 @@ class Settings(BaseSettings):
     )
 
     # Compliance settings
-    COMPLIANCE_STANDARDS: List[str] = Field(
+    COMPLIANCE_STANDARDS: list[str] = Field(
         default=["SOC2", "ISO27001", "GDPR", "CONSTITUTIONAL_AI"],
         env="COMPLIANCE_STANDARDS",
     )

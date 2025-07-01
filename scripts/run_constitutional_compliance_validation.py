@@ -9,11 +9,11 @@ Constitutional Hash: cdd01ef066bc6cf2
 Compliance Targets: >95% constitutional compliance, 100% hash integrity, 98% audit coverage
 """
 
-import sys
-import json
 import argparse
-from pathlib import Path
+import json
+import sys
 from datetime import datetime
+from pathlib import Path
 
 # Add project paths
 project_root = Path(__file__).parent.parent

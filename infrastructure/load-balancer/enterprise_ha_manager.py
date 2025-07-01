@@ -121,8 +121,8 @@ class EnterpriseHAManager:
             instances = []
             for i in range(instance_count):
                 instance = ServiceInstance(
-                    id=f"{service_name}_{i+1}",
-                    host=f"{service_name}_{i+1}" if i > 0 else service_name,
+                    id=f"{service_name}_{i + 1}",
+                    host=f"{service_name}_{i + 1}" if i > 0 else service_name,
                     port=base_port,
                     weight=100 if i == 0 else 80,  # Primary instance gets higher weight
                     max_connections=1000,
@@ -247,18 +247,17 @@ class EnterpriseHAManager:
 
         if pool.routing_strategy == RoutingStrategy.ROUND_ROBIN:
             return self._round_robin_selection(instances)
-        elif pool.routing_strategy == RoutingStrategy.LEAST_CONNECTIONS:
+        if pool.routing_strategy == RoutingStrategy.LEAST_CONNECTIONS:
             return min(instances, key=lambda i: i.current_connections)
-        elif pool.routing_strategy == RoutingStrategy.WEIGHTED_ROUND_ROBIN:
+        if pool.routing_strategy == RoutingStrategy.WEIGHTED_ROUND_ROBIN:
             return self._weighted_round_robin_selection(instances)
-        elif pool.routing_strategy == RoutingStrategy.CONSISTENT_HASH:
+        if pool.routing_strategy == RoutingStrategy.CONSISTENT_HASH:
             return self._consistent_hash_selection(instances, pool.name)
-        elif pool.routing_strategy == RoutingStrategy.RESPONSE_TIME_BASED:
+        if pool.routing_strategy == RoutingStrategy.RESPONSE_TIME_BASED:
             return min(instances, key=lambda i: i.avg_response_time)
-        elif pool.routing_strategy == RoutingStrategy.RESOURCE_BASED:
+        if pool.routing_strategy == RoutingStrategy.RESOURCE_BASED:
             return self._resource_based_selection(instances)
-        else:
-            return instances[0]  # Default to first instance
+        return instances[0]  # Default to first instance
 
     def _round_robin_selection(
         self, instances: list[ServiceInstance]

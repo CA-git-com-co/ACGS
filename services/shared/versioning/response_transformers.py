@@ -7,8 +7,8 @@ for API responses, working with the existing unified response format.
 
 import logging
 from abc import ABC, abstractmethod
-from datetime import datetime, timezone
-from typing import Any, Callable, Dict, List, Optional, Union
+from collections.abc import Callable
+from typing import Any
 
 from ..api_models import APIError, APIMetadata, APIResponse, APIStatus
 from .version_manager import APIVersion, VersionCompatibility
@@ -24,7 +24,7 @@ class ResponseTransformer(ABC):
         self.target_version = target_version
 
     @abstractmethod
-    def transform(self, response_data: Dict[str, Any]) -> Dict[str, Any]:
+    def transform(self, response_data: dict[str, Any]) -> dict[str, Any]:
         """Transform response data from source to target version."""
         pass
 
@@ -49,10 +49,10 @@ class CompatibilityTransformer(ResponseTransformer):
         self,
         source_version: APIVersion,
         target_version: APIVersion,
-        field_mappings: Optional[Dict[str, str]] = None,
-        removed_fields: Optional[List[str]] = None,
-        added_fields: Optional[Dict[str, Any]] = None,
-        custom_transformers: Optional[Dict[str, Callable]] = None,
+        field_mappings: dict[str, str] | None = None,
+        removed_fields: list[str] | None = None,
+        added_fields: dict[str, Any] | None = None,
+        custom_transformers: dict[str, Callable] | None = None,
     ):
         super().__init__(source_version, target_version)
         self.field_mappings = field_mappings or {}
@@ -60,7 +60,7 @@ class CompatibilityTransformer(ResponseTransformer):
         self.added_fields = added_fields or {}
         self.custom_transformers = custom_transformers or {}
 
-    def transform(self, response_data: Dict[str, Any]) -> Dict[str, Any]:
+    def transform(self, response_data: dict[str, Any]) -> dict[str, Any]:
         """Apply compatibility transformations to response data."""
         transformed_data = response_data.copy()
 
@@ -105,7 +105,7 @@ class VersionedResponseBuilder:
     def __init__(self, service_name: str, service_version: str = "3.0.0"):
         self.service_name = service_name
         self.service_version = service_version
-        self.transformers: List[ResponseTransformer] = []
+        self.transformers: list[ResponseTransformer] = []
 
     def register_transformer(self, transformer: ResponseTransformer):
         """Register a response transformer for version compatibility."""
@@ -118,12 +118,12 @@ class VersionedResponseBuilder:
         self,
         status: APIStatus,
         data: Any = None,
-        error: Optional[APIError] = None,
-        request_version: Optional[APIVersion] = None,
-        target_version: Optional[APIVersion] = None,
-        correlation_id: Optional[str] = None,
-        response_time_ms: Optional[float] = None,
-        compatibility_info: Optional[VersionCompatibility] = None,
+        error: APIError | None = None,
+        request_version: APIVersion | None = None,
+        target_version: APIVersion | None = None,
+        correlation_id: str | None = None,
+        response_time_ms: float | None = None,
+        compatibility_info: VersionCompatibility | None = None,
     ) -> APIResponse:
         """
         Build a version-aware API response.
@@ -189,7 +189,7 @@ class VersionedResponseBuilder:
 
     def _find_transformer(
         self, source_version: APIVersion, target_version: APIVersion
-    ) -> Optional[ResponseTransformer]:
+    ) -> ResponseTransformer | None:
         """Find a suitable transformer for the version pair."""
         for transformer in self.transformers:
             if transformer.can_transform(source_version, target_version):
@@ -198,7 +198,7 @@ class VersionedResponseBuilder:
 
     def create_deprecation_response(
         self, compatibility_info: VersionCompatibility, original_response: APIResponse
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Create response with deprecation warnings and migration information.
 

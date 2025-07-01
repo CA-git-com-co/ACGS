@@ -51,17 +51,26 @@ class EmergencyRollback:
         try:
             # Get current branch
             branch_result = subprocess.run(
-                ["git", "branch", "--show-current"], capture_output=True, text=True
+                ["git", "branch", "--show-current"],
+                check=False,
+                capture_output=True,
+                text=True,
             )
 
             # Get recent commits
             log_result = subprocess.run(
-                ["git", "log", "--oneline", "-5"], capture_output=True, text=True
+                ["git", "log", "--oneline", "-5"],
+                check=False,
+                capture_output=True,
+                text=True,
             )
 
             # Check for uncommitted changes
             status_result = subprocess.run(
-                ["git", "status", "--porcelain"], capture_output=True, text=True
+                ["git", "status", "--porcelain"],
+                check=False,
+                capture_output=True,
+                text=True,
             )
 
             return {
@@ -110,7 +119,11 @@ class EmergencyRollback:
                 else:
                     # Actually execute the command
                     result = subprocess.run(
-                        command.split(), capture_output=True, text=True, timeout=60
+                        command.split(),
+                        check=False,
+                        capture_output=True,
+                        text=True,
+                        timeout=60,
                     )
 
                     results["command_results"].append(
@@ -138,6 +151,7 @@ class EmergencyRollback:
             # Run basic health check
             result = subprocess.run(
                 ["python", "post_merge_validation.py"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=120,

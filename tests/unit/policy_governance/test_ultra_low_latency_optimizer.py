@@ -2,15 +2,7 @@
 Unit tests for services.core.policy-governance.pgc_service.app.core.ultra_low_latency_optimizer
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from services.core.policy_governance.pgc_service.app.core.ultra_low_latency_optimizer import (
-    OptimizationLevel,
-    CacheStrategy,
-    LatencyTarget,
-    PerformanceMetrics,
-    OptimizationResult,
-    SpeculativeExecutor,
     FragmentLevelCache,
     UltraLowLatencyOptimizer,
 )

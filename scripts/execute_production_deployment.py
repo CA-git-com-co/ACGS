@@ -6,15 +6,14 @@ Executes blue-green deployment to production with gradual traffic shifting,
 monitoring, and automatic rollback capabilities.
 """
 
-import sys
+import asyncio
 import json
 import logging
-import asyncio
+import sys
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass
-import time
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -35,9 +34,9 @@ class DeploymentStep:
     traffic_percentage: int
     duration_minutes: int
     success: bool = False
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
-    metrics: Optional[Dict[str, Any]] = None
+    start_time: datetime | None = None
+    end_time: datetime | None = None
+    metrics: dict[str, Any] | None = None
 
 
 class ProductionDeploymentManager:
@@ -53,12 +52,12 @@ class ProductionDeploymentManager:
     """
 
     def __init__(self):
-        self.deployment_steps: List[DeploymentStep] = []
+        self.deployment_steps: list[DeploymentStep] = []
         self.current_traffic_percentage = 0
         self.rollback_triggered = False
         self.deployment_start_time = None
 
-    async def execute_production_deployment(self) -> Dict[str, Any]:
+    async def execute_production_deployment(self) -> dict[str, Any]:
         """Execute complete production deployment."""
         logger.info("🚀 Starting ACGS-1 Production Deployment...")
 
@@ -293,7 +292,7 @@ class ProductionDeploymentManager:
                 return False
 
             logger.info(
-                f"📈 Monitoring checkpoint {i+1}/{monitoring_intervals}: Metrics healthy"
+                f"📈 Monitoring checkpoint {i + 1}/{monitoring_intervals}: Metrics healthy"
             )
 
         return True
@@ -389,7 +388,7 @@ class ProductionDeploymentManager:
             rollback_step.end_time = datetime.now(timezone.utc)
             self.deployment_steps.append(rollback_step)
 
-    def _generate_deployment_report(self, total_duration: float) -> Dict[str, Any]:
+    def _generate_deployment_report(self, total_duration: float) -> dict[str, Any]:
         """Generate comprehensive deployment report."""
         successful_steps = len([s for s in self.deployment_steps if s.success])
         total_steps = len(self.deployment_steps)
@@ -462,7 +461,7 @@ async def main():
     print(f"🔄 Rollback: {'Yes' if summary['rollback_triggered'] else 'No'}")
     print(f"✅ Success: {'Yes' if summary['deployment_successful'] else 'No'}")
 
-    print(f"\n🎯 SUCCESS CRITERIA:")
+    print("\n🎯 SUCCESS CRITERIA:")
     criteria = report["success_criteria"]
     for criterion, passed in criteria.items():
         status = "PASS" if passed else "FAIL"

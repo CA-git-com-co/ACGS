@@ -72,12 +72,11 @@ class FormalVerificationRedTeamRunner:
                     "fv_service_healthy": True,
                     "health_data": health_data,
                 }
-            else:
-                return {
-                    "z3_available": False,
-                    "z3_status": "service_unavailable",
-                    "fv_service_healthy": False,
-                }
+            return {
+                "z3_available": False,
+                "z3_status": "service_unavailable",
+                "fv_service_healthy": False,
+            }
         except Exception as e:
             logger.error(f"Failed to check Z3 availability: {e}")
             return {
@@ -526,9 +525,8 @@ async def main():
                 "✅ Formal Verification & Adversarial Red-Teaming Framework - COMPLETED"
             )
             return True
-        else:
-            logger.warning("⚠️ Formal verification framework needs improvement")
-            return False
+        logger.warning("⚠️ Formal verification framework needs improvement")
+        return False
 
     except Exception as e:
         logger.error(f"❌ Assessment failed: {e}")

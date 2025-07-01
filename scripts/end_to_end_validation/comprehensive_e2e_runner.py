@@ -36,7 +36,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -79,7 +79,7 @@ class ComprehensiveE2ERunner:
             "e2e_workflow_completion_seconds": 30.0,
         }
 
-    async def validate_system_health_e2e(self) -> Dict[str, Any]:
+    async def validate_system_health_e2e(self) -> dict[str, Any]:
         """Validate complete system health end-to-end."""
         logger.info("🏥 Running End-to-End System Health Validation...")
 
@@ -162,7 +162,7 @@ class ComprehensiveE2ERunner:
             f"  ✅ System Health: {service_availability:.1f}% service availability"
         )
         logger.info(f"  📊 Average Response Time: {avg_response_time:.2f}ms")
-        logger.info(f"  🔗 All integrations operational")
+        logger.info("  🔗 All integrations operational")
 
         return {
             "overall_health": overall_health,
@@ -176,7 +176,7 @@ class ComprehensiveE2ERunner:
             "status": "PASS" if service_availability >= 100.0 else "PARTIAL",
         }
 
-    async def validate_governance_workflows_e2e(self) -> Dict[str, Any]:
+    async def validate_governance_workflows_e2e(self) -> dict[str, Any]:
         """Validate all governance workflows end-to-end."""
         logger.info("⚖️ Running End-to-End Governance Workflow Validation...")
 
@@ -250,7 +250,7 @@ class ComprehensiveE2ERunner:
             f"  ✅ Governance Workflows: {successful_workflows}/{len(self.governance_workflows)} operational"
         )
         logger.info(f"  📊 Average Completion Time: {avg_workflow_time:.2f}ms")
-        logger.info(f"  ⚖️ Constitutional Compliance: 96.0%")
+        logger.info("  ⚖️ Constitutional Compliance: 96.0%")
 
         return {
             "overall_metrics": overall_workflow_metrics,
@@ -260,13 +260,15 @@ class ComprehensiveE2ERunner:
                 >= self.e2e_targets["governance_workflows_operational"],
                 "completion_time": avg_workflow_time
                 <= (self.e2e_targets["e2e_workflow_completion_seconds"] * 1000),
-                "constitutional_compliance": 96.0
-                >= self.e2e_targets["constitutional_compliance_percent"],
+                "constitutional_compliance": self.e2e_targets[
+                    "constitutional_compliance_percent"
+                ]
+                <= 96.0,
             },
             "status": "PASS" if workflow_success_rate >= 100.0 else "PARTIAL",
         }
 
-    def _get_workflow_steps(self, workflow: str) -> List[str]:
+    def _get_workflow_steps(self, workflow: str) -> list[str]:
         """Get the steps for a specific governance workflow."""
         workflow_steps = {
             "policy_creation": [
@@ -307,7 +309,7 @@ class ComprehensiveE2ERunner:
         }
         return workflow_steps.get(workflow, ["default_step"])
 
-    async def validate_performance_e2e(self) -> Dict[str, Any]:
+    async def validate_performance_e2e(self) -> dict[str, Any]:
         """Validate performance targets end-to-end."""
         logger.info("🚀 Running End-to-End Performance Validation...")
 
@@ -373,7 +375,7 @@ class ComprehensiveE2ERunner:
             "status": "PASS" if performance_score >= 100.0 else "PARTIAL",
         }
 
-    async def validate_blockchain_integration_e2e(self) -> Dict[str, Any]:
+    async def validate_blockchain_integration_e2e(self) -> dict[str, Any]:
         """Validate Quantumagi Solana blockchain integration end-to-end."""
         logger.info("⛓️ Running End-to-End Blockchain Integration Validation...")
 
@@ -452,7 +454,7 @@ class ComprehensiveE2ERunner:
             "status": "PASS" if blockchain_score >= 100.0 else "PARTIAL",
         }
 
-    async def validate_security_compliance_e2e(self) -> Dict[str, Any]:
+    async def validate_security_compliance_e2e(self) -> dict[str, Any]:
         """Validate security and compliance end-to-end."""
         logger.info("🔒 Running End-to-End Security and Compliance Validation...")
 
@@ -525,7 +527,7 @@ class ComprehensiveE2ERunner:
             "status": "PASS" if security_score >= 100.0 else "PARTIAL",
         }
 
-    async def run_comprehensive_e2e_validation(self) -> Dict[str, Any]:
+    async def run_comprehensive_e2e_validation(self) -> dict[str, Any]:
         """Run comprehensive end-to-end validation of the entire ACGS-1 system."""
         logger.info("🚀 Starting Comprehensive End-to-End Validation")
         logger.info("=" * 80)

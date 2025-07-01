@@ -2,19 +2,18 @@
 """
 Comprehensive ACGS-PGP Validation and Deployment Executor
 
-Executes systematic validation and deployment of the completed ACGS-PGP 
+Executes systematic validation and deployment of the completed ACGS-PGP
 production enhancement plan with comprehensive reporting.
 """
 
 import asyncio
 import json
 import logging
-import subprocess
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any
 
 # Validation and deployment configuration
 VALIDATION_CONFIG = {
@@ -94,7 +93,7 @@ class ComprehensiveValidator:
             "recommendations": [],
         }
 
-    async def execute_comprehensive_validation_deployment(self) -> Dict[str, Any]:
+    async def execute_comprehensive_validation_deployment(self) -> dict[str, Any]:
         """Execute comprehensive validation and deployment."""
         try:
             self.logger.info(
@@ -190,8 +189,8 @@ class ComprehensiveValidator:
         return all_validations_passed
 
     async def _run_validation_test(
-        self, test_name: str, test_config: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, test_name: str, test_config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Run individual validation test."""
         try:
             script_path = test_config["script"]
@@ -253,7 +252,7 @@ class ComprehensiveValidator:
         except Exception as e:
             return {"success": False, "error": str(e), "execution_time": 0}
 
-    async def _validate_constitutional_compliance(self) -> Dict[str, Any]:
+    async def _validate_constitutional_compliance(self) -> dict[str, Any]:
         """Validate constitutional compliance across all services."""
         try:
             expected_hash = VALIDATION_CONFIG["phases"]["validation"][
@@ -342,8 +341,8 @@ class ComprehensiveValidator:
         return all_deployments_successful
 
     async def _run_deployment_script(
-        self, script_name: str, script_config: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, script_name: str, script_config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Run deployment script."""
         try:
             script_path = script_config["script"]
@@ -405,7 +404,7 @@ class ComprehensiveValidator:
         except Exception as e:
             return {"success": False, "error": str(e), "execution_time": 0}
 
-    async def _test_emergency_procedures(self) -> Dict[str, Any]:
+    async def _test_emergency_procedures(self) -> dict[str, Any]:
         """Test emergency shutdown and recovery procedures."""
         try:
             # Simulate emergency procedure testing
@@ -458,7 +457,7 @@ class ComprehensiveValidator:
 
         self.logger.info("✅ Comprehensive reporting completed")
 
-    async def _collect_performance_metrics(self) -> Dict[str, Any]:
+    async def _collect_performance_metrics(self) -> dict[str, Any]:
         """Collect performance metrics."""
         # Simulate performance metrics collection
         return {
@@ -470,7 +469,7 @@ class ComprehensiveValidator:
             "formal_verification_reliability": 0.9994,  # Above 0.9992 target
         }
 
-    async def _generate_security_assessment(self) -> Dict[str, Any]:
+    async def _generate_security_assessment(self) -> dict[str, Any]:
         """Generate security assessment."""
         # Simulate security assessment
         return {
@@ -483,7 +482,7 @@ class ComprehensiveValidator:
             "security_score": 0.95,
         }
 
-    async def _compile_system_health_report(self) -> Dict[str, Any]:
+    async def _compile_system_health_report(self) -> dict[str, Any]:
         """Compile system health report."""
         # Simulate system health compilation
         return {
@@ -501,7 +500,7 @@ class ComprehensiveValidator:
             "emergency_procedures_tested": True,
         }
 
-    def _generate_deployment_summary(self) -> Dict[str, Any]:
+    def _generate_deployment_summary(self) -> dict[str, Any]:
         """Generate deployment summary."""
         total_time = (datetime.now() - self.start_time).total_seconds()
 

@@ -844,9 +844,10 @@ class FederatedEvaluator:
                         headers["Authorization"] = f"Bearer {node.api_key}"
                     elif node.platform_type == PlatformType.CLOUD_ANTHROPIC:
                         headers["x-api-key"] = node.api_key
-                    elif node.platform_type == PlatformType.CLOUD_COHERE:
-                        headers["Authorization"] = f"Bearer {node.api_key}"
-                    elif node.platform_type == PlatformType.CLOUD_GROQ:
+                    elif (
+                        node.platform_type == PlatformType.CLOUD_COHERE
+                        or node.platform_type == PlatformType.CLOUD_GROQ
+                    ):
                         headers["Authorization"] = f"Bearer {node.api_key}"
 
                 # Make evaluation request
@@ -860,12 +861,11 @@ class FederatedEvaluator:
                     result["node_id"] = node.node_id
                     result["platform_type"] = node.platform_type.value
                     return result
-                else:
-                    return {
-                        "error": f"HTTP {response.status_code}: {response.text}",
-                        "success": False,
-                        "node_id": node.node_id,
-                    }
+                return {
+                    "error": f"HTTP {response.status_code}: {response.text}",
+                    "success": False,
+                    "node_id": node.node_id,
+                }
 
         except Exception as e:
             return {"error": str(e), "success": False, "node_id": node.node_id}
@@ -926,12 +926,11 @@ class FederatedEvaluator:
                     result["node_id"] = node.node_id
                     result["platform_type"] = node.platform_type.value
                     return result
-                else:
-                    return {
-                        "error": f"Federated node error: {response.status_code}",
-                        "success": False,
-                        "node_id": node.node_id,
-                    }
+                return {
+                    "error": f"Federated node error: {response.status_code}",
+                    "success": False,
+                    "node_id": node.node_id,
+                }
 
         except Exception as e:
             return {"error": str(e), "success": False, "node_id": node.node_id}

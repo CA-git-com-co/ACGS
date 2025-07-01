@@ -93,14 +93,13 @@ class QuantumagiIntegrationValidator:
                     "format_valid": True,
                     "preservation_confirmed": True,
                 }
-            else:
-                print(f"   ❌ Invalid constitutional hash format: {expected_hash}")
-                return {
-                    "status": "failed",
-                    "hash": expected_hash,
-                    "format_valid": False,
-                    "error": "Invalid hash format",
-                }
+            print(f"   ❌ Invalid constitutional hash format: {expected_hash}")
+            return {
+                "status": "failed",
+                "hash": expected_hash,
+                "format_valid": False,
+                "error": "Invalid hash format",
+            }
 
         except Exception as e:
             print(f"   ❌ Constitutional hash validation failed: {e}")

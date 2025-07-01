@@ -75,7 +75,7 @@ class SelfEvolvingAITester:
 
         except Exception as e:
             self.test_results["failed_tests"] += 1
-            logger.error(f"❌ {test_name} - FAILED: {str(e)}")
+            logger.error(f"❌ {test_name} - FAILED: {e!s}")
             self.test_results["test_details"].append(
                 {
                     "test_name": test_name,
@@ -96,11 +96,10 @@ class SelfEvolvingAITester:
                         "status_code": response.status,
                         "health_data": data,
                     }
-                else:
-                    return {
-                        "success": False,
-                        "error": f"Health check failed with status {response.status}",
-                    }
+                return {
+                    "success": False,
+                    "error": f"Health check failed with status {response.status}",
+                }
         except Exception as e:
             return {"success": False, "error": str(e)}
 
@@ -115,11 +114,10 @@ class SelfEvolvingAITester:
                         "status_code": response.status,
                         "service_info": data,
                     }
-                else:
-                    return {
-                        "success": False,
-                        "error": f"Root endpoint failed with status {response.status}",
-                    }
+                return {
+                    "success": False,
+                    "error": f"Root endpoint failed with status {response.status}",
+                }
         except Exception as e:
             return {"success": False, "error": str(e)}
 
@@ -136,11 +134,10 @@ class SelfEvolvingAITester:
                         "status_code": response.status,
                         "evolution_health": data,
                     }
-                else:
-                    return {
-                        "success": False,
-                        "error": f"Evolution health check failed with status {response.status}",
-                    }
+                return {
+                    "success": False,
+                    "error": f"Evolution health check failed with status {response.status}",
+                }
         except Exception as e:
             return {"success": False, "error": str(e)}
 
@@ -157,11 +154,10 @@ class SelfEvolvingAITester:
                         "status_code": response.status,
                         "security_health": data,
                     }
-                else:
-                    return {
-                        "success": False,
-                        "error": f"Security health check failed with status {response.status}",
-                    }
+                return {
+                    "success": False,
+                    "error": f"Security health check failed with status {response.status}",
+                }
         except Exception as e:
             return {"success": False, "error": str(e)}
 
@@ -178,11 +174,10 @@ class SelfEvolvingAITester:
                         "status_code": response.status,
                         "observability_health": data,
                     }
-                else:
-                    return {
-                        "success": False,
-                        "error": f"Observability health check failed with status {response.status}",
-                    }
+                return {
+                    "success": False,
+                    "error": f"Observability health check failed with status {response.status}",
+                }
         except Exception as e:
             return {"success": False, "error": str(e)}
 
@@ -199,11 +194,10 @@ class SelfEvolvingAITester:
                         "status_code": response.status,
                         "metrics": data,
                     }
-                else:
-                    return {
-                        "success": False,
-                        "error": f"Evolution metrics failed with status {response.status}",
-                    }
+                return {
+                    "success": False,
+                    "error": f"Evolution metrics failed with status {response.status}",
+                }
         except Exception as e:
             return {"success": False, "error": str(e)}
 
@@ -220,11 +214,10 @@ class SelfEvolvingAITester:
                         "status_code": response.status,
                         "security_status": data,
                     }
-                else:
-                    return {
-                        "success": False,
-                        "error": f"Security status failed with status {response.status}",
-                    }
+                return {
+                    "success": False,
+                    "error": f"Security status failed with status {response.status}",
+                }
         except Exception as e:
             return {"success": False, "error": str(e)}
 
@@ -241,11 +234,10 @@ class SelfEvolvingAITester:
                         "status_code": response.status,
                         "observability_status": data,
                     }
-                else:
-                    return {
-                        "success": False,
-                        "error": f"Observability status failed with status {response.status}",
-                    }
+                return {
+                    "success": False,
+                    "error": f"Observability status failed with status {response.status}",
+                }
         except Exception as e:
             return {"success": False, "error": str(e)}
 
@@ -270,11 +262,10 @@ class SelfEvolvingAITester:
                         "status_code": response.status,
                         "metric_response": data,
                     }
-                else:
-                    return {
-                        "success": False,
-                        "error": f"Record metric failed with status {response.status}",
-                    }
+                return {
+                    "success": False,
+                    "error": f"Record metric failed with status {response.status}",
+                }
         except Exception as e:
             return {"success": False, "error": str(e)}
 
@@ -297,11 +288,10 @@ class SelfEvolvingAITester:
                         "status_code": response.status,
                         "span_response": data,
                     }
-                else:
-                    return {
-                        "success": False,
-                        "error": f"Start span failed with status {response.status}",
-                    }
+                return {
+                    "success": False,
+                    "error": f"Start span failed with status {response.status}",
+                }
         except Exception as e:
             return {"success": False, "error": str(e)}
 

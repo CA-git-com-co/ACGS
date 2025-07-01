@@ -95,6 +95,7 @@ class ACGSPGPEnhancementCoordinator:
             if enhancement_script.exists():
                 result = subprocess.run(
                     [sys.executable, str(enhancement_script)],
+                    check=False,
                     capture_output=True,
                     text=True,
                     cwd=self.project_root,
@@ -104,15 +105,11 @@ class ACGSPGPEnhancementCoordinator:
                     logger.info("  ✅ Data collection completed successfully")
                     self.execution_log.append("Data collection: SUCCESS")
                     return True
-                else:
-                    logger.error(f"  ❌ Data collection failed: {result.stderr}")
-                    self.execution_log.append(
-                        f"Data collection: FAILED - {result.stderr}"
-                    )
-                    return False
-            else:
-                logger.error("  ❌ Enhancement script not found")
+                logger.error(f"  ❌ Data collection failed: {result.stderr}")
+                self.execution_log.append(f"Data collection: FAILED - {result.stderr}")
                 return False
+            logger.error("  ❌ Enhancement script not found")
+            return False
 
         except Exception as e:
             logger.error(f"  ❌ Data collection phase failed: {e}")
@@ -157,6 +154,7 @@ class ACGSPGPEnhancementCoordinator:
             if update_script.exists():
                 result = subprocess.run(
                     [sys.executable, str(update_script)],
+                    check=False,
                     capture_output=True,
                     text=True,
                     cwd=self.project_root,
@@ -166,13 +164,11 @@ class ACGSPGPEnhancementCoordinator:
                     logger.info("  ✅ Paper update completed successfully")
                     self.execution_log.append("Paper update: SUCCESS")
                     return True
-                else:
-                    logger.error(f"  ❌ Paper update failed: {result.stderr}")
-                    self.execution_log.append(f"Paper update: FAILED - {result.stderr}")
-                    return False
-            else:
-                logger.error("  ❌ Paper update script not found")
+                logger.error(f"  ❌ Paper update failed: {result.stderr}")
+                self.execution_log.append(f"Paper update: FAILED - {result.stderr}")
                 return False
+            logger.error("  ❌ Paper update script not found")
+            return False
 
         except Exception as e:
             logger.error(f"  ❌ Paper update phase failed: {e}")
@@ -284,11 +280,10 @@ class ACGSPGPEnhancementCoordinator:
                     if "acgs_pgp_metrics" in content:
                         logger.info("  ✅ ACGS-PGP monitoring integration verified")
                         return True
-                    else:
-                        logger.warning(
-                            "  ⚠️ ACGS-PGP monitoring not integrated in PGC service"
-                        )
-                        return False
+                    logger.warning(
+                        "  ⚠️ ACGS-PGP monitoring not integrated in PGC service"
+                    )
+                    return False
 
             return False
 
@@ -308,9 +303,8 @@ class ACGSPGPEnhancementCoordinator:
             if defense_module.exists():
                 logger.info("  ✅ Adversarial defense system verified")
                 return True
-            else:
-                logger.warning("  ⚠️ Adversarial defense module not found")
-                return False
+            logger.warning("  ⚠️ Adversarial defense module not found")
+            return False
 
         except Exception as e:
             logger.error(f"  ❌ Adversarial defense verification failed: {e}")
@@ -379,7 +373,7 @@ This package contains the enhanced ACGS-PGP paper with empirical validation from
         """Generate final enhancement report"""
         report_content = f"""# ACGS-PGP Enhancement Final Report
 
-Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}
+Generated: {time.strftime("%Y-%m-%d %H:%M:%S")}
 
 ## Enhancement Results
 

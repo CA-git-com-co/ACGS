@@ -18,7 +18,7 @@ import logging
 import statistics
 import sys
 import time
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 import aiohttp
 import psutil
@@ -94,7 +94,7 @@ class ACGSPerformanceValidator:
 
                 except Exception as e:
                     logger.error(
-                        f"❌ {config['name']} (:{config['port']}) - Error: {str(e)}"
+                        f"❌ {config['name']} (:{config['port']}) - Error: {e!s}"
                     )
 
         all_healthy = healthy_services == len(self.services)
@@ -371,7 +371,7 @@ class ACGSPerformanceValidator:
             return success
 
         except Exception as e:
-            logger.error(f"❌ Performance validation failed with exception: {str(e)}")
+            logger.error(f"❌ Performance validation failed with exception: {e!s}")
             self.results["overall_status"] = "ERROR"
             self.results["error_message"] = str(e)
             return False

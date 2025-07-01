@@ -23,8 +23,7 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives import hmac as crypto_hmac
+from cryptography.hazmat.primitives import hashes, hmac as crypto_hmac
 
 logger = logging.getLogger(__name__)
 
@@ -194,7 +193,7 @@ class ConstitutionalSecurityValidator:
                 operation_type, operation_data, requester_id, "FAILED", str(e)
             )
             return False, {
-                "error": f"Validation failed: {str(e)}",
+                "error": f"Validation failed: {e!s}",
                 "validation_time_ms": (time.time() - validation_start) * 1000,
             }
 
@@ -218,8 +217,7 @@ class ConstitutionalSecurityValidator:
                 cache_entry = self._request_validation_cache[cache_key]
                 if current_time - cache_entry["timestamp"] < self._cache_ttl:
                     return cache_entry["result"]
-                else:
-                    del self._request_validation_cache[cache_key]
+                del self._request_validation_cache[cache_key]
 
             # Perform validation
             if provided_hash and provided_hash != self.constitutional_hash:
@@ -227,29 +225,28 @@ class ConstitutionalSecurityValidator:
                     "valid": False,
                     "reason": f"Hash mismatch: expected {self.constitutional_hash}, got {provided_hash}",
                 }
-            else:
-                # Verify HMAC-SHA256 integrity if signature provided
-                if has_signature:
-                    signature_valid = await self._verify_constitutional_signature(
-                        operation_data, operation_data["constitutional_signature"]
-                    )
-                    if not signature_valid:
-                        result = {
-                            "valid": False,
-                            "reason": "Constitutional signature verification failed",
-                        }
-                    else:
-                        result = {
-                            "valid": True,
-                            "constitutional_hash": self.constitutional_hash,
-                            "verification_method": "HMAC-SHA256",
-                        }
+            # Verify HMAC-SHA256 integrity if signature provided
+            elif has_signature:
+                signature_valid = await self._verify_constitutional_signature(
+                    operation_data, operation_data["constitutional_signature"]
+                )
+                if not signature_valid:
+                    result = {
+                        "valid": False,
+                        "reason": "Constitutional signature verification failed",
+                    }
                 else:
                     result = {
                         "valid": True,
                         "constitutional_hash": self.constitutional_hash,
                         "verification_method": "HMAC-SHA256",
                     }
+            else:
+                result = {
+                    "valid": True,
+                    "constitutional_hash": self.constitutional_hash,
+                    "verification_method": "HMAC-SHA256",
+                }
 
             # Cache the result
             self._request_validation_cache[cache_key] = {
@@ -262,7 +259,7 @@ class ConstitutionalSecurityValidator:
         except Exception as e:
             return {
                 "valid": False,
-                "reason": f"Hash validation error: {str(e)}",
+                "reason": f"Hash validation error: {e!s}",
             }
 
     async def _verify_constitutional_signature(
@@ -299,18 +296,17 @@ class ConstitutionalSecurityValidator:
         """Determine required security level for operation type."""
         if operation_type == ConstitutionalChangeType.EMERGENCY_PROTOCOL_ACTIVATION:
             return SecurityLevel.EMERGENCY
-        elif operation_type in [
+        if operation_type in [
             ConstitutionalChangeType.PRINCIPLE_AMENDMENT,
             ConstitutionalChangeType.AUTHORITY_STRUCTURE_CHANGE,
         ]:
             return SecurityLevel.CRITICAL
-        elif operation_type in [
+        if operation_type in [
             ConstitutionalChangeType.GOVERNANCE_RULE_CHANGE,
             ConstitutionalChangeType.VOTING_MECHANISM_UPDATE,
         ]:
             return SecurityLevel.ENHANCED
-        else:
-            return SecurityLevel.STANDARD
+        return SecurityLevel.STANDARD
 
     async def _validate_authorization(
         self,
@@ -347,7 +343,7 @@ class ConstitutionalSecurityValidator:
         except Exception as e:
             return {
                 "valid": False,
-                "reason": f"Authorization validation error: {str(e)}",
+                "reason": f"Authorization validation error: {e!s}",
             }
 
     async def _is_authorized_for_operation(
@@ -413,7 +409,7 @@ class ConstitutionalSecurityValidator:
         except Exception as e:
             return {
                 "valid": False,
-                "reason": f"Multi-signature validation error: {str(e)}",
+                "reason": f"Multi-signature validation error: {e!s}",
             }
 
     async def _validate_individual_signature(
@@ -471,7 +467,7 @@ class ConstitutionalSecurityValidator:
         except Exception as e:
             return {
                 "valid": False,
-                "reason": f"Cryptographic verification error: {str(e)}",
+                "reason": f"Cryptographic verification error: {e!s}",
             }
 
     async def _log_constitutional_operation(
@@ -526,8 +522,8 @@ constitutional_security_validator = ConstitutionalSecurityValidator()
 
 # Export main classes and functions
 __all__ = [
-    "ConstitutionalSecurityValidator",
     "ConstitutionalChangeType",
+    "ConstitutionalSecurityValidator",
     "SecurityLevel",
     "constitutional_security_validator",
 ]

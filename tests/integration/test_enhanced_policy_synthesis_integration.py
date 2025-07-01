@@ -291,8 +291,8 @@ class TestEnhancedPolicySynthesisIntegration:
         # Perform multiple synthesis operations
         for i in range(3):
             request = EnhancedSynthesisRequest(
-                title=f"Performance Test Policy {i+1}",
-                description=f"Policy for performance monitoring test iteration {i+1}",
+                title=f"Performance Test Policy {i + 1}",
+                description=f"Policy for performance monitoring test iteration {i + 1}",
                 constitutional_principles=["CP-001"],
                 domain_context={"scope": "performance", "iteration": i + 1},
                 risk_strategy=RiskStrategy.STANDARD,
@@ -363,8 +363,8 @@ class TestEnhancedPolicySynthesisIntegration:
         requests = []
         for i in range(5):
             request = EnhancedSynthesisRequest(
-                title=f"Concurrent Policy {i+1}",
-                description=f"Policy for concurrent testing {i+1}",
+                title=f"Concurrent Policy {i + 1}",
+                description=f"Policy for concurrent testing {i + 1}",
                 constitutional_principles=["CP-001"],
                 domain_context={"scope": "concurrency", "id": i + 1},
                 risk_strategy=RiskStrategy.STANDARD,

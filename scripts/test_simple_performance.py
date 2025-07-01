@@ -149,7 +149,6 @@ async def main():
     timeout = aiohttp.ClientTimeout(total=30)
 
     async with aiohttp.ClientSession(connector=connector, timeout=timeout) as session:
-
         # Test endpoints
         test_cases = [
             {

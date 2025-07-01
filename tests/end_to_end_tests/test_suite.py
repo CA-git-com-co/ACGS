@@ -5,7 +5,6 @@ Tests complete user workflows and system behavior
 """
 
 import unittest
-import asyncio
 
 
 class TestCompleteWorkflows(unittest.TestCase):

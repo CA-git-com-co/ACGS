@@ -3,35 +3,28 @@ ACGE Phase 2 Enhanced Integrity Service
 Cryptographic integrity verification with ACGE constitutional compliance integration
 """
 
-import asyncio
-import hashlib
 import logging
-import time
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
-
-import httpx
-from fastapi import FastAPI, HTTPException, Request, Response, Depends, status
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from prometheus_client import Counter, Histogram, Gauge
-from pydantic import BaseModel, Field
+import os
 
 # Import existing integrity service components
 import sys
-import os
+import time
+from datetime import datetime, timezone
+from typing import Any
+
+import httpx
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from prometheus_client import Counter, Gauge, Histogram
+from pydantic import BaseModel, Field
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+from app.api.v1.crypto import SignatureVerification
 from app.services.crypto_service import CryptographicIntegrityService
 from app.services.pgp_assurance import PGPAssuranceService
-from app.api.v1.crypto import SignatureVerification, SignatureVerificationResult
 
 # ACGE integration
-from services.platform.authentication.auth_service.acge_integration import (
-    ACGEAuthIntegration,
-    constitutional_auth_dependency,
-)
 
 # Service configuration
 SERVICE_NAME = "acgs-integrity-service-acge"
@@ -82,8 +75,8 @@ class ACGEIntegrityRequest(BaseModel):
     """Enhanced integrity request with ACGE validation."""
 
     data: str = Field(..., description="Data to verify integrity")
-    signature: Optional[str] = Field(None, description="Digital signature")
-    public_key: Optional[str] = Field(None, description="Public key for verification")
+    signature: str | None = Field(None, description="Digital signature")
+    public_key: str | None = Field(None, description="Public key for verification")
     constitutional_hash: str = Field(
         CONSTITUTIONAL_HASH, description="Constitutional hash"
     )
@@ -101,8 +94,8 @@ class ACGEIntegrityResponse(BaseModel):
     valid: bool
     integrity_score: float
     constitutional_compliance: float
-    cryptographic_verification: Dict[str, Any]
-    acge_analysis: Dict[str, Any] = {}
+    cryptographic_verification: dict[str, Any]
+    acge_analysis: dict[str, Any] = {}
     constitutional_hash_verified: bool
     processing_time_ms: float
     timestamp: str
@@ -207,7 +200,7 @@ class ACGEIntegrityService:
 
     async def _perform_cryptographic_verification(
         self, request: ACGEIntegrityRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Perform cryptographic signature verification."""
         try:
             # Generate data hash
@@ -252,7 +245,7 @@ class ACGEIntegrityService:
 
     async def _validate_with_acge(
         self, request: ACGEIntegrityRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate integrity operation with ACGE model."""
         try:
             # Prepare ACGE validation request
@@ -293,14 +286,13 @@ class ACGEIntegrityService:
                     "integrity_assessment": acge_result.get("integrity_assessment", {}),
                     "acge_model_version": acge_result.get("model_version", "acge-v2"),
                 }
-            else:
-                logger.warning(f"ACGE validation failed: {response.status_code}")
-                return {
-                    "compliance_score": 0.5,
-                    "compliant": False,
-                    "error": f"ACGE model error: {response.status_code}",
-                    "fallback": True,
-                }
+            logger.warning(f"ACGE validation failed: {response.status_code}")
+            return {
+                "compliance_score": 0.5,
+                "compliant": False,
+                "error": f"ACGE model error: {response.status_code}",
+                "fallback": True,
+            }
 
         except Exception as e:
             logger.error(f"ACGE validation error: {e}")
@@ -313,8 +305,8 @@ class ACGEIntegrityService:
 
     def _calculate_integrity_score(
         self,
-        crypto_result: Dict[str, Any],
-        acge_result: Dict[str, Any],
+        crypto_result: dict[str, Any],
+        acge_result: dict[str, Any],
         constitutional_hash_valid: bool,
     ) -> float:
         """Calculate overall integrity score."""
@@ -339,7 +331,7 @@ class ACGEIntegrityService:
             logger.error(f"Integrity score calculation failed: {e}")
             return 0.0
 
-    async def get_service_status(self) -> Dict[str, Any]:
+    async def get_service_status(self) -> dict[str, Any]:
         """Get integrity service status."""
         try:
             # Check ACGE model connectivity

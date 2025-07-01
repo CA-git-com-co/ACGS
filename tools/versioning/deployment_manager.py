@@ -5,12 +5,12 @@ Manages version-specific deployment strategies including blue-green deployments
 for major versions and rolling updates for minor/patch versions.
 """
 
-import logging
 import asyncio
+import logging
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, field
+from typing import Any
 
 from ...services.shared.versioning.version_manager import APIVersion, VersionPolicy
 
@@ -48,7 +48,7 @@ class DeploymentConfig:
     traffic_shift_percentage: int = 10  # For canary deployments
     max_unavailable_instances: int = 1  # For rolling deployments
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "strategy": self.strategy.value,
@@ -67,13 +67,13 @@ class DeploymentStep:
 
     name: str
     description: str
-    commands: List[str] = field(default_factory=list)
-    health_checks: List[str] = field(default_factory=list)
-    rollback_commands: List[str] = field(default_factory=list)
+    commands: list[str] = field(default_factory=list)
+    health_checks: list[str] = field(default_factory=list)
+    rollback_commands: list[str] = field(default_factory=list)
     timeout_seconds: int = 300
     retry_count: int = 3
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "name": self.name,
@@ -91,7 +91,7 @@ class DeploymentPlan:
     """Complete deployment plan with all steps."""
 
     config: DeploymentConfig
-    steps: List[DeploymentStep] = field(default_factory=list)
+    steps: list[DeploymentStep] = field(default_factory=list)
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     estimated_duration_minutes: int = 0
 
@@ -100,7 +100,7 @@ class DeploymentPlan:
         self.steps.append(step)
         self.estimated_duration_minutes += step.timeout_seconds // 60
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "config": self.config.to_dict(),
@@ -124,14 +124,14 @@ class DeploymentManager:
 
     def __init__(self, service_name: str):
         self.service_name = service_name
-        self.active_deployments: Dict[str, DeploymentStatus] = {}
-        self.deployment_history: List[Dict[str, Any]] = []
+        self.active_deployments: dict[str, DeploymentStatus] = {}
+        self.deployment_history: list[dict[str, Any]] = []
 
     def create_deployment_plan(
         self,
         source_version: APIVersion,
         target_version: APIVersion,
-        strategy: Optional[DeploymentStrategy] = None,
+        strategy: DeploymentStrategy | None = None,
     ) -> DeploymentPlan:
         """
         Create deployment plan based on version change type.
@@ -179,10 +179,10 @@ class DeploymentManager:
 
         if compatibility_level == VersionPolicy.MAJOR:
             return DeploymentStrategy.BLUE_GREEN
-        elif compatibility_level == VersionPolicy.MINOR:
+        if compatibility_level == VersionPolicy.MINOR:
             return DeploymentStrategy.ROLLING
-        else:  # PATCH
-            return DeploymentStrategy.ROLLING
+        # PATCH
+        return DeploymentStrategy.ROLLING
 
     def _create_blue_green_steps(self, plan: DeploymentPlan):
         """Create blue-green deployment steps."""
@@ -323,7 +323,7 @@ class DeploymentManager:
                 commands=[
                     f"# Deploy canary with {plan.config.traffic_shift_percentage}% traffic",
                     "kubectl apply -f canary-deployment.yaml",
-                    f"# Configure traffic split: {100-plan.config.traffic_shift_percentage}% stable, {plan.config.traffic_shift_percentage}% canary",
+                    f"# Configure traffic split: {100 - plan.config.traffic_shift_percentage}% stable, {plan.config.traffic_shift_percentage}% canary",
                     "istioctl apply -f traffic-split.yaml",
                 ],
                 health_checks=[
@@ -440,7 +440,7 @@ class DeploymentManager:
             logger.info(f"Starting deployment {deployment_id}")
 
             for i, step in enumerate(plan.steps):
-                logger.info(f"Executing step {i+1}/{len(plan.steps)}: {step.name}")
+                logger.info(f"Executing step {i + 1}/{len(plan.steps)}: {step.name}")
 
                 success = await self._execute_step(step)
                 if not success:
@@ -495,11 +495,11 @@ class DeploymentManager:
                     # In real implementation, execute rollback command
                     await asyncio.sleep(1)
 
-    def get_deployment_status(self, deployment_id: str) -> Optional[DeploymentStatus]:
+    def get_deployment_status(self, deployment_id: str) -> DeploymentStatus | None:
         """Get status of a specific deployment."""
         return self.active_deployments.get(deployment_id)
 
-    def list_active_deployments(self) -> Dict[str, DeploymentStatus]:
+    def list_active_deployments(self) -> dict[str, DeploymentStatus]:
         """List all active deployments."""
         return self.active_deployments.copy()
 

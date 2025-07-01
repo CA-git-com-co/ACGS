@@ -1,5 +1,7 @@
-# Pre-commit configuration for ACGS-2
+# Pre-commit configuration for ACGS-2 with Enterprise Code Quality Standards
+# Constitutional Hash: cdd01ef066bc6cf2
 repos:
+  # Basic file checks
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
@@ -14,12 +16,16 @@ repos:
       - id: check-docstring-first
       - id: check-executables-have-shebangs
       - id: check-toml
+      - id: check-ast
+      - id: debug-statements
+      - id: mixed-line-ending
 
+  # Python formatting and linting
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.1.6
     hooks:
       - id: ruff
-        args: [--fix, --exit-non-zero-on-fix]
+        args: [--fix, --exit-non-zero-on-fix, --show-fixes]
       - id: ruff-format
 
   - repo: https://github.com/psf/black
@@ -27,17 +33,117 @@ repos:
     hooks:
       - id: black
         language_version: python3
+        args: [--preview]
 
+  # Import sorting
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: [--profile=black, --line-length=88]
+
+  # Type checking
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.7.0
     hooks:
       - id: mypy
-        additional_dependencies: [types-all]
-        args: [--ignore-missing-imports]
+        additional_dependencies: [types-all, types-requests, types-pyyaml]
+        args: [--strict, --ignore-missing-imports, --show-error-codes]
 
+  # Security scanning
   - repo: https://github.com/PyCQA/bandit
     rev: 1.7.5
     hooks:
       - id: bandit
-        args: ["-c", "pyproject.toml"]
+        args: ["-c", "pyproject.toml", "--severity-level=medium"]
         additional_dependencies: ["bandit[toml]"]
+
+  # Detect secrets
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+
+  # Safety check for dependencies
+  - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
+    rev: v1.3.3
+    hooks:
+      - id: python-safety-dependencies-check
+        args: [--ignore=70612]  # Ignore known jinja2 CVE if needed
+
+  # Docstring coverage
+  - repo: https://github.com/econchick/interrogate
+    rev: 1.5.0
+    hooks:
+      - id: interrogate
+        args: [-vv, --fail-under=80, --ignore-init-method, --ignore-init-module]
+
+  # Dead code detection
+  - repo: https://github.com/jendrikseipp/vulture
+    rev: v2.10
+    hooks:
+      - id: vulture
+        args: [--min-confidence=80]
+
+  # YAML formatting
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.1.0
+    hooks:
+      - id: prettier
+        types_or: [yaml, json, markdown]
+        exclude: '^docs/'
+
+  # Rust formatting and linting (if Rust files present)
+  - repo: local
+    hooks:
+      - id: rustfmt
+        name: rustfmt
+        entry: rustfmt
+        language: system
+        files: '\.rs$'
+        args: [--edition=2021]
+        pass_filenames: true
+
+      - id: clippy
+        name: clippy
+        entry: cargo clippy
+        language: system
+        files: '\.rs$'
+        args: [--all-targets, --all-features, --, -D, warnings]
+        pass_filenames: false
+
+  # Constitutional compliance validation
+  - repo: local
+    hooks:
+      - id: constitutional-hash-validation
+        name: Constitutional Hash Validation
+        entry: python scripts/validate_constitutional_compliance.py
+        language: python
+        pass_filenames: false
+        always_run: true
+        additional_dependencies: [pyyaml>=6.0]
+
+      - id: performance-check
+        name: Performance Impact Check
+        entry: python scripts/check_performance_impact.py
+        language: python
+        pass_filenames: true
+        files: '\.(py|rs|ts|js)$'
+        additional_dependencies: [ast-grep-py>=0.12.0]
+
+  # License header check
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.5.4
+    hooks:
+      - id: insert-license
+        files: '\.py$'
+        args: [--license-filepath, LICENSE-HEADER.txt, --comment-style, '#']
+
+  # Commit message linting
+  - repo: https://github.com/jorisroovers/gitlint
+    rev: v0.19.1
+    hooks:
+      - id: gitlint
+        stages: [commit-msg]
+        args: [--contrib=contrib-title-conventional-commits]

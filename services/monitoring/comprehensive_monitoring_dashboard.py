@@ -19,16 +19,14 @@ Constitutional Hash: cdd01ef066bc6cf2
 import asyncio
 import json
 import logging
-import time
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Any, Optional
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
-from fastapi.responses import HTMLResponse, JSONResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-import psutil
-import redis
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Any
+
+import psutil
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 
 # Configure logging
 logging.basicConfig(
@@ -44,7 +42,7 @@ class ComprehensiveMonitoringDashboard:
         self.constitutional_hash = "cdd01ef066bc6cf2"
         self.app = FastAPI(title="ACGS Monitoring Dashboard", version="1.0")
         self.redis_client = None
-        self.websocket_connections: List[WebSocket] = []
+        self.websocket_connections: list[WebSocket] = []
         self.metrics_cache = {}
         self.alert_thresholds = {
             "cpu_usage": 80.0,
@@ -404,7 +402,7 @@ class ComprehensiveMonitoringDashboard:
 
         return HTMLResponse(content=dashboard_html)
 
-    async def _get_current_metrics(self) -> Dict[str, Any]:
+    async def _get_current_metrics(self) -> dict[str, Any]:
         """Get current system and application metrics."""
         try:
             # System metrics
@@ -451,7 +449,7 @@ class ComprehensiveMonitoringDashboard:
             logger.error(f"Error getting current metrics: {e}")
             return {"error": str(e)}
 
-    async def _get_constitutional_compliance_metrics(self) -> Dict[str, Any]:
+    async def _get_constitutional_compliance_metrics(self) -> dict[str, Any]:
         """Get detailed constitutional compliance metrics."""
         return {
             "constitutional_hash": self.constitutional_hash,
@@ -476,7 +474,7 @@ class ComprehensiveMonitoringDashboard:
             },
         }
 
-    async def _get_service_health_status(self) -> Dict[str, Any]:
+    async def _get_service_health_status(self) -> dict[str, Any]:
         """Get health status of all ACGS services."""
         services = {
             "auth-service": {
@@ -524,7 +522,7 @@ class ComprehensiveMonitoringDashboard:
             "last_updated": datetime.now(timezone.utc).isoformat(),
         }
 
-    async def _get_performance_analytics(self) -> Dict[str, Any]:
+    async def _get_performance_analytics(self) -> dict[str, Any]:
         """Get performance analytics and trends."""
         # Generate sample performance data
         now = datetime.now(timezone.utc)
@@ -588,7 +586,7 @@ class ComprehensiveMonitoringDashboard:
 
         return analytics
 
-    async def _get_current_alerts(self) -> Dict[str, Any]:
+    async def _get_current_alerts(self) -> dict[str, Any]:
         """Get current alerts and notifications."""
         alerts = [
             {
@@ -647,7 +645,7 @@ class ComprehensiveMonitoringDashboard:
         """Start the monitoring dashboard server."""
         import uvicorn
 
-        logger.info(f"🚀 Starting ACGS Monitoring Dashboard")
+        logger.info("🚀 Starting ACGS Monitoring Dashboard")
         logger.info(f"📜 Constitutional Hash: {self.constitutional_hash}")
         logger.info(f"🌐 Dashboard URL: http://{host}:{port}")
 

@@ -188,6 +188,7 @@ class ACGSValidationPipeline:
                     sys.executable,
                     str(self.project_root / "scripts/validate_research_data.py"),
                 ],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=60,
@@ -242,6 +243,7 @@ class ACGSValidationPipeline:
             try:
                 result = subprocess.run(
                     [sys.executable, "-m", "pytest", str(tests_dir), "-v"],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=300,
@@ -387,7 +389,7 @@ def main():
         status = "✅ PASSED" if check_result.get("passed", True) else "❌ FAILED"
         print(f"{check_name.upper()}: {status}")
 
-        if "errors" in check_result and check_result["errors"]:
+        if check_result.get("errors"):
             for error in check_result["errors"]:
                 print(f"  - {error}")
         print()

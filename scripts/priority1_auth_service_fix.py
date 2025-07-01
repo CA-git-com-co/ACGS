@@ -22,7 +22,7 @@ import logging
 import os
 import time
 from datetime import datetime, timezone
-from typing import Dict, Any, Optional
+from typing import Any
 
 import httpx
 
@@ -40,7 +40,7 @@ class AuthServiceFixer:
         self.auth_service_url = "http://localhost:8000"
         self.constitutional_hash = "cdd01ef066bc6cf2"
 
-    async def diagnose_auth_service_issues(self) -> Dict[str, Any]:
+    async def diagnose_auth_service_issues(self) -> dict[str, Any]:
         """Diagnose current authentication service issues"""
         logger.info("🔍 Diagnosing authentication service issues...")
 
@@ -336,7 +336,7 @@ if __name__ == "__main__":
     uvicorn.run(app, **config)
 '''
 
-    async def apply_auth_service_fix(self) -> Dict[str, Any]:
+    async def apply_auth_service_fix(self) -> dict[str, Any]:
         """Apply comprehensive fix to authentication service"""
         logger.info("🔧 Applying authentication service fix...")
 
@@ -354,7 +354,7 @@ if __name__ == "__main__":
             backup_path = f"{auth_main_path}.backup.{int(time.time())}"
 
             if os.path.exists(auth_main_path):
-                with open(auth_main_path, "r") as f:
+                with open(auth_main_path) as f:
                     content = f.read()
                 with open(backup_path, "w") as f:
                     f.write(content)
@@ -398,7 +398,7 @@ if __name__ == "__main__":
 
         return fix_results
 
-    async def validate_auth_service_fix(self) -> Dict[str, Any]:
+    async def validate_auth_service_fix(self) -> dict[str, Any]:
         """Validate that the authentication service fix is working"""
         logger.info("✅ Validating authentication service fix...")
 
@@ -482,7 +482,7 @@ if __name__ == "__main__":
 
         return validation
 
-    async def run_comprehensive_auth_fix(self) -> Dict[str, Any]:
+    async def run_comprehensive_auth_fix(self) -> dict[str, Any]:
         """Run comprehensive authentication service fix"""
         logger.info("🚀 Starting comprehensive authentication service fix...")
 
@@ -538,13 +538,13 @@ async def main():
 
         # Print diagnosis
         diagnosis = results["diagnosis"]
-        print(f"\nDIAGNOSIS:")
+        print("\nDIAGNOSIS:")
         print(f"  Service Status: {diagnosis['service_status']}")
         print(f"  Health Check: {diagnosis['health_check']['status']}")
 
         # Print fix results
         fix_results = results["fix_results"]
-        print(f"\nFIX RESULTS:")
+        print("\nFIX RESULTS:")
         print(f"  Backup Created: {'YES' if fix_results['backup_created'] else 'NO'}")
         print(
             f"  Simplified Main Created: {'YES' if fix_results['simplified_main_created'] else 'NO'}"
@@ -556,14 +556,14 @@ async def main():
         # Print validation
         validation = results["validation"]
         if validation:
-            print(f"\nVALIDATION:")
+            print("\nVALIDATION:")
             print(
                 f"  Tests Passed: {validation['tests_passed']}/{validation['total_tests']}"
             )
             print(f"  Success: {'YES' if validation['success'] else 'NO'}")
 
             if validation["errors"]:
-                print(f"  Errors:")
+                print("  Errors:")
                 for error in validation["errors"]:
                     print(f"    - {error}")
 
@@ -572,9 +572,8 @@ async def main():
         if results["overall_success"]:
             print("✅ Authentication service fix completed successfully!")
             return 0
-        else:
-            print("❌ Authentication service fix encountered issues")
-            return 1
+        print("❌ Authentication service fix encountered issues")
+        return 1
 
     except Exception as e:
         logger.error(f"Authentication service fix failed: {e}")

@@ -5,12 +5,11 @@ Comprehensive operational procedures for production support
 """
 
 import json
-import time
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone, timedelta
-from enum import Enum
 import logging
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -41,13 +40,13 @@ class IncidentResponse:
     severity: IncidentSeverity
     title: str
     description: str
-    detection_methods: List[str]
-    immediate_actions: List[str]
-    investigation_steps: List[str]
-    resolution_steps: List[str]
-    escalation_criteria: List[str]
-    communication_plan: List[str]
-    post_incident_actions: List[str]
+    detection_methods: list[str]
+    immediate_actions: list[str]
+    investigation_steps: list[str]
+    resolution_steps: list[str]
+    escalation_criteria: list[str]
+    communication_plan: list[str]
+    post_incident_actions: list[str]
     constitutional_impact_assessment: bool
 
 
@@ -60,11 +59,11 @@ class MaintenanceProcedure:
     title: str
     description: str
     frequency: str
-    prerequisites: List[str]
-    execution_steps: List[str]
-    rollback_steps: List[str]
-    validation_checks: List[str]
-    constitutional_compliance_checks: List[str]
+    prerequisites: list[str]
+    execution_steps: list[str]
+    rollback_steps: list[str]
+    validation_checks: list[str]
+    constitutional_compliance_checks: list[str]
     estimated_duration: str
 
 
@@ -74,13 +73,13 @@ class BackupRestoreProcedure:
 
     procedure_id: str
     backup_type: str
-    scope: List[str]
+    scope: list[str]
     frequency: str
     retention_policy: str
-    backup_steps: List[str]
-    restore_steps: List[str]
-    validation_steps: List[str]
-    constitutional_data_protection: List[str]
+    backup_steps: list[str]
+    restore_steps: list[str]
+    validation_steps: list[str]
+    constitutional_data_protection: list[str]
 
 
 class OperationalRunbooks:
@@ -93,7 +92,7 @@ class OperationalRunbooks:
         self.backup_procedures = {}
         self.escalation_procedures = {}
 
-    async def develop_operational_runbooks(self) -> Dict[str, Any]:
+    async def develop_operational_runbooks(self) -> dict[str, Any]:
         """Develop comprehensive operational runbooks"""
         print("📚 ACGS Operational Runbooks Development")
         print("=" * 40)
@@ -119,12 +118,12 @@ class OperationalRunbooks:
         # Create constitutional compliance procedures
         compliance_procedures = await self.create_constitutional_compliance_procedures()
 
-        print(f"\n📊 Operational Runbooks Summary:")
+        print("\n📊 Operational Runbooks Summary:")
         print(f"  Incident Response Runbooks: {len(incident_runbooks)}")
         print(f"  Maintenance Procedures: {len(maintenance_procedures)}")
         print(f"  Backup/Restore Procedures: {len(backup_procedures)}")
         print(f"  Disaster Recovery Plans: {len(disaster_recovery)}")
-        print(f"  Constitutional Compliance: ✅ Integrated")
+        print("  Constitutional Compliance: ✅ Integrated")
 
         return {
             "development_timestamp": datetime.now(timezone.utc).isoformat(),
@@ -138,7 +137,7 @@ class OperationalRunbooks:
             "compliance_procedures": compliance_procedures,
         }
 
-    async def create_incident_response_runbooks(self) -> Dict[str, IncidentResponse]:
+    async def create_incident_response_runbooks(self) -> dict[str, IncidentResponse]:
         """Create comprehensive incident response runbooks"""
         print("  🚨 Creating incident response runbooks...")
 
@@ -356,7 +355,7 @@ class OperationalRunbooks:
 
         return incident_runbooks
 
-    async def create_maintenance_procedures(self) -> Dict[str, MaintenanceProcedure]:
+    async def create_maintenance_procedures(self) -> dict[str, MaintenanceProcedure]:
         """Create comprehensive maintenance procedures"""
         print("  🔧 Creating maintenance procedures...")
 
@@ -487,7 +486,7 @@ class OperationalRunbooks:
 
     async def create_backup_restore_procedures(
         self,
-    ) -> Dict[str, BackupRestoreProcedure]:
+    ) -> dict[str, BackupRestoreProcedure]:
         """Create comprehensive backup and restore procedures"""
         print("  💾 Creating backup and restore procedures...")
 
@@ -587,7 +586,7 @@ class OperationalRunbooks:
 
         return backup_procedures
 
-    async def create_disaster_recovery_plans(self) -> Dict[str, Any]:
+    async def create_disaster_recovery_plans(self) -> dict[str, Any]:
         """Create comprehensive disaster recovery plans"""
         print("  🚨 Creating disaster recovery plans...")
 
@@ -674,7 +673,7 @@ class OperationalRunbooks:
 
         return disaster_recovery_plans
 
-    async def create_escalation_procedures(self) -> Dict[str, Any]:
+    async def create_escalation_procedures(self) -> dict[str, Any]:
         """Create comprehensive escalation procedures"""
         print("  📞 Creating escalation procedures...")
 
@@ -783,7 +782,7 @@ class OperationalRunbooks:
 
         return escalation_procedures
 
-    async def create_monitoring_alerting_procedures(self) -> Dict[str, Any]:
+    async def create_monitoring_alerting_procedures(self) -> dict[str, Any]:
         """Create monitoring and alerting procedures"""
         print("  📊 Creating monitoring and alerting procedures...")
 
@@ -852,7 +851,7 @@ class OperationalRunbooks:
 
         return monitoring_procedures
 
-    async def create_constitutional_compliance_procedures(self) -> Dict[str, Any]:
+    async def create_constitutional_compliance_procedures(self) -> dict[str, Any]:
         """Create constitutional compliance procedures"""
         print("  ⚖️ Creating constitutional compliance procedures...")
 
@@ -930,7 +929,7 @@ async def test_operational_runbooks():
         json.dump(results, f, indent=2, default=str)
 
     print(f"\n📄 Detailed results saved: operational_runbooks_{timestamp}.json")
-    print(f"\n✅ Operational Runbooks: DEVELOPED")
+    print("\n✅ Operational Runbooks: DEVELOPED")
 
 
 if __name__ == "__main__":

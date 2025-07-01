@@ -11,11 +11,11 @@ from services.shared.models import (
 
 # Re-export models for use in this service
 __all__ = [
-    "Principle",
-    "ACMetaRule",
     "ACAmendment",
-    "ACAmendmentVote",
     "ACAmendmentComment",
+    "ACAmendmentVote",
     "ACConflictResolution",
+    "ACMetaRule",
+    "Principle",
     "User",
 ]

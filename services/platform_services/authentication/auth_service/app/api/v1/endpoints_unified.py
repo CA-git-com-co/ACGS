@@ -93,11 +93,10 @@ async def register_user(
                     message="Username already registered", error_code="USERNAME_EXISTS"
                 )
                 return UnifiedJSONResponse(content=error_response, status_code=400)
-            else:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Username already registered",
-                )
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Username already registered",
+            )
 
         # Check if email already exists
         db_user_by_email = await crud_user.get_user_by_email(db, email=user.email)
@@ -107,11 +106,10 @@ async def register_user(
                     message="Email already registered", error_code="EMAIL_EXISTS"
                 )
                 return UnifiedJSONResponse(content=error_response, status_code=400)
-            else:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Email already registered",
-                )
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email already registered",
+            )
 
         # Create user
         created_user = await crud_user.create_user(db=db, obj_in=user)
@@ -132,8 +130,7 @@ async def register_user(
                 data=user_data, message="User registered successfully"
             )
             return UnifiedJSONResponse(content=success_response, status_code=201)
-        else:
-            return user_data
+        return user_data
 
     except Exception as e:
         if UNIFIED_RESPONSE_AVAILABLE:
@@ -143,11 +140,10 @@ async def register_user(
                 error_code="REGISTRATION_FAILED",
             )
             return UnifiedJSONResponse(content=error_response, status_code=500)
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to register user",
-            )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to register user",
+        )
 
 
 @router.post("/token")
@@ -179,12 +175,11 @@ async def login_for_access_token(
                     error_code="INVALID_CREDENTIALS",
                 )
                 return UnifiedJSONResponse(content=error_response, status_code=401)
-            else:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Incorrect username or password",
-                    headers={"WWW-Authenticate": "Bearer"},
-                )
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect username or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
         if not user_obj.is_active:
             if UNIFIED_RESPONSE_AVAILABLE:
@@ -192,10 +187,9 @@ async def login_for_access_token(
                     message="User account is inactive", error_code="INACTIVE_USER"
                 )
                 return UnifiedJSONResponse(content=error_response, status_code=400)
-            else:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user"
-                )
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user"
+            )
 
         # Create access token
         access_token_str, access_jti = security.create_access_token(
@@ -265,10 +259,9 @@ async def login_for_access_token(
                 data=token_data, message="Authentication successful"
             )
             return UnifiedJSONResponse(content=success_response)
-        else:
-            return Token(
-                access_token=access_token_str, token_type="bearer", refresh_token=None
-            )
+        return Token(
+            access_token=access_token_str, token_type="bearer", refresh_token=None
+        )
 
     except Exception as e:
         if UNIFIED_RESPONSE_AVAILABLE:
@@ -278,11 +271,10 @@ async def login_for_access_token(
                 error_code="AUTH_FAILED",
             )
             return UnifiedJSONResponse(content=error_response, status_code=500)
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Authentication failed",
-            )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Authentication failed",
+        )
 
 
 @router.post("/logout", status_code=status.HTTP_200_OK)
@@ -364,8 +356,7 @@ async def logout(
                 data={"logout": True}, message="Logout successful"
             )
             return UnifiedJSONResponse(content=success_response)
-        else:
-            return {"message": "Logout successful"}
+        return {"message": "Logout successful"}
 
     except Exception as e:
         if UNIFIED_RESPONSE_AVAILABLE:
@@ -375,11 +366,10 @@ async def logout(
                 error_code="LOGOUT_FAILED",
             )
             return UnifiedJSONResponse(content=error_response, status_code=500)
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Logout failed",
-            )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Logout failed",
+        )
 
 
 @router.get("/me")
@@ -413,8 +403,7 @@ async def read_users_me(
                 data=user_data, message="User information retrieved successfully"
             )
             return UnifiedJSONResponse(content=success_response)
-        else:
-            return user_data
+        return user_data
 
     except Exception as e:
         if UNIFIED_RESPONSE_AVAILABLE:
@@ -424,11 +413,10 @@ async def read_users_me(
                 error_code="USER_INFO_FAILED",
             )
             return UnifiedJSONResponse(content=error_response, status_code=500)
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to retrieve user information",
-            )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve user information",
+        )
 
 
 # Health endpoint with unified response format
@@ -454,8 +442,7 @@ async def health_check(request: Request = None):
             data=health_data, message="Authentication service is healthy"
         )
         return UnifiedJSONResponse(content=success_response)
-    else:
-        return health_data
+    return health_data
 
 
 # Include this router in the main FastAPI app

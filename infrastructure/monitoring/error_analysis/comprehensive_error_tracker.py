@@ -11,7 +11,6 @@ import time
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Optional, Set, Tuple
 
 import aiohttp
 import numpy as np
@@ -41,13 +40,13 @@ class ErrorEvent:
     error_type: str
     error_code: str
     error_message: str
-    request_id: Optional[str] = None
-    user_id: Optional[str] = None
-    endpoint: Optional[str] = None
-    response_time_ms: Optional[float] = None
-    constitutional_compliance_score: Optional[float] = None
-    stack_trace: Optional[str] = None
-    context: Dict = field(default_factory=dict)
+    request_id: str | None = None
+    user_id: str | None = None
+    endpoint: str | None = None
+    response_time_ms: float | None = None
+    constitutional_compliance_score: float | None = None
+    stack_trace: str | None = None
+    context: dict = field(default_factory=dict)
 
 
 @dataclass
@@ -57,13 +56,13 @@ class ErrorPattern:
     pattern_id: str
     error_type: str
     frequency: int
-    services_affected: Set[str]
+    services_affected: set[str]
     first_seen: datetime
     last_seen: datetime
     avg_response_time: float
     constitutional_impact: float
     root_cause_hypothesis: str
-    suggested_remediation: List[str]
+    suggested_remediation: list[str]
 
 
 class ComprehensiveErrorTracker:
@@ -75,8 +74,8 @@ class ComprehensiveErrorTracker:
 
         # Error storage and analysis
         self.error_events: deque = deque(maxlen=10000)  # Keep last 10k errors
-        self.error_patterns: Dict[str, ErrorPattern] = {}
-        self.service_error_rates: Dict[str, deque] = defaultdict(
+        self.error_patterns: dict[str, ErrorPattern] = {}
+        self.service_error_rates: dict[str, deque] = defaultdict(
             lambda: deque(maxlen=100)
         )
 
@@ -217,7 +216,7 @@ class ComprehensiveErrorTracker:
                 service_port=port,
                 error_type="CONNECTION_ERROR",
                 error_code="CONNECTION_FAILED",
-                error_message=f"Failed to connect to service: {str(e)}",
+                error_message=f"Failed to connect to service: {e!s}",
             )
             await self.record_error_event(error_event)
 
@@ -256,7 +255,7 @@ class ComprehensiveErrorTracker:
                 except (ValueError, IndexError) as e:
                     logger.debug(f"Could not parse metric line: {line}, error: {e}")
 
-    def parse_labels(self, labels_str: str) -> Dict[str, str]:
+    def parse_labels(self, labels_str: str) -> dict[str, str]:
         """Parse Prometheus metric labels."""
         labels = {}
         pairs = labels_str.split(",")
@@ -271,7 +270,7 @@ class ComprehensiveErrorTracker:
         return labels
 
     async def record_metric_error(
-        self, service_name: str, metric_name: str, labels: Dict[str, str], value: float
+        self, service_name: str, metric_name: str, labels: dict[str, str], value: float
     ):
         """Record an error event from metrics."""
         error_event = ErrorEvent(
@@ -346,12 +345,11 @@ class ComprehensiveErrorTracker:
         """Categorize constitutional compliance score."""
         if score >= 0.95:
             return "excellent"
-        elif score >= 0.90:
+        if score >= 0.90:
             return "good"
-        elif score >= 0.75:
+        if score >= 0.75:
             return "acceptable"
-        else:
-            return "poor"
+        return "poor"
 
     async def analyze_error_patterns(self):
         """Analyze error events to identify patterns and root causes."""
@@ -387,7 +385,7 @@ class ComprehensiveErrorTracker:
             except Exception as e:
                 logger.error(f"Error in pattern analysis: {e}")
 
-    async def identify_error_pattern(self, group_key: str, events: List[ErrorEvent]):
+    async def identify_error_pattern(self, group_key: str, events: list[ErrorEvent]):
         """Identify and analyze an error pattern."""
         service_name, error_type = group_key.split(":", 1)
 
@@ -439,7 +437,7 @@ class ComprehensiveErrorTracker:
             f"Identified error pattern: {pattern_id} with {frequency} occurrences"
         )
 
-    def generate_root_cause_hypothesis(self, events: List[ErrorEvent]) -> str:
+    def generate_root_cause_hypothesis(self, events: list[ErrorEvent]) -> str:
         """Generate a hypothesis about the root cause of errors."""
         error_codes = [e.error_code for e in events]
         error_messages = [e.error_message for e in events]
@@ -447,20 +445,19 @@ class ComprehensiveErrorTracker:
         # Analyze common patterns
         if all("timeout" in msg.lower() for msg in error_messages):
             return "Service response timeouts - possible performance degradation or resource exhaustion"
-        elif all("connection" in msg.lower() for msg in error_messages):
+        if all("connection" in msg.lower() for msg in error_messages):
             return "Connection failures - possible network issues or service unavailability"
-        elif any("constitutional" in msg.lower() for msg in error_messages):
+        if any("constitutional" in msg.lower() for msg in error_messages):
             return "Constitutional compliance violations - policy validation failures"
-        elif all(code.startswith("5") for code in error_codes if code.isdigit()):
+        if all(code.startswith("5") for code in error_codes if code.isdigit()):
             return "Server-side errors - possible application bugs or infrastructure issues"
-        elif all(code.startswith("4") for code in error_codes if code.isdigit()):
+        if all(code.startswith("4") for code in error_codes if code.isdigit()):
             return "Client-side errors - possible invalid requests or authentication issues"
-        else:
-            return "Mixed error pattern - requires detailed investigation"
+        return "Mixed error pattern - requires detailed investigation"
 
     def generate_remediation_suggestions(
-        self, error_type: str, events: List[ErrorEvent]
-    ) -> List[str]:
+        self, error_type: str, events: list[ErrorEvent]
+    ) -> list[str]:
         """Generate remediation suggestions based on error type and patterns."""
         suggestions = []
 
@@ -536,7 +533,7 @@ class ComprehensiveErrorTracker:
             except Exception as e:
                 logger.error(f"Error in report generation: {e}")
 
-    async def create_error_analysis_report(self) -> Dict:
+    async def create_error_analysis_report(self) -> dict:
         """Create comprehensive error analysis report."""
         current_time = datetime.now(timezone.utc)
         report_window = current_time - timedelta(hours=1)
@@ -605,7 +602,7 @@ class ComprehensiveErrorTracker:
 
         return report
 
-    def get_top_error_types(self, events: List[ErrorEvent]) -> List[Tuple[str, int]]:
+    def get_top_error_types(self, events: list[ErrorEvent]) -> list[tuple[str, int]]:
         """Get top error types by frequency."""
         error_counts = defaultdict(int)
         for event in events:
@@ -613,7 +610,7 @@ class ComprehensiveErrorTracker:
 
         return sorted(error_counts.items(), key=lambda x: x[1], reverse=True)[:5]
 
-    def calculate_avg_response_time(self, events: List[ErrorEvent]) -> float:
+    def calculate_avg_response_time(self, events: list[ErrorEvent]) -> float:
         """Calculate average response time for events."""
         response_times = [
             e.response_time_ms for e in events if e.response_time_ms is not None
@@ -621,8 +618,8 @@ class ComprehensiveErrorTracker:
         return np.mean(response_times) if response_times else 0.0
 
     def generate_overall_recommendations(
-        self, events: List[ErrorEvent], service_analysis: Dict
-    ) -> List[str]:
+        self, events: list[ErrorEvent], service_analysis: dict
+    ) -> list[str]:
         """Generate overall system recommendations."""
         recommendations = []
 
@@ -670,7 +667,7 @@ class ComprehensiveErrorTracker:
 
         return recommendations
 
-    async def save_error_report(self, report: Dict):
+    async def save_error_report(self, report: dict):
         """Save error analysis report to file."""
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         filename = f"infrastructure/monitoring/error_analysis/reports/error_analysis_{timestamp}.json"

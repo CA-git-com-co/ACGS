@@ -50,9 +50,8 @@ async def _test_nvidia_api_connectivity(api_key: str, base_url: str) -> bool:
             ) as response:
                 if response.status == 200:
                     return True
-                else:
-                    print(f"❌ API returned status {response.status}")
-                    return False
+                print(f"❌ API returned status {response.status}")
+                return False
     except Exception as e:
         print(f"❌ Connection failed: {e}")
         return False
@@ -119,14 +118,13 @@ async def _test_model_availability(
                         .get("message", {})
                         .get("content", ""),
                     }
-                else:
-                    error_text = await response.text()
-                    return {
-                        "status": "error",
-                        "error_code": response.status,
-                        "error_message": error_text,
-                        "latency_ms": round(latency_ms, 2),
-                    }
+                error_text = await response.text()
+                return {
+                    "status": "error",
+                    "error_code": response.status,
+                    "error_message": error_text,
+                    "latency_ms": round(latency_ms, 2),
+                }
     except TimeoutError:
         return {"status": "timeout", "error_message": "Request timed out"}
     except Exception as e:

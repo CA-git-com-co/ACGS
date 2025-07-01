@@ -167,7 +167,7 @@ async def execute_error_correction_workflow(
     except Exception as e:
         logger.error(f"Error in error correction workflow: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Error correction workflow failed: {str(e)}"
+            status_code=500, detail=f"Error correction workflow failed: {e!s}"
         )
 
 
@@ -247,9 +247,7 @@ async def detect_conflicts(
 
     except Exception as e:
         logger.error(f"Error in conflict detection: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Conflict detection failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Conflict detection failed: {e!s}")
 
 
 @router.post("/validation/semantic")
@@ -321,7 +319,7 @@ async def validate_semantic_consistency(
     except Exception as e:
         logger.error(f"Error in semantic validation: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Semantic validation failed: {str(e)}"
+            status_code=500, detail=f"Semantic validation failed: {e!s}"
         )
 
 
@@ -355,7 +353,7 @@ async def get_performance_summary(
     except Exception as e:
         logger.error(f"Error retrieving performance summary: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to retrieve performance summary: {str(e)}"
+            status_code=500, detail=f"Failed to retrieve performance summary: {e!s}"
         )
 
 
@@ -439,7 +437,7 @@ async def generate_policy_refinement_suggestions(
         logger.error(f"Error generating refinement suggestions: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to generate refinement suggestions: {str(e)}",
+            detail=f"Failed to generate refinement suggestions: {e!s}",
         )
 
 
@@ -519,7 +517,7 @@ async def resolve_conflict_automatically(
     except Exception as e:
         logger.error(f"Error in conflict resolution: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Conflict resolution failed: {str(e)}"
+            status_code=500, detail=f"Conflict resolution failed: {e!s}"
         )
 
 
@@ -557,10 +555,11 @@ async def analyze_conflict_complexity(
         )
 
         # Analyze complexity
-        complexity_score, requires_escalation = (
-            await qec_service.complexity_scorer.score_complexity(
-                conflict=conflict, context_data=conflict_data.get("context_data", {})
-            )
+        (
+            complexity_score,
+            requires_escalation,
+        ) = await qec_service.complexity_scorer.score_complexity(
+            conflict=conflict, context_data=conflict_data.get("context_data", {})
         )
 
         return JSONResponse(
@@ -601,5 +600,5 @@ async def analyze_conflict_complexity(
     except Exception as e:
         logger.error(f"Error in complexity analysis: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Complexity analysis failed: {str(e)}"
+            status_code=500, detail=f"Complexity analysis failed: {e!s}"
         )

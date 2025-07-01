@@ -2,14 +2,11 @@
 ACGS Auth Service client for DGM Service.
 """
 
-import asyncio
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import httpx
-import jwt
-from jwt import PyJWTError
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from ..config import settings
@@ -31,17 +28,17 @@ class AuthClient:
         self.timeout = httpx.Timeout(30.0)
 
         # Token cache to reduce auth service calls
-        self.token_cache: Dict[str, Dict[str, Any]] = {}
+        self.token_cache: dict[str, dict[str, Any]] = {}
         self.cache_ttl = timedelta(minutes=5)
 
         # User cache
-        self.user_cache: Dict[str, User] = {}
+        self.user_cache: dict[str, User] = {}
         self.user_cache_ttl = timedelta(minutes=10)
 
     @retry(
         stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10)
     )
-    async def validate_token(self, token: str) -> Dict[str, Any]:
+    async def validate_token(self, token: str) -> dict[str, Any]:
         """
         Validate JWT token with ACGS Auth Service.
 
@@ -77,18 +74,17 @@ class AuthClient:
 
                     return result
 
-                elif response.status_code == 401:
+                if response.status_code == 401:
                     return {"valid": False, "error": "Invalid token"}
 
-                else:
-                    logger.error(f"Auth service error: {response.status_code}")
-                    return {"valid": False, "error": "Auth service error"}
+                logger.error(f"Auth service error: {response.status_code}")
+                return {"valid": False, "error": "Auth service error"}
 
         except Exception as e:
             logger.error(f"Token validation failed: {e}")
             return {"valid": False, "error": str(e)}
 
-    async def get_user_info(self, user_id: str) -> Optional[User]:
+    async def get_user_info(self, user_id: str) -> User | None:
         """
         Get detailed user information.
 
@@ -146,18 +142,17 @@ class AuthClient:
 
                     return user
 
-                elif response.status_code == 404:
+                if response.status_code == 404:
                     return None
 
-                else:
-                    logger.error(f"Failed to get user info: {response.status_code}")
-                    return None
+                logger.error(f"Failed to get user info: {response.status_code}")
+                return None
 
         except Exception as e:
             logger.error(f"Get user info failed: {e}")
             return None
 
-    async def get_user_permissions(self, user_id: str) -> List[str]:
+    async def get_user_permissions(self, user_id: str) -> list[str]:
         """
         Get user permissions list.
 
@@ -178,11 +173,8 @@ class AuthClient:
                     result = response.json()
                     return result.get("permissions", [])
 
-                else:
-                    logger.error(
-                        f"Failed to get user permissions: {response.status_code}"
-                    )
-                    return []
+                logger.error(f"Failed to get user permissions: {response.status_code}")
+                return []
 
         except Exception as e:
             logger.error(f"Get user permissions failed: {e}")
@@ -208,8 +200,8 @@ class AuthClient:
             return False
 
     async def create_service_token(
-        self, service_name: str, permissions: List[str]
-    ) -> Optional[str]:
+        self, service_name: str, permissions: list[str]
+    ) -> str | None:
         """
         Create a service-to-service authentication token.
 
@@ -232,17 +224,14 @@ class AuthClient:
                     result = response.json()
                     return result.get("token")
 
-                else:
-                    logger.error(
-                        f"Failed to create service token: {response.status_code}"
-                    )
-                    return None
+                logger.error(f"Failed to create service token: {response.status_code}")
+                return None
 
         except Exception as e:
             logger.error(f"Service token creation failed: {e}")
             return None
 
-    async def refresh_token(self, refresh_token: str) -> Optional[Dict[str, str]]:
+    async def refresh_token(self, refresh_token: str) -> dict[str, str] | None:
         """
         Refresh an expired JWT token.
 
@@ -263,9 +252,8 @@ class AuthClient:
                 if response.status_code == 200:
                     return response.json()
 
-                else:
-                    logger.error(f"Token refresh failed: {response.status_code}")
-                    return None
+                logger.error(f"Token refresh failed: {response.status_code}")
+                return None
 
         except Exception as e:
             logger.error(f"Token refresh failed: {e}")

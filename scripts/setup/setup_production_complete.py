@@ -77,11 +77,10 @@ def main():
     if success_count == total_steps:
         logger.info("🎉 Production environment setup completed successfully!")
         return 0
-    else:
-        logger.warning(
-            f"⚠️ Production environment setup completed with {total_steps - success_count} failures"
-        )
-        return 1
+    logger.warning(
+        f"⚠️ Production environment setup completed with {total_steps - success_count} failures"
+    )
+    return 1
 
 
 if __name__ == "__main__":

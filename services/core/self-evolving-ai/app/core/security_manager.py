@@ -341,7 +341,7 @@ class SecurityManager:
             logger.error(f"Evolution request validation failed: {e}")
             return {
                 "secure": False,
-                "security_issues": [f"Validation error: {str(e)}"],
+                "security_issues": [f"Validation error: {e!s}"],
             }
 
     async def detect_threat(
@@ -447,13 +447,12 @@ class SecurityManager:
                     "mitigation_results": mitigation_results,
                     "mitigated_at": datetime.now(timezone.utc).isoformat(),
                 }
-            else:
-                return {
-                    "success": False,
-                    "threat_id": threat_id,
-                    "error": "Some mitigation actions failed",
-                    "mitigation_results": mitigation_results,
-                }
+            return {
+                "success": False,
+                "threat_id": threat_id,
+                "error": "Some mitigation actions failed",
+                "mitigation_results": mitigation_results,
+            }
 
         except Exception as e:
             logger.error(f"Threat mitigation failed for {threat_id}: {e}")
@@ -739,19 +738,18 @@ class SecurityManager:
                 "additional_verification",
                 "rollback_preparation",
             ]
-        elif threat_level == ThreatLevel.HIGH:
+        if threat_level == ThreatLevel.HIGH:
             return [
                 "enhanced_monitoring",
                 "additional_verification",
                 "approval_escalation",
             ]
-        elif threat_level == ThreatLevel.MEDIUM:
+        if threat_level == ThreatLevel.MEDIUM:
             return [
                 "standard_monitoring",
                 "verification_required",
             ]
-        else:
-            return ["standard_monitoring"]
+        return ["standard_monitoring"]
 
     async def _validate_proposed_changes(
         self, proposed_changes: dict[str, Any]
@@ -793,7 +791,7 @@ class SecurityManager:
             logger.error(f"Proposed changes validation failed: {e}")
             return {
                 "secure": False,
-                "security_issues": [f"Validation error: {str(e)}"],
+                "security_issues": [f"Validation error: {e!s}"],
             }
 
     async def _analyze_threat_indicators(
@@ -876,7 +874,7 @@ class SecurityManager:
                     "details": "Rate limiting applied",
                 }
 
-            elif action == "enhanced_monitoring":
+            if action == "enhanced_monitoring":
                 # Enable enhanced monitoring
                 return {
                     "success": True,
@@ -884,11 +882,11 @@ class SecurityManager:
                     "details": "Enhanced monitoring enabled",
                 }
 
-            elif action == "access_revocation":
+            if action == "access_revocation":
                 # Revoke access
                 return {"success": True, "action": action, "details": "Access revoked"}
 
-            elif action == "immediate_human_review":
+            if action == "immediate_human_review":
                 # Trigger human review
                 return {
                     "success": True,
@@ -896,12 +894,11 @@ class SecurityManager:
                     "details": "Human review triggered",
                 }
 
-            else:
-                return {
-                    "success": False,
-                    "action": action,
-                    "error": "Unknown mitigation action",
-                }
+            return {
+                "success": False,
+                "action": action,
+                "error": "Unknown mitigation action",
+            }
 
         except Exception as e:
             logger.error(f"Mitigation action execution failed: {e}")

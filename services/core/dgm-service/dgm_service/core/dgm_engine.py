@@ -7,10 +7,9 @@ governance compliance and safe exploration.
 
 import asyncio
 import logging
-import time
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
-from uuid import UUID, uuid4
+from datetime import datetime
+from typing import Any
+from uuid import UUID
 
 from ..config import settings
 from ..network.service_client import ACGSServiceClient
@@ -41,10 +40,10 @@ class DGMEngine:
         )
 
         # Track active improvements
-        self.active_improvements: Dict[UUID, Dict[str, Any]] = {}
+        self.active_improvements: dict[UUID, dict[str, Any]] = {}
 
         # Performance baseline
-        self.performance_baseline: Optional[Dict[str, Any]] = None
+        self.performance_baseline: dict[str, Any] | None = None
 
         # Safety constraints
         self.safety_constraints = {
@@ -73,10 +72,10 @@ class DGMEngine:
         self,
         improvement_id: UUID,
         description: str,
-        target_services: List[str],
+        target_services: list[str],
         priority: str = "normal",
-        metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """
         Start a new improvement cycle.
 
@@ -166,13 +165,13 @@ class DGMEngine:
             logger.error(f"Failed to start improvement {improvement_id}: {e}")
             return {
                 "status": "failed",
-                "reason": f"Internal error: {str(e)}",
+                "reason": f"Internal error: {e!s}",
                 "estimated_completion": None,
             }
 
     async def get_improvement_status(
         self, improvement_id: UUID
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Get the status of a specific improvement."""
         if improvement_id in self.active_improvements:
             improvement = self.active_improvements[improvement_id]
@@ -219,7 +218,7 @@ class DGMEngine:
 
         return None
 
-    async def cancel_improvement(self, improvement_id: UUID) -> Dict[str, Any]:
+    async def cancel_improvement(self, improvement_id: UUID) -> dict[str, Any]:
         """Cancel a running improvement."""
         if improvement_id not in self.active_improvements:
             return {"success": False, "message": "Improvement not found or not running"}
@@ -240,12 +239,12 @@ class DGMEngine:
             logger.error(f"Failed to cancel improvement {improvement_id}: {e}")
             return {
                 "success": False,
-                "message": f"Failed to cancel improvement: {str(e)}",
+                "message": f"Failed to cancel improvement: {e!s}",
             }
 
     async def rollback_improvement(
         self, improvement_id: UUID, rollback_id: UUID, reason: str, force: bool = False
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Rollback a completed improvement."""
         try:
             # Get improvement from archive
@@ -268,9 +267,9 @@ class DGMEngine:
 
         except Exception as e:
             logger.error(f"Failed to rollback improvement {improvement_id}: {e}")
-            return {"success": False, "message": f"Rollback failed: {str(e)}"}
+            return {"success": False, "message": f"Rollback failed: {e!s}"}
 
-    async def get_bandit_report(self) -> Dict[str, Any]:
+    async def get_bandit_report(self) -> dict[str, Any]:
         """Get bandit algorithm performance report."""
         return await self.bandit_algorithm.get_performance_report()
 
@@ -288,10 +287,10 @@ class DGMEngine:
 
     async def _generate_improvement_proposal(
         self,
-        target_services: List[str],
+        target_services: list[str],
         priority: str,
-        metadata: Optional[Dict[str, Any]],
-    ) -> Dict[str, Any]:
+        metadata: dict[str, Any] | None,
+    ) -> dict[str, Any]:
         """Generate improvement proposal using bandit algorithm."""
         # Get current performance metrics
         current_performance = await self.performance_monitor.get_current_metrics()
@@ -318,10 +317,10 @@ class DGMEngine:
     async def _execute_improvement(
         self,
         improvement_id: UUID,
-        proposal: Dict[str, Any],
+        proposal: dict[str, Any],
         description: str,
-        compliance_result: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        compliance_result: dict[str, Any],
+    ) -> dict[str, Any]:
         """Execute the improvement proposal."""
         try:
             # Record baseline performance

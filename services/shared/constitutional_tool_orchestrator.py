@@ -11,7 +11,7 @@ import logging
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -44,11 +44,11 @@ class ToolCall:
 
     tool_id: str
     tool_type: ToolType
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]
     priority: int = 1
-    timeout: Optional[float] = None
+    timeout: float | None = None
     requires_constitutional_validation: bool = True
-    constitutional_context: Optional[Dict[str, Any]] = None
+    constitutional_context: dict[str, Any] | None = None
 
 
 @dataclass
@@ -59,10 +59,10 @@ class ToolResult:
     tool_type: ToolType
     success: bool
     data: Any
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     constitutional_compliance: bool = True
     confidence_score: float = 1.0
-    citation_info: Optional[Dict[str, Any]] = None
+    citation_info: dict[str, Any] | None = None
     timestamp: float = field(default_factory=time.time)
 
 
@@ -73,9 +73,9 @@ class OrchestrationPlan:
     plan_id: str
     query: str
     complexity: QueryComplexity
-    tool_calls: List[ToolCall]
+    tool_calls: list[ToolCall]
     expected_duration: float
-    constitutional_requirements: List[str]
+    constitutional_requirements: list[str]
     parallel_execution: bool = True
 
 
@@ -113,8 +113,8 @@ class ConstitutionalToolOrchestrator:
         }
 
     async def orchestrate_query(
-        self, query: str, context: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+        self, query: str, context: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Orchestrate tools to answer a query with constitutional compliance.
 
@@ -156,7 +156,7 @@ class ConstitutionalToolOrchestrator:
         }
 
     async def _create_orchestration_plan(
-        self, query: str, context: Optional[Dict[str, Any]]
+        self, query: str, context: dict[str, Any] | None
     ) -> OrchestrationPlan:
         """Create an orchestration plan based on query analysis."""
         query_lower = query.lower()
@@ -269,7 +269,7 @@ class ConstitutionalToolOrchestrator:
             parallel_execution=len(tool_calls) <= self.max_parallel_calls,
         )
 
-    async def _execute_plan(self, plan: OrchestrationPlan) -> List[ToolResult]:
+    async def _execute_plan(self, plan: OrchestrationPlan) -> list[ToolResult]:
         """Execute the orchestration plan."""
         results = []
 
@@ -396,8 +396,8 @@ class ConstitutionalToolOrchestrator:
             return False
 
     async def _synthesize_results(
-        self, query: str, results: List[ToolResult], plan: OrchestrationPlan
-    ) -> Dict[str, Any]:
+        self, query: str, results: list[ToolResult], plan: OrchestrationPlan
+    ) -> dict[str, Any]:
         """Synthesize tool results into a coherent response."""
         successful_results = [r for r in results if r.success]
         failed_results = [r for r in results if not r.success]
@@ -452,8 +452,8 @@ class ConstitutionalToolOrchestrator:
         return synthesis
 
     def _generate_synthesis_recommendations(
-        self, results: List[ToolResult], plan: OrchestrationPlan
-    ) -> List[str]:
+        self, results: list[ToolResult], plan: OrchestrationPlan
+    ) -> list[str]:
         """Generate recommendations based on synthesis results."""
         recommendations = []
 
@@ -495,7 +495,7 @@ class ConstitutionalToolOrchestrator:
 
     # Tool implementations (mock for now)
 
-    async def _web_search_tool(self, parameters: Dict[str, Any]) -> Dict[str, Any]:
+    async def _web_search_tool(self, parameters: dict[str, Any]) -> dict[str, Any]:
         """Mock web search tool."""
         await asyncio.sleep(0.5)  # Simulate API call
         query = parameters.get("query", "")
@@ -516,8 +516,8 @@ class ConstitutionalToolOrchestrator:
         }
 
     async def _constitutional_validation_tool(
-        self, parameters: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, parameters: dict[str, Any]
+    ) -> dict[str, Any]:
         """Mock constitutional validation tool."""
         await asyncio.sleep(0.3)
         content = parameters.get("content", "")
@@ -534,7 +534,7 @@ class ConstitutionalToolOrchestrator:
             "confidence": 0.95,
         }
 
-    async def _policy_analysis_tool(self, parameters: Dict[str, Any]) -> Dict[str, Any]:
+    async def _policy_analysis_tool(self, parameters: dict[str, Any]) -> dict[str, Any]:
         """Mock policy analysis tool."""
         await asyncio.sleep(0.7)
         query = parameters.get("query", "")
@@ -548,8 +548,8 @@ class ConstitutionalToolOrchestrator:
         }
 
     async def _stakeholder_consultation_tool(
-        self, parameters: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, parameters: dict[str, Any]
+    ) -> dict[str, Any]:
         """Mock stakeholder consultation tool."""
         await asyncio.sleep(1.0)
 
@@ -562,8 +562,8 @@ class ConstitutionalToolOrchestrator:
         }
 
     async def _compliance_check_tool(
-        self, parameters: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, parameters: dict[str, Any]
+    ) -> dict[str, Any]:
         """Mock compliance check tool."""
         await asyncio.sleep(0.4)
 
@@ -576,8 +576,8 @@ class ConstitutionalToolOrchestrator:
         }
 
     async def _document_retrieval_tool(
-        self, parameters: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, parameters: dict[str, Any]
+    ) -> dict[str, Any]:
         """Mock document retrieval tool."""
         await asyncio.sleep(0.6)
 
@@ -594,7 +594,7 @@ class ConstitutionalToolOrchestrator:
 
 
 # Global orchestrator instance
-_orchestrator: Optional[ConstitutionalToolOrchestrator] = None
+_orchestrator: ConstitutionalToolOrchestrator | None = None
 
 
 def get_tool_orchestrator() -> ConstitutionalToolOrchestrator:
@@ -606,8 +606,8 @@ def get_tool_orchestrator() -> ConstitutionalToolOrchestrator:
 
 
 async def orchestrate_constitutional_query(
-    query: str, context: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
+    query: str, context: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Convenience function for constitutional query orchestration."""
     orchestrator = get_tool_orchestrator()
     return await orchestrator.orchestrate_query(query, context)
@@ -615,12 +615,12 @@ async def orchestrate_constitutional_query(
 
 # Export main components
 __all__ = [
-    "ToolType",
+    "ConstitutionalToolOrchestrator",
+    "OrchestrationPlan",
     "QueryComplexity",
     "ToolCall",
     "ToolResult",
-    "OrchestrationPlan",
-    "ConstitutionalToolOrchestrator",
+    "ToolType",
     "get_tool_orchestrator",
     "orchestrate_constitutional_query",
 ]

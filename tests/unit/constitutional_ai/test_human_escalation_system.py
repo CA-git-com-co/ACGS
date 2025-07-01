@@ -2,18 +2,6 @@
 Unit tests for services.core.constitutional-ai.ac_service.app.services.human_escalation_system
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from services.core.constitutional_ai.ac_service.app.services.human_escalation_system import (
-    EscalationLevel,
-    EscalationReason,
-    NotificationChannel,
-    EscalationRule,
-    EscalationRequest,
-    EscalationResponse,
-    HumanEscalationSystem,
-)
-
 
 class TestEscalationLevel:
     """Test suite for EscalationLevel."""

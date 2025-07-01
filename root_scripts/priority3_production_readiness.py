@@ -258,7 +258,9 @@ class Priority3ProductionReadiness:
             self.log_action("Checking resource utilization", "INFO")
             try:
                 # Check process count and basic system resources
-                result = subprocess.run(["ps", "aux"], capture_output=True, text=True)
+                result = subprocess.run(
+                    ["ps", "aux"], check=False, capture_output=True, text=True
+                )
                 uvicorn_processes = len(
                     [line for line in result.stdout.split("\n") if "uvicorn" in line]
                 )

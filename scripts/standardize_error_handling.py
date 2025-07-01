@@ -215,7 +215,7 @@ class ErrorHandlingStandardizer:
             logger.info(f"Analyzed {file_path}: {result.functions_analyzed} functions")
 
         except Exception as e:
-            error_msg = f"Error processing {file_path}: {str(e)}"
+            error_msg = f"Error processing {file_path}: {e!s}"
             result.errors.append(error_msg)
             logger.error(error_msg)
 
@@ -323,13 +323,13 @@ def main():
         for r in standardizer.results
     )
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("ERROR HANDLING STANDARDIZATION SUMMARY")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"Files Processed: {len(standardizer.results)}")
     print(f"Functions Analyzed: {total_functions}")
     print(f"Total Improvements: {total_improvements}")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@ Improvement workspace model for DGM service.
 """
 
 import enum
-from typing import Any, Dict
+from typing import Any
 
 from sqlalchemy import JSON, Boolean, Column, DateTime, Enum, String, Text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
@@ -84,7 +84,7 @@ class ImprovementWorkspace(Base):
             f"name={self.name}, status={self.status})>"
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "id": str(self.id),

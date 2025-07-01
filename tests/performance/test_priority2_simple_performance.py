@@ -96,6 +96,7 @@ class SimplePerformanceTester:
                 start = time.time()
                 result = subprocess.run(
                     ["curl", "-s", "-f", f"http://localhost:{port}/health"],
+                    check=False,
                     capture_output=True,
                     timeout=10,
                 )
@@ -168,6 +169,7 @@ class SimplePerformanceTester:
                         "%{http_code}",
                         f"http://localhost:8005{endpoint}",
                     ],
+                    check=False,
                     capture_output=True,
                     timeout=10,
                 )
@@ -280,7 +282,9 @@ class SimplePerformanceTester:
 
         # Check memory usage
         try:
-            result = subprocess.run(["free", "-m"], capture_output=True, text=True)
+            result = subprocess.run(
+                ["free", "-m"], check=False, capture_output=True, text=True
+            )
             if result.returncode == 0:
                 lines = result.stdout.strip().split("\n")
                 if len(lines) >= 2:
@@ -301,7 +305,9 @@ class SimplePerformanceTester:
 
         # Check disk usage
         try:
-            result = subprocess.run(["df", "-h", "."], capture_output=True, text=True)
+            result = subprocess.run(
+                ["df", "-h", "."], check=False, capture_output=True, text=True
+            )
             if result.returncode == 0:
                 lines = result.stdout.strip().split("\n")
                 if len(lines) >= 2:
@@ -318,7 +324,7 @@ class SimplePerformanceTester:
         # Check running processes
         try:
             result = subprocess.run(
-                ["pgrep", "-f", "uvicorn"], capture_output=True, text=True
+                ["pgrep", "-f", "uvicorn"], check=False, capture_output=True, text=True
             )
             running_services = (
                 len(result.stdout.strip().split("\n")) if result.stdout.strip() else 0

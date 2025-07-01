@@ -47,8 +47,7 @@ class MultiTierCache:
                 if not entry.is_expired():
                     entry.access_count += 1
                     return entry.value
-                else:
-                    del self.memory_cache[key]
+                del self.memory_cache[key]
 
             # Check Redis cache
             if self.redis_client:

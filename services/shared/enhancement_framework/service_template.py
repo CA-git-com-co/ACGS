@@ -8,7 +8,6 @@ Ensures consistent configuration across all ACGS-1 services.
 import logging
 import os
 from contextlib import asynccontextmanager
-from typing import List, Optional
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -40,7 +39,7 @@ class ACGSServiceTemplate:
         service_name: str,
         port: int,
         version: str = "3.0.0",
-        description: Optional[str] = None,
+        description: str | None = None,
     ):
         self.service_name = service_name
         self.port = port
@@ -217,7 +216,7 @@ class ACGSServiceTemplate:
 
         logger.info("Standard endpoints added")
 
-    def _get_cors_origins(self) -> List[str]:
+    def _get_cors_origins(self) -> list[str]:
         """Get CORS origins from environment or use defaults."""
         cors_origins = os.getenv("CORS_ORIGINS", "").split(",")
         if cors_origins == [""]:
@@ -238,7 +237,7 @@ class ACGSServiceTemplate:
         self,
         enabled: bool = True,
         strict_mode: bool = True,
-        bypass_paths: Optional[List[str]] = None,
+        bypass_paths: list[str] | None = None,
     ):
         """Configure constitutional validation settings."""
         self.enable_constitutional_validation = enabled
@@ -263,7 +262,7 @@ class ACGSServiceTemplate:
     def configure_caching(
         self,
         enabled: bool = True,
-        redis_url: Optional[str] = None,
+        redis_url: str | None = None,
         default_ttl: int = 300,
     ):
         """Configure caching settings."""

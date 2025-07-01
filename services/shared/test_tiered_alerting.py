@@ -9,12 +9,12 @@ latency requirement for ACGS-PGP integration.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import sys
-import os
-import numpy as np
 import logging
+import os
+import sys
 import time
-from datetime import datetime
+
+import numpy as np
 
 # Add the services directory to the path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -178,7 +178,7 @@ def test_latency_performance():
     max_latency = np.max(latencies)
     p95_latency = np.percentile(latencies, 95)
 
-    logger.info(f"  ⏱️ Latency Performance:")
+    logger.info("  ⏱️ Latency Performance:")
     logger.info(f"    Average: {avg_latency:.2f}ms")
     logger.info(f"    Maximum: {max_latency:.2f}ms")
     logger.info(f"    P95: {p95_latency:.2f}ms")
@@ -235,7 +235,7 @@ def test_production_ml_optimizer_integration():
     assert verification["verified"] == True
     assert verification["hash"] == "cdd01ef066bc6cf2"
 
-    logger.info(f"  📊 Monitoring Integration:")
+    logger.info("  📊 Monitoring Integration:")
     logger.info(
         f"    Alerts generated: {len(monitoring_results['performance_alerts'])}"
     )
@@ -318,7 +318,7 @@ def test_alerting_dashboard():
     assert integration["alerting_system_integrated"] == True
     assert integration["constitutional_hash_consistency"] == True
 
-    logger.info(f"  📊 Dashboard Data Generated:")
+    logger.info("  📊 Dashboard Data Generated:")
     logger.info(f"    Total active alerts: {stats['total_active_alerts']}")
     logger.info(f"    Critical alerts: {stats['critical_alerts']}")
     logger.info(f"    Constitutional hash verified: {verification['verified']}")

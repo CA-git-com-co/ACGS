@@ -313,11 +313,10 @@ class WorkflowEngine:
                         workflow.status = WorkflowStatus.FAILED
                         logger.error(f"Step {step.id} failed: {result}")
                         return
-                    else:
-                        step.status = WorkflowStatus.COMPLETED
-                        step.result = result
-                        completed_steps.add(step.id)
-                        logger.info(f"Step {step.id} completed successfully")
+                    step.status = WorkflowStatus.COMPLETED
+                    step.result = result
+                    completed_steps.add(step.id)
+                    logger.info(f"Step {step.id} completed successfully")
 
             workflow.status = WorkflowStatus.COMPLETED
             workflow.completed_at = datetime.utcnow()

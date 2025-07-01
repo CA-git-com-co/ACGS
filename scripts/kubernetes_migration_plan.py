@@ -9,9 +9,8 @@ with service mesh integration and advanced monitoring.
 import asyncio
 import json
 import logging
-import subprocess
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 import yaml
 
@@ -54,7 +53,7 @@ class KubernetesMigrationPlanner:
         self.manifests_dir = self.k8s_dir / "manifests"
         self.helm_dir = self.k8s_dir / "helm"
 
-    async def create_migration_plan(self) -> Dict[str, Any]:
+    async def create_migration_plan(self) -> dict[str, Any]:
         """Create comprehensive Kubernetes migration plan."""
         try:
             self.logger.info("Creating Kubernetes migration plan")
@@ -161,7 +160,7 @@ class KubernetesMigrationPlanner:
 
         self.logger.info("Kubernetes manifests generated")
 
-    async def _create_service_manifest(self, service: Dict[str, Any]):
+    async def _create_service_manifest(self, service: dict[str, Any]):
         """Create Kubernetes manifest for a single service."""
         service_name = service["name"]
 

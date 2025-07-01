@@ -17,8 +17,7 @@ import aioredis
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from jwt import ExpiredSignatureError
-from jwt import InvalidTokenError as JWTError
+from jwt import ExpiredSignatureError, InvalidTokenError as JWTError
 from passlib.context import CryptContext
 
 logger = logging.getLogger(__name__)
@@ -615,9 +614,8 @@ class EnhancedAuthService:
                     # Fall back to in-memory check
                     if jti not in self.active_tokens:
                         raise AuthenticationError("Token has been revoked")
-            else:
-                if jti not in self.active_tokens:
-                    raise AuthenticationError("Token has been revoked")
+            elif jti not in self.active_tokens:
+                raise AuthenticationError("Token has been revoked")
 
             # Verify token with expiration
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -638,7 +636,7 @@ class EnhancedAuthService:
         except ExpiredSignatureError:
             raise AuthenticationError("Token has expired")
         except JWTError as e:
-            raise AuthenticationError(f"Invalid token: {str(e)}")
+            raise AuthenticationError(f"Invalid token: {e!s}")
 
     def _update_auth_metrics(self, response_time: float, success: bool):
         # requires: Valid input parameters
@@ -949,22 +947,22 @@ async def get_current_user(
 
 # Export main functions and classes
 __all__ = [
-    "User",
-    "UserRole",
+    "ROLE_PERMISSIONS",
+    "AuthenticationError",
+    "AuthorizationError",
     "ConstitutionalPermission",
+    "EnhancedAuthService",
+    "PermissionChecker",
+    "ServiceAuthManager",
     "ServicePermission",
     "TokenData",
+    "User",
+    "UserRole",
     "UserSession",
-    "EnhancedAuthService",
     "enhanced_auth_service",
     "get_current_user",
     "get_service_auth",
-    "PermissionChecker",
-    "ServiceAuthManager",
-    "require_permission",
     "require_any_permission",
+    "require_permission",
     "require_role",
-    "AuthenticationError",
-    "AuthorizationError",
-    "ROLE_PERMISSIONS",
 ]

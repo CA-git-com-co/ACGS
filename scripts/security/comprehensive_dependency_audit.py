@@ -7,7 +7,6 @@ Performs thorough dependency vulnerability scanning and reporting.
 import json
 import subprocess
 import sys
-from pathlib import Path
 
 
 def run_dependency_audit():
@@ -23,12 +22,13 @@ def run_dependency_audit():
                 "--desc",
                 "--output=dependency-audit-detailed.json",
             ],
+            check=False,
             capture_output=True,
             text=True,
         )
 
         if result.returncode != 0:
-            print(f"⚠️  Dependency vulnerabilities found")
+            print("⚠️  Dependency vulnerabilities found")
             print(result.stdout)
 
             # Parse and categorize vulnerabilities
@@ -46,7 +46,7 @@ def run_dependency_audit():
                     else:
                         high_vulns.append(vuln)
 
-            print(f"📊 Vulnerability Summary:")
+            print("📊 Vulnerability Summary:")
             print(f"  Critical: {len(critical_vulns)}")
             print(f"  High: {len(high_vulns)}")
 

@@ -6,10 +6,11 @@ Monitors services and sends alerts when thresholds are breached
 
 import asyncio
 import json
-import time
 import logging
-from datetime import datetime, timedelta
-from typing import Dict, List, Any
+import time
+from datetime import datetime
+from typing import Any
+
 import aiohttp
 
 # Configure logging
@@ -70,7 +71,7 @@ alert_state = {
     "alert_history": [],
     "service_stats": {
         service_id: {"total_checks": 0, "failures": 0, "consecutive_failures": 0}
-        for service_id in SERVICES.keys()
+        for service_id in SERVICES
     },
 }
 
@@ -99,7 +100,7 @@ class Alert:
         }
 
 
-async def check_service_health(service_id: str, service_config: Dict) -> Dict[str, Any]:
+async def check_service_health(service_id: str, service_config: dict) -> dict[str, Any]:
     """Check health of a single service"""
     try:
         async with aiohttp.ClientSession(
@@ -118,14 +119,13 @@ async def check_service_health(service_id: str, service_config: Dict) -> Dict[st
                         "details": health_data,
                         "timestamp": datetime.now().isoformat(),
                     }
-                else:
-                    return {
-                        "status": "unhealthy",
-                        "response_time_ms": round(response_time, 2),
-                        "http_status": response.status,
-                        "error": f"HTTP {response.status}",
-                        "timestamp": datetime.now().isoformat(),
-                    }
+                return {
+                    "status": "unhealthy",
+                    "response_time_ms": round(response_time, 2),
+                    "http_status": response.status,
+                    "error": f"HTTP {response.status}",
+                    "timestamp": datetime.now().isoformat(),
+                }
     except Exception as e:
         return {
             "status": "error",
@@ -136,7 +136,7 @@ async def check_service_health(service_id: str, service_config: Dict) -> Dict[st
         }
 
 
-def process_alerts(service_id: str, health_data: Dict[str, Any]):
+def process_alerts(service_id: str, health_data: dict[str, Any]):
     """Process health data and generate alerts if needed"""
     stats = alert_state["service_stats"][service_id]
     stats["total_checks"] += 1
