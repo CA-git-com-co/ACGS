@@ -91,6 +91,12 @@ ALERTMANAGER_URL=http://localhost:9093
 ALERTMANAGER_WEBHOOK_URL=http://localhost:5001/alerts
 ```
 
+### OpenTelemetry Configuration
+```bash
+# Trace sampling ratio for PGC service (0.0-1.0)
+PGC_TELEMETRY_TRACE_SAMPLING_RATIO=0.1
+```
+
 ### Logging Configuration
 ```bash
 # Log Levels

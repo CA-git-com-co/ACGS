@@ -57,6 +57,7 @@ class ServiceConfig:
             "service_name": "pgc_service",
             "environment": "production",
             "traces_sample_rate": 0.1,
+            "trace_sampling_ratio": 0.1,
         },
         "performance": {
             "p99_latency_target_ms": 500,  # p99 latency below 500ms
