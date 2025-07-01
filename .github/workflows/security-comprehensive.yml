@@ -1,4 +1,4 @@
-name: Comprehensive Security Scanning
+name: Legacy Security Scanning (Deprecated - Use unified-ci-modern.yml)
 
 on:
   push:
@@ -34,6 +34,7 @@ jobs:
           enable-cache: true
 
       - name: Install dependencies
+        timeout-minutes: 10
         run: |
           echo "Installing dependencies for security scanning..."
           # Create virtual environment first
@@ -64,6 +65,7 @@ jobs:
           timeout 300 uv pip install safety bandit pip-audit semgrep || echo "Security tools install completed with some failures"
 
       - name: Python Dependency Vulnerability Scan (Safety)
+        timeout-minutes: 5
         run: |
           # Activate virtual environment
           if [ -d ".venv" ]; then
@@ -75,6 +77,7 @@ jobs:
           uv run safety check || true
 
       - name: Python Dependency Audit (pip-audit)
+        timeout-minutes: 5
         run: |
           # Activate virtual environment
           if [ -d ".venv" ]; then
@@ -86,6 +89,7 @@ jobs:
           uv run pip-audit || true
 
       - name: Static Code Analysis (Bandit)
+        timeout-minutes: 8
         run: |
           # Activate virtual environment
           if [ -d ".venv" ]; then

@@ -1,0 +1,551 @@
+name: ACGS-1 Security-Focused Scanning
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'services/**'
+      - 'scripts/**'
+      - 'blockchain/**'
+      - '**/requirements*.txt'
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - 'pyproject.toml'
+      - 'Dockerfile*'
+      - '.github/workflows/security-focused.yml'
+  pull_request:
+    branches: [main, master]
+  schedule:
+    - cron: '0 3 * * *' # Daily at 3 AM UTC
+  workflow_dispatch:
+    inputs:
+      scan_level:
+        description: 'Security scan intensity'
+        required: false
+        default: 'standard'
+        type: choice
+        options:
+          - quick
+          - standard
+          - comprehensive
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+env:
+  PYTHON_VERSION: '3.11'
+  RUST_TOOLCHAIN: '1.81.0'
+  # Security scan configuration
+  SCAN_TIMEOUT_MINUTES: 20
+  CRITICAL_THRESHOLD: 0
+  HIGH_THRESHOLD: 5
+
+jobs:
+  # Fast security triage
+  security-triage:
+    name: Security Triage
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      python_scan_required: ${{ steps.triage.outputs.python_scan }}
+      rust_scan_required: ${{ steps.triage.outputs.rust_scan }}
+      container_scan_required: ${{ steps.triage.outputs.container_scan }}
+      scan_level: ${{ steps.triage.outputs.scan_level }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Determine scan scope
+        id: triage
+        run: |
+          SCAN_LEVEL="${{ inputs.scan_level || 'standard' }}"
+          
+          # Default to full scans for manual or scheduled runs
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "python_scan=true" >> $GITHUB_OUTPUT
+            echo "rust_scan=true" >> $GITHUB_OUTPUT
+            echo "container_scan=true" >> $GITHUB_OUTPUT
+          else
+            # Check for relevant file changes
+            PYTHON_CHANGED=false
+            RUST_CHANGED=false
+            CONTAINER_CHANGED=false
+            
+            if git diff --name-only HEAD^ HEAD | grep -E "\.(py|txt)$|pyproject\.toml"; then
+              PYTHON_CHANGED=true
+            fi
+            
+            if git diff --name-only HEAD^ HEAD | grep -E "\.(rs|toml)$|Cargo\.(toml|lock)"; then
+              RUST_CHANGED=true
+            fi
+            
+            if git diff --name-only HEAD^ HEAD | grep -E "Dockerfile|docker-compose|\.dockerignore"; then
+              CONTAINER_CHANGED=true
+            fi
+            
+            echo "python_scan=$PYTHON_CHANGED" >> $GITHUB_OUTPUT
+            echo "rust_scan=$RUST_CHANGED" >> $GITHUB_OUTPUT
+            echo "container_scan=$CONTAINER_CHANGED" >> $GITHUB_OUTPUT
+          fi
+          
+          echo "scan_level=$SCAN_LEVEL" >> $GITHUB_OUTPUT
+          
+          echo "🔍 Security scan triage completed:"
+          echo "   Python scan: $([ "$PYTHON_CHANGED" = "true" ] && echo "required" || echo "skipped")"
+          echo "   Rust scan: $([ "$RUST_CHANGED" = "true" ] && echo "required" || echo "skipped")"
+          echo "   Container scan: $([ "$CONTAINER_CHANGED" = "true" ] && echo "required" || echo "skipped")"
+          echo "   Scan level: $SCAN_LEVEL"
+
+  # Python ecosystem security scanning
+  python-security:
+    name: Python Security Analysis
+    runs-on: ubuntu-latest
+    needs: security-triage
+    if: needs.security-triage.outputs.python_scan_required == 'true'
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python with UV
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install UV package manager
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install dependencies and security tools
+        timeout-minutes: 8
+        run: |
+          echo "🔧 Installing dependencies and security tools..."
+          uv venv --python ${{ env.PYTHON_VERSION }}
+          source .venv/bin/activate
+          
+          # Install project dependencies
+          if [ -f "pyproject.toml" ]; then
+            uv pip install -e . --index-strategy unsafe-best-match || echo "Project install failed"
+          elif [ -f "requirements.txt" ]; then
+            uv pip install -r requirements.txt --index-strategy unsafe-best-match || echo "Requirements install failed"
+          fi
+          
+          # Install security scanning tools
+          uv pip install safety bandit pip-audit semgrep
+
+      - name: Critical vulnerability scan (Safety)
+        timeout-minutes: 3
+        run: |
+          source .venv/bin/activate
+          echo "🚨 Running critical vulnerability scan with Safety..."
+          
+          # Run with strict failure on critical/high vulnerabilities
+          uv run safety check \
+            --json \
+            --output safety-report.json \
+            --severity critical,high \
+            --exit-code || SAFETY_FAILED=true
+          
+          if [ "$SAFETY_FAILED" = "true" ]; then
+            echo "❌ CRITICAL: High/Critical vulnerabilities found in dependencies"
+            uv run safety check --severity critical,high
+            exit 1
+          else
+            echo "✅ No critical/high vulnerabilities found"
+          fi
+
+      - name: Dependency audit (pip-audit)
+        timeout-minutes: 3
+        run: |
+          source .venv/bin/activate
+          echo "🔍 Running comprehensive dependency audit..."
+          
+          uv run pip-audit \
+            --format=json \
+            --output=pip-audit-report.json \
+            --vulnerability-service=all || PIP_AUDIT_FAILED=true
+          
+          if [ "$PIP_AUDIT_FAILED" = "true" ]; then
+            echo "⚠️ pip-audit found vulnerabilities"
+            uv run pip-audit --vulnerability-service=all
+          else
+            echo "✅ pip-audit passed"
+          fi
+
+      - name: Static security analysis (Bandit)
+        timeout-minutes: 5
+        run: |
+          source .venv/bin/activate
+          echo "🔒 Running static security analysis with Bandit..."
+          
+          uv run bandit -r services/ scripts/ \
+            -f json \
+            -o bandit-report.json \
+            -ll \
+            --exclude tests/,node_modules/,.venv/ || BANDIT_FAILED=true
+          
+          if [ "$BANDIT_FAILED" = "true" ]; then
+            echo "⚠️ Bandit found security issues"
+            uv run bandit -r services/ scripts/ -ll --exclude tests/,node_modules/,.venv/
+          else
+            echo "✅ Bandit security analysis passed"
+          fi
+
+      - name: Advanced pattern matching (Semgrep)
+        if: needs.security-triage.outputs.scan_level != 'quick'
+        timeout-minutes: 5
+        run: |
+          source .venv/bin/activate
+          echo "🎯 Running advanced pattern matching with Semgrep..."
+          
+          uv run semgrep \
+            --config=auto \
+            --json \
+            --output=semgrep-report.json \
+            --severity=ERROR \
+            --severity=WARNING \
+            . || SEMGREP_FAILED=true
+          
+          if [ "$SEMGREP_FAILED" = "true" ]; then
+            echo "⚠️ Semgrep found potential security issues"
+            uv run semgrep --config=auto --severity=ERROR .
+          else
+            echo "✅ Semgrep analysis passed"
+          fi
+
+      - name: Upload Python security reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: python-security-reports
+          path: |
+            safety-report.json
+            pip-audit-report.json
+            bandit-report.json
+            semgrep-report.json
+          retention-days: 30
+
+  # Rust/Blockchain security scanning
+  rust-security:
+    name: Rust Security Analysis
+    runs-on: ubuntu-latest
+    needs: security-triage
+    if: needs.security-triage.outputs.rust_scan_required == 'true'
+    timeout-minutes: 20
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+          components: clippy
+
+      - name: Cache Rust dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            blockchain/target/
+            quantumagi_core/target/
+          key: ${{ runner.os }}-cargo-security-${{ env.RUST_TOOLCHAIN }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-security-${{ env.RUST_TOOLCHAIN }}-
+
+      - name: Install Rust security tools
+        timeout-minutes: 10
+        run: |
+          echo "🔧 Installing Rust security tools..."
+          
+          # Install cargo-audit with retry logic
+          for attempt in 1 2 3; do
+            if cargo install cargo-audit --version 0.21.1 --locked; then
+              echo "✅ cargo-audit installed successfully"
+              break
+            elif [ $attempt -eq 3 ]; then
+              echo "❌ Failed to install cargo-audit after 3 attempts"
+              exit 1
+            else
+              echo "⚠️ Attempt $attempt failed, retrying..."
+              sleep 10
+            fi
+          done
+          
+          # Install cargo-deny
+          for attempt in 1 2 3; do
+            if cargo install cargo-deny --version 0.17.0 --locked; then
+              echo "✅ cargo-deny installed successfully"
+              break
+            elif [ $attempt -eq 3 ]; then
+              echo "❌ Failed to install cargo-deny after 3 attempts"
+              break
+            else
+              echo "⚠️ Attempt $attempt failed, retrying..."
+              sleep 10
+            fi
+          done
+
+      - name: Blockchain security audit
+        if: hashFiles('blockchain/Cargo.lock') != ''
+        working-directory: blockchain
+        timeout-minutes: 8
+        run: |
+          echo "🔒 Running blockchain security audit..."
+          
+          # Run cargo audit with zero-tolerance for unignored vulnerabilities
+          cargo audit --deny warnings \
+            --ignore RUSTSEC-2021-0145 \
+            --ignore RUSTSEC-2023-0033 \
+            --ignore RUSTSEC-2024-0375 \
+            --ignore RUSTSEC-2024-0388 \
+            --ignore RUSTSEC-2024-0436 \
+            --ignore RUSTSEC-2024-0344 || AUDIT_FAILED=true
+          
+          if [ "$AUDIT_FAILED" = "true" ]; then
+            echo "❌ CRITICAL: Blockchain security audit failed"
+            echo "Unignored vulnerabilities found - immediate attention required"
+            cargo audit --json > ../blockchain-audit-failure.json 2>/dev/null || true
+            exit 1
+          else
+            echo "✅ Blockchain security audit passed"
+          fi
+          
+          # Run cargo deny if configuration exists
+          if [ -f "deny.toml" ]; then
+            echo "Running cargo deny policy check..."
+            cargo deny check || echo "⚠️ cargo deny found policy violations"
+          fi
+
+      - name: QuantumAGI security audit
+        if: hashFiles('quantumagi_core/Cargo.lock') != ''
+        working-directory: quantumagi_core
+        timeout-minutes: 5
+        run: |
+          echo "🔒 Running QuantumAGI core security audit..."
+          
+          cargo audit || echo "⚠️ QuantumAGI audit found issues (non-blocking)"
+          
+          if [ -f "deny.toml" ]; then
+            cargo deny check || echo "⚠️ QuantumAGI deny check found issues"
+          fi
+
+      - name: Security-focused clippy analysis
+        timeout-minutes: 5
+        run: |
+          echo "🔍 Running security-focused Rust analysis..."
+          
+          # Check blockchain if it exists
+          if [ -d "blockchain" ]; then
+            cd blockchain
+            cargo clippy -- \
+              -D warnings \
+              -D clippy::all \
+              -D clippy::suspicious \
+              -D clippy::perf \
+              -W clippy::nursery || CLIPPY_FAILED=true
+            cd ..
+          fi
+          
+          # Check quantumagi_core if it exists
+          if [ -d "quantumagi_core" ]; then
+            cd quantumagi_core
+            cargo clippy -- \
+              -D warnings \
+              -D clippy::all \
+              -D clippy::suspicious \
+              -D clippy::perf || echo "⚠️ QuantumAGI clippy warnings"
+            cd ..
+          fi
+          
+          if [ "$CLIPPY_FAILED" = "true" ]; then
+            echo "❌ Security-focused clippy analysis failed"
+            exit 1
+          else
+            echo "✅ Security-focused clippy analysis passed"
+          fi
+
+      - name: Check for unsafe code patterns
+        timeout-minutes: 2
+        run: |
+          echo "🚨 Checking for unsafe code patterns..."
+          
+          UNSAFE_FOUND=false
+          
+          if [ -d "blockchain/programs" ]; then
+            if grep -r "unsafe" blockchain/programs/ 2>/dev/null; then
+              echo "❌ Unsafe code found in blockchain programs"
+              UNSAFE_FOUND=true
+            fi
+          fi
+          
+          if [ -d "quantumagi_core/src" ]; then
+            if grep -r "unsafe" quantumagi_core/src/ 2>/dev/null; then
+              echo "⚠️ Unsafe code found in QuantumAGI core"
+            fi
+          fi
+          
+          if [ "$UNSAFE_FOUND" = "true" ]; then
+            echo "❌ Unsafe code patterns detected in critical blockchain code"
+            exit 1
+          else
+            echo "✅ No unsafe code patterns found in blockchain programs"
+          fi
+
+      - name: Upload Rust security reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rust-security-reports
+          path: |
+            blockchain-audit-failure.json
+            quantumagi-audit-results.json
+          retention-days: 30
+
+  # Container and infrastructure security
+  container-security:
+    name: Container Security Analysis
+    runs-on: ubuntu-latest
+    needs: security-triage
+    if: needs.security-triage.outputs.container_scan_required == 'true'
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build security test image
+        timeout-minutes: 8
+        run: |
+          echo "🏗️ Building container for security scanning..."
+          docker build -t acgs-security-scan:latest .
+
+      - name: Critical container vulnerability scan
+        uses: aquasecurity/trivy-action@0.31.0
+        with:
+          image-ref: 'acgs-security-scan:latest'
+          format: 'sarif'
+          output: 'trivy-container-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+
+      - name: Upload container scan to Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-container-results.sarif'
+
+      - name: Filesystem security scan
+        uses: aquasecurity/trivy-action@0.31.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-fs-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          skip-dirs: 'node_modules,.venv,target'
+
+      - name: Upload filesystem scan to Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-fs-results.sarif'
+
+      - name: Secret detection scan
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --debug --only-verified
+
+  # Security summary and reporting
+  security-summary:
+    name: Security Summary & Compliance
+    runs-on: ubuntu-latest
+    needs: [security-triage, python-security, rust-security, container-security]
+    if: always()
+    timeout-minutes: 5
+    
+    steps:
+      - name: Download security artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: security-reports/
+
+      - name: Generate security compliance report
+        run: |
+          echo "# ACGS-1 Security Compliance Report" > security-summary.md
+          echo "Generated: $(date -u)" >> security-summary.md
+          echo "Scan Level: ${{ needs.security-triage.outputs.scan_level }}" >> security-summary.md
+          echo "" >> security-summary.md
+          
+          echo "## Security Scan Results" >> security-summary.md
+          echo "- Python Security: ${{ needs.python-security.result || 'skipped' }}" >> security-summary.md
+          echo "- Rust Security: ${{ needs.rust-security.result || 'skipped' }}" >> security-summary.md
+          echo "- Container Security: ${{ needs.container-security.result || 'skipped' }}" >> security-summary.md
+          echo "" >> security-summary.md
+          
+          # Determine overall security status
+          PYTHON_STATUS="${{ needs.python-security.result }}"
+          RUST_STATUS="${{ needs.rust-security.result }}"
+          CONTAINER_STATUS="${{ needs.container-security.result }}"
+          
+          if [ "$PYTHON_STATUS" = "failure" ] || [ "$RUST_STATUS" = "failure" ] || [ "$CONTAINER_STATUS" = "failure" ]; then
+            echo "## ❌ SECURITY ALERT" >> security-summary.md
+            echo "Critical security issues detected that require immediate attention:" >> security-summary.md
+            [ "$PYTHON_STATUS" = "failure" ] && echo "- Python ecosystem vulnerabilities found" >> security-summary.md
+            [ "$RUST_STATUS" = "failure" ] && echo "- Rust/Blockchain security issues found" >> security-summary.md
+            [ "$CONTAINER_STATUS" = "failure" ] && echo "- Container security vulnerabilities found" >> security-summary.md
+            echo "" >> security-summary.md
+            echo "**Action Required**: Review security reports and address all findings before deployment." >> security-summary.md
+          else
+            echo "## ✅ Security Compliance Achieved" >> security-summary.md
+            echo "All security scans passed. The codebase meets security standards for deployment." >> security-summary.md
+          fi
+          
+          echo "" >> security-summary.md
+          echo "## Next Steps" >> security-summary.md
+          echo "1. Review detailed security reports in the artifacts" >> security-summary.md
+          echo "2. Address any identified vulnerabilities" >> security-summary.md
+          echo "3. Update dependencies with security patches" >> security-summary.md
+          echo "4. Re-run security scans after fixes" >> security-summary.md
+
+      - name: Upload security summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-compliance-report
+          path: security-summary.md
+          retention-days: 90
+
+      - name: Security notification
+        run: |
+          echo "🔒 ACGS-1 Security Scan Completed"
+          echo "=================================="
+          
+          PYTHON_STATUS="${{ needs.python-security.result }}"
+          RUST_STATUS="${{ needs.rust-security.result }}"
+          CONTAINER_STATUS="${{ needs.container-security.result }}"
+          
+          if [ "$PYTHON_STATUS" = "failure" ] || [ "$RUST_STATUS" = "failure" ] || [ "$CONTAINER_STATUS" = "failure" ]; then
+            echo "🚨 SECURITY ALERT: Critical issues found"
+            echo "Deployment should be blocked until issues are resolved"
+            exit 1
+          else
+            echo "✅ All security scans passed"
+            echo "Codebase is secure for deployment"
+          fi

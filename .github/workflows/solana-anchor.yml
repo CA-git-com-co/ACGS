@@ -297,6 +297,7 @@ jobs:
           toolchain: ${{ env.RUST_TOOLCHAIN }}
 
       - name: Install security tools with enhanced compatibility
+        timeout-minutes: 15
         run: |
           echo "🔧 Installing security tools for Rust ${{ env.RUST_TOOLCHAIN }}..."
 
@@ -379,6 +380,7 @@ jobs:
       - name: Run comprehensive security audit on blockchain
         if: hashFiles('blockchain/Cargo.lock') != ''
         working-directory: blockchain
+        timeout-minutes: 20
         run: |
           echo "🔒 Running comprehensive security audit on blockchain..."
 
