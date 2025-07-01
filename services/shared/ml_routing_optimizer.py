@@ -423,6 +423,10 @@ class MLRoutingOptimizer:
                 self.models = model_data['models']
                 self.scalers = model_data['scalers']
                 logger.info("ML models loaded successfully")
+            else:
+                logger.info(
+                    "ML model file not found. Run 'python scripts/generate_ml_routing_models.py' to create it."
+                )
                 
         except Exception as e:
             logger.error(f"Failed to load ML models: {e}")

@@ -77,6 +77,8 @@ coverage.xml
 cover/
 tests/coverage/
 tests/results/
+coverage.json
+data/ml_routing_models.joblib
 
 # Virtual environments
 .env
