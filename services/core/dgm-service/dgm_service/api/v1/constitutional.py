@@ -3,10 +3,15 @@ Constitutional compliance endpoints.
 """
 
 import logging
-from typing import List, Optional
+from typing import Dict, List, Optional
+from datetime import datetime, timedelta
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import select
+
+from ...database import get_db_session
+from ...models.compliance import ComplianceLevel, ConstitutionalComplianceLog
 
 from ...core.constitutional_validator import ConstitutionalValidator
 from ...network.service_client import ACGSServiceClient
@@ -138,21 +143,76 @@ async def get_compliance_history(
     Returns historical compliance data for analysis and monitoring.
     """
     try:
-        # TODO: Implement actual compliance history retrieval
-        # This would query the constitutional_compliance_log table
+        async with get_db_session() as db:
+            stmt = select(ConstitutionalComplianceLog).where(
+                ConstitutionalComplianceLog.created_at
+                >= datetime.utcnow() - timedelta(days=days)
+            )
 
-        # Mock response for now
-        history = {
+            if improvement_id:
+                stmt = stmt.where(
+                    ConstitutionalComplianceLog.improvement_id == improvement_id
+                )
+
+            if min_score is not None:
+                stmt = stmt.where(
+                    ConstitutionalComplianceLog.compliance_score >= min_score
+                )
+
+            stmt = stmt.order_by(ConstitutionalComplianceLog.created_at)
+            result = await db.execute(stmt)
+            logs = result.scalars().all()
+
+        total_validations = len(logs)
+        average_score = (
+            float(sum(float(log.compliance_score) for log in logs) / total_validations)
+            if total_validations
+            else 0.0
+        )
+
+        compliant_count = sum(
+            1
+            for log in logs
+            if log.compliance_level
+            in (ComplianceLevel.COMPLIANT, ComplianceLevel.EXEMPLARY)
+        )
+        compliance_rate = (
+            compliant_count / total_validations if total_validations else 0.0
+        )
+
+        violations_by_principle: Dict[str, int] = {}
+        daily_scores_map: Dict[str, List[float]] = {}
+
+        for log in logs:
+            for violation in log.violations or []:
+                violations_by_principle[violation] = (
+                    violations_by_principle.get(violation, 0) + 1
+                )
+
+            date_key = log.created_at.date().isoformat()
+            daily_scores_map.setdefault(date_key, []).append(float(log.compliance_score))
+
+        daily_scores = [
+            {"date": k, "average_score": sum(v) / len(v)}
+            for k, v in sorted(daily_scores_map.items())
+        ]
+
+        trend = "stable"
+        if len(daily_scores) >= 2:
+            if daily_scores[-1]["average_score"] > daily_scores[0]["average_score"]:
+                trend = "improving"
+            elif daily_scores[-1]["average_score"] < daily_scores[0]["average_score"]:
+                trend = "declining"
+
+        return {
             "period_days": days,
-            "total_validations": 0,
-            "average_score": 0.0,
-            "compliance_rate": 0.0,
-            "trend": "stable",
-            "violations_by_principle": {},
-            "daily_scores": [],
+            "total_validations": total_validations,
+            "average_score": average_score,
+            "compliance_rate": compliance_rate,
+            "trend": trend,
+            "violations_by_principle": violations_by_principle,
+            "daily_scores": daily_scores,
         }
-
-        return history
 
     except Exception as e:
         logger.error(f"Failed to get compliance history: {e}")
