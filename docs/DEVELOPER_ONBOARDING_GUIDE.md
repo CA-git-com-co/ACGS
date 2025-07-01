@@ -72,7 +72,7 @@ uv sync
 # Alternative: Traditional Python setup
 python3.11 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-test.txt
 
 # 4. Set up environment variables
 cp .env.example .env
