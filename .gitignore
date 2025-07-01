@@ -113,6 +113,7 @@ celerybeat.pid
 
 # Additional environment files
 .env.*.local
+config/services/backups/.env
 
 # Spyder project settings
 .spyderproject
