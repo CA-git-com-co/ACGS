@@ -6,8 +6,11 @@ Integrates with the agent identity management system.
 """
 
 import logging
+import os
 from typing import Optional, Dict, Any, Callable
 from datetime import datetime
+
+import redis.asyncio as aioredis
 
 import httpx
 from fastapi import HTTPException, Request, status
@@ -32,11 +35,13 @@ class AgentAuthenticationMiddleware:
     - Session management
     """
     
-    def __init__(self, auth_service_url: str = "http://localhost:8006"):
+    def __init__(self, auth_service_url: str = "http://localhost:8006", redis_url: Optional[str] = None):
         self.auth_service_url = auth_service_url
         self.agent_service = AgentService()
         self.http_client = httpx.AsyncClient(timeout=10.0)
         self.security = HTTPBearer(auto_error=False)
+        self.redis_url = redis_url or os.getenv("REDIS_URL", "redis://localhost:6379/0")
+        self.redis_client: aioredis.Redis | None = None
     
     async def authenticate_agent(
         self, 
@@ -229,16 +234,42 @@ class AgentAuthenticationMiddleware:
         
         # Fall back to direct connection IP
         return request.client.host if request.client else None
+
+    async def _get_redis(self) -> aioredis.Redis:
+        """Lazily initialize and return Redis client."""
+        if not self.redis_client:
+            self.redis_client = aioredis.from_url(
+                self.redis_url,
+                encoding="utf-8",
+                decode_responses=True,
+            )
+            try:
+                await self.redis_client.ping()
+            except Exception as e:
+                logger.error(f"Redis connection failed: {e}")
+                self.redis_client = None
+                raise
+        return self.redis_client
     
     async def _check_rate_limits(self, agent: Agent, request: Request) -> bool:
-        """Check if agent is within rate limits."""
-        # Simplified rate limiting - in production use Redis or similar
-        # This would track requests per minute per agent
-        
+        """Check if agent is within rate limits using Redis counters."""
         max_requests = agent.max_requests_per_minute or 100
-        # TODO: Implement actual rate limiting logic with Redis
-        # For now, always return True
-        return True
+
+        try:
+            redis = await self._get_redis()
+        except Exception:
+            # If Redis is unavailable fail open
+            return True
+
+        key = f"agent_rl:{agent.agent_id}"
+        try:
+            count = await redis.incr(key)
+            if count == 1:
+                await redis.expire(key, 60)
+            return count <= max_requests
+        except Exception as e:
+            logger.error(f"Rate limit check failed: {e}")
+            return True
     
     def _is_high_risk_operation(
         self, operation_type: str, operation_context: Dict[str, Any]
@@ -323,6 +354,8 @@ class AgentAuthenticationMiddleware:
     async def close(self):
         """Clean up resources."""
         await self.http_client.aclose()
+        if self.redis_client:
+            await self.redis_client.close()
 
 
 # FastAPI dependency functions
