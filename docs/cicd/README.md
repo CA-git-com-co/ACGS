@@ -99,6 +99,20 @@ id = "governance-secret"
 regex = '''(?i)(governance[_-]?secret|constitutional[_-]?key)['"]*\s*[:=]\s*['"][a-zA-Z0-9]{16,}['"]'''
 ```
 
+### Managing Ignore Patterns
+
+False positives occasionally occur when scanners match normal comments or example
+data. Add safe ignore patterns in `.gitleaks.toml` under `[allowlist.regexes]`.
+Each regex should narrowly target the text you want to skip:
+
+```toml
+[allowlist.regexes]
+regexes = [
+  '''example[_-]?key''',
+  '''TODO:[^"'=]*$'''
+]
+```
+
 ### **Security Validation Process**
 
 1. **Pre-commit**: detect-secrets baseline validation

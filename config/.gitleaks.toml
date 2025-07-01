@@ -62,9 +62,10 @@ regexes = [
   '''placeholder[_-]?value''',
   '''your[_-]?api[_-]?key[_-]?here''',
   '''replace[_-]?with[_-]?actual''',
-  '''TODO:.*''',
-  '''FIXME:.*''',
-  '''XXX:.*''',
+  # Allow simple TODO/FIXME/XXX comments without quoted values
+  '''TODO:[^"'=]*$''',
+  '''FIXME:[^"'=]*$''',
+  '''XXX:[^"'=]*$''',
   '''localhost''',
   '''127\.0\.0\.1''',
   '''0\.0\.0\.0''',
