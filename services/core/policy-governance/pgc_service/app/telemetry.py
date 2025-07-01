@@ -31,6 +31,7 @@ try:
     from opentelemetry.sdk.resources import Resource
     from opentelemetry.sdk.trace import TracerProvider
     from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+    from opentelemetry.sdk.trace.sampling import TraceIdRatioBased
     from opentelemetry.semconv.resource import ResourceAttributes
     from opentelemetry.trace.propagation.tracecontext import (
         TraceContextTextMapPropagator,
@@ -86,7 +87,10 @@ class TelemetryManager:
         self.otlp_version = self.telemetry_config.get("otlp_version", "v1.37.0")
         self.service_name = self.telemetry_config.get("service_name", "pgc_service")
         self.environment = self.telemetry_config.get("environment", "production")
-        self.trace_sample_rate = self.telemetry_config.get("traces_sample_rate", 0.1)
+        self.trace_sampling_ratio = self.telemetry_config.get(
+            "trace_sampling_ratio",
+            self.telemetry_config.get("traces_sample_rate", 0.1),
+        )
 
         self.meter_provider = None
         self.tracer_provider = None
@@ -154,7 +158,7 @@ class TelemetryManager:
         # Create tracer provider
         self.tracer_provider = TracerProvider(
             resource=resource,
-            # TODO: Use TraceIdRatioBased sampler with configurable rate
+            sampler=TraceIdRatioBased(self.trace_sampling_ratio),
         )
         trace.set_tracer_provider(self.tracer_provider)
 
