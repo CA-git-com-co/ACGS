@@ -18,7 +18,7 @@ ACGS-2 is a comprehensive governance system implementing constitutional AI proce
 ```bash
 git clone <repository-url>
 cd ACGS-2
-pip install -r requirements.txt
+pip install -r requirements-test.txt
 ```
 
 ### Environment Configuration
