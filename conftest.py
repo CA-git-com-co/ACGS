@@ -37,3 +37,17 @@ for path in paths_to_add:
         path_str = str(path.absolute())
         if path_str not in sys.path:
             sys.path.insert(0, path_str)
+
+# Alias modules with underscores to corresponding hyphenated package names
+import importlib
+ALIASES = {
+    "services.core.constitutional_ai": "services.core.constitutional-ai",
+    "services.core.governance_synthesis": "services.core.governance-synthesis",
+    "services.core.governance_workflows": "services.core.governance-workflows",
+    "services.core.policy_governance": "services.core.policy-governance",
+}
+for alias, target in ALIASES.items():
+    try:
+        sys.modules[alias] = importlib.import_module(target)
+    except ModuleNotFoundError:
+        pass
