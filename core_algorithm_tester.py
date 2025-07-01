@@ -48,8 +48,7 @@ class CoreAlgorithmTester:
         try:
             # Test basic imports
             constitutional_dirs = [
-                "services/core/constitutional-ai",
-                "services/core/constitutional_ai"
+                "services/core/constitutional-ai"
             ]
             
             found_modules = []
@@ -113,8 +112,7 @@ class CoreAlgorithmTester:
         start_time = time.time()
         try:
             policy_dirs = [
-                "services/core/policy-governance",
-                "services/core/policy_governance"
+                "services/core/policy-governance"
             ]
             
             structure_analysis = {
