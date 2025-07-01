@@ -21,6 +21,11 @@ cd ACGS-2
 pip install -r requirements.txt
 ```
 
+### Environment Configuration
+Copy `config/services/backups/.env` as a template and set the required API keys
+via environment variables. The file is excluded from version control, so
+configure keys locally or through your CI/CD secrets.
+
 ### Running Tests
 ```bash
 # Run all tests
